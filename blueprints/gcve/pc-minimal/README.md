@@ -1,7 +1,7 @@
 # GCVE Private Cloud Minimal
 
 This blueprint presents an opinionated architecture to handle different Google VMware Engine deployment scenarios: from a simple single region private cloud to multi-region private clouds spread across different locations. The general idea behind this blueprint is to deploy a single project hosting one or more GCVE private clouds connected to a shared VMware Engine Network (VEN).
-Optionally this blueprint can deploy the VMWare Engine Network peerings to existing VPCs the user needs to create upfront.
+Optionally this blueprint can deploy the VMWare Engine Network peerings to pre-existing VPCs.
 
 Multiple deployments of this blueprint allow the user to achieve more complex design solutions as for example GCVE private clouds deployed on different projects or connected to indipendent VMWare Engine Networks.
 
@@ -15,7 +15,7 @@ The blueprint manages:
 - project creation
 - project-level organization policy definitions
 - billing setup (billing account attachment)
-- API/Services enablement
+- API/services enablement
 - IAM role assignment for groups
 - VMware Engine private clouds creation
 - [VMware Engine Network](https://cloud.google.com/vmware-engine/docs/networking/vmware-engine-network#standard_networks) creation
@@ -36,6 +36,7 @@ The blueprint can optionally configure the [VMware Engine Network peering](https
 - vmwareengine.networkPeerings.get
 - vmwareengine.networkPeerings.list
 - vmwareengine.operations.get
+The permissions have to be assigned through the creation of a custom role (least privilege).
 
 ## Basic usage
 
@@ -58,21 +59,6 @@ module "gcve-pc" {
     dev-spoke-ven = {
       peer_network                  = "projects/spokeproject/regions/europe-west1/subnetworks/dev-default-ew1"
       peer_project_id               = "peerprojectid"
-      configure_peer_network        = false
-      peer_to_vmware_engine_network = false
-      custom_routes = {
-        export_to_peer   = false
-        import_from_peer = false
-        export_to_ven    = false
-        import_from_ven  = false
-      }
-      custom_routes_with_public_ip = {
-        export_to_peer   = false
-        import_from_peer = false
-        export_to_ven    = false
-        import_from_ven  = false
-      }
-
     }
   }
 
