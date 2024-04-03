@@ -21,13 +21,11 @@
   - changed-files:
     - any-glob-to-any-file:
       - 'fast/**'
-      - '!**/*.md'
 
 'on:modules':
   - changed-files:
     - any-glob-to-any-file:
       - 'modules/**'
-      - '!**/*.md'
 
 'on:tools':
   - changed-files:
