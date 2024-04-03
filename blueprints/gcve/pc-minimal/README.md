@@ -57,8 +57,8 @@ module "gcve-pc" {
 
   network_peerings = {
     dev-spoke-ven = {
-      peer_network                  = "projects/spokeproject/regions/europe-west1/subnetworks/dev-default-ew1"
-      peer_project_id               = "peerprojectid"
+      peer_network    = "projects/spokeproject/regions/europe-west1/subnetworks/dev-default-ew1"
+      peer_project_id = "peerprojectid"
     }
   }
 
