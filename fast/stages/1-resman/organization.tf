@@ -50,6 +50,7 @@ module "organization" {
       values = {
         data       = {}
         gke        = {}
+        gcve       = {}
         networking = {}
         sandbox    = {}
         security   = {}

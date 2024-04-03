@@ -39,6 +39,28 @@ locals {
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
+    gcve_dev = {
+      service_accounts = {
+        apply = try(module.branch-gcve-dev-sa-cicd.0.email, null)
+        plan  = try(module.branch-gcve-dev-r-sa-cicd.0.email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gcve-dev-providers.tf"
+        plan  = "3-gcve-dev-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gcve_prod = {
+      service_accounts = {
+        apply = try(module.branch-gcve-prod-sa-cicd.0.email, null)
+        plan  = try(module.branch-gcve-prod-r-sa-cicd.0.email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gcve-prod-providers.tf"
+        plan  = "3-gcve-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
     gke_dev = {
       service_accounts = {
         apply = try(module.branch-gke-dev-sa-cicd.0.email, null)
@@ -125,6 +147,8 @@ locals {
     {
       data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      gcve-dev           = try(module.branch-gcve-dev-folder.0.id, null)
+      gcve-prod          = try(module.branch-gcve-prod-folder.0.id, null)
       gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
       gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
       networking         = try(module.branch-network-folder.id, null)
@@ -226,6 +250,32 @@ locals {
         sa            = module.branch-gke-prod-r-sa.0.email
       })
     },
+    !var.fast_features.gcve ? {} : {
+      "3-gcve-dev" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-dev-gcs.0.name
+        name          = "gcve-dev"
+        sa            = module.branch-gcve-dev-sa.0.email
+      })
+      "3-gcve-dev-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-dev-gcs.0.name
+        name          = "gcve-dev"
+        sa            = module.branch-gcve-dev-r-sa.0.email
+      })
+      "3-gcve-prod" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-prod-gcs.0.name
+        name          = "gcve-prod"
+        sa            = module.branch-gcve-prod-sa.0.email
+      })
+      "3-gcve-prod-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-prod-gcs.0.name
+        name          = "gcve-prod"
+        sa            = module.branch-gcve-prod-r-sa.0.email
+      })
+    },
     !var.fast_features.project_factory ? {} : {
       "3-project-factory-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
@@ -286,6 +336,10 @@ locals {
       data-platform-dev-r    = try(module.branch-dp-dev-r-sa.0.email, null)
       data-platform-prod     = try(module.branch-dp-prod-sa.0.email, null)
       data-platform-prod-r   = try(module.branch-dp-prod-r-sa.0.email, null)
+      gcve-dev               = try(module.branch-gcve-dev-sa.0.email, null)
+      gcve-dev-r             = try(module.branch-gcve-dev-r-sa.0.email, null)
+      gcve-prod              = try(module.branch-gcve-prod-sa.0.email, null)
+      gcve-prod-r            = try(module.branch-gcve-prod-r-sa.0.email, null)
       gke-dev                = try(module.branch-gke-dev-sa.0.email, null)
       gke-dev-r              = try(module.branch-gke-dev-r-sa.0.email, null)
       gke-prod               = try(module.branch-gke-prod-sa.0.email, null)
@@ -362,6 +416,27 @@ output "dataplatform" {
       service_account = module.branch-dp-prod-sa.0.email
     }
   }
+}
+
+output "gcve" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the GCVE stage."
+  value = (
+    var.fast_features.gcve
+    ? {
+      "dev" = {
+        folder          = module.branch-gcve-dev-folder.0.id
+        gcs_bucket      = module.branch-gcve-dev-gcs.0.name
+        service_account = module.branch-gcve-dev-sa.0.email
+      }
+      "prod" = {
+        folder          = module.branch-gcve-prod-folder.0.id
+        gcs_bucket      = module.branch-gcve-prod-gcs.0.name
+        service_account = module.branch-gcve-prod-sa.0.email
+      }
+    }
+    : {}
+  )
 }
 
 output "gke_multitenant" {

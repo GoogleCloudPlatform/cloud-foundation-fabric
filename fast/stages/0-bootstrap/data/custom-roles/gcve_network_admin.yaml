@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  google_folder: 5
-  google_folder_iam_binding: 21
-  google_organization_iam_member: 5
-  google_project_iam_member: 4
-  google_service_account: 4
-  google_service_account_iam_binding: 4
-  google_storage_bucket: 2
-  google_storage_bucket_iam_binding: 4
-  google_storage_bucket_iam_member: 4
-  google_storage_bucket_object: 5
-  google_tags_tag_binding: 5
-  google_tags_tag_key: 3
-  google_tags_tag_value: 10
-  modules: 12
-  resources: 76
+name: gcveNetworkAdmin
+includedPermissions:
+  - vmwareengine.networkPeerings.create
+  - vmwareengine.networkPeerings.delete
+  - vmwareengine.networkPeerings.get
+  - vmwareengine.networkPeerings.list
+  - vmwareengine.operations.get
