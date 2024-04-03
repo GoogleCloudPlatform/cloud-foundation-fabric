@@ -13,32 +13,39 @@
 # limitations under the License.
 
 'on:blueprints':
-  - any:
-    - 'blueprints/**'
-    - '!**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'blueprints/**'
+      - '!**/*.md'
 
 'on:documentation':
-  - any:
-      - '**/*.md'
-      - '!**/README.md'
-
-  - 'README.md'
-  - 'blueprints/README.md'
-  - 'blueprints/*/README.md'
-  - 'modules/README.md'
-  - 'fast/README.md'
-  - 'fast/stages/README.md'
+  - changed-files:
+    - any-glob-to-any-file:
+        - '**/*.md'
+        - '!**/README.md'
+        - 'README.md'
+        - 'blueprints/README.md'
+        - 'blueprints/*/README.md'
+        - 'modules/README.md'
+        - 'fast/README.md'
+        - 'fast/stages/README.md'
 
 'on:FAST':
-  - any:
-    - 'fast/**'
-    - '!**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'fast/**'
+      - '!**/*.md'
 
 'on:modules':
-  - any:
-    - 'modules/**'
-    - '!**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'modules/**'
+      - '!**/*.md'
 
 'on:tools':
-  - 'tools/**'
-  - '.github/**'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'tools/**'
+      - '.github/**'
+    - all-globs-to-all-files:
+      - 'tests/**'
