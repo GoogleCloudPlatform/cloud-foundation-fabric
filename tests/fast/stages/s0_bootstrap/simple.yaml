@@ -43,7 +43,7 @@ counts:
   google_logging_project_bucket_config: 3
   google_org_policy_policy: 20
   google_organization_iam_binding: 27
-  google_organization_iam_custom_role: 6
+  google_organization_iam_custom_role: 7
   google_organization_iam_member: 22
   google_project: 3
   google_project_iam_binding: 19
@@ -61,10 +61,11 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 16
-  resources: 183
+  resources: 184
 
 outputs:
   custom_roles:
+    gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
     organization_admin_viewer: organizations/123456789012/roles/organizationAdminViewer
     organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
     service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin

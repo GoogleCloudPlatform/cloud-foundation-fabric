@@ -168,7 +168,7 @@ def parse_files(basepath, exclude_files=None):
     if shortname in exclude_files:
       continue
     try:
-      with open(name) as file:
+      with open(name, encoding='utf-8') as file:
         body = file.read()
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot read file {name}: {e}')
@@ -192,7 +192,7 @@ def parse_outputs(basepath, exclude_files=None):
     if shortname in exclude_files:
       continue
     try:
-      with open(name) as file:
+      with open(name, encoding='utf-8') as file:
         body = file.read()
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot open outputs file {shortname}.')
@@ -215,7 +215,7 @@ def parse_variables(basepath, exclude_files=None):
     if shortname in exclude_files:
       continue
     try:
-      with open(name) as file:
+      with open(name, encoding='utf-8') as file:
         body = file.read()
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot open variables file {shortname}.')
@@ -430,7 +430,7 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
 def get_readme(readme_path):
   'Open and return README.md in module.'
   try:
-    return open(readme_path).read()
+    return open(readme_path, "r", encoding="utf-8").read()
   except (IOError, OSError) as e:
     raise SystemExit(f'Error opening README {readme_path}: {e}')
 
@@ -486,7 +486,7 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   readme = render_toc(readme, toc)
   if replace:
     try:
-      with open(readme_path, 'w') as f:
+      with open(readme_path, 'w', encoding='utf-8') as f:
         f.write(readme)
     except (IOError, OSError) as e:
       raise SystemExit(f'Error replacing README {readme_path}: {e}')
