@@ -17,19 +17,31 @@
 # tfdoc:file:description Team stage resources.
 
 # TODO(ludo): add support for CI/CD
-
-module "branch-teams-folder" {
-  source = "../../../modules/folder"
-  count  = var.fast_features.teams ? 1 : 0
-  parent = "organizations/${var.organization.id}"
-  name   = "Teams"
-  iam = {
+locals {
+  # FAST-specific IAM
+  _teams_folder_fast_iam = !var.fast_features.teams ? {} : {
     "roles/logging.admin"                  = [module.branch-teams-sa.0.iam_email]
     "roles/owner"                          = [module.branch-teams-sa.0.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-teams-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-teams-sa.0.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-teams-sa.0.iam_email]
   }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _teams_folder_iam = merge(
+    var.folder_iam.teams,
+    {
+      for role, principals in local._teams_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.teams, role, [])))
+    }
+  )
+}
+
+module "branch-teams-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.teams ? 1 : 0
+  parent = "organizations/${var.organization.id}"
+  name   = "Teams"
+  iam    = local._teams_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/teams"].id, null

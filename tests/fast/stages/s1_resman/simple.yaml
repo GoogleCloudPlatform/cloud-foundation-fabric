@@ -14,7 +14,7 @@
 
 counts:
   google_folder: 5
-  google_folder_iam_binding: 21
+  google_folder_iam_binding: 25
   google_organization_iam_member: 5
   google_project_iam_member: 4
   google_service_account: 4
@@ -27,4 +27,4 @@ counts:
   google_tags_tag_key: 3
   google_tags_tag_value: 10
   modules: 12
-  resources: 76
+  resources: 80

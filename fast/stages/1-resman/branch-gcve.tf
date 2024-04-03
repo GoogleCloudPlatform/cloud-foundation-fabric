@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ module "branch-gcve-folder" {
   count  = var.fast_features.gcve ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "GCVE"
+  iam    = var.folder_iam.gcve
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/gcve"].id, null
