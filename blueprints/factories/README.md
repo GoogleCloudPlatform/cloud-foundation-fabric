@@ -74,5 +74,3 @@ The second factory type is implemented as a standalone module that internally re
 
 - **projects**
   - [`project-factory`](../../modules/project-factory/)
-
-<!-- test labeler -->
