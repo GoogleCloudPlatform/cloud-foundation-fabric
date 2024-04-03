@@ -32,7 +32,7 @@ module "prod-spoke-project" {
     "vpcaccess.googleapis.com"
     ],
     (
-      var.fast_features.gcve == true
+      var.fast_features.gcve
       ? ["vmwareengine.googleapis.com"]
       : []
     )
