@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.376" timestamp="2024-04-03T19:39:29.685159" hostname="DESKTOP-JBJJNQL"><testcase classname="fast.stages.s2_networking_c_nva.tftest.yaml" name="stage" time="0.318"><failure message="tftest.TerraformTestError: ('Error running command init: 1 \nInitializing the backend...\nUpgrading modules...\n- dev-dns-peer-landing-rev-10 in ..\\..\\..\\modules\\dns\n- dev-dns-peer-landing-root in ..\\..\\..\\modules\\dns\n- dev-dns-priv-example in ..\\..\\..\\modules\\dns\n- dev-spoke-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- dev-spoke-project in ..\\..\\..\\modules\\project\n- dev-spoke-vpc in ..\\..\\..\\modules\\net-vpc\n- dev-spoke-vpc-serverless in ..\\..\\..\\modules\\net-vpc\n- dmz-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- dmz-nat-primary in ..\\..\\..\\modules\\net-cloudnat\n- dmz-nat-secondary in ..\\..\\..\\modules\\net-cloudnat\n- dmz-vpc in ..\\..\\..\\modules\\net-vpc\n- firewall-policy-default in ..\\..\\..\\modules\\net-firewall-policy\n- folder in ..\\..\\..\\modules\\folder\n- heartbeat-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- heartbeat-vpc in ..\\..\\..\\modules\\net-vpc\n- ilb-nva-dmz in ..\\..\\..\\modules\\net-lb-int\n- ilb-nva-landing in ..\\..\\..\\modules\\net-lb-int\n- landing-dns-fwd-onprem-example in ..\\..\\..\\modules\\dns\n- landing-dns-fwd-onprem-rev-10 in ..\\..\\..\\modules\\dns\n- landing-dns-policy-googleapis in ..\\..\\..\\modules\\dns-response-policy\n- landing-dns-priv-gcp in ..\\..\\..\\modules\\dns\n- landing-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- landing-project in ..\\..\\..\\modules\\project\n- landing-to-onprem-primary-vpn in ..\\..\\..\\modules\\net-vpn-ha\n- landing-to-onprem-secondary-vpn in ..\\..\\..\\modules\\net-vpn-ha\n- landing-vpc in ..\\..\\..\\modules\\net-vpc\n- management-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- management-vpc in ..\\..\\..\\modules\\net-vpc\n- nva-cloud-config in ..\\..\\..\\modules\\cloud-config-container\\simple-nva\n- nva-mig in ..\\..\\..\\modules\\compute-mig\n- nva-template in ..\\..\\..\\modules\\compute-vm\n- peering-dev in ..\\..\\..\\modules\\net-vpc-peering\n- peering-prod in ..\\..\\..\\modules\\net-vpc-peering\n- prod-dns-peer-landing-rev-10 in ..\\..\\..\\modules\\dns\n- prod-dns-peer-landing-root in ..\\..\\..\\modules\\dns\n- prod-dns-priv-example in ..\\..\\..\\modules\\dns\n- prod-spoke-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- prod-spoke-project in ..\\..\\..\\modules\\project\n- prod-spoke-vpc in ..\\..\\..\\modules\\net-vpc\n- prod-spoke-vpc-serverless in ..\\..\\..\\modules\\net-vpc\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\compute-mig\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.nva-mig (from ../../../modules/compute-mig) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\compute-vm\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.nva-template (from ../../../modules/compute-vm) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns-response-policy\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-dns-policy-googleapis (from\n../../../modules/dns-response-policy) does not support Terraform version\n1.7.3. To proceed, either choose another supported Terraform version or\nupdate this version constraint. Version constraints are normally set for good\nreason, so updating the constraint may lead to other errors or unexpected\nbehavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-dns-peer-landing-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-dns-peer-landing-root (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-dns-priv-example (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-dns-fwd-onprem-example (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-dns-fwd-onprem-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-dns-priv-gcp (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-dns-peer-landing-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-dns-peer-landing-root (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-dns-priv-example (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\folder\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.folder (from ../../../modules/folder) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-cloudnat\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dmz-nat-primary (from ../../../modules/net-cloudnat) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-cloudnat\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dmz-nat-secondary (from ../../../modules/net-cloudnat) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-firewall-policy\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.firewall-policy-default (from\n../../../modules/net-firewall-policy) does not support Terraform version\n1.7.3. To proceed, either choose another supported Terraform version or\nupdate this version constraint. Version constraints are normally set for good\nreason, so updating the constraint may lead to other errors or unexpected\nbehavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-lb-int\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.ilb-nva-dmz (from ../../../modules/net-lb-int) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-lb-int\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.ilb-nva-landing (from ../../../modules/net-lb-int) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-spoke-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dmz-firewall (from ../../../modules/net-vpc-firewall) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.heartbeat-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-firewall (from ../../../modules/net-vpc-firewall) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.management-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-spoke-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-peering\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.peering-dev (from ../../../modules/net-vpc-peering) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-peering\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.peering-prod (from ../../../modules/net-vpc-peering) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-spoke-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-spoke-vpc-serverless (from ../../../modules/net-vpc) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dmz-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.heartbeat-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.management-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-spoke-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-spoke-vpc-serverless (from ../../../modules/net-vpc) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpn-ha\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-to-onprem-primary-vpn (from\n../../../modules/net-vpn-ha) does not support Terraform version 1.7.3. To\nproceed, either choose another supported Terraform version or update this\nversion constraint. Version constraints are normally set for good reason, so\nupdating the constraint may lead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpn-ha\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-to-onprem-secondary-vpn (from\n../../../modules/net-vpn-ha) does not support Terraform version 1.7.3. To\nproceed, either choose another supported Terraform version or update this\nversion constraint. Version constraints are normally set for good reason, so\nupdating the constraint may lead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.dev-spoke-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.landing-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.prod-spoke-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\cloud-config-container\\simple-nva\\versions.tf line 16, in terraform:\n  16:   required_version = &quot;&gt;= 1.7.4&quot;\n\nModule module.nva-cloud-config (from\n../../../modules/cloud-config-container/simple-nva) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n None', None)">cls = &lt;class '_pytest.runner.CallInfo'&gt;, func = &lt;function call_and_report.&lt;locals&gt;.&lt;lambda&gt; at 0x000001CFABA66160&gt;, when = 'call', reraise = (&lt;class '_pytest.outcomes.Exit'&gt;, &lt;class 'KeyboardInterrupt'&gt;)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: Optional[
+            Union[Type[BaseException], Tuple[Type[BaseException], ...]]
+        ] = None,
+    ) -&gt; "CallInfo[TResult]":
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        start = timing.time()
+        precise_start = timing.perf_counter()
+        try:
+&gt;           result: Optional[TResult] = func()
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\runner.py:340: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+&gt;       lambda: runtest_hook(item=item, **kwds), when=when, reraise=reraise
+    )
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\runner.py:240: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;HookCaller 'pytest_runtest_call'&gt;, kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def __call__(self, **kwargs: object) -&gt; Any:
+        """Call the hook.
+    
+        Only accepts keyword arguments, which should match the hook
+        specification.
+    
+        Returns the result(s) of calling all registered plugins, see
+        :ref:`calling`.
+        """
+        assert (
+            not self.is_historic()
+        ), "Cannot directly call a historic hook - use call_historic instead."
+        self._verify_all_args_are_provided(kwargs)
+        firstresult = self.spec.opts.get("firstresult", False) if self.spec else False
+        # Copy because plugins may register other plugins during iteration (#438).
+&gt;       return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_hooks.py:501: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_pytest.config.PytestPluginManager object at 0x000001CFAB33B3B0&gt;, hook_name = 'pytest_runtest_call'
+methods = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _hookexec(
+        self,
+        hook_name: str,
+        methods: Sequence[HookImpl],
+        kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        # called from all hookcaller instances.
+        # enable_tracing will set its own wrapping function at self._inner_hookexec
+&gt;       return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_manager.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+                            teardown.throw(exception)  # type: ignore[union-attr]
+                        else:
+                            teardown.send(result)  # type: ignore[union-attr]
+                        # Following is unreachable for a well behaved hook wrapper.
+                        # Try to force finalizers otherwise postponed till GC action.
+                        # Note: close() may raise if generator handles GeneratorExit.
+                        teardown.close()  # type: ignore[union-attr]
+                    except StopIteration as si:
+                        result = si.value
+                        exception = None
+                        continue
+                    except BaseException as e:
+                        exception = e
+                        continue
+                    _raise_wrapfail(teardown, "has second yield")  # type: ignore[arg-type]
+    
+                if exception is not None:
+&gt;                   raise exception.with_traceback(exception.__traceback__)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+&gt;                           teardown.throw(exception)  # type: ignore[union-attr]
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    @pytest.hookimpl(wrapper=True, tryfirst=True)
+    def pytest_runtest_call() -&gt; Generator[None, None, None]:
+&gt;       yield from thread_exception_runtest_hook()
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\threadexception.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def thread_exception_runtest_hook() -&gt; Generator[None, None, None]:
+        with catch_threading_exception() as cm:
+            try:
+&gt;               yield
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\threadexception.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+&gt;                           teardown.throw(exception)  # type: ignore[union-attr]
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    @pytest.hookimpl(wrapper=True, tryfirst=True)
+    def pytest_runtest_call() -&gt; Generator[None, None, None]:
+&gt;       yield from unraisable_exception_runtest_hook()
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\unraisableexception.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def unraisable_exception_runtest_hook() -&gt; Generator[None, None, None]:
+        with catch_unraisable_exception() as cm:
+            try:
+&gt;               yield
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\unraisableexception.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+&gt;                           teardown.throw(exception)  # type: ignore[union-attr]
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_pytest.logging.LoggingPlugin object at 0x000001CFAD324CE0&gt;, item = &lt;FabricTestItem stage&gt;
+
+    @hookimpl(wrapper=True)
+    def pytest_runtest_call(self, item: nodes.Item) -&gt; Generator[None, None, None]:
+        self.log_cli_handler.set_when("call")
+    
+&gt;       yield from self._runtest_for(item, "call")
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\logging.py:849: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;_pytest.logging.LoggingPlugin object at 0x000001CFAD324CE0&gt;, item = &lt;FabricTestItem stage&gt;, when = 'call'
+
+    def _runtest_for(self, item: nodes.Item, when: str) -&gt; Generator[None, None, None]:
+        """Implement the internals of the pytest_runtest_xxx() hooks."""
+        with catching_logs(
+            self.caplog_handler,
+            level=self.log_level,
+        ) as caplog_handler, catching_logs(
+            self.report_handler,
+            level=self.log_level,
+        ) as report_handler:
+            caplog_handler.reset()
+            report_handler.reset()
+            item.stash[caplog_records_key][when] = caplog_handler.records
+            item.stash[caplog_handler_key] = caplog_handler
+    
+            try:
+&gt;               yield
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\logging.py:832: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+&gt;                           teardown.throw(exception)  # type: ignore[union-attr]
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;CaptureManager _method='fd' _global_capturing=&lt;MultiCapture out=&lt;FDCapture 1 oldfd=8 _state='suspended' tmpfile=&lt;_io...._io.TextIOWrapper name='nul' mode='r' encoding='utf-8'&gt;&gt; _state='suspended' _in_suspended=False&gt; _capture_fixture=None&gt;
+item = &lt;FabricTestItem stage&gt;
+
+    @hookimpl(wrapper=True)
+    def pytest_runtest_call(self, item: Item) -&gt; Generator[None, None, None]:
+        with self.item_capture("call", item):
+&gt;           return (yield)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\capture.py:883: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+                        res = hook_impl.function(*args)
+                        if res is not None:
+                            results.append(res)
+                            if firstresult:  # halt further impl calls
+                                break
+            except BaseException as exc:
+                exception = exc
+        finally:
+            # Fast path - only new-style wrappers, no Result.
+            if only_new_style_wrappers:
+                if firstresult:  # first result hooks return a single value
+                    result = results[0] if results else None
+                else:
+                    result = results
+    
+                # run all wrapper post-yield blocks
+                for teardown in reversed(teardowns):
+                    try:
+                        if exception is not None:
+&gt;                           teardown.throw(exception)  # type: ignore[union-attr]
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+item = &lt;FabricTestItem stage&gt;
+
+    @hookimpl(wrapper=True)
+    def pytest_runtest_call(item: Item) -&gt; Generator[None, None, None]:
+        xfailed = item.stash.get(xfailed_key, None)
+        if xfailed is None:
+            item.stash[xfailed_key] = xfailed = evaluate_xfail_marks(item)
+    
+        if xfailed and not item.config.option.runxfail and not xfailed.run:
+            xfail("[NOTRUN] " + xfailed.reason)
+    
+        try:
+&gt;           return (yield)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\skipping.py:256: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+hook_name = 'pytest_runtest_call'
+hook_impls = [&lt;HookImpl plugin_name='runner', plugin=&lt;module '_pytest.runner' from 'C:\\Users\\User\\AppData\\Local\\Programs\\Pyth...from 'C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\threadexception.py'&gt;&gt;]
+caller_kwargs = {'item': &lt;FabricTestItem stage&gt;}, firstresult = False
+
+    def _multicall(
+        hook_name: str,
+        hook_impls: Sequence[HookImpl],
+        caller_kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -&gt; object | list[object]:
+        """Execute a call into multiple python functions/methods and return the
+        result(s).
+    
+        ``caller_kwargs`` comes from HookCaller.__call__().
+        """
+        __tracebackhide__ = True
+        results: list[object] = []
+        exception = None
+        only_new_style_wrappers = True
+        try:  # run impl and wrapper setup functions in a loop
+            teardowns: list[Teardown] = []
+            try:
+                for hook_impl in reversed(hook_impls):
+                    try:
+                        args = [caller_kwargs[argname] for argname in hook_impl.argnames]
+                    except KeyError:
+                        for argname in hook_impl.argnames:
+                            if argname not in caller_kwargs:
+                                raise HookCallError(
+                                    f"hook call must provide argument {argname!r}"
+                                )
+    
+                    if hook_impl.hookwrapper:
+                        only_new_style_wrappers = False
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            wrapper_gen = cast(Generator[None, Result[object], None], res)
+                            next(wrapper_gen)  # first yield
+                            teardowns.append((wrapper_gen, hook_impl))
+                        except StopIteration:
+                            _raise_wrapfail(wrapper_gen, "did not yield")
+                    elif hook_impl.wrapper:
+                        try:
+                            # If this cast is not valid, a type error is raised below,
+                            # which is the desired response.
+                            res = hook_impl.function(*args)
+                            function_gen = cast(Generator[None, object, object], res)
+                            next(function_gen)  # first yield
+                            teardowns.append(function_gen)
+                        except StopIteration:
+                            _raise_wrapfail(function_gen, "did not yield")
+                    else:
+&gt;                       res = hook_impl.function(*args)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\pluggy\_callers.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+item = &lt;FabricTestItem stage&gt;
+
+    def pytest_runtest_call(item: Item) -&gt; None:
+        _update_current_test_var(item, "call")
+        try:
+            del sys.last_type
+            del sys.last_value
+            del sys.last_traceback
+            if sys.version_info &gt;= (3, 12, 0):
+                del sys.last_exc  # type: ignore[attr-defined]
+        except AttributeError:
+            pass
+        try:
+            item.runtest()
+        except Exception as e:
+            # Store trace info to allow postmortem debugging
+            sys.last_type = type(e)
+            sys.last_value = e
+            if sys.version_info &gt;= (3, 12, 0):
+                sys.last_exc = e  # type: ignore[attr-defined]
+            assert e.__traceback__ is not None
+            # Skip *this* frame
+            sys.last_traceback = e.__traceback__.tb_next
+&gt;           raise e
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\runner.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+item = &lt;FabricTestItem stage&gt;
+
+    def pytest_runtest_call(item: Item) -&gt; None:
+        _update_current_test_var(item, "call")
+        try:
+            del sys.last_type
+            del sys.last_value
+            del sys.last_traceback
+            if sys.version_info &gt;= (3, 12, 0):
+                del sys.last_exc  # type: ignore[attr-defined]
+        except AttributeError:
+            pass
+        try:
+&gt;           item.runtest()
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\runner.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;FabricTestItem stage&gt;
+
+    def runtest(self):
+&gt;     s = plan_validator(self.module, self.inventory, self.parent.path.parent,
+                         self.tf_var_files, self.extra_files)
+
+tests\collectors.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module_path = 'fast/stages/2-networking-c-nva', inventory_paths = ['stage.yaml'], basedir = WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/tests/fast/stages/s2_networking_c_nva')
+tf_var_files = ['common.tfvars', 'stage.tfvars'], extra_files = ['../../plugins/2-networking-serverless-connector/*.tf'], tf_vars = {}
+
+    def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
+                       extra_files=None, **tf_vars):
+&gt;     summary = plan_summary(module_path=module_path, tf_var_files=tf_var_files,
+                             extra_files=extra_files, basedir=basedir, **tf_vars)
+
+tests\fixtures.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+module_path = WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/stages/2-networking-c-nva'), basedir = WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/tests/fast/stages/s2_networking_c_nva')
+tf_var_files = ['common.tfvars', 'stage.tfvars']
+extra_files = [WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-c...'D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-connector.tf')]
+tf_vars = {}, test_path = WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/stages/2-networking-c-nva'), binary = 'terraform', tf = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;
+
+    def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
+                     **tf_vars):
+      """
+      Run a Terraform plan on the module located at `module_path`.
+    
+      - module_path: terraform root module to run. Can be an absolute
+        path or relative to the root of the repository
+    
+      - basedir: directory root to use for relative paths in
+        tf_var_files.
+    
+      - tf_var_files: set of terraform variable files (tfvars) to pass
+        in to terraform
+    
+      Returns a PlanSummary object containing 3 attributes:
+      - values: dictionary where the keys are terraform plan addresses
+        and values are the JSON representation (converted to python
+        types) of the attribute values of the resource.
+    
+      - counts: dictionary where the keys are the terraform resource
+        types and the values are the number of times that type appears
+        in the plan
+    
+      - outputs: dictionary of the modules outputs that can be
+        determined at plan type.
+    
+      Consult [1] for mode details on the structure of values and outputs
+    
+      [1] https://developer.hashicorp.com/terraform/internals/json-format
+      """
+      # make the module_path relative to the root of the repo while still
+      # supporting absolute paths
+      module_path = _REPO_ROOT / module_path
+      with _prepare_root_module(module_path) as test_path:
+        binary = os.environ.get('TERRAFORM', 'terraform')
+        tf = tftest.TerraformTest(test_path, binary=binary)
+        extra_files = [(module_path / filename).resolve()
+                       for x in extra_files or []
+                       for filename in glob.glob(x, root_dir=module_path)]
+&gt;       tf.setup(extra_files=extra_files, upgrade=True)
+
+tests\fixtures.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;
+kwargs = {'extra_files': [WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/lo...oud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-connector.tf')], 'upgrade': True}
+
+    def cache(self, **kwargs):
+      """
+      Runs the tftest instance method or retreives the cache value if it exists
+    
+      Args:
+          kwargs: Keyword argument that are passed to the decorated method
+      Returns:
+          Output of the tftest instance method
+      """
+      _LOGGER.info("Cache decorated method: %s", func.__name__)
+    
+      if not self.enable_cache:
+&gt;       return func(self, **kwargs)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\tftest.py:467: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;
+extra_files = [WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-c...'D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-connector.tf')]
+plugin_dir = None, init_vars = None, backend = True, cleanup_on_exit = True, disable_prevent_destroy = False, workspace_name = None, use_cache = False, kw = {'upgrade': True}
+filenames = ['local-serverless-connector-outputs.tf', 'local-serverless-connector-variables.tf', 'local-serverless-connector.tf']
+link_src = WindowsPath('D:/Fabric Fast/cloud-foundation-fabric/fast/plugins/2-networking-serverless-connector/local-serverless-connector.tf'), filename = 'local-serverless-connector.tf'
+
+    @_cache
+    def setup(self, extra_files=None, plugin_dir=None, init_vars=None,
+              backend=True, cleanup_on_exit=True, disable_prevent_destroy=False,
+              workspace_name=None, use_cache=False, **kw):
+      """Setup method to use in test fixtures.
+    
+      This method prepares a new Terraform environment for testing the module
+      specified at init time, and returns init output.
+    
+      Args:
+        extra_files: list of absolute or relative to base paths to be linked in
+          the root module folder
+        plugin_dir: path to a plugin directory to be used for Terraform init, eg
+          built with terraform-bundle
+        init_vars: Terraform backend configuration variables
+        backend: Terraform backend argument
+        cleanup_on_exit: remove .terraform and terraform.tfstate files on exit
+        disable_prevent_destroy: set all prevent destroy to false
+        workspace_name: name of workspace to create or select
+    
+      Returns:
+        Terraform init output.
+      """
+      # remove lifecycle prevent destroy
+      if disable_prevent_destroy:
+        min_python = (3, 5)
+        if sys.version_info &lt; min_python:
+          raise TerraformTestError(
+              'The disable_prevent_destroy flag requires at least Python 3.5')
+        for tf_file in Path(self.tfdir).rglob('*.tf'):
+          try:
+            shutil.copy(str(tf_file), f'{str(tf_file)}.bkp')
+          # except (OSError, IOError) as exc:
+          except (OSError, IOError):
+            _LOGGER.exception(
+                f'Unable to backup terraform file {tf_file.resolve()}')
+            raise TerraformTestError(
+                f'Backup of terraform file ({tf_file.resolve()}) failed')
+          try:
+            with open(tf_file, 'r') as src:
+              terraform = src.read()
+            with open(tf_file, 'w') as src:
+              terraform = re.sub(r'prevent_destroy\s+=\s+true',
+                                 'prevent_destroy = false', terraform)
+              src.write(terraform)
+          except (OSError, IOError):
+            _LOGGER.exception(
+                f'Unable to update prevent_destroy in file {tf_file.resolve()}')
+            raise TerraformTestError(
+                f'Unable to update prevent_destroy in file ({tf_file.resolve()}) failed'
+            )
+    
+      # link extra files inside dir
+      filenames = []
+      for link_src in (extra_files or []):
+        link_src = self._abspath(link_src)
+        filename = os.path.basename(link_src)
+        if os.path.isfile(link_src):
+          link_dst = os.path.join(self.tfdir, filename)
+          try:
+            if os.name == 'nt':
+              shutil.copy(link_src, link_dst)
+            else:
+              os.symlink(link_src, link_dst)
+            filenames.append(filename)
+          except FileExistsError as e:  # pylint:disable=undefined-variable
+            _LOGGER.warning(e)
+          else:
+            _LOGGER.debug('linked %s', link_src)
+        else:
+          _LOGGER.warning('no such file {}'.format(link_src))
+      self._finalizer = weakref.finalize(self, self._cleanup, self.tfdir,
+                                         filenames, deep=cleanup_on_exit,
+                                         restore_files=disable_prevent_destroy)
+&gt;     setup_output = self.init(plugin_dir=plugin_dir, init_vars=init_vars,
+                               backend=backend, use_cache=use_cache, **kw)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\tftest.py:586: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;, kwargs = {'backend': True, 'init_vars': None, 'plugin_dir': None, 'upgrade': True, ...}
+
+    def cache(self, **kwargs):
+      """
+      Runs the tftest instance method or retreives the cache value if it exists
+    
+      Args:
+          kwargs: Keyword argument that are passed to the decorated method
+      Returns:
+          Output of the tftest instance method
+      """
+      _LOGGER.info("Cache decorated method: %s", func.__name__)
+    
+      if not self.enable_cache:
+&gt;       return func(self, **kwargs)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\tftest.py:467: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;, input = False, color = False, force_copy = False, plugin_dir = None, init_vars = None, backend = True, use_cache = False, kw = {'upgrade': True}
+cmd_args = ['-no-color', '-input=false', '-upgrade']
+
+    @_cache
+    def init(self, input=False, color=False, force_copy=False, plugin_dir=None,
+             init_vars=None, backend=True, use_cache=False, **kw):
+      """Run Terraform init command."""
+      cmd_args = parse_args(input=input, color=color, backend=backend,
+                            force_copy=force_copy, plugin_dir=plugin_dir,
+                            init_vars=init_vars, **kw)
+&gt;     return self.execute_command('init', *cmd_args).out
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\tftest.py:599: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tftest.TerraformTest object at 0x000001CFADF03FE0&gt;, cmd = 'init', cmd_args = ('-no-color', '-input=false', '-upgrade'), cmdline = ['terraform', 'init', '-no-color', '-input=false', '-upgrade']
+retcode = 1
+full_output_lines = ['\n', 'Initializing the backend...\n', 'Upgrading modules...\n', '- dev-dns-peer-landing-rev-10 in ..\\..\\..\\module... dev-dns-peer-landing-root in ..\\..\\..\\modules\\dns\n', '- dev-dns-priv-example in ..\\..\\..\\modules\\dns\n', ...]
+
+    def execute_command(self, cmd, *cmd_args):
+      """Run arbitrary Terraform command."""
+      _LOGGER.debug([cmd, cmd_args])
+      cmdline = [self.binary, *self._tg_ra(), cmd]
+      cmdline += cmd_args
+      _LOGGER.info(cmdline)
+      retcode = None
+      full_output_lines = []
+      try:
+        stderr_mode = subprocess.STDOUT if os.name == 'nt' else subprocess.PIPE
+        p = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=stderr_mode,
+                             cwd=self.tfdir, env=self.env,
+                             universal_newlines=True, encoding='utf-8',
+                             errors='ignore')
+        while True:
+          output = p.stdout.readline()
+          if output == '' and p.poll() is not None:
+            break
+          if output:
+            _LOGGER.info(output.strip())
+            full_output_lines.append(output)
+        retcode = p.poll()
+        p.wait()
+      except FileNotFoundError as e:
+        raise TerraformTestError('Terraform executable not found: %s' % e)
+      out, err = p.communicate()
+      full_output = "".join(full_output_lines)
+      if retcode in [1, 11]:
+        message = 'Error running command {command}: {retcode} {out} {err}'.format(
+            command=cmd, retcode=retcode, out=full_output, err=err)
+        _LOGGER.critical(message)
+&gt;       raise TerraformTestError(message, err)
+E       tftest.TerraformTestError: ('Error running command init: 1 \nInitializing the backend...\nUpgrading modules...\n- dev-dns-peer-landing-rev-10 in ..\\..\\..\\modules\\dns\n- dev-dns-peer-landing-root in ..\\..\\..\\modules\\dns\n- dev-dns-priv-example in ..\\..\\..\\modules\\dns\n- dev-spoke-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- dev-spoke-project in ..\\..\\..\\modules\\project\n- dev-spoke-vpc in ..\\..\\..\\modules\\net-vpc\n- dev-spoke-vpc-serverless in ..\\..\\..\\modules\\net-vpc\n- dmz-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- dmz-nat-primary in ..\\..\\..\\modules\\net-cloudnat\n- dmz-nat-secondary in ..\\..\\..\\modules\\net-cloudnat\n- dmz-vpc in ..\\..\\..\\modules\\net-vpc\n- firewall-policy-default in ..\\..\\..\\modules\\net-firewall-policy\n- folder in ..\\..\\..\\modules\\folder\n- heartbeat-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- heartbeat-vpc in ..\\..\\..\\modules\\net-vpc\n- ilb-nva-dmz in ..\\..\\..\\modules\\net-lb-int\n- ilb-nva-landing in ..\\..\\..\\modules\\net-lb-int\n- landing-dns-fwd-onprem-example in ..\\..\\..\\modules\\dns\n- landing-dns-fwd-onprem-rev-10 in ..\\..\\..\\modules\\dns\n- landing-dns-policy-googleapis in ..\\..\\..\\modules\\dns-response-policy\n- landing-dns-priv-gcp in ..\\..\\..\\modules\\dns\n- landing-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- landing-project in ..\\..\\..\\modules\\project\n- landing-to-onprem-primary-vpn in ..\\..\\..\\modules\\net-vpn-ha\n- landing-to-onprem-secondary-vpn in ..\\..\\..\\modules\\net-vpn-ha\n- landing-vpc in ..\\..\\..\\modules\\net-vpc\n- management-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- management-vpc in ..\\..\\..\\modules\\net-vpc\n- nva-cloud-config in ..\\..\\..\\modules\\cloud-config-container\\simple-nva\n- nva-mig in ..\\..\\..\\modules\\compute-mig\n- nva-template in ..\\..\\..\\modules\\compute-vm\n- peering-dev in ..\\..\\..\\modules\\net-vpc-peering\n- peering-prod in ..\\..\\..\\modules\\net-vpc-peering\n- prod-dns-peer-landing-rev-10 in ..\\..\\..\\modules\\dns\n- prod-dns-peer-landing-root in ..\\..\\..\\modules\\dns\n- prod-dns-priv-example in ..\\..\\..\\modules\\dns\n- prod-spoke-firewall in ..\\..\\..\\modules\\net-vpc-firewall\n- prod-spoke-project in ..\\..\\..\\modules\\project\n- prod-spoke-vpc in ..\\..\\..\\modules\\net-vpc\n- prod-spoke-vpc-serverless in ..\\..\\..\\modules\\net-vpc\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\compute-mig\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.nva-mig (from ../../../modules/compute-mig) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\compute-vm\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.nva-template (from ../../../modules/compute-vm) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns-response-policy\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-dns-policy-googleapis (from\n../../../modules/dns-response-policy) does not support Terraform version\n1.7.3. To proceed, either choose another supported Terraform version or\nupdate this version constraint. Version constraints are normally set for good\nreason, so updating the constraint may lead to other errors or unexpected\nbehavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-dns-peer-landing-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-dns-peer-landing-root (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-dns-priv-example (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-dns-fwd-onprem-example (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-dns-fwd-onprem-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-dns-priv-gcp (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-dns-peer-landing-rev-10 (from ../../../modules/dns) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-dns-peer-landing-root (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\dns\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-dns-priv-example (from ../../../modules/dns) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\folder\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.folder (from ../../../modules/folder) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-cloudnat\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dmz-nat-primary (from ../../../modules/net-cloudnat) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-cloudnat\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dmz-nat-secondary (from ../../../modules/net-cloudnat) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-firewall-policy\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.firewall-policy-default (from\n../../../modules/net-firewall-policy) does not support Terraform version\n1.7.3. To proceed, either choose another supported Terraform version or\nupdate this version constraint. Version constraints are normally set for good\nreason, so updating the constraint may lead to other errors or unexpected\nbehavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-lb-int\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.ilb-nva-dmz (from ../../../modules/net-lb-int) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-lb-int\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.ilb-nva-landing (from ../../../modules/net-lb-int) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-spoke-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dmz-firewall (from ../../../modules/net-vpc-firewall) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.heartbeat-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-firewall (from ../../../modules/net-vpc-firewall) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.management-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-firewall\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-spoke-firewall (from ../../../modules/net-vpc-firewall)\ndoes not support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-peering\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.peering-dev (from ../../../modules/net-vpc-peering) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc-peering\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.peering-prod (from ../../../modules/net-vpc-peering) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-spoke-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-spoke-vpc-serverless (from ../../../modules/net-vpc) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dmz-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.heartbeat-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.management-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-spoke-vpc (from ../../../modules/net-vpc) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpc\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-spoke-vpc-serverless (from ../../../modules/net-vpc) does\nnot support Terraform version 1.7.3. To proceed, either choose another\nsupported Terraform version or update this version constraint. Version\nconstraints are normally set for good reason, so updating the constraint may\nlead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpn-ha\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-to-onprem-primary-vpn (from\n../../../modules/net-vpn-ha) does not support Terraform version 1.7.3. To\nproceed, either choose another supported Terraform version or update this\nversion constraint. Version constraints are normally set for good reason, so\nupdating the constraint may lead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\net-vpn-ha\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-to-onprem-secondary-vpn (from\n../../../modules/net-vpn-ha) does not support Terraform version 1.7.3. To\nproceed, either choose another supported Terraform version or update this\nversion constraint. Version constraints are normally set for good reason, so\nupdating the constraint may lead to other errors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.dev-spoke-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.landing-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\project\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.prod-spoke-project (from ../../../modules/project) does not\nsupport Terraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n\nError: Unsupported Terraform Core version\n\n  on ..\\..\\..\\modules\\cloud-config-container\\simple-nva\\versions.tf line 16, in terraform:\n  16:   required_version = "&gt;= 1.7.4"\n\nModule module.nva-cloud-config (from\n../../../modules/cloud-config-container/simple-nva) does not support\nTerraform version 1.7.3. To proceed, either choose another supported\nTerraform version or update this version constraint. Version constraints are\nnormally set for good reason, so updating the constraint may lead to other\nerrors or unexpected behavior.\n\n None', None)
+
+C:\Users\User\AppData\Local\Programs\Python\Python312\Lib\site-packages\tftest.py:743: TerraformTestError</failure></testcase></testsuite></testsuites>
