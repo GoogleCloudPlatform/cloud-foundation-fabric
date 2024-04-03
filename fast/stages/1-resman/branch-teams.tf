@@ -132,12 +132,12 @@ module "branch-teams-team-dev-folder" {
       local.branch_optional_sa_lists.pf-dev
     )
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = local.branch_optional_sa_lists.pf-dev
-    "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-dev
-    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-dev
+    "roles/owner"                                = local.branch_optional_sa_lists.pf-dev
+    "roles/logging.admin"                        = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.folderAdmin"          = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.projectCreator"       = local.branch_optional_sa_lists.pf-dev
+    "roles/viewer"                               = local.branch_optional_r_sa_lists.pf-dev
+    (var.custom_roles.organization_admin_viewer) = local.branch_optional_r_sa_lists.pf-dev
   }
   tag_bindings = {
     environment = try(
@@ -159,12 +159,12 @@ module "branch-teams-team-prod-folder" {
       local.branch_optional_sa_lists.pf-prod
     )
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = local.branch_optional_sa_lists.pf-prod
-    "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-prod
-    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-prod
+    "roles/owner"                                = local.branch_optional_sa_lists.pf-prod
+    "roles/logging.admin"                        = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.folderAdmin"          = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.projectCreator"       = local.branch_optional_sa_lists.pf-prod
+    "roles/viewer"                               = local.branch_optional_r_sa_lists.pf-prod
+    (var.custom_roles.organization_admin_viewer) = local.branch_optional_r_sa_lists.pf-prod
   }
   tag_bindings = {
     environment = try(
