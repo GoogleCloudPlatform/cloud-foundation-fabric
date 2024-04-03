@@ -36,5 +36,3 @@ locals {
   # naming: environment used in most resource names
   prefix = join("-", compact([var.prefix, "prod"]))
 }
-
-# test labeler
