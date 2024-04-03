@@ -380,8 +380,8 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 |---|---|:---:|---|
 | [cicd_repositories](outputs.tf#L391) | WIF configuration for CI/CD repositories. |  |  |
 | [dataplatform](outputs.tf#L405) | Data for the Data Platform stage. |  |  |
-| [gcve](outputs.tf#L442) | Data for the GCVE stage. |  | <code>03-gke-multitenant</code> |
-| [gke_multitenant](outputs.tf#L421) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [gcve](outputs.tf#L421) | Data for the GCVE stage. |  | <code>03-gke-multitenant</code> |
+| [gke_multitenant](outputs.tf#L442) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
 | [networking](outputs.tf#L463) | Data for the networking stage. |  |  |
 | [project_factories](outputs.tf#L472) | Data for the project factories stage. |  |  |
 | [providers](outputs.tf#L487) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
