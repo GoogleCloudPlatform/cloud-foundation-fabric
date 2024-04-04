@@ -67,7 +67,7 @@ resource "google_sql_database_instance" "primary" {
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
     time_zone                   = var.time_zone
-    
+
     dynamic "data_cache_config" {
       for_each = var.edition == "ENTERPRISE_PLUS" ? [1] : []
       content {
