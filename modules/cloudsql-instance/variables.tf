@@ -196,6 +196,13 @@ variable "network_config" {
   }
 }
 
+variable "data_cache_enabled" {
+  description = "Whether data cache is enabled for the instance. Defaults to false. Can be used with MYSQL and PostgreSQL only."
+  type = bool
+  default = false
+  nullable    = false
+}
+
 
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
