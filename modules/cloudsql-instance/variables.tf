@@ -203,6 +203,7 @@ variable "data_cache_config" {
       data_cache_enabled = optional(bool, false)
     })
   })
+  default = {}
 }
 
 
