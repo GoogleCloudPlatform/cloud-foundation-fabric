@@ -68,8 +68,11 @@ resource "google_sql_database_instance" "primary" {
     connector_enforcement       = var.connector_enforcement
     time_zone                   = var.time_zone
     
-    data_cache_config {
-        data_cache_enabled = true
+    dynamic "data_cache_config" {
+      for_each = var.edition == "ENTERPRISE_PLUS" ? [1] : []
+      content {
+        data_cache_enabled = var.data_cache_enabled
+      }
     }
 
     ip_configuration {
