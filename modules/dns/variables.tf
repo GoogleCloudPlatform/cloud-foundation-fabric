@@ -23,7 +23,7 @@ variable "description" {
 variable "force_destroy" {
   description = "Set this to true to delete all records in the zone upon zone destruction."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "iam" {
