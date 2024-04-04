@@ -180,7 +180,7 @@ resource "google_cloud_run_v2_service" "service" {
             dynamic "tcp_socket" {
               for_each = containers.value.startup_probe.tcp_socket == null ? [] : [""]
               content {
-                port = ontainers.value.startup_probe.tcp_socket.port
+                port = containers.value.startup_probe.tcp_socket.port
               }
             }
             dynamic "grpc" {

@@ -145,7 +145,7 @@ module "ilb" {
 # tftest modules=1 resources=4
 ```
 
-### Mutiple forwarding rules
+### Multiple forwarding rules
 
 You can add more forwarding rules to your load balancer and override some forwarding rules defaults, including the global access policy, the IP protocol, the IP version and ports.
 

@@ -392,7 +392,7 @@ def e2e_tfvars_path():
   Otherwise, create a unique test environment (in case of multiple workers - as many environments as
   there are workers), that will be injected into each example test instead of `tests/examples/variables.tf`.
 
-  Returns path to tfvars file that contains information about envrionment to use for the tests.
+  Returns path to tfvars file that contains information about environment to use for the tests.
   """
   if tfvars_path := os.environ.get('TFTEST_E2E_TFVARS_PATH'):
     # no need to set up the project
