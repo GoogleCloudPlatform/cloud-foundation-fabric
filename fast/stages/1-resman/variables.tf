@@ -180,6 +180,22 @@ variable "fast_features" {
   nullable = false
 }
 
+variable "folder_iam" {
+  description = "Authoritative IAM for top-level folders."
+  type = object({
+    data_platform = optional(map(list(string)), {})
+    gcve          = optional(map(list(string)), {})
+    gke           = optional(map(list(string)), {})
+    sandbox       = optional(map(list(string)), {})
+    security      = optional(map(list(string)), {})
+    network       = optional(map(list(string)), {})
+    teams         = optional(map(list(string)), {})
+    tenants       = optional(map(list(string)), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,31 @@
 
 # tfdoc:file:description Sandbox stage resources.
 
-module "branch-sandbox-folder" {
-  source = "../../../modules/folder"
-  count  = var.fast_features.sandbox ? 1 : 0
-  parent = "organizations/${var.organization.id}"
-  name   = "Sandbox"
-  iam = {
+locals {
+  # FAST-specific IAM
+  _sandbox_folder_fast_iam = !var.fast_features.sandbox ? {} : {
     "roles/logging.admin"                  = [module.branch-sandbox-sa.0.iam_email]
     "roles/owner"                          = [module.branch-sandbox-sa.0.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
   }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _sandbox_folder_iam = merge(
+    var.folder_iam.sandbox,
+    {
+      for role, principals in local._sandbox_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.sandbox, role, [])))
+    }
+  )
+}
+
+
+module "branch-sandbox-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.sandbox ? 1 : 0
+  parent = "organizations/${var.organization.id}"
+  name   = "Sandbox"
+  iam    = local._sandbox_folder_iam
   org_policies = {
     "sql.restrictPublicIp"       = { rules = [{ enforce = false }] }
     "compute.vmExternalIpAccess" = { rules = [{ allow = { all = true } }] }
