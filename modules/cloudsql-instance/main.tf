@@ -67,6 +67,7 @@ resource "google_sql_database_instance" "primary" {
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
     time_zone                   = var.time_zone
+    data_cache_config           = var.data_cache_config
 
     ip_configuration {
       ipv4_enabled       = var.network_config.connectivity.public_ipv4
