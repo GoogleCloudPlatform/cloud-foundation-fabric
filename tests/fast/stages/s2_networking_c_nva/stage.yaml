@@ -34,7 +34,7 @@ counts:
   google_compute_subnetwork: 14
   google_compute_vpn_tunnel: 4
   google_dns_managed_zone: 9
-  google_dns_policy:
+  google_dns_policy: 6
   google_dns_record_set: 3
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 34
@@ -46,7 +46,7 @@ counts:
   google_project: 3
   google_project_iam_binding: 6
   google_project_iam_member: 2
-  google_project_service: 21
+  google_project_service: 21s
   google_project_service_identity: 5
   google_storage_bucket_object: 2
   google_vpc_access_connector: 2
