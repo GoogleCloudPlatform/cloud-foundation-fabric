@@ -61,12 +61,10 @@ output "kms_keys" {
   value       = local.output_kms_keys
 }
 
-output "stage_perimeter_projects" {
-  description = "Security project numbers. They can be added to perimeter resources."
-  value = {
-    dev  = ["projects/${module.dev-sec-project.number}"]
-    prod = ["projects/${module.prod-sec-project.number}"]
-  }
+output "vpc_sc_perimeter_default" {
+  description = "Raw default perimeter resource."
+  sensitive   = true
+  value       = try(module.vpc-sc.0.service_perimeters_regular["default"], null)
 }
 
 # ready to use variable values for subsequent stages

@@ -1,10 +1,13 @@
-# Shared security resources
+# Shared security resources and VPC Service Controls
 
 This stage sets up security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
 
-The design of this stage is fairly general, and provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management) and a [VPC Service Controls](https://cloud.google.com/vpc-service-controls) configuration that sets up three perimeters (landing, development, production), their related bridge perimeters, and provides variables to configure their resources, access levels, and directional policies.
+The design of this stage is fairly general, providing
 
-Expanding this stage to include other security-related services like Secret Manager, is fairly simple by using the provided implementation for Cloud KMS, and leveraging the broad permissions on the top-level Security folder of the automation service account used.
+- a reference example for [Cloud KMS](https://cloud.google.com/security-key-management)
+- a simplified implementation of [VPC Service Controls](https://cloud.google.com/vpc-service-controls) that should work for most users
+
+Expanding this stage to include other security-related services like Secret Manager is fairly simple by adapting the provided implementation for Cloud KMS, and leveraging the broad permissions granted on the top-level Security folder to the automation service account used here.
 
 The following diagram illustrates the high-level design of created resources and a schema of the VPC SC design, which can be adapted to specific requirements via variables:
 
@@ -36,7 +39,7 @@ Project-level security resources are grouped into two separate projects, one per
 
 Cloud KMS is configured and designed mainly to encrypt GCP resources with a [Customer-managed encryption key](https://cloud.google.com/kms/docs/cmek) but it may be used to create cryptokeys used to [encrypt application data](https://cloud.google.com/kms/docs/encrypting-application-data) too.
 
-IAM for management-related operations is already assigned at the folder level to the security team by the previous stage, but more granularity can be added here at the project level, to grant control of separate services across environments to different actors.
+IAM for day to day operations is already assigned at the folder level to the security team by the previous stage, but more granularity can be added here at the project level, to grant control of separate services across environments to different actors.
 
 ### Cloud KMS
 
@@ -48,15 +51,9 @@ IAM roles on keys can be configured at the logical level for all locations where
 
 ### VPC Service Controls
 
-This stage also provisions the VPC Service Controls configuration on demand for the whole organization, implementing the straightforward design illustrated above:
+This stage also provisions the VPC Service Controls configuration that protects the whole organization, implementing a simplified design that leverages a single perimeter and optionally provides automatic enrollment of projects in the perimeter.
 
-- one perimeter for each environment
-- one perimeter for centralized services and the landing VPC
-- bridge perimeters to connect the landing perimeter to each environment
-
-The VPC SC configuration is set to dry-run mode, but switching to enforced mode is a simple operation involving modifying a few lines of code highlighted by ad-hoc comments. Variables are designed to enable easy centralized management of VPC Service Controls, including access levels and [ingress/egress rules](https://cloud.google.com/vpc-service-controls/docs/ingress-egress-rules) as described below.
-
-Some care needs to be taken with project membership in perimeters, which can only be implemented here instead of being delegated (all or partially) to different stages, until the [Google Provider feature request](https://github.com/hashicorp/terraform-provider-google/issues/7270) allowing using project-level association for both enforced and dry-run modes is implemented.
+The VPC SC configuration is controlled via the top-level `vpc_sc` variable, and is disabled by default unless `vpc_sc.perimeter_default` is populated. Access levels and ingress/egress policies can be defined in code via the respective `vpc_sc` variable attributes, or via YAML-based factories configured via the usual `factories_config` variable.
 
 ## How to run this stage
 
@@ -176,95 +173,27 @@ The script will create one keyring for each specified location and keys on each 
 
 ### VPC Service Controls configuration
 
-A set of variables allows configuring the VPC SC perimeters described above:
+This is an example that activates the default perimeter, with a single broad geo-based access level. Refer to the [vpc-sc module](../../../modules/vpc-sc/) for details on how to configure ingress/egress policies, and how to leverage the YAML factories.
 
-- `vpc_sc_perimeter_projects` configures project membership in the three regular perimeters
-- `vpc_sc_access_levels` configures access levels, which can then be associated to perimeters by key using the `vpc_sc_perimeter_access_levels`
-- `vpc_sc_egress_policies` configures directional egress policies, which can then be associated to perimeters by key using the `vpc_sc_perimeter_egress_policies`
-- `vpc_sc_ingress_policies` configures directional ingress policies, which can then be associated to perimeters by key using the `vpc_sc_perimeter_ingress_policies`
+The YAML-based access level used by the factory, in the default folder path  which can be changed via the `factories_config` variable:
 
-This allows configuring VPC SC in a fairly flexible and concise way, without repeating similar definitions. Bridges perimeters configuration will be computed automatically to allow communication between regular perimeters: `landing <-> prod` and `landing <-> dev`.
-
-#### Dry-run vs. enforced
-
-The VPC SC configuration is set up by default in dry-run mode to allow easy experimentation, and detecting violations before enforcement. Once everything is set up correctly, switching to enforced mode needs to be done in code, by changing the `vpc_sc_explicit_dry_run_spec` local.
-
-#### Access levels
-
-Access levels are defined via the `vpc_sc_access_levels` variable, and referenced by key in perimeter definitions:
-
-```tfvars
-vpc_sc_access_levels = {
-  onprem = {
-    conditions = [{
-      ip_subnetworks = ["101.101.101.0/24"]
-    }]
-  }
-}
+```yaml
+# data/vpc-sc/access-levels/geo-default.yaml
+conditions:
+  - regions:
+      - IT
+      - ES
 ```
 
-#### Ingress and Egress policies
-
-Ingress and egress policy are defined via the `vpc_sc_egress_policies` and `vpc_sc_ingress_policies`, and referenced by key in perimeter definitions:
-
 ```tfvars
-vpc_sc_egress_policies = {
-  iac-gcs = {
-    from = {
-      identities = [
-        "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
-      ]
-    }
-    to = {
-      operations = [{
-        method_selectors = ["*"]
-        service_name     = "storage.googleapis.com"
-      }]
-      resources = ["projects/123456782"]
-    }
-  }
-}
-vpc_sc_ingress_policies = {
-  iac = {
-    from = {
-      identities = [
-        "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
-      ]
-      access_levels = ["*"]
-    }
-    to = {
-      operations = [{ method_selectors = [], service_name = "*" }]
-      resources  = ["*"]
-    }
-  }
-}
-```
+# terraform.tfvars
 
-#### Perimeters
-
-Regular perimeters are defined via the  the `vpc_sc_perimeters` variable, and bridge perimeters are automatically populated from that variable.
-
-Support for independently adding projects to perimeters outside of this Terraform setup is pending resolution of [this Google Terraform Provider issue](https://github.com/hashicorp/terraform-provider-google/issues/7270), which implements support for dry-run mode in the additive resource.
-
-Access levels and egress/ingress policies are referenced in perimeters via keys.
-
-```tfvars
-vpc_sc_perimeters = {
-  dev = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/1111111111"]
-  }
-  landing = {
-    access_levels    = ["onprem"]
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/2222222222"]
-  }
-  prod = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/0000000000"]
+vpc_sc = {
+  perimeter_default = {
+    access_levels = ["geo-default"]
+    # dry run is disabled by default
+    dry_run = true
+    # resource discovery is enabled by default
   }
 }
 ```
