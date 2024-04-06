@@ -31,19 +31,20 @@ locals {
     var.vpc_sc.perimeter_default == null
     ? null
     : merge(var.vpc_sc.perimeter_default, {
-      ingress_policies = concat(var.vpc_sc.perimeter_default.resources, [
-        "fast-org-log-sinks"
-      ])
+      ingress_policies = concat(
+        var.vpc_sc.perimeter_default.ingress_policies,
+        ["fast-org-log-sinks"]
+      )
       restricted_services = yamldecode(file(
         var.factories_config.vpc_sc.restricted_services
       ))
-      resources = concat(
+      resources = distinct(concat(
         var.vpc_sc.perimeter_default.resources,
         var.vpc_sc.resource_discovery.enabled != true ? [] : [
           for v in module.vpc-sc-discovery.0.project_numbers :
           "projects/${v}"
         ]
-      )
+      ))
     })
   )
 }
@@ -57,6 +58,9 @@ module "vpc-sc-discovery" {
   include_projects = var.vpc_sc.resource_discovery.include_projects
 }
 
+# TODO(ludomagno): allow passing in restricted services via variable and factory file
+# TODO(ludomagno): implement vpc accessible services via variable or factory file
+
 module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
@@ -69,7 +73,8 @@ module "vpc-sc" {
   access_levels   = var.vpc_sc.access_levels
   egress_policies = var.vpc_sc.egress_policies
   ingress_policies = merge(
-    var.vpc_sc.ingress_policies, local.vpc_sc_ingress_policies
+    var.vpc_sc.ingress_policies,
+    local.vpc_sc_ingress_policies
   )
   factories_config = var.factories_config.vpc_sc
   service_perimeters_regular = {
