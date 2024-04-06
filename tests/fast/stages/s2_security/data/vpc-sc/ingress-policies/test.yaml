@@ -1,0 +1,15 @@
+from:
+  access_levels:
+    - "*"
+  identities:
+    - user:user@fast.example.com
+to:
+  operations:
+    - service_name: compute.googleapis.com
+      method_selectors:
+        - "*"
+    - service_name: monitoring.googleapis.com
+      method_selectors:
+        - "*"
+  resources:
+    - "*"
