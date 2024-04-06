@@ -20,6 +20,12 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "force_destroy" {
+  description = "Set this to true to delete all records in the zone upon zone destruction."
+  type        = bool
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
