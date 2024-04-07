@@ -60,7 +60,7 @@ This variable will not be internally merged in modules with `iam` or `group_iam`
 
 ### Additive bindings
 
-Additive bindings have evolved to mimick authoritative ones, but the result is an interface which is bloated (no one uses `iam_additive_members`), and hard to understand and use without triggering dynamic errors. Coverage is also spotty and uneven across modules, and the interface needs to support aliasing of project service accounts in the project module to work around dynamic errors.
+Additive bindings have evolved to mimic authoritative ones, but the result is an interface which is bloated (no one uses `iam_additive_members`), and hard to understand and use without triggering dynamic errors. Coverage is also spotty and uneven across modules, and the interface needs to support aliasing of project service accounts in the project module to work around dynamic errors.
 
 The `iam_additive` variable is used in a special patterns in data blueprints, to allow code to not mess up existing IAM bindings in an external project on destroy. This pattern only works in a limited set of cases, where principals are passed in via static variables or refer to "magic" static outputs in our modules. This is a simple example of the pattern:
 

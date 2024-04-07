@@ -1,6 +1,6 @@
 # Copyright 2014-2019 F5 Networks Inc.
 #
-# This file usees code from the following third-party project:
+# This file uses code from the following third-party project:
 # * [terraform-gcp-bigip-module] - [https://github.com/F5Networks/terraform-gcp-bigip-module]
 #
 # The code from this project is licensed under the Apache 2.0 license.
