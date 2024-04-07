@@ -149,6 +149,7 @@ variable "custom_roles" {
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     gcve_network_admin            = string
+    organization_admin_viewer     = string
     service_project_network_admin = string
     storage_viewer                = string
   })
@@ -177,6 +178,22 @@ variable "fast_features" {
   })
   default  = {}
   nullable = false
+}
+
+variable "folder_iam" {
+  description = "Authoritative IAM for top-level folders."
+  type = object({
+    data_platform = optional(map(list(string)), {})
+    gcve          = optional(map(list(string)), {})
+    gke           = optional(map(list(string)), {})
+    sandbox       = optional(map(list(string)), {})
+    security      = optional(map(list(string)), {})
+    network       = optional(map(list(string)), {})
+    teams         = optional(map(list(string)), {})
+    tenants       = optional(map(list(string)), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "groups" {
