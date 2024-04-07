@@ -74,7 +74,7 @@ module "workstation-cluster" {
 
 ## Custom image
 
-Example showing how to create a cluster with publicly accesible workstation that run a custom image.
+Example showing how to create a cluster with publicly accessible workstation that run a custom image.
 
 ```hcl
 module "workstation-cluster" {
