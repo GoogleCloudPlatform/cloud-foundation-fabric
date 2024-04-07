@@ -86,6 +86,12 @@ variable "enable_cloud_nat" {
   nullable    = false
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
@@ -107,6 +113,16 @@ variable "factories_config" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -121,25 +137,15 @@ variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   type        = map(string)
   default = {
-    gcp_dev_primary                 = "10.68.0.0/16"
-    gcp_dev_secondary               = "10.84.0.0/16"
-    gcp_landing_trusted_primary     = "10.64.0.0/17"
-    gcp_landing_trusted_secondary   = "10.80.0.0/17"
-    gcp_landing_untrusted_primary   = "10.64.127.0/17"
-    gcp_landing_untrusted_secondary = "10.80.127.0/17"
-    gcp_prod_primary                = "10.72.0.0/16"
-    gcp_prod_secondary              = "10.88.0.0/16"
+    gcp_dev_primary               = "10.68.0.0/16"
+    gcp_dev_secondary             = "10.84.0.0/16"
+    gcp_landing_landing_primary   = "10.64.0.0/17"
+    gcp_landing_landing_secondary = "10.80.0.0/17"
+    gcp_dmz_primary               = "10.64.127.0/17"
+    gcp_dmz_secondary             = "10.80.127.0/17"
+    gcp_prod_primary              = "10.72.0.0/16"
+    gcp_prod_secondary            = "10.88.0.0/16"
   }
-}
-
-variable "groups" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type = object({
-    gcp-network-admins = optional(string)
-  })
-  default  = {}
-  nullable = false
 }
 
 variable "onprem_cidr" {

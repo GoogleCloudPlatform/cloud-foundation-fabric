@@ -18,11 +18,6 @@
 
 # GCP-specific environment zone
 
-moved {
-  from = module.prod-dns-private-zone
-  to   = module.prod-dns-priv-example
-}
-
 module "prod-dns-priv-example" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -40,11 +35,6 @@ module "prod-dns-priv-example" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-moved {
-  from = module.prod-landing-root-dns-peering
-  to   = module.prod-dns-peer-landing-root
-}
-
 module "prod-dns-peer-landing-root" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -58,11 +48,6 @@ module "prod-dns-peer-landing-root" {
   }
 }
 
-moved {
-  from = module.prod-reverse-10-dns-peering
-  to   = module.prod-dns-peer-landing-rev-10
-}
-
 module "prod-dns-peer-landing-rev-10" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -73,17 +58,5 @@ module "prod-dns-peer-landing-rev-10" {
       client_networks = [module.prod-spoke-vpc.self_link]
       peer_network    = module.landing-vpc.self_link
     }
-  }
-}
-
-# DNS policy to enable query logging
-
-resource "google_dns_policy" "prod-dns-logging-policy" {
-  name           = "logging-policy"
-  count          = var.dns.enable_logging ? 1 : 0
-  project        = module.prod-spoke-project.project_id
-  enable_logging = true
-  networks {
-    network_url = module.prod-spoke-vpc.id
   }
 }

@@ -22,7 +22,7 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  services = [
+  services = concat([
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -30,7 +30,13 @@ module "dev-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-  ]
+    ],
+    (
+      var.fast_features.gcve
+      ? ["vmwareengine.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
   }
@@ -69,6 +75,9 @@ module "dev-spoke-vpc" {
   project_id = module.dev-spoke-project.project_id
   name       = "dev-spoke-0"
   mtu        = 1500
+  dns_policy = {
+    logging = var.dns.enable_logging
+  }
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
@@ -98,5 +107,5 @@ module "peering-dev" {
   source        = "../../../modules/net-vpc-peering"
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
-  peer_network  = module.landing-trusted-vpc.self_link
+  peer_network  = module.landing-vpc.self_link
 }

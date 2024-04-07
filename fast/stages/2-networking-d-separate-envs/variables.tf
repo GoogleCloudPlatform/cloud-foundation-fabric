@@ -87,6 +87,12 @@ variable "enable_cloud_nat" {
   nullable    = false
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
@@ -108,6 +114,16 @@ variable "factories_config" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -116,16 +132,6 @@ variable "folder_ids" {
     networking-dev  = string
     networking-prod = string
   })
-}
-
-variable "groups" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type = object({
-    gcp-network-admins = optional(string)
-  })
-  default  = {}
-  nullable = false
 }
 
 variable "organization" {

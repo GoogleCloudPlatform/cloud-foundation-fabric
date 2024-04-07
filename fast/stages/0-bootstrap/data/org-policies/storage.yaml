@@ -9,3 +9,7 @@
 storage.uniformBucketLevelAccess:
   rules:
     - enforce: true
+
+storage.publicAccessPrevention:
+  rules:
+    - enforce: true

@@ -15,13 +15,18 @@
  */
 
 output "id" {
-  description = "Fully qualified service id."
-  value       = google_cloud_run_v2_service.service.id
+  description = "Fully qualified job or service id."
+  value       = var.create_job ? google_cloud_run_v2_job.job[0].id : google_cloud_run_v2_service.service[0].id
+}
+
+output "job" {
+  description = "Cloud Run Job."
+  value       = var.create_job ? google_cloud_run_v2_job.job[0] : null
 }
 
 output "service" {
-  description = "Cloud Run service."
-  value       = google_cloud_run_v2_service.service
+  description = "Cloud Run Service."
+  value       = var.create_job ? null : google_cloud_run_v2_service.service[0]
 }
 
 output "service_account" {
@@ -44,7 +49,7 @@ output "service_account_iam_email" {
 
 output "service_name" {
   description = "Cloud Run service name."
-  value       = google_cloud_run_v2_service.service.name
+  value       = var.create_job ? null : google_cloud_run_v2_service.service[0].name
 }
 
 output "vpc_connector" {

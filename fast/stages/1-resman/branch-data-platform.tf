@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ module "branch-dp-folder" {
   count  = var.fast_features.data_platform ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "Data Platform"
+  iam    = var.folder_iam.data_platform
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/data"].id, null
@@ -29,11 +30,11 @@ module "branch-dp-folder" {
 }
 
 module "branch-dp-dev-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Development"
-  group_iam = {}
+  source            = "../../../modules/folder"
+  count             = var.fast_features.data_platform ? 1 : 0
+  parent            = module.branch-dp-folder.0.id
+  name              = "Development"
+  iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {
@@ -58,11 +59,11 @@ module "branch-dp-dev-folder" {
 }
 
 module "branch-dp-prod-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Production"
-  group_iam = {}
+  source            = "../../../modules/folder"
+  count             = var.fast_features.data_platform ? 1 : 0
+  parent            = module.branch-dp-folder.0.id
+  name              = "Production"
+  iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {

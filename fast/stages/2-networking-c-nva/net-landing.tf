@@ -42,44 +42,39 @@ module "landing-project" {
   }
 }
 
-# Untrusted VPC
+# DMZ (untrusted) VPC
 
-module "landing-untrusted-vpc" {
+module "dmz-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.landing-project.project_id
-  name       = "prod-untrusted-landing-0"
+  name       = "prod-dmz-0"
   mtu        = 1500
   dns_policy = {
-    inbound = false
-    logging = false
+    inbound = true
+    logging = var.dns.enable_logging
   }
   create_googleapis_routes = null
   factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
 }
 
-module "landing-untrusted-firewall" {
+module "dmz-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
-  network    = module.landing-untrusted-vpc.name
+  network    = module.dmz-vpc.name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-untrusted"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dmz"
   }
 }
 
 # NAT
 
-moved {
-  from = module.landing-nat-ew1
-  to   = module.landing-nat-primary
-}
-
-module "landing-nat-primary" {
+module "dmz-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
@@ -87,15 +82,10 @@ module "landing-nat-primary" {
   name           = local.region_shortnames[var.regions.primary]
   router_create  = true
   router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
-  router_network = module.landing-untrusted-vpc.name
+  router_network = module.dmz-vpc.name
 }
 
-moved {
-  from = module.landing-nat-ew4
-  to   = module.landing-nat-secondary
-}
-
-module "landing-nat-secondary" {
+module "dmz-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
   count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
@@ -103,19 +93,19 @@ module "landing-nat-secondary" {
   name           = local.region_shortnames[var.regions.secondary]
   router_create  = true
   router_name    = "prod-nat-${local.region_shortnames[var.regions.secondary]}"
-  router_network = module.landing-untrusted-vpc.name
+  router_network = module.dmz-vpc.name
 }
 
-# Trusted VPC
+# Landing (trusted) VPC
 
-module "landing-trusted-vpc" {
+module "landing-vpc" {
   source                          = "../../../modules/net-vpc"
   project_id                      = module.landing-project.project_id
-  name                            = "prod-trusted-landing-0"
+  name                            = "prod-landing-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
   factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing-trusted"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
   dns_policy = {
     inbound = true
@@ -127,15 +117,15 @@ module "landing-trusted-vpc" {
   }
 }
 
-module "landing-trusted-firewall" {
+module "landing-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
-  network    = module.landing-trusted-vpc.name
+  network    = module.landing-vpc.name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-trusted"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
 }

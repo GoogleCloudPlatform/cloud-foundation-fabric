@@ -1,5 +1,5 @@
-factory_data = {
-  data_path = "../../../../tests/fast/stages/s3_project_factory/data/projects/"
+factories_config = {
+  projects_data_path = "../../../../tests/fast/stages/s3_project_factory/data/projects/"
 }
 prefix = "test"
 billing_account = {

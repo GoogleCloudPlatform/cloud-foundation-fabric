@@ -18,11 +18,6 @@
 
 # forwarding to on-prem DNS resolvers
 
-moved {
-  from = module.onprem-example-dns-forwarding
-  to   = module.landing-dns-fwd-onprem-example
-}
-
 module "landing-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
   count      = length(var.dns.resolvers) > 0 ? 1 : 0
@@ -37,11 +32,6 @@ module "landing-dns-fwd-onprem-example" {
   }
 }
 
-moved {
-  from = module.reverse-10-dns-forwarding
-  to   = module.landing-dns-fwd-onprem-rev-10
-}
-
 module "landing-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
   count      = length(var.dns.resolvers) > 0 ? 1 : 0
@@ -54,11 +44,6 @@ module "landing-dns-fwd-onprem-rev-10" {
       forwarders      = { for ip in var.dns.resolvers : ip => null }
     }
   }
-}
-
-moved {
-  from = module.gcp-example-dns-private-zone
-  to   = module.landing-dns-priv-gcp
 }
 
 module "landing-dns-priv-gcp" {
@@ -82,20 +67,10 @@ module "landing-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
   project_id = module.landing-project.project_id
   name       = "googleapis"
+  factories_config = {
+    rules = var.factories_config.dns_policy_rules_file
+  }
   networks = {
     landing = module.landing-vpc.self_link
-  }
-  rules_file = var.factories_config.dns_policy_rules_file
-}
-
-# DNS policy to enable query logging
-
-resource "google_dns_policy" "landing-dns-logging-policy" {
-  name           = "logging-policy"
-  count          = var.dns.enable_logging ? 1 : 0
-  project        = module.landing-project.project_id
-  enable_logging = true
-  networks {
-    network_url = module.landing-vpc.id
   }
 }

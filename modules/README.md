@@ -39,6 +39,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Project](./project)
 - [Projects (data source)](./projects-data-source)
 
+## Process factories
+
+- [Project factory](./project-factory/)
+
 ## Networking modules
 
 - [Address reservation](./net-address)
@@ -75,10 +79,12 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Data
 
+- [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
+- [Data Catalog Tag](./data-catalog-tag)
 - [Data Catalog Tag Template](./data-catalog-tag-template)
 - [Dataform Repository](./dataform-repository/)
 - [Datafusion](./datafusion)

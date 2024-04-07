@@ -158,6 +158,21 @@ variable "region" {
   type        = string
 }
 
+variable "service_attachment" {
+  description = "PSC service attachment."
+  type = object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  })
+  default = null
+}
+
 variable "service_directory_registration" {
   description = "Service directory namespace and service used to register this load balancer."
   type = object({

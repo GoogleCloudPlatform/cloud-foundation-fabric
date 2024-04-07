@@ -254,7 +254,7 @@ def validate_plan_object(expected_value, plan_value, relative_path,
   if isinstance(expected_value, dict) and isinstance(plan_value, dict):
     for k, v in expected_value.items():
       assert k in plan_value, \
-        f'{relative_path}: {k} is not a valid address in the plan'
+        f'{relative_path}: {relative_address}.{k} is not a valid address in the plan'
       validate_plan_object(v, plan_value[k], relative_path,
                            f'{relative_address}.{k}')
 

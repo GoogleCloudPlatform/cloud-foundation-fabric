@@ -70,9 +70,9 @@ module "branch-gke-dev-sa" {
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       (
-        local.groups.gcp-devops == null
+        local.principals.gcp-devops == null
         ? []
-        : ["group:${local.groups.gcp-devops}"]
+        : [local.principals.gcp-devops]
       ),
       compact([
         try(module.branch-gke-dev-sa-cicd.0.iam_email, null)
@@ -94,9 +94,9 @@ module "branch-gke-prod-sa" {
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       (
-        local.groups.gcp-devops == null
+        local.principals.gcp-devops == null
         ? []
-        : ["group:${local.groups.gcp-devops}"]
+        : [local.principals.gcp-devops]
       ),
       compact([
         try(module.branch-gke-prod-sa-cicd.0.iam_email, null)

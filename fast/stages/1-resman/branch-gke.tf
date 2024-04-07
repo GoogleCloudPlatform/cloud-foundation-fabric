@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ module "branch-gke-folder" {
   count  = var.fast_features.gke ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
+  iam    = var.folder_iam.gke
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/gke"].id, null
@@ -87,11 +88,7 @@ module "branch-gke-dev-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
-      (
-        local.groups.gcp-devops == null
-        ? []
-        : ["group:${local.groups.gcp-devops}"]
-      ),
+      [local.principals.gcp-devops],
       compact([
         try(module.branch-gke-dev-sa-cicd.0.iam_email, null)
       ])
@@ -114,11 +111,7 @@ module "branch-gke-prod-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
-      (
-        local.groups.gcp-devops == null
-        ? []
-        : ["group:${local.groups.gcp-devops}"]
-      ),
+      [local.principals.gcp-devops],
       compact([
         try(module.branch-gke-prod-sa-cicd.0.iam_email, null)
       ])

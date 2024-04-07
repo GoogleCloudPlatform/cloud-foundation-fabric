@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,40 @@
 
 # tfdoc:file:description Security stage resources.
 
-module "branch-security-folder" {
-  source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
-  name   = "Security"
-  group_iam = local.groups.gcp-security-admins == null ? {} : {
-    (local.groups.gcp-security-admins) = [
-      # owner and viewer roles are broad and might grant unwanted access
-      # replace them with more selective custom roles for production deployments
-      "roles/editor"
-    ]
-  }
-  iam = {
-    # read-write (apply) automation service account
+locals {
+  # FAST-specific IAM
+  _security_folder_fast_iam = {
     "roles/logging.admin"                  = [module.branch-security-sa.iam_email]
     "roles/owner"                          = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
+    "roles/viewer"                       = [module.branch-security-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-security-r-sa.iam_email]
   }
+
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _security_folder_iam = merge(
+    var.folder_iam.security,
+    {
+      for role, principals in local._security_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.security, role, [])))
+    }
+  )
+}
+
+module "branch-security-folder" {
+  source = "../../../modules/folder"
+  parent = "organizations/${var.organization.id}"
+  name   = "Security"
+  iam_by_principals = {
+    (local.principals.gcp-security-admins) = [
+      # owner and viewer roles are broad and might grant unwanted access
+      # replace them with more selective custom roles for production deployments
+      "roles/editor"
+    ]
+  }
+  iam = local._security_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/security"].id, null

@@ -31,7 +31,7 @@ module "landing-to-onprem-primary-vpn" {
   count         = var.vpn_onprem_primary_config == null ? 0 : 1
   source        = "../../../modules/net-vpn-ha"
   project_id    = module.landing-project.project_id
-  network       = module.landing-trusted-vpc.self_link
+  network       = module.landing-vpc.self_link
   region        = var.regions.primary
   name          = "vpn-to-onprem-${local.region_shortnames[var.regions.primary]}"
   router_config = try(var.vpn_onprem_primary_config.router_config, {})
@@ -45,7 +45,7 @@ module "landing-to-onprem-secondary-vpn" {
   count         = var.vpn_onprem_secondary_config == null ? 0 : 1
   source        = "../../../modules/net-vpn-ha"
   project_id    = module.landing-project.project_id
-  network       = module.landing-trusted-vpc.self_link
+  network       = module.landing-vpc.self_link
   region        = var.regions.secondary
   name          = "vpn-to-onprem-${local.region_shortnames[var.regions.secondary]}"
   router_config = try(var.vpn_onprem_secondary_config.router_config, {})

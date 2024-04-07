@@ -39,7 +39,7 @@ moved {
 resource "google_service_networking_connection" "psa_connection" {
   count   = var.psa_config != null ? 1 : 0
   network = local.network.id
-  service = "servicenetworking.googleapis.com"
+  service = var.psa_config.service_producer
   reserved_peering_ranges = [
     for k, v in google_compute_global_address.psa_ranges : v.name
   ]
@@ -65,6 +65,6 @@ resource "google_service_networking_peered_dns_domain" "name" {
   name       = trimsuffix(replace(each.value, ".", "-"), "-")
   network    = local.network.name
   dns_suffix = each.value
-  service    = "servicenetworking.googleapis.com"
+  service    = var.psa_config.service_producer
   depends_on = [google_service_networking_connection.psa_connection]
 }

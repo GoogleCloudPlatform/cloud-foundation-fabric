@@ -49,6 +49,7 @@ module "landing-vpc" {
   mtu        = 1500
   dns_policy = {
     inbound = true
+    logging = var.dns.enable_logging
   }
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
@@ -71,11 +72,6 @@ module "landing-firewall" {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
     rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
-}
-
-moved {
-  from = module.landing-nat-ew1
-  to   = module.landing-nat-primary
 }
 
 module "landing-nat-primary" {

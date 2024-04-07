@@ -25,7 +25,7 @@ module "prod-dns-private-zone" {
   zone_config = {
     domain = "prod.gcp.example.com."
     private = {
-      client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
+      client_networks = [module.landing-vpc.self_link, module.dmz-vpc.self_link]
     }
   }
   recordsets = {
@@ -48,7 +48,7 @@ module "prod-dns-peer-landing-root" {
     domain = "."
     peering = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
   }
 }
@@ -66,19 +66,7 @@ module "prod-dns-peer-landing-rev-10" {
     domain = "10.in-addr.arpa."
     peering = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
-  }
-}
-
-# DNS policy to enable query logging
-
-resource "google_dns_policy" "prod-dns-logging-policy" {
-  name           = "logging-policy"
-  count          = var.dns.enable_logging ? 1 : 0
-  project        = module.prod-spoke-project.project_id
-  enable_logging = true
-  networks {
-    network_url = module.prod-spoke-vpc.id
   }
 }

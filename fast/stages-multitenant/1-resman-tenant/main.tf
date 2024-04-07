@@ -69,11 +69,11 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  groups = {
-    for k, v in var.groups :
-    k => v == null ? null : can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => v != null ? "group:${v}" : null
+  principals = {
+    for k, v in var.groups : k => (
+      can(regex("^[a-zA-Z]+:", v)) || v == null
+      ? v
+      : "group:${v}@${var.organization.domain}"
+    )
   }
 }

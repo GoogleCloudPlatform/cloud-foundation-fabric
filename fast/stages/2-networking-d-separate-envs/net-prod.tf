@@ -22,7 +22,7 @@ module "prod-spoke-project" {
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = [
+  services = concat([
     "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -31,7 +31,13 @@ module "prod-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-  ]
+    ],
+    (
+      var.fast_features.gcve
+      ? ["vmwareengine.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled          = true
     service_projects = []
@@ -68,6 +74,9 @@ module "prod-spoke-vpc" {
   project_id = module.prod-spoke-project.project_id
   name       = "prod-spoke-0"
   mtu        = 1500
+  dns_policy = {
+    logging = var.dns.enable_logging
+  }
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }

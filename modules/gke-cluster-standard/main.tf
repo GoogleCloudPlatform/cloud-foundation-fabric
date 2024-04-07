@@ -39,8 +39,8 @@ resource "google_container_cluster" "cluster" {
   enable_shielded_nodes       = var.enable_features.shielded_nodes
   enable_fqdn_network_policy  = var.enable_features.fqdn_network_policy
   enable_tpu                  = var.enable_features.tpu
-  initial_node_count          = 1
-  remove_default_node_pool    = true
+  initial_node_count          = var.default_nodepool.initial_node_count
+  remove_default_node_pool    = var.default_nodepool.remove_pool
   deletion_protection         = var.deletion_protection
   datapath_provider = (
     var.enable_features.dataplane_v2
@@ -366,7 +366,8 @@ resource "google_container_cluster" "cluster" {
   }
   monitoring_config {
     enable_components = toset(compact([
-      # System metrics is the minimum requirement if any other metrics are enabled. This is checked by input var validation.
+      # System metrics is the minimum requirement if any other metrics are enabled.
+      # This is checked by input var validation.
       var.monitoring_config.enable_system_metrics ? "SYSTEM_COMPONENTS" : null,
       # Control plane metrics
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
@@ -382,6 +383,24 @@ resource "google_container_cluster" "cluster" {
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
+    }
+    dynamic "advanced_datapath_observability_config" {
+      for_each = (
+        var.monitoring_config.advanced_datapath_observability == null
+        ? []
+        : [""]
+      )
+      content {
+        enable_metrics = (
+          var.monitoring_config.advanced_datapath_observability.enable_metrics
+        )
+        enable_relay = (
+          var.monitoring_config.advanced_datapath_observability.enable_relay
+        )
+        relay_mode = (
+          var.monitoring_config.advanced_datapath_observability.relay_mode
+        )
+      }
     }
   }
   # Dataplane V2 has built-in network policies

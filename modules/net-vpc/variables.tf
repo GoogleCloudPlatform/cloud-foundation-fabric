@@ -97,6 +97,19 @@ variable "name" {
   type        = string
 }
 
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet                = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "peering_config" {
   description = "VPC peering configuration."
   type = object({
@@ -162,12 +175,13 @@ variable "project_id" {
 }
 
 variable "psa_config" {
-  description = "The Private Service Access configuration for Service Networking."
+  description = "The Private Service Access configuration."
   type = object({
-    ranges         = map(string)
-    export_routes  = optional(bool, false)
-    import_routes  = optional(bool, false)
-    peered_domains = optional(list(string), [])
+    ranges           = map(string)
+    export_routes    = optional(bool, false)
+    import_routes    = optional(bool, false)
+    peered_domains   = optional(list(string), [])
+    service_producer = optional(string, "servicenetworking.googleapis.com")
   })
   default = null
 }

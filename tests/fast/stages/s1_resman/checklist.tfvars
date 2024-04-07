@@ -13,6 +13,8 @@ billing_account = {
 }
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
+  gcve_network_admin            = "organizations/123456789012/roles/gcveNetworkAdmin"
+  organization_admin_viewer     = "organizations/123456789012/roles/organizationAdminViewer"
   service_project_network_admin = "organizations/123456789012/roles/xpnServiceAdmin"
   storage_viewer                = "organizations/123456789012/roles/storageViewer"
 }

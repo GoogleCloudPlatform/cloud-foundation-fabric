@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.nlb.google_compute_forwarding_rule.forwarding_rules["vip-one"]:
+  module.nlb.google_compute_forwarding_rule.default["vip-one"]:
     all_ports: true
     allow_global_access: null
     allow_psc_global_access: null
@@ -32,7 +32,7 @@ values:
     source_ip_ranges: null
     target: null
     timeouts: null
-  module.nlb.google_compute_forwarding_rule.forwarding_rules["vip-two"]:
+  module.nlb.google_compute_forwarding_rule.default["vip-two"]:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null

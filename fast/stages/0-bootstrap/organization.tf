@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ locals {
     local.iam_sa_bindings,
     local.iam_user_bootstrap_bindings,
     {
-      for k, v in local.iam_group_bindings : "group:${k}" => {
+      for k, v in local.iam_principal_bindings : k => {
         authoritative = []
         additive      = v.additive
       }
@@ -46,7 +46,7 @@ locals {
     ]
   ])
   drs_domains = concat(
-    [var.organization.customer_id],
+    var.organization.customer_id == null ? [] : [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
@@ -59,8 +59,8 @@ locals {
     "tenant_network_admin",
   ]
   # intermediate values before we merge in what comes from the checklist
-  _group_iam = {
-    for k, v in local.iam_group_bindings : k => v.authoritative
+  _iam_principals = {
+    for k, v in local.iam_principal_bindings : k => v.authoritative
   }
   _iam = merge(
     {
@@ -77,10 +77,10 @@ locals {
     }
   }
   # final values combining all sources
-  group_iam = {
-    for k, v in local._group_iam : k => distinct(concat(
+  iam_principals = {
+    for k, v in local._iam_principals : k => distinct(concat(
       v,
-      try(local.checklist.group_iam[k], [])
+      try(local.checklist.iam_principals[k], [])
     ))
   }
   iam = {
@@ -98,7 +98,7 @@ locals {
   )
   # compute authoritative and additive roles for use by add-ons (checklist, etc.)
   iam_roles_authoritative = distinct(concat(
-    flatten(values(local._group_iam)),
+    flatten(values(local._iam_principals)),
     keys(local._iam)
   ))
   iam_roles_additive = distinct([
@@ -108,13 +108,48 @@ locals {
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
-module "organization" {
+# import org policy constraints enabled by default in new orgs since February 2024
+import {
+  for_each = (
+    !var.org_policies_config.import_defaults || var.bootstrap_user != null
+    ? toset([])
+    : toset([
+      "compute.requireOsLogin",
+      "compute.skipDefaultNetworkCreation",
+      "compute.vmExternalIpAccess",
+      "iam.allowedPolicyMemberDomains",
+      "iam.automaticIamGrantsForDefaultServiceAccounts",
+      "iam.disableServiceAccountKeyCreation",
+      "iam.disableServiceAccountKeyUpload",
+      "sql.restrictAuthorizedNetworks",
+      "sql.restrictPublicIp",
+      "storage.uniformBucketLevelAccess",
+    ])
+  )
+  id = "organizations/${var.organization.id}/policies/${each.key}"
+  to = module.organization.google_org_policy_policy.default[each.key]
+}
+
+module "organization-logging" {
+  # Preconfigure organization-wide logging settings to ensure project
+  # log buckets (_Default, _Required) are created in the location
+  # specified by `var.locations.logging`. This separate
+  # organization-block prevents circular dependencies with later
+  # project creation.
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
+  logging_settings = {
+    storage_location = var.locations.logging
+  }
+}
+
+module "organization" {
+  source          = "../../../modules/organization"
+  organization_id = module.organization-logging.id
   # human (groups) IAM bindings
-  group_iam = {
-    for k, v in local.group_iam :
-    k => distinct(concat(v, lookup(var.group_iam, k, [])))
+  iam_by_principals = {
+    for k, v in local.iam_principals :
+    k => distinct(concat(v, lookup(var.iam_by_principals, k, [])))
   }
   # machine (service accounts) IAM bindings
   iam = merge(
@@ -131,34 +166,48 @@ module "organization" {
     var.iam_bindings_additive
   )
   # delegated role grant for resource manager service account
-  iam_bindings = {
-    organization_iam_admin_conditional = {
-      members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id["organization_iam_admin"]
-      condition = {
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          join(",", formatlist("'%s'", concat(
-            [
+  iam_bindings = merge(
+    {
+      organization_iam_admin_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/accesscontextmanager.policyAdmin",
               "roles/compute.orgFirewallPolicyAdmin",
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
+              "roles/orgpolicy.policyViewer",
               "roles/resourcemanager.organizationViewer",
               module.organization.custom_role_id["tenant_network_admin"]
-            ],
-            local.billing_mode == "org" ? [
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
+      }
+    },
+    local.billing_mode != "org" ? {} : {
+      organization_billing_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/billing.admin",
               "roles/billing.costsManager",
               "roles/billing.user",
-            ] : []
-          )))
-        )
-        title       = "automation_sa_delegated_grants"
-        description = "Automation service account delegated grants."
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
       }
     }
-  }
+  )
   custom_roles = var.custom_roles
   factories_config = {
     custom_roles = var.factories_config.custom_roles

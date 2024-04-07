@@ -2,20 +2,21 @@
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
-## Issues
-
-There are some corner cases where Terraform raises a cycle error on apply, for example when using the entire ILB module as a value in `for_each` counts used to create static routes in the VPC module. These are easily fixed by using forwarding rule ids instead of modules as values in the `for_each` loop.
-
-<!--
-One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
--->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Referencing existing MIGs](#referencing-existing-migs)
+  - [Externally managed instances](#externally-managed-instances)
+  - [Passing multiple protocols through the load balancers](#passing-multiple-protocols-through-the-load-balancers)
+  - [Mutiple forwarding rules](#mutiple-forwarding-rules)
+  - [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
+  - [PSC service attachments](#psc-service-attachments)
+  - [End to end example](#end-to-end-example)
+- [Issues](#issues)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Examples
-
-- [Referencing existing MIGs](#referencing-existing-migs)
-- [Externally managed instances](#externally-managed-instances)
-- [Passing multiple protocols through the load balancers](#passing-multiple-protocols-through-the-load-balancers)
-- [End to end example](#end-to-end-example)
 
 ### Referencing existing MIGs
 
@@ -154,7 +155,6 @@ The example adds two forwarding rules:
 - the first one, called `ilb-test-vip-one` exposes an IPv4 address, it listens on all ports, and allows connections from any region.
 - the second one, called `ilb-test-vip-two` exposes an IPv4 address, it listens on port 80 and allows connections from the same region only.
 
-
 ```hcl
 module "ilb" {
   source        = "./fabric/modules/net-lb-int"
@@ -229,6 +229,54 @@ module "ilb" {
 # tftest modules=1 resources=5
 ```
 
+### PSC service attachments
+
+The optional `service_attachments` variable allows [publishing Private Service Connect services](https://cloud.google.com/vpc/docs/configure-private-service-connect-producer) by configuring  up to one service attachment for each of the forwarding rules.
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  forwarding_rules_config = {
+    vip-one = {}
+    vip-two = {
+      global_access = false
+      ports         = [80]
+    }
+  }
+  group_configs = {
+    my-group = {
+      zone = "europe-west1-b"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  backends = [{
+    group = module.ilb.groups.my-group.self_link
+  }]
+  service_attachments = {
+    vip-one = {
+      nat_subnets          = [var.subnet_psc_1.self_link]
+      automatic_connection = true
+    }
+    vip-two = {
+      nat_subnets          = [var.subnet_psc_2.self_link]
+      automatic_connection = true
+    }
+  }
+}
+# tftest modules=1 resources=7
+```
+
 ### End to end example
 
 This example spins up a simple HTTP server and combines four modules:
@@ -298,6 +346,15 @@ module "ilb" {
 }
 # tftest modules=3 resources=7 e2e
 ```
+
+## Issues
+
+There are some corner cases where Terraform raises a cycle error on apply, for example when using the entire ILB module as a value in `for_each` counts used to create static routes in the VPC module. These are easily fixed by using forwarding rule ids instead of modules as values in the `for_each` loop.
+
+<!--
+One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
+-->
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -306,7 +363,7 @@ module "ilb" {
 | [name](variables.tf#L184) | Name used for all resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L189) | Project id where resources will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L200) | GCP region. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L211) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L226) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  enable_subsetting &#61; optional&#40;bool&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  log_sample_rate  &#61; optional&#40;number&#41;&#10;  protocol         &#61; optional&#40;string, &#34;UNSPECIFIED&#34;&#41;&#10;  session_affinity &#61; optional&#40;string&#41;&#10;  timeout_sec      &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backends](variables.tf#L51) | Load balancer backends. | <code title="list&#40;object&#40;&#123;&#10;  group       &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  failover    &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [description](variables.tf#L62) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
@@ -316,7 +373,8 @@ module "ilb" {
 | [health_check_config](variables.tf#L101) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [labels](variables.tf#L178) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [protocol](variables.tf#L194) | Forwarding rule protocol used, defaults to TCP. | <code>string</code> |  | <code>&#34;TCP&#34;</code> |
-| [service_label](variables.tf#L205) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
+| [service_attachments](variables.tf#L205) | PSC service attachments, keyed by forwarding rule. | <code title="map&#40;object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [service_label](variables.tf#L220) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -334,4 +392,5 @@ module "ilb" {
 | [health_check_id](outputs.tf#L73) | Auto-created health-check id. |  |
 | [health_check_self_link](outputs.tf#L78) | Auto-created health-check self link. |  |
 | [id](outputs.tf#L83) | Fully qualified forwarding rule ids. |  |
+| [service_attachment_ids](outputs.tf#L91) | Service attachment ids. |  |
 <!-- END TFDOC -->

@@ -13,9 +13,9 @@
 # limitations under the License.
 
 values:
-  google_compute_forwarding_rule.forwarding_rules["ipv4"]:
+  google_compute_forwarding_rule.default["ipv4"]:
     ip_version: "IPV4"
-  google_compute_forwarding_rule.forwarding_rules["ipv6"]:
+  google_compute_forwarding_rule.default["ipv6"]:
     ip_version: "IPV6"
 
 counts:

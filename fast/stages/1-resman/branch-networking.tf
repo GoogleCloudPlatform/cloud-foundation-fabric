@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,9 @@
 
 # tfdoc:file:description Networking stage resources.
 
-module "branch-network-folder" {
-  source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
-  name   = "Networking"
-  group_iam = local.groups.gcp-network-admins == null ? {} : {
-    (local.groups.gcp-network-admins) = [
-      # owner and viewer roles are broad and might grant unwanted access
-      # replace them with more selective custom roles for production deployments
-      "roles/editor",
-    ]
-  }
-  iam = {
+locals {
+  # FAST-specific IAM
+  _network_folder_fast_iam = {
     # read-write (apply) automation service account
     "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
     "roles/owner"                          = [module.branch-network-sa.iam_email]
@@ -38,6 +29,28 @@ module "branch-network-folder" {
     "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
     "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
   }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _network_folder_iam = merge(
+    var.folder_iam.network,
+    {
+      for role, principals in local._network_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.network, role, [])))
+    }
+  )
+}
+
+module "branch-network-folder" {
+  source = "../../../modules/folder"
+  parent = "organizations/${var.organization.id}"
+  name   = "Networking"
+  iam_by_principals = {
+    (local.principals.gcp-network-admins) = [
+      # owner and viewer roles are broad and might grant unwanted access
+      # replace them with more selective custom roles for production deployments
+      "roles/editor",
+    ]
+  }
+  iam = local._network_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/networking"].id, null
@@ -54,14 +67,17 @@ module "branch-network-prod-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-prod,
       local.branch_optional_sa_lists.gke-prod,
+      local.branch_optional_sa_lists.gcve-prod,
       local.branch_optional_sa_lists.pf-prod,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-prod,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-prod
   }
   tag_bindings = {
     environment = try(
@@ -80,14 +96,17 @@ module "branch-network-dev-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-dev,
       local.branch_optional_sa_lists.gke-dev,
+      local.branch_optional_sa_lists.gcve-dev,
       local.branch_optional_sa_lists.pf-dev,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-dev,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
   }
   tag_bindings = {
     environment = try(

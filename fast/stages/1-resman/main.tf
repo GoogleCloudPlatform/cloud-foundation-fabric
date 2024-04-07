@@ -26,20 +26,24 @@ locals {
   )
   # service accounts that receive additional grants on networking/security
   branch_optional_sa_lists = {
-    dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
-    dp-prod  = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
-    gke-dev  = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
-    gke-prod = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
-    pf-dev   = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
-    pf-prod  = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
+    dp-dev    = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
+    dp-prod   = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
+    gcve-dev  = compact([try(module.branch-gcve-dev-sa.0.iam_email, "")])
+    gcve-prod = compact([try(module.branch-gcve-prod-sa.0.iam_email, "")])
+    gke-dev   = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
+    gke-prod  = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
+    pf-dev    = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
+    pf-prod   = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
   }
   branch_optional_r_sa_lists = {
-    dp-dev   = compact([try(module.branch-dp-dev-r-sa.0.iam_email, "")])
-    dp-prod  = compact([try(module.branch-dp-prod-r-sa.0.iam_email, "")])
-    gke-dev  = compact([try(module.branch-gke-dev-r-sa.0.iam_email, "")])
-    gke-prod = compact([try(module.branch-gke-prod-r-sa.0.iam_email, "")])
-    pf-dev   = compact([try(module.branch-pf-dev-r-sa.0.iam_email, "")])
-    pf-prod  = compact([try(module.branch-pf-prod-r-sa.0.iam_email, "")])
+    dp-dev    = compact([try(module.branch-dp-dev-r-sa.0.iam_email, "")])
+    dp-prod   = compact([try(module.branch-dp-prod-r-sa.0.iam_email, "")])
+    gcve-dev  = compact([try(module.branch-gcve-dev-r-sa.0.iam_email, "")])
+    gcve-prod = compact([try(module.branch-gcve-prod-r-sa.0.iam_email, "")])
+    gke-dev   = compact([try(module.branch-gke-dev-r-sa.0.iam_email, "")])
+    gke-prod  = compact([try(module.branch-gke-prod-r-sa.0.iam_email, "")])
+    pf-dev    = compact([try(module.branch-pf-dev-r-sa.0.iam_email, "")])
+    pf-prod   = compact([try(module.branch-pf-prod-r-sa.0.iam_email, "")])
   }
   # normalize CI/CD repositories
   cicd_repositories = {
@@ -92,16 +96,16 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  groups = {
-    for k, v in var.groups :
-    k => can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => v != null ? "group:${v}" : null
-  }
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
+  principals = {
+    for k, v in var.groups : k => (
+      can(regex("^[a-zA-Z]+:", v))
+      ? v
+      : "group:${v}@${var.organization.domain}"
+    )
+  }
 }
 
 data "google_client_openid_userinfo" "provider_identity" {
