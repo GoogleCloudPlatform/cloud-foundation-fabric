@@ -7,7 +7,7 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [Referencing existing MIGs](#referencing-existing-migs)
   - [Externally managed instances](#externally-managed-instances)
   - [Passing multiple protocols through the load balancers](#passing-multiple-protocols-through-the-load-balancers)
-  - [Mutiple forwarding rules](#mutiple-forwarding-rules)
+  - [Multiple forwarding rules](#multiple-forwarding-rules)
   - [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
   - [PSC service attachments](#psc-service-attachments)
   - [End to end example](#end-to-end-example)
