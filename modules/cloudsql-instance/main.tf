@@ -75,13 +75,6 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
-    dynamic "data_cache_config" {
-      for_each = var.edition == "ENTERPRISE_PLUS" ? [1] : []
-      content {
-        data_cache_enabled = var.data_cache_enabled
-      }
-    }
-
     ip_configuration {
       ipv4_enabled       = var.network_config.connectivity.public_ipv4
       private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
