@@ -12,19 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  google_folder: 5
-  google_folder_iam_binding: 25
-  google_organization_iam_member: 6
-  google_project_iam_member: 4
-  google_service_account: 4
-  google_service_account_iam_binding: 4
-  google_storage_bucket: 2
-  google_storage_bucket_iam_binding: 4
-  google_storage_bucket_iam_member: 4
-  google_storage_bucket_object: 5
-  google_tags_tag_binding: 5
-  google_tags_tag_key: 3
-  google_tags_tag_value: 10
-  modules: 12
-  resources: 81
+from:
+  access_levels:
+    - "*"
+  identities:
+    - user:user@fast.example.com
+to:
+  operations:
+    - service_name: compute.googleapis.com
+      method_selectors:
+        - "*"
+    - service_name: monitoring.googleapis.com
+      method_selectors:
+        - "*"
+  resources:
+    - "*"

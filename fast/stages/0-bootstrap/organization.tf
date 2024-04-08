@@ -176,6 +176,7 @@ module "organization" {
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
             join(",", formatlist("'%s'", [
               "roles/accesscontextmanager.policyAdmin",
+              "roles/cloudasset.viewer",
               "roles/compute.orgFirewallPolicyAdmin",
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",

@@ -1209,7 +1209,7 @@ The script will create in `<directory>` following structure:
 
 The `infra` directory contains the sandbox infrastructure as well as all environment variables dumped into `terraform.tfvars` file. The script runs `terraform init` and `terraform apply -auto-approve` in this folder.
 
-The `<direcotry>` has empty `main.tf` where you can paste any example, and it will get all necessary variables from `e2e_tests.auto.tfvars` file.
+The `<directory>` has empty `main.tf` where you can paste any example, and it will get all necessary variables from `e2e_tests.auto.tfvars` file.
 
 If there are any changes to the test sandbox, you can rerun the script and only changes will be applied to the project.
 

@@ -28,6 +28,10 @@ locals {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.xpnAdmin"
       }
+      sa_sec_asset_viewer = {
+        member = module.branch-security-sa.iam_email
+        role   = "roles/cloudasset.viewer"
+      }
       sa_sec_vpcsc_admin = {
         member = module.branch-security-sa.iam_email
         role   = "roles/accesscontextmanager.policyAdmin"
