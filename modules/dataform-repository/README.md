@@ -7,7 +7,7 @@ This module allows managing a dataform repository, allows adding IAM permissions
 
 ## Examples
 
-### Simple dataform repository with access configration
+### Simple dataform repository with access configuration
 
 Simple dataform repository and specifying repository access via the IAM variable.
 

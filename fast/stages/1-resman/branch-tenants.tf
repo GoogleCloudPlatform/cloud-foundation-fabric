@@ -33,6 +33,7 @@ module "tenant-tenants-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Tenants"
+  iam    = var.folder_iam.tenants
   tag_bindings = {
     context = module.organization.tag_values["${var.tag_names.context}/tenant"].id
   }

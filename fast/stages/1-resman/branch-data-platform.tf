@@ -21,6 +21,7 @@ module "branch-dp-folder" {
   count  = var.fast_features.data_platform ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "Data Platform"
+  iam    = var.folder_iam.data_platform
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/data"].id, null

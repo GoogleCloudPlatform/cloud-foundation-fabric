@@ -17,19 +17,31 @@
 # tfdoc:file:description Team stage resources.
 
 # TODO(ludo): add support for CI/CD
-
-module "branch-teams-folder" {
-  source = "../../../modules/folder"
-  count  = var.fast_features.teams ? 1 : 0
-  parent = "organizations/${var.organization.id}"
-  name   = "Teams"
-  iam = {
+locals {
+  # FAST-specific IAM
+  _teams_folder_fast_iam = !var.fast_features.teams ? {} : {
     "roles/logging.admin"                  = [module.branch-teams-sa.0.iam_email]
     "roles/owner"                          = [module.branch-teams-sa.0.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-teams-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-teams-sa.0.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-teams-sa.0.iam_email]
   }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _teams_folder_iam = merge(
+    var.folder_iam.teams,
+    {
+      for role, principals in local._teams_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.teams, role, [])))
+    }
+  )
+}
+
+module "branch-teams-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.teams ? 1 : 0
+  parent = "organizations/${var.organization.id}"
+  name   = "Teams"
+  iam    = local._teams_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/teams"].id, null
@@ -132,12 +144,12 @@ module "branch-teams-team-dev-folder" {
       local.branch_optional_sa_lists.pf-dev
     )
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = local.branch_optional_sa_lists.pf-dev
-    "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-dev
-    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-dev
-    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-dev
+    "roles/owner"                                = local.branch_optional_sa_lists.pf-dev
+    "roles/logging.admin"                        = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.folderAdmin"          = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.projectCreator"       = local.branch_optional_sa_lists.pf-dev
+    "roles/viewer"                               = local.branch_optional_r_sa_lists.pf-dev
+    (var.custom_roles.organization_admin_viewer) = local.branch_optional_r_sa_lists.pf-dev
   }
   tag_bindings = {
     environment = try(
@@ -159,12 +171,12 @@ module "branch-teams-team-prod-folder" {
       local.branch_optional_sa_lists.pf-prod
     )
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = local.branch_optional_sa_lists.pf-prod
-    "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-prod
-    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-prod
-    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-prod
+    "roles/owner"                                = local.branch_optional_sa_lists.pf-prod
+    "roles/logging.admin"                        = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.folderAdmin"          = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.projectCreator"       = local.branch_optional_sa_lists.pf-prod
+    "roles/viewer"                               = local.branch_optional_r_sa_lists.pf-prod
+    (var.custom_roles.organization_admin_viewer) = local.branch_optional_r_sa_lists.pf-prod
   }
   tag_bindings = {
     environment = try(
