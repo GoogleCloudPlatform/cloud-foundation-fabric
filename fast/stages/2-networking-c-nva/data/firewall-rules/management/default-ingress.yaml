@@ -1,7 +1,6 @@
 # skip boilerplate check
-
 ingress:
-  landing-ingress-default-deny:
+  management-ingress-default-deny:
     description: "Deny and log any unmatched ingress traffic."
     deny: true
     priority: 65535
