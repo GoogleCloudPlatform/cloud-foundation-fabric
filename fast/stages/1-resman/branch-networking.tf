@@ -16,6 +16,29 @@
 
 # tfdoc:file:description Networking stage resources.
 
+locals {
+  # FAST-specific IAM
+  _network_folder_fast_iam = {
+    # read-write (apply) automation service account
+    "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
+    "roles/owner"                          = [module.branch-network-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
+    # read-only (plan) automation service account
+    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
+  }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _network_folder_iam = merge(
+    var.folder_iam.network,
+    {
+      for role, principals in local._network_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.network, role, [])))
+    }
+  )
+}
+
 module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -27,17 +50,7 @@ module "branch-network-folder" {
       "roles/editor",
     ]
   }
-  iam = {
-    # read-write (apply) automation service account
-    "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
-    "roles/owner"                          = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
-    # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
-  }
+  iam = local._network_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/networking"].id, null
