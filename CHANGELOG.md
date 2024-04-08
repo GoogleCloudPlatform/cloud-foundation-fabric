@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
 - [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
 - [[#2181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2181)] Bump express from 4.17.3 to 4.19.2 in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-03-28 06:14:50+00:00 -->
 - [[#2174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2174)] Bump provider version to 5.18 to fix non-empty plan for google_notebooks_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-25 18:57:14+00:00 -->
@@ -21,12 +22,17 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2203](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2203)] **incompatible change:** FAST security stage refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 03:14:39+00:00 -->
+- [[#2196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2196)] Add variable to resman to control top-level folder IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-04-04 08:26:35+00:00 -->
+- [[#2195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2195)] Allow r/o project factory SAs access to folder-level IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-04-03 19:51:47+00:00 -->
 - [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
 - [[#2178](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2178)] Add missing permission to org viewer custom role in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-03-27 08:06:25+00:00 -->
 - [[#2172](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2172)] Fix subnet names in FAST net stage c nva ([ludoo](https://github.com/ludoo)) <!-- 2024-03-24 11:54:29+00:00 -->
 
 ### MODULES
 
+- [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
+- [[#2202](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2202)] added force_destroy to dns module ([nika-pr](https://github.com/nika-pr)) <!-- 2024-04-05 09:20:51+00:00 -->
 - [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
 - [[#2190](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2190)] VPC module - PSA configurable service producer ([spica29](https://github.com/spica29)) <!-- 2024-04-02 18:23:25+00:00 -->
 - [[#2185](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2185)] Fix failing e2e tests for Cloud Run CMEK ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-28 14:02:56+00:00 -->

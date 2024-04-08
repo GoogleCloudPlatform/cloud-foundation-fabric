@@ -31,58 +31,24 @@ service_accounts = {
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"
 }
-vpc_sc_access_levels = {
-  onprem = {
-    conditions = [{
-      ip_subnetworks = ["101.101.101.0/24"]
-    }]
+factories_config = {
+  vpc-sc = {
+    access_levels    = "../../../../tests/fast/stages/s2_security/data/vpc-sc/access-levels"
+    egress_policies  = "../../../../tests/fast/stages/s2_security/data/vpc-sc/egress-policies"
+    ingress_policies = "../../../../tests/fast/stages/s2_security/data/vpc-sc/ingress-policies"
   }
 }
-vpc_sc_egress_policies = {
-  iac-gcs = {
-    from = {
-      identities = [
-        "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
-      ]
-    }
-    to = {
-      operations = [{
-        method_selectors = ["*"]
-        service_name     = "storage.googleapis.com"
-      }]
-      resources = ["projects/123456782"]
-    }
+vpc_sc = {
+  perimeter_default = {
+    access_levels    = ["geo_it", "identity_me"]
+    egress_policies  = ["test"]
+    ingress_policies = ["test"]
+    dry_run          = true
+    resources = [
+      "projects/1234567890"
+    ]
   }
-}
-vpc_sc_ingress_policies = {
-  iac = {
-    from = {
-      identities = [
-        "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
-      ]
-      access_levels = ["*"]
-    }
-    to = {
-      operations = [{ method_selectors = [], service_name = "*" }]
-      resources  = ["*"]
-    }
-  }
-}
-vpc_sc_perimeters = {
-  dev = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/1111111111"]
-  }
-  dev = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/0000000000"]
-  }
-  dev = {
-    access_levels    = ["onprem"]
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/2222222222"]
+  resource_discovery = {
+    enabled = false
   }
 }
