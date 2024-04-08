@@ -353,11 +353,11 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [dev_cloud_dns_inbound_policy](outputs.tf#L59) | IP Addresses for Cloud DNS inbound policy for the dev environment. |  |  |
-| [host_project_ids](outputs.tf#L64) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L69) | Network project numbers. |  |  |
-| [prod_cloud_dns_inbound_policy](outputs.tf#L74) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
-| [shared_vpc_self_links](outputs.tf#L79) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L84) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L90) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [dev_cloud_dns_inbound_policy](outputs.tf#L77) | IP Addresses for Cloud DNS inbound policy for the dev environment. |  |  |
+| [host_project_ids](outputs.tf#L82) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L87) | Network project numbers. |  |  |
+| [prod_cloud_dns_inbound_policy](outputs.tf#L92) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
+| [shared_vpc_self_links](outputs.tf#L97) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L102) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L108) | External IP Addresses for the GCP VPN gateways. |  |  |
 <!-- END TFDOC -->
