@@ -56,5 +56,5 @@ module "gcve-pc" {
   }
 
   private_cloud_configs = var.private_cloud_configs
-  gcve_monitoring = var.gcve_monitoring
+  gcve_monitoring       = var.gcve_monitoring
 }

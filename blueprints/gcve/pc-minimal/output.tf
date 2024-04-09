@@ -14,6 +14,10 @@
 
 # tfdoc:file:description Output variables.
 
+output "gcve-monitoring" {
+  value = module.gcve-monitoring
+}
+
 output "project_id" {
   description = "GCVE project id."
   value       = module.gcve-project-0.project_id
@@ -37,8 +41,4 @@ output "vmw_engine_private_clouds" {
 output "vmw_private_cloud_network" {
   description = "VMware engine network."
   value       = module.gcve-pc.vmw_private_cloud_network
-}
-
-output "gcve-monitoring" {
-  value = module.gcve-monitoring
 }
