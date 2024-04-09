@@ -38,3 +38,7 @@ output "vmw_private_cloud_network" {
   description = "VMware engine network."
   value       = module.gcve-pc.vmw_private_cloud_network
 }
+
+output "gcve-monitoring" {
+  value = module.gcve-monitoring
+}
