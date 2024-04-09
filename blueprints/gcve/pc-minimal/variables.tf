@@ -121,104 +121,28 @@ variable "project_services" {
   nullable    = false
 }
 
-// Monitoring inputs
-
-variable "vm_mon_name" {
-  description = "GCE VM name where GCVE monitoring agent will run"
-  type        = string
-  default     = "bp-agent"
-}
-
-variable "vm_mon_type" {
-  description = "GCE VM machine type"
-  type        = string
-  default     = "e2-small"
-}
-
-variable "vm_mon_zone" {
-  description = "GCP zone where GCE VM will be deployed"
-  type        = string
-  default     = "europe-west1-b"
-}
-
-variable "subnetwork" {
-  description = "Subnetwork where the VM will be deployed to"
-  type        = string
-  default     = "prod-default-ew1"
-}
-
-variable "sa_gcve_monitoring" {
-  description = "Service account for GCVE monitoring agent"
-  type        = string
-  default     = "gcve-mon-sa"
-}
-
-variable "secret_vsphere_server" {
-  type        = string
-  description = "The secret name conatining the FQDN of the vSphere vCenter server"
-  default     = "gcve-mon-vsphere-server"
-}
-
-variable "secret_vsphere_user" {
-  type        = string
-  description = "The secret name containing the user for the vCenter server. Must be an admin user"
-  default     = "gcve-mon-vsphere-user"
-}
-
-variable "secret_vsphere_password" {
-  type        = string
-  description = "The secret name containing the password for the vCenter admin user"
-  default     = "gcve-mon-vsphere-password"
-}
-
-variable "gcve_region" {
-  description = "Region where the Private Cloud is deployed"
-  type        = string
-  default     = "europe-west1"
-}
-
-variable "hc_interval_sec" {
-  description = "Healthcheck interval in seconds"
-  type        = number
-  default     = 5
-}
-
-variable "hc_timeout_sec" {
-  description = "Healthcheck timeout in seconds"
-  type        = number
-  default     = 5
-}
-
-variable "hc_healthy_threshold" {
-  description = "How many consecutive success checks to consider the VM as healthy"
-  type        = number
-  default     = 2
-}
-
-variable "hc_unhealthy_threshold" {
-  description = "How many consecutive success checks to consider the VM as unhealthy"
-  type        = number
-  default     = 2
-}
-
-variable "initial_delay_sec" {
-  description = "How long to delay checking for healthcheck upon initialization"
-  type        = number
-  default     = 180
-}
-
-variable "create_dashboards" {
-  description = "Define if sample GCVE monitoring dashboards should be installed"
-  type        = bool
-  default     = true
-}
-
-variable "network_project_id" {
-  description = "Project ID of shared VPC"
-  type        = string
-}
-
-variable "network_self_link" {
-  description = "Self Link of shared VPC in which Monitoring VMs will be placed"
-  type        = string
+variable "gcve_monitoring" {
+  description = "Inputs for GCVE Monitoring"
+  type = object({
+    setup_monitoring        = optional(bool, false)
+    vm_mon_name             = optional(string, "bp-agent")
+    vm_mon_type             = optional(string, "e2-small")
+    vm_mon_zone             = optional(string)
+    subnetwork              = optional(string)
+    sa_gcve_monitoring      = optional(string, "gcve-mon-sa")
+    secret_vsphere_server   = optional(string, "gcve-mon-vsphere-server")
+    secret_vsphere_user     = optional(string, "gcve-mon-vsphere-user")
+    secret_vsphere_password = optional(string, "gcve-mon-vsphere-password")
+    gcve_region             = optional(string)
+    hc_interval_sec         = optional(number, 4)
+    hc_timeout_sec          = optional(number, 5)
+    hc_healthy_threshold    = optional(number, 2)
+    hc_unhealthy_threshold  = optional(number, 2)
+    initial_delay_sec       = optional(number, 180)
+    create_dashboards       = optional(bool, true)
+    network_project_id      = optional(string)
+    network_self_link       = optional(string)
+  })
+  nullable = true
+  default  = {}
 }
