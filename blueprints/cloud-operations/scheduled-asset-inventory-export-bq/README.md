@@ -85,7 +85,7 @@ module "test" {
   source          = "./fabric/blueprints/cloud-operations/scheduled-asset-inventory-export-bq"
   billing_account = "1234-ABCD-1234"
   cai_config = {
-    bq_dataset         = "my-dataset"
+    bq_dataset         = "my_dataset"
     bq_table           = "my_table"
     bq_table_overwrite = "true"
     target_node        = "organization/1234567890"
@@ -95,7 +95,7 @@ module "test" {
     bucket     = "my-bucket"
     filename   = "my-folder/myfile.json"
     format     = "NEWLINE_DELIMITED_JSON"
-    bq_dataset = "my-dataset"
+    bq_dataset = "my_dataset"
     bq_table   = "my_table"
   }
   project_create = true
