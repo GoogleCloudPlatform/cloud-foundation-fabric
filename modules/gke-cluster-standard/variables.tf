@@ -168,6 +168,13 @@ variable "enable_addons" {
   nullable = false
 }
 
+variable "enable_cilium_clusterwide_network_policy" {
+  description = "Whether CiliumClusterWideNetworkPolicy is enabled in the cluster."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
