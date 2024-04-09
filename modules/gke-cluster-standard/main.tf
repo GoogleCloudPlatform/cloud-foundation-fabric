@@ -29,19 +29,20 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version          = var.min_master_version
-  network                     = var.vpc_config.network
-  subnetwork                  = var.vpc_config.subnetwork
-  resource_labels             = var.labels
-  default_max_pods_per_node   = var.max_pods_per_node
-  enable_intranode_visibility = var.enable_features.intranode_visibility
-  enable_l4_ilb_subsetting    = var.enable_features.l4_ilb_subsetting
-  enable_shielded_nodes       = var.enable_features.shielded_nodes
-  enable_fqdn_network_policy  = var.enable_features.fqdn_network_policy
-  enable_tpu                  = var.enable_features.tpu
-  initial_node_count          = var.default_nodepool.initial_node_count
-  remove_default_node_pool    = var.default_nodepool.remove_pool
-  deletion_protection         = var.deletion_protection
+  min_master_version                       = var.min_master_version
+  network                                  = var.vpc_config.network
+  subnetwork                               = var.vpc_config.subnetwork
+  resource_labels                          = var.labels
+  default_max_pods_per_node                = var.max_pods_per_node
+  enable_intranode_visibility              = var.enable_features.intranode_visibility
+  enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
+  enable_shielded_nodes                    = var.enable_features.shielded_nodes
+  enable_fqdn_network_policy               = var.enable_features.fqdn_network_policy
+  enable_tpu                               = var.enable_features.tpu
+  initial_node_count                       = var.default_nodepool.initial_node_count
+  remove_default_node_pool                 = var.default_nodepool.remove_pool
+  deletion_protection                      = var.deletion_protection
+  enable_cilium_clusterwide_network_policy = var.enable_features.cilium_clusterwide_network_policy
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"

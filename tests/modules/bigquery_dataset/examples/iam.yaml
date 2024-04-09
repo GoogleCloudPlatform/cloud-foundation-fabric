@@ -14,11 +14,11 @@
 
 values:
   module.bigquery-dataset.google_bigquery_dataset.default:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     project: my-project
   module.bigquery-dataset.google_bigquery_dataset_iam_binding.bindings["roles/bigquery.dataOwner"]:
     condition: []
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     members:
     - user:user1@example.org
     project: my-project
