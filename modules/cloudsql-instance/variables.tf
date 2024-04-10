@@ -65,6 +65,13 @@ variable "connector_enforcement" {
   default     = null
 }
 
+variable "data_cache" {
+  description = "Enable data cache. Only used for Enterprise MYSQL and PostgreSQL."
+  type        = bool
+  nullable    = false
+  default     = false
+}
+
 variable "database_version" {
   description = "Database type and version to create."
   type        = string

@@ -21,7 +21,7 @@ The access variables are split into `access` and `access_identities` variables, 
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   access = {
     reader-group   = { role = "READER", type = "group" }
     owner          = { role = "OWNER", type = "user" }
@@ -32,7 +32,7 @@ module "bigquery-dataset" {
     reader-group   = "playground-test@ludomagno.net"
     owner          = "ludo@ludomagno.net"
     project_owners = "projectOwners"
-    view_1         = "my-project|my-dataset|my-table"
+    view_1         = "my-project|my_dataset|my-table"
   }
 }
 # tftest modules=1 resources=5 inventory=simple.yaml
@@ -46,7 +46,7 @@ Access configuration can also be specified via IAM instead of basic roles via th
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   iam = {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }
@@ -143,7 +143,7 @@ Authorized views can be specified both using the standard `access` options and t
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   authorized_views = [
     {
       project_id = "view_project"
@@ -176,7 +176,7 @@ Dataset options are set via the `options` variable. all options must be specifie
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   options = {
     default_table_expiration_ms     = 3600000
     default_partition_expiration_ms = null
@@ -227,7 +227,7 @@ locals {
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   tables = {
     table_a = {
       deletion_protection = true
