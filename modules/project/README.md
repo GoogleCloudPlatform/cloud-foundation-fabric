@@ -800,7 +800,7 @@ includedPermissions:
 
 ## Quotas
 
-Project and regional quotas can be managed via the `quotas` variable, but require configuring the quota project used by the Terraform provider. This can be done at the provider level via the `user_project_override` and `billing_project` [provider configurations](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference.html#user_project_override). Note that some module functionality will break with this configuration, so we recommend [definining an alias](https://developer.hashicorp.com/terraform/language/providers/configuration#alias-multiple-provider-configurations) for the Google provider changing module so that the quota resource uses it.
+Project and regional quotas can be managed via the `quotas` variable.
 
 ```hcl
 module "project" {
