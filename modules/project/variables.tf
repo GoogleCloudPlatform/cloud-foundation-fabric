@@ -71,6 +71,7 @@ variable "factories_config" {
   type = object({
     custom_roles = optional(string)
     org_policies = optional(string)
+    quotas       = optional(string)
   })
   nullable = false
   default  = {}
