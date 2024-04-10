@@ -134,6 +134,7 @@ module "automation-project" {
       "cloudasset.googleapis.com",
       "cloudbilling.googleapis.com",
       "cloudkms.googleapis.com",
+      "cloudquotas.googleapis.com",
       "cloudresourcemanager.googleapis.com",
       "essentialcontacts.googleapis.com",
       "iam.googleapis.com",
