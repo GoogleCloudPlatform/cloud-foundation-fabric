@@ -22,6 +22,7 @@ This module implements the creation and management of one GCP project including 
 - [Project-scoped Tags](#project-scoped-tags)
 - [Custom Roles](#custom-roles)
   - [Custom Roles Factory](#custom-roles-factory)
+- [Quotas](#quotas)
 - [Outputs](#outputs)
   - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
 - [Files](#files)
@@ -1067,10 +1068,12 @@ module "bucket" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [quotas.tf](./quotas.tf) | None | <code>google_cloud_quotas_quota_preference</code> |
 | [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_default_service_accounts</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
+| [variables-quotas.tf](./variables-quotas.tf) | None |  |
 | [variables-tags.tf](./variables-tags.tf) | None |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
@@ -1104,6 +1107,7 @@ module "bucket" {
 | [parent](variables.tf#L184) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
 | [prefix](variables.tf#L194) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [project_create](variables.tf#L204) | Create project. When set to false, uses a data source to reference existing project. | <code>bool</code> |  | <code>true</code> |
+| [quotas](variables-quotas.tf#L17) | Service quota configuration. | <code title="map&#40;object&#40;&#123;&#10;  service              &#61; string&#10;  quota_id             &#61; string&#10;  preferred_value      &#61; number&#10;  dimensions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  justification        &#61; optional&#40;string&#41;&#10;  contact_email        &#61; optional&#40;string&#41;&#10;  annotations          &#61; optional&#40;map&#40;string&#41;&#41;&#10;  ignore_safety_checks &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_config](variables.tf#L210) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_encryption_key_ids](variables.tf#L222) | Cloud KMS encryption key in {SERVICE => [KEY_URL]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_perimeter_bridges](variables.tf#L229) | Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
@@ -1125,9 +1129,11 @@ module "bucket" {
 | [name](outputs.tf#L51) | Project name. |  |
 | [number](outputs.tf#L63) | Project number. |  |
 | [project_id](outputs.tf#L82) | Project id. |  |
-| [service_accounts](outputs.tf#L101) | Product robot service accounts in project. |  |
-| [services](outputs.tf#L117) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L126) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L133) | Tag key resources. |  |
-| [tag_values](outputs.tf#L142) | Tag value resources. |  |
+| [quota_configs](outputs.tf#L101) | Quota configurations. |  |
+| [quotas](outputs.tf#L109) | Quota resources. |  |
+| [service_accounts](outputs.tf#L114) | Product robot service accounts in project. |  |
+| [services](outputs.tf#L130) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L139) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L146) | Tag key resources. |  |
+| [tag_values](outputs.tf#L155) | Tag value resources. |  |
 <!-- END TFDOC -->
