@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2208)] Updated diagram to better reflect PSC terminology ([bswenka](https://github.com/bswenka)) <!-- 2024-04-09 15:18:43+00:00 -->
+- [[#2207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2207)] feat(gke-cluster-standard): Add optional `CiliumClusterWideNetworkPolicy` ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2024-04-09 15:08:36+00:00 -->
 - [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
 - [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
 - [[#2181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2181)] Bump express from 4.17.3 to 4.19.2 in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-03-28 06:14:50+00:00 -->
@@ -22,6 +24,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2210)] Add support for quotas to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 17:03:04+00:00 -->
+- [[#2206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2206)] Update the description and README for the tags variable ([timothy-jabez](https://github.com/timothy-jabez)) <!-- 2024-04-10 13:08:59+00:00 -->
+- [[#2204](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2204)] Align exported tfvars in FAST networking stages, add psc and proxy only subnets ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 07:26:47+00:00 -->
 - [[#2203](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2203)] **incompatible change:** FAST security stage refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 03:14:39+00:00 -->
 - [[#2196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2196)] Add variable to resman to control top-level folder IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-04-04 08:26:35+00:00 -->
 - [[#2195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2195)] Allow r/o project factory SAs access to folder-level IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-04-03 19:51:47+00:00 -->
@@ -31,6 +36,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2210)] Add support for quotas to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 17:03:04+00:00 -->
+- [[#2209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2209)] Add support for data cache to cloud sql module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 06:24:01+00:00 -->
+- [[#2207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2207)] feat(gke-cluster-standard): Add optional `CiliumClusterWideNetworkPolicy` ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2024-04-09 15:08:36+00:00 -->
+- [[#2205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2205)] Add validation rule for DNS module health check targets ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 11:30:42+00:00 -->
 - [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
 - [[#2202](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2202)] added force_destroy to dns module ([nika-pr](https://github.com/nika-pr)) <!-- 2024-04-05 09:20:51+00:00 -->
 - [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
