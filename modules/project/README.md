@@ -804,21 +804,28 @@ Project and regional quotas can be managed via the `quotas` variable, but requir
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "project"
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
   quotas = {
     cpus-ew8 = {
       service         = "compute.googleapis.com"
       quota_id        = "CPUS-per-project-region"
       contact_email   = "user@example.com"
-      preferred_value = 80
+      preferred_value = 321
       dimensions = {
         region = "europe-west8"
       }
     }
   }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=4 e2e
 ```
 
 ## Outputs
