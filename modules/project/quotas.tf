@@ -14,8 +14,27 @@
  * limitations under the License.
  */
 
+locals {
+  _quota_factory_data_raw = merge([
+    for f in try(fileset(var.factories_config.quotas, "*.yaml"), []) :
+    yamldecode(file("${var.factories_config.quotas}/${f}"))
+  ]...)
+  # simulate applying defaults to data coming from yaml files
+  _quota_factory_data = {
+    for k, v in local._quota_factory_data_raw :
+    k => merge({
+      dimensions           = {}
+      justification        = null
+      contact_email        = null
+      annotations          = null
+      ignore_safety_checks = null
+    }, v)
+  }
+  quotas = merge(local._quota_factory_data, var.quotas)
+}
+
 resource "google_cloud_quotas_quota_preference" "default" {
-  for_each      = var.quotas
+  for_each      = local.quotas
   parent        = "projects/${local.project.project_id}"
   name          = each.key
   service       = each.value.service
