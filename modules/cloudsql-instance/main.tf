@@ -114,6 +114,13 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
+    dynamic "data_cache_config" {
+      for_each = var.edition == "ENTERPRISE_PLUS" ? [1] : []
+      content {
+        data_cache_enabled = var.data_cache
+      }
+    }
+
     dynamic "database_flags" {
       for_each = var.flags != null ? var.flags : {}
       iterator = flag
