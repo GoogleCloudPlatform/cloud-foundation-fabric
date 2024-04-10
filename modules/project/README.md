@@ -1130,10 +1130,10 @@ module "bucket" {
 | [number](outputs.tf#L63) | Project number. |  |
 | [project_id](outputs.tf#L82) | Project id. |  |
 | [quota_configs](outputs.tf#L101) | Quota configurations. |  |
-| [quotas](outputs.tf#L109) | Quota resources. |  |
-| [service_accounts](outputs.tf#L114) | Product robot service accounts in project. |  |
-| [services](outputs.tf#L130) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L139) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L146) | Tag key resources. |  |
-| [tag_values](outputs.tf#L155) | Tag value resources. |  |
+| [quotas](outputs.tf#L112) | Quota resources. |  |
+| [service_accounts](outputs.tf#L117) | Product robot service accounts in project. |  |
+| [services](outputs.tf#L133) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L142) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L149) | Tag key resources. |  |
+| [tag_values](outputs.tf#L158) | Tag value resources. |  |
 <!-- END TFDOC -->

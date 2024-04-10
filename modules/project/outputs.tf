@@ -102,7 +102,10 @@ output "quota_configs" {
   description = "Quota configurations."
   value = {
     for k, v in google_cloud_quotas_quota_preference.default :
-    "${v.service}/${v.quota_id}" => v.quota_config.0.preferred_value
+    "${v.service}/${v.quota_id}" => {
+      granted   = v.quota_config.0.granted_value
+      preferred = v.quota_config.0.preferred_value
+    }
   }
 }
 
