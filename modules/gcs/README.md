@@ -56,7 +56,7 @@ module "bucket" {
 # tftest modules=3 skip e2e
 ```
 
-### Example with retention policy and logging
+### Example with retention policy, soft delete policy and logging
 
 ```hcl
 module "bucket" {
@@ -68,6 +68,7 @@ module "bucket" {
     retention_period = 100
     is_locked        = true
   }
+  soft_delete_retention = 7776000
   logging_config = {
     log_bucket        = "log-bucket"
     log_object_prefix = null
@@ -240,10 +241,11 @@ module "bucket" {
 | [public_access_prevention](variables.tf#L224) | Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention, only if the bucket is subject to the public access prevention organization policy constraint. | <code>string</code> |  | <code>null</code> |
 | [requester_pays](variables.tf#L230) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
 | [retention_policy](variables.tf#L236) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L245) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
-| [uniform_bucket_level_access](variables.tf#L255) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L261) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
-| [website](variables.tf#L267) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [soft_delete_retention](variables.tf#L245) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L251) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
+| [uniform_bucket_level_access](variables.tf#L261) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L267) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
+| [website](variables.tf#L273) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

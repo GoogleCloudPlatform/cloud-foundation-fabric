@@ -1,4 +1,4 @@
-# GKE Jumpstart Blueprints
+# GKE Patterns
 
 This directory includes several blueprints related to Google Kubernetes Engine (GKE), following Google recommendations and best practices. The blueprints in this directory split the deployment process into two stages: an initial infrastructure stage that provisions the cluster, and additional workload stages that deploy specific types of applications/workloads.
 
