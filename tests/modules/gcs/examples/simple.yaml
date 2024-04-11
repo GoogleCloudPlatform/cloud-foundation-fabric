@@ -33,7 +33,6 @@ values:
     storage_class: MULTI_REGIONAL
     timeouts: null
     uniform_bucket_level_access: true
-    soft_delete_policy_retention_period: 7776000
     versioning:
       - enabled: true
 

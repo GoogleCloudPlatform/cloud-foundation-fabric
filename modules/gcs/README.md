@@ -56,7 +56,7 @@ module "bucket" {
 # tftest modules=3 skip e2e
 ```
 
-### Example with retention policy and logging
+### Example with retention policy, soft delete policy and logging
 
 ```hcl
 module "bucket" {
@@ -68,6 +68,7 @@ module "bucket" {
     retention_period = 100
     is_locked        = true
   }
+  soft_delete_policy_retention_period = 7776000
   logging_config = {
     log_bucket        = "log-bucket"
     log_object_prefix = null
