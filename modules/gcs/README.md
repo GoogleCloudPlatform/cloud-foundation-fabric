@@ -68,7 +68,7 @@ module "bucket" {
     retention_period = 100
     is_locked        = true
   }
-  soft_delete_policy_retention_period = 7776000
+  soft_delete_retention = 7776000
   logging_config = {
     log_bucket        = "log-bucket"
     log_object_prefix = null
