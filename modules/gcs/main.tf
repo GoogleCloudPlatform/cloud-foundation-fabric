@@ -41,12 +41,21 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic "website" {
-    for_each = var.website == null ? [] : [""]
+  dynamic "cors" {
+    for_each = var.cors == null ? [] : [""]
+    content {
+      origin          = var.cors.origin
+      method          = var.cors.method
+      response_header = var.cors.response_header
+      max_age_seconds = max(3600, var.cors.max_age_seconds)
+    }
+  }
+
+  dynamic "custom_placement_config" {
+    for_each = var.custom_placement_config == null ? [] : [""]
 
     content {
-      main_page_suffix = var.website.main_page_suffix
-      not_found_page   = var.website.not_found_page
+      data_locations = var.custom_placement_config
     }
   }
 
@@ -58,29 +67,11 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic "retention_policy" {
-    for_each = var.retention_policy == null ? [] : [""]
-    content {
-      retention_period = var.retention_policy.retention_period
-      is_locked        = var.retention_policy.is_locked
-    }
-  }
-
   dynamic "logging" {
     for_each = var.logging_config == null ? [] : [""]
     content {
       log_bucket        = var.logging_config.log_bucket
       log_object_prefix = var.logging_config.log_object_prefix
-    }
-  }
-
-  dynamic "cors" {
-    for_each = var.cors == null ? [] : [""]
-    content {
-      origin          = var.cors.origin
-      method          = var.cors.method
-      response_header = var.cors.response_header
-      max_age_seconds = max(3600, var.cors.max_age_seconds)
     }
   }
 
@@ -108,11 +99,27 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic "custom_placement_config" {
-    for_each = var.custom_placement_config == null ? [] : [""]
+  dynamic "retention_policy" {
+    for_each = var.retention_policy == null ? [] : [""]
+    content {
+      retention_period = var.retention_policy.retention_period
+      is_locked        = var.retention_policy.is_locked
+    }
+  }
+
+  dynamic "soft_delete_policy" {
+    for_each = var.soft_delete_policy_retention_period == null ? [] : [""]
+    content {
+      retention_duration_seconds = var.soft_delete_policy_retention_period
+    }
+  }
+
+  dynamic "website" {
+    for_each = var.website == null ? [] : [""]
 
     content {
-      data_locations = var.custom_placement_config
+      main_page_suffix = var.website.main_page_suffix
+      not_found_page   = var.website.not_found_page
     }
   }
 }
