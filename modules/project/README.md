@@ -801,7 +801,14 @@ includedPermissions:
 
 ## Quotas
 
-Project and regional quotas can be managed via the `quotas` variable.
+Project and regional quotas can be managed via the `quotas` variable. Keep in mind, that metrics returned by `gcloud compute regions describe` do not match `quota_id`s. To get a list of quotas in the project use the API call, for example to get quotas for `compute.googleapis.com` use:
+```bash
+curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://cloudquotas.googleapis.com/v1/projects/${PROJECT_ID}/locations/global/services/compute.googleapis.com/quotaInfos?pageSize=1000" \
+  | grep quotaId
+```
 
 ```hcl
 module "project" {
