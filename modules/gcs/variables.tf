@@ -258,6 +258,12 @@ variable "storage_class" {
   }
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this folder, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
+
 variable "uniform_bucket_level_access" {
   description = "Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
   type        = bool
