@@ -242,7 +242,7 @@ variable "retention_policy" {
   default = null
 }
 
-variable "soft_delete_policy_retention_period" {
+variable "soft_delete_retention" {
   description = "The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable."
   type        = number
   default     = null

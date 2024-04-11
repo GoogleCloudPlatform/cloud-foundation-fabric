@@ -108,9 +108,9 @@ resource "google_storage_bucket" "bucket" {
   }
 
   dynamic "soft_delete_policy" {
-    for_each = var.soft_delete_policy_retention_period == null ? [] : [""]
+    for_each = var.soft_delete_retention == null ? [] : [""]
     content {
-      retention_duration_seconds = var.soft_delete_policy_retention_period
+      retention_duration_seconds = var.soft_delete_retention
     }
   }
 
