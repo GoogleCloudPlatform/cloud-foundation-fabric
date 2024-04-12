@@ -86,7 +86,9 @@ OUT_RE = re.compile(r'''(?smx)
     (?:^(.*?)$)
 ''')
 OUT_TEMPLATE = ('description', 'value', 'sensitive')
+RECIPE_RE = re.compile(r'(?sm)^#\s*(.*?)$')
 REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
+REPO_URL = 'https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/'
 TAG_RE = re.compile(r'(?sm)^\s*#\stfdoc:([^:]+:\S+)\s+(.*?)\s*$')
 TOC_BEGIN = '<!-- BEGIN TOC -->'
 TOC_END = '<!-- END TOC -->'
@@ -113,6 +115,7 @@ Document = collections.namedtuple('Document', 'content files variables outputs')
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple(
     'Output', 'name description sensitive consumers file line')
+Recipe = collections.namedtuple('Recipe', 'path title')
 Variable = collections.namedtuple(
     'Variable',
     'name description type default required nullable source file line')
@@ -186,7 +189,13 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
     opts = get_tfref_opts(readme)
     files = opts.get('files', files)
     show_extra = opts.get('show_extra', show_extra)
+  abspath = os.path.abspath(module_path)
   try:
+    if os.path.dirname(abspath).endswith('/modules'):
+      mod_recipes = parse_recipes(
+          module_path, f'{REPO_URL}/modules/{os.path.basename(abspath)}')
+    else:
+      mod_recipes = None
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
     mod_variables = list(parse_variables(module_path, exclude_files))
     mod_outputs = list(parse_outputs(module_path, exclude_files))
@@ -194,13 +203,17 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
   except (IOError, OSError) as e:
     raise SystemExit(e)
   doc = format_tfref(mod_outputs, mod_variables, mod_files, mod_fixtures,
-                     show_extra)
+                     mod_recipes, show_extra)
   return Document(doc, mod_files, mod_variables, mod_outputs)
 
 
-def format_tfref(outputs, variables, files, fixtures, show_extra=False):
+def format_tfref(outputs, variables, files, fixtures, recipes=None,
+                 show_extra=False):
   'Return formatted document.'
   buffer = []
+  if recipes:
+    buffer += ['', '## Recipes', '']
+    buffer += list(format_tfref_recipes(recipes))
   if files:
     buffer += ['', '## Files', '']
     buffer += list(format_tfref_files(files))
@@ -262,6 +275,14 @@ def format_tfref_outputs(items, show_extra=True):
     yield format
 
 
+def format_tfref_recipes(recipes):
+  'Format recipes list.'
+  if not recipes:
+    return
+  for r in recipes:
+    yield f'- [{r.title}]({r.path})'
+
+
 def format_tfref_variables(items, show_extra=True):
   'Format variables table.'
   if not items:
@@ -311,14 +332,6 @@ def get_tfref_parts(readme):
   return {'doc': m.group(1).strip(), 'start': m.start(), 'end': m.end()}
 
 
-def get_toc_parts(readme):
-  'Check if README file is marked, and return current toc.'
-  t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
-  if not t:
-    return
-  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
-
-
 def get_tfref_opts(readme):
   'Check if README file is setting options via a mark, and return options.'
   m = MARK_OPTS_RE.search(readme)
@@ -332,6 +345,14 @@ def get_tfref_opts(readme):
   except (TypeError, ValueError) as e:
     raise SystemExit(f'incorrect option mark: {e}')
   return opts
+
+
+def get_toc_parts(readme):
+  'Check if README file is marked, and return current toc.'
+  t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
+  if not t:
+    return
+  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
 def parse_files(basepath, exclude_files=None):
@@ -398,6 +419,22 @@ def parse_outputs(basepath, exclude_files=None):
       yield Output(name=item['name'], description=description,
                    sensitive=sensitive, consumers=consumers, file=shortname,
                    line=item['line'])
+
+
+def parse_recipes(module_path, module_url):
+  'Find and return module recipes.'
+  for dirpath, dirnames, filenames in os.walk(module_path):
+    name = os.path.basename(dirpath)
+    if name.startswith('recipe-') and 'README.md' in filenames:
+      try:
+        with open(os.path.join(dirpath, 'README.md'), encoding='utf-8') as f:
+          match = RECIPE_RE.search(f.read())
+          if match:
+            yield Recipe(f'{module_url}/{name}', match.group(1))
+          else:
+            raise SystemExit(f'No title for recipe {dirpath}')
+      except (IOError, OSError) as e:
+        raise SystemExit(f'Error opening recipe {dirpath}')
 
 
 def parse_variables(basepath, exclude_files=None):
