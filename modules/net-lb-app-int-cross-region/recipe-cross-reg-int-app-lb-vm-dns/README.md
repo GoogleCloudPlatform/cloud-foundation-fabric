@@ -6,26 +6,137 @@ This recipe shows an actual usage scenario for the [cross-region internal applic
   <img src="https://cloud.google.com/static/load-balancing/images/cross-reg-int-vm.svg" alt="Scenario diagram.">
 </p>
 
+<!-- BEGIN TOC -->
+- [Prerequisites](#prerequisites)
+  - [Proxy-only global subnets](#proxy-only-global-subnets)
+  - [Firewall rules](#firewall-rules)
+- [Variable configuration](#variable-configuration)
+  - [VPC configuration options](#vpc-configuration-options)
+  - [Instance configuration options](#instance-configuration-options)
+  - [DNS configuration](#dns-configuration)
+- [Testing](#testing)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Prerequisites
+
+To run this recipe, you need
+
+- an existing GCP project with the `compute` API enabled
+- the `roles/compute.admin` role or equivalent (e.g. `roles/editor`) assigned on the project
+- an existing VPC in the same project
+- one regular subnet per region where you want to deploy the load balancer in the same VPC
+- an organization policy configuration that allows creation of internal application load balancer (the default configuration is fine)
+- access to the Docker Registry from the instances
 
 ### Proxy-only global subnets
 
-The load balancer needs one proxy-only global subnet in each of its regions. If you are using the [`net-vpc`](../../net-vpc/) module with the subnet factory enabled, this is an example on how to create one of the subnets.
-
-```yaml
-# data/subnets/proxy-global-ew1.yaml
-region: europe-west1
-ip_cidr_range: 172.16.192.0/24
-proxy_only: true
-global: true
-description: Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB.
-```
+The load balancer needs one proxy-only global subnet in each of its regions. If the subnets already exist the load balancer will consume them. If you need to create them, either do that manually or configure the module to do it for you as explained in the [Variable configuration](#variable-configuration) section below.
 
 ### Firewall rules
 
+For the load balancer to work you need to allow ingress to the instances from the health check ranges, and from the load balancer proxy ranges. You can configure firewall rules manually or configure the module to do it for you as explained in the [Variable configuration](#variable-configuration) section below.
+
 ## Variable configuration
 
+With all the requirements in place, the only variables that are needed are those that configure the project and VPC details. Note that you need to use ids or self link in the VPC configuration, not names which also allows supporting Shared VPC.
+
+This is a simple minimal configuration:
+
+```tfvars
+project_id = "my-project"
+vpc_config = {
+  network = "projects/my-project/global/networks/test"
+  subnets = {
+    europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
+    europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
+  }
+}
+```
+
+### VPC configuration options
+
+The VPC configuration also allows creating instances in different subnets, and auto-creation of proxy subnets and firewall rules. This is a complete configuration with all options.
+
+```tfvars
+project_id = "my-project"
+vpc_config = {
+  network = "projects/my-project/global/networks/test"
+  subnets = {
+    europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
+    europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
+  }
+  # only specify this to use different subnets for instances
+  subnets_instances = {
+    europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/vms"
+    europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/vms",
+  }
+  # create proxy subnets
+  proxy_subnets_config = {
+    europe-west1 = "172.16.193.0/24"
+    europe-west8 = "172.16.192.0/24"
+  }
+  # create firewall rules
+  firewall_config = {
+    proxy_subnet_ranges = [
+      "172.16.193.0/24",
+      "172.16.192.0/24"
+    ]
+    enable_health_check = true
+    enable_iap_ssh      = true
+  }
+}
+```
+
+### Instance configuration options
+
+Instance type and the number of zones can be configure via the `instances_config` variable:
+
+```hcl
+project_id = "my-project"
+vpc_config = {
+  network = "projects/my-project/global/networks/test"
+  subnets = {
+    europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
+    europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
+  }
+  instances_config = {
+    # both attributes are optional
+    machine_type = "e2-small"
+    zones = ["b", "c"]
+  }
+}
+```
+
+### DNS configuration
+
+The DNS zone used for the load balancer record can be configured via the `dns_config` variable:
+
+```hcl
+project_id = "my-project"
+vpc_config = {
+  network = "projects/my-project/global/networks/test"
+  subnets = {
+    europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
+    europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
+  }
+  dns_config = {
+    # all attributes are optional
+    client_networks = [
+      "projects/my-project/global/networks/test",
+      "projects/my-other-project/global/networks/test"
+    ]
+    domain          = "foo.example."
+    hostname        = "lb-test
+  }
+}
+```
+
 ## Testing
+
+To test the load balancer behaviour, you can simply disable the service on the backend instances by connecting via SSH and issuing the `sudo systemctl stop nginx` command.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

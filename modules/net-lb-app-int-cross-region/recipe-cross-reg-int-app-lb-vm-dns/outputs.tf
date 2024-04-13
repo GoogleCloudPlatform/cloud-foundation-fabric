@@ -34,6 +34,6 @@ output "instances" {
 output "lb" {
   description = "Load balancer details."
   value = {
-    addresses = module.load-balancer.addresses[k]
+    addresses = module.load-balancer.addresses
   }
 }

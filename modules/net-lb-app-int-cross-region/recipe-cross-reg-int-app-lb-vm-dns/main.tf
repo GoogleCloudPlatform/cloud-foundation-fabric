@@ -24,13 +24,13 @@ locals {
 module "vpc" {
   source     = "../../net-vpc"
   count      = var.vpc_config.proxy_subnets_config == null ? 0 : 1
-  project_id = var.project_id
-  name       = regex("global/networks/([^/]+$)", var.vpc_config.network)
+  project_id = regex("projects/([^/]+)/", var.vpc_config.network)[0]
+  name       = regex("global/networks/([^/]+)$", var.vpc_config.network)[0]
   vpc_create = false
   subnets_proxy_only = [
     for k, v in var.vpc_config.proxy_subnets_config : {
       ip_cidr_range = v
-      name          = "{var.prefix}-proxy-${local.region_shortnames[k]}"
+      name          = "${var.prefix}-proxy-${local.region_shortnames[k]}"
       region        = k
       active        = true
       global        = true
@@ -54,6 +54,7 @@ module "load-balancer" {
     network     = var.vpc_config.network
     subnetworks = var.vpc_config.subnets
   }
+  depends_on = [module.vpc]
 }
 
 module "dns" {
@@ -73,7 +74,7 @@ module "dns" {
   recordsets = {
     "A ${coalesce(var.dns_config.hostname, var.prefix)}" = {
       geo_routing = [
-        for k, v in local.regions : {
+        for k in local.regions : {
           location = k
           health_checked_targets = [
             {

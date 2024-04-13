@@ -26,7 +26,7 @@ locals {
     for t in setproduct(local.regions, var.instances_config.zones) :
     "${var.prefix}-${local.region_shortnames[t.0]}-${t.1}" => {
       region = t.0
-      zone   = t.1
+      zone   = "${t.0}-${t.1}"
     }
   }
 }

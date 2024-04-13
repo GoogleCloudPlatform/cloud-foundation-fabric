@@ -68,10 +68,20 @@ variable "vpc_config" {
   })
   nullable = false
   validation {
+    condition     = try(regex("/", var.vpc_config.network), null) != null
+    error_message = "Network must be a network id or self link, not a name."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.vpc_config.subnets : try(regex("/", v), null) != null
+    ])
+    error_message = "Subnet values must be ids or self links, not names."
+  }
+  validation {
     condition = (
       var.vpc_config.subnets_instances == null
       ||
-      keys(var.vpc_config.subnets) == keys(var.vpc_config.subnets_instances)
+      keys(var.vpc_config.subnets) == keys(coalesce(var.vpc_config.subnets_instances, {}))
     )
     error_message = "Instance subnet regions must match load balancer regions if defined."
   }
@@ -79,8 +89,15 @@ variable "vpc_config" {
     condition = (
       var.vpc_config.proxy_subnets_config == null
       ||
-      keys(var.vpc_config.subnets) == keys(var.vpc_config.proxy_subnets_config)
+      keys(var.vpc_config.subnets) == keys(coalesce(var.vpc_config.proxy_subnets_config, {}))
     )
     error_message = "Proxy subnet regions must match load balancer regions if defined."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.vpc_config.subnets_instances, {}) :
+      try(regex("/", v), null) != null
+    ])
+    error_message = "Instance subnet values must be ids or self links, not names."
   }
 }
