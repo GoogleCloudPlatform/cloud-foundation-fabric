@@ -192,8 +192,9 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
   abspath = os.path.abspath(module_path)
   try:
     if os.path.dirname(abspath).endswith('/modules'):
-      mod_recipes = parse_recipes(
-          module_path, f'{REPO_URL}/modules/{os.path.basename(abspath)}')
+      mod_recipes = list(
+          parse_recipes(module_path,
+                        f'{REPO_URL}/modules/{os.path.basename(abspath)}'))
     else:
       mod_recipes = None
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
