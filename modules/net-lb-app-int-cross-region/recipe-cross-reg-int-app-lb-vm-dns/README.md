@@ -29,7 +29,7 @@ To run this recipe, you need
 - an existing VPC in the same project
 - one regular subnet per region where you want to deploy the load balancer in the same VPC
 - an organization policy configuration that allows creation of internal application load balancer (the default configuration is fine)
-- access to the Docker Registry from the instances
+- access to the Docker Registry from the instances (e.g. via Cloud NAT)
 
 ### Proxy-only global subnets
 
@@ -94,7 +94,7 @@ vpc_config = {
 
 ### Instance configuration options
 
-Instance type and the number of zones can be configure via the `instances_config` variable:
+The instance type and the number of zones can be configured via the `instances_config` variable:
 
 ```hcl
 project_id = "my-project"
@@ -141,6 +141,8 @@ vpc_config = {
 ## Testing
 
 To test the load balancer behaviour, you can simply disable the service on the backend instances by connecting via SSH and issuing the `sudo systemctl stop nginx` command.
+
+If the backends are unhealthy and the necessary firewall rules are in place, check that the Docker containers have started successfully on the instances by connecting via SSH and issuing the `sudo systemctl status nginx` command.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
