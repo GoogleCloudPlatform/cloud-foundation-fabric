@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Region shortnames via locals.
+
 # adapted from FAST networking stages
 
 locals {

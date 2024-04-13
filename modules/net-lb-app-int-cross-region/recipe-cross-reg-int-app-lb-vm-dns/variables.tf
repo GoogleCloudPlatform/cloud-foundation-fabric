@@ -40,7 +40,7 @@ variable "instances_config" {
 }
 
 variable "prefix" {
-  description = "Prefix used for or in resource names."
+  description = "Prefix used for resource names."
   type        = string
   nullable    = false
   default     = "lb-xr-00"
@@ -50,20 +50,6 @@ variable "project_id" {
   description = "Project used to create resources."
   type        = string
   nullable    = false
-}
-
-variable "regions" {
-  description = "Regions used for the compute resources, use shortnames as keys."
-  type        = map(string)
-  nullable    = false
-  default = {
-    ew1 = "europe-west1"
-    ew3 = "europe-west3"
-  }
-  validation {
-    condition     = length(var.regions) >= 2
-    error_message = "At least two regions are required."
-  }
 }
 
 variable "vpc_config" {
@@ -78,6 +64,7 @@ variable "vpc_config" {
       enable_health_check   = optional(bool, true)
       enable_iap_ssh        = optional(bool, false)
     }))
+    proxy_subnets_config = optional(map(string))
   })
   nullable = false
   validation {
@@ -87,5 +74,13 @@ variable "vpc_config" {
       keys(var.vpc_config.subnets) == keys(var.vpc_config.subnets_instances)
     )
     error_message = "Instance subnet regions must match load balancer regions if defined."
+  }
+  validation {
+    condition = (
+      var.vpc_config.proxy_subnets_config == null
+      ||
+      keys(var.vpc_config.subnets) == keys(var.vpc_config.proxy_subnets_config)
+    )
+    error_message = "Proxy subnet regions must match load balancer regions if defined."
   }
 }

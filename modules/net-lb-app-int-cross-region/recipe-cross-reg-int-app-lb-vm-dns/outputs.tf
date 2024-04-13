@@ -14,3 +14,26 @@
  * limitations under the License.
  */
 
+output "instances" {
+  description = "Instances details."
+  value = {
+    addresses = {
+      for k, v in module.instances : k => v.internal_ip
+    }
+    commands = {
+      for k, v in module.instances : k => (
+        "gssh ${nonsensitive(v.instance.name)} --project ${var.project_id} --zone ${nonsensitive(v.instance.zone)}"
+      )
+    }
+    groups = {
+      for k, v in module.instances : k => v.group.id
+    }
+  }
+}
+
+output "lb" {
+  description = "Load balancer details."
+  value = {
+    addresses = module.load-balancer.addresses[k]
+  }
+}

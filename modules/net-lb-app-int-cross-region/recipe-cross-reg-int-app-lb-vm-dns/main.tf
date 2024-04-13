@@ -14,9 +14,28 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Load balancer and VPC resources.
+
 locals {
   # define regions for both instances and lb for easy access
   regions = keys(var.vpc_config.subnets)
+}
+
+module "vpc" {
+  source     = "../../net-vpc"
+  count      = var.vpc_config.proxy_subnets_config == null ? 0 : 1
+  project_id = var.project_id
+  name       = regex("global/networks/([^/]+$)", var.vpc_config.network)
+  vpc_create = false
+  subnets_proxy_only = [
+    for k, v in var.vpc_config.proxy_subnets_config : {
+      ip_cidr_range = v
+      name          = "{var.prefix}-proxy-${local.region_shortnames[k]}"
+      region        = k
+      active        = true
+      global        = true
+    }
+  ]
 }
 
 module "load-balancer" {

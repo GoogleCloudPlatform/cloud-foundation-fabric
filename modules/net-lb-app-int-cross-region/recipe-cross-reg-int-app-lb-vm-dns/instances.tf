@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Instance-related locals and resources.
+
 locals {
   # use lb subnets for instances if instance subnets are not defined
   subnets_instances = coalesce(
