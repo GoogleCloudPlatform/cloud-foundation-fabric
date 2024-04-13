@@ -37,11 +37,11 @@ The load balancer needs one proxy-only global subnet in each of its regions. If 
 
 ### Firewall rules
 
-For the load balancer to work you need to allow ingress to the instances from the health check ranges, and from the load balancer proxy ranges. You can configure firewall rules manually or configure the module to do it for you as explained in the [Variable configuration](#variable-configuration) section below.
+For the load balancer to work you need to allow ingress to the instances from the health check ranges, and from the load balancer proxy ranges. You can create firewall rules manually or configure the module to do it for you as explained in the [Variable configuration](#variable-configuration) section below.
 
 ## Variable configuration
 
-With all the requirements in place, the only variables that are needed are those that configure the project and VPC details. Note that you need to use ids or self link in the VPC configuration, not names which also allows supporting Shared VPC.
+With all the requirements in place, the only variables that are needed are those that configure the project and VPC details. Note that you need to use ids or self links in the VPC configuration not names (Shared VPC configurations are also supported).
 
 This is a simple minimal configuration:
 
