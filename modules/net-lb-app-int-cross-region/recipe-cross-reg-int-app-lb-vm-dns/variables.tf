@@ -28,7 +28,6 @@ variable "dns_config" {
 variable "instances_config" {
   description = "Configuration for instances."
   type = object({
-    count        = optional(number, 1)
     machine_type = optional(string, "e2-micro")
     zones        = optional(list(string), ["b"])
   })
@@ -68,27 +67,25 @@ variable "regions" {
 }
 
 variable "vpc_config" {
-  description = "VPC configuration for load balancer and instances."
+  description = "VPC configuration for load balancer and instances. Subnets are keyed by region."
   type = object({
-    load_balancer_subnets = map(string)
-    network               = string
-    instance_subnets      = optional(map(string))
+    network           = string
+    subnets           = map(string)
+    subnets_instances = optional(map(string))
+    firewall_config = optional(object({
+      proxy_subnet_ranges   = list(string)
+      client_allowed_ranges = optional(list(string))
+      enable_health_check   = optional(bool, true)
+      enable_iap_ssh        = optional(bool, false)
+    }))
   })
   nullable = false
   validation {
     condition = (
-      toset([
-        for s in var.vpc_config.load_balancer_subnets :
-        regex("/regions/([^/]+)/", s)
-      ])
-      ==
-      toset([
-        for s in coalesce(
-          var.vpc_config.instance_subnets,
-          var.vpc_config.load_balancer_subnets
-        ) : regex("/regions/([^/]+)/", s)
-      ])
+      var.vpc_config.subnets_instances == null
+      ||
+      keys(var.vpc_config.subnets) == keys(var.vpc_config.subnets_instances)
     )
-    error_message = "Instance subnet regions must match load balancer regions."
+    error_message = "Instance subnet regions must match load balancer regions if defined."
   }
 }

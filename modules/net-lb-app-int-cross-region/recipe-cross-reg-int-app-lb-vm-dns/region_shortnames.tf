@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# borrowed from FAST networking stages
+# adapted from FAST networking stages
 
 locals {
   # used when the first character would not work
@@ -26,7 +26,7 @@ locals {
   }
   # split in [geo, cardinal, number] tokens
   _region_tokens = {
-    for v in local.lb_regions : v => regexall("(?:[a-z]+)|(?:[0-9]+)", v)
+    for v in local.regions : v => regexall("(?:[a-z]+)|(?:[0-9]+)", v)
   }
   region_shortnames = {
     for k, v in local._region_tokens : k => join("", [

@@ -15,87 +15,8 @@
  */
 
 locals {
-  _instance_subnets = (
-    var.vpc_config.instance_subnets == null
-    ? var.vpc_config.load_balancer_subnets
-    : var.vpc_config.instance_subnets
-  )
-  _instance_regions = {
-    for v in var.vpc_config.instance_subnets :
-    regex("/regions/([^/]+)/", v) => v
-  }
-  _lb_subnets = [
-    for v in var.vpc_config.load_balancer_subnets : merge(
-      regex("/regions/(?P<region>[^/]+)/subnetworks/(?P<name>[^/]+)$"),
-      { subnet = v }
-    )
-  ]
-  instances = flatten([
-    for region, subnet in local._instance_regions : [
-      for zone in var.instances_config.zones : [
-        for num in range(var.instances_config.count) : {
-          key    = join("-", [var.prefix, region, zone, num])
-          subnet = subnet
-          zone   = "${region}-${zone}"
-        }
-      ]
-    ]
-  ])
-  lb_regions = {
-    for v in var.vpc_config.load_balancer_subnets :
-    regex("/regions/([^/]+)/", v) => v
-  }
-  lb_subnets = {
-    for v in local._lb_subnets :
-    "${local.region_shortnames[v.region]}-${v.name}" => v.subnet
-  }
-}
-
-module "instance-sa" {
-  source       = "../../iam-service-account"
-  project_id   = var.project_id
-  name         = "vm-default"
-  prefix       = var.prefix
-  display_name = "Cross-region LB instances service account"
-  iam_project_roles = {
-    (var.project_id) = [
-      "roles/logging.logWriter",
-      "roles/monitoring.metricWriter"
-    ]
-  }
-}
-
-module "instances" {
-  source        = "../../compute-vm"
-  for_each      = { for v in local.instances : v.key => v }
-  project_id    = var.project_id
-  zone          = each.value.zone
-  name          = each.key
-  instance_type = var.instances_config.machine_type
-  boot_disk = {
-    initialize_params = {
-      image = "projects/cos-cloud/global/images/family/cos-stable"
-    }
-  }
-  network_interfaces = [{
-    network    = var.vpc_config.network
-    subnetwork = each.value.subnet
-  }]
-  tags = [
-    "${var.prefix}-ssh", "${var.prefix}-http-server", "${var.prefix}-proxy"
-  ]
-  metadata = {
-    user-data = file("nginx-cloud-config.yaml")
-  }
-  service_account = {
-    email = module.instance-sa.email
-  }
-  group = {
-    named_ports = {
-      http  = 80
-      https = 443
-    }
-  }
+  # define regions for both instances and lb for easy access
+  regions = keys(var.vpc_config.subnets)
 }
 
 module "load-balancer" {
@@ -112,7 +33,7 @@ module "load-balancer" {
   }
   vpc_config = {
     network     = var.vpc_config.network
-    subnetworks = local.lb_subnets
+    subnetworks = var.vpc_config.subnets
   }
 }
 
@@ -133,7 +54,7 @@ module "dns" {
   recordsets = {
     "A ${coalesce(var.dns_config.hostname, var.prefix)}" = {
       geo_routing = [
-        for k, v in local.lb_regions : {
+        for k, v in local.regions : {
           location = k
           health_checked_targets = [
             {
@@ -148,4 +69,46 @@ module "dns" {
       ]
     }
   }
+}
+
+module "firewall" {
+  source               = "../../net-vpc-firewall"
+  count                = var.vpc_config.firewall_config == null ? 0 : 1
+  project_id           = var.project_id
+  network              = var.vpc_config.network
+  default_rules_config = { disabled = true }
+  ingress_rules = merge(
+    {
+      "ingress-${var.prefix}-proxies" = {
+        description   = "Allow load balancer proxy traffic to instances."
+        source_ranges = var.vpc_config.firewall_config.proxy_subnet_ranges
+        targets       = [var.prefix]
+        rules         = [{ protocol = "tcp", ports = [80, 443] }]
+      }
+    },
+    var.vpc_config.firewall_config.client_allowed_ranges == null ? {} : {
+      "ingress-${var.prefix}-http-clients" = {
+        description   = "Allow client HTTP traffic to instances."
+        source_ranges = var.vpc_config.firewall_config.client_allowed_ranges
+        targets       = [var.prefix]
+        rules         = [{ protocol = "tcp", ports = [80, 443] }]
+      }
+    },
+    var.vpc_config.firewall_config.enable_health_check != true ? {} : {
+      "ingress-${var.prefix}-health-checks" = {
+        description   = "Allow health check traffic to instances."
+        source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
+        targets       = [var.prefix]
+        rules         = [{ protocol = "tcp", ports = [80, 443] }]
+      }
+    },
+    var.vpc_config.firewall_config.enable_iap_ssh != true ? {} : {
+      "ingress-${var.prefix}-iap-ssh" = {
+        description   = "Allow SSH traffic to instances via IAP."
+        source_ranges = ["35.235.240.0/20"]
+        targets       = [var.prefix]
+        rules         = [{ protocol = "tcp", ports = [22] }]
+      }
+    }
+  )
 }
