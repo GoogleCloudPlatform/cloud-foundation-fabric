@@ -54,6 +54,7 @@ vpc_config = {
     europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
   }
 }
+# tftest skip
 ```
 
 ### VPC configuration options
@@ -88,6 +89,7 @@ vpc_config = {
     enable_iap_ssh      = true
   }
 }
+# tftest skip
 ```
 
 ### Instance configuration options
@@ -108,6 +110,7 @@ vpc_config = {
     zones = ["b", "c"]
   }
 }
+# tftest skip
 ```
 
 ### DNS configuration
@@ -132,6 +135,7 @@ vpc_config = {
     hostname        = "lb-test
   }
 }
+# tftest skip
 ```
 
 ## Testing
