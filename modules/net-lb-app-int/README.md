@@ -21,7 +21,6 @@ Due to the complexity of the underlying resources, changes to the configuration 
   - [SSL Certificates](#ssl-certificates)
   - [PSC service attachment](#psc-service-attachment)
   - [Complex example](#complex-example)
-- [Recipes](#recipes)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -672,9 +671,6 @@ module "ilb-l7" {
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-## Recipes
-
-
 ## Files
 
 | name | description | resources |

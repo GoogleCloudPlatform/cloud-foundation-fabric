@@ -111,7 +111,9 @@ VAR_RE = re.compile(r'''(?smx)
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
-Document = collections.namedtuple('Document', 'content files variables outputs')
+Document = collections.namedtuple('Document',
+                                  'content files variables outputs recipes',
+                                  defaults=[None])
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple(
     'Output', 'name description sensitive consumers file line')
@@ -205,7 +207,7 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
     raise SystemExit(e)
   doc = format_tfref(mod_outputs, mod_variables, mod_files, mod_fixtures,
                      mod_recipes, show_extra)
-  return Document(doc, mod_files, mod_variables, mod_outputs)
+  return Document(doc, mod_files, mod_variables, mod_outputs, mod_recipes)
 
 
 def format_tfref(outputs, variables, files, fixtures, recipes=None,
