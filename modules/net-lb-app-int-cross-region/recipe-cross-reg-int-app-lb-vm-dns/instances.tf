@@ -63,7 +63,7 @@ module "instances" {
   }]
   tags = [var.prefix]
   metadata = {
-    user-data = file("nginx-cloud-config.yaml")
+    user-data = file("${path.module}/nginx-cloud-config.yaml")
   }
   service_account = {
     email = module.instance-sa.email

@@ -173,3 +173,20 @@ If the backends are unhealthy and the necessary firewall rules are in place, che
 | [instances](outputs.tf#L17) | Instances details. |  |
 | [lb](outputs.tf#L34) | Load balancer details. |  |
 <!-- END TFDOC -->
+
+## Tests
+
+```hcl
+module "recipe" {
+  source = "./fabric/modules/net-lb-app-int-cross-region/recipe-cross-reg-int-app-lb-vm-dns"
+  project_id = "my-project"
+  vpc_config = {
+    network = "projects/my-project/global/networks/test"
+    subnets = {
+      europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
+      europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
+    }
+  }
+}
+# tftest modules=6 resources=15
+```
