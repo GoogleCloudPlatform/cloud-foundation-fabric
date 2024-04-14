@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
+- [Recipes](#recipes)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -721,6 +722,10 @@ module "ilb-l7" {
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [Cross-region internal Application Load Balancer with VM instance group backends](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-lb-app-int-cross-region/recipe-cross-reg-int-app-lb-vm-dns)
+
 ## Files
 
 | name | description | resources |

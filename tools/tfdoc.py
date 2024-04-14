@@ -49,16 +49,15 @@ import urllib.parse
 import click
 import marko
 
-# manipulate path to import COUNT_TEST_RE from tests/examples/test_plan.py
-REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(os.path.join(REPO_ROOT, 'tests'))
-
-from examples.test_plan import COUNT_TEST_RE
-
 __version__ = '2.1.0'
 
+# COUNT_TEST_RE copied from tests/examples/test_plan.py
+COUNT_TEST_RE = re.compile(
+    r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
+    r'(?: +files=(?P<files>[\w@,_-]+))?' +
+    r'(?: +fixtures=(?P<fixtures>[\w@,_/.-]+))?' +
+    r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
 # TODO(ludomagno): decide if we want to support variables*.tf and outputs*.tf
-
 FILE_DESC_DEFAULTS = {
     'main.tf': 'Module-level locals and resources.',
     'outputs.tf': 'Module outputs.',
@@ -87,6 +86,9 @@ OUT_RE = re.compile(r'''(?smx)
     (?:^(.*?)$)
 ''')
 OUT_TEMPLATE = ('description', 'value', 'sensitive')
+RECIPE_RE = re.compile(r'(?sm)^#\s*(.*?)$')
+REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
+REPO_URL = 'https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master'
 TAG_RE = re.compile(r'(?sm)^\s*#\stfdoc:([^:]+:\S+)\s+(.*?)\s*$')
 TOC_BEGIN = '<!-- BEGIN TOC -->'
 TOC_END = '<!-- END TOC -->'
@@ -109,14 +111,21 @@ VAR_RE = re.compile(r'''(?smx)
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
-Document = collections.namedtuple('Document', 'content files variables outputs')
+Document = collections.namedtuple('Document',
+                                  'content files variables outputs recipes',
+                                  defaults=[None])
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple(
     'Output', 'name description sensitive consumers file line')
+Recipe = collections.namedtuple('Recipe', 'path title')
 Variable = collections.namedtuple(
     'Variable',
     'name description type default required nullable source file line')
-# parsing functions
+
+
+def _escape(s):
+  'Basic, minimal HTML escaping'
+  return ''.join(c if c in UNESCAPED else ('&#%s;' % ord(c)) for c in s)
 
 
 def _extract_tags(body):
@@ -158,112 +167,56 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
         item[context].append(data)
 
 
-def parse_files(basepath, exclude_files=None):
-  'Return a list of File named tuples in root module at basepath.'
-  exclude_files = exclude_files or []
-  for name in glob.glob(os.path.join(basepath, '*tf')):
-    if os.path.islink(name):
-      continue
-    shortname = os.path.basename(name)
-    if shortname in exclude_files:
-      continue
-    try:
-      with open(name, encoding='utf-8') as file:
-        body = file.read()
-    except (IOError, OSError) as e:
-      raise SystemExit(f'Cannot read file {name}: {e}')
-    tags = _extract_tags(body)
-    description = tags.get('file:description',
-                           FILE_DESC_DEFAULTS.get(shortname))
-    modules = set(
-        os.path.basename(urllib.parse.urlparse(m).path)
-        for m in FILE_RE_MODULES.findall(body))
-    resources = set(FILE_RE_RESOURCES.findall(body))
-    yield File(shortname, description, modules, resources)
-
-
-def parse_outputs(basepath, exclude_files=None):
-  'Return a list of Output named tuples for root module outputs*.tf.'
-  exclude_files = exclude_files or []
-  names = glob.glob(os.path.join(basepath, 'outputs*tf'))
-  names += glob.glob(os.path.join(basepath, 'local-*outputs*tf'))
-  for name in names:
-    shortname = os.path.basename(name)
-    if shortname in exclude_files:
-      continue
-    try:
-      with open(name, encoding='utf-8') as file:
-        body = file.read()
-    except (IOError, OSError) as e:
-      raise SystemExit(f'Cannot open outputs file {shortname}.')
-    for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
-      description = ''.join(item['description'])
-      sensitive = item['sensitive'] != []
-      consumers = item['tags'].get('output:consumers', '')
-      yield Output(name=item['name'], description=description,
-                   sensitive=sensitive, consumers=consumers, file=shortname,
-                   line=item['line'])
-
-
-def parse_variables(basepath, exclude_files=None):
-  'Return a list of Variable named tuples for root module variables*.tf.'
-  exclude_files = exclude_files or []
-  names = glob.glob(os.path.join(basepath, 'variables*tf'))
-  names += glob.glob(os.path.join(basepath, 'local-*variables*tf'))
-  for name in names:
-    shortname = os.path.basename(name)
-    if shortname in exclude_files:
-      continue
-    try:
-      with open(name, encoding='utf-8') as file:
-        body = file.read()
-    except (IOError, OSError) as e:
-      raise SystemExit(f'Cannot open variables file {shortname}.')
-    for item in _parse(body):
-      description = (''.join(item['description'])).replace('|', '\\|')
-      vtype = '\n'.join(item['type'])
-      default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
-      required = not item['default']
-      nullable = item.get('nullable') != ['false']
-      source = item['tags'].get('variable:source', '')
-      if not required and default != 'null' and vtype == 'string':
-        default = f'"{default}"'
-
-      yield Variable(name=item['name'], description=description, type=vtype,
-                     default=default, required=required, source=source,
-                     file=shortname, line=item['line'], nullable=nullable)
-
-
-def parse_fixtures(basepath, readme):
-  'Return a list of file paths of all the unique fixtures used in the module.'
+def create_toc(readme):
+  'Create a Markdown table of contents a for README.'
   doc = marko.parse(readme)
-  used_fixtures = set()
-  for child in doc.children:
-    if isinstance(child, marko.block.FencedCode):
-      if child.lang == 'hcl':
-        code = child.children[0].children
-        if match := COUNT_TEST_RE.search(code):
-          if fixtures := match.group('fixtures'):
-            for fixture in fixtures.split(','):
-              fixture_full = os.path.join(REPO_ROOT, 'tests', fixture)
-              if not os.path.exists(fixture_full):
-                raise SystemExit(f'Unknown fixture: {fixture}')
-              fixture_relative = os.path.relpath(fixture_full, basepath)
-              used_fixtures.add(fixture_relative)
-  yield from sorted(used_fixtures)
+  lines = []
+  headings = [x for x in doc.children if x.get_type() == 'Heading']
+  for h in headings[1:]:
+    title = h.children[0].children
+    slug = title.lower().strip()
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[-\s]+', '-', slug)
+    link = f'- [{title}](#{slug})'
+    indent = '  ' * (h.level - 2)
+    lines.append(f'{indent}{link}')
+  return "\n".join(lines)
 
 
-# formatting functions
+def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
+                 readme=None):
+  'Return tfdoc mark and generated content.'
+  if readme:
+    # check for overrides in doc
+    opts = get_tfref_opts(readme)
+    files = opts.get('files', files)
+    show_extra = opts.get('show_extra', show_extra)
+  abspath = os.path.abspath(module_path)
+  try:
+    if os.path.dirname(abspath).endswith('/modules'):
+      mod_recipes = list(
+          parse_recipes(module_path,
+                        f'{REPO_URL}/modules/{os.path.basename(abspath)}'))
+    else:
+      mod_recipes = None
+    mod_files = list(parse_files(module_path, exclude_files)) if files else []
+    mod_variables = list(parse_variables(module_path, exclude_files))
+    mod_outputs = list(parse_outputs(module_path, exclude_files))
+    mod_fixtures = list(parse_fixtures(module_path, readme))
+  except (IOError, OSError) as e:
+    raise SystemExit(e)
+  doc = format_tfref(mod_outputs, mod_variables, mod_files, mod_fixtures,
+                     mod_recipes, show_extra)
+  return Document(doc, mod_files, mod_variables, mod_outputs, mod_recipes)
 
 
-def _escape(s):
-  'Basic, minimal HTML escaping'
-  return ''.join(c if c in UNESCAPED else ('&#%s;' % ord(c)) for c in s)
-
-
-def format_tfref(outputs, variables, files, fixtures, show_extra=False):
+def format_tfref(outputs, variables, files, fixtures, recipes=None,
+                 show_extra=False):
   'Return formatted document.'
   buffer = []
+  if recipes:
+    buffer += ['', '## Recipes', '']
+    buffer += list(format_tfref_recipes(recipes))
   if files:
     buffer += ['', '## Files', '']
     buffer += list(format_tfref_files(files))
@@ -301,6 +254,12 @@ def format_tfref_files(items):
         f' {resources} |' if num_resources else '')
 
 
+def format_tfref_fixtures(items):
+  'Format fixtures table.'
+  for x in items:
+    yield f"- [{os.path.basename(x)}]({x})"
+
+
 def format_tfref_outputs(items, show_extra=True):
   'Format outputs table.'
   if not items:
@@ -317,6 +276,14 @@ def format_tfref_outputs(items, show_extra=True):
     format = f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
     yield format
+
+
+def format_tfref_recipes(recipes):
+  'Format recipes list.'
+  if not recipes:
+    return
+  for r in recipes:
+    yield f'- [{r.title}]({r.path})'
 
 
 def format_tfref_variables(items, show_extra=True):
@@ -352,29 +319,12 @@ def format_tfref_variables(items, show_extra=True):
     yield format
 
 
-def format_tfref_fixtures(items):
-  'Format fixtures table.'
-  for x in items:
-    yield f"- [{os.path.basename(x)}]({x})"
-
-
-def create_toc(readme):
-  'Create a Markdown table of contents a for README.'
-  doc = marko.parse(readme)
-  lines = []
-  headings = [x for x in doc.children if x.get_type() == 'Heading']
-  for h in headings[1:]:
-    title = h.children[0].children
-    slug = title.lower().strip()
-    slug = re.sub(r'[^\w\s-]', '', slug)
-    slug = re.sub(r'[-\s]+', '-', slug)
-    link = f'- [{title}](#{slug})'
-    indent = '  ' * (h.level - 2)
-    lines.append(f'{indent}{link}')
-  return "\n".join(lines)
-
-
-# replace functions
+def get_readme(readme_path):
+  'Open and return README.md in module.'
+  try:
+    return open(readme_path, "r", encoding="utf-8").read()
+  except (IOError, OSError) as e:
+    raise SystemExit(f'Error opening README {readme_path}: {e}')
 
 
 def get_tfref_parts(readme):
@@ -383,14 +333,6 @@ def get_tfref_parts(readme):
   if not m:
     return
   return {'doc': m.group(1).strip(), 'start': m.start(), 'end': m.end()}
-
-
-def get_toc_parts(readme):
-  'Check if README file is marked, and return current toc.'
-  t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
-  if not t:
-    return
-  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
 def get_tfref_opts(readme):
@@ -408,31 +350,123 @@ def get_tfref_opts(readme):
   return opts
 
 
-def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
-                 readme=None):
-  if readme:
-    # check for overrides in doc
-    opts = get_tfref_opts(readme)
-    files = opts.get('files', files)
-    show_extra = opts.get('show_extra', show_extra)
-  try:
-    mod_files = list(parse_files(module_path, exclude_files)) if files else []
-    mod_variables = list(parse_variables(module_path, exclude_files))
-    mod_outputs = list(parse_outputs(module_path, exclude_files))
-    mod_fixtures = list(parse_fixtures(module_path, readme))
-  except (IOError, OSError) as e:
-    raise SystemExit(e)
-  doc = format_tfref(mod_outputs, mod_variables, mod_files, mod_fixtures,
-                     show_extra)
-  return Document(doc, mod_files, mod_variables, mod_outputs)
+def get_toc_parts(readme):
+  'Check if README file is marked, and return current toc.'
+  t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
+  if not t:
+    return
+  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
-def get_readme(readme_path):
-  'Open and return README.md in module.'
-  try:
-    return open(readme_path, "r", encoding="utf-8").read()
-  except (IOError, OSError) as e:
-    raise SystemExit(f'Error opening README {readme_path}: {e}')
+def parse_files(basepath, exclude_files=None):
+  'Return a list of File named tuples in root module at basepath.'
+  exclude_files = exclude_files or []
+  for name in glob.glob(os.path.join(basepath, '*tf')):
+    if os.path.islink(name):
+      continue
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
+    try:
+      with open(name, encoding='utf-8') as file:
+        body = file.read()
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Cannot read file {name}: {e}')
+    tags = _extract_tags(body)
+    description = tags.get('file:description',
+                           FILE_DESC_DEFAULTS.get(shortname))
+    modules = set(
+        os.path.basename(urllib.parse.urlparse(m).path)
+        for m in FILE_RE_MODULES.findall(body))
+    resources = set(FILE_RE_RESOURCES.findall(body))
+    yield File(shortname, description, modules, resources)
+
+
+def parse_fixtures(basepath, readme):
+  'Return a list of file paths of all the unique fixtures used in the module.'
+  doc = marko.parse(readme)
+  used_fixtures = set()
+  for child in doc.children:
+    if isinstance(child, marko.block.FencedCode):
+      if child.lang == 'hcl':
+        code = child.children[0].children
+        if match := COUNT_TEST_RE.search(code):
+          if fixtures := match.group('fixtures'):
+            for fixture in fixtures.split(','):
+              fixture_full = os.path.join(REPO_ROOT, 'tests', fixture)
+              if not os.path.exists(fixture_full):
+                raise SystemExit(f'Unknown fixture: {fixture}')
+              fixture_relative = os.path.relpath(fixture_full, basepath)
+              used_fixtures.add(fixture_relative)
+  yield from sorted(used_fixtures)
+
+
+def parse_outputs(basepath, exclude_files=None):
+  'Return a list of Output named tuples for root module outputs*.tf.'
+  exclude_files = exclude_files or []
+  names = glob.glob(os.path.join(basepath, 'outputs*tf'))
+  names += glob.glob(os.path.join(basepath, 'local-*outputs*tf'))
+  for name in names:
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
+    try:
+      with open(name, encoding='utf-8') as file:
+        body = file.read()
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Cannot open outputs file {shortname}.')
+    for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
+      description = ''.join(item['description'])
+      sensitive = item['sensitive'] != []
+      consumers = item['tags'].get('output:consumers', '')
+      yield Output(name=item['name'], description=description,
+                   sensitive=sensitive, consumers=consumers, file=shortname,
+                   line=item['line'])
+
+
+def parse_recipes(module_path, module_url):
+  'Find and return module recipes.'
+  for dirpath, dirnames, filenames in os.walk(module_path):
+    name = os.path.basename(dirpath)
+    if name.startswith('recipe-') and 'README.md' in filenames:
+      try:
+        with open(os.path.join(dirpath, 'README.md'), encoding='utf-8') as f:
+          match = RECIPE_RE.search(f.read())
+          if match:
+            yield Recipe(f'{module_url}/{name}', match.group(1))
+          else:
+            raise SystemExit(f'No title for recipe {dirpath}')
+      except (IOError, OSError) as e:
+        raise SystemExit(f'Error opening recipe {dirpath}')
+
+
+def parse_variables(basepath, exclude_files=None):
+  'Return a list of Variable named tuples for root module variables*.tf.'
+  exclude_files = exclude_files or []
+  names = glob.glob(os.path.join(basepath, 'variables*tf'))
+  names += glob.glob(os.path.join(basepath, 'local-*variables*tf'))
+  for name in names:
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
+    try:
+      with open(name, encoding='utf-8') as file:
+        body = file.read()
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Cannot open variables file {shortname}.')
+    for item in _parse(body):
+      description = (''.join(item['description'])).replace('|', '\\|')
+      vtype = '\n'.join(item['type'])
+      default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
+      required = not item['default']
+      nullable = item.get('nullable') != ['false']
+      source = item['tags'].get('variable:source', '')
+      if not required and default != 'null' and vtype == 'string':
+        default = f'"{default}"'
+
+      yield Variable(name=item['name'], description=description, type=vtype,
+                     default=default, required=required, source=source,
+                     file=shortname, line=item['line'], nullable=nullable)
 
 
 def render_tfref(readme, doc):
