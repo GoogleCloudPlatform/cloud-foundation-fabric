@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,10 +34,9 @@ PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 def _prepare_root_module(path):
   """Context manager to prepare a terraform module to be tested.
 
-  If the TFTEST_COPY environment variable is set, `path` is copied to
-  a temporary directory and a few terraform files (e.g.
-  terraform.tfvars) are deleted to ensure a clean test environment.
-  Otherwise, `path` is simply returned untouched.
+  `path` is copied to a temporary directory and a few terraform files
+  (e.g. terraform.tfvars) are deleted to ensure a clean test
+  environment.
   """
   # if we're copying the module, we might as well ignore files and
   # directories that are automatically read by terraform. Useful
@@ -50,31 +49,18 @@ def _prepare_root_module(path):
                                            '.terraform.lock.hcl',
                                            'terraform.tfvars', '.terraform')
 
-  if os.environ.get('TFTEST_COPY'):
-    # if the TFTEST_COPY is set, create temp dir and copy the root
-    # module there
-    with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
-      tmp_path = Path(tmp_path)
+  with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
+    tmp_path = Path(tmp_path)
 
-      # Running tests in a copy made with symlinks=True makes them run
-      # ~20% slower than when run in a copy made with symlinks=False.
-      shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
-                      ignore=ignore_patterns)
-      lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
-      if lockfile.exists():
-        shutil.copy(lockfile, tmp_path / '.terraform.lock.hcl')
+    # Running tests in a copy made with symlinks=True makes them run
+    # ~20% slower than when run in a copy made with symlinks=False.
+    shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
+                    ignore=ignore_patterns)
+    lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
+    if lockfile.exists():
+      shutil.copy(lockfile, tmp_path / '.terraform.lock.hcl')
 
-      yield tmp_path
-  else:
-    # check if any ignore_patterns files are present in path
-    if unwanted_files := ignore_patterns(path, os.listdir(path=path)):
-      # prevent shooting yourself in the foot (unexpected test results) when ignored files are present
-      raise RuntimeError(
-          f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
-          f'test results. Please run tests with TFTEST_COPY=1 environment variable'
-      )
-    # if TFTEST_COPY is not set, just return the same path
-    yield path
+    yield tmp_path
 
 
 def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,

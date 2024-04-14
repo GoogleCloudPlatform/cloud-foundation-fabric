@@ -54,7 +54,7 @@ vpc_config = {
     europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
   }
 }
-# tftest skip
+# tftest modules=5 resources=15
 ```
 
 ### VPC configuration options
@@ -96,7 +96,7 @@ vpc_config = {
 
 The instance type and the number of zones can be configured via the `instances_config` variable:
 
-```hcl
+```tfvars
 project_id = "my-project"
 vpc_config = {
   network = "projects/my-project/global/networks/test"
@@ -110,14 +110,14 @@ vpc_config = {
     zones = ["b", "c"]
   }
 }
-# tftest skip
+# tftest modules=5 resources=15
 ```
 
 ### DNS configuration
 
 The DNS zone used for the load balancer record can be configured via the `dns_config` variable:
 
-```hcl
+```tfvars
 project_id = "my-project"
 vpc_config = {
   network = "projects/my-project/global/networks/test"
@@ -132,10 +132,10 @@ vpc_config = {
       "projects/my-other-project/global/networks/test"
     ]
     domain          = "foo.example."
-    hostname        = "lb-test
+    hostname        = "lb-test"
   }
 }
-# tftest skip
+# tftest modules=5 resources=15
 ```
 
 ## Testing
@@ -173,20 +173,3 @@ If the backends are unhealthy and the necessary firewall rules are in place, che
 | [instances](outputs.tf#L17) | Instances details. |  |
 | [lb](outputs.tf#L34) | Load balancer details. |  |
 <!-- END TFDOC -->
-
-## Tests
-
-```hcl
-module "recipe" {
-  source = "./fabric/modules/net-lb-app-int-cross-region/recipe-cross-reg-int-app-lb-vm-dns"
-  project_id = "my-project"
-  vpc_config = {
-    network = "projects/my-project/global/networks/test"
-    subnets = {
-      europe-west1 = "projects/my-project/regions/europe-west1/subnetworks/default"
-      europe-west8 = "projects/my-project/regions/europe-west8/subnetworks/default",
-    }
-  }
-}
-# tftest modules=6 resources=15
-```
