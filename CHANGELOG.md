@@ -36,6 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2214](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2214)] Net LB App Internal Cross-Region recipe ([ludoo](https://github.com/ludoo)) <!-- 2024-04-14 16:38:05+00:00 -->
 - [[#2213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2213)] Add support for tags to GCS module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-11 13:19:06+00:00 -->
 - [[#2211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2211)] Add project quotas factory ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-11 09:51:19+00:00 -->
 - [[#2212](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2212)] Add support for GCS soft-delete retention period ([sruffilli](https://github.com/sruffilli)) <!-- 2024-04-11 07:31:00+00:00 -->
@@ -59,6 +60,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2214](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2214)] Net LB App Internal Cross-Region recipe ([ludoo](https://github.com/ludoo)) <!-- 2024-04-14 16:38:05+00:00 -->
 - [[#2192](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2192)] Update labeler version ([ludoo](https://github.com/ludoo)) <!-- 2024-04-03 09:24:10+00:00 -->
 - [[#2189](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2189)] Use explicit UTF-8 encoding in tfdoc.py ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-02 18:34:51+00:00 -->
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
