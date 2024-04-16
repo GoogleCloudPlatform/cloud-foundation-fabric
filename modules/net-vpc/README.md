@@ -277,7 +277,7 @@ module "vpc" {
     peered_domains = ["gcp.example.com."]
   }]
 }
-# tftest modules=1 resources=8 inventory=psa-routes.yaml e2e
+# tftest modules=1 resources=8
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
