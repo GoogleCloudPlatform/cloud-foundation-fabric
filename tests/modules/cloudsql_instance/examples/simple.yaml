@@ -36,7 +36,6 @@ values:
       disk_autoresize_limit: 0
       disk_type: PD_SSD
       edition: ENTERPRISE
-      enable_google_ml_integration: null
       insights_config: []
       ip_configuration:
       - allocated_ip_range: null
