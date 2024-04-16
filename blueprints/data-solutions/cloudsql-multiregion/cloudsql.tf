@@ -19,9 +19,9 @@ module "db" {
   encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   network_config = {
     connectivity = {
-      psa_config = {
+      psa_configs = [{
         private_network = local.vpc_self_link
-      }
+      }]
     }
   }
   name             = "${var.prefix}-db"

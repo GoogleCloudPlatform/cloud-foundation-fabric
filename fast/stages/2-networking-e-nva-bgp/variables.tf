@@ -197,20 +197,21 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
   type = object({
-    dev = object({
+    dev = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
-    prod = object({
+    })), [])
+    prod = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
+    })), [])
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "regions" {
