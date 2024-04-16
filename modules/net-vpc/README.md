@@ -13,6 +13,7 @@ This module allows creation and management of VPC networks including subnetworks
   - [Shared VPC](#shared-vpc)
   - [Private Service Networking](#private-service-networking)
   - [Private Service Networking with peering routes and peered Cloud DNS domains](#private-service-networking-with-peering-routes-and-peered-cloud-dns-domains)
+  - [Private Service Networking with multiple service providers](#private-service-networking-with-multiple-service-providers)
   - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
   - [PSC Network Attachments](#psc-network-attachments)
   - [DNS Policies](#dns-policies)
@@ -278,6 +279,34 @@ module "vpc" {
   }]
 }
 # tftest modules=1 resources=8 inventory=psa-routes.yaml e2e
+```
+
+### Private Service Networking with multiple service providers
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = var.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
+    }
+  ]
+  psa_configs = [
+    {
+      ranges = { myrange = "10.0.1.0/24" }
+      # service_producer = "servicenetworking.googleapis.com" # default value
+    },
+    {
+      ranges           = { netapp = "10.0.2.0/24" }
+      service_producer = "netapp.servicenetworking.goog"
+    }
+  ]
+}
+# tftest modules=1 resources=10 inventory=psa-multiple-providers.yaml e2e
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets

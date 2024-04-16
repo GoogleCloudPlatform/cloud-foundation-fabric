@@ -1,0 +1,57 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-myrange"]:
+    address: 10.0.1.0
+    address_type: INTERNAL
+    name: servicenetworking-googleapis-com-myrange
+    prefix_length: 24
+    project: project-id
+    purpose: VPC_PEERING
+  module.vpc.google_compute_global_address.psa_ranges["netapp-servicenetworking-goog-netapp"]:
+    address: 10.0.2.0
+    address_type: INTERNAL
+    name: netapp-servicenetworking-goog-netapp
+    prefix_length: 24
+    project: project-id
+    purpose: VPC_PEERING
+  module.vpc.google_compute_network.network[0]:
+    name: my-network
+    project: project-id
+  module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    project: project-id
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
+    ip_cidr_range: 10.0.0.0/24
+    name: production
+    project: project-id
+  module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    reserved_peering_ranges:
+      - servicenetworking-googleapis-com-myrange
+    service: servicenetworking.googleapis.com
+  module.vpc.google_service_networking_connection.psa_connection["netapp.servicenetworking.goog"]:
+    reserved_peering_ranges:
+      - netapp-servicenetworking-goog-netapp
+    service: netapp.servicenetworking.goog
+
+counts:
+  google_compute_global_address: 2
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 2
+  google_compute_subnetwork: 1
+  google_service_networking_connection: 2
+
+outputs: {}
