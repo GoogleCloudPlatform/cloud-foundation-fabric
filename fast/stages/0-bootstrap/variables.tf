@@ -115,13 +115,6 @@ variable "fast_features" {
   nullable = false
 }
 
-variable "group_iam" {
-  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
