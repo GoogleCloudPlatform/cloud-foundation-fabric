@@ -43,12 +43,6 @@ locals {
   )
 }
 
-data "google_compute_network" "network" {
-  count   = var.vpc_create ? 0 : 1
-  project = var.project_id
-  name    = var.name
-}
-
 resource "google_compute_network" "network" {
   count                                     = var.vpc_create ? 1 : 0
   project                                   = var.project_id
