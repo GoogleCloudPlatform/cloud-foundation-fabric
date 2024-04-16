@@ -176,14 +176,26 @@ variable "project_id" {
 
 variable "psa_config" {
   description = "The Private Service Access configuration."
-  type = object({
+  type = list(object({
     ranges           = map(string)
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
     peered_domains   = optional(list(string), [])
     service_producer = optional(string, "servicenetworking.googleapis.com")
-  })
-  default = null
+  }))
+  default  = []
+  nullable = false
+  validation {
+    condition     = length(var.psa_config) == length(toset([for x in var.psa_config : x.service_producer]))
+    error_message = "Only one psa_config per service_producer is allowed"
+  }
+  validation {
+    condition = (
+      try(sum([for x in var.psa_config : length(coalesce(x.ranges, {}))]), 0) ==
+      length(toset(flatten([for x in var.psa_config : keys(x.ranges)])))
+    )
+    error_message = "Range names in psa_config have to be unique"
+  }
 }
 
 variable "routes" {
