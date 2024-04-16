@@ -67,7 +67,7 @@ module "cloudsql" {
   tier             = local.cloudsql_conf.tier
   databases        = [local.cloudsql_conf.db]
   users = {
-    "${local.cloudsql_conf.user}" = {
+    (local.cloudsql_conf.user) = {
       password = var.cloudsql_password
     }
   }

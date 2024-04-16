@@ -174,7 +174,7 @@ module "cloud-scheduler-service-account" {
   project_id = module.project.project_id
   name       = "scheduler-sa"
   iam_project_roles = {
-    "${module.project.project_id}" = [
+    (module.project.project_id) = [
       "roles/run.invoker",
     ]
   }
