@@ -19,7 +19,7 @@ locals {
   function = (
     var.cloud_function_config.version == "v1"
     ? module.cloud-function[0]
-    : module.cloud-function-v2.0
+    : module.cloud-function-v2[0]
   )
 }
 
@@ -190,7 +190,7 @@ resource "google_cloud_scheduler_job" "scheduler-http" {
 
   http_target {
     http_method = "POST"
-    uri         = module.cloud-function-v2.0.uri
+    uri         = module.cloud-function-v2[0].uri
     body = base64encode(jsonencode({
       discovery_root = var.discovery_config.discovery_root
       folders        = var.discovery_config.monitored_folders
@@ -211,7 +211,7 @@ resource "google_cloud_scheduler_job" "scheduler-http" {
     }
     oidc_token {
       service_account_email = module.cloud-scheduler-service-account[0].email
-      audience              = module.cloud-function-v2.0.uri
+      audience              = module.cloud-function-v2[0].uri
     }
   }
 }
