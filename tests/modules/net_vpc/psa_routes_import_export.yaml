@@ -46,10 +46,7 @@ counts:
   google_service_networking_connection: 1
 
 outputs:
-  name: __missing__
-  network: __missing__
   project_id: test-project
-  self_link: __missing__
   subnet_ips: {}
   subnet_regions: {}
   subnet_secondary_ranges: {}
