@@ -29,13 +29,13 @@ module "branch-security-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin"  = [module.branch-security-sa.iam_email]
-    "roles/source.reader" = [module.branch-security-sa-cicd.0.iam_email]
+    "roles/source.reader" = [module.branch-security-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-02-security = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.branch-security-sa-cicd.0.id
+      service_account = module.branch-security-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

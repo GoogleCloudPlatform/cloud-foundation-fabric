@@ -19,9 +19,9 @@
 locals {
   log_sink_destinations = merge(
     # use the same dataset for all sinks with `bigquery` as  destination
-    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
+    { for k, v in var.log_sinks : k => module.log-export-dataset[0] if v.type == "bigquery" },
     # use the same gcs bucket for all sinks with `storage` as destination
-    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
+    { for k, v in var.log_sinks : k => module.log-export-gcs[0] if v.type == "storage" },
     # use separate pubsub topics and logging buckets for sinks with
     # destination `pubsub` and `logging`
     module.log-export-pubsub,

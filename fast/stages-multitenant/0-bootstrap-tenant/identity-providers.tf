@@ -75,7 +75,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   for_each = local.identity_providers
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+    google_iam_workload_identity_pool.default[0].workload_identity_pool_id
   )
   workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
   attribute_condition                = each.value.attribute_condition

@@ -20,8 +20,8 @@ locals {
   )
   fwd_rule_target = (
     var.protocol == "HTTPS"
-    ? google_compute_region_target_https_proxy.default.0.id
-    : google_compute_region_target_http_proxy.default.0.id
+    ? google_compute_region_target_https_proxy.default[0].id
+    : google_compute_region_target_http_proxy.default[0].id
   )
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),

@@ -19,10 +19,10 @@
 locals {
   # FAST-specific IAM
   _sandbox_folder_fast_iam = !var.fast_features.sandbox ? {} : {
-    "roles/logging.admin"                  = [module.branch-sandbox-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-sandbox-sa[0].iam_email]
+    "roles/owner"                          = [module.branch-sandbox-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa[0].iam_email]
   }
   # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
   _sandbox_folder_iam = merge(
@@ -62,7 +62,7 @@ module "branch-sandbox-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-sandbox-sa[0].iam_email]
   }
 }
 

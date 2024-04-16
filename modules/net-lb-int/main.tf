@@ -25,7 +25,7 @@ locals {
   health_check = (
     var.health_check != null
     ? var.health_check
-    : google_compute_health_check.default.0.self_link
+    : google_compute_health_check.default[0].self_link
   )
   _service_attachments = (
     var.service_attachments == null ? {} : var.service_attachments

@@ -32,7 +32,7 @@ module "branch-dp-folder" {
 module "branch-dp-dev-folder" {
   source            = "../../../modules/folder"
   count             = var.fast_features.data_platform ? 1 : 0
-  parent            = module.branch-dp-folder.0.id
+  parent            = module.branch-dp-folder[0].id
   name              = "Development"
   iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
@@ -40,15 +40,15 @@ module "branch-dp-dev-folder" {
   iam = {
     # read-write (apply) automation service account
     (local.custom_roles.service_project_network_admin) = [
-      module.branch-dp-dev-sa.0.iam_email
+      module.branch-dp-dev-sa[0].iam_email
     ]
-    "roles/logging.admin"                  = [module.branch-dp-dev-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-dp-dev-sa[0].iam_email]
+    "roles/owner"                          = [module.branch-dp-dev-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa[0].iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-dp-dev-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-dp-dev-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-dp-dev-r-sa[0].iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-dp-dev-r-sa[0].iam_email]
   }
   tag_bindings = {
     context = try(
@@ -61,21 +61,21 @@ module "branch-dp-dev-folder" {
 module "branch-dp-prod-folder" {
   source            = "../../../modules/folder"
   count             = var.fast_features.data_platform ? 1 : 0
-  parent            = module.branch-dp-folder.0.id
+  parent            = module.branch-dp-folder[0].id
   name              = "Production"
   iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {
     # read-write (apply) automation service account
-    (local.custom_roles.service_project_network_admin) = [module.branch-dp-prod-sa.0.iam_email]
-    "roles/owner"                                      = [module.branch-dp-prod-sa.0.iam_email]
-    "roles/logging.admin"                              = [module.branch-dp-prod-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"                = [module.branch-dp-prod-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator"             = [module.branch-dp-prod-sa.0.iam_email]
+    (local.custom_roles.service_project_network_admin) = [module.branch-dp-prod-sa[0].iam_email]
+    "roles/owner"                                      = [module.branch-dp-prod-sa[0].iam_email]
+    "roles/logging.admin"                              = [module.branch-dp-prod-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"                = [module.branch-dp-prod-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator"             = [module.branch-dp-prod-sa[0].iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-dp-prod-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-dp-prod-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-dp-prod-r-sa[0].iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-dp-prod-r-sa[0].iam_email]
   }
   tag_bindings = {
     context = try(
@@ -96,7 +96,7 @@ module "branch-dp-dev-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
+      try(module.branch-dp-dev-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -116,7 +116,7 @@ module "branch-dp-prod-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
+      try(module.branch-dp-prod-sa-cicd[0].iam_email, null)
     ])
   }
   iam_storage_roles = {
@@ -135,7 +135,7 @@ module "branch-dp-dev-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-dp-dev-r-sa-cicd.0.iam_email, null)
+      try(module.branch-dp-dev-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -155,7 +155,7 @@ module "branch-dp-prod-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-dp-prod-r-sa-cicd.0.iam_email, null)
+      try(module.branch-dp-prod-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -178,8 +178,8 @@ module "branch-dp-dev-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.branch-dp-dev-sa.0.iam_email]
-    "roles/storage.objectViewer" = [module.branch-dp-dev-r-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-dp-dev-sa[0].iam_email]
+    "roles/storage.objectViewer" = [module.branch-dp-dev-r-sa[0].iam_email]
   }
 }
 
@@ -193,7 +193,7 @@ module "branch-dp-prod-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.branch-dp-prod-sa.0.iam_email]
-    "roles/storage.objectViewer" = [module.branch-dp-prod-r-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-dp-prod-sa[0].iam_email]
+    "roles/storage.objectViewer" = [module.branch-dp-prod-r-sa[0].iam_email]
   }
 }

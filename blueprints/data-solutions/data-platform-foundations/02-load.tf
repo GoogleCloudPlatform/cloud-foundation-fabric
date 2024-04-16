@@ -119,7 +119,7 @@ module "load-vpc-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.load-project.project_id
-  network    = module.load-vpc.0.name
+  network    = module.load-vpc[0].name
   default_rules_config = {
     admin_ranges = ["10.10.0.0/24"]
   }
@@ -131,5 +131,5 @@ module "load-nat" {
   project_id     = module.load-project.project_id
   name           = "${var.prefix}-lod"
   region         = var.region
-  router_network = module.load-vpc.0.name
+  router_network = module.load-vpc[0].name
 }

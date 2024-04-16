@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ module "billing-export-project" {
 module "billing-export-dataset" {
   source        = "../../../modules/bigquery-dataset"
   count         = local.billing_mode == "org" ? 1 : 0
-  project_id    = module.billing-export-project.0.project_id
+  project_id    = module.billing-export-project[0].project_id
   id            = "billing_export"
   friendly_name = "Billing export."
   location      = local.locations.bq

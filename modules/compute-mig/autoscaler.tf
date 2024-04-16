@@ -29,7 +29,7 @@ resource "google_compute_autoscaler" "default" {
   name        = var.name
   zone        = var.location
   description = var.description
-  target      = google_compute_instance_group_manager.default.0.id
+  target      = google_compute_instance_group_manager.default[0].id
 
   autoscaling_policy {
     max_replicas    = var.autoscaler_config.max_replicas
@@ -133,7 +133,7 @@ resource "google_compute_region_autoscaler" "default" {
   name        = var.name
   region      = var.location
   description = var.description
-  target      = google_compute_region_instance_group_manager.default.0.id
+  target      = google_compute_region_instance_group_manager.default[0].id
 
   autoscaling_policy {
     max_replicas    = var.autoscaler_config.max_replicas

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ module "branch-pf-dev-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-pf-dev-sa.0.iam_email]
-    "roles/source.reader" = [module.branch-pf-dev-sa-cicd.0.iam_email]
+    "roles/source.admin"  = [module.branch-pf-dev-sa[0].iam_email]
+    "roles/source.reader" = [module.branch-pf-dev-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-pf-dev = {
@@ -37,7 +37,7 @@ module "branch-pf-dev-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-pf-dev-sa-cicd.0.id
+      service_account = module.branch-pf-dev-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null
@@ -60,8 +60,8 @@ module "branch-pf-prod-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-pf-prod-sa.0.iam_email]
-    "roles/source.reader" = [module.branch-pf-prod-sa-cicd.0.iam_email]
+    "roles/source.admin"  = [module.branch-pf-prod-sa[0].iam_email]
+    "roles/source.reader" = [module.branch-pf-prod-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-pf-prod = {
@@ -69,7 +69,7 @@ module "branch-pf-prod-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-pf-prod-sa-cicd.0.id
+      service_account = module.branch-pf-prod-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

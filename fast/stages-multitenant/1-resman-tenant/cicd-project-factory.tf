@@ -34,7 +34,7 @@ module "branch-pf-dev-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin"  = local.branch_optional_sa_lists.pf-dev
-    "roles/source.reader" = [module.branch-pf-dev-sa-cicd.0.iam_email]
+    "roles/source.reader" = [module.branch-pf-dev-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-pf-dev = {
@@ -42,7 +42,7 @@ module "branch-pf-dev-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-pf-dev-sa-cicd.0.id
+      service_account = module.branch-pf-dev-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null
@@ -71,7 +71,7 @@ module "branch-pf-prod-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin"  = local.branch_optional_sa_lists.pf-prod
-    "roles/source.reader" = [module.branch-pf-prod-sa-cicd.0.iam_email]
+    "roles/source.reader" = [module.branch-pf-prod-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-pf-prod = {
@@ -79,7 +79,7 @@ module "branch-pf-prod-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-pf-prod-sa-cicd.0.id
+      service_account = module.branch-pf-prod-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

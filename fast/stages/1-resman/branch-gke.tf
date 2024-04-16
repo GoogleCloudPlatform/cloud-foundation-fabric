@@ -32,18 +32,18 @@ module "branch-gke-folder" {
 module "branch-gke-dev-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
-  parent = module.branch-gke-folder.0.id
+  parent = module.branch-gke-folder[0].id
   name   = "Development"
   iam = {
     # read-write (apply) automation service account
-    "roles/owner"                          = [module.branch-gke-dev-sa.0.iam_email]
-    "roles/logging.admin"                  = [module.branch-gke-dev-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-dev-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-gke-dev-sa.0.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-gke-dev-sa[0].iam_email]
+    "roles/logging.admin"                  = [module.branch-gke-dev-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-dev-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gke-dev-sa[0].iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gke-dev-sa[0].iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-gke-dev-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-gke-dev-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-gke-dev-r-sa[0].iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-gke-dev-r-sa[0].iam_email]
   }
   tag_bindings = {
     context = try(
@@ -56,18 +56,18 @@ module "branch-gke-dev-folder" {
 module "branch-gke-prod-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
-  parent = module.branch-gke-folder.0.id
+  parent = module.branch-gke-folder[0].id
   name   = "Production"
   iam = {
     # read-write (apply) automation service account
-    "roles/owner"                          = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/logging.admin"                  = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/logging.admin"                  = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gke-prod-sa[0].iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-gke-prod-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-gke-prod-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-gke-prod-r-sa[0].iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-gke-prod-r-sa[0].iam_email]
   }
   tag_bindings = {
     context = try(
@@ -90,7 +90,7 @@ module "branch-gke-dev-sa" {
     "roles/iam.serviceAccountTokenCreator" = concat(
       [local.principals.gcp-devops],
       compact([
-        try(module.branch-gke-dev-sa-cicd.0.iam_email, null)
+        try(module.branch-gke-dev-sa-cicd[0].iam_email, null)
       ])
     )
   }
@@ -113,7 +113,7 @@ module "branch-gke-prod-sa" {
     "roles/iam.serviceAccountTokenCreator" = concat(
       [local.principals.gcp-devops],
       compact([
-        try(module.branch-gke-prod-sa-cicd.0.iam_email, null)
+        try(module.branch-gke-prod-sa-cicd[0].iam_email, null)
       ])
     )
   }
@@ -136,7 +136,7 @@ module "branch-gke-dev-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-gke-dev-r-sa-cicd.0.iam_email, null)
+      try(module.branch-gke-dev-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -156,7 +156,7 @@ module "branch-gke-prod-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-gke-prod-r-sa-cicd.0.iam_email, null)
+      try(module.branch-gke-prod-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -179,8 +179,8 @@ module "branch-gke-dev-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.branch-gke-dev-sa.0.iam_email]
-    "roles/storage.objectViewer" = [module.branch-gke-dev-r-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-gke-dev-sa[0].iam_email]
+    "roles/storage.objectViewer" = [module.branch-gke-dev-r-sa[0].iam_email]
   }
 }
 
@@ -194,7 +194,7 @@ module "branch-gke-prod-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/storage.objectViewer" = [module.branch-gke-prod-r-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/storage.objectViewer" = [module.branch-gke-prod-r-sa[0].iam_email]
   }
 }

@@ -25,7 +25,7 @@ module "branch-pf-dev-sa" {
   service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
+      try(module.branch-pf-dev-sa-cicd[0].iam_email, null)
     ])
   }
   iam_storage_roles = {
@@ -42,7 +42,7 @@ module "branch-pf-prod-sa" {
   service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
+      try(module.branch-pf-prod-sa-cicd[0].iam_email, null)
     ])
   }
   iam_storage_roles = {

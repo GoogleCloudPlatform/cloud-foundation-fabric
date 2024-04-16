@@ -42,6 +42,6 @@ output "vm_keys" {
   description = "GCE VM Cloud KMS crypto keys."
   value = {
     name = module.vm_example.instance.name
-    key  = module.vm_example.instance.boot_disk.0.kms_key_self_link
+    key  = module.vm_example.instance.boot_disk[0].kms_key_self_link
   }
 }

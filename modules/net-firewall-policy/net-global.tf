@@ -28,7 +28,7 @@ resource "google_compute_network_firewall_policy_association" "net-global" {
   project           = var.parent_id
   name              = "${var.name}-${each.key}"
   attachment_target = each.value
-  firewall_policy   = google_compute_network_firewall_policy.net-global.0.name
+  firewall_policy   = google_compute_network_firewall_policy.net-global[0].name
 }
 
 resource "google_compute_network_firewall_policy_rule" "net-global" {
@@ -39,7 +39,7 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
     : []
   )
   project                 = var.parent_id
-  firewall_policy         = google_compute_network_firewall_policy.net-global.0.name
+  firewall_policy         = google_compute_network_firewall_policy.net-global[0].name
   rule_name               = local.rules[each.key].name
   action                  = local.rules[each.key].action
   description             = local.rules[each.key].description

@@ -33,7 +33,7 @@ locals {
   }
   policy_name = (
     var.policy_create
-    ? google_dns_response_policy.default.0.response_policy_name
+    ? google_dns_response_policy.default[0].response_policy_name
     : var.name
   )
 }
