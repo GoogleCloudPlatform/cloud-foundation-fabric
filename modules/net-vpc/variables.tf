@@ -174,16 +174,25 @@ variable "project_id" {
   type        = string
 }
 
-variable "psa_config" {
+variable "psa_configs" {
   description = "The Private Service Access configuration."
-  type = object({
+  type = list(object({
     ranges           = map(string)
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
     peered_domains   = optional(list(string), [])
     service_producer = optional(string, "servicenetworking.googleapis.com")
-  })
-  default = null
+  }))
+  nullable = false
+  default  = []
+  validation {
+    condition = (
+      length(var.psa_configs) == length(toset([
+        for v in var.psa_configs : v.service_producer
+      ]))
+    )
+    error_message = "At most one configuration is possible for each service producer."
+  }
 }
 
 variable "routes" {

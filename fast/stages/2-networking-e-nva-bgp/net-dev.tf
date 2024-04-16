@@ -82,7 +82,7 @@ module "dev-spoke-vpc" {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
   delete_default_routes_on_create = true
-  psa_config                      = try(var.psa_ranges.dev, null)
+  psa_configs                     = var.psa_ranges.dev
   # Set explicit routes for googleapis; send everything else to NVAs
   create_googleapis_routes = {
     private    = true

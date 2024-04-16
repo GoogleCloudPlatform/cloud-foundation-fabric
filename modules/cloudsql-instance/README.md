@@ -25,9 +25,9 @@ module "vpc" {
   source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
-  psa_config = {
+  psa_configs = [{
     ranges = { cloud-sql = "10.60.0.0/16" }
-  }
+  }]
 }
 
 module "db" {
@@ -117,6 +117,7 @@ module "db" {
 ```
 
 ### CMEK encryption
+
 ```hcl
 
 module "project" {

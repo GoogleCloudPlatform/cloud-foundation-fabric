@@ -55,12 +55,12 @@ module "apigee_vpc" {
     name          = "subnet-psc"
     region        = var.region
   }]
-  psa_config = {
+  psa_configs = [{
     ranges = {
       "apigee-runtime"         = var.apigee_runtime_ip_cidr_range
       "apigee-troubleshooting" = var.apigee_troubleshooting_ip_cidr_range
     }
-  }
+  }]
 }
 
 module "apigee" {

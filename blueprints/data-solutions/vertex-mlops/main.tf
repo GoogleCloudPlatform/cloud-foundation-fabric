@@ -147,12 +147,12 @@ module "vpc-local" {
       "secondary_ip_range" : null
     }
   ]
-  psa_config = {
+  psa_configs = [{
     ranges = {
       "vertex" : "10.13.0.0/18"
     }
     routes = null
-  }
+  }]
 }
 
 module "firewall" {
