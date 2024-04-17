@@ -25,7 +25,7 @@ output "autoscaler" {
 
 output "group_manager" {
   description = "Instance group resource."
-  value       = local.instance_group_manager.default.0
+  value       = local.instance_group_manager.default[0]
 }
 
 output "health_check" {
@@ -39,5 +39,5 @@ output "health_check" {
 
 output "id" {
   description = "Fully qualified group manager id."
-  value       = local.instance_group_manager.default.0.id
+  value       = local.instance_group_manager.default[0].id
 }
