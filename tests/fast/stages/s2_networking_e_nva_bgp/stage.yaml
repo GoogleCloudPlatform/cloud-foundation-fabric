@@ -13,54 +13,6 @@
 # limitations under the License.
 
 values:
-  google_compute_address.nva_static_ip_landing["primary-b"]:
-    address: 10.64.0.101
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew1-b
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["primary-c"]:
-    address: 10.64.0.102
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew1-c
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["secondary-b"]:
-    address: 10.80.0.101
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew4-b
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["secondary-c"]:
-    address: 10.80.0.102
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew4-c
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
   google_compute_address.nva_static_ip_dmz["primary-b"]:
     address: 10.64.128.101
     address_type: INTERNAL
@@ -105,6 +57,54 @@ values:
     ipv6_endpoint_type: null
     labels: null
     name: nva-ip-dmz-ew4-c
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["primary-b"]:
+    address: 10.64.0.101
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew1-b
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["primary-c"]:
+    address: 10.64.0.102
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew1-c
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["secondary-b"]:
+    address: 10.80.0.101
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew4-b
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["secondary-c"]:
+    address: 10.80.0.102
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew4-c
     network: null
     project: fast2-prod-net-landing-0
     region: europe-west4
@@ -252,16 +252,16 @@ values:
       resource.type=\"vpn_gateway\"","secondaryAggregation":{}},"unitOverride":"1"}}],"timeshiftDuration":"0s","yAxis":{"label":"y1Axis","scale":"LINEAR"}}},"width":6,"yPos":12}]}}'
     project: fast2-prod-net-landing-0
     timeouts: null
-  google_network_connectivity_hub.hub_landing:
-    description: Prod hub landing (trusted)
-    labels: null
-    name: prod-hub-landing
-    project: fast2-prod-net-landing-0
-    timeouts: null
   google_network_connectivity_hub.hub_dmz:
     description: Prod hub DMZ (untrusted)
     labels: null
     name: prod-hub-dmz
+    project: fast2-prod-net-landing-0
+    timeouts: null
+  google_network_connectivity_hub.hub_landing:
+    description: Prod hub landing (trusted)
+    labels: null
+    name: prod-hub-landing
     project: fast2-prod-net-landing-0
     timeouts: null
   google_storage_bucket_object.tfvars:
@@ -347,6 +347,7 @@ values:
     disabled: false
     log_config: []
     name: ingress-allow-composer-nodes
+    network: dev-spoke-0
     priority: 1000
     project: fast2-dev-net-spoke-0
     source_ranges: null
@@ -369,6 +370,7 @@ values:
     disabled: false
     log_config: []
     name: ingress-allow-dataflow-load
+    network: dev-spoke-0
     priority: 1000
     project: fast2-dev-net-spoke-0
     source_ranges: null
@@ -390,6 +392,7 @@ values:
     log_config:
       - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-deny
+    network: dev-spoke-0
     priority: 65535
     project: fast2-dev-net-spoke-0
     source_ranges:
@@ -500,6 +503,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: dev-spoke-0-private-googleapis
+    network: dev-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -512,6 +516,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: dev-spoke-0-restricted-googleapis
+    network: dev-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -526,6 +531,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: dev-dataplatform
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
@@ -542,6 +548,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: dev-default
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
@@ -554,6 +561,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: dev-gke-nodes
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
@@ -570,6 +578,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: dev-default
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west4
@@ -578,13 +587,152 @@ values:
     timeouts: null
   module.dev-spoke-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Terraform managed.
+    description: Managed by Terraform
     enable_inbound_forwarding: null
     enable_logging: true
     name: dev-spoke-0
     networks:
       - {}
     project: fast2-dev-net-spoke-0
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-dmz"]
+  : allow:
+      - ports:
+          - "22"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from Google healthchecks to NVA appliances
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-hc-nva-ssh-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-dmz"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from NCC Cloud Routers to NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-ncc-nva-bgp-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.128.0.201/32
+      - 10.128.0.202/32
+      - 10.128.32.201/32
+      - 10.128.32.202/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-dmz"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from cross-regional NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-nva-nva-bgp-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges: null
+    source_service_accounts: null
+    source_tags:
+      - nva
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["dmz-ingress-default-deny"]
+  : allow: []
+    deny:
+      - ports: []
+        protocol: all
+    description: Deny and log any unmatched ingress traffic.
+    direction: INGRESS
+    disabled: false
+    log_config:
+      - metadata: EXCLUDE_ALL_METADATA
+    name: dmz-ingress-default-deny
+    network: prod-dmz-0
+    priority: 65535
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.dmz-vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    mtu: 1500
+    name: prod-dmz-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: fast2-prod-net-landing-0
+    routing_mode: GLOBAL
+    timeouts: null
+  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west1/dmz-default"]
+  : description: Default europe-west1 subnet for DMZ
+    ip_cidr_range: 10.64.128.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: dmz-default
+    network: prod-dmz-0
+    private_ip_google_access: true
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+    timeouts: null
+  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west4/dmz-default"]
+  : description: Default europe-west4 subnet for DMZ
+    ip_cidr_range: 10.80.128.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: dmz-default
+    network: prod-dmz-0
+    private_ip_google_access: true
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    role: null
+    secondary_ip_range: []
+    timeouts: null
+  module.dmz-vpc.google_dns_policy.default[0]:
+    alternative_name_server_config: []
+    description: Managed by Terraform
+    enable_inbound_forwarding: true
+    enable_logging: true
+    name: prod-dmz-0
+    networks:
+      - {}
+    project: fast2-prod-net-landing-0
     timeouts: null
   module.firewall-policy-default.google_compute_firewall_policy.hierarchical[0]:
     description: null
@@ -1263,11 +1411,103 @@ values:
       - 127.0.0.1
     ttl: 300
     type: A
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-landing"]
+  : allow:
+      - ports:
+          - "22"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from Google healthchecks to NVA appliances
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-hc-nva-ssh-landing
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-landing"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from NCC Cloud Routers to NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-ncc-nva-bgp-landing
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.128.64.201/32
+      - 10.128.64.202/32
+      - 10.128.96.201/32
+      - 10.128.96.202/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-landing-example"]
+  : allow:
+      - ports:
+          - "12345"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from onprem probes
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-onprem-probes-landing-example
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.255.255.254/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["landing-ingress-default-deny"]
+  : allow: []
+    deny:
+      - ports: []
+        protocol: all
+    description: Deny and log any unmatched ingress traffic.
+    direction: INGRESS
+    disabled: false
+    log_config:
+      - metadata: EXCLUDE_ALL_METADATA
+    name: landing-ingress-default-deny
+    network: prod-landing-0
+    priority: 65535
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
   module.landing-nat-primary[0].google_compute_router.router[0]:
     bgp: []
     description: null
     encrypted_interconnect_router: null
     name: prod-nat-ew1
+    network: prod-dmz-0
     project: fast2-prod-net-landing-0
     region: europe-west1
     timeouts: null
@@ -1300,6 +1540,7 @@ values:
     description: null
     encrypted_interconnect_router: null
     name: prod-nat-ew4
+    network: prod-dmz-0
     project: fast2-prod-net-landing-0
     region: europe-west4
     timeouts: null
@@ -1640,93 +1881,6 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-landing"]
-  : allow:
-      - ports:
-          - "22"
-        protocol: tcp
-    deny: []
-    description: Allow traffic from Google healthchecks to NVA appliances
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-hc-nva-ssh-landing
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 130.211.0.0/22
-      - 209.85.152.0/22
-      - 209.85.204.0/22
-      - 35.191.0.0/16
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-landing"]
-  : allow:
-      - ports:
-          - "179"
-        protocol: tcp
-    deny: []
-    description: Allow BGP traffic from NCC Cloud Routers to NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-ncc-nva-bgp-landing
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 10.128.64.201/32
-      - 10.128.64.202/32
-      - 10.128.96.201/32
-      - 10.128.96.202/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags:
-      - nva
-    timeouts: null
-  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-landing-example"]
-  : allow:
-      - ports:
-          - "12345"
-        protocol: tcp
-    deny: []
-    description: Allow traffic from onprem probes
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-onprem-probes-landing-example
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 10.255.255.254/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  ? module.landing-firewall.google_compute_firewall.custom-rules["landing-ingress-default-deny"]
-  : allow: []
-    deny:
-      - ports: []
-        protocol: all
-    description: Deny and log any unmatched ingress traffic.
-    direction: INGRESS
-    disabled: false
-    log_config:
-      - metadata: EXCLUDE_ALL_METADATA
-    name: landing-ingress-default-deny
-    priority: 65535
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 0.0.0.0/0
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
   module.landing-vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: true
@@ -1742,6 +1896,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: prod-landing-0-private-googleapis
+    network: prod-landing-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1754,6 +1909,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: prod-landing-0-restricted-googleapis
+    network: prod-landing-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1768,6 +1924,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: landing-default
+    network: prod-landing-0
     private_ip_google_access: true
     project: fast2-prod-net-landing-0
     region: europe-west1
@@ -1780,6 +1937,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: landing-default
+    network: prod-landing-0
     private_ip_google_access: true
     project: fast2-prod-net-landing-0
     region: europe-west4
@@ -1788,143 +1946,10 @@ values:
     timeouts: null
   module.landing-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Terraform managed.
+    description: Managed by Terraform
     enable_inbound_forwarding: true
     enable_logging: null
     name: prod-landing-0
-    networks:
-      - {}
-    project: fast2-prod-net-landing-0
-    timeouts: null
-  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-dmz"]
-  : allow:
-      - ports:
-          - "22"
-        protocol: tcp
-    deny: []
-    description: Allow traffic from Google healthchecks to NVA appliances
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-hc-nva-ssh-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 130.211.0.0/22
-      - 209.85.152.0/22
-      - 209.85.204.0/22
-      - 35.191.0.0/16
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-dmz"]
-  : allow:
-      - ports:
-          - "179"
-        protocol: tcp
-    deny: []
-    description: Allow BGP traffic from NCC Cloud Routers to NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-ncc-nva-bgp-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 10.128.0.201/32
-      - 10.128.0.202/32
-      - 10.128.32.201/32
-      - 10.128.32.202/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags:
-      - nva
-    timeouts: null
-  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-dmz"]
-  : allow:
-      - ports:
-          - "179"
-        protocol: tcp
-    deny: []
-    description: Allow BGP traffic from cross-regional NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-nva-nva-bgp-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges: null
-    source_service_accounts: null
-    source_tags:
-      - nva
-    target_service_accounts: null
-    target_tags:
-      - nva
-    timeouts: null
-  ? module.dmz-firewall.google_compute_firewall.custom-rules["dmz-ingress-default-deny"]
-  : allow: []
-    deny:
-      - ports: []
-        protocol: all
-    description: Deny and log any unmatched ingress traffic.
-    direction: INGRESS
-    disabled: false
-    log_config:
-      - metadata: EXCLUDE_ALL_METADATA
-    name: dmz-ingress-default-deny
-    priority: 65535
-    project: fast2-prod-net-landing-0
-    source_ranges:
-      - 0.0.0.0/0
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  module.dmz-vpc.google_compute_network.network[0]:
-    auto_create_subnetworks: false
-    delete_default_routes_on_create: false
-    description: Terraform-managed.
-    enable_ula_internal_ipv6: null
-    mtu: 1500
-    name: prod-dmz-0
-    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: fast2-prod-net-landing-0
-    routing_mode: GLOBAL
-    timeouts: null
-  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west1/dmz-default"]
-  : description: Default europe-west1 subnet for DMZ
-    ip_cidr_range: 10.64.128.0/24
-    ipv6_access_type: null
-    log_config: []
-    name: dmz-default
-    private_ip_google_access: true
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    role: null
-    secondary_ip_range: []
-    timeouts: null
-  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west4/dmz-default"]
-  : description: Default europe-west4 subnet for DMZ
-    ip_cidr_range: 10.80.128.0/24
-    ipv6_access_type: null
-    log_config: []
-    name: dmz-default
-    private_ip_google_access: true
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    role: null
-    secondary_ip_range: []
-    timeouts: null
-  module.dmz-vpc.google_dns_policy.default[0]:
-    alternative_name_server_config: []
-    description: Terraform managed.
-    enable_inbound_forwarding: true
-    enable_logging: true
-    name: prod-dmz-0
     networks:
       - {}
     project: fast2-prod-net-landing-0
@@ -2005,14 +2030,14 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
-        \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
-        \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
-        \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
-        \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.101\n\
-        \       bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 10100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list PRIMARY\n        set metric 50\n\
+        \      \n      router bgp 64513\n       bgp router-id 10.64.128.101\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
         \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
         \     no bgp network import-check\n      !\n       neighbor 10.64.128.201\
         \ remote-as 64512\n       neighbor 10.64.128.202 remote-as 64512\n      !\n\
@@ -2022,30 +2047,16 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
-        \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
-        \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
-        \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
-        \ soft-reconfiguration inbound\n       exit-address-family\n      \n\n  -\
-        \ path: /etc/frr/vtysh.conf\n    owner: root\n    permissions: 0644\n    content:\
-        \ |\n      # Copyright 2023 Google LLC\n      #\n      # Licensed under the\
-        \ Apache License, Version 2.0 (the \"License\");\n      # you may not use\
-        \ this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.64.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.64.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor 10.64.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.80.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.80.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2055,22 +2066,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2254,14 +2279,14 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
-        \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
-        \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
-        \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
-        \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.102\n\
-        \       bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 10100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list PRIMARY\n        set metric 50\n\
+        \      \n      router bgp 64513\n       bgp router-id 10.64.128.102\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
         \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
         \     no bgp network import-check\n      !\n       neighbor 10.64.128.201\
         \ remote-as 64512\n       neighbor 10.64.128.202 remote-as 64512\n      !\n\
@@ -2271,30 +2296,16 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
-        \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
-        \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
-        \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
-        \ soft-reconfiguration inbound\n       exit-address-family\n      \n\n  -\
-        \ path: /etc/frr/vtysh.conf\n    owner: root\n    permissions: 0644\n    content:\
-        \ |\n      # Copyright 2023 Google LLC\n      #\n      # Licensed under the\
-        \ Apache License, Version 2.0 (the \"License\");\n      # you may not use\
-        \ this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.64.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.64.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor 10.64.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.80.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.80.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2304,22 +2315,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2503,47 +2528,33 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
-        \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
-        \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
-        \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
-        \  bgp router-id 10.80.128.101\n       bgp bestpath as-path ignore\n     \
-        \  bgp disable-ebgp-connected-route-check\n       bgp timers 20 60\n     \
-        \ !\n       no bgp ebgp-requires-policy\n       no bgp network import-check\n\
-        \      !\n       neighbor 10.80.128.201 remote-as 64512\n       neighbor 10.80.128.202\
-        \ remote-as 64512\n      !\n       neighbor 10.80.0.201 remote-as 64515\n\
-        \       neighbor 10.80.0.201 update-source 10.80.0.101\n       neighbor 10.80.0.202\
-        \ remote-as 64515\n       neighbor 10.80.0.202 update-source 10.80.0.101\n\
-        \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
-        \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
-        \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
-        \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
-        \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
-        \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
-        \ 10.64.128.102 soft-reconfiguration inbound\n       exit-address-family\n\
-        \      \n\n  - path: /etc/frr/vtysh.conf\n    owner: root\n    permissions:\
-        \ 0644\n    content: |\n      # Copyright 2023 Google LLC\n      #\n     \
-        \ # Licensed under the Apache License, Version 2.0 (the \"License\");\n  \
-        \    # you may not use this file except in compliance with the License.\n\
-        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 10100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list SECONDARY\n        set metric 50\n\
+        \      \n      router bgp 64514\n       bgp router-id 10.80.128.101\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
+        \     no bgp network import-check\n      !\n       neighbor 10.80.128.201\
+        \ remote-as 64512\n       neighbor 10.80.128.202 remote-as 64512\n      !\n\
+        \       neighbor 10.80.0.201 remote-as 64515\n       neighbor 10.80.0.201\
+        \ update-source 10.80.0.101\n       neighbor 10.80.0.202 remote-as 64515\n\
+        \       neighbor 10.80.0.202 update-source 10.80.0.101\n      !\n       neighbor\
+        \ 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101 ebgp-multihop\
+        \ 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor 10.64.128.102\
+        \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
+        \ 10.80.128.201 route-map TO-DMZ out\n        neighbor 10.80.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.80.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.80.0.201 route-map TO-LANDING out\n        neighbor 10.80.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.80.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.80.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.64.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.64.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2553,22 +2564,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2752,47 +2777,33 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
-        \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
-        \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
-        \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
-        \  bgp router-id 10.80.128.102\n       bgp bestpath as-path ignore\n     \
-        \  bgp disable-ebgp-connected-route-check\n       bgp timers 20 60\n     \
-        \ !\n       no bgp ebgp-requires-policy\n       no bgp network import-check\n\
-        \      !\n       neighbor 10.80.128.201 remote-as 64512\n       neighbor 10.80.128.202\
-        \ remote-as 64512\n      !\n       neighbor 10.80.0.201 remote-as 64515\n\
-        \       neighbor 10.80.0.201 update-source 10.80.0.102\n       neighbor 10.80.0.202\
-        \ remote-as 64515\n       neighbor 10.80.0.202 update-source 10.80.0.102\n\
-        \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
-        \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
-        \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
-        \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
-        \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
-        \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
-        \ 10.64.128.102 soft-reconfiguration inbound\n       exit-address-family\n\
-        \      \n\n  - path: /etc/frr/vtysh.conf\n    owner: root\n    permissions:\
-        \ 0644\n    content: |\n      # Copyright 2023 Google LLC\n      #\n     \
-        \ # Licensed under the Apache License, Version 2.0 (the \"License\");\n  \
-        \    # you may not use this file except in compliance with the License.\n\
-        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 10100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list SECONDARY\n        set metric 50\n\
+        \      \n      router bgp 64514\n       bgp router-id 10.80.128.102\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
+        \     no bgp network import-check\n      !\n       neighbor 10.80.128.201\
+        \ remote-as 64512\n       neighbor 10.80.128.202 remote-as 64512\n      !\n\
+        \       neighbor 10.80.0.201 remote-as 64515\n       neighbor 10.80.0.201\
+        \ update-source 10.80.0.102\n       neighbor 10.80.0.202 remote-as 64515\n\
+        \       neighbor 10.80.0.202 update-source 10.80.0.102\n      !\n       neighbor\
+        \ 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101 ebgp-multihop\
+        \ 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor 10.64.128.102\
+        \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
+        \ 10.80.128.201 route-map TO-DMZ out\n        neighbor 10.80.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.80.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.80.0.201 route-map TO-LANDING out\n        neighbor 10.80.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.80.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.80.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.64.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.64.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2802,22 +2813,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -3018,6 +3043,7 @@ values:
     log_config:
       - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-deny
+    network: prod-spoke-0
     priority: 65535
     project: fast2-prod-net-spoke-0
     source_ranges:
@@ -3128,6 +3154,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: prod-spoke-0-private-googleapis
+    network: prod-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -3140,6 +3167,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: prod-spoke-0-restricted-googleapis
+    network: prod-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -3154,6 +3182,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: prod-default
+    network: prod-spoke-0
     private_ip_google_access: true
     project: fast2-prod-net-spoke-0
     region: europe-west1
@@ -3166,6 +3195,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: prod-default
+    network: prod-spoke-0
     private_ip_google_access: true
     project: fast2-prod-net-spoke-0
     region: europe-west4
@@ -3174,13 +3204,223 @@ values:
     timeouts: null
   module.prod-spoke-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Terraform managed.
+    description: Managed by Terraform
     enable_inbound_forwarding: null
     enable_logging: true
     name: prod-spoke-0
     networks:
       - {}
     project: fast2-prod-net-spoke-0
+    timeouts: null
+  module.spokes-dmz["primary"].google_compute_router.cr:
+    bgp:
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: Default route.
+            range: 0.0.0.0/0
+        asn: 64512
+        keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: prod-spoke-dmz-ew1-cr
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  module.spokes-dmz["primary"].google_compute_router_interface.intf_0:
+    interconnect_attachment: null
+    name: prod-spoke-dmz-ew1-cr-intf0
+    private_ip_address: 10.64.128.201
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-dmz["primary"].google_compute_router_interface.intf_1:
+    interconnect_attachment: null
+    name: prod-spoke-dmz-ew1-cr-intf1
+    private_ip_address: 10.64.128.202
+    project: fast2-prod-net-landing-0
+    redundant_interface: prod-spoke-dmz-ew1-cr-intf0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-dmz["primary"].google_compute_router_peer.peer_0["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew1-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+  module.spokes-dmz["primary"].google_compute_router_peer.peer_0["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew1-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+  module.spokes-dmz["primary"].google_compute_router_peer.peer_1["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew1-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+  module.spokes-dmz["primary"].google_compute_router_peer.peer_1["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew1-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-dmz-ew1-cr
+    timeouts: null
+  module.spokes-dmz["primary"].google_network_connectivity_spoke.spoke-ra:
+    description: null
+    labels: null
+    linked_interconnect_attachments: []
+    linked_router_appliance_instances:
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: prod-spoke-dmz-ew1
+    project: fast2-prod-net-landing-0
+    timeouts: null
+  module.spokes-dmz["secondary"].google_compute_router.cr:
+    bgp:
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: Default route.
+            range: 0.0.0.0/0
+        asn: 64512
+        keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: prod-spoke-dmz-ew4-cr
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
+  module.spokes-dmz["secondary"].google_compute_router_interface.intf_0:
+    interconnect_attachment: null
+    name: prod-spoke-dmz-ew4-cr-intf0
+    private_ip_address: 10.80.128.201
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-dmz["secondary"].google_compute_router_interface.intf_1:
+    interconnect_attachment: null
+    name: prod-spoke-dmz-ew4-cr-intf1
+    private_ip_address: 10.80.128.202
+    project: fast2-prod-net-landing-0
+    redundant_interface: prod-spoke-dmz-ew4-cr-intf0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-dmz["secondary"].google_compute_router_peer.peer_0["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew4-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+  module.spokes-dmz["secondary"].google_compute_router_peer.peer_0["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew4-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+  module.spokes-dmz["secondary"].google_compute_router_peer.peer_1["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew4-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+  module.spokes-dmz["secondary"].google_compute_router_peer.peer_1["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-dmz-ew4-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-dmz-ew4-cr
+    timeouts: null
+  module.spokes-dmz["secondary"].google_network_connectivity_spoke.spoke-ra:
+    description: null
+    labels: null
+    linked_interconnect_attachments: []
+    linked_router_appliance_instances:
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west4
+    name: prod-spoke-dmz-ew4
+    project: fast2-prod-net-landing-0
     timeouts: null
   module.spokes-landing["primary"].google_compute_router.cr:
     bgp:
@@ -3412,216 +3652,6 @@ values:
     name: prod-spoke-landing-ew4
     project: fast2-prod-net-landing-0
     timeouts: null
-  module.spokes-dmz["primary"].google_compute_router.cr:
-    bgp:
-      - advertise_mode: CUSTOM
-        advertised_groups: []
-        advertised_ip_ranges:
-          - description: Default route.
-            range: 0.0.0.0/0
-        asn: 64512
-        keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    name: prod-spoke-dmz-ew1-cr
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  module.spokes-dmz["primary"].google_compute_router_interface.intf_0:
-    interconnect_attachment: null
-    name: prod-spoke-dmz-ew1-cr-intf0
-    private_ip_address: 10.64.128.201
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-dmz["primary"].google_compute_router_interface.intf_1:
-    interconnect_attachment: null
-    name: prod-spoke-dmz-ew1-cr-intf1
-    private_ip_address: 10.64.128.202
-    project: fast2-prod-net-landing-0
-    redundant_interface: prod-spoke-dmz-ew1-cr-intf0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-dmz["primary"].google_compute_router_peer.peer_0["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew1-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-  module.spokes-dmz["primary"].google_compute_router_peer.peer_0["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew1-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-  module.spokes-dmz["primary"].google_compute_router_peer.peer_1["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew1-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-  module.spokes-dmz["primary"].google_compute_router_peer.peer_1["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew1-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-dmz-ew1-cr
-    timeouts: null
-  module.spokes-dmz["primary"].google_network_connectivity_spoke.spoke-ra:
-    description: null
-    labels: null
-    linked_interconnect_attachments: []
-    linked_router_appliance_instances:
-      - instances:
-          - {}
-          - {}
-        site_to_site_data_transfer: false
-    linked_vpc_network: []
-    linked_vpn_tunnels: []
-    location: europe-west1
-    name: prod-spoke-dmz-ew1
-    project: fast2-prod-net-landing-0
-    timeouts: null
-  module.spokes-dmz["secondary"].google_compute_router.cr:
-    bgp:
-      - advertise_mode: CUSTOM
-        advertised_groups: []
-        advertised_ip_ranges:
-          - description: Default route.
-            range: 0.0.0.0/0
-        asn: 64512
-        keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    name: prod-spoke-dmz-ew4-cr
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
-  module.spokes-dmz["secondary"].google_compute_router_interface.intf_0:
-    interconnect_attachment: null
-    name: prod-spoke-dmz-ew4-cr-intf0
-    private_ip_address: 10.80.128.201
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-dmz["secondary"].google_compute_router_interface.intf_1:
-    interconnect_attachment: null
-    name: prod-spoke-dmz-ew4-cr-intf1
-    private_ip_address: 10.80.128.202
-    project: fast2-prod-net-landing-0
-    redundant_interface: prod-spoke-dmz-ew4-cr-intf0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-dmz["secondary"].google_compute_router_peer.peer_0["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew4-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-  module.spokes-dmz["secondary"].google_compute_router_peer.peer_0["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew4-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-  module.spokes-dmz["secondary"].google_compute_router_peer.peer_1["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew4-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-  module.spokes-dmz["secondary"].google_compute_router_peer.peer_1["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-dmz-ew4-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-dmz-ew4-cr
-    timeouts: null
-  module.spokes-dmz["secondary"].google_network_connectivity_spoke.spoke-ra:
-    description: null
-    labels: null
-    linked_interconnect_attachments: []
-    linked_router_appliance_instances:
-      - instances:
-          - {}
-          - {}
-        site_to_site_data_transfer: false
-    linked_vpc_network: []
-    linked_vpn_tunnels: []
-    location: europe-west4
-    name: prod-spoke-dmz-ew4
-    project: fast2-prod-net-landing-0
-    timeouts: null
 
 counts:
   google_compute_address: 8
@@ -3663,3 +3693,13 @@ counts:
   modules: 37
   random_id: 2
   resources: 212
+
+outputs:
+  host_project_ids:
+    dev-spoke-0: fast2-dev-net-spoke-0
+    prod-landing: fast2-prod-net-landing-0
+    prod-spoke-0: fast2-prod-net-spoke-0
+  host_project_numbers: __missing__
+  shared_vpc_self_links: __missing__
+  tfvars: __missing__
+  vpn_gateway_endpoints: __missing__
