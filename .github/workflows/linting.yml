@@ -42,7 +42,9 @@ jobs:
           tflint_version: v0.50.3
 
       - name: Init TFLint
-        run: tflint --init
+        run: |
+          cp .tflint.hcl ~
+          tflint --init
         env:
           # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
           GITHUB_TOKEN: ${{ github.token }}
