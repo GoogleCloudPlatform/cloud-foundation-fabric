@@ -17,7 +17,7 @@
 locals {
   connector = (
     var.vpc_connector_create != null
-    ? google_vpc_access_connector.connector.0.id
+    ? google_vpc_access_connector.connector[0].id
     : try(var.revision.vpc_access.connector, null)
   )
   prefix = var.prefix == null ? "" : "${var.prefix}-"

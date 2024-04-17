@@ -103,8 +103,8 @@ output "quota_configs" {
   value = {
     for k, v in google_cloud_quotas_quota_preference.default :
     k => {
-      granted   = v.quota_config.0.granted_value
-      preferred = v.quota_config.0.preferred_value
+      granted   = v.quota_config[0].granted_value
+      preferred = v.quota_config[0].preferred_value
     }
   }
 }

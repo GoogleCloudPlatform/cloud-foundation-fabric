@@ -81,7 +81,7 @@ resource "google_apigee_instance" "instances" {
   location     = each.key
   org_id       = local.org_id
   ip_range = (
-    compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]) == []
+    length(compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range])) == 0
     ? null
     : join(",", compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]))
   )

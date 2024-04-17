@@ -41,7 +41,7 @@ locals {
       resources = distinct(concat(
         var.vpc_sc.perimeter_default.resources,
         var.vpc_sc.resource_discovery.enabled != true ? [] : [
-          for v in module.vpc-sc-discovery.0.project_numbers :
+          for v in module.vpc-sc-discovery[0].project_numbers :
           "projects/${v}"
         ]
       ))

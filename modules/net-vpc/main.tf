@@ -18,9 +18,9 @@ locals {
   network = (
     var.vpc_create
     ? {
-      id        = try(google_compute_network.network.0.id, null)
-      name      = try(google_compute_network.network.0.name, null)
-      self_link = try(google_compute_network.network.0.self_link, null)
+      id        = try(google_compute_network.network[0].id, null)
+      name      = try(google_compute_network.network[0].name, null)
+      self_link = try(google_compute_network.network[0].self_link, null)
     }
     : {
       id = format(

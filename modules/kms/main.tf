@@ -17,8 +17,8 @@
 locals {
   keyring = (
     var.keyring_create
-    ? google_kms_key_ring.default.0
-    : data.google_kms_key_ring.default.0
+    ? google_kms_key_ring.default[0]
+    : data.google_kms_key_ring.default[0]
   )
 }
 

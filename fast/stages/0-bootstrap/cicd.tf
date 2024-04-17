@@ -122,12 +122,12 @@ module "automation-tf-cicd-sa" {
         each.value.branch == null
         ? format(
           local.workload_identity_providers_defs[each.value.type].principal_repo,
-          google_iam_workload_identity_pool.default.0.name,
+          google_iam_workload_identity_pool.default[0].name,
           each.value.name
         )
         : format(
           local.workload_identity_providers_defs[each.value.type].principal_branch,
-          google_iam_workload_identity_pool.default.0.name,
+          google_iam_workload_identity_pool.default[0].name,
           each.value.name,
           each.value.branch
         )
@@ -158,7 +158,7 @@ module "automation-tf-cicd-r-sa" {
       "roles/iam.workloadIdentityUser" = [
         format(
           local.workload_identity_providers_defs[each.value.type].principal_repo,
-          google_iam_workload_identity_pool.default.0.name,
+          google_iam_workload_identity_pool.default[0].name,
           each.value.name
         )
       ]

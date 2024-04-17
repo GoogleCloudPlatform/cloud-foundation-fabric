@@ -85,7 +85,7 @@ module "branch-network-sa" {
   service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-sa-cicd.0.iam_email, null)
+      try(module.branch-network-sa-cicd[0].iam_email, null)
     ])
   }
   iam_storage_roles = {

@@ -30,16 +30,16 @@ locals {
     for v in setproduct(keys(var.regions), local._nva_zones) :
     join("-", v) => {
       # Each NVA announces its trusted regional subnets
-      announce-to-nva = upper(v.0)
+      announce-to-nva = upper(v[0])
       # NVAs in each region have their own ASN
       # and peer with cross-regional NVAs.
       asn_nva = (
-        v.0 == "primary"
+        v[0] == "primary"
         ? var.ncc_asn.nva_primary
         : var.ncc_asn.nva_secondary
       )
       asn_nva_cross_region = (
-        v.0 == "primary"
+        v[0] == "primary"
         ? var.ncc_asn.nva_secondary
         : var.ncc_asn.nva_primary
       )
@@ -47,8 +47,8 @@ locals {
       asn_dmz     = var.ncc_asn.dmz
       # To guarantee traffic to remain symmetric,
       # NVAs need to advertise cross-region routes with a higher cost (10100)
-      cost_primary                  = v.0 == "primary" ? "100" : "10100"
-      cost_secondary                = v.0 == "primary" ? "10100" : "100"
+      cost_primary                  = v[0] == "primary" ? "100" : "10100"
+      cost_secondary                = v[0] == "primary" ? "10100" : "100"
       gcp_dev_primary               = var.gcp_ranges.gcp_dev_primary
       gcp_dev_secondary             = var.gcp_ranges.gcp_dev_secondary
       gcp_landing_landing_primary   = var.gcp_ranges.gcp_landing_primary
@@ -59,44 +59,44 @@ locals {
       gcp_prod_secondary            = var.gcp_ranges.gcp_prod_secondary
       # The IPs of cross-region NVA VMs in the DMZ VPC (x.y.w.z)
       ip_neighbor_cross_region_nva_0 = cidrhost(
-        module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 101
+        module.dmz-vpc.subnet_ips["${local._regions_cross[v[0]]}/dmz-default"], 101
       )
       ip_neighbor_cross_region_nva_1 = cidrhost(
-        module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 102
+        module.dmz-vpc.subnet_ips["${local._regions_cross[v[0]]}/dmz-default"], 102
       )
       # The Cloud router IPs (x.y.w.z) in the DMZ
       # and in the landing VPCs, where the NVA connects to
       ip_neighbor_landing_0 = cidrhost(
-        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 201
+        module.landing-vpc.subnet_ips["${var.regions[v[0]]}/landing-default"], 201
       )
       ip_neighbor_landing_1 = cidrhost(
-        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 202
+        module.landing-vpc.subnet_ips["${var.regions[v[0]]}/landing-default"], 202
       )
       ip_neighbor_dmz_0 = cidrhost(
-        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 201
+        module.dmz-vpc.subnet_ips["${var.regions[v[0]]}/dmz-default"], 201
       )
       ip_neighbor_dmz_1 = cidrhost(
-        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 202
+        module.dmz-vpc.subnet_ips["${var.regions[v[0]]}/dmz-default"], 202
       )
       # The IPs to assign to the NVA NICs
       # in the landing and in the DMZ VPCs.
       ip_landing = cidrhost(
-        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"],
-        101 + index(var.zones, v.1)
+        module.landing-vpc.subnet_ips["${var.regions[v[0]]}/landing-default"],
+        101 + index(var.zones, v[1])
       )
       ip_dmz = cidrhost(
-        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"],
-        101 + index(var.zones, v.1)
+        module.dmz-vpc.subnet_ips["${var.regions[v[0]]}/dmz-default"],
+        101 + index(var.zones, v[1])
       )
       # Either primary or secondary
-      name = v.0
+      name = v[0]
       # The name of the region where the NVA lives.
       # For example, europe-west1 or europe-west4
-      region = var.regions[v.0]
+      region = var.regions[v[0]]
       # the short name for the region. For example, ew1 or ew4
-      shortname = local.region_shortnames[var.regions[v.0]]
+      shortname = local.region_shortnames[var.regions[v[0]]]
       # The zone where the NVA lives. For example, b or c
-      zone = v.1
+      zone = v[1]
     }
   }
 

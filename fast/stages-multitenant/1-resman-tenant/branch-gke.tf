@@ -29,7 +29,7 @@ module "branch-gke-folder" {
 module "branch-gke-dev-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
-  parent = module.branch-gke-folder.0.id
+  parent = module.branch-gke-folder[0].id
   name   = "Development"
   iam = {
     "roles/owner"                          = [local.automation_sas_iam.gke-dev]
@@ -46,7 +46,7 @@ module "branch-gke-dev-folder" {
 module "branch-gke-prod-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
-  parent = module.branch-gke-folder.0.id
+  parent = module.branch-gke-folder[0].id
   name   = "Production"
   iam = {
     "roles/owner"                          = [local.automation_sas_iam.gke-prod]
@@ -75,7 +75,7 @@ module "branch-gke-dev-sa" {
         : [local.principals.gcp-devops]
       ),
       compact([
-        try(module.branch-gke-dev-sa-cicd.0.iam_email, null)
+        try(module.branch-gke-dev-sa-cicd[0].iam_email, null)
       ])
     )
   }
@@ -99,7 +99,7 @@ module "branch-gke-prod-sa" {
         : [local.principals.gcp-devops]
       ),
       compact([
-        try(module.branch-gke-prod-sa-cicd.0.iam_email, null)
+        try(module.branch-gke-prod-sa-cicd[0].iam_email, null)
       ])
     )
   }

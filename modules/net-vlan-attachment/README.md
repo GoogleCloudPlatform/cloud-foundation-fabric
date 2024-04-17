@@ -604,8 +604,7 @@ module "example-va-b" {
 | [ipsec_gateway_ip_ranges](variables.tf#L40) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [mtu](variables.tf#L46) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
 | [partner_interconnect_config](variables.tf#L62) | Partner interconnect configuration. | <code title="object&#40;&#123;&#10;  edge_availability_domain &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vlan_tag](variables.tf#L114) | The VLAN id to be used for this VLAN attachment. | <code>number</code> |  | <code>null</code> |
-| [vpn_gateways_ip_range](variables.tf#L120) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateways_ip_range](variables.tf#L114) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

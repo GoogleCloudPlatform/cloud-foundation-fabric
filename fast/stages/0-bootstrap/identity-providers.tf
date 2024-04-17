@@ -96,9 +96,9 @@ resource "google_iam_workforce_pool_provider" "default" {
   description         = each.value.description
   disabled            = each.value.disabled
   display_name        = each.value.display_name
-  location            = google_iam_workforce_pool.default.0.location
+  location            = google_iam_workforce_pool.default[0].location
   provider_id         = "${var.prefix}-bootstrap-${each.key}"
-  workforce_pool_id   = google_iam_workforce_pool.default.0.workforce_pool_id
+  workforce_pool_id   = google_iam_workforce_pool.default[0].workforce_pool_id
   saml {
     idp_metadata_xml = each.value.saml.idp_metadata_xml
   }
@@ -116,7 +116,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   for_each = local.workload_identity_providers
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+    google_iam_workload_identity_pool.default[0].workload_identity_pool_id
   )
   workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
   attribute_condition                = each.value.attribute_condition

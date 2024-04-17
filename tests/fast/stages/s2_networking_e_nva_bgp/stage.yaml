@@ -13,54 +13,6 @@
 # limitations under the License.
 
 values:
-  google_compute_address.nva_static_ip_landing["primary-b"]:
-    address: 10.64.0.101
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew1-b
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["primary-c"]:
-    address: 10.64.0.102
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew1-c
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["secondary-b"]:
-    address: 10.80.0.101
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew4-b
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
-  google_compute_address.nva_static_ip_landing["secondary-c"]:
-    address: 10.80.0.102
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: nva-ip-landing-ew4-c
-    network: null
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
   google_compute_address.nva_static_ip_dmz["primary-b"]:
     address: 10.64.128.101
     address_type: INTERNAL
@@ -109,25 +61,74 @@ values:
     project: fast2-prod-net-landing-0
     region: europe-west4
     timeouts: null
+  google_compute_address.nva_static_ip_landing["primary-b"]:
+    address: 10.64.0.101
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew1-b
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["primary-c"]:
+    address: 10.64.0.102
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew1-c
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["secondary-b"]:
+    address: 10.80.0.101
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew4-b
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
+  google_compute_address.nva_static_ip_landing["secondary-c"]:
+    address: 10.80.0.102
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: nva-ip-landing-ew4-c
+    network: null
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
   google_monitoring_alert_policy.vpn_tunnel_bandwidth[0]:
     alert_strategy: []
     combiner: OR
     conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language:
-      - duration: 120s
-        evaluation_missing_data: null
-        query: fetch vpn_gateway| { metric vpn.googleapis.com/network/sent_bytes_count;
-          metric vpn.googleapis.com/network/received_bytes_count }| align rate (1m)|
-          group_by [metric.tunnel_name]| outer_join 0,0| value val(0) + val(1)| condition
-          val() > 187.5 "MBy/s"
-        trigger:
-        - count: 1
-          percent: null
-      condition_prometheus_query_language: []
-      condition_threshold: []
-      display_name: VPN Tunnel Bandwidth usage
+      - condition_absent: []
+        condition_matched_log: []
+        condition_monitoring_query_language:
+          - duration: 120s
+            evaluation_missing_data: null
+            query:
+              fetch vpn_gateway| { metric vpn.googleapis.com/network/sent_bytes_count;
+              metric vpn.googleapis.com/network/received_bytes_count }| align rate (1m)|
+              group_by [metric.tunnel_name]| outer_join 0,0| value val(0) + val(1)| condition
+              val() > 187.5 "MBy/s"
+            trigger:
+              - count: 1
+                percent: null
+        condition_prometheus_query_language: []
+        condition_threshold: []
+        display_name: VPN Tunnel Bandwidth usage
     display_name: VPN Tunnel Bandwidth usage
     documentation: []
     enabled: true
@@ -140,20 +141,21 @@ values:
     alert_strategy: []
     combiner: OR
     conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language:
-      - duration: 120s
-        evaluation_missing_data: null
-        query: 'fetch vpn_gateway| metric vpn.googleapis.com/tunnel_established| group_by
-          5m, [value_tunnel_established_max: max(value.tunnel_established)]| every
-          5m| condition val() < 1 ''1'''
-        trigger:
-        - count: 1
-          percent: null
-      condition_prometheus_query_language: []
-      condition_threshold: []
-      display_name: VPN Tunnel Established
+      - condition_absent: []
+        condition_matched_log: []
+        condition_monitoring_query_language:
+          - duration: 120s
+            evaluation_missing_data: null
+            query:
+              "fetch vpn_gateway| metric vpn.googleapis.com/tunnel_established| group_by
+              5m, [value_tunnel_established_max: max(value.tunnel_established)]| every
+              5m| condition val() < 1 '1'"
+            trigger:
+              - count: 1
+                percent: null
+        condition_prometheus_query_language: []
+        condition_threshold: []
+        display_name: VPN Tunnel Established
     display_name: VPN Tunnel Established
     documentation: []
     enabled: true
@@ -163,15 +165,17 @@ values:
     timeouts: null
     user_labels: null
   google_monitoring_dashboard.dashboard["firewall_insights.json"]:
-    dashboard_json: '{"displayName":"Firewall Insights Monitoring","gridLayout":{"columns":"2","widgets":[{"title":"Subnet
+    dashboard_json:
+      '{"displayName":"Firewall Insights Monitoring","gridLayout":{"columns":"2","widgets":[{"title":"Subnet
       Firewall Hit Counts","xyChart":{"chartOptions":{"mode":"COLOR"},"dataSets":[{"minAlignmentPeriod":"60s","plotType":"LINE","targetAxis":"Y1","timeSeriesQuery":{"timeSeriesFilter":{"aggregation":{"perSeriesAligner":"ALIGN_RATE"},"filter":"metric.type=\"firewallinsights.googleapis.com/subnet/firewall_hit_count\"
       resource.type=\"gce_subnetwork\"","secondaryAggregation":{}},"unitOverride":"1"}}],"timeshiftDuration":"0s","yAxis":{"label":"y1Axis","scale":"LINEAR"}}},{"title":"VM
       Firewall Hit Counts","xyChart":{"chartOptions":{"mode":"COLOR"},"dataSets":[{"minAlignmentPeriod":"60s","plotType":"LINE","targetAxis":"Y1","timeSeriesQuery":{"timeSeriesFilter":{"aggregation":{"perSeriesAligner":"ALIGN_RATE"},"filter":"metric.type=\"firewallinsights.googleapis.com/vm/firewall_hit_count\"
       resource.type=\"gce_instance\"","secondaryAggregation":{}},"unitOverride":"1"}}],"timeshiftDuration":"0s","yAxis":{"label":"y1Axis","scale":"LINEAR"}}}]}}'
     project: fast2-prod-net-landing-0
     timeouts: null
-  google_monitoring_dashboard.dashboard["vpc_and_vpc_peering_group_quotas.json"]:
-    dashboard_json: '{"dashboardFilters":[],"displayName":"VPC \u0026 VPC Peering
+  ? google_monitoring_dashboard.dashboard["vpc_and_vpc_peering_group_quotas.json"]
+  : dashboard_json:
+      '{"dashboardFilters":[],"displayName":"VPC \u0026 VPC Peering
       Group Quotas","labels":{},"mosaicLayout":{"columns":12,"tiles":[{"height":4,"widget":{"title":"Internal
       network (L4) Load Balancers per VPC Peering Group","xyChart":{"chartOptions":{"mode":"COLOR"},"dataSets":[{"breakdowns":[],"dimensions":[],"measures":[],"plotType":"LINE","targetAxis":"Y1","timeSeriesQuery":{"timeSeriesQueryLanguage":"fetch
       compute.googleapis.com/VpcNetwork\n|{ metric\n      compute.googleapis.com/quota/internal_lb_forwarding_rules_per_peering_group/usage\n    |
@@ -224,7 +228,8 @@ values:
     project: fast2-prod-net-landing-0
     timeouts: null
   google_monitoring_dashboard.dashboard["vpn.json"]:
-    dashboard_json: '{"displayName":"VPN Monitoring","mosaicLayout":{"columns":12,"tiles":[{"height":4,"widget":{"title":"Number
+    dashboard_json:
+      '{"displayName":"VPN Monitoring","mosaicLayout":{"columns":12,"tiles":[{"height":4,"widget":{"title":"Number
       of connections","xyChart":{"chartOptions":{"mode":"COLOR"},"dataSets":[{"minAlignmentPeriod":"60s","plotType":"LINE","targetAxis":"Y1","timeSeriesQuery":{"timeSeriesFilter":{"aggregation":{"perSeriesAligner":"ALIGN_MEAN"},"filter":"metric.type=\"vpn.googleapis.com/gateway/connections\"
       resource.type=\"vpn_gateway\"","secondaryAggregation":{}},"unitOverride":"1"}}],"timeshiftDuration":"0s","yAxis":{"label":"y1Axis","scale":"LINEAR"}}},"width":4},{"height":4,"widget":{"title":"Tunnel
       established","xyChart":{"chartOptions":{"mode":"COLOR"},"dataSets":[{"minAlignmentPeriod":"60s","plotType":"LINE","targetAxis":"Y1","timeSeriesQuery":{"timeSeriesFilter":{"aggregation":{"perSeriesAligner":"ALIGN_MEAN"},"filter":"metric.type=\"vpn.googleapis.com/tunnel_established\"
@@ -247,16 +252,16 @@ values:
       resource.type=\"vpn_gateway\"","secondaryAggregation":{}},"unitOverride":"1"}}],"timeshiftDuration":"0s","yAxis":{"label":"y1Axis","scale":"LINEAR"}}},"width":6,"yPos":12}]}}'
     project: fast2-prod-net-landing-0
     timeouts: null
-  google_network_connectivity_hub.hub_landing:
-    description: Prod hub landing (trusted)
-    labels: null
-    name: prod-hub-landing
-    project: fast2-prod-net-landing-0
-    timeouts: null
   google_network_connectivity_hub.hub_dmz:
     description: Prod hub DMZ (untrusted)
     labels: null
     name: prod-hub-dmz
+    project: fast2-prod-net-landing-0
+    timeouts: null
+  google_network_connectivity_hub.hub_landing:
+    description: Prod hub landing (trusted)
+    labels: null
+    name: prod-hub-landing
     project: fast2-prod-net-landing-0
     timeouts: null
   google_storage_bucket_object.tfvars:
@@ -274,9 +279,9 @@ values:
     source: null
     temporary_hold: null
     timeouts: null
-  module.dev-dns-peer-landing-rev-10.google_dns_managed_zone.dns_managed_zone[0]:
-    cloud_logging_config:
-    - enable_logging: false
+  ? module.dev-dns-peer-landing-rev-10.google_dns_managed_zone.dns_managed_zone[0]
+  : cloud_logging_config:
+      - enable_logging: false
     description: Terraform managed.
     dns_name: 10.in-addr.arpa.
     dnssec_config: []
@@ -291,7 +296,7 @@ values:
     visibility: private
   module.dev-dns-peer-landing-root.google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-    - enable_logging: false
+      - enable_logging: false
     description: Terraform managed.
     dns_name: .
     dnssec_config: []
@@ -306,7 +311,7 @@ values:
     visibility: private
   module.dev-dns-private-zone.google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-    - enable_logging: false
+      - enable_logging: false
     description: Terraform managed.
     dns_name: dev.gcp.example.com.
     dnssec_config: []
@@ -319,86 +324,89 @@ values:
     service_directory_config: []
     timeouts: null
     visibility: private
-  module.dev-dns-private-zone.google_dns_record_set.dns_record_set["A localhost"]:
-    managed_zone: dev-gcp-example-com
+  ? module.dev-dns-private-zone.google_dns_record_set.dns_record_set["A localhost"]
+  : managed_zone: dev-gcp-example-com
     name: localhost.dev.gcp.example.com.
     project: fast2-dev-net-spoke-0
     routing_policy: []
     rrdatas:
-    - 127.0.0.1
+      - 127.0.0.1
     ttl: 300
     type: A
-  module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-allow-composer-nodes"]:
-    allow:
-    - ports:
-      - '80'
-      - '443'
-      - '3306'
-      - '3307'
-      protocol: tcp
+  ? module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-allow-composer-nodes"]
+  : allow:
+      - ports:
+          - "80"
+          - "443"
+          - "3306"
+          - "3307"
+        protocol: tcp
     deny: []
     description: Allow traffic to Composer nodes.
     direction: INGRESS
     disabled: false
     log_config: []
     name: ingress-allow-composer-nodes
+    network: dev-spoke-0
     priority: 1000
     project: fast2-dev-net-spoke-0
     source_ranges: null
     source_service_accounts: null
     source_tags:
-    - composer-worker
+      - composer-worker
     target_service_accounts: null
     target_tags:
-    - composer-worker
+      - composer-worker
     timeouts: null
-  module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-allow-dataflow-load"]:
-    allow:
-    - ports:
-      - '12345'
-      - '12346'
-      protocol: tcp
+  ? module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-allow-dataflow-load"]
+  : allow:
+      - ports:
+          - "12345"
+          - "12346"
+        protocol: tcp
     deny: []
     description: Allow traffic to Dataflow nodes.
     direction: INGRESS
     disabled: false
     log_config: []
     name: ingress-allow-dataflow-load
+    network: dev-spoke-0
     priority: 1000
     project: fast2-dev-net-spoke-0
     source_ranges: null
     source_service_accounts: null
     source_tags:
-    - dataflow
+      - dataflow
     target_service_accounts: null
     target_tags:
-    - dataflow
+      - dataflow
     timeouts: null
-  module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-default-deny"]:
-    allow: []
+  ? module.dev-spoke-firewall.google_compute_firewall.custom-rules["ingress-default-deny"]
+  : allow: []
     deny:
-    - ports: []
-      protocol: all
+      - ports: []
+        protocol: all
     description: Deny and log any unmatched ingress traffic.
     direction: INGRESS
     disabled: false
     log_config:
-    - metadata: EXCLUDE_ALL_METADATA
+      - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-deny
+    network: dev-spoke-0
     priority: 65535
     project: fast2-dev-net-spoke-0
     source_ranges:
-    - 0.0.0.0/0
+      - 0.0.0.0/0
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.dev-spoke-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: fast2-dev-net-spoke-0
+  ? module.dev-spoke-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]
+  : project: fast2-dev-net-spoke-0
     timeouts: null
-  module.dev-spoke-project.google_monitoring_monitored_project.primary["fast2-prod-net-landing-0"]:
-    metrics_scope: fast2-prod-net-landing-0
+  ? module.dev-spoke-project.google_monitoring_monitored_project.primary["fast2-prod-net-landing-0"]
+  : metrics_scope: fast2-prod-net-landing-0
     name: fast2-dev-net-spoke-0
     timeouts: null
   module.dev-spoke-project.google_project.project[0]:
@@ -411,69 +419,69 @@ values:
     project_id: fast2-dev-net-spoke-0
     skip_delete: false
     timeouts: null
-  module.dev-spoke-project.google_project_iam_binding.authoritative["roles/dns.admin"]:
-    condition: []
+  ? module.dev-spoke-project.google_project_iam_binding.authoritative["roles/dns.admin"]
+  : condition: []
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-dev-net-spoke-0
     role: roles/dns.admin
-  module.dev-spoke-project.google_project_iam_binding.bindings["sa_delegated_grants"]:
-    condition:
-    - description: Development host project delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/composer.sharedVpcAgent','roles/compute.networkUser','roles/compute.networkViewer','roles/container.hostServiceAgentUser','roles/multiclusterservicediscovery.serviceAgent','roles/vpcaccess.user'])
-      title: dev_stage3_sa_delegated_grants
+  ? module.dev-spoke-project.google_project_iam_binding.bindings["sa_delegated_grants"]
+  : condition:
+      - description: Development host project delegated grants.
+        expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/composer.sharedVpcAgent','roles/compute.networkUser','roles/compute.networkViewer','roles/container.hostServiceAgentUser','roles/multiclusterservicediscovery.serviceAgent','roles/vpcaccess.user'])
+        title: dev_stage3_sa_delegated_grants
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-dev-net-spoke-0
     role: roles/resourcemanager.projectIamAdmin
   module.dev-spoke-project.google_project_iam_member.servicenetworking[0]:
     condition: []
     project: fast2-dev-net-spoke-0
     role: roles/servicenetworking.serviceAgent
-  module.dev-spoke-project.google_project_service.project_services["compute.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["compute.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: compute.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["dns.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["dns.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["iap.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["iap.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["networkmanagement.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["networkmanagement.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["servicenetworking.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["servicenetworking.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["stackdriver.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: stackdriver.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service.project_services["vpcaccess.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.dev-spoke-project.google_project_service.project_services["vpcaccess.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-dev-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
-  module.dev-spoke-project.google_project_service_identity.jit_si["iap.googleapis.com"]:
-    project: fast2-dev-net-spoke-0
+  ? module.dev-spoke-project.google_project_service_identity.jit_si["iap.googleapis.com"]
+  : project: fast2-dev-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
   module.dev-spoke-project.google_project_service_identity.servicenetworking[0]:
@@ -495,6 +503,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: dev-spoke-0-private-googleapis
+    network: dev-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -507,6 +516,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: dev-spoke-0-restricted-googleapis
+    network: dev-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -515,56 +525,60 @@ values:
     project: fast2-dev-net-spoke-0
     tags: null
     timeouts: null
-  module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-dataplatform"]:
-    description: Default subnet for dev Data Platform
+  ? module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-dataplatform"]
+  : description: Default subnet for dev Data Platform
     ip_cidr_range: 10.68.2.0/24
     ipv6_access_type: null
     log_config: []
     name: dev-dataplatform
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
     role: null
     secondary_ip_range:
-    - ip_cidr_range: 100.69.0.0/16
-      range_name: pods
-    - ip_cidr_range: 100.71.2.0/24
-      range_name: services
+      - ip_cidr_range: 100.69.0.0/16
+        range_name: pods
+      - ip_cidr_range: 100.71.2.0/24
+        range_name: services
     timeouts: null
-  module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-default"]:
-    description: Default europe-west1 subnet for dev
+  ? module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-default"]
+  : description: Default europe-west1 subnet for dev
     ip_cidr_range: 10.68.0.0/24
     ipv6_access_type: null
     log_config: []
     name: dev-default
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
     role: null
     secondary_ip_range: []
     timeouts: null
-  module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-gke-nodes"]:
-    description: Default subnet for prod gke nodes
+  ? module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/dev-gke-nodes"]
+  : description: Default subnet for prod gke nodes
     ip_cidr_range: 10.68.1.0/24
     ipv6_access_type: null
     log_config: []
     name: dev-gke-nodes
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west1
     role: null
     secondary_ip_range:
-    - ip_cidr_range: 100.68.0.0/16
-      range_name: pods
-    - ip_cidr_range: 100.71.1.0/24
-      range_name: services
+      - ip_cidr_range: 100.68.0.0/16
+        range_name: pods
+      - ip_cidr_range: 100.71.1.0/24
+        range_name: services
     timeouts: null
-  module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west4/dev-default"]:
-    description: Default europe-west4 subnet for dev
+  ? module.dev-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west4/dev-default"]
+  : description: Default europe-west4 subnet for dev
     ip_cidr_range: 10.84.0.0/24
     ipv6_access_type: null
     log_config: []
     name: dev-default
+    network: dev-spoke-0
     private_ip_google_access: true
     project: fast2-dev-net-spoke-0
     region: europe-west4
@@ -578,116 +592,255 @@ values:
     enable_logging: true
     name: dev-spoke-0
     networks:
-    - {}
+      - {}
     project: fast2-dev-net-spoke-0
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-dmz"]
+  : allow:
+      - ports:
+          - "22"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from Google healthchecks to NVA appliances
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-hc-nva-ssh-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-dmz"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from NCC Cloud Routers to NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-ncc-nva-bgp-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.128.0.201/32
+      - 10.128.0.202/32
+      - 10.128.32.201/32
+      - 10.128.32.202/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-dmz"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from cross-regional NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-nva-nva-bgp-dmz
+    network: prod-dmz-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges: null
+    source_service_accounts: null
+    source_tags:
+      - nva
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.dmz-firewall.google_compute_firewall.custom-rules["dmz-ingress-default-deny"]
+  : allow: []
+    deny:
+      - ports: []
+        protocol: all
+    description: Deny and log any unmatched ingress traffic.
+    direction: INGRESS
+    disabled: false
+    log_config:
+      - metadata: EXCLUDE_ALL_METADATA
+    name: dmz-ingress-default-deny
+    network: prod-dmz-0
+    priority: 65535
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.dmz-vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    mtu: 1500
+    name: prod-dmz-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: fast2-prod-net-landing-0
+    routing_mode: GLOBAL
+    timeouts: null
+  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west1/dmz-default"]
+  : description: Default europe-west1 subnet for DMZ
+    ip_cidr_range: 10.64.128.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: dmz-default
+    network: prod-dmz-0
+    private_ip_google_access: true
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+    timeouts: null
+  ? module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west4/dmz-default"]
+  : description: Default europe-west4 subnet for DMZ
+    ip_cidr_range: 10.80.128.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: dmz-default
+    network: prod-dmz-0
+    private_ip_google_access: true
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    role: null
+    secondary_ip_range: []
+    timeouts: null
+  module.dmz-vpc.google_dns_policy.default[0]:
+    alternative_name_server_config: []
+    description: Managed by Terraform
+    enable_inbound_forwarding: true
+    enable_logging: true
+    name: prod-dmz-0
+    networks:
+      - {}
+    project: fast2-prod-net-landing-0
     timeouts: null
   module.firewall-policy-default.google_compute_firewall_policy.hierarchical[0]:
     description: null
     short_name: net-default
     timeouts: null
-  module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-healthchecks"]:
-    action: allow
+  ? module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-healthchecks"]
+  : action: allow
     description: Enable HTTP and HTTPS healthchecks
     direction: INGRESS
     disabled: false
     enable_logging: null
     match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '80'
-        - '443'
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 35.191.0.0/16
-      - 130.211.0.0/22
-      - 209.85.152.0/22
-      - 209.85.204.0/22
-      src_region_codes: null
-      src_threat_intelligences: null
+      - dest_address_groups: null
+        dest_fqdns: null
+        dest_ip_ranges: null
+        dest_region_codes: null
+        dest_threat_intelligences: null
+        layer4_configs:
+          - ip_protocol: tcp
+            ports:
+              - "80"
+              - "443"
+        src_address_groups: null
+        src_fqdns: null
+        src_ip_ranges:
+          - 35.191.0.0/16
+          - 130.211.0.0/22
+          - 209.85.152.0/22
+          - 209.85.204.0/22
+        src_region_codes: null
+        src_threat_intelligences: null
     priority: 1001
     target_resources: null
     target_service_accounts: null
     timeouts: null
-  module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-icmp"]:
-    action: allow
+  ? module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-icmp"]
+  : action: allow
     description: Enable ICMP
     direction: INGRESS
     disabled: false
     enable_logging: null
     match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: icmp
-        ports: []
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 0.0.0.0/0
-      src_region_codes: null
-      src_threat_intelligences: null
+      - dest_address_groups: null
+        dest_fqdns: null
+        dest_ip_ranges: null
+        dest_region_codes: null
+        dest_threat_intelligences: null
+        layer4_configs:
+          - ip_protocol: icmp
+            ports: []
+        src_address_groups: null
+        src_fqdns: null
+        src_ip_ranges:
+          - 0.0.0.0/0
+        src_region_codes: null
+        src_threat_intelligences: null
     priority: 1003
     target_resources: null
     target_service_accounts: null
     timeouts: null
-  module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-nat-ranges"]:
-    action: allow
+  ? module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-nat-ranges"]
+  : action: allow
     description: Enable NAT ranges for VPC serverless connector
     direction: INGRESS
     disabled: false
     enable_logging: null
     match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: all
-        ports: null
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 107.178.230.64/26
-      - 35.199.224.0/19
-      src_region_codes: null
-      src_threat_intelligences: null
+      - dest_address_groups: null
+        dest_fqdns: null
+        dest_ip_ranges: null
+        dest_region_codes: null
+        dest_threat_intelligences: null
+        layer4_configs:
+          - ip_protocol: all
+            ports: null
+        src_address_groups: null
+        src_fqdns: null
+        src_ip_ranges:
+          - 107.178.230.64/26
+          - 35.199.224.0/19
+        src_region_codes: null
+        src_threat_intelligences: null
     priority: 1004
     target_resources: null
     target_service_accounts: null
     timeouts: null
-  module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-ssh-from-iap"]:
-    action: allow
+  ? module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-ssh-from-iap"]
+  : action: allow
     description: Enable SSH from IAP
     direction: INGRESS
     disabled: false
     enable_logging: true
     match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '22'
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 35.235.240.0/20
-      src_region_codes: null
-      src_threat_intelligences: null
+      - dest_address_groups: null
+        dest_fqdns: null
+        dest_ip_ranges: null
+        dest_region_codes: null
+        dest_threat_intelligences: null
+        layer4_configs:
+          - ip_protocol: tcp
+            ports:
+              - "22"
+        src_address_groups: null
+        src_fqdns: null
+        src_ip_ranges:
+          - 35.235.240.0/20
+        src_region_codes: null
+        src_threat_intelligences: null
     priority: 1002
     target_resources: null
     target_service_accounts: null
@@ -695,27 +848,27 @@ values:
   module.folder.google_compute_firewall_policy_association.default[0]:
     name: default
     timeouts: null
-  module.folder.google_essential_contacts_contact.contact["gcp-network-admins@fast.example.com"]:
-    email: gcp-network-admins@fast.example.com
+  ? module.folder.google_essential_contacts_contact.contact["gcp-network-admins@fast.example.com"]
+  : email: gcp-network-admins@fast.example.com
     language_tag: en
     notification_category_subscriptions:
-    - ALL
+      - ALL
     timeouts: null
   module.folder.google_folder.folder[0]:
     display_name: Networking
     parent: organizations/123456789012
     timeouts: null
-  module.landing-dns-fwd-onprem-example[0].google_dns_managed_zone.dns_managed_zone[0]:
-    cloud_logging_config:
-    - enable_logging: false
+  ? module.landing-dns-fwd-onprem-example[0].google_dns_managed_zone.dns_managed_zone[0]
+  : cloud_logging_config:
+      - enable_logging: false
     description: Terraform managed.
     dns_name: onprem.example.com.
     dnssec_config: []
     force_destroy: false
     forwarding_config:
-    - target_name_servers:
-      - forwarding_path: ''
-        ipv4_address: 10.10.10.10
+      - target_name_servers:
+          - forwarding_path: ""
+            ipv4_address: 10.10.10.10
     labels: null
     name: example-com
     peering_config: []
@@ -724,17 +877,17 @@ values:
     service_directory_config: []
     timeouts: null
     visibility: private
-  module.landing-dns-fwd-onprem-rev-10[0].google_dns_managed_zone.dns_managed_zone[0]:
-    cloud_logging_config:
-    - enable_logging: false
+  ? module.landing-dns-fwd-onprem-rev-10[0].google_dns_managed_zone.dns_managed_zone[0]
+  : cloud_logging_config:
+      - enable_logging: false
     description: Terraform managed.
     dns_name: 10.in-addr.arpa.
     dnssec_config: []
     force_destroy: false
     forwarding_config:
-    - target_name_servers:
-      - forwarding_path: ''
-        ipv4_address: 10.10.10.10
+      - target_name_servers:
+          - forwarding_path: ""
+            ipv4_address: 10.10.10.10
     labels: null
     name: root-reverse-10
     peering_config: []
@@ -744,499 +897,499 @@ values:
     timeouts: null
     visibility: private
   module.landing-dns-policy-googleapis.google_dns_response_policy.default[0]:
-    description: Managed by Terraform
+    description: Terraform managed.
     gke_clusters: []
     networks:
-    - {}
-    - {}
+      - {}
+      - {}
     project: fast2-prod-net-landing-0
     response_policy_name: googleapis
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["accounts"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["accounts"]
+  : behavior: null
     dns_name: accounts.google.com.
     local_data:
-    - local_datas:
-      - name: accounts.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: accounts.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: accounts
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-cloud"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-cloud"]
+  : behavior: null
     dns_name: backupdr.cloud.google.com.
     local_data:
-    - local_datas:
-      - name: backupdr.cloud.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: backupdr.cloud.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: backupdr-cloud
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-cloud-all"]:
-    behavior: null
-    dns_name: '*.backupdr.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-cloud-all"]
+  : behavior: null
+    dns_name: "*.backupdr.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.backupdr.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.backupdr.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: backupdr-cloud-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-gu"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-gu"]
+  : behavior: null
     dns_name: backupdr.googleusercontent.google.com.
     local_data:
-    - local_datas:
-      - name: backupdr.googleusercontent.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: backupdr.googleusercontent.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: backupdr-gu
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-gu-all"]:
-    behavior: null
-    dns_name: '*.backupdr.googleusercontent.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["backupdr-gu-all"]
+  : behavior: null
+    dns_name: "*.backupdr.googleusercontent.google.com."
     local_data:
-    - local_datas:
-      - name: '*.backupdr.googleusercontent.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.backupdr.googleusercontent.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: backupdr-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["cloudfunctions"]:
-    behavior: null
-    dns_name: '*.cloudfunctions.net.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["cloudfunctions"]
+  : behavior: null
+    dns_name: "*.cloudfunctions.net."
     local_data:
-    - local_datas:
-      - name: '*.cloudfunctions.net.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.cloudfunctions.net."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: cloudfunctions
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["cloudproxy"]:
-    behavior: null
-    dns_name: '*.cloudproxy.app.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["cloudproxy"]
+  : behavior: null
+    dns_name: "*.cloudproxy.app."
     local_data:
-    - local_datas:
-      - name: '*.cloudproxy.app.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.cloudproxy.app."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: cloudproxy
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["composer-cloud-all"]:
-    behavior: null
-    dns_name: '*.composer.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["composer-cloud-all"]
+  : behavior: null
+    dns_name: "*.composer.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.composer.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.composer.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: composer-cloud-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["composer-gu-all"]:
-    behavior: null
-    dns_name: '*.composer.googleusercontent.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["composer-gu-all"]
+  : behavior: null
+    dns_name: "*.composer.googleusercontent.com."
     local_data:
-    - local_datas:
-      - name: '*.composer.googleusercontent.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.composer.googleusercontent.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: composer-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["datafusion-all"]:
-    behavior: null
-    dns_name: '*.datafusion.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["datafusion-all"]
+  : behavior: null
+    dns_name: "*.datafusion.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.datafusion.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.datafusion.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: datafusion-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["datafusion-gu-all"]:
-    behavior: null
-    dns_name: '*.datafusion.googleusercontent.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["datafusion-gu-all"]
+  : behavior: null
+    dns_name: "*.datafusion.googleusercontent.com."
     local_data:
-    - local_datas:
-      - name: '*.datafusion.googleusercontent.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.datafusion.googleusercontent.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: datafusion-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc"]
+  : behavior: null
     dns_name: dataproc.cloud.google.com.
     local_data:
-    - local_datas:
-      - name: dataproc.cloud.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: dataproc.cloud.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: dataproc
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-all"]:
-    behavior: null
-    dns_name: '*.dataproc.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-all"]
+  : behavior: null
+    dns_name: "*.dataproc.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.dataproc.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.dataproc.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: dataproc-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-gu"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-gu"]
+  : behavior: null
     dns_name: dataproc.googleusercontent.com.
     local_data:
-    - local_datas:
-      - name: dataproc.googleusercontent.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: dataproc.googleusercontent.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: dataproc-gu
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-gu-all"]:
-    behavior: null
-    dns_name: '*.dataproc.googleusercontent.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dataproc-gu-all"]
+  : behavior: null
+    dns_name: "*.dataproc.googleusercontent.com."
     local_data:
-    - local_datas:
-      - name: '*.dataproc.googleusercontent.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.dataproc.googleusercontent.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: dataproc-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dl"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["dl"]
+  : behavior: null
     dns_name: dl.google.com.
     local_data:
-    - local_datas:
-      - name: dl.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: dl.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: dl
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gcr"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gcr"]
+  : behavior: null
     dns_name: gcr.io.
     local_data:
-    - local_datas:
-      - name: gcr.io.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: gcr.io.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: gcr
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gcr-all"]:
-    behavior: null
-    dns_name: '*.gcr.io.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gcr-all"]
+  : behavior: null
+    dns_name: "*.gcr.io."
     local_data:
-    - local_datas:
-      - name: '*.gcr.io.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.gcr.io."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: gcr-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-all"]:
-    behavior: null
-    dns_name: '*.googleapis.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-all"]
+  : behavior: null
+    dns_name: "*.googleapis.com."
     local_data:
-    - local_datas:
-      - name: '*.googleapis.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.googleapis.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: googleapis-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-private"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-private"]
+  : behavior: null
     dns_name: private.googleapis.com.
     local_data:
-    - local_datas:
-      - name: private.googleapis.com.
-        rrdatas:
-        - 199.36.153.8
-        - 199.36.153.9
-        - 199.36.153.10
-        - 199.36.153.11
-        ttl: null
-        type: A
+      - local_datas:
+          - name: private.googleapis.com.
+            rrdatas:
+              - 199.36.153.8
+              - 199.36.153.9
+              - 199.36.153.10
+              - 199.36.153.11
+            ttl: null
+            type: A
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: googleapis-private
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-restricted"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["googleapis-restricted"]
+  : behavior: null
     dns_name: restricted.googleapis.com.
     local_data:
-    - local_datas:
-      - name: restricted.googleapis.com.
-        rrdatas:
-        - 199.36.153.4
-        - 199.36.153.5
-        - 199.36.153.6
-        - 199.36.153.7
-        ttl: null
-        type: A
+      - local_datas:
+          - name: restricted.googleapis.com.
+            rrdatas:
+              - 199.36.153.4
+              - 199.36.153.5
+              - 199.36.153.6
+              - 199.36.153.7
+            ttl: null
+            type: A
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: googleapis-restricted
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gstatic-all"]:
-    behavior: null
-    dns_name: '*.gstatic.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["gstatic-all"]
+  : behavior: null
+    dns_name: "*.gstatic.com."
     local_data:
-    - local_datas:
-      - name: '*.gstatic.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.gstatic.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: gstatic-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["kernels-gu"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["kernels-gu"]
+  : behavior: null
     dns_name: kernels.googleusercontent.com.
     local_data:
-    - local_datas:
-      - name: kernels.googleusercontent.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: kernels.googleusercontent.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: kernels-gu
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["kernels-gu-all"]:
-    behavior: null
-    dns_name: '*.kernels.googleusercontent.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["kernels-gu-all"]
+  : behavior: null
+    dns_name: "*.kernels.googleusercontent.com."
     local_data:
-    - local_datas:
-      - name: '*.kernels.googleusercontent.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.kernels.googleusercontent.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: kernels-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["notebooks-all"]:
-    behavior: null
-    dns_name: '*.notebooks.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["notebooks-all"]
+  : behavior: null
+    dns_name: "*.notebooks.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.notebooks.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.notebooks.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: notebooks-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["notebooks-gu-all"]:
-    behavior: null
-    dns_name: '*.notebooks.googleusercontent.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["notebooks-gu-all"]
+  : behavior: null
+    dns_name: "*.notebooks.googleusercontent.com."
     local_data:
-    - local_datas:
-      - name: '*.notebooks.googleusercontent.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.notebooks.googleusercontent.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: notebooks-gu-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["packages-cloud"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["packages-cloud"]
+  : behavior: null
     dns_name: packages.cloud.google.com.
     local_data:
-    - local_datas:
-      - name: packages.cloud.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: packages.cloud.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: packages-cloud
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["packages-cloud-all"]:
-    behavior: null
-    dns_name: '*.packages.cloud.google.com.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["packages-cloud-all"]
+  : behavior: null
+    dns_name: "*.packages.cloud.google.com."
     local_data:
-    - local_datas:
-      - name: '*.packages.cloud.google.com.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.packages.cloud.google.com."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: packages-cloud-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkgdev"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkgdev"]
+  : behavior: null
     dns_name: pkg.dev.
     local_data:
-    - local_datas:
-      - name: pkg.dev.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: pkg.dev.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: pkgdev
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkgdev-all"]:
-    behavior: null
-    dns_name: '*.pkg.dev.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkgdev-all"]
+  : behavior: null
+    dns_name: "*.pkg.dev."
     local_data:
-    - local_datas:
-      - name: '*.pkg.dev.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.pkg.dev."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: pkgdev-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkigoog"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkigoog"]
+  : behavior: null
     dns_name: pki.goog.
     local_data:
-    - local_datas:
-      - name: pki.goog.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: pki.goog.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: pkigoog
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkigoog-all"]:
-    behavior: null
-    dns_name: '*.pki.goog.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["pkigoog-all"]
+  : behavior: null
+    dns_name: "*.pki.goog."
     local_data:
-    - local_datas:
-      - name: '*.pki.goog.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.pki.goog."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: pkigoog-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["run-all"]:
-    behavior: null
-    dns_name: '*.run.app.'
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["run-all"]
+  : behavior: null
+    dns_name: "*.run.app."
     local_data:
-    - local_datas:
-      - name: '*.run.app.'
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: "*.run.app."
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: run-all
     timeouts: null
-  module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["source"]:
-    behavior: null
+  ? module.landing-dns-policy-googleapis.google_dns_response_policy_rule.default["source"]
+  : behavior: null
     dns_name: source.developers.google.com.
     local_data:
-    - local_datas:
-      - name: source.developers.google.com.
-        rrdatas:
-        - private.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: source.developers.google.com.
+            rrdatas:
+              - private.googleapis.com.
+            ttl: null
+            type: CNAME
     project: fast2-prod-net-landing-0
     response_policy: googleapis
     rule_name: source
     timeouts: null
   module.landing-dns-priv-gcp.google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-    - enable_logging: false
+      - enable_logging: false
     description: Terraform managed.
     dns_name: gcp.example.com.
     dnssec_config: []
@@ -1249,20 +1402,112 @@ values:
     service_directory_config: []
     timeouts: null
     visibility: private
-  module.landing-dns-priv-gcp.google_dns_record_set.dns_record_set["A localhost"]:
-    managed_zone: gcp-example-com
+  ? module.landing-dns-priv-gcp.google_dns_record_set.dns_record_set["A localhost"]
+  : managed_zone: gcp-example-com
     name: localhost.gcp.example.com.
     project: fast2-prod-net-landing-0
     routing_policy: []
     rrdatas:
-    - 127.0.0.1
+      - 127.0.0.1
     ttl: 300
     type: A
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-landing"]
+  : allow:
+      - ports:
+          - "22"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from Google healthchecks to NVA appliances
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-hc-nva-ssh-landing
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-landing"]
+  : allow:
+      - ports:
+          - "179"
+        protocol: tcp
+    deny: []
+    description: Allow BGP traffic from NCC Cloud Routers to NVAs
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-ncc-nva-bgp-landing
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.128.64.201/32
+      - 10.128.64.202/32
+      - 10.128.96.201/32
+      - 10.128.96.202/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+      - nva
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-landing-example"]
+  : allow:
+      - ports:
+          - "12345"
+        protocol: tcp
+    deny: []
+    description: Allow traffic from onprem probes
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-onprem-probes-landing-example
+    network: prod-landing-0
+    priority: 1000
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 10.255.255.254/32
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  ? module.landing-firewall.google_compute_firewall.custom-rules["landing-ingress-default-deny"]
+  : allow: []
+    deny:
+      - ports: []
+        protocol: all
+    description: Deny and log any unmatched ingress traffic.
+    direction: INGRESS
+    disabled: false
+    log_config:
+      - metadata: EXCLUDE_ALL_METADATA
+    name: landing-ingress-default-deny
+    network: prod-landing-0
+    priority: 65535
+    project: fast2-prod-net-landing-0
+    source_ranges:
+      - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
   module.landing-nat-primary[0].google_compute_router.router[0]:
     bgp: []
     description: null
     encrypted_interconnect_router: null
     name: prod-nat-ew1
+    network: prod-dmz-0
     project: fast2-prod-net-landing-0
     region: europe-west1
     timeouts: null
@@ -1272,8 +1517,8 @@ values:
     enable_endpoint_independent_mapping: true
     icmp_idle_timeout_sec: 30
     log_config:
-    - enable: false
-      filter: ALL
+      - enable: false
+        filter: ALL
     max_ports_per_vm: 65536
     min_ports_per_vm: 64
     name: ew1
@@ -1295,6 +1540,7 @@ values:
     description: null
     encrypted_interconnect_router: null
     name: prod-nat-ew4
+    network: prod-dmz-0
     project: fast2-prod-net-landing-0
     region: europe-west4
     timeouts: null
@@ -1304,8 +1550,8 @@ values:
     enable_endpoint_independent_mapping: true
     icmp_idle_timeout_sec: 30
     log_config:
-    - enable: false
-      filter: ALL
+      - enable: false
+        filter: ALL
     max_ports_per_vm: 65536
     min_ports_per_vm: 64
     name: ew4
@@ -1322,8 +1568,8 @@ values:
     tcp_transitory_idle_timeout_sec: 30
     timeouts: null
     udp_idle_timeout_sec: 30
-  module.landing-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: fast2-prod-net-landing-0
+  ? module.landing-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]
+  : project: fast2-prod-net-landing-0
     timeouts: null
   module.landing-project.google_project.project[0]:
     auto_create_network: false
@@ -1335,70 +1581,70 @@ values:
     project_id: fast2-prod-net-landing-0
     skip_delete: false
     timeouts: null
-  module.landing-project.google_project_iam_binding.authoritative["organizations/123456789012/roles/foo"]:
-    condition: []
+  ? module.landing-project.google_project_iam_binding.authoritative["organizations/123456789012/roles/foo"]
+  : condition: []
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-prod-net-landing-0
     role: organizations/123456789012/roles/foo
-  module.landing-project.google_project_iam_binding.authoritative["roles/dns.admin"]:
-    condition: []
+  ? module.landing-project.google_project_iam_binding.authoritative["roles/dns.admin"]
+  : condition: []
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-prod-net-landing-0
     role: roles/dns.admin
-  module.landing-project.google_project_service.project_services["compute.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["compute.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: compute.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service.project_services["dns.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["dns.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: dns.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service.project_services["iap.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["iap.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: iap.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service.project_services["networkconnectivity.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["networkconnectivity.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: networkconnectivity.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service.project_services["networkmanagement.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["networkmanagement.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: networkmanagement.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service.project_services["stackdriver.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.landing-project.google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-landing-0
     service: stackdriver.googleapis.com
     timeouts: null
-  module.landing-project.google_project_service_identity.jit_si["iap.googleapis.com"]:
-    project: fast2-prod-net-landing-0
+  ? module.landing-project.google_project_service_identity.jit_si["iap.googleapis.com"]
+  : project: fast2-prod-net-landing-0
     service: iap.googleapis.com
     timeouts: null
-  module.landing-to-onprem-primary-vpn[0].google_compute_external_vpn_gateway.external_gateway["default"]:
-    description: Terraform managed external VPN gateway
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_external_vpn_gateway.external_gateway["default"]
+  : description: Terraform managed external VPN gateway
     interface:
-    - id: 0
-      ip_address: 8.8.8.8
+      - id: 0
+        ip_address: 8.8.8.8
     labels: null
     name: vpn-to-onprem-ew1-default
     project: fast2-prod-net-landing-0
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     timeouts: null
-  module.landing-to-onprem-primary-vpn[0].google_compute_ha_vpn_gateway.ha_gateway[0]:
-    description: Terraform managed external VPN gateway
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_ha_vpn_gateway.ha_gateway[0]
+  : description: Terraform managed external VPN gateway
     name: vpn-to-onprem-ew1
     project: fast2-prod-net-landing-0
     region: europe-west1
@@ -1406,25 +1652,25 @@ values:
     timeouts: null
   module.landing-to-onprem-primary-vpn[0].google_compute_router.router[0]:
     bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: gcp
-        range: 10.1.0.0/16
-      - description: gcp-restricted
-        range: 199.36.153.4/30
-      - description: gcp-dns
-        range: 35.199.192.0/19
-      asn: 65501
-      keepalive_interval: 20
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: gcp
+            range: 10.1.0.0/16
+          - description: gcp-restricted
+            range: 199.36.153.4/30
+          - description: gcp-dns
+            range: 35.199.192.0/19
+        asn: 65501
+        keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     name: vpn-vpn-to-onprem-ew1
     project: fast2-prod-net-landing-0
     region: europe-west1
     timeouts: null
-  module.landing-to-onprem-primary-vpn[0].google_compute_router_interface.router_interface["0"]:
-    interconnect_attachment: null
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_router_interface.router_interface["0"]
+  : interconnect_attachment: null
     ip_range: 169.254.1.2/30
     name: vpn-to-onprem-ew1-0
     private_ip_address: null
@@ -1434,8 +1680,8 @@ values:
     subnetwork: null
     timeouts: null
     vpn_tunnel: vpn-to-onprem-ew1-0
-  module.landing-to-onprem-primary-vpn[0].google_compute_router_interface.router_interface["1"]:
-    interconnect_attachment: null
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_router_interface.router_interface["1"]
+  : interconnect_attachment: null
     ip_range: 169.254.2.2/30
     name: vpn-to-onprem-ew1-1
     private_ip_address: null
@@ -1445,8 +1691,8 @@ values:
     subnetwork: null
     timeouts: null
     vpn_tunnel: vpn-to-onprem-ew1-1
-  module.landing-to-onprem-primary-vpn[0].google_compute_router_peer.bgp_peer["0"]:
-    advertise_mode: DEFAULT
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_router_peer.bgp_peer["0"]
+  : advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
@@ -1462,8 +1708,8 @@ values:
     router: vpn-vpn-to-onprem-ew1
     router_appliance_instance: null
     timeouts: null
-  module.landing-to-onprem-primary-vpn[0].google_compute_router_peer.bgp_peer["1"]:
-    advertise_mode: DEFAULT
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_router_peer.bgp_peer["1"]
+  : advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
@@ -1479,8 +1725,8 @@ values:
     router: vpn-vpn-to-onprem-ew1
     router_appliance_instance: null
     timeouts: null
-  module.landing-to-onprem-primary-vpn[0].google_compute_vpn_tunnel.tunnels["0"]:
-    description: null
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_vpn_tunnel.tunnels["0"]
+  : description: null
     ike_version: 2
     labels: null
     name: vpn-to-onprem-ew1-0
@@ -1493,8 +1739,8 @@ values:
     target_vpn_gateway: null
     timeouts: null
     vpn_gateway_interface: 0
-  module.landing-to-onprem-primary-vpn[0].google_compute_vpn_tunnel.tunnels["1"]:
-    description: null
+  ? module.landing-to-onprem-primary-vpn[0].google_compute_vpn_tunnel.tunnels["1"]
+  : description: null
     ike_version: 2
     labels: null
     name: vpn-to-onprem-ew1-1
@@ -1511,18 +1757,18 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-  module.landing-to-onprem-secondary-vpn[0].google_compute_external_vpn_gateway.external_gateway["default"]:
-    description: Terraform managed external VPN gateway
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_external_vpn_gateway.external_gateway["default"]
+  : description: Terraform managed external VPN gateway
     interface:
-    - id: 0
-      ip_address: 8.8.4.4
+      - id: 0
+        ip_address: 8.8.4.4
     labels: null
     name: vpn-to-onprem-ew4-default
     project: fast2-prod-net-landing-0
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     timeouts: null
-  module.landing-to-onprem-secondary-vpn[0].google_compute_ha_vpn_gateway.ha_gateway[0]:
-    description: Terraform managed external VPN gateway
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_ha_vpn_gateway.ha_gateway[0]
+  : description: Terraform managed external VPN gateway
     name: vpn-to-onprem-ew4
     project: fast2-prod-net-landing-0
     region: europe-west4
@@ -1530,25 +1776,25 @@ values:
     timeouts: null
   module.landing-to-onprem-secondary-vpn[0].google_compute_router.router[0]:
     bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: gcp
-        range: 10.1.0.0/16
-      - description: gcp-restricted
-        range: 199.36.153.4/30
-      - description: gcp-dns
-        range: 35.199.192.0/19
-      asn: 65501
-      keepalive_interval: 20
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: gcp
+            range: 10.1.0.0/16
+          - description: gcp-restricted
+            range: 199.36.153.4/30
+          - description: gcp-dns
+            range: 35.199.192.0/19
+        asn: 65501
+        keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     name: vpn-vpn-to-onprem-ew4
     project: fast2-prod-net-landing-0
     region: europe-west4
     timeouts: null
-  module.landing-to-onprem-secondary-vpn[0].google_compute_router_interface.router_interface["0"]:
-    interconnect_attachment: null
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_router_interface.router_interface["0"]
+  : interconnect_attachment: null
     ip_range: 169.254.3.2/30
     name: vpn-to-onprem-ew4-0
     private_ip_address: null
@@ -1558,8 +1804,8 @@ values:
     subnetwork: null
     timeouts: null
     vpn_tunnel: vpn-to-onprem-ew4-0
-  module.landing-to-onprem-secondary-vpn[0].google_compute_router_interface.router_interface["1"]:
-    interconnect_attachment: null
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_router_interface.router_interface["1"]
+  : interconnect_attachment: null
     ip_range: 169.254.4.2/30
     name: vpn-to-onprem-ew4-1
     private_ip_address: null
@@ -1569,8 +1815,8 @@ values:
     subnetwork: null
     timeouts: null
     vpn_tunnel: vpn-to-onprem-ew4-1
-  module.landing-to-onprem-secondary-vpn[0].google_compute_router_peer.bgp_peer["0"]:
-    advertise_mode: DEFAULT
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_router_peer.bgp_peer["0"]
+  : advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
@@ -1586,8 +1832,8 @@ values:
     router: vpn-vpn-to-onprem-ew4
     router_appliance_instance: null
     timeouts: null
-  module.landing-to-onprem-secondary-vpn[0].google_compute_router_peer.bgp_peer["1"]:
-    advertise_mode: DEFAULT
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_router_peer.bgp_peer["1"]
+  : advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
@@ -1603,8 +1849,8 @@ values:
     router: vpn-vpn-to-onprem-ew4
     router_appliance_instance: null
     timeouts: null
-  module.landing-to-onprem-secondary-vpn[0].google_compute_vpn_tunnel.tunnels["0"]:
-    description: null
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_vpn_tunnel.tunnels["0"]
+  : description: null
     ike_version: 2
     labels: null
     name: vpn-to-onprem-ew4-0
@@ -1617,8 +1863,8 @@ values:
     target_vpn_gateway: null
     timeouts: null
     vpn_gateway_interface: 0
-  module.landing-to-onprem-secondary-vpn[0].google_compute_vpn_tunnel.tunnels["1"]:
-    description: null
+  ? module.landing-to-onprem-secondary-vpn[0].google_compute_vpn_tunnel.tunnels["1"]
+  : description: null
     ike_version: 2
     labels: null
     name: vpn-to-onprem-ew4-1
@@ -1635,93 +1881,6 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-landing"]:
-    allow:
-    - ports:
-      - '22'
-      protocol: tcp
-    deny: []
-    description: Allow traffic from Google healthchecks to NVA appliances
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-hc-nva-ssh-landing
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 130.211.0.0/22
-    - 209.85.152.0/22
-    - 209.85.204.0/22
-    - 35.191.0.0/16
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-landing"]:
-    allow:
-    - ports:
-      - '179'
-      protocol: tcp
-    deny: []
-    description: Allow BGP traffic from NCC Cloud Routers to NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-ncc-nva-bgp-landing
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 10.128.64.201/32
-    - 10.128.64.202/32
-    - 10.128.96.201/32
-    - 10.128.96.202/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags:
-    - nva
-    timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-landing-example"]:
-    allow:
-    - ports:
-      - '12345'
-      protocol: tcp
-    deny: []
-    description: Allow traffic from onprem probes
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-onprem-probes-landing-example
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 10.255.255.254/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["landing-ingress-default-deny"]:
-    allow: []
-    deny:
-    - ports: []
-      protocol: all
-    description: Deny and log any unmatched ingress traffic.
-    direction: INGRESS
-    disabled: false
-    log_config:
-    - metadata: EXCLUDE_ALL_METADATA
-    name: landing-ingress-default-deny
-    priority: 65535
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 0.0.0.0/0
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
   module.landing-vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: true
@@ -1737,6 +1896,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: prod-landing-0-private-googleapis
+    network: prod-landing-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1749,6 +1909,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: prod-landing-0-restricted-googleapis
+    network: prod-landing-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1757,24 +1918,26 @@ values:
     project: fast2-prod-net-landing-0
     tags: null
     timeouts: null
-  module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west1/landing-default"]:
-    description: Default europe-west1 subnet for landing
+  ? module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west1/landing-default"]
+  : description: Default europe-west1 subnet for landing
     ip_cidr_range: 10.64.0.0/24
     ipv6_access_type: null
     log_config: []
     name: landing-default
+    network: prod-landing-0
     private_ip_google_access: true
     project: fast2-prod-net-landing-0
     region: europe-west1
     role: null
     secondary_ip_range: []
     timeouts: null
-  module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west4/landing-default"]:
-    description: Default europe-west4 subnet for landing
+  ? module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west4/landing-default"]
+  : description: Default europe-west4 subnet for landing
     ip_cidr_range: 10.80.0.0/24
     ipv6_access_type: null
     log_config: []
     name: landing-default
+    network: prod-landing-0
     private_ip_google_access: true
     project: fast2-prod-net-landing-0
     region: europe-west4
@@ -1788,140 +1951,7 @@ values:
     enable_logging: null
     name: prod-landing-0
     networks:
-    - {}
-    project: fast2-prod-net-landing-0
-    timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-dmz"]:
-    allow:
-    - ports:
-      - '22'
-      protocol: tcp
-    deny: []
-    description: Allow traffic from Google healthchecks to NVA appliances
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-hc-nva-ssh-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 130.211.0.0/22
-    - 209.85.152.0/22
-    - 209.85.204.0/22
-    - 35.191.0.0/16
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-dmz"]:
-    allow:
-    - ports:
-      - '179'
-      protocol: tcp
-    deny: []
-    description: Allow BGP traffic from NCC Cloud Routers to NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-ncc-nva-bgp-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 10.128.0.201/32
-    - 10.128.0.202/32
-    - 10.128.32.201/32
-    - 10.128.32.202/32
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags:
-    - nva
-    timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-dmz"]:
-    allow:
-    - ports:
-      - '179'
-      protocol: tcp
-    deny: []
-    description: Allow BGP traffic from cross-regional NVAs
-    direction: INGRESS
-    disabled: false
-    log_config: []
-    name: allow-nva-nva-bgp-dmz
-    priority: 1000
-    project: fast2-prod-net-landing-0
-    source_ranges: null
-    source_service_accounts: null
-    source_tags:
-    - nva
-    target_service_accounts: null
-    target_tags:
-    - nva
-    timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["dmz-ingress-default-deny"]:
-    allow: []
-    deny:
-    - ports: []
-      protocol: all
-    description: Deny and log any unmatched ingress traffic.
-    direction: INGRESS
-    disabled: false
-    log_config:
-    - metadata: EXCLUDE_ALL_METADATA
-    name: dmz-ingress-default-deny
-    priority: 65535
-    project: fast2-prod-net-landing-0
-    source_ranges:
-    - 0.0.0.0/0
-    source_service_accounts: null
-    source_tags: null
-    target_service_accounts: null
-    target_tags: null
-    timeouts: null
-  module.dmz-vpc.google_compute_network.network[0]:
-    auto_create_subnetworks: false
-    delete_default_routes_on_create: false
-    description: Terraform-managed.
-    enable_ula_internal_ipv6: null
-    mtu: 1500
-    name: prod-dmz-0
-    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: fast2-prod-net-landing-0
-    routing_mode: GLOBAL
-    timeouts: null
-  module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west1/dmz-default"]:
-    description: Default europe-west1 subnet for DMZ
-    ip_cidr_range: 10.64.128.0/24
-    ipv6_access_type: null
-    log_config: []
-    name: dmz-default
-    private_ip_google_access: true
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    role: null
-    secondary_ip_range: []
-    timeouts: null
-  module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west4/dmz-default"]:
-    description: Default europe-west4 subnet for DMZ
-    ip_cidr_range: 10.80.128.0/24
-    ipv6_access_type: null
-    log_config: []
-    name: dmz-default
-    private_ip_google_access: true
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    role: null
-    secondary_ip_range: []
-    timeouts: null
-  module.dmz-vpc.google_dns_policy.default[0]:
-    alternative_name_server_config: []
-    description: Managed by Terraform
-    enable_inbound_forwarding: true
-    enable_logging: true
-    name: prod-dmz-0
-    networks:
-    - {}
+      - {}
     project: fast2-prod-net-landing-0
     timeouts: null
   module.nva["primary-b"].google_compute_instance.default[0]:
@@ -1929,15 +1959,15 @@ values:
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
-      disk_encryption_key_raw: null
-      initialize_params:
-      - enable_confidential_compute: null
-        image: projects/cos-cloud/global/images/family/cos-stable
-        resource_manager_tags: null
-        size: 10
-        type: pd-balanced
-      mode: READ_WRITE
+      - auto_delete: true
+        disk_encryption_key_raw: null
+        initialize_params:
+          - enable_confidential_compute: null
+            image: projects/cos-cloud/global/images/family/cos-stable
+            resource_manager_tags: null
+            size: 10
+            type: pd-balanced
+        mode: READ_WRITE
     can_ip_forward: true
     deletion_protection: false
     description: Managed by the compute-vm Terraform module.
@@ -1947,7 +1977,8 @@ values:
     labels: null
     machine_type: e2-standard-2
     metadata:
-      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+      user-data:
+        "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
         \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
         \ file except in compliance with the License.\n# You may obtain a copy of\
         \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
@@ -1999,14 +2030,14 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
-        \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
-        \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
-        \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
-        \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.101\n\
-        \       bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 10100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list PRIMARY\n        set metric 50\n\
+        \      \n      router bgp 64513\n       bgp router-id 10.64.128.101\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
         \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
         \     no bgp network import-check\n      !\n       neighbor 10.64.128.201\
         \ remote-as 64512\n       neighbor 10.64.128.202 remote-as 64512\n      !\n\
@@ -2016,30 +2047,16 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
-        \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
-        \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
-        \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
-        \ soft-reconfiguration inbound\n       exit-address-family\n      \n\n  -\
-        \ path: /etc/frr/vtysh.conf\n    owner: root\n    permissions: 0644\n    content:\
-        \ |\n      # Copyright 2023 Google LLC\n      #\n      # Licensed under the\
-        \ Apache License, Version 2.0 (the \"License\");\n      # you may not use\
-        \ this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.64.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.64.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor 10.64.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.80.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.80.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2049,22 +2066,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2132,44 +2163,44 @@ values:
     metadata_startup_script: null
     name: nva-ew1-b
     network_interface:
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.64.128.101
-      nic_type: null
-      queue_count: null
-      security_policy: null
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.64.0.101
-      nic_type: null
-      queue_count: null
-      security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.64.128.101
+        nic_type: null
+        queue_count: null
+        security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.64.0.101
+        nic_type: null
+        queue_count: null
+        security_policy: null
     network_performance_config: []
     params: []
     project: fast2-prod-net-landing-0
     resource_policies: null
     scheduling:
-    - automatic_restart: true
-      instance_termination_action: null
-      local_ssd_recovery_timeout: []
-      maintenance_interval: null
-      max_run_duration: []
-      min_node_cpus: null
-      node_affinities: []
-      on_host_maintenance: MIGRATE
-      preemptible: false
-      provisioning_model: STANDARD
+      - automatic_restart: true
+        instance_termination_action: null
+        local_ssd_recovery_timeout: []
+        maintenance_interval: null
+        max_run_duration: []
+        min_node_cpus: null
+        node_affinities: []
+        on_host_maintenance: MIGRATE
+        preemptible: false
+        provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+      - scopes:
+          - https://www.googleapis.com/auth/devstorage.read_only
+          - https://www.googleapis.com/auth/logging.write
+          - https://www.googleapis.com/auth/monitoring.write
     shielded_instance_config: []
     tags:
-    - nva
+      - nva
     timeouts: null
     zone: europe-west1-b
   module.nva["primary-c"].google_compute_instance.default[0]:
@@ -2177,15 +2208,15 @@ values:
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
-      disk_encryption_key_raw: null
-      initialize_params:
-      - enable_confidential_compute: null
-        image: projects/cos-cloud/global/images/family/cos-stable
-        resource_manager_tags: null
-        size: 10
-        type: pd-balanced
-      mode: READ_WRITE
+      - auto_delete: true
+        disk_encryption_key_raw: null
+        initialize_params:
+          - enable_confidential_compute: null
+            image: projects/cos-cloud/global/images/family/cos-stable
+            resource_manager_tags: null
+            size: 10
+            type: pd-balanced
+        mode: READ_WRITE
     can_ip_forward: true
     deletion_protection: false
     description: Managed by the compute-vm Terraform module.
@@ -2195,7 +2226,8 @@ values:
     labels: null
     machine_type: e2-standard-2
     metadata:
-      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+      user-data:
+        "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
         \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
         \ file except in compliance with the License.\n# You may obtain a copy of\
         \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
@@ -2247,14 +2279,14 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
-        \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
-        \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
-        \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
-        \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.102\n\
-        \       bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 10100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list PRIMARY\n        set metric 50\n\
+        \      \n      router bgp 64513\n       bgp router-id 10.64.128.102\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
         \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
         \     no bgp network import-check\n      !\n       neighbor 10.64.128.201\
         \ remote-as 64512\n       neighbor 10.64.128.202 remote-as 64512\n      !\n\
@@ -2264,30 +2296,16 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
-        \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
-        \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
-        \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
-        \ soft-reconfiguration inbound\n       exit-address-family\n      \n\n  -\
-        \ path: /etc/frr/vtysh.conf\n    owner: root\n    permissions: 0644\n    content:\
-        \ |\n      # Copyright 2023 Google LLC\n      #\n      # Licensed under the\
-        \ Apache License, Version 2.0 (the \"License\");\n      # you may not use\
-        \ this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.64.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.64.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor 10.64.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.80.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.80.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2297,22 +2315,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2380,44 +2412,44 @@ values:
     metadata_startup_script: null
     name: nva-ew1-c
     network_interface:
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.64.128.102
-      nic_type: null
-      queue_count: null
-      security_policy: null
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.64.0.102
-      nic_type: null
-      queue_count: null
-      security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.64.128.102
+        nic_type: null
+        queue_count: null
+        security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.64.0.102
+        nic_type: null
+        queue_count: null
+        security_policy: null
     network_performance_config: []
     params: []
     project: fast2-prod-net-landing-0
     resource_policies: null
     scheduling:
-    - automatic_restart: true
-      instance_termination_action: null
-      local_ssd_recovery_timeout: []
-      maintenance_interval: null
-      max_run_duration: []
-      min_node_cpus: null
-      node_affinities: []
-      on_host_maintenance: MIGRATE
-      preemptible: false
-      provisioning_model: STANDARD
+      - automatic_restart: true
+        instance_termination_action: null
+        local_ssd_recovery_timeout: []
+        maintenance_interval: null
+        max_run_duration: []
+        min_node_cpus: null
+        node_affinities: []
+        on_host_maintenance: MIGRATE
+        preemptible: false
+        provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+      - scopes:
+          - https://www.googleapis.com/auth/devstorage.read_only
+          - https://www.googleapis.com/auth/logging.write
+          - https://www.googleapis.com/auth/monitoring.write
     shielded_instance_config: []
     tags:
-    - nva
+      - nva
     timeouts: null
     zone: europe-west1-c
   module.nva["secondary-b"].google_compute_instance.default[0]:
@@ -2425,15 +2457,15 @@ values:
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
-      disk_encryption_key_raw: null
-      initialize_params:
-      - enable_confidential_compute: null
-        image: projects/cos-cloud/global/images/family/cos-stable
-        resource_manager_tags: null
-        size: 10
-        type: pd-balanced
-      mode: READ_WRITE
+      - auto_delete: true
+        disk_encryption_key_raw: null
+        initialize_params:
+          - enable_confidential_compute: null
+            image: projects/cos-cloud/global/images/family/cos-stable
+            resource_manager_tags: null
+            size: 10
+            type: pd-balanced
+        mode: READ_WRITE
     can_ip_forward: true
     deletion_protection: false
     description: Managed by the compute-vm Terraform module.
@@ -2443,7 +2475,8 @@ values:
     labels: null
     machine_type: e2-standard-2
     metadata:
-      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+      user-data:
+        "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
         \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
         \ file except in compliance with the License.\n# You may obtain a copy of\
         \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
@@ -2495,47 +2528,33 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
-        \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
-        \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
-        \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
-        \  bgp router-id 10.80.128.101\n       bgp bestpath as-path ignore\n     \
-        \  bgp disable-ebgp-connected-route-check\n       bgp timers 20 60\n     \
-        \ !\n       no bgp ebgp-requires-policy\n       no bgp network import-check\n\
-        \      !\n       neighbor 10.80.128.201 remote-as 64512\n       neighbor 10.80.128.202\
-        \ remote-as 64512\n      !\n       neighbor 10.80.0.201 remote-as 64515\n\
-        \       neighbor 10.80.0.201 update-source 10.80.0.101\n       neighbor 10.80.0.202\
-        \ remote-as 64515\n       neighbor 10.80.0.202 update-source 10.80.0.101\n\
-        \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
-        \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
-        \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
-        \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
-        \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
-        \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
-        \ 10.64.128.102 soft-reconfiguration inbound\n       exit-address-family\n\
-        \      \n\n  - path: /etc/frr/vtysh.conf\n    owner: root\n    permissions:\
-        \ 0644\n    content: |\n      # Copyright 2023 Google LLC\n      #\n     \
-        \ # Licensed under the Apache License, Version 2.0 (the \"License\");\n  \
-        \    # you may not use this file except in compliance with the License.\n\
-        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 10100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list SECONDARY\n        set metric 50\n\
+        \      \n      router bgp 64514\n       bgp router-id 10.80.128.101\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
+        \     no bgp network import-check\n      !\n       neighbor 10.80.128.201\
+        \ remote-as 64512\n       neighbor 10.80.128.202 remote-as 64512\n      !\n\
+        \       neighbor 10.80.0.201 remote-as 64515\n       neighbor 10.80.0.201\
+        \ update-source 10.80.0.101\n       neighbor 10.80.0.202 remote-as 64515\n\
+        \       neighbor 10.80.0.202 update-source 10.80.0.101\n      !\n       neighbor\
+        \ 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101 ebgp-multihop\
+        \ 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor 10.64.128.102\
+        \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
+        \ 10.80.128.201 route-map TO-DMZ out\n        neighbor 10.80.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.80.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.80.0.201 route-map TO-LANDING out\n        neighbor 10.80.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.80.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.80.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.64.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.64.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2545,22 +2564,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2628,44 +2661,44 @@ values:
     metadata_startup_script: null
     name: nva-ew4-b
     network_interface:
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.80.128.101
-      nic_type: null
-      queue_count: null
-      security_policy: null
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.80.0.101
-      nic_type: null
-      queue_count: null
-      security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.80.128.101
+        nic_type: null
+        queue_count: null
+        security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.80.0.101
+        nic_type: null
+        queue_count: null
+        security_policy: null
     network_performance_config: []
     params: []
     project: fast2-prod-net-landing-0
     resource_policies: null
     scheduling:
-    - automatic_restart: true
-      instance_termination_action: null
-      local_ssd_recovery_timeout: []
-      maintenance_interval: null
-      max_run_duration: []
-      min_node_cpus: null
-      node_affinities: []
-      on_host_maintenance: MIGRATE
-      preemptible: false
-      provisioning_model: STANDARD
+      - automatic_restart: true
+        instance_termination_action: null
+        local_ssd_recovery_timeout: []
+        maintenance_interval: null
+        max_run_duration: []
+        min_node_cpus: null
+        node_affinities: []
+        on_host_maintenance: MIGRATE
+        preemptible: false
+        provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+      - scopes:
+          - https://www.googleapis.com/auth/devstorage.read_only
+          - https://www.googleapis.com/auth/logging.write
+          - https://www.googleapis.com/auth/monitoring.write
     shielded_instance_config: []
     tags:
-    - nva
+      - nva
     timeouts: null
     zone: europe-west4-b
   module.nva["secondary-c"].google_compute_instance.default[0]:
@@ -2673,15 +2706,15 @@ values:
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
-      disk_encryption_key_raw: null
-      initialize_params:
-      - enable_confidential_compute: null
-        image: projects/cos-cloud/global/images/family/cos-stable
-        resource_manager_tags: null
-        size: 10
-        type: pd-balanced
-      mode: READ_WRITE
+      - auto_delete: true
+        disk_encryption_key_raw: null
+        initialize_params:
+          - enable_confidential_compute: null
+            image: projects/cos-cloud/global/images/family/cos-stable
+            resource_manager_tags: null
+            size: 10
+            type: pd-balanced
+        mode: READ_WRITE
     can_ip_forward: true
     deletion_protection: false
     description: Managed by the compute-vm Terraform module.
@@ -2691,7 +2724,8 @@ values:
     labels: null
     machine_type: e2-standard-2
     metadata:
-      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+      user-data:
+        "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
         \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
         \ file except in compliance with the License.\n# You may obtain a copy of\
         \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
@@ -2743,47 +2777,33 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-DMZ permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
-        \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
-        \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
-        \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
-        \  bgp router-id 10.80.128.102\n       bgp bestpath as-path ignore\n     \
-        \  bgp disable-ebgp-connected-route-check\n       bgp timers 20 60\n     \
-        \ !\n       no bgp ebgp-requires-policy\n       no bgp network import-check\n\
-        \      !\n       neighbor 10.80.128.201 remote-as 64512\n       neighbor 10.80.128.202\
-        \ remote-as 64512\n      !\n       neighbor 10.80.0.201 remote-as 64515\n\
-        \       neighbor 10.80.0.201 update-source 10.80.0.102\n       neighbor 10.80.0.202\
-        \ remote-as 64515\n       neighbor 10.80.0.202 update-source 10.80.0.102\n\
-        \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
-        \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
-        \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
-        \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
-        \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
-        \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
-        \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
-        \ 10.64.128.102 soft-reconfiguration inbound\n       exit-address-family\n\
-        \      \n\n  - path: /etc/frr/vtysh.conf\n    owner: root\n    permissions:\
-        \ 0644\n    content: |\n      # Copyright 2023 Google LLC\n      #\n     \
-        \ # Licensed under the Apache License, Version 2.0 (the \"License\");\n  \
-        \    # you may not use this file except in compliance with the License.\n\
-        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
-        \      #\n      # Unless required by applicable law or agreed to in writing,\
-        \ software\n      # distributed under the License is distributed on an \"\
-        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
-        \ express or implied.\n      # See the License for the specific language governing\
-        \ permissions and\n      # limitations under the License.\n      \n      #\
-        \ This is a sample file used to remove warnings\n      # when users open the\
-        \ vtysh console.\n      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner:\
-        \ root\n    permissions: 0644\n    content: |\n      alias vtysh='sudo docker\
-        \ exec -it frr sh -c vtysh'\n\n  - path: /etc/systemd/system/frr.service\n\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address prefix-list\
+        \ PRIMARY\n        set metric 10100\n      !\n      route-map TO-DMZ permit\
+        \ 20\n        match ip address prefix-list SECONDARY\n        set metric 100\n\
+        \      !\n      route-map TO-LANDING permit 10\n        match ip address prefix-list\
+        \ DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA permit\
+        \ 10\n        match ip address prefix-list SECONDARY\n        set metric 50\n\
+        \      \n      router bgp 64514\n       bgp router-id 10.80.128.102\n    \
+        \   bgp bestpath as-path ignore\n       bgp disable-ebgp-connected-route-check\n\
+        \       bgp timers 20 60\n      !\n       no bgp ebgp-requires-policy\n  \
+        \     no bgp network import-check\n      !\n       neighbor 10.80.128.201\
+        \ remote-as 64512\n       neighbor 10.80.128.202 remote-as 64512\n      !\n\
+        \       neighbor 10.80.0.201 remote-as 64515\n       neighbor 10.80.0.201\
+        \ update-source 10.80.0.102\n       neighbor 10.80.0.202 remote-as 64515\n\
+        \       neighbor 10.80.0.202 update-source 10.80.0.102\n      !\n       neighbor\
+        \ 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101 ebgp-multihop\
+        \ 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor 10.64.128.102\
+        \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
+        \ 10.80.128.201 route-map TO-DMZ out\n        neighbor 10.80.128.201 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.128.202 route-map TO-DMZ out\n\
+        \        neighbor 10.80.128.202 soft-reconfiguration inbound\n      !\n  \
+        \      neighbor 10.80.0.201 route-map TO-LANDING out\n        neighbor 10.80.0.201\
+        \ soft-reconfiguration inbound\n      !\n        neighbor 10.80.0.202 route-map\
+        \ TO-LANDING out\n        neighbor 10.80.0.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.128.101 route-map TO-NVA out\n        neighbor\
+        \ 10.64.128.101 soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.102\
+        \ route-map TO-NVA out\n        neighbor 10.64.128.102 soft-reconfiguration\
+        \ inbound\n       exit-address-family\n      \n\n  - path: /etc/frr/vtysh.conf\n\
         \    owner: root\n    permissions: 0644\n    content: |\n      # Copyright\
         \ 2023 Google LLC\n      #\n      # Licensed under the Apache License, Version\
         \ 2.0 (the \"License\");\n      # you may not use this file except in compliance\
@@ -2793,22 +2813,36 @@ values:
         \      # distributed under the License is distributed on an \"AS IS\" BASIS,\n\
         \      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
         \      # See the License for the specific language governing permissions and\n\
-        \      # limitations under the License.\n      \n      [Unit]\n      Description=Start\
-        \ FRR container\n      After=gcr-online.target docker.socket\n      Wants=gcr-online.target\
-        \ docker.socket docker-events-collector.service\n      [Service]\n      Environment=\"\
-        HOME=/home/frr\"\n      ExecStart=/usr/bin/docker run --rm --name=frr \\\n\
-        \      --privileged \\\n      --network host \\\n      -v /etc/frr:/etc/frr\
-        \ \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker stop frr\n     \
-        \ ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path: /var/lib/docker/daemon.json\n\
-        \    owner: root\n    permissions: 0644\n    content: |\n              {\n\
-        \                \"live-restore\": true,\n                \"storage-driver\"\
-        : \"overlay2\",\n                \"log-opts\": {\n                  \"max-size\"\
-        : \"1024m\"\n                }\n              }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n\
-        \    owner: root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n\
-        \      \n      # Copyright 2023 Google LLC\n      #\n      # Licensed under\
-        \ the Apache License, Version 2.0 (the \"License\");\n      # you may not\
-        \ use this file except in compliance with the License.\n      # You may obtain\
-        \ a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      # limitations under the License.\n      \n      # This is a sample\
+        \ file used to remove warnings\n      # when users open the vtysh console.\n\
+        \      \n\n  - path: /etc/profile.d/00-aliases.sh\n    owner: root\n    permissions:\
+        \ 0644\n    content: |\n      alias vtysh='sudo docker exec -it frr sh -c\
+        \ vtysh'\n\n  - path: /etc/systemd/system/frr.service\n    owner: root\n \
+        \   permissions: 0644\n    content: |\n      # Copyright 2023 Google LLC\n\
+        \      #\n      # Licensed under the Apache License, Version 2.0 (the \"License\"\
+        );\n      # you may not use this file except in compliance with the License.\n\
+        \      # You may obtain a copy of the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
+        \      #\n      # Unless required by applicable law or agreed to in writing,\
+        \ software\n      # distributed under the License is distributed on an \"\
+        AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
+        \ express or implied.\n      # See the License for the specific language governing\
+        \ permissions and\n      # limitations under the License.\n      \n      [Unit]\n\
+        \      Description=Start FRR container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/frr\"\n      ExecStart=/usr/bin/docker\
+        \ run --rm --name=frr \\\n      --privileged \\\n      --network host \\\n\
+        \      -v /etc/frr:/etc/frr \\\n      frrouting/frr\n      ExecStop=/usr/bin/docker\
+        \ stop frr\n      ExecStopPost=/usr/bin/docker rm frr\n      \n\n  - path:\
+        \ /var/lib/docker/daemon.json\n    owner: root\n    permissions: 0644\n  \
+        \  content: |\n              {\n                \"live-restore\": true,\n\
+        \                \"storage-driver\": \"overlay2\",\n                \"log-opts\"\
+        : {\n                  \"max-size\": \"1024m\"\n                }\n      \
+        \        }\n      \n\n  - path: /var/run/nva/ipprefix_by_netmask.sh\n    owner:\
+        \ root\n    permissions: 0744\n    content: |\n      #!/bin/bash\n      \n\
+        \      # Copyright 2023 Google LLC\n      #\n      # Licensed under the Apache\
+        \ License, Version 2.0 (the \"License\");\n      # you may not use this file\
+        \ except in compliance with the License.\n      # You may obtain a copy of\
+        \ the License at\n      #\n      #      http://www.apache.org/licenses/LICENSE-2.0\n\
         \      #\n      # Unless required by applicable law or agreed to in writing,\
         \ software\n      # distributed under the License is distributed on an \"\
         AS IS\" BASIS,\n      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either\
@@ -2876,44 +2910,44 @@ values:
     metadata_startup_script: null
     name: nva-ew4-c
     network_interface:
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.80.128.102
-      nic_type: null
-      queue_count: null
-      security_policy: null
-    - access_config: []
-      alias_ip_range: []
-      ipv6_access_config: []
-      network_ip: 10.80.0.102
-      nic_type: null
-      queue_count: null
-      security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.80.128.102
+        nic_type: null
+        queue_count: null
+        security_policy: null
+      - access_config: []
+        alias_ip_range: []
+        ipv6_access_config: []
+        network_ip: 10.80.0.102
+        nic_type: null
+        queue_count: null
+        security_policy: null
     network_performance_config: []
     params: []
     project: fast2-prod-net-landing-0
     resource_policies: null
     scheduling:
-    - automatic_restart: true
-      instance_termination_action: null
-      local_ssd_recovery_timeout: []
-      maintenance_interval: null
-      max_run_duration: []
-      min_node_cpus: null
-      node_affinities: []
-      on_host_maintenance: MIGRATE
-      preemptible: false
-      provisioning_model: STANDARD
+      - automatic_restart: true
+        instance_termination_action: null
+        local_ssd_recovery_timeout: []
+        maintenance_interval: null
+        max_run_duration: []
+        min_node_cpus: null
+        node_affinities: []
+        on_host_maintenance: MIGRATE
+        preemptible: false
+        provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+      - scopes:
+          - https://www.googleapis.com/auth/devstorage.read_only
+          - https://www.googleapis.com/auth/logging.write
+          - https://www.googleapis.com/auth/monitoring.write
     shielded_instance_config: []
     tags:
-    - nva
+      - nva
     timeouts: null
     zone: europe-west4-c
   module.peering-dev.google_compute_network_peering.local_network_peering:
@@ -2944,9 +2978,9 @@ values:
     import_subnet_routes_with_public_ip: null
     stack_type: IPV4_ONLY
     timeouts: null
-  module.prod-dns-peer-landing-rev-10.google_dns_managed_zone.dns_managed_zone[0]:
-    cloud_logging_config:
-    - enable_logging: false
+  ? module.prod-dns-peer-landing-rev-10.google_dns_managed_zone.dns_managed_zone[0]
+  : cloud_logging_config:
+      - enable_logging: false
     description: Terraform managed.
     dns_name: 10.in-addr.arpa.
     dnssec_config: []
@@ -2961,7 +2995,7 @@ values:
     visibility: private
   module.prod-dns-peer-landing-root.google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-    - enable_logging: false
+      - enable_logging: false
     description: Terraform managed.
     dns_name: .
     dnssec_config: []
@@ -2976,7 +3010,7 @@ values:
     visibility: private
   module.prod-dns-private-zone.google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-    - enable_logging: false
+      - enable_logging: false
     description: Terraform managed.
     dns_name: prod.gcp.example.com.
     dnssec_config: []
@@ -2989,40 +3023,41 @@ values:
     service_directory_config: []
     timeouts: null
     visibility: private
-  module.prod-dns-private-zone.google_dns_record_set.dns_record_set["A localhost"]:
-    managed_zone: prod-gcp-example-com
+  ? module.prod-dns-private-zone.google_dns_record_set.dns_record_set["A localhost"]
+  : managed_zone: prod-gcp-example-com
     name: localhost.prod.gcp.example.com.
     project: fast2-prod-net-spoke-0
     routing_policy: []
     rrdatas:
-    - 127.0.0.1
+      - 127.0.0.1
     ttl: 300
     type: A
-  module.prod-spoke-firewall.google_compute_firewall.custom-rules["ingress-default-deny"]:
-    allow: []
+  ? module.prod-spoke-firewall.google_compute_firewall.custom-rules["ingress-default-deny"]
+  : allow: []
     deny:
-    - ports: []
-      protocol: all
+      - ports: []
+        protocol: all
     description: Deny and log any unmatched ingress traffic.
     direction: INGRESS
     disabled: false
     log_config:
-    - metadata: EXCLUDE_ALL_METADATA
+      - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-deny
+    network: prod-spoke-0
     priority: 65535
     project: fast2-prod-net-spoke-0
     source_ranges:
-    - 0.0.0.0/0
+      - 0.0.0.0/0
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.prod-spoke-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: fast2-prod-net-spoke-0
+  ? module.prod-spoke-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]
+  : project: fast2-prod-net-spoke-0
     timeouts: null
-  module.prod-spoke-project.google_monitoring_monitored_project.primary["fast2-prod-net-landing-0"]:
-    metrics_scope: fast2-prod-net-landing-0
+  ? module.prod-spoke-project.google_monitoring_monitored_project.primary["fast2-prod-net-landing-0"]
+  : metrics_scope: fast2-prod-net-landing-0
     name: fast2-prod-net-spoke-0
     timeouts: null
   module.prod-spoke-project.google_project.project[0]:
@@ -3035,73 +3070,73 @@ values:
     project_id: fast2-prod-net-spoke-0
     skip_delete: false
     timeouts: null
-  module.prod-spoke-project.google_project_iam_binding.authoritative["roles/dns.admin"]:
-    condition: []
+  ? module.prod-spoke-project.google_project_iam_binding.authoritative["roles/dns.admin"]
+  : condition: []
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-prod-net-spoke-0
     role: roles/dns.admin
-  module.prod-spoke-project.google_project_iam_binding.bindings["sa_delegated_grants"]:
-    condition:
-    - description: Production host project delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/composer.sharedVpcAgent','roles/compute.networkUser','roles/compute.networkViewer','roles/container.hostServiceAgentUser','roles/multiclusterservicediscovery.serviceAgent','roles/vpcaccess.user'])
-      title: prod_stage3_sa_delegated_grants
+  ? module.prod-spoke-project.google_project_iam_binding.bindings["sa_delegated_grants"]
+  : condition:
+      - description: Production host project delegated grants.
+        expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/composer.sharedVpcAgent','roles/compute.networkUser','roles/compute.networkViewer','roles/container.hostServiceAgentUser','roles/multiclusterservicediscovery.serviceAgent','roles/vpcaccess.user'])
+        title: prod_stage3_sa_delegated_grants
     members:
-    - serviceAccount:string
+      - serviceAccount:string
     project: fast2-prod-net-spoke-0
     role: roles/resourcemanager.projectIamAdmin
   module.prod-spoke-project.google_project_iam_member.servicenetworking[0]:
     condition: []
     project: fast2-prod-net-spoke-0
     role: roles/servicenetworking.serviceAgent
-  module.prod-spoke-project.google_project_service.project_services["compute.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["compute.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: compute.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["dns.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["dns.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["iap.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["iap.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["networkmanagement.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["networkmanagement.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["servicenetworking.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["servicenetworking.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["stackdriver.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: stackdriver.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service.project_services["vpcaccess.googleapis.com"]:
-    disable_dependent_services: false
+  ? module.prod-spoke-project.google_project_service.project_services["vpcaccess.googleapis.com"]
+  : disable_dependent_services: false
     disable_on_destroy: false
     project: fast2-prod-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service_identity.jit_si["iap.googleapis.com"]:
-    project: fast2-prod-net-spoke-0
+  ? module.prod-spoke-project.google_project_service_identity.jit_si["iap.googleapis.com"]
+  : project: fast2-prod-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
-  module.prod-spoke-project.google_project_service_identity.servicenetworking[0]:
-    project: fast2-prod-net-spoke-0
+  ? module.prod-spoke-project.google_project_service_identity.servicenetworking[0]
+  : project: fast2-prod-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.prod-spoke-vpc.google_compute_network.network[0]:
@@ -3119,6 +3154,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: prod-spoke-0-private-googleapis
+    network: prod-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -3131,6 +3167,7 @@ values:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: prod-spoke-0-restricted-googleapis
+    network: prod-spoke-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -3139,24 +3176,26 @@ values:
     project: fast2-prod-net-spoke-0
     tags: null
     timeouts: null
-  module.prod-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/prod-default"]:
-    description: Default europe-west1 subnet for prod
+  ? module.prod-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west1/prod-default"]
+  : description: Default europe-west1 subnet for prod
     ip_cidr_range: 10.72.0.0/24
     ipv6_access_type: null
     log_config: []
     name: prod-default
+    network: prod-spoke-0
     private_ip_google_access: true
     project: fast2-prod-net-spoke-0
     region: europe-west1
     role: null
     secondary_ip_range: []
     timeouts: null
-  module.prod-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west4/prod-default"]:
-    description: Default europe-west4 subnet for prod
+  ? module.prod-spoke-vpc.google_compute_subnetwork.subnetwork["europe-west4/prod-default"]
+  : description: Default europe-west4 subnet for prod
     ip_cidr_range: 10.88.0.0/24
     ipv6_access_type: null
     log_config: []
     name: prod-default
+    network: prod-spoke-0
     private_ip_google_access: true
     project: fast2-prod-net-spoke-0
     region: europe-west4
@@ -3170,248 +3209,18 @@ values:
     enable_logging: true
     name: prod-spoke-0
     networks:
-    - {}
+      - {}
     project: fast2-prod-net-spoke-0
-    timeouts: null
-  module.spokes-landing["primary"].google_compute_router.cr:
-    bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: GCP landing primary.
-        range: 10.64.0.0/17
-      - description: GCP dev primary.
-        range: 10.68.0.0/16
-      - description: GCP prod primary.
-        range: 10.72.0.0/16
-      - description: GCP landing secondary.
-        range: 10.80.0.0/17
-      - description: GCP dev secondary.
-        range: 10.84.0.0/16
-      - description: GCP prod secondary.
-        range: 10.88.0.0/16
-      asn: 64515
-      keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    name: prod-spoke-landing-ew1-cr
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    timeouts: null
-  module.spokes-landing["primary"].google_compute_router_interface.intf_0:
-    interconnect_attachment: null
-    name: prod-spoke-landing-ew1-cr-intf0
-    private_ip_address: 10.64.0.201
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-landing["primary"].google_compute_router_interface.intf_1:
-    interconnect_attachment: null
-    name: prod-spoke-landing-ew1-cr-intf1
-    private_ip_address: 10.64.0.202
-    project: fast2-prod-net-landing-0
-    redundant_interface: prod-spoke-landing-ew1-cr-intf0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-landing["primary"].google_compute_router_peer.peer_0["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew1-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-  module.spokes-landing["primary"].google_compute_router_peer.peer_0["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew1-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-  module.spokes-landing["primary"].google_compute_router_peer.peer_1["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew1-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-  module.spokes-landing["primary"].google_compute_router_peer.peer_1["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew1-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64513
-    project: fast2-prod-net-landing-0
-    region: europe-west1
-    router: prod-spoke-landing-ew1-cr
-    timeouts: null
-  module.spokes-landing["primary"].google_network_connectivity_spoke.spoke-ra:
-    description: null
-    labels: null
-    linked_interconnect_attachments: []
-    linked_router_appliance_instances:
-    - instances:
-      - {}
-      - {}
-      site_to_site_data_transfer: false
-    linked_vpc_network: []
-    linked_vpn_tunnels: []
-    location: europe-west1
-    name: prod-spoke-landing-ew1
-    project: fast2-prod-net-landing-0
-    timeouts: null
-  module.spokes-landing["secondary"].google_compute_router.cr:
-    bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: GCP landing primary.
-        range: 10.64.0.0/17
-      - description: GCP dev primary.
-        range: 10.68.0.0/16
-      - description: GCP prod primary.
-        range: 10.72.0.0/16
-      - description: GCP landing secondary.
-        range: 10.80.0.0/17
-      - description: GCP dev secondary.
-        range: 10.84.0.0/16
-      - description: GCP prod secondary.
-        range: 10.88.0.0/16
-      asn: 64515
-      keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    name: prod-spoke-landing-ew4-cr
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    timeouts: null
-  module.spokes-landing["secondary"].google_compute_router_interface.intf_0:
-    interconnect_attachment: null
-    name: prod-spoke-landing-ew4-cr-intf0
-    private_ip_address: 10.80.0.201
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-landing["secondary"].google_compute_router_interface.intf_1:
-    interconnect_attachment: null
-    name: prod-spoke-landing-ew4-cr-intf1
-    private_ip_address: 10.80.0.202
-    project: fast2-prod-net-landing-0
-    redundant_interface: prod-spoke-landing-ew4-cr-intf0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-    vpn_tunnel: null
-  module.spokes-landing["secondary"].google_compute_router_peer.peer_0["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew4-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-  module.spokes-landing["secondary"].google_compute_router_peer.peer_0["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew4-cr-intf0
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-  module.spokes-landing["secondary"].google_compute_router_peer.peer_1["0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew4-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-  module.spokes-landing["secondary"].google_compute_router_peer.peer_1["1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: null
-    advertised_ip_ranges: []
-    advertised_route_priority: 100
-    enable: true
-    enable_ipv6: false
-    interface: prod-spoke-landing-ew4-cr-intf1
-    md5_authentication_key: []
-    peer_asn: 64514
-    project: fast2-prod-net-landing-0
-    region: europe-west4
-    router: prod-spoke-landing-ew4-cr
-    timeouts: null
-  module.spokes-landing["secondary"].google_network_connectivity_spoke.spoke-ra:
-    description: null
-    labels: null
-    linked_interconnect_attachments: []
-    linked_router_appliance_instances:
-    - instances:
-      - {}
-      - {}
-      site_to_site_data_transfer: false
-    linked_vpc_network: []
-    linked_vpn_tunnels: []
-    location: europe-west4
-    name: prod-spoke-landing-ew4
-    project: fast2-prod-net-landing-0
     timeouts: null
   module.spokes-dmz["primary"].google_compute_router.cr:
     bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: Default route.
-        range: 0.0.0.0/0
-      asn: 64512
-      keepalive_interval: 20
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: Default route.
+            range: 0.0.0.0/0
+        asn: 64512
+        keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     name: prod-spoke-dmz-ew1-cr
@@ -3498,10 +3307,10 @@ values:
     labels: null
     linked_interconnect_attachments: []
     linked_router_appliance_instances:
-    - instances:
-      - {}
-      - {}
-      site_to_site_data_transfer: false
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
     linked_vpc_network: []
     linked_vpn_tunnels: []
     location: europe-west1
@@ -3510,13 +3319,13 @@ values:
     timeouts: null
   module.spokes-dmz["secondary"].google_compute_router.cr:
     bgp:
-    - advertise_mode: CUSTOM
-      advertised_groups: []
-      advertised_ip_ranges:
-      - description: Default route.
-        range: 0.0.0.0/0
-      asn: 64512
-      keepalive_interval: 20
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: Default route.
+            range: 0.0.0.0/0
+        asn: 64512
+        keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     name: prod-spoke-dmz-ew4-cr
@@ -3603,14 +3412,244 @@ values:
     labels: null
     linked_interconnect_attachments: []
     linked_router_appliance_instances:
-    - instances:
-      - {}
-      - {}
-      site_to_site_data_transfer: false
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
     linked_vpc_network: []
     linked_vpn_tunnels: []
     location: europe-west4
     name: prod-spoke-dmz-ew4
+    project: fast2-prod-net-landing-0
+    timeouts: null
+  module.spokes-landing["primary"].google_compute_router.cr:
+    bgp:
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: GCP landing primary.
+            range: 10.64.0.0/17
+          - description: GCP dev primary.
+            range: 10.68.0.0/16
+          - description: GCP prod primary.
+            range: 10.72.0.0/16
+          - description: GCP landing secondary.
+            range: 10.80.0.0/17
+          - description: GCP dev secondary.
+            range: 10.84.0.0/16
+          - description: GCP prod secondary.
+            range: 10.88.0.0/16
+        asn: 64515
+        keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: prod-spoke-landing-ew1-cr
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    timeouts: null
+  module.spokes-landing["primary"].google_compute_router_interface.intf_0:
+    interconnect_attachment: null
+    name: prod-spoke-landing-ew1-cr-intf0
+    private_ip_address: 10.64.0.201
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-landing["primary"].google_compute_router_interface.intf_1:
+    interconnect_attachment: null
+    name: prod-spoke-landing-ew1-cr-intf1
+    private_ip_address: 10.64.0.202
+    project: fast2-prod-net-landing-0
+    redundant_interface: prod-spoke-landing-ew1-cr-intf0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-landing["primary"].google_compute_router_peer.peer_0["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew1-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+  module.spokes-landing["primary"].google_compute_router_peer.peer_0["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew1-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+  module.spokes-landing["primary"].google_compute_router_peer.peer_1["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew1-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+  module.spokes-landing["primary"].google_compute_router_peer.peer_1["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew1-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64513
+    project: fast2-prod-net-landing-0
+    region: europe-west1
+    router: prod-spoke-landing-ew1-cr
+    timeouts: null
+  module.spokes-landing["primary"].google_network_connectivity_spoke.spoke-ra:
+    description: null
+    labels: null
+    linked_interconnect_attachments: []
+    linked_router_appliance_instances:
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west1
+    name: prod-spoke-landing-ew1
+    project: fast2-prod-net-landing-0
+    timeouts: null
+  module.spokes-landing["secondary"].google_compute_router.cr:
+    bgp:
+      - advertise_mode: CUSTOM
+        advertised_groups: []
+        advertised_ip_ranges:
+          - description: GCP landing primary.
+            range: 10.64.0.0/17
+          - description: GCP dev primary.
+            range: 10.68.0.0/16
+          - description: GCP prod primary.
+            range: 10.72.0.0/16
+          - description: GCP landing secondary.
+            range: 10.80.0.0/17
+          - description: GCP dev secondary.
+            range: 10.84.0.0/16
+          - description: GCP prod secondary.
+            range: 10.88.0.0/16
+        asn: 64515
+        keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: prod-spoke-landing-ew4-cr
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    timeouts: null
+  module.spokes-landing["secondary"].google_compute_router_interface.intf_0:
+    interconnect_attachment: null
+    name: prod-spoke-landing-ew4-cr-intf0
+    private_ip_address: 10.80.0.201
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-landing["secondary"].google_compute_router_interface.intf_1:
+    interconnect_attachment: null
+    name: prod-spoke-landing-ew4-cr-intf1
+    private_ip_address: 10.80.0.202
+    project: fast2-prod-net-landing-0
+    redundant_interface: prod-spoke-landing-ew4-cr-intf0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+    vpn_tunnel: null
+  module.spokes-landing["secondary"].google_compute_router_peer.peer_0["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew4-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+  module.spokes-landing["secondary"].google_compute_router_peer.peer_0["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew4-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+  module.spokes-landing["secondary"].google_compute_router_peer.peer_1["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew4-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+  module.spokes-landing["secondary"].google_compute_router_peer.peer_1["1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    interface: prod-spoke-landing-ew4-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 64514
+    project: fast2-prod-net-landing-0
+    region: europe-west4
+    router: prod-spoke-landing-ew4-cr
+    timeouts: null
+  module.spokes-landing["secondary"].google_network_connectivity_spoke.spoke-ra:
+    description: null
+    labels: null
+    linked_interconnect_attachments: []
+    linked_router_appliance_instances:
+      - instances:
+          - {}
+          - {}
+        site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west4
+    name: prod-spoke-landing-ew4
     project: fast2-prod-net-landing-0
     timeouts: null
 
@@ -3654,3 +3693,13 @@ counts:
   modules: 37
   random_id: 2
   resources: 212
+
+outputs:
+  host_project_ids:
+    dev-spoke-0: fast2-dev-net-spoke-0
+    prod-landing: fast2-prod-net-landing-0
+    prod-spoke-0: fast2-prod-net-spoke-0
+  host_project_numbers: __missing__
+  shared_vpc_self_links: __missing__
+  tfvars: __missing__
+  vpn_gateway_endpoints: __missing__

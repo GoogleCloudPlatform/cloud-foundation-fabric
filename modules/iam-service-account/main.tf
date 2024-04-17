@@ -33,8 +33,8 @@ locals {
   service_account_id_static = "projects/${var.project_id}/serviceAccounts/${local.resource_email_static}"
   service_account = (
     var.service_account_create
-    ? try(google_service_account.service_account.0, null)
-    : try(data.google_service_account.service_account.0, null)
+    ? try(google_service_account.service_account[0], null)
+    : try(data.google_service_account.service_account[0], null)
   )
   service_account_credential_templates = {
     for file, _ in local.public_keys_data : file => jsonencode(

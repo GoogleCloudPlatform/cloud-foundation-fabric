@@ -34,7 +34,7 @@ module "glb-redirect" {
   count                = local.glb_create ? 1 : 0
   project_id           = module.project.project_id
   name                 = "phpipam-glb-redirect"
-  address              = module.addresses.0.global_addresses["phpipam"].address
+  address              = module.addresses[0].global_addresses["phpipam"].address
   health_check_configs = {}
   urlmap_config = {
     description = "URL redirect for phpipam glb."
@@ -51,7 +51,7 @@ module "glb" {
   count      = local.glb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "phpipam-glb"
-  address    = module.addresses.0.global_addresses["phpipam"].address
+  address    = module.addresses[0].global_addresses["phpipam"].address
   protocol   = "HTTPS"
 
   backend_service_configs = {

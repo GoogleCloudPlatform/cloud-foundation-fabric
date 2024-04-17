@@ -30,7 +30,7 @@ module "branch-dp-dev-cicd-repo" {
   iam = {
     "roles/source.admin" = local.branch_optional_sa_lists.dp-dev
     "roles/source.reader" = compact([
-      try(module.branch-dp-dev-sa-cicd.0.iam_email, "")
+      try(module.branch-dp-dev-sa-cicd[0].iam_email, "")
     ])
   }
   triggers = {
@@ -39,7 +39,7 @@ module "branch-dp-dev-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-dp-dev-sa-cicd.0.id
+      service_account = module.branch-dp-dev-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null
@@ -63,7 +63,7 @@ module "branch-dp-prod-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin"  = local.branch_optional_sa_lists.dp-prod
-    "roles/source.reader" = [module.branch-dp-prod-sa-cicd.0.iam_email]
+    "roles/source.reader" = [module.branch-dp-prod-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-dp-prod = {
@@ -71,7 +71,7 @@ module "branch-dp-prod-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-dp-prod-sa-cicd.0.id
+      service_account = module.branch-dp-prod-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

@@ -111,12 +111,6 @@ variable "router_config" {
   nullable = false
 }
 
-variable "vlan_tag" {
-  description = "The VLAN id to be used for this VLAN attachment."
-  type        = number
-  default     = null
-}
-
 variable "vpn_gateways_ip_range" {
   description = "The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled."
   type        = string

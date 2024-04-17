@@ -34,7 +34,7 @@ module "cloudsql" {
   region = var.region
   tier   = local.cloudsql_conf.tier
   users = {
-    "${local.cloudsql_conf.user}" = {
+    (local.cloudsql_conf.user) = {
       password = var.cloudsql_password
       type     = "BUILT_IN"
     }

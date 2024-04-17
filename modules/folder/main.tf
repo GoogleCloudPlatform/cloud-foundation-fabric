@@ -17,8 +17,8 @@
 locals {
   folder = (
     var.folder_create
-    ? try(google_folder.folder.0, null)
-    : try(data.google_folder.folder.0, null)
+    ? try(google_folder.folder[0], null)
+    : try(data.google_folder.folder[0], null)
   )
 }
 

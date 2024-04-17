@@ -31,7 +31,7 @@ resource "google_storage_bucket_object" "bootstrap-ignition" {
 data "google_storage_object_signed_url" "bootstrap-ignition" {
   count       = local.bootstrapping ? 1 : 0
   bucket      = google_storage_bucket.bootstrap-ignition.name
-  path        = google_storage_bucket_object.bootstrap-ignition.0.name
+  path        = google_storage_bucket_object.bootstrap-ignition[0].name
   credentials = file(local.fs_paths.credentials)
 }
 
@@ -67,7 +67,7 @@ resource "google_compute_instance" "bootstrap" {
       ignition = {
         config = {
           replace = !local.bootstrapping ? {} : {
-            source = data.google_storage_object_signed_url.bootstrap-ignition.0.signed_url
+            source = data.google_storage_object_signed_url.bootstrap-ignition[0].signed_url
           }
         }
         version = "3.1.0"

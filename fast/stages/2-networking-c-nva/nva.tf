@@ -41,9 +41,9 @@ locals {
   nva_locality = {
     for v in setproduct(keys(var.regions), local.nva_zones) :
     join("-", v) => {
-      name   = v.0
-      region = var.regions[v.0]
-      zone   = v.1
+      name   = v[0]
+      region = var.regions[v[0]]
+      zone   = v[1]
     }
   }
   nva_zones = ["b", "c"]

@@ -67,7 +67,7 @@ module "branch-security-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-security-sa-cicd.0.iam_email, null)
+      try(module.branch-security-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -88,7 +88,7 @@ module "branch-security-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-security-r-sa-cicd.0.iam_email, null)
+      try(module.branch-security-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
