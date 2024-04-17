@@ -37,12 +37,12 @@ locals {
   orch_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
-    : values(module.orch-vpc.0.subnet_self_links)[0]
+    : values(module.orch-vpc[0].subnet_self_links)[0]
   )
   orch_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.orch-vpc.0.self_link
+    : module.orch-vpc[0].self_link
   )
   # TODO: use new artifact registry module output
   orch_docker_path = format("%s-docker.pkg.dev/%s/%s",

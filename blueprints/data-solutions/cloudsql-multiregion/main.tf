@@ -32,13 +32,13 @@ locals {
   subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_link
-    : values(module.vpc.0.subnet_self_links)[0]
+    : values(module.vpc[0].subnet_self_links)[0]
   )
   use_shared_vpc = var.network_config != null
   vpc_self_link = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.vpc.0.self_link
+    : module.vpc[0].self_link
   )
 }
 
@@ -108,17 +108,17 @@ module "vpc" {
       region        = var.regions.primary
     }
   ]
-  psa_config = {
+  psa_configs = [{
     ranges = { cloud-sql = var.sql_configuration.psa_range }
     routes = null
-  }
+  }]
 }
 
 module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.project.project_id
-  network    = module.vpc.0.name
+  network    = module.vpc[0].name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/20"]
   }
@@ -130,7 +130,7 @@ module "nat" {
   project_id     = module.project.project_id
   region         = var.regions.primary
   name           = "${var.prefix}-default"
-  router_network = module.vpc.0.name
+  router_network = module.vpc[0].name
 }
 
 module "gcs" {

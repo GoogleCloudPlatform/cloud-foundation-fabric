@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,12 +114,12 @@ resource "google_project_iam_member" "project-iap-sa-image-builder" {
 resource "local_file" "packer-vars" {
   count = var.create_packer_vars ? 1 : 0
   content = templatefile(local.packer_variables_template, {
-    PROJECT_ID         = "${var.project_id}"
-    COMPUTE_ZONE       = "${local.compute_zone}"
-    BUILDER_SA         = "${module.service-account-image-builder.email}"
-    COMPUTE_SA         = "${module.service-account-image-builder-vm.email}"
-    COMPUTE_SUBNETWORK = "${local.compute_subnet_name}"
-    USE_IAP            = "${var.use_iap}"
+    PROJECT_ID         = var.project_id
+    COMPUTE_ZONE       = local.compute_zone
+    BUILDER_SA         = module.service-account-image-builder.email
+    COMPUTE_SA         = module.service-account-image-builder-vm.email
+    COMPUTE_SUBNETWORK = local.compute_subnet_name
+    USE_IAP            = var.use_iap
   })
   filename = local.packer_variables_file
 }

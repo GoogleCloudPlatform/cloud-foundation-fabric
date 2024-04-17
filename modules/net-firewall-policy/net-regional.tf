@@ -30,7 +30,7 @@ resource "google_compute_region_network_firewall_policy_association" "net-region
   region            = var.region
   name              = "${var.name}-${each.key}"
   attachment_target = each.value
-  firewall_policy   = google_compute_region_network_firewall_policy.net-regional.0.name
+  firewall_policy   = google_compute_region_network_firewall_policy.net-regional[0].name
 }
 
 resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
@@ -42,7 +42,7 @@ resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
   )
   project                 = var.parent_id
   region                  = var.region
-  firewall_policy         = google_compute_region_network_firewall_policy.net-regional.0.name
+  firewall_policy         = google_compute_region_network_firewall_policy.net-regional[0].name
   rule_name               = local.rules[each.key].name
   action                  = local.rules[each.key].action
   description             = local.rules[each.key].description

@@ -28,8 +28,8 @@ locals {
   )
   fwd_rule_target = (
     var.protocol == "HTTPS"
-    ? google_compute_region_target_https_proxy.default.0.id
-    : google_compute_region_target_http_proxy.default.0.id
+    ? google_compute_region_target_https_proxy.default[0].id
+    : google_compute_region_target_http_proxy.default[0].id
   )
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v

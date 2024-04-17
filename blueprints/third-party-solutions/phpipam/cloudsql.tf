@@ -25,16 +25,16 @@ module "cloudsql" {
   databases                     = [local.cloudsql_conf.db]
   network_config = {
     connectivity = {
-      psa_config = {
+      psa_configs = [{
         private_network = local.network
-      }
+      }]
     }
   }
   prefix = var.prefix
   region = var.region
   tier   = local.cloudsql_conf.tier
   users = {
-    "${local.cloudsql_conf.user}" = {
+    (local.cloudsql_conf.user) = {
       password = var.cloudsql_password
       type     = "BUILT_IN"
     }

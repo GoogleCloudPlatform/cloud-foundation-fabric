@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 locals {
   # convenience flags that express where billing account resides
   automation_resman_sa = try(
-    data.google_client_openid_userinfo.provider_identity.0.email, null
+    data.google_client_openid_userinfo.provider_identity[0].email, null
   )
   automation_resman_sa_iam = (
     local.automation_resman_sa == null
@@ -26,24 +26,24 @@ locals {
   )
   # service accounts that receive additional grants on networking/security
   branch_optional_sa_lists = {
-    dp-dev    = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
-    dp-prod   = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
-    gcve-dev  = compact([try(module.branch-gcve-dev-sa.0.iam_email, "")])
-    gcve-prod = compact([try(module.branch-gcve-prod-sa.0.iam_email, "")])
-    gke-dev   = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
-    gke-prod  = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
-    pf-dev    = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
-    pf-prod   = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
+    dp-dev    = compact([try(module.branch-dp-dev-sa[0].iam_email, "")])
+    dp-prod   = compact([try(module.branch-dp-prod-sa[0].iam_email, "")])
+    gcve-dev  = compact([try(module.branch-gcve-dev-sa[0].iam_email, "")])
+    gcve-prod = compact([try(module.branch-gcve-prod-sa[0].iam_email, "")])
+    gke-dev   = compact([try(module.branch-gke-dev-sa[0].iam_email, "")])
+    gke-prod  = compact([try(module.branch-gke-prod-sa[0].iam_email, "")])
+    pf-dev    = compact([try(module.branch-pf-dev-sa[0].iam_email, "")])
+    pf-prod   = compact([try(module.branch-pf-prod-sa[0].iam_email, "")])
   }
   branch_optional_r_sa_lists = {
-    dp-dev    = compact([try(module.branch-dp-dev-r-sa.0.iam_email, "")])
-    dp-prod   = compact([try(module.branch-dp-prod-r-sa.0.iam_email, "")])
-    gcve-dev  = compact([try(module.branch-gcve-dev-r-sa.0.iam_email, "")])
-    gcve-prod = compact([try(module.branch-gcve-prod-r-sa.0.iam_email, "")])
-    gke-dev   = compact([try(module.branch-gke-dev-r-sa.0.iam_email, "")])
-    gke-prod  = compact([try(module.branch-gke-prod-r-sa.0.iam_email, "")])
-    pf-dev    = compact([try(module.branch-pf-dev-r-sa.0.iam_email, "")])
-    pf-prod   = compact([try(module.branch-pf-prod-r-sa.0.iam_email, "")])
+    dp-dev    = compact([try(module.branch-dp-dev-r-sa[0].iam_email, "")])
+    dp-prod   = compact([try(module.branch-dp-prod-r-sa[0].iam_email, "")])
+    gcve-dev  = compact([try(module.branch-gcve-dev-r-sa[0].iam_email, "")])
+    gcve-prod = compact([try(module.branch-gcve-prod-r-sa[0].iam_email, "")])
+    gke-dev   = compact([try(module.branch-gke-dev-r-sa[0].iam_email, "")])
+    gke-prod  = compact([try(module.branch-gke-prod-r-sa[0].iam_email, "")])
+    pf-dev    = compact([try(module.branch-pf-dev-r-sa[0].iam_email, "")])
+    pf-prod   = compact([try(module.branch-pf-prod-r-sa[0].iam_email, "")])
   }
   # normalize CI/CD repositories
   cicd_repositories = {

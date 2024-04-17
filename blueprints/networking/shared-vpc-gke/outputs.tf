@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ output "gke_clusters" {
   description = "GKE clusters information."
   value = (
     var.cluster_create
-    ? { cluster-1 = module.cluster-1.0.endpoint }
+    ? { cluster-1 = module.cluster-1[0].endpoint }
     : {}
   )
 }

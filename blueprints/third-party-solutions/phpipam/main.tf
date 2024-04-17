@@ -29,7 +29,7 @@ locals {
   domain = (
     var.custom_domain != null ? var.custom_domain : (
       var.phpipam_exposure == "EXTERNAL" ?
-    "${module.addresses.0.global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
+    "${module.addresses[0].global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
   )
   iam = {
     # CloudSQL
@@ -41,9 +41,9 @@ locals {
     "roles/iam.serviceAccountUser"         = var.admin_principals
     "roles/iam.serviceAccountTokenCreator" = var.admin_principals
   }
-  network          = var.vpc_config == null ? module.vpc.0.self_link : var.vpc_config.network
+  network          = var.vpc_config == null ? module.vpc[0].self_link : var.vpc_config.network
   phpipam_password = var.phpipam_password == null ? random_password.phpipam_password.result : var.phpipam_password
-  subnetwork       = var.vpc_config == null ? module.vpc.0.subnet_self_links["${var.region}/ilb"] : var.vpc_config.subnetwork
+  subnetwork       = var.vpc_config == null ? module.vpc[0].subnet_self_links["${var.region}/ilb"] : var.vpc_config.subnetwork
 }
 
 
@@ -75,12 +75,11 @@ module "vpc" {
   count      = var.vpc_config == null ? 1 : 0
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
-
-  psa_config = {
+  psa_configs = [{
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-  }
+  }]
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.ilb

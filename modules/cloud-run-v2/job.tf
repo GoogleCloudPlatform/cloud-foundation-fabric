@@ -131,7 +131,7 @@ resource "google_cloud_run_v2_job" "job" {
 
   lifecycle {
     ignore_changes = [
-      template.0.annotations["run.googleapis.com/operation-id"],
+      template[0].annotations["run.googleapis.com/operation-id"],
     ]
   }
 }

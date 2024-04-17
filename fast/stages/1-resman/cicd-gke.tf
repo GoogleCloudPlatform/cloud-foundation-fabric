@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ module "branch-gke-dev-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin" = compact([
-      try(module.branch-gke-dev-sa.0.iam_email, "")
+      try(module.branch-gke-dev-sa[0].iam_email, "")
     ])
     "roles/source.reader" = compact([
-      try(module.branch-gke-dev-sa-cicd.0.iam_email, "")
+      try(module.branch-gke-dev-sa-cicd[0].iam_email, "")
     ])
   }
   triggers = {
@@ -41,7 +41,7 @@ module "branch-gke-dev-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-gke-dev-sa-cicd.0.id
+      service_account = module.branch-gke-dev-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null
@@ -64,8 +64,8 @@ module "branch-gke-prod-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-gke-prod-sa.0.iam_email]
-    "roles/source.reader" = [module.branch-gke-prod-sa-cicd.0.iam_email]
+    "roles/source.admin"  = [module.branch-gke-prod-sa[0].iam_email]
+    "roles/source.reader" = [module.branch-gke-prod-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-03-gke-prod = {
@@ -73,7 +73,7 @@ module "branch-gke-prod-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-gke-prod-sa-cicd.0.id
+      service_account = module.branch-gke-prod-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

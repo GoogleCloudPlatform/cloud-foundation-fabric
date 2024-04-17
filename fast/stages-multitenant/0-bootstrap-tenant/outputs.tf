@@ -69,7 +69,7 @@ locals {
       project_id     = module.automation-project.project_id
       project_number = module.automation-project.number
       federated_identity_pools = compact([
-        try(google_iam_workload_identity_pool.default.0.name, null),
+        try(google_iam_workload_identity_pool.default[0].name, null),
         var.automation.federated_identity_pool,
       ])
       federated_identity_providers = local.cicd_providers
@@ -116,7 +116,7 @@ output "federated_identity" {
   description = "Workload Identity Federation pool and providers."
   value = {
     pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
+      google_iam_workload_identity_pool.default[0].name, null
     )
     providers = local.cicd_providers
   }

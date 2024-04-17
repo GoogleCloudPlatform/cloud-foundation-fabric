@@ -14,22 +14,138 @@
 
 values:
   module.db.google_sql_database_instance.primary:
+    clone: []
     database_version: POSTGRES_13
+    deletion_protection: true
     name: db
     project: my-db-project
     region: europe-west1
+    restore_backup_context: []
+    root_password: null
     settings:
     - activation_policy: ALWAYS
+      active_directory_config: []
+      advanced_machine_features: []
       availability_type: ZONAL
+      collation: null
+      data_cache_config: []
+      database_flags: []
       deletion_protection_enabled: true
+      deny_maintenance_period: []
       disk_autoresize: true
+      disk_autoresize_limit: 0
       disk_type: PD_SSD
+      edition: ENTERPRISE
       insights_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
+        enable_private_path_for_google_cloud_services: null
         ipv4_enabled: false
+        psc_config: []
+        require_ssl: null
+      maintenance_window: []
+      password_validation_policy: []
+      pricing_plan: PER_USE
+      sql_server_audit_config: []
       tier: db-g1-small
+      time_zone: null
+    timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: null
+    labels: null
+    name: my-db-project
+    org_id: '1122334455'
+    project_id: my-db-project
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_iam_member.servicenetworking[0]:
+    condition: []
+    project: my-db-project
+    role: roles/servicenetworking.serviceAgent
+  module.project.google_project_service.project_services["servicenetworking.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-db-project
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.servicenetworking[0]:
+    project: my-db-project
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-cloud-sql"]:
+    address: 10.60.0.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    name: servicenetworking-googleapis-com-cloud-sql
+    prefix_length: 16
+    project: my-db-project
+    purpose: VPC_PEERING
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: my-db-project
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    network: my-network
+    project: my-db-project
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-db-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-db-project
+    tags: null
+    timeouts: null
+  module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    deletion_policy: null
+    reserved_peering_ranges:
+    - servicenetworking-googleapis-com-cloud-sql
+    service: servicenetworking.googleapis.com
+    timeouts: null
 
 counts:
+  google_compute_global_address: 1
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 1
+  google_compute_route: 2
+  google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 1
+  google_project_service_identity: 1
+  google_service_networking_connection: 1
   google_sql_database_instance: 1
+  modules: 3
+  resources: 11
+
+outputs: {}

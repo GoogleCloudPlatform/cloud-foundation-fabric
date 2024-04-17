@@ -64,17 +64,17 @@ output "groups" {
 
 output "health_check" {
   description = "Auto-created health-check resource."
-  value       = try(google_compute_region_health_check.default.0, null)
+  value       = try(google_compute_region_health_check.default[0], null)
 }
 
 output "health_check_id" {
   description = "Auto-created health-check id."
-  value       = try(google_compute_region_health_check.default.0.id, null)
+  value       = try(google_compute_region_health_check.default[0].id, null)
 }
 
 output "health_check_self_link" {
   description = "Auto-created health-check self link."
-  value       = try(google_compute_region_health_check.default.0.self_link, null)
+  value       = try(google_compute_region_health_check.default[0].self_link, null)
 }
 
 output "id" {

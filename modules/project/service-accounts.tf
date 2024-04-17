@@ -89,7 +89,7 @@ resource "google_project_iam_member" "servicenetworking" {
   count   = contains(var.services, "servicenetworking.googleapis.com") ? 1 : 0
   project = local.project.project_id
   role    = "roles/servicenetworking.serviceAgent"
-  member  = "serviceAccount:${google_project_service_identity.servicenetworking.0.email}"
+  member  = "serviceAccount:${google_project_service_identity.servicenetworking[0].email}"
 }
 
 # Secret Manager SA created just in time, we need to trigger the creation.

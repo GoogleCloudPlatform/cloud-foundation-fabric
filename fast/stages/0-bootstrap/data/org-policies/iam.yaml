@@ -17,3 +17,9 @@ iam.disableServiceAccountKeyCreation:
 iam.disableServiceAccountKeyUpload:
   rules:
     - enforce: true
+
+iam.serviceAccountKeyExposureResponse:
+  rules:
+    - allow:
+        values:
+          - DISABLE_KEY

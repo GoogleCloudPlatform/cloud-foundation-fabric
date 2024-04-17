@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ resource "github_actions_secret" "default" {
   plaintext_value = (
     try(var.modules_config.key_config.keypair_path, null) == null
     ? tls_private_key.default.private_key_openssh
-    : file(pathexpand("${var.modules_config.key_config.keypair_path}"))
+    : file(pathexpand(var.modules_config.key_config.keypair_path))
   )
 }
 

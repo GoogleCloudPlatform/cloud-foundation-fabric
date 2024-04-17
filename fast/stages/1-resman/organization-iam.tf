@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,48 +51,48 @@ locals {
     # optional billing roles for data platform
     local.billing_mode != "org" || !var.fast_features.data_platform ? {} : {
       sa_dp_dev_billing = {
-        member = module.branch-dp-dev-sa.0.iam_email
+        member = module.branch-dp-dev-sa[0].iam_email
         role   = "roles/billing.user"
       }
       sa_dp_prod_billing = {
-        member = module.branch-dp-prod-sa.0.iam_email
+        member = module.branch-dp-prod-sa[0].iam_email
         role   = "roles/billing.user"
       }
     },
     # optional billing roles for GKE
     local.billing_mode != "org" || !var.fast_features.gke ? {} : {
       sa_gke_dev_billing = {
-        member = module.branch-gke-dev-sa.0.iam_email
+        member = module.branch-gke-dev-sa[0].iam_email
         role   = "roles/billing.user"
       }
       sa_gke_prod_billing = {
-        member = module.branch-gke-prod-sa.0.iam_email
+        member = module.branch-gke-prod-sa[0].iam_email
         role   = "roles/billing.user"
       }
     },
     # optional billing roles for project factory
     local.billing_mode != "org" || !var.fast_features.project_factory ? {} : {
       sa_pf_dev_billing = {
-        member = module.branch-pf-dev-sa.0.iam_email
+        member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/billing.user"
       }
       sa_pf_dev_costs_manager = {
-        member = module.branch-pf-dev-sa.0.iam_email
+        member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/billing.costsManager"
       }
       sa_pf_prod_billing = {
-        member = module.branch-pf-prod-sa.0.iam_email
+        member = module.branch-pf-prod-sa[0].iam_email
         role   = "roles/billing.user"
       }
       sa_pf_prod_costs_manager = {
-        member = module.branch-pf-prod-sa.0.iam_email
+        member = module.branch-pf-prod-sa[0].iam_email
         role   = "roles/billing.costsManager"
       }
     },
     # scoped org policy admin grants for project factory
     !var.fast_features.project_factory ? {} : {
       sa_pf_dev_conditional_org_policy = {
-        member = module.branch-pf-dev-sa.0.iam_email
+        member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_dev"
@@ -105,7 +105,7 @@ locals {
         }
       }
       sa_pf_prod_conditional_org_policy = {
-        member = module.branch-pf-prod-sa.0.iam_email
+        member = module.branch-pf-prod-sa[0].iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_prod"

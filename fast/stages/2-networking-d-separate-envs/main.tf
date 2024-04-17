@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  custom_roles = coalesce(var.custom_roles, {})
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),

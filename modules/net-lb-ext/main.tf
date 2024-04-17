@@ -20,7 +20,7 @@ locals {
   health_check = (
     var.health_check != null
     ? var.health_check
-    : google_compute_region_health_check.default.0.self_link
+    : google_compute_region_health_check.default[0].self_link
   )
 }
 

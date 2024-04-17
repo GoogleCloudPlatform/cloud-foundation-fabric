@@ -32,7 +32,7 @@ provider "kubernetes" {
     ? null
     : var.credentials_config.fleet_host
   )
-  token = try(data.google_client_config.identity.0.access_token, null)
+  token = try(data.google_client_config.identity[0].access_token, null)
 }
 
 provider "kubectl" {
@@ -46,7 +46,7 @@ provider "kubectl" {
     ? null
     : pathexpand(var.credentials_config.kubeconfig.path)
   )
-  token = try(data.google_client_config.identity.0.access_token, null)
+  token = try(data.google_client_config.identity[0].access_token, null)
 }
 
 provider "helm" {
@@ -64,6 +64,6 @@ provider "helm" {
       ? null
       : var.credentials_config.fleet_host
     )
-    token = try(data.google_client_config.identity.0.access_token, null)
+    token = try(data.google_client_config.identity[0].access_token, null)
   }
 }

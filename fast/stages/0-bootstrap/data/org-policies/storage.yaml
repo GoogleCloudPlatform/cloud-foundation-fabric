@@ -13,3 +13,8 @@ storage.uniformBucketLevelAccess:
 storage.publicAccessPrevention:
   rules:
     - enforce: true
+
+
+storage.secureHttpTransport:
+  rules:
+    - enforce: true

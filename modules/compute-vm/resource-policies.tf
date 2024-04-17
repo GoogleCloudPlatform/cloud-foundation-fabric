@@ -23,7 +23,7 @@ locals {
     # created policy with optional attach to allow policy destroy
     ? (
       var.instance_schedule.create_config.active
-      ? [google_compute_resource_policy.schedule.0.id]
+      ? [google_compute_resource_policy.schedule[0].id]
       : null
     )
     # externally managed policy

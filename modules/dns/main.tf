@@ -16,8 +16,8 @@
 
 locals {
   managed_zone = (var.zone_config == null ?
-    data.google_dns_managed_zone.dns_managed_zone.0
-    : google_dns_managed_zone.dns_managed_zone.0
+    data.google_dns_managed_zone.dns_managed_zone[0]
+    : google_dns_managed_zone.dns_managed_zone[0]
   )
   # split record name and type and set as keys in a map
   _recordsets_0 = {

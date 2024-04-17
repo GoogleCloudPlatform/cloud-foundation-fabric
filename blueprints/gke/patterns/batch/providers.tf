@@ -32,5 +32,5 @@ provider "kubectl" {
     ? null
     : var.credentials_config.fleet_host
   )
-  token = try(data.google_client_config.identity.0.access_token, null)
+  token = try(data.google_client_config.identity[0].access_token, null)
 }
