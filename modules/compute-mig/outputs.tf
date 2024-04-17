@@ -25,11 +25,7 @@ output "autoscaler" {
 
 output "group_manager" {
   description = "Instance group resource."
-  value = try(
-    google_compute_instance_group_manager.default.0,
-    google_compute_region_instance_group_manager.default.0,
-    {}
-  )
+  value       = local.instance_group_manager.default.0
 }
 
 output "health_check" {
@@ -43,9 +39,5 @@ output "health_check" {
 
 output "id" {
   description = "Fully qualified group manager id."
-  value = try(
-    google_compute_instance_group_manager.default.0.id,
-    google_compute_region_instance_group_manager.default.0.id,
-    null
-  )
+  value       = local.instance_group_manager.default.0.id
 }

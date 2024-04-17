@@ -17,7 +17,6 @@
 # tfdoc:file:description Autoscaler resource.
 
 locals {
-  as_enabled = true
   as_scaling = try(var.autoscaler_config.scaling_control, null)
   as_signals = try(var.autoscaler_config.scaling_signals, null)
 }
