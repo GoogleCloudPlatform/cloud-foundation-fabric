@@ -75,12 +75,11 @@ module "vpc" {
   count      = var.vpc_config == null ? 1 : 0
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
-
-  psa_config = {
+  psa_configs = [{
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-  }
+  }]
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.ilb

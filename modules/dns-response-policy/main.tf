@@ -42,6 +42,7 @@ resource "google_dns_response_policy" "default" {
   provider             = google-beta
   count                = var.policy_create ? 1 : 0
   project              = var.project_id
+  description          = var.description
   response_policy_name = var.name
   dynamic "networks" {
     for_each = var.networks

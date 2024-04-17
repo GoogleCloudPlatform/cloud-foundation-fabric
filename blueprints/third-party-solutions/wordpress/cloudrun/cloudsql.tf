@@ -31,11 +31,11 @@ module "vpc" {
       region        = var.region
     }
   ]
-  psa_config = {
+  psa_configs = [{
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-  }
+  }]
 }
 
 
@@ -56,9 +56,9 @@ module "cloudsql" {
   project_id = module.project.project_id
   network_config = {
     connectivity = {
-      psa_config = {
+      psa_configs = [{
         private_network = module.vpc.self_link
-      }
+      }]
     }
   }
   name             = "${var.prefix}-mysql"

@@ -362,7 +362,7 @@ counts:
   google_essential_contacts_contact: 3
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 20
+  google_org_policy_policy: 22
   google_organization_iam_binding: 27
   google_organization_iam_custom_role: 7
   google_organization_iam_member: 35
@@ -381,4 +381,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 17
-  resources: 196
+  resources: 198

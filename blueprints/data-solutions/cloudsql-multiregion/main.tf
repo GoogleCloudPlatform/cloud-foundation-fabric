@@ -108,10 +108,10 @@ module "vpc" {
       region        = var.regions.primary
     }
   ]
-  psa_config = {
+  psa_configs = [{
     ranges = { cloud-sql = var.sql_configuration.psa_range }
     routes = null
-  }
+  }]
 }
 
 module "firewall" {
