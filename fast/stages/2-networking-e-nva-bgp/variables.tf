@@ -159,14 +159,6 @@ variable "ncc_asn" {
   }
 }
 
-variable "onprem_cidr" {
-  description = "Onprem addresses in name => range format."
-  type        = map(string)
-  default = {
-    main = "10.0.0.0/24"
-  }
-}
-
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
