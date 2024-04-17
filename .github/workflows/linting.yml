@@ -36,6 +36,17 @@ jobs:
         with:
           terraform_version: 1.7.4
 
+      - uses: terraform-linters/setup-tflint@v4
+        name: Setup TFLint
+        with:
+          tflint_version: v0.50.3
+
+      - name: Init TFLint
+        run: tflint --init
+        env:
+          # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Install dependencies
         run: |
           pip install -r tools/requirements.txt
@@ -49,6 +60,9 @@ jobs:
         id: fmt
         run: |
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
+
+      - name: TFLint Modules
+        run: tflint -chdir modules -f compact
 
       - name: Check documentation
         id: documentation-fabric
