@@ -64,7 +64,7 @@ jobs:
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
 
       - name: TFLint Modules
-        run: tflint --chdir modules -f compact
+        run: cd modules && tflint --recursive -f compact
 
       - name: Check documentation
         id: documentation-fabric
