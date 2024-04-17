@@ -749,7 +749,7 @@ values:
     timeouts: null
     visibility: private
   module.landing-dns-policy-googleapis.google_dns_response_policy.default[0]:
-    description: Managed by Terraform
+    description: Terraform managed.
     gke_clusters: []
     networks:
       - {}
@@ -1788,7 +1788,7 @@ values:
     timeouts: null
   module.landing-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Managed by Terraform
+    description: Terraform managed.
     enable_inbound_forwarding: true
     enable_logging: null
     name: prod-landing-0
@@ -1921,7 +1921,7 @@ values:
     timeouts: null
   module.dmz-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Managed by Terraform
+    description: Terraform managed.
     enable_inbound_forwarding: true
     enable_logging: true
     name: prod-dmz-0
@@ -3174,7 +3174,7 @@ values:
     timeouts: null
   module.prod-spoke-vpc.google_dns_policy.default[0]:
     alternative_name_server_config: []
-    description: Managed by Terraform
+    description: Terraform managed.
     enable_inbound_forwarding: null
     enable_logging: true
     name: prod-spoke-0
