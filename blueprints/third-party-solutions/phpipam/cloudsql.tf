@@ -25,9 +25,9 @@ module "cloudsql" {
   databases                     = [local.cloudsql_conf.db]
   network_config = {
     connectivity = {
-      psa_configs = [{
+      psa_config = {
         private_network = local.network
-      }]
+      }
     }
   }
   prefix = var.prefix

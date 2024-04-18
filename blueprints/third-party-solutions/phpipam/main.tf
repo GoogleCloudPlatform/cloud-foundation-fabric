@@ -87,6 +87,14 @@ module "vpc" {
       region        = var.region
     }
   ]
+  subnets_proxy_only = [
+    {
+      ip_cidr_range = var.ip_ranges.proxy
+      name          = "regional-proxy"
+      region        = var.region
+      active        = true
+    }
+  ]
 }
 
 resource "random_password" "phpipam_password" {
