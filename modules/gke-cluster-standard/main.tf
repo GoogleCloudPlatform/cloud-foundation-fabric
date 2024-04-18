@@ -338,6 +338,9 @@ resource "google_container_cluster" "cluster" {
         exclusion_name = exclusion.value.name
         start_time     = exclusion.value.start_time
         end_time       = exclusion.value.end_time
+        exclusion_options {
+          scope = exclusion.value.scope
+        }
       }
     }
   }
