@@ -70,7 +70,7 @@ jobs:
         run: |
           for STAGE_DIR in $(find fast/stages -name main.tf -printf '%h\n' ) ; do
             STAGE_NAME=$(echo ${STAGE_DIR} | sed -e 's#^fast/stages/\([^/]*\).*$#\1#')
-            tflint --chdir ${STAGE_DIR} --var-file ../../../tests/fast/stages/s${STAGE_NAME}/common.tfvars
+            tflint --chdir ${STAGE_DIR} --var-file ../../../tests/fast/stages/s$(echo ${STAGE_NAME} | sed -e 's/-/_/g')/common.tfvars
           done
 
       - name: Check documentation
