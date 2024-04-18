@@ -74,7 +74,7 @@ jobs:
             if [ -z $(echo ${STAGE_DIR} | sed -e 's#^fast/stages/[^/]*/\(.*\)$##') ] ; then
               VAR_PATH_LEVEL=".."
             fi
-            tflint --chdir ${STAGE_DIR} --var-file ${VAR_PATH_LEVEL}/../../../tests/fast/stages/s$(echo ${STAGE_NAME} | sed -e 's/-/_/g')/common.tfvars
+            tflint --chdir ${STAGE_DIR} --var-file ${VAR_PATH_LEVEL}/../../../tests/fast/stages/s$(echo ${STAGE_NAME} | sed -e 's/-/_/g')/simple.tfvars
           done
 
       - name: Check documentation

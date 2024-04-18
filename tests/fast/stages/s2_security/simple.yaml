@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+counts:
+  google_access_context_manager_access_policy: 1
+  google_access_context_manager_service_perimeter: 1
+  google_essential_contacts_contact: 1
+  google_folder: 1
+  google_kms_crypto_key: 8
+  google_kms_crypto_key_iam_binding: 8
+  google_kms_key_ring: 8
+  google_project: 2
+  google_project_iam_binding: 2
+  google_project_iam_member: 2
+  google_project_service: 6
+  google_project_service_identity: 2
+  google_storage_bucket_object: 1
+  modules: 12
+  resources: 43

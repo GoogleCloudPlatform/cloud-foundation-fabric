@@ -26,9 +26,9 @@ def test_vpn_peering_parity(plan_summary):
   '''Ensure VPN- and peering-based networking stages are identical except
   for VPN and VPC peering resources'''
   summary_peering = plan_summary("fast/stages/2-networking-a-peering",
-                                 tf_var_files=["common.tfvars"])
+                                 tf_var_files=["simple.tfvars"])
   summary_vpn = plan_summary("fast/stages/2-networking-b-vpn",
-                             tf_var_files=["common.tfvars"])
+                             tf_var_files=["simple.tfvars"])
 
   ddiff = DeepDiff(summary_vpn.values, summary_peering.values,
                    ignore_order=True)

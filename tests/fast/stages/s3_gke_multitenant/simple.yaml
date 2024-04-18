@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+counts:
+  google_bigquery_dataset: 1
+  google_compute_shared_vpc_service_project: 1
+  google_container_cluster: 1
+  google_container_node_pool: 1
+  google_project: 1
+  google_project_iam_binding: 1
+  google_project_iam_member: 8
+  google_project_service: 12
+  google_project_service_identity: 2
+  google_service_account: 1
+  google_storage_bucket_object: 1
+  modules: 6
+  resources: 30

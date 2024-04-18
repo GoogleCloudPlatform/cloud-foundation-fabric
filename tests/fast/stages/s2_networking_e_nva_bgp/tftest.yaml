@@ -13,8 +13,6 @@
 # limitations under the License.
 
 module: fast/stages/2-networking-e-nva-bgp
-common_tfvars:
-  - common.tfvars
 
 tests:
-  stage:
+  simple:
