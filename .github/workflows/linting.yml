@@ -68,19 +68,10 @@ jobs:
 
       - name: TFLint FAST
         run: |
-          # TODO: try to generalize this
-          tflint --chdir fast/stages/0-bootstrap --var-file ../../../tests/fast/stages/s0_bootstrap/simple.tfvars
-          tflint --chdir fast/stages/1-resman --var-file ../../../tests/fast/stages/s1_resman/simple.tfvars
-          tflint --chdir fast/stages/2-networking-a-peering --var-file ../../../tests/fast/stages/s2_networking_a_peering/common.tfvars
-          tflint --chdir fast/stages/2-networking-b-vpn --var-file ../../../tests/fast/stages/s2_networking_b_vpn/common.tfvars
-          tflint --chdir fast/stages/2-networking-c-nva --var-file ../../../tests/fast/stages/s2_networking_c_nva/common.tfvars
-          tflint --chdir fast/stages/2-networking-d-separate-envs --var-file ../../../tests/fast/stages/s2_networking_d_separate_envs/common.tfvars
-          tflint --chdir fast/stages/2-security --var-file ../../../tests/fast/stages/s2_security/common.tfvars
-          tflint --chdir fast/stages/3-data-platform/dev --var-file ../../../../tests/fast/stages/s3_data_platform/common.tfvars
-          tflint --chdir fast/stages/3-gcve/prod/ --var-file ../../../../tests/fast/stages/s3_gcve_minimal/simple.tfvars
-          tflint --chdir fast/stages/3-data-platform/dev --var-file ../../../../tests/fast/stages/s3_data_platform/common.tfvars
-          tflint --chdir fast/stages/3-gke-multitenant/dev --var-file ../../../../tests/fast/stages/s3_gke_multitenant/common.tfvars
-          tflint --chdir fast/stages/3-project-factory/dev --var-file ../../../../tests/fast/stages/s3_project_factory/common.tfvars
+          for STAGE_DIR in $(find fast/stages -name main.tf -printf '%h\n' ) ; do
+            STAGE_NAME=$(echo ${STAGE_DIR} | sed -e 's#^fast/stages/\([^/]*\).*$#\1#')
+            tflint --chdir ${STAGE_DIR} --var-file ../../../tests/fast/stages/s${STAGE_NAME}/common.tfvars
+          done
 
       - name: Check documentation
         id: documentation-fabric

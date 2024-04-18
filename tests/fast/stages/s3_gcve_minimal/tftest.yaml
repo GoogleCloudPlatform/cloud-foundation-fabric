@@ -17,6 +17,6 @@ module: fast/stages/3-gcve/prod
 tests:
   simple:
     tfvars:
-      - simple.tfvars
+      - common.tfvars
     inventory:
       - simple.yaml

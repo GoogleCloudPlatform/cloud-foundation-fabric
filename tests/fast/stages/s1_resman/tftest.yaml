@@ -24,6 +24,6 @@ tests:
       - checklist.yaml
   simple:
     tfvars:
-      - simple.tfvars
+      - common.tfvars
     inventory:
       - simple.yaml
