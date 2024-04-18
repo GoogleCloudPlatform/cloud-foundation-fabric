@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+module: fast/stages/3-project-factory/dev
 
-def test_counts(plan_summary):
-  "Test stage."
-  summary = plan_summary("fast/stages/3-data-platform/dev/",
-                         tf_var_files=["common.tfvars"])
-  assert summary.counts["modules"] > 0
-  assert summary.counts["resources"] > 0
+tests:
+  simple:

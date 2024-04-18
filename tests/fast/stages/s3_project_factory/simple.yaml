@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_counts(plan_summary):
-  "Test stage."
-  summary = plan_summary("fast/stages/3-gke-multitenant/dev/",
-                         tf_var_files=["common.tfvars"])
-  assert summary.counts["modules"] > 0
-  assert summary.counts["resources"] > 0
+counts:
+  google_project: 1
+  google_project_service: 3
+  google_storage_project_service_account: 1
+  modules: 2
+  resources: 5
