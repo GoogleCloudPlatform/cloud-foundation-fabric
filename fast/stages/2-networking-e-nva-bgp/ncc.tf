@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,12 +64,12 @@ module "spokes-landing" {
     custom_advertise = {
       all_subnets = false
       ip_ranges = {
-        "${var.gcp_ranges.gcp_landing_primary}"   = "GCP landing primary."
-        "${var.gcp_ranges.gcp_landing_secondary}" = "GCP landing secondary."
-        "${var.gcp_ranges.gcp_dev_primary}"       = "GCP dev primary.",
-        "${var.gcp_ranges.gcp_dev_secondary}"     = "GCP dev secondary.",
-        "${var.gcp_ranges.gcp_prod_primary}"      = "GCP prod primary.",
-        "${var.gcp_ranges.gcp_prod_secondary}"    = "GCP prod secondary.",
+        (var.gcp_ranges.gcp_landing_primary)   = "GCP landing primary."
+        (var.gcp_ranges.gcp_landing_secondary) = "GCP landing secondary."
+        (var.gcp_ranges.gcp_dev_primary)       = "GCP dev primary.",
+        (var.gcp_ranges.gcp_dev_secondary)     = "GCP dev secondary.",
+        (var.gcp_ranges.gcp_prod_primary)      = "GCP prod primary.",
+        (var.gcp_ranges.gcp_prod_secondary)    = "GCP prod secondary.",
       }
     }
   }
