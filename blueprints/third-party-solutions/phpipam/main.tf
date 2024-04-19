@@ -107,7 +107,7 @@ module "cloud_run" {
   project_id       = module.project.project_id
   name             = "${var.prefix}-cr-phpipam"
   prefix           = var.prefix
-  ingress_settings = "all"
+  ingress_settings = "internal-and-cloud-load-balancing"
   region           = var.region
 
   containers = {
