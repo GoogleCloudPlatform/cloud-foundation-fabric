@@ -197,7 +197,7 @@ variable "psa_configs" {
   validation {
     condition = alltrue([
       for v in var.psa_configs : (
-      v.deletion_policy == null || v.deletion_policy == "ABANDON"
+        v.deletion_policy == null || v.deletion_policy == "ABANDON"
       )
     ])
     error_message = "Deletion policy supports only ABANDON."
