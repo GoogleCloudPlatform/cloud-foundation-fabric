@@ -177,6 +177,7 @@ variable "project_id" {
 variable "psa_configs" {
   description = "The Private Service Access configuration."
   type = list(object({
+    deletion_policy  = optional(string, null)
     ranges           = map(string)
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
@@ -192,6 +193,14 @@ variable "psa_configs" {
       ]))
     )
     error_message = "At most one configuration is possible for each service producer."
+  }
+  validation {
+    condition = alltrue([
+      for v in var.psa_configs : (
+      v.deletion_policy == null || v.deletion_policy == "ABANDON"
+      )
+    ])
+    error_message = "Deletion policy supports only ABANDON."
   }
 }
 

@@ -76,6 +76,7 @@ module "vpc" {
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
   psa_configs = [{
+    deletion_policy = "ABANDON"
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
