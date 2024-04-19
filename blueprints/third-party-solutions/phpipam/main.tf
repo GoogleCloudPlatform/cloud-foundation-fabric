@@ -76,6 +76,7 @@ module "vpc" {
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
   psa_configs = [{
+    deletion_policy = "ABANDON"
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
@@ -85,6 +86,14 @@ module "vpc" {
       ip_cidr_range = var.ip_ranges.ilb
       name          = "ilb"
       region        = var.region
+    }
+  ]
+  subnets_proxy_only = [
+    {
+      ip_cidr_range = var.ip_ranges.proxy
+      name          = "regional-proxy"
+      region        = var.region
+      active        = true
     }
   ]
 }
@@ -99,7 +108,7 @@ module "cloud_run" {
   project_id       = module.project.project_id
   name             = "${var.prefix}-cr-phpipam"
   prefix           = var.prefix
-  ingress_settings = "all"
+  ingress_settings = "internal-and-cloud-load-balancing"
   region           = var.region
 
   containers = {
