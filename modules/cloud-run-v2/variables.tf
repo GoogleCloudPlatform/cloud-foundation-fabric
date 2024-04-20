@@ -74,6 +74,18 @@ variable "containers" {
   nullable = false
 }
 
+variable "create_job" {
+  description = "Create Cloud Run Job instead of Service."
+  type        = bool
+  default     = false
+}
+
+variable "encryption_key" {
+  description = "The full resource name of the Cloud KMS CryptoKey."
+  type        = string
+  default     = null
+}
+
 variable "eventarc_triggers" {
   description = "Event arc triggers for different sources."
   type = object({
@@ -86,6 +98,10 @@ variable "eventarc_triggers" {
     service_account_create = optional(bool, false)
   })
   default = {}
+  validation {
+    condition     = var.eventarc_triggers.audit_log == null || (var.eventarc_triggers.audit_log != null && (var.eventarc_triggers.service_account_email != null || var.eventarc_triggers.service_account_create))
+    error_message = "When setting var.eventarc_triggers.audit_log provide either service_account_email or set service_account_create to true"
+  }
 }
 
 variable "iam" {

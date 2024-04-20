@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,16 @@ variable "logging_exclusions" {
   nullable    = false
 }
 
+variable "logging_settings" {
+  description = "Default settings for logging resources."
+  type = object({
+    # TODO: add support for CMEK
+    disable_default_sink = optional(bool)
+    storage_location     = optional(string)
+  })
+  default = null
+}
+
 variable "logging_sinks" {
   description = "Logging sinks to create for the organization."
   type = map(object({
@@ -78,7 +88,7 @@ variable "logging_sinks" {
     destination          = string
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
-    filter               = string
+    filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
     type                 = string
@@ -88,9 +98,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([

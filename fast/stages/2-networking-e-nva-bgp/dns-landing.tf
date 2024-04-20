@@ -32,8 +32,8 @@ module "landing-dns-fwd-onprem-example" {
     domain = "onprem.example.com."
     forwarding = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
       forwarders = { for ip in var.dns.resolvers : ip => null }
     }
@@ -54,8 +54,8 @@ module "landing-dns-fwd-onprem-rev-10" {
     domain = "10.in-addr.arpa."
     forwarding = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
       forwarders = { for ip in var.dns.resolvers : ip => null }
     }
@@ -75,8 +75,8 @@ module "landing-dns-priv-gcp" {
     domain = "gcp.example.com."
     private = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
     }
   }
@@ -91,9 +91,11 @@ module "landing-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
   project_id = module.landing-project.project_id
   name       = "googleapis"
-  networks = {
-    landing-trusted   = module.landing-trusted-vpc.self_link
-    landing-untrusted = module.landing-untrusted-vpc.self_link
+  factories_config = {
+    rules = var.factories_config.dns_policy_rules_file
   }
-  rules_file = var.factories_config.dns_policy_rules_file
+  networks = {
+    landing = module.landing-vpc.self_link
+    dmz     = module.dmz-vpc.self_link
+  }
 }

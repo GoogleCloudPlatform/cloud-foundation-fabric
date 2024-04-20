@@ -22,16 +22,23 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  services = [
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "iap.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "stackdriver.googleapis.com",
-    "vpcaccess.googleapis.com"
-  ]
+  services = concat(
+    [
+      "container.googleapis.com",
+      "compute.googleapis.com",
+      "dns.googleapis.com",
+      "iap.googleapis.com",
+      "networkmanagement.googleapis.com",
+      "servicenetworking.googleapis.com",
+      "stackdriver.googleapis.com",
+      "vpcaccess.googleapis.com"
+    ],
+    (
+      var.fast_features.gcve
+      ? ["vmwareengine.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
   }
@@ -76,7 +83,7 @@ module "dev-spoke-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
-  psa_config = try(var.psa_ranges.dev, null)
+  psa_configs = var.psa_ranges.dev
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true

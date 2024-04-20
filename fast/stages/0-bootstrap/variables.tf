@@ -105,6 +105,7 @@ variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = optional(bool, false)
+    gcve            = optional(bool, false)
     gke             = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
@@ -112,26 +113,6 @@ variable "fast_features" {
   })
   default  = {}
   nullable = false
-}
-
-variable "federated_identity_providers" {
-  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
-  type = map(object({
-    attribute_condition = optional(string)
-    issuer              = string
-    custom_settings = optional(object({
-      issuer_uri = optional(string)
-      audiences  = optional(list(string), [])
-      jwks_json  = optional(string)
-    }), {})
-  }))
-  default  = {}
-  nullable = false
-  # TODO: fix validation
-  # validation {
-  #   condition     = var.federated_identity_providers.custom_settings == null
-  #   error_message = "Custom settings cannot be null."
-  # }
 }
 
 variable "groups" {
@@ -242,9 +223,9 @@ variable "org_policies_config" {
 variable "organization" {
   description = "Organization details."
   type = object({
-    domain      = string
     id          = number
-    customer_id = string
+    domain      = optional(string)
+    customer_id = optional(string)
   })
 }
 
@@ -266,14 +247,46 @@ variable "prefix" {
 variable "project_parent_ids" {
   description = "Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent."
   type = object({
-    automation = string
-    billing    = string
-    logging    = string
+    automation = optional(string)
+    billing    = optional(string)
+    logging    = optional(string)
   })
-  default = {
-    automation = null
-    billing    = null
-    logging    = null
-  }
+  default  = {}
   nullable = false
+}
+
+variable "workforce_identity_providers" {
+  description = "Workforce Identity Federation pools."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    display_name        = string
+    description         = string
+    disabled            = optional(bool, false)
+    saml = optional(object({
+      idp_metadata_xml = string
+    }), null)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "workload_identity_providers" {
+  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    custom_settings = optional(object({
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
+      jwks_json  = optional(string)
+    }), {})
+  }))
+  default  = {}
+  nullable = false
+  # TODO: fix validation
+  # validation {
+  #   condition     = var.federated_identity_providers.custom_settings == null
+  #   error_message = "Custom settings cannot be null."
+  # }
 }

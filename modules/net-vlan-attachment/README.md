@@ -47,6 +47,60 @@ module "example-va" {
 # tftest modules=1 resources=4
 ```
 
+### Dedicated Interconnect - Single VLAN Attachment (No SLA) - BFD and MD5 Auth
+
+```hcl
+resource "google_compute_router" "interconnect-router" {
+  name    = "interconnect-router"
+  network = "mynet"
+  project = "myproject"
+  region  = "europe-west8"
+  bgp {
+    advertise_mode    = "CUSTOM"
+    asn               = 64514
+    advertised_groups = ["ALL_SUBNETS"]
+    advertised_ip_ranges {
+      range = "10.255.255.0/24"
+    }
+    advertised_ip_ranges {
+      range = "192.168.255.0/24"
+    }
+  }
+}
+
+module "example-va" {
+  source      = "./fabric/modules/net-vlan-attachment"
+  network     = "mynet"
+  project_id  = "myproject"
+  region      = "europe-west8"
+  name        = "vlan-attachment"
+  description = "Example vlan attachment"
+  peer_asn    = "65000"
+  router_config = {
+    create = false
+    name   = google_compute_router.interconnect-router.name
+    bfd = {
+      min_receive_interval        = 1000
+      min_transmit_interval       = 1000
+      multiplier                  = 5
+      session_initialization_mode = "ACTIVE"
+    }
+    md5_authentication_key = {
+      name = "foo"
+      key  = "bar"
+    }
+  }
+  dedicated_interconnect_config = {
+    bandwidth    = "BPS_10G"
+    bgp_range    = "169.254.0.0/30"
+    interconnect = "interconnect-a"
+    vlan_tag     = 12345
+  }
+}
+
+# tftest modules=1 resources=4
+```
+
 ### Partner Interconnect - Single VLAN Attachment (No SLA)
 
 ```hcl
@@ -434,7 +488,7 @@ module "example-va-b-ew12" {
 # tftest modules=4 resources=6
 ```
 
-### IPSec for Dedicated Interconnect 
+### IPSec for Dedicated Interconnect
 
 Refer to the [HA VPN over Interconnect Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/) for an all-encompassing example.
 
@@ -495,7 +549,7 @@ module "example-va-b" {
 # tftest modules=2 resources=9
 ```
 
-### IPSec for Partner Interconnect 
+### IPSec for Partner Interconnect
 
 ```hcl
 module "example-va-a" {
@@ -533,10 +587,7 @@ module "example-va-b" {
 }
 # tftest modules=2 resources=6
 ```
-
-
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -547,14 +598,13 @@ module "example-va-b" {
 | [peer_asn](variables.tf#L74) | The on-premises underlay router ASN. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L79) | The project id where resources are created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L84) | The region where resources are created. | <code>string</code> | ✓ |  |
-| [router_config](variables.tf#L89) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create    &#61; optional&#40;bool, true&#41;&#10;  asn       &#61; optional&#40;number, 65001&#41;&#10;  name      &#61; optional&#40;string, &#34;router&#34;&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L89) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  asn    &#61; optional&#40;number, 65001&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;    name &#61; string&#10;    key  &#61; string&#10;  &#125;&#41;&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string, &#34;router&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
 | [dedicated_interconnect_config](variables.tf#L23) | Partner interconnect configuration. | <code title="object&#40;&#123;&#10;  bandwidth    &#61; optional&#40;string, &#34;BPS_10G&#34;&#41;&#10;  bgp_range    &#61; optional&#40;string, &#34;169.254.128.0&#47;29&#34;&#41;&#10;  interconnect &#61; string&#10;  vlan_tag     &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L40) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [mtu](variables.tf#L46) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
 | [partner_interconnect_config](variables.tf#L62) | Partner interconnect configuration. | <code title="object&#40;&#123;&#10;  edge_availability_domain &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vlan_tag](variables.tf#L110) | The VLAN id to be used for this VLAN attachment. | <code>number</code> |  | <code>null</code> |
-| [vpn_gateways_ip_range](variables.tf#L116) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateways_ip_range](variables.tf#L114) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -567,5 +617,4 @@ module "example-va-b" {
 | [router](outputs.tf#L37) | Router resource (only if auto-created). |  |
 | [router_interface](outputs.tf#L42) | Router interface created for the VLAN attachment. |  |
 | [router_name](outputs.tf#L47) | Router name. |  |
-
 <!-- END TFDOC -->

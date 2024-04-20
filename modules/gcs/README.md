@@ -1,6 +1,19 @@
 # Google Cloud Storage Module
 
-## Example
+<!-- BEGIN TOC -->
+- [Simple bucket example](#simple-bucket-example)
+- [Cloud KMS](#cloud-kms)
+- [Retention policy, soft delete policy and logging](#retention-policy-soft-delete-policy-and-logging)
+- [Lifecycle rule](#lifecycle-rule)
+- [GCS notifications](#gcs-notifications)
+- [Object upload](#object-upload)
+- [IAM](#iam)
+- [Tags](#tags)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+## Simple bucket example
 
 ```hcl
 module "bucket" {
@@ -16,7 +29,7 @@ module "bucket" {
 # tftest modules=1 resources=1 inventory=simple.yaml e2e
 ```
 
-### Example with Cloud KMS
+## Cloud KMS
 
 ```hcl
 module "project" {
@@ -56,7 +69,7 @@ module "bucket" {
 # tftest modules=3 skip e2e
 ```
 
-### Example with retention policy and logging
+## Retention policy, soft delete policy and logging
 
 ```hcl
 module "bucket" {
@@ -68,6 +81,7 @@ module "bucket" {
     retention_period = 100
     is_locked        = true
   }
+  soft_delete_retention = 7776000
   logging_config = {
     log_bucket        = "log-bucket"
     log_object_prefix = null
@@ -76,7 +90,7 @@ module "bucket" {
 # tftest modules=1 resources=1 inventory=retention-logging.yaml
 ```
 
-### Example with lifecycle rule
+## Lifecycle rule
 
 ```hcl
 module "bucket" {
@@ -99,7 +113,7 @@ module "bucket" {
 # tftest modules=1 resources=1 inventory=lifecycle.yaml e2e
 ```
 
-### Minimal example with GCS notifications
+## GCS notifications
 
 ```hcl
 module "project" {
@@ -125,7 +139,7 @@ module "bucket-gcs-notification" {
 # tftest skip e2e
 ```
 
-### Example with object upload
+## Object upload
 
 ```hcl
 module "bucket" {
@@ -144,7 +158,17 @@ module "bucket" {
 # tftest modules=1 resources=2 inventory=object-upload.yaml e2e
 ```
 
-### Examples of IAM
+## IAM
+
+IAM is managed via several variables that implement different features and levels of control:
+
+- `iam` and `iam_by_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
+- `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
+- `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
+
+The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+
+Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
 
 ```hcl
 module "bucket" {
@@ -214,6 +238,38 @@ module "bucket" {
 }
 # tftest modules=1 resources=2 inventory=iam-bindings-additive.yaml e2e
 ```
+
+## Tags
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev     = {}
+        prod    = {}
+        sandbox = {}
+      }
+    }
+  }
+}
+
+module "bucket" {
+  source     = "./fabric/modules/gcs"
+  project_id = var.project_id
+  prefix     = var.prefix
+  name       = "my-bucket"
+  tag_bindings = {
+    env-sandbox = module.org.tag_values["environment/sandbox"].id
+  }
+}
+# tftest modules=2 resources=6
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -240,10 +296,12 @@ module "bucket" {
 | [public_access_prevention](variables.tf#L224) | Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention, only if the bucket is subject to the public access prevention organization policy constraint. | <code>string</code> |  | <code>null</code> |
 | [requester_pays](variables.tf#L230) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
 | [retention_policy](variables.tf#L236) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L245) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
-| [uniform_bucket_level_access](variables.tf#L255) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L261) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
-| [website](variables.tf#L267) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [soft_delete_retention](variables.tf#L245) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L251) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
+| [tag_bindings](variables.tf#L261) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [uniform_bucket_level_access](variables.tf#L267) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L273) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
+| [website](variables.tf#L279) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

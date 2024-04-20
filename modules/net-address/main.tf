@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+locals {
+  network_attachments = {
+    for k, v in var.network_attachments : k => merge(v, {
+      region = regex("regions/([^/]+)", v.subnet_self_link)[0]
+      # not using the full self link generates a permadiff
+      subnet_self_link = (
+        startswith(v.subnet_self_link, "https://")
+        ? v.subnet_self_link
+        : "https://www.googleapis.com/compute/v1/${v.subnet_self_link}"
+      )
+    })
+  }
+}
+
 resource "google_compute_global_address" "global" {
   for_each    = var.global_addresses
   project     = var.project_id
@@ -88,4 +102,19 @@ resource "google_compute_address" "ipsec_interconnect" {
   network       = each.value.network
   prefix_length = each.value.prefix_length
   purpose       = "IPSEC_INTERCONNECT"
+}
+
+resource "google_compute_network_attachment" "default" {
+  provider    = google-beta
+  for_each    = local.network_attachments
+  project     = var.project_id
+  region      = each.value.region
+  name        = each.key
+  description = each.value.description
+  connection_preference = (
+    each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
+  )
+  subnetworks           = [each.value.subnet_self_link]
+  producer_accept_lists = each.value.producer_accept_lists
+  producer_reject_lists = each.value.producer_reject_lists
 }

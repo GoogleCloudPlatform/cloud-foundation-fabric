@@ -97,6 +97,19 @@ variable "name" {
   type        = string
 }
 
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet                = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "peering_config" {
   description = "VPC peering configuration."
   type = object({
@@ -161,15 +174,34 @@ variable "project_id" {
   type        = string
 }
 
-variable "psa_config" {
-  description = "The Private Service Access configuration for Service Networking."
-  type = object({
-    ranges         = map(string)
-    export_routes  = optional(bool, false)
-    import_routes  = optional(bool, false)
-    peered_domains = optional(list(string), [])
-  })
-  default = null
+variable "psa_configs" {
+  description = "The Private Service Access configuration."
+  type = list(object({
+    deletion_policy  = optional(string, null)
+    ranges           = map(string)
+    export_routes    = optional(bool, false)
+    import_routes    = optional(bool, false)
+    peered_domains   = optional(list(string), [])
+    service_producer = optional(string, "servicenetworking.googleapis.com")
+  }))
+  nullable = false
+  default  = []
+  validation {
+    condition = (
+      length(var.psa_configs) == length(toset([
+        for v in var.psa_configs : v.service_producer
+      ]))
+    )
+    error_message = "At most one configuration is possible for each service producer."
+  }
+  validation {
+    condition = alltrue([
+      for v in var.psa_configs : (
+        v.deletion_policy == null || v.deletion_policy == "ABANDON"
+      )
+    ])
+    error_message = "Deletion policy supports only ABANDON."
+  }
 }
 
 variable "routes" {

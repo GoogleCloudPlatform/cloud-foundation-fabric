@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+# any changes to this factory should be mirrored in the project factory
+
 locals {
   _factory_data = {
-    for f in fileset("${local._factory_path}", "**/*.yaml") :
+    for f in fileset(local._factory_path, "**/*.yaml") :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
-  _factory_path = var.factory_config.budgets_data_path
+  _factory_path = try(pathexpand(var.factories_config.budgets_data_path), "")
   factory_budgets = {
     for k, v in local._factory_data : k => merge(v, {
       amount = merge(

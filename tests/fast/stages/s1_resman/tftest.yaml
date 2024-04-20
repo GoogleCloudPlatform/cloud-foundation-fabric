@@ -18,12 +18,4 @@ tests:
   checklist:
     extra_files:
       - ../../../tests/fast/stages/s0_bootstrap/data/checklist-data.json
-    tfvars:
-      - checklist.tfvars
-    inventory:
-      - checklist.yaml
   simple:
-    tfvars:
-      - simple.tfvars
-    inventory:
-      - simple.yaml

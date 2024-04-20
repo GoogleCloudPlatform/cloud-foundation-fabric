@@ -32,7 +32,7 @@ output "backend_service_self_link" {
 output "forwarding_rule_addresses" {
   description = "Forwarding rule address."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.ip_address
   }
 }
@@ -40,7 +40,7 @@ output "forwarding_rule_addresses" {
 output "forwarding_rule_self_links" {
   description = "Forwarding rule self links."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.self_link
   }
 }
@@ -48,7 +48,7 @@ output "forwarding_rule_self_links" {
 output "forwarding_rules" {
   description = "Forwarding rule resources."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v
   }
 }
@@ -67,23 +67,30 @@ output "groups" {
 
 output "health_check" {
   description = "Auto-created health-check resource."
-  value       = try(google_compute_health_check.default.0, null)
+  value       = try(google_compute_health_check.default[0], null)
 }
 
 output "health_check_id" {
   description = "Auto-created health-check id."
-  value       = try(google_compute_health_check.default.0.id, null)
+  value       = try(google_compute_health_check.default[0].id, null)
 }
 
 output "health_check_self_link" {
   description = "Auto-created health-check self link."
-  value       = try(google_compute_health_check.default.0.self_link, null)
+  value       = try(google_compute_health_check.default[0].self_link, null)
 }
 
 output "id" {
   description = "Fully qualified forwarding rule ids."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.id
+  }
+}
+
+output "service_attachment_ids" {
+  description = "Service attachment ids."
+  value = {
+    for k, v in google_compute_service_attachment.default : k => v.id
   }
 }

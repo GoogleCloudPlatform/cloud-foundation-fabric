@@ -32,7 +32,7 @@ module "vpc-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.project.project_id
-  network    = module.vpc.0.name
+  network    = module.vpc[0].name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/20"]
   }
@@ -53,7 +53,7 @@ module "cloudnat" {
   project_id     = module.project.project_id
   name           = "${var.prefix}-default"
   region         = var.region
-  router_network = module.vpc.0.name
+  router_network = module.vpc[0].name
 }
 
 resource "google_project_iam_member" "shared_vpc" {

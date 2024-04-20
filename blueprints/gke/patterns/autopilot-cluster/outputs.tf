@@ -21,22 +21,22 @@ output "created_resources" {
       project = module.project.project_id
     },
     !local.vpc_create ? {} : {
-      subnet_id = one(values(module.vpc.0.subnet_ids))
-      vpc_id    = module.vpc.0.id
+      subnet_id = one(values(module.vpc[0].subnet_ids))
+      vpc_id    = module.vpc[0].id
     },
     !var.registry_create ? {} : {
-      registry = module.registry.0.image_path
+      registry = module.registry[0].image_path
     },
     !local.cluster_create ? {} : {
-      cluster              = module.cluster.0.id
-      node_service_account = module.cluster-service-account.0.email
+      cluster              = module.cluster[0].id
+      node_service_account = module.cluster-service-account[0].email
     },
     !local.create_nat ? {} : {
-      router    = module.nat.0.id
-      cloud_nat = module.nat.0.router.id
+      router    = module.nat[0].id
+      cloud_nat = module.nat[0].router.id
     },
     local.proxy_only_subnet == null ? {} : {
-      proxy_only_subnet = one(values(module.vpc.0.subnets_proxy_only)).id
+      proxy_only_subnet = one(values(module.vpc[0].subnets_proxy_only)).id
     },
   )
 }

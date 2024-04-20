@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "custom_role_ids" {
+output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
   value = {
     for k, v in google_project_iam_custom_role.roles :
@@ -22,6 +22,11 @@ output "custom_role_ids" {
     # keys (useful for folder/organization/project-level iam bindings)
     (k) => "projects/${local.prefix}${var.name}/roles/${local.custom_roles[k].name}"
   }
+}
+
+output "custom_roles" {
+  description = "Map of custom roles resources created in the project."
+  value       = google_project_iam_custom_role.roles
 }
 
 output "id" {
@@ -91,6 +96,22 @@ output "project_id" {
     google_project_service_identity.servicenetworking,
     google_project_iam_member.servicenetworking
   ]
+}
+
+output "quota_configs" {
+  description = "Quota configurations."
+  value = {
+    for k, v in google_cloud_quotas_quota_preference.default :
+    k => {
+      granted   = v.quota_config[0].granted_value
+      preferred = v.quota_config[0].preferred_value
+    }
+  }
+}
+
+output "quotas" {
+  description = "Quota resources."
+  value       = google_cloud_quotas_quota_preference.default
 }
 
 output "service_accounts" {

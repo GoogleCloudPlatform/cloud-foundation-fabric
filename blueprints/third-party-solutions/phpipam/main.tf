@@ -21,11 +21,15 @@ locals {
     db               = "phpipam"
     user             = "admin"
   }
-  connector = var.connector == null ? module.cloud_run.vpc_connector : var.connector
+  cloudsql_password = coalesce(
+    var.cloudsql_password,
+    module.cloudsql.user_passwords[local.cloudsql_conf.user]
+  )
+  connector = coalesce(var.connector, module.cloud_run.vpc_connector)
   domain = (
     var.custom_domain != null ? var.custom_domain : (
       var.phpipam_exposure == "EXTERNAL" ?
-    "${module.addresses.0.global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
+    "${module.addresses[0].global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
   )
   iam = {
     # CloudSQL
@@ -37,9 +41,9 @@ locals {
     "roles/iam.serviceAccountUser"         = var.admin_principals
     "roles/iam.serviceAccountTokenCreator" = var.admin_principals
   }
-  network          = var.vpc_config == null ? module.vpc.0.self_link : var.vpc_config.network
+  network          = var.vpc_config == null ? module.vpc[0].self_link : var.vpc_config.network
   phpipam_password = var.phpipam_password == null ? random_password.phpipam_password.result : var.phpipam_password
-  subnetwork       = var.vpc_config == null ? module.vpc.0.subnet_self_links["${var.region}/ilb"] : var.vpc_config.subnetwork
+  subnetwork       = var.vpc_config == null ? module.vpc[0].subnet_self_links["${var.region}/ilb"] : var.vpc_config.subnetwork
 }
 
 
@@ -71,17 +75,25 @@ module "vpc" {
   count      = var.vpc_config == null ? 1 : 0
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
-
-  psa_config = {
+  psa_configs = [{
+    deletion_policy = "ABANDON"
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-  }
+  }]
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.ilb
       name          = "ilb"
       region        = var.region
+    }
+  ]
+  subnets_proxy_only = [
+    {
+      ip_cidr_range = var.ip_ranges.proxy
+      name          = "regional-proxy"
+      region        = var.region
+      active        = true
     }
   ]
 }
@@ -96,7 +108,7 @@ module "cloud_run" {
   project_id       = module.project.project_id
   name             = "${var.prefix}-cr-phpipam"
   prefix           = var.prefix
-  ingress_settings = "all"
+  ingress_settings = "internal-and-cloud-load-balancing"
   region           = var.region
 
   containers = {
@@ -112,12 +124,13 @@ module "cloud_run" {
       env_from = null
       # set up the database connection
       env = {
-        "TZ"                 = "Europe/Rome"
-        "IPAM_DATABASE_HOST" = module.cloudsql.ip
-        "IPAM_DATABASE_USER" = local.cloudsql_conf.user
-        "IPAM_DATABASE_PASS" = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-        "IPAM_DATABASE_NAME" = local.cloudsql_conf.db
-        "IPAM_DATABASE_PORT" = "3306"
+        "TZ"                     = "Europe/Rome"
+        "IPAM_TRUST_X_FORWARDED" = "true"
+        "IPAM_DATABASE_HOST"     = module.cloudsql.ip
+        "IPAM_DATABASE_USER"     = local.cloudsql_conf.user
+        "IPAM_DATABASE_PASS"     = local.cloudsql_password
+        "IPAM_DATABASE_NAME"     = local.cloudsql_conf.db
+        "IPAM_DATABASE_PORT"     = "3306"
       }
     }
   }

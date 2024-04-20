@@ -208,7 +208,7 @@ resource "google_compute_instance" "default" {
     )
     source = (
       var.boot_disk.use_independent_disk
-      ? google_compute_disk.boot.0.id
+      ? google_compute_disk.boot[0].id
       : var.boot_disk.source
     )
     disk_encryption_key_raw = (
@@ -264,6 +264,13 @@ resource "google_compute_instance" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
+    }
+  }
+
+  dynamic "network_interface" {
+    for_each = var.network_attached_interfaces
+    content {
+      network_attachment = network_interface.value
     }
   }
 
@@ -425,6 +432,13 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "network_interface" {
+    for_each = var.network_attached_interfaces
+    content {
+      network_attachment = network_interface.value
+    }
+  }
+
   scheduling {
     automatic_restart           = !var.options.spot
     instance_termination_action = local.termination_action
@@ -471,13 +485,13 @@ resource "google_compute_instance_group" "unmanaged" {
   project = var.project_id
   network = (
     length(var.network_interfaces) > 0
-    ? var.network_interfaces.0.network
+    ? var.network_interfaces[0].network
     : ""
   )
   zone        = var.zone
   name        = var.name
   description = var.description
-  instances   = [google_compute_instance.default.0.self_link]
+  instances   = [google_compute_instance.default[0].self_link]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}
     iterator = config

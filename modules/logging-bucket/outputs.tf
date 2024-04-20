@@ -17,9 +17,9 @@
 output "id" {
   description = "Fully qualified logging bucket id."
   value = try(
-    google_logging_project_bucket_config.bucket.0.id,
-    google_logging_folder_bucket_config.bucket.0.id,
-    google_logging_organization_bucket_config.bucket.0.id,
-    google_logging_billing_account_bucket_config.bucket.0.id,
+    google_logging_project_bucket_config.bucket[0].id,
+    google_logging_folder_bucket_config.bucket[0].id,
+    google_logging_organization_bucket_config.bucket[0].id,
+    google_logging_billing_account_bucket_config.bucket[0].id,
   )
 }

@@ -59,7 +59,7 @@ module "branch-teams-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-teams-sa.0.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-teams-sa[0].iam_email]
   }
 }
 
@@ -68,7 +68,7 @@ module "branch-teams-gcs" {
 module "branch-teams-team-folder" {
   source   = "../../../modules/folder"
   for_each = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
-  parent   = module.branch-teams-folder.0.id
+  parent   = module.branch-teams-folder[0].id
   name     = each.value.descriptive_name
   iam = {
     "roles/logging.admin"                  = [module.branch-teams-team-sa[each.key].iam_email]

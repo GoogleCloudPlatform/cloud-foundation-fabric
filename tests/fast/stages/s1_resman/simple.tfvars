@@ -13,6 +13,8 @@ billing_account = {
 }
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
+  gcve_network_admin            = "organizations/123456789012/roles/gcveNetworkAdmin"
+  organization_admin_viewer     = "organizations/123456789012/roles/organizationAdminViewer"
   service_project_network_admin = "organizations/123456789012/roles/xpnServiceAdmin"
   storage_viewer                = "organizations/123456789012/roles/storageViewer"
 }
@@ -30,3 +32,37 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast2"
+folder_iam = {
+  data_platform = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  gcve = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  gke = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  sandbox = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  security = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  network = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  teams = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+  tenants = {
+    "roles/owner"   = ["user:extra-owner@fast.example.com"]
+    "roles/browser" = ["user:extra-browser@fast.example.com"]
+  }
+}

@@ -113,6 +113,24 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "default_nodepool" {
+  description = "Enable default nodepool."
+  type = object({
+    remove_pool        = optional(bool, true)
+    initial_node_count = optional(number, 1)
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition = (
+      var.default_nodepool.remove_pool != true
+      ||
+      var.default_nodepool.initial_node_count != null
+    )
+    error_message = "If `remove_pool` is set to false, `initial_node_count` needs to be set."
+  }
+}
+
 variable "deletion_protection" {
   description = "Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail."
   type        = bool
@@ -153,9 +171,10 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    beta_apis            = optional(list(string))
-    binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, false)
+    beta_apis                         = optional(list(string))
+    binary_authorization              = optional(bool, false)
+    cilium_clusterwide_network_policy = optional(bool, false)
+    cost_management                   = optional(bool, false)
     dns = optional(object({
       provider = optional(string)
       scope    = optional(string)
@@ -276,12 +295,10 @@ variable "monitoring_config" {
   description = "Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default."
   type = object({
     enable_system_metrics = optional(bool, true)
-
     # Control plane metrics
     enable_api_server_metrics         = optional(bool, false)
     enable_controller_manager_metrics = optional(bool, false)
     enable_scheduler_metrics          = optional(bool, false)
-
     # Kube state metrics
     enable_daemonset_metrics   = optional(bool, false)
     enable_deployment_metrics  = optional(bool, false)
@@ -289,9 +306,13 @@ variable "monitoring_config" {
     enable_pod_metrics         = optional(bool, false)
     enable_statefulset_metrics = optional(bool, false)
     enable_storage_metrics     = optional(bool, false)
-
     # Google Cloud Managed Service for Prometheus
     enable_managed_prometheus = optional(bool, true)
+    advanced_datapath_observability = optional(object({
+      enable_metrics = bool
+      enable_relay   = optional(bool)
+      relay_mode     = optional(string)
+    }))
   })
   default  = {}
   nullable = false
@@ -319,6 +340,28 @@ variable "monitoring_config" {
       var.monitoring_config.enable_storage_metrics,
     ]) ? var.monitoring_config.enable_managed_prometheus : true
     error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
+  }
+  validation {
+    condition = (
+      try(
+        var.monitoring_config.advanced_datapath_observability.relay_mode,
+        null
+      ) == null
+      ||
+      contains(
+        [
+          "RELAY_MODE_UNSPECIFIED",
+          "DISABLED",
+          "INTERNAL_VPC_LB",
+          "EXTERNAL_LB"
+        ],
+        try(
+          var.monitoring_config.advanced_datapath_observability.relay_mode,
+          ""
+        )
+      )
+    )
+    error_message = "Invalid relay mode value."
   }
 }
 

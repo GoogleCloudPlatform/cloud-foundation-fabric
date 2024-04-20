@@ -46,6 +46,14 @@ output "ipsec_interconnect_addresses" {
   }
 }
 
+output "network_attachment_ids" {
+  description = "IDs of network attachments."
+  value = {
+    for k, v in google_compute_network_attachment.default :
+    k => v.id
+  }
+}
+
 output "psa_addresses" {
   description = "Allocated internal addresses for PSA endpoints."
   value = {

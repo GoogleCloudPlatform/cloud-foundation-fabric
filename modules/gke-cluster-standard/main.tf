@@ -29,19 +29,20 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version          = var.min_master_version
-  network                     = var.vpc_config.network
-  subnetwork                  = var.vpc_config.subnetwork
-  resource_labels             = var.labels
-  default_max_pods_per_node   = var.max_pods_per_node
-  enable_intranode_visibility = var.enable_features.intranode_visibility
-  enable_l4_ilb_subsetting    = var.enable_features.l4_ilb_subsetting
-  enable_shielded_nodes       = var.enable_features.shielded_nodes
-  enable_fqdn_network_policy  = var.enable_features.fqdn_network_policy
-  enable_tpu                  = var.enable_features.tpu
-  initial_node_count          = 1
-  remove_default_node_pool    = true
-  deletion_protection         = var.deletion_protection
+  min_master_version                       = var.min_master_version
+  network                                  = var.vpc_config.network
+  subnetwork                               = var.vpc_config.subnetwork
+  resource_labels                          = var.labels
+  default_max_pods_per_node                = var.max_pods_per_node
+  enable_intranode_visibility              = var.enable_features.intranode_visibility
+  enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
+  enable_shielded_nodes                    = var.enable_features.shielded_nodes
+  enable_fqdn_network_policy               = var.enable_features.fqdn_network_policy
+  enable_tpu                               = var.enable_features.tpu
+  initial_node_count                       = var.default_nodepool.initial_node_count
+  remove_default_node_pool                 = var.default_nodepool.remove_pool
+  deletion_protection                      = var.deletion_protection
+  enable_cilium_clusterwide_network_policy = var.enable_features.cilium_clusterwide_network_policy
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
@@ -337,6 +338,12 @@ resource "google_container_cluster" "cluster" {
         exclusion_name = exclusion.value.name
         start_time     = exclusion.value.start_time
         end_time       = exclusion.value.end_time
+        dynamic "exclusion_options" {
+          for_each = exclusion.value.scope != null ? [""] : []
+          content {
+            scope = exclusion.value.scope
+          }
+        }
       }
     }
   }
@@ -366,7 +373,8 @@ resource "google_container_cluster" "cluster" {
   }
   monitoring_config {
     enable_components = toset(compact([
-      # System metrics is the minimum requirement if any other metrics are enabled. This is checked by input var validation.
+      # System metrics is the minimum requirement if any other metrics are enabled.
+      # This is checked by input var validation.
       var.monitoring_config.enable_system_metrics ? "SYSTEM_COMPONENTS" : null,
       # Control plane metrics
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
@@ -382,6 +390,24 @@ resource "google_container_cluster" "cluster" {
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
+    }
+    dynamic "advanced_datapath_observability_config" {
+      for_each = (
+        var.monitoring_config.advanced_datapath_observability == null
+        ? []
+        : [""]
+      )
+      content {
+        enable_metrics = (
+          var.monitoring_config.advanced_datapath_observability.enable_metrics
+        )
+        enable_relay = (
+          var.monitoring_config.advanced_datapath_observability.enable_relay
+        )
+        relay_mode = (
+          var.monitoring_config.advanced_datapath_observability.relay_mode
+        )
+      }
     }
   }
   # Dataplane V2 has built-in network policies
@@ -538,7 +564,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   )
   project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
   peering = try(
-    google_container_cluster.cluster.private_cluster_config.0.peering_name,
+    google_container_cluster.cluster.private_cluster_config[0].peering_name,
     null
   )
   network              = element(reverse(split("/", var.vpc_config.network)), 0)

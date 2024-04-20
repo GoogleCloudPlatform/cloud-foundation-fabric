@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,16 +25,16 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
   PYTHON_VERSION: "3.10"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-  TF_VERSION: 1.7.0
+  TF_VERSION: 1.7.4
   TFTEST_COPY: 1
 
 jobs:
   setup-tf-providers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
@@ -51,23 +51,24 @@ jobs:
           terraform init -upgrade=true
 
       - name: Upload Terraform provider cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
 
       - name: Upload lockfile
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lockfile
           path: tools/lockfile/.terraform.lock.hcl
+          overwrite: true
 
 
   examples-blueprints:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -76,13 +77,19 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -n4 --tb=line -k blueprints/ tests/examples
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k blueprints/ tests/examples
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: Blueprint Examples
 
   examples-modules:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -91,13 +98,19 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -n4 --tb=line -k modules/ tests/examples
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k modules/ tests/examples
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: Module Examples
 
   blueprints:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -106,13 +119,19 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests environments
-        run: pytest -vv -n4 --tb=line tests/blueprints
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/blueprints
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: Blueprints
 
   modules:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -121,13 +140,19 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests modules
-        run: pytest -vv -n4 --tb=line tests/modules
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/modules
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: Modules
 
   fast:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -136,4 +161,10 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on FAST stages
-        run: pytest -vv -n4 --tb=line tests/fast
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/fast
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: FAST

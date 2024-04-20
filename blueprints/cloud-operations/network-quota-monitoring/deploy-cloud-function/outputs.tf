@@ -36,6 +36,6 @@ output "troubleshooting_payload" {
   description = "Cloud Function payload used for manual triggering."
   sensitive   = true
   value = jsonencode({
-    data = var.cloud_function_config.version == "v1" ? google_cloud_scheduler_job.default[0].pubsub_target.0.data : google_cloud_scheduler_job.scheduler-http[0].http_target.0.body
+    data = var.cloud_function_config.version == "v1" ? google_cloud_scheduler_job.default[0].pubsub_target[0].data : google_cloud_scheduler_job.scheduler-http[0].http_target[0].body
   })
 }

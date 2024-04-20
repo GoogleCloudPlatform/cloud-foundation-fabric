@@ -23,7 +23,7 @@ locals {
         identities    = values(module.folder.sink_writer_identities)
       }
       to = {
-        resources  = ["projects/${module.log-export-project.0.number}"]
+        resources  = ["projects/${module.log-export-project[0].number}"]
         operations = [{ service_name = "*" }]
     } }
   } : null
@@ -60,9 +60,9 @@ locals {
 
   log_sink_destinations = var.enable_features.log_sink ? merge(
     # use the same dataset for all sinks with `bigquery` as  destination
-    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
+    { for k, v in var.log_sinks : k => module.log-export-dataset[0] if v.type == "bigquery" },
     # use the same gcs bucket for all sinks with `storage` as destination
-    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
+    { for k, v in var.log_sinks : k => module.log-export-gcs[0] if v.type == "storage" },
     # use separate pubsub topics and logging buckets for sinks with
     # destination `pubsub` and `logging`
     module.log-export-pubsub,
@@ -94,7 +94,7 @@ module "firewall-policy" {
   source    = "../../../modules/net-firewall-policy"
   name      = "default"
   parent_id = module.folder.id
-  rules_factory_config = var.data_dir == null ? {} : {
+  factories_config = var.data_dir == null ? {} : {
     cidr_file_path          = "${var.data_dir}/firewall-policies/cidrs.yaml"
     ingress_rules_file_path = "${var.data_dir}/firewall-policies/hierarchical-ingress-rules.yaml"
   }

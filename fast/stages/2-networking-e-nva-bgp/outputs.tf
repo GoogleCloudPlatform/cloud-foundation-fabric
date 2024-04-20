@@ -25,16 +25,53 @@ locals {
     prod-landing = module.landing-project.number
     prod-spoke-0 = module.prod-spoke-project.number
   }
+  subnet_self_links = {
+    prod-dmz     = module.dmz-vpc.subnet_self_links
+    prod-landing = module.landing-vpc.subnet_self_links
+    dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
+    prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
+  }
+  subnet_proxy_only_self_links = {
+    prod-dmz = {
+      for k, v in module.dmz-vpc.subnets_proxy_only : k => v.id
+    }
+    prod-landing = {
+      for k, v in module.landing-vpc.subnets_proxy_only : k => v.id
+    }
+    dev-spoke-0 = {
+      for k, v in module.dev-spoke-vpc.subnets_proxy_only : k => v.id
+    }
+    prod-spoke-0 = {
+      for k, v in module.prod-spoke-vpc.subnets_proxy_only : k => v.id
+    }
+  }
+  subnet_psc_self_links = {
+    prod-dmz = {
+      for k, v in module.dmz-vpc.subnets_psc : k => v.id
+    }
+    prod-landing = {
+      for k, v in module.landing-vpc.subnets_psc : k => v.id
+    }
+    dev-spoke-0 = {
+      for k, v in module.dev-spoke-vpc.subnets_psc : k => v.id
+    }
+    prod-spoke-0 = {
+      for k, v in module.prod-spoke-vpc.subnets_psc : k => v.id
+    }
+  }
   tfvars = {
-    host_project_ids     = local.host_project_ids
-    host_project_numbers = local.host_project_numbers
-    vpc_self_links       = local.vpc_self_links
+    host_project_ids             = local.host_project_ids
+    host_project_numbers         = local.host_project_numbers
+    subnet_self_links            = local.subnet_self_links
+    subnet_proxy_only_self_links = local.subnet_proxy_only_self_links
+    subnet_psc_self_links        = local.subnet_psc_self_links
+    vpc_self_links               = local.vpc_self_links
   }
   vpc_self_links = {
-    prod-landing-trusted   = module.landing-trusted-vpc.self_link
-    prod-landing-untrusted = module.landing-untrusted-vpc.self_link
-    dev-spoke-0            = module.dev-spoke-vpc.self_link
-    prod-spoke-0           = module.prod-spoke-vpc.self_link
+    prod-landing = module.landing-vpc.self_link
+    prod-dmz     = module.dmz-vpc.self_link
+    dev-spoke-0  = module.dev-spoke-vpc.self_link
+    prod-spoke-0 = module.prod-spoke-vpc.self_link
   }
 }
 
@@ -80,11 +117,11 @@ output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
     onprem-primary = var.vpn_onprem_primary_config == null ? {} : {
-      for v in module.landing-to-onprem-primary-vpn.0.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-primary-vpn[0].gateway.vpn_interfaces :
       v.id => v.ip_address
     }
     onprem-secondary = var.vpn_onprem_secondary_config == null ? {} : {
-      for v in module.landing-to-onprem-secondary-vpn.0.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-secondary-vpn[0].gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }

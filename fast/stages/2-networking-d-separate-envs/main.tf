@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  custom_roles = coalesce(var.custom_roles, {})
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
@@ -56,7 +55,7 @@ module "firewall-policy-default" {
   source    = "../../../modules/net-firewall-policy"
   name      = var.factories_config.firewall_policy_name
   parent_id = module.folder.id
-  rules_factory_config = {
+  factories_config = {
     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
     ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
   }

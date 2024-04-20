@@ -78,3 +78,10 @@ output "regional_neg_ids" {
     for k, v in google_compute_region_network_endpoint_group.default : k => v.id
   }
 }
+
+output "service_attachment_id" {
+  description = "Id of the service attachment."
+  value = try(
+    google_compute_service_attachment.default[0].id, null
+  )
+}

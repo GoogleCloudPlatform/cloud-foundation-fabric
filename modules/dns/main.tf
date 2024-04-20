@@ -16,8 +16,8 @@
 
 locals {
   managed_zone = (var.zone_config == null ?
-    data.google_dns_managed_zone.dns_managed_zone.0
-    : google_dns_managed_zone.dns_managed_zone.0
+    data.google_dns_managed_zone.dns_managed_zone[0]
+    : google_dns_managed_zone.dns_managed_zone[0]
   )
   # split record name and type and set as keys in a map
   _recordsets_0 = {
@@ -61,6 +61,7 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
   name           = var.name
   dns_name       = var.zone_config.domain
   description    = var.description
+  force_destroy  = var.force_destroy
   visibility     = local.visibility
   reverse_lookup = try(var.zone_config.private, null) != null && endswith(var.zone_config.domain, ".in-addr.arpa.")
 

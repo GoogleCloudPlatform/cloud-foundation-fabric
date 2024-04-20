@@ -18,7 +18,7 @@ locals {
   _vpcaccess_annotation = (
     local.vpc_connector_create
     ? merge({
-      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id
+      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector[0].id
       },
       var.revision_annotations.vpcaccess_egress == null ? {
         # if creating a vpc connector and no explicit annotation is given,
@@ -309,8 +309,8 @@ resource "google_cloud_run_service" "service" {
 
   lifecycle {
     ignore_changes = [
-      metadata.0.annotations["run.googleapis.com/operation-id"],
-      template.0.metadata.0.labels["run.googleapis.com/startupProbeType"]
+      metadata[0].annotations["run.googleapis.com/operation-id"],
+      template[0].metadata[0].labels["run.googleapis.com/startupProbeType"]
     ]
   }
 }

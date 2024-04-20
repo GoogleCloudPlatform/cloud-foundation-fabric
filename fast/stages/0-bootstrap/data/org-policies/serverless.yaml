@@ -10,8 +10,8 @@ run.allowedIngress:
   rules:
     - allow:
         values:
-          - is:internal
           - is:internal-and-cloud-load-balancing
+
 # run.allowedVPCEgress:
 #   rules:
 #   - allow:
@@ -33,3 +33,8 @@ run.allowedIngress:
 # cloudfunctions.requireVPCConnector:
 #   rules:
 #   - enforce: true
+
+# constraints/cloudfunctions.restrictAllowedGenerations:
+#   - allow:
+#       values:
+#       - is:2ndGen

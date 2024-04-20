@@ -36,7 +36,7 @@ locals {
     : (
       try(var.vpc_connector.create, false) == false
       ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      : google_vpc_access_connector.connector[0].id
     )
   )
 }
@@ -51,21 +51,22 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 resource "google_cloudfunctions_function" "function" {
-  project               = var.project_id
-  region                = var.region
-  name                  = "${local.prefix}${var.name}"
-  description           = var.description
-  runtime               = var.function_config.runtime
-  available_memory_mb   = var.function_config.memory_mb
-  max_instances         = var.function_config.instance_count
-  timeout               = var.function_config.timeout_seconds
-  entry_point           = var.function_config.entry_point
-  environment_variables = var.environment_variables
-  service_account_email = local.service_account_email
-  source_archive_bucket = local.bucket
-  source_archive_object = google_storage_bucket_object.bundle.name
-  labels                = var.labels
-  trigger_http          = var.trigger_config == null ? true : null
+  project                      = var.project_id
+  region                       = var.region
+  name                         = "${local.prefix}${var.name}"
+  description                  = var.description
+  runtime                      = var.function_config.runtime
+  available_memory_mb          = var.function_config.memory_mb
+  max_instances                = var.function_config.instance_count
+  timeout                      = var.function_config.timeout_seconds
+  entry_point                  = var.function_config.entry_point
+  environment_variables        = var.environment_variables
+  service_account_email        = local.service_account_email
+  source_archive_bucket        = local.bucket
+  source_archive_object        = google_storage_bucket_object.bundle.name
+  labels                       = var.labels
+  trigger_http                 = var.trigger_config == null ? true : null
+  https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
 
   ingress_settings  = var.ingress_settings
   build_worker_pool = var.build_worker_pool
@@ -96,7 +97,7 @@ resource "google_cloudfunctions_function" "function" {
       key        = secret.key
       project_id = secret.value.project_id
       secret     = secret.value.secret
-      version    = try(secret.value.versions.0, "latest")
+      version    = try(secret.value.versions[0], "latest")
     }
   }
 

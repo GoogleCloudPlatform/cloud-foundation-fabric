@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ locals {
   disk_encryption_key = (
     var.disk_encryption_key == null
     ? null
-    : data.google_kms_crypto_key.default.0.id
+    : data.google_kms_crypto_key.default[0].id
   )
   fs_paths = { for k, v in var.fs_paths : k => pathexpand(v) }
   infra_id = local.install_metadata["infraID"]
@@ -56,6 +56,6 @@ data "google_kms_key_ring" "default" {
 
 data "google_kms_crypto_key" "default" {
   count    = var.disk_encryption_key == null ? 0 : 1
-  key_ring = data.google_kms_key_ring.default.0.self_link
+  key_ring = data.google_kms_key_ring.default[0].self_link
   name     = var.disk_encryption_key.name
 }

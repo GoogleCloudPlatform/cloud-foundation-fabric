@@ -17,13 +17,8 @@
 locals {
   health_check = (
     try(var.auto_healing_policies.health_check, null) == null
-    ? try(google_compute_health_check.default.0.self_link, null)
+    ? try(google_compute_health_check.default[0].self_link, null)
     : try(var.auto_healing_policies.health_check, null)
-  )
-  instance_group_manager = (
-    local.is_regional ?
-    google_compute_region_instance_group_manager.default :
-    google_compute_instance_group_manager.default
   )
   is_regional = length(split("-", var.location)) == 2
 }

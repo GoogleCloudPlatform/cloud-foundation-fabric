@@ -3,7 +3,7 @@
 Contributors are the engine that keeps Fabric alive so if you were or are planning to be active in this repo, a huge thanks from all of us for dedicating your time!!! If you have free time and are looking for suggestions on what to work on, our issue tracker generally has a few pending feature requests: you are welcome to send a PR for any of them.
 
 ## Table of Contents
-
+<!-- BEGIN TOC -->
 - [I just found a bug / have a feature request](#i-just-found-a-bug--have-a-feature-request)
 - [Quick developer workflow](#quick-developer-workflow)
 - [Developer's handbook](#developers-handbook)
@@ -25,6 +25,8 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
   - [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
   - [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
 - [Fabric tools](#fabric-tools)
+- [Cutting a new release](#cutting-a-new-release)
+<!-- END TOC -->
 
 ## I just found a bug / have a feature request
 
@@ -1005,8 +1007,7 @@ tests:
   # run a test named `test-plan`, load the specified tfvars files
   # use the default inventory file of `test-plan.yaml`
   test-plan:
-    tfvars: # if omitted, we load test-plan.tfvars by default
-      - test-plan.tfvars
+    tfvars: # test-plan.tfvars is always loaded
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
@@ -1072,18 +1073,23 @@ outputs:
 You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
 
 ### Running end-to-end tests
+
 You can use end-to-end tests to verify your code against GCP API. These tests verify that `terraform apply` succeeds, `terraform plan` is empty afterwards and that `terraform destroy` raises no error.
+
 #### Prerequisites
+
 Prepare following information:
-* billing account id
-* organization id
-* parent folder under which resources will be created
-  * (you may want to disable / restore to default some organization policies under this folder)
-* decide in which region you want to deploy (choose one, that has wide service coverage)
-* (optional) prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
-* prepare a prefix (this is to provide project and other global resources name uniqueness)
+
+- billing account id
+- organization id
+- parent folder under which resources will be created
+  - (you may want to disable / restore to default some organization policies under this folder)
+- decide in which region you want to deploy (choose one, that has wide service coverage)
+- (optional) prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
+- prepare a prefix (this is to provide project and other global resources name uniqueness)
 
 #### How does it work
+
 Each test case is provided by additional environment defined in [variables.tf](tests/examples/variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
 
 The test environment can be provisioned automatically during the test run (which takes ~2 minutes) and destroyed at the end, when all tests finish (option 1 below), which is targeting automated runs in CI/CD pipeline, or it can be provisioned manually (option 2 below) to reduce test time, which might be typical use case for tests run locally.
@@ -1093,6 +1099,7 @@ For development, to keep the feedback loop short, consider using [local sandbox]
 #### Option 1 - automatically provision and de-provision testing infrastructure
 
 Set variables in environment:
+
 ```bash
 export TFTEST_E2E_billing_account="123456-123456-123456"  # billing account id to associate projects
 export TFTEST_E2E_group_email="group@example.org" # existing group within organization
@@ -1103,19 +1110,25 @@ export TFTEST_E2E_region="europe-west4"  # region to use
 ```
 
 To use Service Account Impersonation, use provider environment variable
+
 ```bash
 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
 ```
 
 You can keep the prefix the same for all the tests run, the tests will add necessary suffix for subsequent runs, and in case tests are run in parallel, use separate suffix for the workers.
+
 # Run the tests
+
 ```bash
 pytest tests/examples_e2e
 ```
 
 #### Option 2 - Provision manually test environment and use it for tests
+
 ##### Provision manually test environment
+
 In `tests/examples_e2e/setup_module` create `terraform.tfvars` with following values:
+
 ```tfvars
 billing_account = "123456-123456-123456"  # billing account id to associate projects
 group_email     = "group@example.org"  # existing group within organization
@@ -1127,11 +1140,13 @@ timestamp       = "1696444185" # generate your own timestamp - will be used as a
 ```
 
 If you use service account impersonation, set `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT`
+
 ```bash
 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
 ```
 
 Provision the environment using terraform
+
 ```bash
 (cd tests/examples_e2e/setup_module/ && terraform init && terraform apply)
 ```
@@ -1139,33 +1154,42 @@ Provision the environment using terraform
 This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for you, which can be used by tests.
 
 ##### Setup your environment
+
 ```bash
 export TFTEST_E2E_TFVARS_PATH=`pwd`/tests/examples_e2e/setup_module/e2e_tests.tfvars  # generated above
 export TFTEST_E2E_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
 ```
 
 ##### De-provision the environment
+
 Once you are done with the tests, run:
+
 ```bash
 (cd tests/examples_e2e/setup_module/ && terraform apply -destroy)
 ```
+
 To remove all resources created for testing and `tests/examples_e2e/setup_module/e2e_tests.tfvars` file.
 
 #### Run tests
+
 Run tests using:
+
 ```bash
 pytest tests/examples_e2e
 ```
 
 #### Creating sandbox environment for examples
+
 When developing it is convenient to have a module that represents chosen example, so you can inspect the environment after running apply and quickly verify fixes. Shell script [create_e2e_sandbox.sh](tools/create_e2e_sandbox.sh) will create such environment for you.
 
 Prepare the environment variables as defined in Option 1 above and run:
+
 ```bash
-$ tools/create_e2e_sandbox.sh <directory>
+tools/create_e2e_sandbox.sh <directory>
 ```
 
 The script will create in `<directory>` following structure:
+
 ```
 <directory>
 ├── default-versions.tf
@@ -1184,16 +1208,19 @@ The script will create in `<directory>` following structure:
 
 The `infra` directory contains the sandbox infrastructure as well as all environment variables dumped into `terraform.tfvars` file. The script runs `terraform init` and `terraform apply -auto-approve` in this folder.
 
-The `<direcotry>` has empty `main.tf` where you can paste any example, and it will get all necessary variables from `e2e_tests.auto.tfvars` file.
+The `<directory>` has empty `main.tf` where you can paste any example, and it will get all necessary variables from `e2e_tests.auto.tfvars` file.
 
 If there are any changes to the test sandbox, you can rerun the script and only changes will be applied to the project.
 
 #### Cleaning up interrupted E2E tests / failed destroys
+
 Tests take the effort to clean after themselves but in following situations some resources may be left in GCP:
-* you interrupt the test run
-* `terraform destroy` failed (for example, because of some bug in the example of module code)
+
+- you interrupt the test run
+- `terraform destroy` failed (for example, because of some bug in the example of module code)
 
 To clean up the old dangling resources you may run this commands, to remove folders and projects older than 1 week
+
 ```bash
 
 for folder_id in $(
@@ -1288,3 +1315,63 @@ When generating the files table, a special annotation can be used to fill in the
 ```
 
 The tool can also be run so that it prints the generated output on standard output instead of replacing in files. Run `tfdoc --help` to see all available options.
+
+## Cutting a new release
+
+Cutting a new release is mostly about updating `CHANGELOG.md` - luckily the [changelog tool](./tools/changelog.py) will do the heavy lifting for you.
+
+In order to use it, you will need to generate a [Github Token](https://github.com/settings/tokens/). The token does not require any scope, so if you're purposely generating one, make sure to avoid adding any. Store the token in your favourite secret manager for future usage.
+
+Also make sure to work in a `venv` where all the [requirements for the fabric tools](./tools/requirements.txt) are installed.
+
+```bash
+cd cloud-foundation-fabric
+git checkout master
+git pull
+./tools/changelog.py --write --token $YOURGITHUBTOKEN
+```
+
+After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:blueprints, on:module, ...), and finally run again
+
+```bash
+./tools/changelog.py --write --token $YOURGITHUBTOKEN
+```
+
+Now open the up-to-date CHANGELOG.md in your favorite editor, and append the new release H2 after the `## [Unreleased]` header you see at the top - e.g. if the latest version is `29.0.0`, add an header for `30.0.0` and mark todays date as follows:
+
+```md
+[...]
+## [Unreleased]
+<!-- None < 2024-03-20 13:57:56+00:00 -->
+
+## [30.0.0] - 2024-03-20
+
+## [29.0.0] - 2024-01-24
+
+### BLUEPRINTS
+[...]
+```
+
+Now scroll to the bottom section of the document, and update the release links by adding `30.0.0` and updating `Unreleased` as follows:
+
+```md
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...HEAD
+[30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
+[29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
+```
+
+Once done, add, commit and push changes to master.
+
+As CHANGELOG.md is now ready, [create a new release from the Github UI](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/new), and use `vXX.Y.Z` as the release tag and title (don't forget the `v` in front!).
+
+As a description, copy the whole content added to [CHANGELOG.md](./CHANGELOG.md) for the current release, and then click the 'Publish release' button.
+
+As a last cleanup for the CHANGELOG.md file, run
+
+```bash
+git pull
+./tools/changelog.py --write --token $TOKEN --release Unreleased --release vXX.Y.Z
+git diff
+```
+
+And add / commit / push any change in case of a diff.

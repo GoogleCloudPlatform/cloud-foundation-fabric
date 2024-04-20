@@ -149,8 +149,8 @@ variable "dataproc_config" {
       kubernetes_cluster_config = object({
         kubernetes_namespace = optional(string)
         kubernetes_software_config = object({
-          component_version = list(map(string))
-          properties        = optional(list(map(string)))
+          component_version = map(string)
+          properties        = optional(map(string))
         })
 
         gke_cluster_config = object({
@@ -193,16 +193,6 @@ variable "name" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Optional prefix used to generate project id and name."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
-}
-
 variable "project_id" {
   description = "Project ID."
   type        = string
@@ -211,10 +201,4 @@ variable "project_id" {
 variable "region" {
   description = "Dataproc region."
   type        = string
-}
-
-variable "service_account" {
-  description = "Service account to set on the Dataproc cluster."
-  type        = string
-  default     = null
 }

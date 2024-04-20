@@ -191,15 +191,24 @@ variable "project_id" {
   type        = string
 }
 
-variable "protocol" {
-  description = "Forwarding rule protocol used, defaults to TCP."
-  type        = string
-  default     = "TCP"
-}
-
 variable "region" {
   description = "GCP region."
   type        = string
+}
+
+variable "service_attachments" {
+  description = "PSC service attachments, keyed by forwarding rule."
+  type = map(object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  }))
+  default = null
 }
 
 variable "service_label" {

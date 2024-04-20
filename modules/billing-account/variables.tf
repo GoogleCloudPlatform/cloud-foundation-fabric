@@ -118,8 +118,7 @@ variable "budgets" {
   }
 }
 
-variable "factory_config" {
-  # TODO: align all other factory variable names
+variable "factories_config" {
   description = "Path to folder containing budget alerts data files."
   type = object({
     budgets_data_path = optional(string, "data/billing-budgets")
@@ -134,7 +133,7 @@ variable "id" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
+  description = "Logging sinks to create for the billing account."
   type = map(object({
     destination          = string
     type                 = string
@@ -153,9 +152,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([

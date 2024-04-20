@@ -16,6 +16,29 @@
 
 # tfdoc:file:description Networking stage resources.
 
+locals {
+  # FAST-specific IAM
+  _network_folder_fast_iam = {
+    # read-write (apply) automation service account
+    "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
+    "roles/owner"                          = [module.branch-network-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
+    # read-only (plan) automation service account
+    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
+  }
+  # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
+  _network_folder_iam = merge(
+    var.folder_iam.network,
+    {
+      for role, principals in local._network_folder_fast_iam :
+      role => distinct(concat(principals, lookup(var.folder_iam.network, role, [])))
+    }
+  )
+}
+
 module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -27,17 +50,7 @@ module "branch-network-folder" {
       "roles/editor",
     ]
   }
-  iam = {
-    # read-write (apply) automation service account
-    "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
-    "roles/owner"                          = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
-    # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
-  }
+  iam = local._network_folder_iam
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/networking"].id, null
@@ -54,14 +67,17 @@ module "branch-network-prod-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-prod,
       local.branch_optional_sa_lists.gke-prod,
+      local.branch_optional_sa_lists.gcve-prod,
       local.branch_optional_sa_lists.pf-prod,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-prod,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-prod
   }
   tag_bindings = {
     environment = try(
@@ -80,14 +96,17 @@ module "branch-network-dev-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-dev,
       local.branch_optional_sa_lists.gke-dev,
+      local.branch_optional_sa_lists.gcve-dev,
       local.branch_optional_sa_lists.pf-dev,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-dev,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
   }
   tag_bindings = {
     environment = try(
@@ -107,7 +126,7 @@ module "branch-network-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-sa-cicd.0.iam_email, null)
+      try(module.branch-network-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -128,7 +147,7 @@ module "branch-network-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-r-sa-cicd.0.iam_email, null)
+      try(module.branch-network-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {

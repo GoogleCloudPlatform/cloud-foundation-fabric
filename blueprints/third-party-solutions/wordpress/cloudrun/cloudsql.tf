@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ module "vpc" {
       region        = var.region
     }
   ]
-  psa_config = {
+  psa_configs = [{
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-  }
+  }]
 }
 
 
@@ -56,9 +56,9 @@ module "cloudsql" {
   project_id = module.project.project_id
   network_config = {
     connectivity = {
-      psa_config = {
+      psa_configs = [{
         private_network = module.vpc.self_link
-      }
+      }]
     }
   }
   name             = "${var.prefix}-mysql"
@@ -67,9 +67,10 @@ module "cloudsql" {
   tier             = local.cloudsql_conf.tier
   databases        = [local.cloudsql_conf.db]
   users = {
-    "${local.cloudsql_conf.user}" = {
+    (local.cloudsql_conf.user) = {
       password = var.cloudsql_password
     }
   }
-  deletion_protection = false
+  terraform_deletion_protection = false
+  gcp_deletion_protection       = false
 }

@@ -22,7 +22,7 @@ locals {
     "roles/billing.creator"
   ]
   # domain IAM bindings
-  iam_domain_bindings = {
+  iam_domain_bindings = var.organization.domain == null ? {} : {
     "domain:${var.organization.domain}" = {
       authoritative = ["roles/browser"]
       additive      = []
@@ -58,7 +58,8 @@ locals {
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
-        "roles/resourcemanager.tagAdmin"
+        "roles/resourcemanager.tagAdmin",
+        "roles/iam.workforcePoolAdmin"
       ]
       additive = concat(
         [

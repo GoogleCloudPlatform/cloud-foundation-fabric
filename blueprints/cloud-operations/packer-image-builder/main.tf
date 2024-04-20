@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,19 +82,19 @@ module "firewall" {
 }
 
 module "nat" {
-  source                = "../../../modules/net-cloudnat"
-  project_id            = module.project.project_id
-  region                = var.region
-  name                  = "default"
-  router_network        = module.vpc.name
-  config_source_subnets = "LIST_OF_SUBNETWORKS"
-  subnetworks = [
-    {
-      self_link            = module.vpc.subnet_self_links["${var.region}/${local.compute_subnet_name}"]
-      config_source_ranges = ["ALL_IP_RANGES"]
-      secondary_ranges     = null
-    }
-  ]
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "default"
+  router_network = module.vpc.name
+  config_source_subnetworks = {
+    all = false
+    subnetworks = [
+      {
+        self_link = module.vpc.subnet_self_links["${var.region}/${local.compute_subnet_name}"]
+      }
+    ]
+  }
 }
 
 resource "google_service_account_iam_binding" "sa-image-builder-token-creators" {
@@ -114,12 +114,12 @@ resource "google_project_iam_member" "project-iap-sa-image-builder" {
 resource "local_file" "packer-vars" {
   count = var.create_packer_vars ? 1 : 0
   content = templatefile(local.packer_variables_template, {
-    PROJECT_ID         = "${var.project_id}"
-    COMPUTE_ZONE       = "${local.compute_zone}"
-    BUILDER_SA         = "${module.service-account-image-builder.email}"
-    COMPUTE_SA         = "${module.service-account-image-builder-vm.email}"
-    COMPUTE_SUBNETWORK = "${local.compute_subnet_name}"
-    USE_IAP            = "${var.use_iap}"
+    PROJECT_ID         = var.project_id
+    COMPUTE_ZONE       = local.compute_zone
+    BUILDER_SA         = module.service-account-image-builder.email
+    COMPUTE_SA         = module.service-account-image-builder-vm.email
+    COMPUTE_SUBNETWORK = local.compute_subnet_name
+    USE_IAP            = var.use_iap
   })
   filename = local.packer_variables_file
 }

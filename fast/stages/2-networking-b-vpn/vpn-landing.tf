@@ -51,37 +51,37 @@ module "landing-to-spokes-primary-vpn" {
   tunnels = {
     dev-0 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.dev-primary.0, 2)
+        address = cidrhost(local.bgp_session_ranges.dev-primary[0], 2)
         asn     = var.vpn_configs.dev.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary.0, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[0], 1)}/30"
       peer_gateway          = "dev"
       vpn_gateway_interface = 0
     }
     dev-1 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.dev-primary.1, 2)
+        address = cidrhost(local.bgp_session_ranges.dev-primary[1], 2)
         asn     = var.vpn_configs.dev.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary.1, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[1], 1)}/30"
       peer_gateway          = "dev"
       vpn_gateway_interface = 1
     }
     prod-0 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.prod-primary.0, 2)
+        address = cidrhost(local.bgp_session_ranges.prod-primary[0], 2)
         asn     = var.vpn_configs.prod.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary.0, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[0], 1)}/30"
       peer_gateway          = "prod"
       vpn_gateway_interface = 0
     }
     prod-1 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.prod-primary.1, 2)
+        address = cidrhost(local.bgp_session_ranges.prod-primary[1], 2)
         asn     = var.vpn_configs.prod.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary.1, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[1], 1)}/30"
       peer_gateway          = "prod"
       vpn_gateway_interface = 1
     }
@@ -104,19 +104,19 @@ module "landing-to-spokes-secondary-vpn" {
   tunnels = {
     prod-0 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.prod-secondary.0, 2)
+        address = cidrhost(local.bgp_session_ranges.prod-secondary[0], 2)
         asn     = var.vpn_configs.prod.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary.0, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[0], 1)}/30"
       peer_gateway          = "prod"
       vpn_gateway_interface = 0
     }
     prod-1 = {
       bgp_peer = {
-        address = cidrhost(local.bgp_session_ranges.prod-secondary.1, 2)
+        address = cidrhost(local.bgp_session_ranges.prod-secondary[1], 2)
         asn     = var.vpn_configs.prod.asn
       }
-      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary.1, 1)}/30"
+      bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[1], 1)}/30"
       peer_gateway          = "prod"
       vpn_gateway_interface = 1
     }

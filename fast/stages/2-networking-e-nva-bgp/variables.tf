@@ -113,6 +113,16 @@ variable "factories_config" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -127,14 +137,14 @@ variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   type        = map(string)
   default = {
-    gcp_dev_primary                 = "10.68.0.0/16"
-    gcp_dev_secondary               = "10.84.0.0/16"
-    gcp_landing_trusted_primary     = "10.64.0.0/17"
-    gcp_landing_trusted_secondary   = "10.80.0.0/17"
-    gcp_landing_untrusted_primary   = "10.64.127.0/17"
-    gcp_landing_untrusted_secondary = "10.80.127.0/17"
-    gcp_prod_primary                = "10.72.0.0/16"
-    gcp_prod_secondary              = "10.88.0.0/16"
+    gcp_dev_primary       = "10.68.0.0/16"
+    gcp_dev_secondary     = "10.84.0.0/16"
+    gcp_landing_primary   = "10.64.0.0/17"
+    gcp_landing_secondary = "10.80.0.0/17"
+    gcp_dmz_primary       = "10.64.127.0/17"
+    gcp_dmz_secondary     = "10.80.127.0/17"
+    gcp_prod_primary      = "10.72.0.0/16"
+    gcp_prod_secondary    = "10.88.0.0/16"
   }
 }
 
@@ -144,16 +154,8 @@ variable "ncc_asn" {
   default = {
     nva_primary   = 64513
     nva_secondary = 64514
-    trusted       = 64515
-    untrusted     = 64512
-  }
-}
-
-variable "onprem_cidr" {
-  description = "Onprem addresses in name => range format."
-  type        = map(string)
-  default = {
-    main = "10.0.0.0/24"
+    landing       = 64515
+    dmz           = 64512
   }
 }
 
@@ -187,20 +189,21 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
   type = object({
-    dev = object({
+    dev = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
-    prod = object({
+    })), [])
+    prod = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
+    })), [])
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "regions" {

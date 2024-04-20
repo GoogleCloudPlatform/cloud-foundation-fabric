@@ -40,9 +40,12 @@ To get started, click Start.
 
 ```hcl
 project_id     = "<walkthrough-project-name/>"
-cluster_name   = "cluster"
+cluster_name   = "gke-patterns-cluster"
 cluster_create = {
   deletion_protection = false
+  labels = {
+    pattern = "redis-cluster"
+  }
 }
 region         = "europe-west1"
 vpc_create = { }
@@ -63,7 +66,7 @@ vpc_create = { }
 7. Fetch the cluster credentials.
 
     ```bash
-    gcloud container fleet memberships get-credentials cluster --project "<walkthrough-project-name/>"
+    gcloud container fleet memberships get-credentials gke-patterns-cluster --project "<walkthrough-project-name/>"
     ```
 
 8. Check the nodes are ready.
@@ -74,7 +77,7 @@ vpc_create = { }
 
 ## Install Redis and create associated resources
 
-1. Change to the ```patterns/batch``` directory.
+1. Change to the ```patterns/redis-cluster``` directory.
 
     ```bash
     cd ../redis-cluster

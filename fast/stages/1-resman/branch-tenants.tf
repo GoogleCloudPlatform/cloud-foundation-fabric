@@ -21,7 +21,7 @@
 locals {
   tenant_iam = {
     for k, v in var.tenants : k => [
-      "group:${v.admin_group_email}",
+      v.admin_principal,
       module.tenant-self-iac-sa[k].iam_email
     ]
   }
@@ -33,6 +33,7 @@ module "tenant-tenants-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Tenants"
+  iam    = var.folder_iam.tenants
   tag_bindings = {
     context = module.organization.tag_values["${var.tag_names.context}/tenant"].id
   }

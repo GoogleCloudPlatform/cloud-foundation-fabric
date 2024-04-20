@@ -17,54 +17,75 @@
 # tfdoc:file:description Private Service Access resources.
 
 locals {
-  psa_config_ranges = try(var.psa_config.ranges, {})
+  _psa_configs_ranges = flatten([
+    for config in local.psa_configs : [
+      for k, v in config.ranges : {
+        key   = "${config.key}-${k}"
+        value = v
+      }
+    ]
+  ])
+  _psa_peered_domains = flatten([
+    for config in local.psa_configs : [
+      for v in config.peered_domains : {
+        key              = "${config.key}-${replace(v, ".", "-")}"
+        dns_suffix       = v
+        service_producer = config.service_producer
+      }
+    ]
+  ])
+  psa_configs = {
+    for v in var.psa_configs : v.service_producer => merge(v, {
+      key = replace(v.service_producer, ".", "-")
+    })
+  }
+  psa_configs_ranges = {
+    for v in local._psa_configs_ranges : v.key => v.value
+  }
+  psa_peered_domains = {
+    for v in local._psa_peered_domains : v.key => v
+  }
 }
 
 resource "google_compute_global_address" "psa_ranges" {
-  for_each      = local.psa_config_ranges
+  for_each      = local.psa_configs_ranges
   project       = var.project_id
+  network       = local.network.id
   name          = each.key
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   address       = split("/", each.value)[0]
   prefix_length = split("/", each.value)[1]
-  network       = local.network.id
-}
-
-moved {
-  from = google_service_networking_connection.psa_connection["1"]
-  to   = google_service_networking_connection.psa_connection[0]
 }
 
 resource "google_service_networking_connection" "psa_connection" {
-  count   = var.psa_config != null ? 1 : 0
-  network = local.network.id
-  service = "servicenetworking.googleapis.com"
+  for_each = local.psa_configs
+  network  = local.network.id
+  service  = each.key
   reserved_peering_ranges = [
-    for k, v in google_compute_global_address.psa_ranges : v.name
+    for k, v in google_compute_global_address.psa_ranges :
+    v.name if startswith(k, each.value.key)
   ]
-}
-
-moved {
-  from = google_compute_network_peering_routes_config.psa_routes["1"]
-  to   = google_compute_network_peering_routes_config.psa_routes[0]
+  deletion_policy = each.value.deletion_policy
 }
 
 resource "google_compute_network_peering_routes_config" "psa_routes" {
-  count                = var.psa_config != null ? 1 : 0
-  project              = var.project_id
-  peering              = google_service_networking_connection.psa_connection[0].peering
+  for_each = local.psa_configs
+  project  = var.project_id
+  peering = (
+    google_service_networking_connection.psa_connection[each.key].peering
+  )
   network              = local.network.name
-  export_custom_routes = var.psa_config.export_routes
-  import_custom_routes = var.psa_config.import_routes
+  export_custom_routes = each.value.export_routes
+  import_custom_routes = each.value.import_routes
 }
 
 resource "google_service_networking_peered_dns_domain" "name" {
-  for_each   = toset(try(var.psa_config.peered_domains, []))
+  for_each   = local.psa_peered_domains
   project    = var.project_id
-  name       = trimsuffix(replace(each.value, ".", "-"), "-")
   network    = local.network.name
-  dns_suffix = each.value
-  service    = "servicenetworking.googleapis.com"
+  name       = each.key
+  dns_suffix = each.value.dns_suffix
+  service    = each.value.service_producer
   depends_on = [google_service_networking_connection.psa_connection]
 }

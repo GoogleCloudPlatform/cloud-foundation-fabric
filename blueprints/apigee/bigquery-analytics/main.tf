@@ -65,14 +65,14 @@ module "vpc" {
     name          = "subnet-psc-${k}"
     region        = k
   }]
-  psa_config = {
+  psa_configs = [{
     ranges = merge({ for k, v in var.instances :
       "apigee-runtime-${k}" => v.runtime_ip_cidr_range
       }, { for k, v in var.instances :
       "apigee-troubleshooting-${k}" => v.troubleshooting_ip_cidr_range
       }
     )
-  }
+  }]
 }
 
 module "apigee" {

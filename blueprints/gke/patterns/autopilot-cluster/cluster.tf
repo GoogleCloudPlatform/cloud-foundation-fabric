@@ -17,8 +17,8 @@
 locals {
   _cluster_sa = (
     local.cluster_create
-    ? module.cluster-service-account.0.email
-    : data.google_container_cluster.cluster.0.node_config.0.service_account
+    ? module.cluster-service-account[0].email
+    : data.google_container_cluster.cluster[0].node_config[0].service_account
   )
   cluster_sa = (
     local._cluster_sa == "default"
@@ -48,9 +48,9 @@ locals {
     }
     # VPC creation configures networking
     : {
-      network               = module.vpc.0.id
+      network               = module.vpc[0].id
       secondary_range_names = { pods = "pods", services = "services" }
-      subnet                = values(module.vpc.0.subnet_ids)[0]
+      subnet                = values(module.vpc[0].subnet_ids)[0]
     }
   )
 }
@@ -88,7 +88,7 @@ module "cluster" {
     master_global_access    = true
   }
   node_config = {
-    service_account = module.cluster-service-account.0.email
+    service_account = module.cluster-service-account[0].email
   }
   labels          = var.cluster_create.labels
   release_channel = var.cluster_create.options.release_channel

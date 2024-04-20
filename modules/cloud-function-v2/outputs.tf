@@ -17,7 +17,7 @@
 output "bucket" {
   description = "Bucket resource (only if auto-created)."
   value = try(
-    var.bucket_config == null ? null : google_storage_bucket.bucket.0, null
+    var.bucket_config == null ? null : google_storage_bucket.bucket[0], null
   )
 }
 
@@ -84,5 +84,5 @@ output "uri" {
 
 output "vpc_connector" {
   description = "VPC connector resource if created."
-  value       = try(google_vpc_access_connector.connector.0.id, null)
+  value       = try(google_vpc_access_connector.connector[0].id, null)
 }

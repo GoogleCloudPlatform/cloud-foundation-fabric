@@ -22,13 +22,13 @@ output "cloud_run_service" {
 
 output "cloudsql_password" {
   description = "CloudSQL password."
-  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
+  value       = local.cloudsql_password
   sensitive   = true
 }
 
 output "phpipam_ip_address" {
   description = "PHPIPAM IP Address either external or internal according to app exposure."
-  value       = local.glb_create ? module.addresses.0.global_addresses["phpipam"].address : module.ilb-l7.0.address
+  value       = local.glb_create ? module.addresses[0].global_addresses["phpipam"].address : module.ilb-l7[0].address
 }
 
 output "phpipam_password" {

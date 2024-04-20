@@ -26,6 +26,12 @@ variable "group_email" {
   default = "organization-admins@example.org"
 }
 
+variable "keyring" {
+  default = {
+    name = "keyring"
+  }
+}
+
 variable "kms_key" {
   default = {
     id = "kms_key_self_link"
@@ -48,6 +54,10 @@ variable "project_id" {
   default = "project-id"
 }
 
+variable "project_number" {
+  default = "123"
+}
+
 variable "region" {
   default = "europe-west8"
 }
@@ -61,6 +71,24 @@ variable "service_account" {
 }
 
 variable "subnet" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
+variable "subnet_psc_1" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
+variable "subnet_psc_2" {
   default = {
     name      = "subnet_name"
     region    = "subnet_region"

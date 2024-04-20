@@ -14,7 +14,8 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
-    autoclass: []
+    autoclass:
+      - enabled: false
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -33,9 +34,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: true
-    autoclass:
-    - enabled: false
+      - enabled: true
 
 counts:
   google_storage_bucket: 1

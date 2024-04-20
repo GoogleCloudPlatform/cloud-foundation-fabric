@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ locals {
   tfvars = {
     automation = {
       federated_identity_pool = try(
-        google_iam_workload_identity_pool.default.0.name, null
+        google_iam_workload_identity_pool.default[0].name, null
       )
       federated_identity_providers = local.cicd_providers
       outputs_bucket               = module.automation-tf-output-gcs.name
@@ -128,7 +128,7 @@ output "automation" {
 
 output "billing_dataset" {
   description = "BigQuery dataset prepared for billing export."
-  value       = try(module.billing-export-dataset.0.id, null)
+  value       = try(module.billing-export-dataset[0].id, null)
 }
 
 output "cicd_repositories" {
@@ -148,16 +148,6 @@ output "custom_roles" {
   value       = module.organization.custom_role_id
 }
 
-output "federated_identity" {
-  description = "Workload Identity Federation pool and providers."
-  value = {
-    pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
-    )
-    providers = local.cicd_providers
-  }
-}
-
 output "outputs_bucket" {
   description = "GCS bucket where generated output files are stored."
   value       = module.automation-tf-output-gcs.name
@@ -167,7 +157,7 @@ output "project_ids" {
   description = "Projects created by this stage."
   value = {
     automation     = module.automation-project.project_id
-    billing-export = try(module.billing-export-project.0.project_id, null)
+    billing-export = try(module.billing-export-project[0].project_id, null)
     log-export     = module.log-export-project.project_id
   }
 }
@@ -202,4 +192,23 @@ output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
+}
+
+output "workforce_identity_pool" {
+  description = "Workforce Identity Federation pool."
+  value = {
+    pool = try(
+      google_iam_workforce_pool.default[0].name, null
+    )
+  }
+}
+
+output "workload_identity_pool" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default[0].name, null
+    )
+    providers = local.cicd_providers
+  }
 }

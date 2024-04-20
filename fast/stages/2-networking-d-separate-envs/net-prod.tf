@@ -22,7 +22,7 @@ module "prod-spoke-project" {
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = [
+  services = concat([
     "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -31,7 +31,13 @@ module "prod-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-  ]
+    ],
+    (
+      var.fast_features.gcve
+      ? ["vmwareengine.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled          = true
     service_projects = []
@@ -74,7 +80,7 @@ module "prod-spoke-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
-  psa_config = try(var.psa_ranges.prod, null)
+  psa_configs = var.psa_ranges.prod
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true

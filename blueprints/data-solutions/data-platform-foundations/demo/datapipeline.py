@@ -20,9 +20,11 @@ import datetime
 
 from airflow import models
 from airflow.models.variable import Variable
-from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator
+from airflow.providers.google.cloud.operators.dataflow import \
+  DataflowTemplatedJobStartOperator
 from airflow.operators import empty
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator
+from airflow.providers.google.cloud.operators.bigquery import \
+  BigQueryInsertJobOperator
 
 # --------------------------------------------------------------------------------
 # Set variables - Needed for the DEMO
@@ -70,85 +72,87 @@ DF_ZONE = Variable.get("GCP_REGION") + "-b"
 yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
 
 default_args = {
-  'owner': 'airflow',
-  'start_date': yesterday,
-  'depends_on_past': False,
-  'email': [''],
-  'email_on_failure': False,
-  'email_on_retry': False,
-  'retries': 1,
-  'retry_delay': datetime.timedelta(minutes=5),
-  'dataflow_default_options': {
-    'location': DF_REGION,
-    'zone': DF_ZONE,
-    'stagingLocation': LOD_GCS_STAGING,
-    'tempLocation': LOD_GCS_STAGING + "/tmp",
-    'serviceAccountEmail': LOD_SA_DF,
-    'subnetwork': LOD_NET_SUBNET,
-    'ipConfiguration': "WORKER_IP_PRIVATE",
-    'kmsKeyName' : DF_KMS_KEY
-  },
+    'owner': 'airflow',
+    'start_date': yesterday,
+    'depends_on_past': False,
+    'email': [''],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': datetime.timedelta(minutes=5),
+    'dataflow_default_options': {
+        'location': DF_REGION,
+        'zone': DF_ZONE,
+        'stagingLocation': LOD_GCS_STAGING,
+        'tempLocation': LOD_GCS_STAGING + "/tmp",
+        'serviceAccountEmail': LOD_SA_DF,
+        'subnetwork': LOD_NET_SUBNET,
+        'ipConfiguration': "WORKER_IP_PRIVATE",
+        'kmsKeyName': DF_KMS_KEY
+    },
 }
 
 # --------------------------------------------------------------------------------
 # Main DAG
 # --------------------------------------------------------------------------------
 
-with models.DAG(
-    'data_pipeline_dag',
-    default_args=default_args,
-    schedule_interval=None) as dag:
-  start = empty.EmptyOperator(
-    task_id='start',
-    trigger_rule='all_success'
-  )
+with models.DAG('data_pipeline_dag', default_args=default_args,
+                schedule_interval=None) as dag:
+  start = empty.EmptyOperator(task_id='start', trigger_rule='all_success')
 
-  end = empty.EmptyOperator(
-    task_id='end',
-    trigger_rule='all_success'
-  )
+  end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
-  # Bigquery Tables automatically created for demo porpuse. 
+  # Bigquery Tables automatically created for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
   customers_import = DataflowTemplatedJobStartOperator(
-    task_id="dataflow_customers_import",
-    template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
-    project_id=LOD_PRJ,
-    location=DF_REGION,
-    parameters={
-      "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": ORC_GCS + "/customers_schema.json",
-      "javascriptTextTransformGcsPath": ORC_GCS + "/customers_udf.js",
-      "inputFilePattern": DRP_GCS + "/customers.csv",
-      "outputTable": DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".customers",
-      "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
-    },
+      task_id="dataflow_customers_import",
+      template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+      project_id=LOD_PRJ,
+      location=DF_REGION,
+      parameters={
+          "javascriptTextTransformFunctionName":
+              "transform",
+          "JSONPath":
+              ORC_GCS + "/customers_schema.json",
+          "javascriptTextTransformGcsPath":
+              ORC_GCS + "/customers_udf.js",
+          "inputFilePattern":
+              DRP_GCS + "/customers.csv",
+          "outputTable":
+              DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".customers",
+          "bigQueryLoadingTemporaryDirectory":
+              LOD_GCS_STAGING + "/tmp/bq/",
+      },
   )
 
   purchases_import = DataflowTemplatedJobStartOperator(
-    task_id="dataflow_purchases_import",
-    template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
-    project_id=LOD_PRJ,
-    location=DF_REGION,
-    parameters={
-      "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": ORC_GCS + "/purchases_schema.json",
-      "javascriptTextTransformGcsPath": ORC_GCS + "/purchases_udf.js",
-      "inputFilePattern": DRP_GCS + "/purchases.csv",
-      "outputTable": DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".purchases",
-      "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
-    },
+      task_id="dataflow_purchases_import",
+      template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+      project_id=LOD_PRJ,
+      location=DF_REGION,
+      parameters={
+          "javascriptTextTransformFunctionName":
+              "transform",
+          "JSONPath":
+              ORC_GCS + "/purchases_schema.json",
+          "javascriptTextTransformGcsPath":
+              ORC_GCS + "/purchases_udf.js",
+          "inputFilePattern":
+              DRP_GCS + "/purchases.csv",
+          "outputTable":
+              DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".purchases",
+          "bigQueryLoadingTemporaryDirectory":
+              LOD_GCS_STAGING + "/tmp/bq/",
+      },
   )
 
   join_customer_purchase = BigQueryInsertJobOperator(
-    task_id='bq_join_customer_purchase',
-    gcp_conn_id='bigquery_default',
-    project_id=TRF_PRJ,
-    location=BQ_LOCATION,
-    configuration={
-      'jobType':'QUERY',
-      'query':{
-        'query':"""SELECT
+      task_id='bq_join_customer_purchase', gcp_conn_id='bigquery_default',
+      project_id=TRF_PRJ, location=BQ_LOCATION, configuration={
+          'jobType': 'QUERY',
+          'query': {
+              'query':
+                  """SELECT
                   c.id as customer_id,
                   p.id as purchase_id,
                   p.item as item,
@@ -156,28 +160,30 @@ with models.DAG(
                   p.timestamp as timestamp
                 FROM `{dwh_0_prj}.{dwh_0_dataset}.customers` c
                 JOIN `{dwh_0_prj}.{dwh_0_dataset}.purchases` p ON c.id = p.customer_id
-              """.format(dwh_0_prj=DWH_LAND_PRJ, dwh_0_dataset=DWH_LAND_BQ_DATASET, ),
-        'destinationTable':{
-          'projectId': DWH_CURATED_PRJ,
-          'datasetId': DWH_CURATED_BQ_DATASET,
-          'tableId': 'customer_purchase'
-        },
-        'writeDisposition':'WRITE_TRUNCATE',
-        "useLegacySql": False
-      }
-    },
-    impersonation_chain=[TRF_SA_BQ]
-  )
+              """.format(
+                      dwh_0_prj=DWH_LAND_PRJ,
+                      dwh_0_dataset=DWH_LAND_BQ_DATASET,
+                  ),
+              'destinationTable': {
+                  'projectId': DWH_CURATED_PRJ,
+                  'datasetId': DWH_CURATED_BQ_DATASET,
+                  'tableId': 'customer_purchase'
+              },
+              'writeDisposition':
+                  'WRITE_TRUNCATE',
+              "useLegacySql":
+                  False
+          }
+      }, impersonation_chain=[TRF_SA_BQ])
 
   confidential_customer_purchase = BigQueryInsertJobOperator(
-    task_id='bq_confidential_customer_purchase',
-    gcp_conn_id='bigquery_default',
-    project_id=TRF_PRJ,
-    location=BQ_LOCATION,
-    configuration={
-      'jobType':'QUERY',
-      'query':{
-        'query':"""SELECT
+      task_id='bq_confidential_customer_purchase',
+      gcp_conn_id='bigquery_default', project_id=TRF_PRJ, location=BQ_LOCATION,
+      configuration={
+          'jobType': 'QUERY',
+          'query': {
+              'query':
+                  """SELECT
                   c.id as customer_id,
                   p.id as purchase_id,
                   c.name as name,
@@ -187,17 +193,21 @@ with models.DAG(
                   p.timestamp as timestamp
                 FROM `{dwh_0_prj}.{dwh_0_dataset}.customers` c
                 JOIN `{dwh_0_prj}.{dwh_0_dataset}.purchases` p ON c.id = p.customer_id
-              """.format(dwh_0_prj=DWH_LAND_PRJ, dwh_0_dataset=DWH_LAND_BQ_DATASET, ),
-        'destinationTable':{
-          'projectId': DWH_CONFIDENTIAL_PRJ,
-          'datasetId': DWH_CONFIDENTIAL_BQ_DATASET,
-          'tableId': 'customer_purchase'
-        },
-        'writeDisposition':'WRITE_TRUNCATE',
-        "useLegacySql": False
-      }
-    },
-    impersonation_chain=[TRF_SA_BQ]
-  )
+              """.format(
+                      dwh_0_prj=DWH_LAND_PRJ,
+                      dwh_0_dataset=DWH_LAND_BQ_DATASET,
+                  ),
+              'destinationTable': {
+                  'projectId': DWH_CONFIDENTIAL_PRJ,
+                  'datasetId': DWH_CONFIDENTIAL_BQ_DATASET,
+                  'tableId': 'customer_purchase'
+              },
+              'writeDisposition':
+                  'WRITE_TRUNCATE',
+              "useLegacySql":
+                  False
+          }
+      }, impersonation_chain=[TRF_SA_BQ])
 
-  start >> [customers_import, purchases_import] >> join_customer_purchase >> confidential_customer_purchase >> end
+  start >> [customers_import, purchases_import
+           ] >> join_customer_purchase >> confidential_customer_purchase >> end

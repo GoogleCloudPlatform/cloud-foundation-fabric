@@ -28,8 +28,8 @@ locals {
   )
   fwd_rule_target = (
     var.protocol == "HTTPS"
-    ? google_compute_region_target_https_proxy.default.0.id
-    : google_compute_region_target_http_proxy.default.0.id
+    ? google_compute_region_target_https_proxy.default[0].id
+    : google_compute_region_target_http_proxy.default[0].id
   )
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
@@ -115,6 +115,37 @@ resource "google_compute_region_target_https_proxy" "default" {
   description      = var.description
   ssl_certificates = local.proxy_ssl_certificates
   url_map          = google_compute_region_url_map.default.id
+}
+
+resource "google_compute_service_attachment" "default" {
+  count          = var.service_attachment == null ? 0 : 1
+  project        = var.project_id
+  region         = var.region
+  name           = var.name
+  description    = var.description
+  target_service = google_compute_forwarding_rule.default.id
+  nat_subnets    = var.service_attachment.nat_subnets
+  connection_preference = (
+    var.service_attachment.automatic_connection
+    ? "ACCEPT_AUTOMATIC"
+    : "ACCEPT_MANUAL"
+  )
+  consumer_reject_lists = var.service_attachment.consumer_reject_lists
+  domain_names = (
+    var.service_attachment.domain_name == null
+    ? null
+    : [var.service_attachment.domain_name]
+  )
+  enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
+  reconcile_connections = var.service_attachment.reconcile_connections
+  dynamic "consumer_accept_lists" {
+    for_each = var.service_attachment.consumer_accept_lists
+    iterator = accept
+    content {
+      project_id_or_num = accept.key
+      connection_limit  = accept.value
+    }
+  }
 }
 
 resource "google_compute_network_endpoint_group" "default" {

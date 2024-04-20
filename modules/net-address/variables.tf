@@ -81,6 +81,19 @@ variable "ipsec_interconnect_addresses" {
 #   default     = {}
 # }
 
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet_self_link      = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "project_id" {
   description = "Project where the addresses will be created."
   type        = string

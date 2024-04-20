@@ -22,8 +22,8 @@ locals {
   regions = distinct(concat(
     values(var.regions),
     values(module.dev-spoke-vpc.subnet_regions),
-    values(module.landing-trusted-vpc.subnet_regions),
-    values(module.landing-untrusted-vpc.subnet_regions),
+    values(module.landing-vpc.subnet_regions),
+    values(module.dmz-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
   ))
   service_accounts = {
@@ -61,7 +61,7 @@ module "firewall-policy-default" {
   source    = "../../../modules/net-firewall-policy"
   name      = var.factories_config.firewall_policy_name
   parent_id = module.folder.id
-  rules_factory_config = {
+  factories_config = {
     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
     ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
   }

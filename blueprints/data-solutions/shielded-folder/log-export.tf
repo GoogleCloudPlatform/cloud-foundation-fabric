@@ -22,7 +22,7 @@ locals {
       var.enable_features.log_sink
       ? [format(
         "projects/%s/locations/%s/keyRings/%s/cryptoKeys/bq",
-        module.sec-project.0.project_id,
+        module.sec-project[0].project_id,
         var.log_locations.bq,
         var.log_locations.bq
       )]
@@ -32,7 +32,7 @@ locals {
       var.enable_features.log_sink
       ? [format(
         "projects/%s/locations/%s/keyRings/%s/cryptoKeys/pubsub",
-        module.sec-project.0.project_id,
+        module.sec-project[0].project_id,
         var.log_locations.pubsub,
         var.log_locations.pubsub
       )]
@@ -42,7 +42,7 @@ locals {
       var.enable_features.log_sink
       ? [format(
         "projects/%s/locations/%s/keyRings/%s/cryptoKeys/storage",
-        module.sec-project.0.project_id,
+        module.sec-project[0].project_id,
         var.log_locations.storage,
         var.log_locations.storage
       )]

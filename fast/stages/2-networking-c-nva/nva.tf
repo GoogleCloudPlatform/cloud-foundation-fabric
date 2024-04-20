@@ -19,20 +19,20 @@ locals {
   # local.routing_config[0] sets up the first interface, and so on.
   routing_config = [
     {
-      name                = "untrusted"
+      name                = "dmz"
       enable_masquerading = true
       routes = [
-        var.gcp_ranges.gcp_landing_untrusted_primary,
-        var.gcp_ranges.gcp_landing_untrusted_secondary,
+        var.gcp_ranges.gcp_dmz_primary,
+        var.gcp_ranges.gcp_dmz_secondary,
       ]
     },
     {
-      name = "trusted"
+      name = "landing"
       routes = [
         var.gcp_ranges.gcp_dev_primary,
         var.gcp_ranges.gcp_dev_secondary,
-        var.gcp_ranges.gcp_landing_trusted_primary,
-        var.gcp_ranges.gcp_landing_trusted_secondary,
+        var.gcp_ranges.gcp_landing_landing_primary,
+        var.gcp_ranges.gcp_landing_landing_secondary,
         var.gcp_ranges.gcp_prod_primary,
         var.gcp_ranges.gcp_prod_secondary,
       ]
@@ -41,10 +41,9 @@ locals {
   nva_locality = {
     for v in setproduct(keys(var.regions), local.nva_zones) :
     join("-", v) => {
-      name      = v.0
-      region    = var.regions[v.0]
-      shortname = local.region_shortnames[var.regions[v.0]]
-      zone      = v.1
+      name   = v[0]
+      region = var.regions[v[0]]
+      zone   = v[1]
     }
   }
   nva_zones = ["b", "c"]
@@ -69,16 +68,20 @@ module "nva-template" {
   can_ip_forward  = true
   network_interfaces = [
     {
-      network    = module.landing-untrusted-vpc.self_link
-      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.shortname}"]
-      nat        = false
-      addresses  = null
+      network = module.dmz-vpc.self_link
+      subnetwork = try(
+        module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"], null
+      )
+      nat       = false
+      addresses = null
     },
     {
-      network    = module.landing-trusted-vpc.self_link
-      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.shortname}"]
-      nat        = false
-      addresses  = null
+      network = module.landing-vpc.self_link
+      subnetwork = try(
+        module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"], null
+      )
+      nat       = false
+      addresses = null
     }
   ]
   boot_disk = {
@@ -116,18 +119,17 @@ module "nva-mig" {
   }
 }
 
-module "ilb-nva-untrusted" {
+module "ilb-nva-dmz" {
   for_each = {
     for k, v in var.regions : k => {
-      region    = v
-      shortname = local.region_shortnames[v]
-      subnet    = "${v}/landing-untrusted-default-${local.region_shortnames[v]}"
+      region = v
+      subnet = "${v}/dmz-default"
     }
   }
   source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
-  name          = "nva-untrusted-${each.key}"
+  name          = "nva-dmz-${each.key}"
   service_label = var.prefix
   forwarding_rules_config = {
     "" = {
@@ -135,8 +137,8 @@ module "ilb-nva-untrusted" {
     }
   }
   vpc_config = {
-    network    = module.landing-untrusted-vpc.self_link
-    subnetwork = module.landing-untrusted-vpc.subnet_self_links[each.value.subnet]
+    network    = module.dmz-vpc.self_link
+    subnetwork = try(module.dmz-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
     for k, v in module.nva-mig :
@@ -151,18 +153,17 @@ module "ilb-nva-untrusted" {
   }
 }
 
-module "ilb-nva-trusted" {
+module "ilb-nva-landing" {
   for_each = {
     for k, v in var.regions : k => {
-      region    = v
-      shortname = local.region_shortnames[v]
-      subnet    = "${v}/landing-trusted-default-${local.region_shortnames[v]}"
+      region = v
+      subnet = "${v}/landing-default"
     }
   }
   source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
-  name          = "nva-trusted-${each.key}"
+  name          = "nva-landing-${each.key}"
   service_label = var.prefix
   forwarding_rules_config = {
     "" = {
@@ -170,8 +171,8 @@ module "ilb-nva-trusted" {
     }
   }
   vpc_config = {
-    network    = module.landing-trusted-vpc.self_link
-    subnetwork = module.landing-trusted-vpc.subnet_self_links[each.value.subnet]
+    network    = module.landing-vpc.self_link
+    subnetwork = try(module.landing-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
     for k, v in module.nva-mig :

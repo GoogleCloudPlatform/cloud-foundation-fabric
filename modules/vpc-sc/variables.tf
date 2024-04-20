@@ -99,6 +99,17 @@ variable "egress_policies" {
   }
 }
 
+variable "factories_config" {
+  description = "Paths to folders that enable factory functionality."
+  type = object({
+    access_levels    = optional(string)
+    egress_policies  = optional(string)
+    ingress_policies = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))

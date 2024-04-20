@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ locals {
     # use the same dataset for all sinks with `bigquery` as  destination
     {
       for k, v in var.log_sinks :
-      k => module.log-export-dataset.0 if v.type == "bigquery"
+      k => module.log-export-dataset[0] if v.type == "bigquery"
     },
     # use the same gcs bucket for all sinks with `storage` as destination
     {
       for k, v in var.log_sinks :
-      k => module.log-export-gcs.0 if v.type == "storage"
+      k => module.log-export-gcs[0] if v.type == "storage"
     },
     # use separate pubsub topics and logging buckets for sinks with
     # destination `pubsub` and `logging`
@@ -69,7 +69,7 @@ module "log-export-dataset" {
   source        = "../../../modules/bigquery-dataset"
   count         = contains(local.log_types, "bigquery") ? 1 : 0
   project_id    = module.log-export-project.project_id
-  id            = "audit_export"
+  id            = "logs"
   friendly_name = "Audit logs export."
   location      = local.locations.bq
 }
@@ -78,25 +78,29 @@ module "log-export-gcs" {
   source        = "../../../modules/gcs"
   count         = contains(local.log_types, "storage") ? 1 : 0
   project_id    = module.log-export-project.project_id
-  name          = "audit-logs-0"
+  name          = "logs"
   prefix        = local.prefix
   location      = local.locations.gcs
   storage_class = local.gcs_storage_class
 }
 
 module "log-export-logbucket" {
-  source      = "../../../modules/logging-bucket"
-  for_each    = toset([for k, v in var.log_sinks : k if v.type == "logging"])
-  parent_type = "project"
-  parent      = module.log-export-project.project_id
-  id          = "audit-logs-${each.key}"
-  location    = local.locations.logging
+  source        = "../../../modules/logging-bucket"
+  for_each      = toset([for k, v in var.log_sinks : k if v.type == "logging"])
+  parent_type   = "project"
+  parent        = module.log-export-project.project_id
+  id            = each.key
+  location      = local.locations.logging
+  log_analytics = { enable = true }
+
+  # org-level logging settings ready before we create any logging buckets
+  depends_on = [module.organization-logging]
 }
 
 module "log-export-pubsub" {
   source     = "../../../modules/pubsub"
   for_each   = toset([for k, v in var.log_sinks : k if v.type == "pubsub"])
   project_id = module.log-export-project.project_id
-  name       = "audit-logs-${each.key}"
+  name       = each.key
   regions    = local.locations.pubsub
 }

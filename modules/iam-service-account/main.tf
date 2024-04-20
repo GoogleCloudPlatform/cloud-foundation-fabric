@@ -21,8 +21,9 @@ locals {
     ? google_service_account_key.key["1"]
     : map("", null)
   , {})
+  name                  = split("@", var.name)[0]
   prefix                = var.prefix == null ? "" : "${var.prefix}-"
-  resource_email_static = "${local.prefix}${var.name}@${var.project_id}.iam.gserviceaccount.com"
+  resource_email_static = "${local.prefix}${local.name}@${var.project_id}.iam.gserviceaccount.com"
   resource_iam_email = (
     local.service_account != null
     ? "serviceAccount:${local.service_account.email}"
@@ -32,8 +33,8 @@ locals {
   service_account_id_static = "projects/${var.project_id}/serviceAccounts/${local.resource_email_static}"
   service_account = (
     var.service_account_create
-    ? try(google_service_account.service_account.0, null)
-    : try(data.google_service_account.service_account.0, null)
+    ? try(google_service_account.service_account[0], null)
+    : try(data.google_service_account.service_account[0], null)
   )
   service_account_credential_templates = {
     for file, _ in local.public_keys_data : file => jsonencode(
@@ -64,13 +65,13 @@ locals {
 data "google_service_account" "service_account" {
   count      = var.service_account_create ? 0 : 1
   project    = var.project_id
-  account_id = "${local.prefix}${var.name}"
+  account_id = "${local.prefix}${local.name}"
 }
 
 resource "google_service_account" "service_account" {
   count        = var.service_account_create ? 1 : 0
   project      = var.project_id
-  account_id   = "${local.prefix}${var.name}"
+  account_id   = "${local.prefix}${local.name}"
   display_name = var.display_name
   description  = var.description
 }

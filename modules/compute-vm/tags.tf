@@ -29,7 +29,7 @@
 # resource "google_tags_location_tag_binding" "instance" {
 #   for_each = var.create_template ? {} : coalesce(var.tag_bindings, {})
 #   parent = (
-#     "${local.tag_parent_base}/instances/${google_compute_instance.default.0.instance_id}"
+#     "${local.tag_parent_base}/instances/${google_compute_instance.default[0].instance_id}"
 #   )
 #   tag_value = each.value
 #   location  = var.zone

@@ -71,6 +71,7 @@ variable "factories_config" {
   type = object({
     custom_roles = optional(string)
     org_policies = optional(string)
+    quotas       = optional(string)
   })
   nullable = false
   default  = {}
@@ -119,7 +120,7 @@ variable "logging_sinks" {
     destination          = string
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
-    filter               = string
+    filter               = optional(string)
     iam                  = optional(bool, true)
     type                 = string
     unique_writer        = optional(bool, true)
@@ -129,9 +130,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([

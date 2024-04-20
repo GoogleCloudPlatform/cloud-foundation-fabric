@@ -1,0 +1,56 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_compute_external_vpn_gateway: 2
+  google_compute_firewall: 9
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 4
+  google_compute_forwarding_rule: 4
+  google_compute_ha_vpn_gateway: 2
+  google_compute_health_check: 8
+  google_compute_instance_template: 4
+  google_compute_network: 4
+  google_compute_network_peering: 4
+  google_compute_region_backend_service: 4
+  google_compute_region_instance_group_manager: 4
+  google_compute_route: 14
+  google_compute_router: 4
+  google_compute_router_interface: 4
+  google_compute_router_nat: 2
+  google_compute_router_peer: 4
+  google_compute_shared_vpc_host_project: 3
+  google_compute_subnetwork: 12
+  google_compute_vpn_tunnel: 4
+  google_dns_managed_zone: 9
+  google_dns_policy: 4
+  google_dns_record_set: 3
+  google_dns_response_policy: 1
+  google_dns_response_policy_rule: 34
+  google_essential_contacts_contact: 1
+  google_folder: 1
+  google_monitoring_alert_policy: 2
+  google_monitoring_dashboard: 3
+  google_monitoring_monitored_project: 2
+  google_project: 3
+  google_project_iam_binding: 6
+  google_project_iam_member: 2
+  google_project_service: 21
+  google_project_service_identity: 5
+  google_storage_bucket_object: 2
+  google_vpc_access_connector: 2
+  modules: 43
+  random_id: 2
+  resources: 201

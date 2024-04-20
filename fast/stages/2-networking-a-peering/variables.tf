@@ -113,6 +113,16 @@ variable "factories_config" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -153,20 +163,21 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (CloudSQL, etc.)."
   type = object({
-    dev = object({
+    dev = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
-    prod = object({
+    })), [])
+    prod = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
+    })), [])
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "regions" {

@@ -344,7 +344,7 @@ module "f5-lb" {
 
 ## F5 code copyright
 
-This repository usees code from the third-party project [terraform-gcp-bigip-module](https://github.com/F5Networks/terraform-gcp-bigip-module).
+This repository uses code from the third-party project [terraform-gcp-bigip-module](https://github.com/F5Networks/terraform-gcp-bigip-module).
 
 This code is also licensed as Apache 2.0.
 

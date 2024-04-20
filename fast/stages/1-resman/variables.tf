@@ -77,6 +77,18 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    gcve_dev = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
+    gcve_prod = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
     networking = optional(object({
       name              = string
       type              = string
@@ -136,6 +148,8 @@ variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
+    gcve_network_admin            = string
+    organization_admin_viewer     = string
     service_project_network_admin = string
     storage_viewer                = string
   })
@@ -157,12 +171,29 @@ variable "fast_features" {
   type = object({
     data_platform   = optional(bool, false)
     gke             = optional(bool, false)
+    gcve            = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
     teams           = optional(bool, false)
   })
   default  = {}
   nullable = false
+}
+
+variable "folder_iam" {
+  description = "Authoritative IAM for top-level folders."
+  type = object({
+    data_platform = optional(map(list(string)), {})
+    gcve          = optional(map(list(string)), {})
+    gke           = optional(map(list(string)), {})
+    sandbox       = optional(map(list(string)), {})
+    security      = optional(map(list(string)), {})
+    network       = optional(map(list(string)), {})
+    teams         = optional(map(list(string)), {})
+    tenants       = optional(map(list(string)), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "groups" {
@@ -196,18 +227,6 @@ variable "locations" {
     pubsub  = []
   }
   nullable = false
-}
-
-variable "org_policy_tags" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Resource management tags for organization policy exceptions."
-  type = object({
-    key_id   = optional(string)
-    key_name = optional(string)
-    values   = optional(map(string), {})
-  })
-  nullable = false
-  default  = {}
 }
 
 variable "organization" {
@@ -253,7 +272,7 @@ variable "tag_names" {
 }
 
 variable "tags" {
-  description = "Custome secure tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  description = "Custom secure tags by key name. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
     description = optional(string, "Managed by the Terraform organization module.")
     iam         = optional(map(list(string)), {})
