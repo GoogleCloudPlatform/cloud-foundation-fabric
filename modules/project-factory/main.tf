@@ -77,11 +77,6 @@ module "projects" {
     each.value.service_encryption_key_ids,
     var.data_merges.service_encryption_key_ids
   )
-  service_perimeter_bridges = distinct(concat(
-    each.value.service_perimeter_bridges,
-    var.data_merges.service_perimeter_bridges
-  ))
-  service_perimeter_standard = each.value.service_perimeter_standard
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -91,6 +86,7 @@ module "projects" {
     each.value.tag_bindings,
     var.data_merges.tag_bindings
   )
+  vpc_sc = each.value.vpc_sc
 }
 
 module "service-accounts" {
