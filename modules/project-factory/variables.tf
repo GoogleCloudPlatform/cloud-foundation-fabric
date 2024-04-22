@@ -24,8 +24,6 @@ variable "data_defaults" {
     parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)), {})
-    service_perimeter_bridges  = optional(list(string), [])
-    service_perimeter_standard = optional(string)
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
       host_project                = string
@@ -41,6 +39,11 @@ variable "data_defaults" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })), {})
+    vpc_sc = optional(object({
+      perimeter_name    = string
+      perimeter_bridges = optional(list(string), [])
+      is_dry_run        = optional(bool, false)
+    }))
   })
   nullable = false
   default  = {}
@@ -53,7 +56,6 @@ variable "data_merges" {
     labels                     = optional(map(string), {})
     metric_scopes              = optional(list(string), [])
     service_encryption_key_ids = optional(map(list(string)), {})
-    service_perimeter_bridges  = optional(list(string), [])
     services                   = optional(list(string), [])
     tag_bindings               = optional(map(string), {})
     # non-project resources
@@ -74,8 +76,6 @@ variable "data_overrides" {
     parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)))
-    service_perimeter_bridges  = optional(list(string))
-    service_perimeter_standard = optional(string)
     tag_bindings               = optional(map(string))
     services                   = optional(list(string))
     # non-project resources
@@ -83,6 +83,11 @@ variable "data_overrides" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })))
+    vpc_sc = optional(object({
+      perimeter_name    = string
+      perimeter_bridges = optional(list(string), [])
+      is_dry_run        = optional(bool, false)
+    }))
   })
   nullable = false
   default  = {}

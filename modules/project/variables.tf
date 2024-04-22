@@ -226,20 +226,6 @@ variable "service_encryption_key_ids" {
   default     = {}
 }
 
-# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
-variable "service_perimeter_bridges" {
-  description = "Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format."
-  type        = list(string)
-  default     = null
-}
-
-# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
-variable "service_perimeter_standard" {
-  description = "Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format."
-  type        = string
-  default     = null
-}
-
 variable "services" {
   description = "Service APIs to enable."
   type        = list(string)
@@ -287,4 +273,14 @@ variable "skip_delete" {
   description = "Allows the underlying resources to be destroyed without destroying the project itself."
   type        = bool
   default     = false
+}
+
+variable "vpc_sc" {
+  description = "VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module."
+  type = object({
+    perimeter_name    = string
+    perimeter_bridges = optional(list(string), [])
+    is_dry_run        = optional(bool, false)
+  })
+  default = null
 }
