@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
-
 GITLAB_URL=https://${gitlab_hostname}
 GITLAB_RUNNER_CONFIG=${gitlab_runner_config}
-
+GITLAB_TOKEN_SECRET_ID=${gitlab_token_secret_id}
+GITLAB_TOKEN_SECRET_VERSION="latest"
 GL_NAME=$(curl 169.254.169.254/computeMetadata/v1/instance/name --header "Metadata-Flavor:Google")
 GL_EXECUTOR=$(curl 169.254.169.254/computeMetadata/v1/instance/attributes/gl_executor --header "Metadata-Flavor:Google")
 
@@ -41,11 +41,11 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 apt-get update
 apt-get install -yq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# setup new gitlab runner config
-echo $GITLAB_RUNNER_CONFIG | base64 -d > /etc/gitlab-runner/config.toml
-
 # Install Gitlab Runner
 apt install -y gitlab-runner
+
+# setup new gitlab runner config
+echo $GITLAB_RUNNER_CONFIG | base64 -d > /etc/gitlab-runner/config.toml
 
 %{ if gitlab_executor_type == "docker-autoscaler" }
 # Install GCP fleeting plugin for Docker Autoscale Runner
@@ -55,7 +55,10 @@ chmod +x fleeting-plugin-googlecompute-linux-386
 mv ./fleeting-plugin-googlecompute-linux-386 /usr/bin/fleeting-plugin-googlecompute
 %{ endif }
 
+# Fetch the gitlab auth token value from secret manager
+TOKEN=$(gcloud secrets versions access $GITLAB_TOKEN_SECRET_VERSION --secret $GITLAB_TOKEN_SECRET_ID)
+
 gitlab-runner register --non-interactive --name="$GL_NAME" \
-  --url="$GITLAB_URL" --token="${token}" --template-config="/etc/gitlab-runner/config.toml"
+  --url="$GITLAB_URL" --token="$TOKEN" --template-config="/etc/gitlab-runner/config.toml" \
   --executor="${gitlab_executor_type}"
 systemctl restart gitlab-runner

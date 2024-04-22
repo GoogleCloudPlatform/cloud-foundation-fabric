@@ -35,7 +35,7 @@ variable "gitlab_runner_config" {
     executors_config = object({
       docker_autoscaler = optional(object({
         gcp_project_id = string
-        zone           = optional(string, "europe-west1-b")
+        zone           = optional(string)
         mig_name       = optional(string, "gitlab-runner")
         machine_type   = optional(string, "g1-small")
         machine_image  = optional(string, "coreos-cloud/global/images/family/coreos-stable")
@@ -88,6 +88,11 @@ variable "project_id" {
   type        = string
 }
 
+variable "region" {
+  description = "Region for the created resources."
+  type        = string
+}
+
 variable "vm_config" {
   description = "Gitlab runner GCE config."
   type = object({
@@ -95,6 +100,6 @@ variable "vm_config" {
     name           = optional(string, "gitlab-runner-0")
     instance_type  = optional(string, "e2-standard-2")
     network_tags   = optional(list(string), [])
-    zone           = optional(string, "europe-west1-b")
+    zone           = optional(string)
   })
 }

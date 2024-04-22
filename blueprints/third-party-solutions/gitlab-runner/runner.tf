@@ -14,6 +14,52 @@
  * limitations under the License.
  */
 
+locals {
+  gitlab_runner_auth_token_secret_id = "gitlab_runner_auth_token"
+}
+
+module "runner-sa" {
+  source     = "../../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "gitlab-runner-sa"
+}
+
+module "runner-mig-sa" {
+  count      = local.runner_config_type == "docker_autoscaler" ? 1 : 0
+  source     = "../../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "gitlab-runner-sa"
+  iam = {
+    "roles/iam.serviceAccountUser" = [
+      "serviceAccount:${module.runner-sa.email}"
+    ]
+  }
+}
+
+module "runner-secrets" {
+  source     = "../../../modules/secret-manager"
+  project_id = module.project.project_id
+  secrets = {
+    (local.gitlab_runner_auth_token_secret_id) = {
+      locations = [var.region]
+    }
+  }
+  versions = {
+    (local.gitlab_runner_auth_token_secret_id) = {
+      latest = {
+        enabled = true, data = var.gitlab_runner_config.authentication_token
+      }
+    }
+  }
+  iam = {
+    (local.gitlab_runner_auth_token_secret_id) = {
+      "roles/secretmanager.secretAccessor" = [
+        "serviceAccount:${module.runner-sa.email}"
+      ]
+    }
+  }
+}
+
 module "gitlab-runner" {
   source     = "../../../modules/compute-vm"
   project_id = module.project.project_id
@@ -36,7 +82,7 @@ module "gitlab-runner" {
     startup-script = templatefile("${path.module}/assets/startup-script.sh.tpl", local.runner_startup_script_config)
   }
   service_account = {
-    auto_create = true
+    email = module.runner-sa.email
   }
 }
 
@@ -59,7 +105,7 @@ module "gitlab-runner-template" {
     }
   }
   service_account = {
-    auto_create = true
+    email = module.runner-mig-sa.0.email
   }
   create_template = true
 }

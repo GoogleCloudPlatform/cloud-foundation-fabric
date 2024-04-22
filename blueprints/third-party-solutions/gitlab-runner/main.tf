@@ -15,23 +15,16 @@
  */
 
 locals {
-  role_id            = "projects/${module.project.project_id}/roles/${local.role_name}"
-  role_name          = "gitlab_runner_manager_role"
+  role_id            = module.project.custom_role_ids[local.role_name]
+  role_name          = "gitlabRunnerManagerRole"
   runner_config_type = [for key, value in var.gitlab_runner_config.executors_config : key if value != null][0]
   runner_startup_script_config = {
-    gitlab_hostname      = var.gitlab_config.hostname
-    gitlab_ca_cert       = base64encode(var.gitlab_config.ca_cert_pem)
-    token                = var.gitlab_runner_config.authentication_token
-    gitlab_runner_config = base64encode(templatefile("${path.module}/assets/config/${local.runner_config_type}_config.toml.tpl", var.gitlab_runner_config.executors_config[local.runner_config_type]))
-    gitlab_executor_type = replace(local.runner_config_type, "_", "-")
+    gitlab_hostname        = var.gitlab_config.hostname
+    gitlab_ca_cert         = base64encode(var.gitlab_config.ca_cert_pem)
+    gitlab_token_secret_id = local.gitlab_runner_auth_token_secret_id
+    gitlab_runner_config   = base64encode(templatefile("${path.module}/assets/config/${local.runner_config_type}_config.toml.tpl", var.gitlab_runner_config.executors_config[local.runner_config_type]))
+    gitlab_executor_type   = replace(local.runner_config_type, "_", "-")
   }
-}
-
-resource "google_service_account_iam_member" "admin-account-iam" {
-  count              = local.runner_config_type == "docker_autoscaler" ? 1 : 0
-  service_account_id = module.gitlab-runner-template.0.service_account.name
-  role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${module.gitlab-runner.service_account.email}"
 }
 
 module "project" {
@@ -50,7 +43,7 @@ module "project" {
     ]
   }
   iam = {
-    (local.role_id) = ["serviceAccount:${module.gitlab-runner.service_account.email}"]
+    (local.role_id) = ["serviceAccount:${module.runner-sa.email}"]
   }
   services = [
     "compute.googleapis.com",
@@ -58,6 +51,7 @@ module "project" {
     "stackdriver.googleapis.com",
     "dns.googleapis.com",
     "iam.googleapis.com",
+    "secretmanager.googleapis.com"
   ]
   shared_vpc_service_config = {
     attach       = true
