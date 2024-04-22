@@ -238,3 +238,28 @@ module "test" {
 }
 # tftest modules=8 resources=47
 ```
+
+## Bugs and errors
+
+If you've deployed the phpIPAM terraform configuration, destroyed it, and set it up again, you might stumble upon this error:
+```
+╷
+│ Error: Error waiting for Create Service Networking Connection: Error code 9, message: Cannot modify allocated ranges in CreateConnection. Please use UpdateConnection.
+│ Help Token: <token>
+│ 
+│   with module.vpc[0].google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"],
+│   on ../../../modules/net-vpc/psa.tf line 61, in resource "google_service_networking_connection" "psa_connection":
+│   61: resource "google_service_networking_connection" "psa_connection" {
+│ 
+╵
+```
+This can be solved by running this command:
+```bash
+gcloud beta services vpc-peerings update \
+	--service=servicenetworking.googleapis.com \
+	--ranges=[your-private-connection-range-name] \
+	--network=[your-vpc-name] \
+	--project=[your-project-id] \
+	--force
+```
+After it has finished updating, try running `terraform apply` again and it should work.
