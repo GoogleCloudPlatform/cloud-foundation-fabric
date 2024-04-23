@@ -68,8 +68,9 @@ resource "google_cloudfunctions_function" "function" {
   trigger_http                 = var.trigger_config == null ? true : null
   https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
 
-  ingress_settings  = var.ingress_settings
-  build_worker_pool = var.build_worker_pool
+  ingress_settings            = var.ingress_settings
+  build_worker_pool           = var.build_worker_pool
+  build_environment_variables = var.build_environment_variables
 
   vpc_connector = local.vpc_connector
   vpc_connector_egress_settings = try(
