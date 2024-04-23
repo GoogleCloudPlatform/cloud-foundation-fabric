@@ -101,10 +101,10 @@ module "branch-network-dev-folder" {
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
-      local.branch_optional_r_sa_lists.dp-prod,
-      local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.dp-dev,
+      local.branch_optional_r_sa_lists.gke-dev,
       local.branch_optional_r_sa_lists.gcve-dev,
-      local.branch_optional_r_sa_lists.pf-prod,
+      local.branch_optional_r_sa_lists.pf-dev,
     )
     (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
   }
