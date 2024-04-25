@@ -156,20 +156,7 @@ locals {
       networking-prod    = try(module.branch-network-prod-folder.id, null)
       sandbox            = try(module.branch-sandbox-folder[0].id, null)
       security           = try(module.branch-security-folder.id, null)
-      teams              = try(module.branch-teams-folder[0].id, null)
     },
-    {
-      for k, v in module.branch-teams-team-folder :
-      "team-${k}" => v.id
-    },
-    {
-      for k, v in module.branch-teams-team-dev-folder :
-      "team-${k}-dev" => v.id
-    },
-    {
-      for k, v in module.branch-teams-team-prod-folder :
-      "team-${k}-prod" => v.id
-    }
   )
   providers = merge(
     {
@@ -310,73 +297,29 @@ locals {
         sa            = module.branch-sandbox-sa[0].email
       })
     },
-    !var.fast_features.teams ? {} : merge(
-      {
-        "3-teams" = templatefile(local._tpl_providers, {
-          backend_extra = null
-          bucket        = module.branch-teams-gcs[0].name
-          name          = "teams"
-          sa            = module.branch-teams-sa[0].email
-        })
-      },
-      {
-        for k, v in module.branch-teams-team-sa :
-        "3-teams-${k}" => templatefile(local._tpl_providers, {
-          backend_extra = null
-          bucket        = module.branch-teams-team-gcs[k].name
-          name          = "teams"
-          sa            = v.email
-        })
-      }
-    )
   )
-  service_accounts = merge(
-    {
-      data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
-      data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
-      data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
-      data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
-      gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
-      gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
-      gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
-      gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
-      gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
-      gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
-      gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
-      gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-      networking             = module.branch-network-sa.email
-      networking-r           = module.branch-network-r-sa.email
-      project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
-      project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
-      project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
-      project-factory-prod-r = try(module.branch-pf-prod-r-sa[0].email, null)
-      sandbox                = try(module.branch-sandbox-sa[0].email, null)
-      security               = module.branch-security-sa.email
-      security-r             = module.branch-security-r-sa.email
-      teams                  = try(module.branch-teams-sa[0].email, null)
-    },
-    {
-      for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
-    },
-  )
-  team_cicd_workflows = {
-    for k, v in local.team_cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.cicd.type}.yaml",
-      merge(local.team_cicd_workflow_attrs[k], {
-        identity_provider = try(
-          local.identity_providers[v.cicd.identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        stage_name     = k
-      })
-    )
-  }
-  team_cicd_workflow_attrs = {
-    for k, v in local.team_cicd_repositories : k => {
-      service_account   = try(module.branch-teams-team-sa-cicd[k].email, null)
-      tf_providers_file = "3-teams-${k}-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
-    }
+  service_accounts = {
+    data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
+    data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
+    data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
+    data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
+    gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
+    gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
+    gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
+    gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
+    gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
+    gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
+    gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
+    gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
+    networking             = module.branch-network-sa.email
+    networking-r           = module.branch-network-r-sa.email
+    project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
+    project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
+    project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
+    project-factory-prod-r = try(module.branch-pf-prod-r-sa[0].email, null)
+    sandbox                = try(module.branch-sandbox-sa[0].email, null)
+    security               = module.branch-security-sa.email
+    security-r             = module.branch-security-r-sa.email
   }
   tfvars = {
     checklist_hierarchy = local.checklist.hierarchy
@@ -485,7 +428,7 @@ output "project_factories" {
 
 # ready to use provider configurations for subsequent stages
 output "providers" {
-  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform xx-sandbox xx-teams
+  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers
@@ -512,31 +455,6 @@ output "security" {
     folder          = module.branch-security-folder.id
     gcs_bucket      = module.branch-security-gcs.name
     service_account = module.branch-security-sa.iam_email
-  }
-}
-
-output "team_cicd_repositories" {
-  description = "WIF configuration for Team CI/CD repositories."
-  value = {
-    for k, v in local.team_cicd_repositories : k => {
-      branch = v.cicd.branch
-      name   = v.cicd.name
-      provider = try(
-        local.identity_providers[v.cicd.identity_provider].name, null
-      )
-      service_account = local.team_cicd_workflow_attrs[k].service_account
-    } if v.cicd != null
-  }
-}
-
-output "teams" {
-  description = "Data for the teams stage."
-  value = {
-    for k, v in module.branch-teams-team-folder : k => {
-      folder          = v.id
-      gcs_bucket      = module.branch-teams-team-gcs[k].name
-      service_account = module.branch-teams-team-sa[k].email
-    }
   }
 }
 

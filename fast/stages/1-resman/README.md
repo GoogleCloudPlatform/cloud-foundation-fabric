@@ -56,7 +56,8 @@ For a discussion on naming, please refer to the [Bootstrap stage documentation](
 
 ### Multitenancy
 
-Fully multitenant hierarchies inside the same organization are implemented via [separate additional stages](../../stages-multitenant/) that need to be run once for each tenant, and require this stage as a prerequisite.
+TODO: explain how to use the tenant stage for multitenancy.
+ite.
 
 ### Workload Identity Federation and CI/CD
 
@@ -140,7 +141,6 @@ The first set of default tags cannot be overridden and defines the following key
 
 - `context` to identify parts of the resource hierarchy, with `data`, `gke`, `networking`, `sandbox`, `security` and `teams` values
 - `environment` to identify folders and projects belonging to specific environments, with `development` and `production` values
-- `tenant` for FAST multitenant, with one value for each defined tenant that identifies their specific set of resources
 
 The second set is optional and allows defining a custom tag hierarchy, including IAM bindings that can refer to specific identities, or to the internally defined automation service accounts via their names, like in the following example:
 
@@ -160,154 +160,9 @@ tags = {
 }
 ```
 
-### Lightweight multitenancy
-
-If the organization needs to support tenants without the full complexity and separation offered by our [full multitenant support](../../stages-multitenant/), this stage offers a simplified setup which is suitable for cases where tenants have less autonomy, and don't need to implement FAST stages inside their reserved partition.
-
-This mode is activated by defining tenants in the `tenants` variable, while IAM configurations that apply to every tenant can be optionally set in the `tenants_config` variable.
-
-The resulting setup provides a new "Tenants" branch in the hierarchy with one second-level folder for each tenant, and additional folders inside it to host tenant resources managed from the central team, and tenant resources managed by the tenant itself. Automation resources are provided for both teams.
-
-This allows subsequent Terraform stages to create network resources for each tenant which are centrally managed and connected to central networking, and tenants themselves to optionally manage their own networking and application projects.
-
-The default roles applied on tenant folders are
-
-- on the top-level folder for each tenant
-  - for the core IaC service account
-    - `roles/cloudasset.owner`
-    - `roles/compute.xpnAdmin`
-    - `roles/logging.admin`
-    - `roles/resourcemanager.folderAdmin`
-    - `roles/resourcemanager.projectCreator`
-    - `roles/resourcemanager.tagUser`
-- on the core folder for each tenant
-  - for the core IaC service account
-    - `roles/owner`
-  - for the tenant admin group and IaC service account
-    - `roles/viewer`
-- on the tenant folder for each tenant
-  - for the tenant admin group and IaC service account
-    - `roles/cloudasset.owner`
-    - `roles/compute.xpnAdmin`
-    - `roles/logging.admin`
-    - `roles/resourcemanager.folderAdmin`
-    - `roles/resourcemanager.projectCreator`
-    - `roles/resourcemanager.tagUser`
-    - `roles/owner`
-  
-Further customization is possible via the `tenants_config` variable.
-
-This is a high level diagram of the design described above.
-
-```mermaid
-%%{init: {'theme':'base'}}%%
-classDiagram
-    Organization -- Tenants_root~📁~
-    Organization -- org_iac
-    Tenants_root~📁~ -- Tenant_0_root~📁~
-    Tenants_root~📁~ -- Tenant_1_root~📁~
-    Tenant_0_root~📁~ -- Tenant_0_core~📁~
-    Tenant_0_root~📁~ -- Tenant_0_self~📁~
-    Tenant_0_self~📁~ -- tenant0_iac
-    Tenant_1_root~📁~ -- Tenant_1_core~📁~
-    Tenant_1_root~📁~ -- Tenant_1_self~📁~
-    Tenant_1_self~📁~ -- tenant1_iac
-    class org_iac["org_iac (from stage 0)"] {
-        - GCS buckets
-        - service accounts
-    }
-    class Tenants_root~📁~ {
-        - IAM bindings()
-    }
-    class Tenant_0_root~📁~ {
-        - IAM bindings()
-    }
-    class Tenant_0_core~📁~ {
-        - IAM bindings()
-    }
-    class Tenant_0_self~📁~ {
-        - IAM bindings()
-    }
-    class tenant0_iac {
-        - GCS buckets
-        - service account
-        - IAM bindings()
-    }
-    class Tenant_1_root~📁~ {
-        - IAM bindings()
-    }
-    class Tenant_1_core~📁~ {
-        - IAM bindings()
-    }
-    class Tenant_1_self~📁~ {
-        - IAM bindings()
-    }
-    class tenant1_iac {
-        - GCS buckets
-        - service account
-        - IAM bindings()
-    }
-```
-
-This is an example that shows how to populate the relevant variables.
-
-```tfvars
-tenants = {
-  tn0 = {
-    admin_principal   = "group:tn-0-admins@tenant.example.org"
-    descriptive_name  = "Tenant 0"
-    # an optional billing account and org can be specified for the tenant
-    organization = {
-      customer_id = "CAbCde0123"
-      domain      = "tenant.example.com"
-      id          = 1234567890
-    }
-  }
-  tnq = {
-    admin_principal   = "group:tn-1-admins@example.org"
-    descriptive_name  = "Tenant 1"
-  }
-}
-tenants_config = {
-  core_folder_roles = [
-    "roles/compute.instanceAdmin.v1",
-    "organizations/1234567890/roles/tenantLoadBalancerAdmin"
-  ]
-  top_folder_roles = ["roles/logging.admin", "roles/monitoring.admin"]
-}
-```
-
-Providers and tfvars files will be created for each tenant.
-
 ### Team folders
 
-This stage provides a single built-in customization that offers a minimal (but usable) implementation of the "application" or "business" grouping for resources discussed above. The `team_folders` variable allows you to specify a map of team name and groups, that will result in folders, automation service accounts, and IAM policies applied.
-
-Consider the following example in a `tfvars` file:
-
-```tfvars
-team_folders = {
-  team-a = {
-    descriptive_name = "Team A"
-    iam_by_principals = {
-      "group:team-a@gcp-pso-italy.net" = [
-        "roles/viewer"
-      ]
-    }
-    impersonation_principals = ["group:team-a-admins@gcp-pso-italy.net"]
-  }
-}
-```
-
-This will result in
-
-- a "Team A" folder under the "Teams" folder
-- one GCS bucket in the automation project
-- one service account in the automation project with the correct IAM policies on the folder and bucket
-- a IAM policy on the folder that assigns `roles/viewer` to the `team-a` group
-- a IAM policy on the service account that allows `team-a` to impersonate it
-
-This allows to centralize the minimum set of resources to delegate control of each team's folder to a pipeline, and/or to the team group. This can be used as a starting point for scenarios that implement more complex requirements (e.g. environment folders per team, etc.).
+TODO: explain how to use the project factory for teams.
 
 ### IAM
 

@@ -174,7 +174,6 @@ variable "fast_features" {
     gcve            = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
-    teams           = optional(bool, false)
   })
   default  = {}
   nullable = false
@@ -189,8 +188,6 @@ variable "folder_iam" {
     sandbox       = optional(map(list(string)), {})
     security      = optional(map(list(string)), {})
     network       = optional(map(list(string)), {})
-    teams         = optional(map(list(string)), {})
-    tenants       = optional(map(list(string)), {})
   })
   nullable = false
   default  = {}
@@ -261,7 +258,6 @@ variable "tag_names" {
   type = object({
     context     = optional(string, "context")
     environment = optional(string, "environment")
-    tenant      = optional(string, "tenant")
   })
   default  = {}
   nullable = false
@@ -292,45 +288,15 @@ variable "tags" {
   }
 }
 
-variable "team_folders" {
-  description = "Team folders to be created. Format is described in a code comment."
-  type = map(object({
-    descriptive_name         = string
-    iam_by_principals        = map(list(string))
-    impersonation_principals = list(string)
-    cicd = optional(object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    }))
-  }))
-  default = null
-}
-
-variable "tenants" {
-  description = "Lightweight tenant definitions."
-  type = map(object({
-    admin_principal  = string
-    descriptive_name = string
-    billing_account  = optional(string)
-    organization = optional(object({
-      customer_id = string
-      domain      = string
-      id          = number
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "tenants_config" {
-  description = "Lightweight tenants shared configuration. Roles will be assigned to tenant admin group and service accounts."
-  type = object({
-    core_folder_roles   = optional(list(string), [])
-    tenant_folder_roles = optional(list(string), [])
-    top_folder_roles    = optional(list(string), [])
-  })
-  nullable = false
-  default  = {}
-}
+# variable "folders" {
+#   description = "Additional top-level folders to be created. Key is the folder name."
+#   type = list(object({
+#     iam = optional(map(list(string)), [])
+#     iam_by_principals        = optional(map(list(string)), {})
+#     impersonation_principals = optional(list(string), [])
+#     org_policies = optional(map(any), {})
+#     tags                     = optional(list(string), [])
+#    uses_environments = optional(bool, false)
+#   }))
+#   default = null
+# }
