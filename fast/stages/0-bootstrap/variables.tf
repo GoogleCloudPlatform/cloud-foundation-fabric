@@ -182,15 +182,33 @@ variable "log_sinks" {
   }))
   default = {
     audit-logs = {
-      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\" OR protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.TransparencyLog\""
+      filter = <<-FILTER
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+      FILTER
+      type   = "logging"
+    }
+    iam = {
+      filter = <<-FILTER
+        protoPayload.serviceName="iamcredentials.googleapis.com" OR
+        protoPayload.serviceName="iam.googleapis.com" OR
+        protoPayload.serviceName="sts.googleapis.com"
+      FILTER
       type   = "logging"
     }
     vpc-sc = {
-      filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata\""
+      filter = <<-FILTER
+        protoPayload.metadata.@type:"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+      FILTER
       type   = "logging"
     }
     workspace-audit-logs = {
-      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Fdata_access\" and protoPayload.serviceName:\"login.googleapis.com\""
+      filter = <<-FILTER
+        log_id("cloudaudit.googleapis.com/data_access")
+        protoPayload.serviceName:"login.googleapis.com"
+      FILTER
       type   = "logging"
     }
   }
