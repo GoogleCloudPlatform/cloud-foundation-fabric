@@ -166,7 +166,6 @@ variable "factories_config" {
 }
 
 variable "fast_features" {
-  # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = optional(bool, false)
@@ -287,16 +286,3 @@ variable "tags" {
     error_message = "Use an empty map instead of null as value."
   }
 }
-
-# variable "folders" {
-#   description = "Additional top-level folders to be created. Key is the folder name."
-#   type = list(object({
-#     iam = optional(map(list(string)), [])
-#     iam_by_principals        = optional(map(list(string)), {})
-#     impersonation_principals = optional(list(string), [])
-#     org_policies = optional(map(any), {})
-#     tags                     = optional(list(string), [])
-#    uses_environments = optional(bool, false)
-#   }))
-#   default = null
-# }

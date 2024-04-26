@@ -13,8 +13,8 @@
 # limitations under the License.
 
 counts:
-  google_folder: 5
-  google_folder_iam_binding: 25
+  google_folder: 4
+  google_folder_iam_binding: 23
   google_organization_iam_member: 6
   google_project_iam_member: 4
   google_service_account: 4
@@ -23,8 +23,8 @@ counts:
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_iam_member: 4
   google_storage_bucket_object: 5
-  google_tags_tag_binding: 5
-  google_tags_tag_key: 3
-  google_tags_tag_value: 10
-  modules: 12
-  resources: 81
+  google_tags_tag_binding: 4
+  google_tags_tag_key: 2
+  google_tags_tag_value: 8
+  modules: 11
+  resources: 74

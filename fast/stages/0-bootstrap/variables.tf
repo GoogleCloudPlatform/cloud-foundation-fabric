@@ -101,20 +101,6 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "fast_features" {
-  description = "Selective control for top-level FAST features."
-  type = object({
-    data_platform   = optional(bool, false)
-    gcve            = optional(bool, false)
-    gke             = optional(bool, false)
-    project_factory = optional(bool, false)
-    sandbox         = optional(bool, false)
-    teams           = optional(bool, false)
-  })
-  default  = {}
-  nullable = false
-}
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."

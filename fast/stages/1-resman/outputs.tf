@@ -323,6 +323,7 @@ locals {
   }
   tfvars = {
     checklist_hierarchy = local.checklist.hierarchy
+    fast_features       = var.fast_features
     folder_ids          = local.folder_ids
     service_accounts    = local.service_accounts
     tag_keys            = { for k, v in try(module.organization.tag_keys, {}) : k => v.id }
