@@ -132,7 +132,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = local.cas == null ? [] : [""]
     content {
-      enabled             = true
+      enabled             = var.cluster_autoscaling.enabled
       autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []

@@ -38,6 +38,7 @@ variable "backup_configs" {
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
+    enabled             = optional(bool, true)
     autoscaling_profile = optional(string, "BALANCED")
     auto_provisioning_defaults = optional(object({
       boot_disk_kms_key = optional(string)
