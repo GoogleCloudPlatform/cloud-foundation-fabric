@@ -156,6 +156,24 @@ module "automation-project" {
       "container.googleapis.com",
     ]
   )
+
+  # Enable IAM data access logs to capture impersonation and service
+  # account token generation events. This is implemented within the
+  # automation project to limit log volume. For heightened security,
+  # consider enabling it at the organization level. A log sink within
+  # the organization will collect and store these logs in a logging
+  # bucket. See
+  # https://cloud.google.com/iam/docs/audit-logging#audited_operations
+  logging_data_access = {
+    "iam.googleapis.com" = {
+      # ADMIN_READ captures impersonation and token generation/exchanges
+      ADMIN_READ = []
+      # enable DATA_WRITE if you want to capture configuration changes
+      # to IAM-related resources (roles, deny policies, service
+      # accounts, identity pools, etc)
+      # DATA_WRITE = []
+    }
+  }
 }
 
 # output files bucket

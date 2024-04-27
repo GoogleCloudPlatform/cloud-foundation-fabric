@@ -60,6 +60,7 @@ module "pubsub" {
   source     = "./fabric/modules/pubsub"
   project_id = var.project_id
   name       = "my-topic"
+  labels     = { test = "default" }
   subscriptions = {
     test-pull = {}
     test-pull-override = {

@@ -29,6 +29,12 @@ variable "bucket_name" {
   nullable    = false
 }
 
+variable "build_environment_variables" {
+  description = "A set of key/value environment variable pairs available during build time."
+  type        = map(string)
+  default     = {}
+}
+
 variable "build_worker_pool" {
   description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format."
   type        = string
