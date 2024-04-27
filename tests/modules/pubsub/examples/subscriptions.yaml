@@ -20,7 +20,8 @@ values:
     enable_exactly_once_delivery: false
     enable_message_ordering: false
     filter: null
-    labels: null
+    labels:
+      test: default
     message_retention_duration: 604800s
     name: test-pull
     project: project-id
@@ -52,7 +53,8 @@ values:
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:
     kms_key_name: null
-    labels: null
+    labels:
+      test: default
     message_retention_duration: null
     name: my-topic
     project: project-id
