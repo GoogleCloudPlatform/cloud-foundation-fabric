@@ -28,7 +28,7 @@ locals {
   _psa_peered_domains = flatten([
     for config in local.psa_configs : [
       for v in config.peered_domains : {
-        key              = "${config.key}-${replace(v, ".", "-")}"
+        key              = "${config.key}-${trimsuffix(replace(v, ".", "-"), "-")}"
         dns_suffix       = v
         service_producer = config.service_producer
       }
