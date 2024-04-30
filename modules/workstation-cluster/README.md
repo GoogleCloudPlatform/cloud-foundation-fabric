@@ -59,6 +59,9 @@ module "workstation-cluster" {
   }
   workstation_configs = {
     my-workstation-config = {
+      gce_instance = {
+        disable_public_ip_addresses = true
+      }
       workstations = {
         my-workstation = {
           labels = {

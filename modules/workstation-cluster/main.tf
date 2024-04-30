@@ -70,8 +70,8 @@ resource "google_workstations_workstation_config" "configs" {
         pool_size                    = each.value.gce_instance.pool_size
         boot_disk_size_gb            = each.value.gce_instance.boot_disk_size_gb
         tags                         = each.value.gce_instance.tags
-        disable_public_ip_addresses  = each.value.disable_public_ip_addresses
-        enable_nested_virtualization = each.value.enable_nested_virtualization
+        disable_public_ip_addresses  = each.value.gce_instance.disable_public_ip_addresses
+        enable_nested_virtualization = each.value.gce_instance.enable_nested_virtualization
         dynamic "shielded_instance_config" {
           for_each = each.value.gce_instance.shielded_instance_config == null ? [] : [""]
           content {
@@ -81,7 +81,7 @@ resource "google_workstations_workstation_config" "configs" {
           }
         }
         dynamic "confidential_instance_config" {
-          for_each = each.value.gce_instance.enable_confidential_compute ? [] : [""]
+          for_each = each.value.gce_instance.enable_confidential_compute ? [""] : []
           content {
             enable_confidential_compute = true
           }
@@ -112,6 +112,21 @@ resource "google_workstations_workstation_config" "configs" {
     content {
       kms_key                 = each.value.encryption_key.kms_key
       kms_key_service_account = each.value.encryption_key.kms_key_service_account
+    }
+  }
+  dynamic "persistent_directories" {
+    for_each = each.value.persistent_directories
+    content {
+      mount_path = persistent_directories.value.mount_path
+      dynamic "gce_pd" {
+        for_each = persistent_directories.value.gce_pd == null ? [] : [""]
+        content {
+          size_gb        = persistent_directories.value.gce_pd.size_gb
+          fs_type        = persistent_directories.value.gce_pd.fs_type
+          disk_type      = persistent_directories.value.gce_pd.disk_type
+          reclaim_policy = persistent_directories.value.gce_pd.reclaim_policy
+        }
+      }
     }
   }
 }
