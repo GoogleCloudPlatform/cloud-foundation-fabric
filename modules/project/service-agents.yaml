@@ -121,6 +121,7 @@
   service_agent: "service-%s@gcp-sa-anthossupport.iam.gserviceaccount.com"
 - name: "connectors"
   service_agent: "service-%s@gcp-sa-connectors.iam.gserviceaccount.com"
+  jit: true
 - name: "contactcenteraiplatform"
   service_agent: "service-%s@gcp-sa-ccaip.iam.gserviceaccount.com"
 - name: "contactcenterinsights"
