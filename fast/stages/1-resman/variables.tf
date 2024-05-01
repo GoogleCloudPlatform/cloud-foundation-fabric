@@ -159,7 +159,8 @@ variable "custom_roles" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    checklist_data = optional(string)
+    checklist_data    = optional(string)
+    top_level_folders = optional(string)
   })
   nullable = false
   default  = {}
@@ -285,4 +286,28 @@ variable "tags" {
     ])
     error_message = "Use an empty map instead of null as value."
   }
+}
+
+variable "top_level_folders" {
+  description = "Additional top-level folders. Keys are used for service account and bucket names, values implement the folders module interface with the addition of the 'automation' attribute."
+  type = map(object({
+    name = string
+    automation = optional(object({
+      enable                      = optional(bool, true)
+      sa_impersonation_principals = optional(list(string), [])
+    }), {})
+    contacts              = optional(map(any), {})
+    firewall_policy       = optional(map(any))
+    logging_data_access   = optional(map(any), {})
+    logging_exclusions    = optional(map(any), {})
+    logging_sinks         = optional(map(any), {})
+    iam                   = optional(map(any), {})
+    iam_bindings          = optional(map(any), {})
+    iam_bindings_additive = optional(map(any), {})
+    iam_by_principals     = optional(map(any), {})
+    org_policies          = optional(map(any), {})
+    tag_bindings          = optional(map(any), {})
+  }))
+  nullable = false
+  default  = {}
 }
