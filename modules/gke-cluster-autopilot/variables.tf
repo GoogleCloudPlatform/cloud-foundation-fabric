@@ -22,6 +22,7 @@ variable "backup_configs" {
       encryption_key                    = optional(string)
       include_secrets                   = optional(bool, true)
       include_volume_data               = optional(bool, true)
+      labels                            = optional(map(string))
       namespaces                        = optional(list(string))
       region                            = string
       schedule                          = string
