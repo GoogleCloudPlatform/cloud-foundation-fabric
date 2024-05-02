@@ -81,9 +81,27 @@ values:
           - access_level: '*'
             resource: null
         ingress_to:
-        - operations: []
+        - operations:
+          - method_selectors:
+            - method: ProjectsService.Get
+              permission: null
+            - method: RegionsService.Get
+              permission: null
+            service_name: compute.googleapis.com
           resources:
           - '*'
+      - ingress_from:
+        - identities:
+          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - projects/1234567890
       resources:
       - projects/11111
       - projects/111111
