@@ -740,7 +740,7 @@ values:
     timeouts: null
   ? module.firewall-policy-default.google_compute_firewall_policy_rule.hierarchical["ingress/allow-healthchecks"]
   : action: allow
-    description: Enable HTTP and HTTPS healthchecks
+    description: Enable SSH, HTTP and HTTPS healthchecks
     direction: INGRESS
     disabled: false
     enable_logging: null
@@ -753,6 +753,7 @@ values:
         layer4_configs:
           - ip_protocol: tcp
             ports:
+              - "22"
               - "80"
               - "443"
         src_address_groups: null
