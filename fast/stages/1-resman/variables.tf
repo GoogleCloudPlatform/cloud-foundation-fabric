@@ -200,7 +200,7 @@ variable "groups" {
   type = object({
     gcp-billing-admins      = optional(string, "gcp-billing-admins")
     gcp-devops              = optional(string, "gcp-devops")
-    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
   })
@@ -212,18 +212,13 @@ variable "locations" {
   # tfdoc:variable:source 0-bootstrap
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
-    bq      = string
-    gcs     = string
-    logging = string
-    pubsub  = list(string)
+    bq      = optional(string, "EU")
+    gcs     = optional(string, "EU")
+    logging = optional(string, "global")
+    pubsub  = optional(list(string), [])
   })
-  default = {
-    bq      = "EU"
-    gcs     = "EU"
-    logging = "global"
-    pubsub  = []
-  }
   nullable = false
+  default  = {}
 }
 
 variable "organization" {
