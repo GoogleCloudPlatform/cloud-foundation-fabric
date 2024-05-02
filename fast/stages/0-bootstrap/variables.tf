@@ -200,14 +200,14 @@ variable "log_sinks" {
     }
     vpc-sc = {
       filter = <<-FILTER
-        protoPayload.metadata.@type:"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
       FILTER
       type   = "logging"
     }
     workspace-audit-logs = {
       filter = <<-FILTER
-        log_id("cloudaudit.googleapis.com/data_access")
-        protoPayload.serviceName:"login.googleapis.com"
+        log_id("cloudaudit.googleapis.com/data_access") AND
+        protoPayload.serviceName="login.googleapis.com"
       FILTER
       type   = "logging"
     }
