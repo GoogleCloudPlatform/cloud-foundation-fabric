@@ -157,6 +157,9 @@ locals {
       sandbox            = try(module.branch-sandbox-folder[0].id, null)
       security           = try(module.branch-security-folder.id, null)
     },
+    {
+      for k, v in module.top-level-folder : k => try(v.id, null)
+    }
   )
   providers = merge(
     {
@@ -183,6 +186,15 @@ locals {
         bucket        = module.branch-security-gcs.name
         name          = "security"
         sa            = module.branch-security-r-sa.email
+      })
+    },
+    {
+      for k, v in module.top-level-sa :
+      "1-resman-folder-${k}" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.top-level-bucket[k].name
+        name          = k
+        sa            = v.email
       })
     },
     !var.fast_features.data_platform ? {} : {
@@ -298,29 +310,34 @@ locals {
       })
     },
   )
-  service_accounts = {
-    data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
-    data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
-    data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
-    data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
-    gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
-    gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
-    gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
-    gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
-    gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
-    gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
-    gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
-    gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-    networking             = module.branch-network-sa.email
-    networking-r           = module.branch-network-r-sa.email
-    project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
-    project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
-    project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
-    project-factory-prod-r = try(module.branch-pf-prod-r-sa[0].email, null)
-    sandbox                = try(module.branch-sandbox-sa[0].email, null)
-    security               = module.branch-security-sa.email
-    security-r             = module.branch-security-r-sa.email
-  }
+  service_accounts = merge(
+    {
+      data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
+      data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
+      data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
+      data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
+      gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
+      gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
+      gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
+      gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
+      gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
+      gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
+      gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
+      gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
+      networking             = module.branch-network-sa.email
+      networking-r           = module.branch-network-r-sa.email
+      project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
+      project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
+      project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
+      project-factory-prod-r = try(module.branch-pf-prod-r-sa[0].email, null)
+      sandbox                = try(module.branch-sandbox-sa[0].email, null)
+      security               = module.branch-security-sa.email
+      security-r             = module.branch-security-r-sa.email
+    },
+    {
+      for k, v in module.top-level-sa : k => try(v.email)
+    }
+  )
   tfvars = {
     checklist_hierarchy = local.checklist.hierarchy
     fast_features       = var.fast_features

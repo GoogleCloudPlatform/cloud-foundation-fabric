@@ -19,17 +19,18 @@ locals {
     pathexpand(var.factories_config.top_level_folders), null
   )
   _top_level_files = try(
-    fileset(local._top_level_path, "**/_config.yaml"),
+    fileset(local._top_level_path, "**/*.yaml"),
     []
   )
   _top_level_folders = {
-    for f in local._top_level_files : dirname(f) => yamldecode(file(
+    for f in local._top_level_files :
+    split(".", f)[0] => yamldecode(file(
       "${coalesce(local._top_level_path, "-")}/${f}"
     ))
   }
   top_level_automation = {
     for k, v in local.top_level_folders :
-    k => v.automation if try(v.automation.enable) == true
+    k => v.automation if try(v.automation.enable, null) == true
   }
   top_level_folders = merge(
     {
@@ -52,9 +53,10 @@ locals {
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
+    var.top_level_folders
   )
 }
-output "foo" { value = var.top_level_folders }
+
 module "top-level-folder" {
   source                = "../../../modules/folder"
   for_each              = local.top_level_folders
