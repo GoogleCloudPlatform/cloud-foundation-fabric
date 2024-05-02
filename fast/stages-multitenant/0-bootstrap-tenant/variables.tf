@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ variable "groups" {
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
     gcp-devops          = optional(string, "gcp-devops")
-    gcp-network-admins  = optional(string, "gcp-network-admins")
+    gcp-network-admins  = optional(string, "gcp-vpc-network-admins")
     gcp-security-admins = optional(string, "gcp-security-admins")
   })
   nullable = false

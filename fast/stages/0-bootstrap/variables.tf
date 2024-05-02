@@ -121,7 +121,7 @@ variable "groups" {
   type = object({
     gcp-billing-admins      = optional(string, "gcp-billing-admins")
     gcp-devops              = optional(string, "gcp-devops")
-    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
     # aliased to gcp-devops as the checklist does not create it
