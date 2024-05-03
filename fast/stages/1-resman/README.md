@@ -13,9 +13,9 @@ The following diagram is a high level reference of the resources created and man
   <img src="diagram.svg" alt="Resource-management diagram">
 </p>
 
-## Table of contents
-
+<!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
+  - [Department or team folders](#department-or-team-folders)
   - [Multitenancy](#multitenancy)
   - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
 - [How to run this stage](#how-to-run-this-stage)
@@ -24,12 +24,14 @@ The following diagram is a high level reference of the resources created and man
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
+  - [Toggling features](#toggling-features)
+  - [Top-level folders](#top-level-folders)
   - [Secure tags](#secure-tags)
-  - [Lightweight multitenancy](#lightweight-multitenancy)
-  - [Team folders](#team-folders)
-  - [Organization Policies](#organization-policies)
   - [IAM](#iam)
-  - [Additional folders](#additional-folders)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Design overview and choices
 
@@ -64,7 +66,7 @@ Top-level folders also support defining associated resources for automation, and
 
 ### Multitenancy
 
-Multitenancy is supported via a separate stage, which is entirely optional and can be applied after resource management has been deployed.
+Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../3-project-factory/) support for folder and project management.
 
 ### Workload Identity Federation and CI/CD
 
