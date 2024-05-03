@@ -193,7 +193,7 @@ variable "log_sinks" {
     workspace-audit-logs = {
       filter = <<-FILTER
         log_id("cloudaudit.googleapis.com/data_access") AND
-        protoPayload.serviceName:"login.googleapis.com"
+        protoPayload.serviceName="login.googleapis.com"
       FILTER
       type   = "logging"
     }
