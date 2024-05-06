@@ -35,13 +35,6 @@ module "tenant-folder-iam" {
       module.tenant-sa[each.key].iam_email,
       try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
     ])
-    "roles/orgpolicy.policyAdmin" = compact([
-      each.value.admin_principal,
-      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
-    ])
-    "roles/orgpolicy.policyViewer" = compact([
-      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
-    ])
     "roles/owner" = [
       each.value.admin_principal,
       module.tenant-sa[each.key].iam_email
