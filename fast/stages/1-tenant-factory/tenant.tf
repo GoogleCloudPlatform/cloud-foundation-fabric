@@ -14,72 +14,63 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Tenant resources.
-
-locals {
-  root_node = (
-    var.root_node == null
-    ? "organizations/${var.organization.id}"
-    : var.root_node
-  )
-}
-
-module "tenant-core-logbucket" {
-  source        = "../../../modules/logging-bucket"
-  for_each      = var.tenant_configs
-  parent_type   = "project"
-  parent        = var.automation.project_id
-  id            = "tenant-${each.key}-audit"
-  location      = var.locations.logging
-  log_analytics = { enable = true }
-}
-
-module "tenant-core-folder" {
-  source   = "../../../modules/folder"
-  for_each = var.tenant_configs
-  parent   = local.root_node
-  name     = "${each.value.descriptive_name} Core"
-  logging_sinks = {
-    "tenant-${each.key}-audit" = {
-      destination = module.tenant-core-logbucket[each.key].id
-      filter      = <<-FILTER
-        log_id("cloudaudit.googleapis.com/activity") OR
-        log_id("cloudaudit.googleapis.com/system_event") OR
-        log_id("cloudaudit.googleapis.com/policy") OR
-        log_id("cloudaudit.googleapis.com/access_transparency")
-      FILTER
-      type        = "logging"
-    }
-  }
-  org_policies = {
-    "iam.allowedPolicyMemberDomains" = {
-      rules = [{
-        allow = {
-          values = compact([
-            var.organization.customer_id,
-            try(each.value.cloud_identity.customer_id, null)
-          ])
-        }
-      }]
-    }
-  }
-  tag_bindings = {
-    tenant = try(
-      module.organization.tag_values["${var.tag_names.tenant}/${each.key}"].id,
-      null
-    )
-  }
-}
+# tfdoc:file:description Per-tenant resources.
 
 module "tenant-folder" {
   source   = "../../../modules/folder"
-  for_each = var.tenant_configs
+  for_each = local.tenants
   parent   = module.tenant-core-folder[each.key].id
   name     = each.value.descriptive_name
   iam = {
-    "roles/logging.admin"                  = [each.value.admin_principal]
-    "roles/owner"                          = [each.value.admin_principal]
-    "roles/resourcemanager.folderAdmin"    = [each.value.admin_principal]
-    "roles/resourcemanager.projectCreator" = [each.value.admin_principal]
+    "roles/logging.admin" = [
+      each.value.admin_principal,
+      module.tenant-sa[each.key].iam_email
+    ]
+    "roles/owner" = [
+      each.value.admin_principal,
+      module.tenant-sa[each.key].iam_email
+    ]
+    "roles/resourcemanager.folderAdmin" = [
+      each.value.admin_principal,
+      module.tenant-sa[each.key].iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      each.value.admin_principal,
+      module.tenant-sa[each.key].iam_email
+    ]
+  }
+  contacts = { (split(":", each.value.admin_principal)[1]) = ["ALL"] }
+}
+
+# automation service account
+
+module "tenant-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.tenants
+  project_id   = var.automation.project_id
+  name         = "tenant-${each.key}-0"
+  display_name = "Terraform tenant ${each.key} service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [each.value.admin_principal]
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+}
+
+# automation bucket
+
+module "tenant-gcs" {
+  source        = "../../../modules/gcs"
+  for_each      = local.tenants
+  project_id    = var.automation.project_id
+  name          = "tenant-${each.key}-0"
+  prefix        = var.prefix
+  location      = each.value.locations.gcs
+  storage_class = each.value.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.tenant-sa[each.key].iam_email]
   }
 }

@@ -52,11 +52,16 @@ variable "tenant_configs" {
     admin_principal  = string
     descriptive_name = string
     billing_account  = optional(string)
-    prefix           = optional(string)
     cloud_identity = optional(object({
       customer_id = string
       domain      = string
       id          = string
+    }))
+    locations = optional(object({
+      bq      = optional(string, "EU")
+      gcs     = optional(string, "EU")
+      logging = optional(string, "global")
+      pubsub  = optional(list(string), [])
     }))
     fast_config = optional(object({
       cicd_repository = optional(object({
@@ -73,12 +78,7 @@ variable "tenant_configs" {
         gcp-security-admins     = optional(string, "gcp-security-admins")
         gcp-support             = optional(string, "gcp-devops")
       }))
-      locations = optional(object({
-        bq      = optional(string, "EU")
-        gcs     = optional(string, "EU")
-        logging = optional(string, "global")
-        pubsub  = optional(list(string), [])
-      }))
+      prefix               = optional(string)
       vpc_sc_policy_create = optional(bool, false)
     }))
   }))

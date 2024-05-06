@@ -33,6 +33,7 @@ variable "automation" {
       principal_repo   = string
     }))
     service_accounts = object({
+      resman   = string
       resman-r = string
     })
   })
@@ -96,6 +97,16 @@ variable "organization" {
     domain      = string
     id          = number
     customer_id = string
+  })
+}
+
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization policy tags."
+  type = object({
+    key_id   = string
+    key_name = string
+    values   = map(string)
   })
 }
 

@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+locals {
+  _tenants = {
+    for k, v in var.tenant_configs : k => merge(v, {
+      billing_account = coalesce(v.billing_account, var.billing_account.id)
+      locations       = coalesce(v.locations, var.locations)
+      organization    = coalesce(v.cloud_identity, var.organization)
+    })
+  }
+  tenants = {
+    for k, v in local._tenants : k => merge(v, {
+      gcs_storage_class = (
+        length(split("-", v.locations.gcs)) < 2
+        ? "MULTI_REGIONAL"
+        : "REGIONAL"
+      )
+    })
+  }
+}
+
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
@@ -21,7 +40,7 @@ module "organization" {
     (var.tag_names.tenant) = {
       description = "Resource management tenant."
       values = {
-        for k, v in var.tenant_configs : k => {
+        for k, v in local.tenants : k => {
           description = v.descriptive_name
         }
       }
