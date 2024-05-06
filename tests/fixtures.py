@@ -186,8 +186,13 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # print(yaml.dump({'counts': summary.counts}))
 
     if 'values' in inventory:
-      validate_plan_object(inventory['values'], summary.values, relative_path,
-                           "")
+      try:
+        validate_plan_object(inventory['values'], summary.values, relative_path,
+                             "")
+      except AssertionError:
+        print(f'\n{path}')
+        print(yaml.dump({'values': summary.values}))
+        raise
 
     if 'counts' in inventory:
       try:
@@ -199,6 +204,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
           assert plan_count == expected_count, \
               f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
       except AssertionError:
+        print(f'\n{path}')
         print(yaml.dump({'counts': summary.counts}))
         raise
 
@@ -218,6 +224,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
               f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
       except AssertionError:
         if _buffer:
+          print(f'\n{path}')
           print(yaml.dump(_buffer))
         raise
   return summary

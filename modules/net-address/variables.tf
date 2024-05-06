@@ -115,10 +115,28 @@ variable "psa_addresses" {
 variable "psc_addresses" {
   description = "Map of internal addresses used for Private Service Connect."
   type = map(object({
-    address     = string
-    network     = string
-    description = optional(string, "Terraform managed.")
-    name        = optional(string)
+    address          = string
+    description      = optional(string, "Terraform managed.")
+    name             = optional(string)
+    network          = optional(string)
+    region           = optional(string) #
+    subnet_self_link = optional(string)
+    service_attachment = optional(object({
+      name                        = string # forwarding rule name
+      psc_service_attachment_link = string
+    }))
   }))
   default = {}
+  validation {
+    condition     = alltrue([for key, value in var.psc_addresses : (value.region != null || (value.region == null && value.network != null))])
+    error_message = "Provide network if creating global PSC addresses / endpoints."
+  }
+  validation {
+    condition     = alltrue([for key, value in var.psc_addresses : (value.region == null || (value.region != null && value.subnet_self_link != null))])
+    error_message = "Provide subnet_self_link if creating regional PSC addresses / endpoints."
+  }
+  validation {
+    condition     = alltrue([for key, value in var.psc_addresses : !(value.subnet_self_link != null && value.network != null)])
+    error_message = "Do not provide network and subnet_self_link at the same time"
+  }
 }

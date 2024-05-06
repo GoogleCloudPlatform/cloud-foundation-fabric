@@ -122,6 +122,27 @@ module "addresses" {
 # tftest modules=1 resources=1 inventory=psc.yaml e2e
 ```
 
+To create PSC address targeting a service provide `service_attachment`.
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  psc_addresses = {
+    cloudsql-one = {
+      address          = "10.0.16.32"
+      subnet_self_link = var.subnet.self_link
+      region           = var.region
+      service_attachment = {
+        name                        = "cloudsql-one"
+        psc_service_attachment_link = module.cloudsql-instance.psc_service_attachment_link
+      }
+    }
+  }
+}
+# tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-service-attachment.yaml e2e
+```
+
+
 ### IPSec Interconnect addresses
 
 ```hcl
@@ -177,7 +198,7 @@ module "addresses" {
 | [ipsec_interconnect_addresses](variables.tf#L65) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code title="map&#40;object&#40;&#123;&#10;  region        &#61; string&#10;  address       &#61; string&#10;  network       &#61; string&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  prefix_length &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_attachments](variables.tf#L84) | PSC network attachments, names as keys. | <code title="map&#40;object&#40;&#123;&#10;  subnet_self_link      &#61; string&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  description           &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;  producer_accept_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  producer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [psa_addresses](variables.tf#L102) | Map of internal addresses used for Private Service Access. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; string&#10;  network       &#61; string&#10;  prefix_length &#61; number&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;&#10;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psc_addresses](variables.tf#L115) | Map of internal addresses used for Private Service Connect. | <code title="map&#40;object&#40;&#123;&#10;  address     &#61; string&#10;  network     &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  name        &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psc_addresses](variables.tf#L115) | Map of internal addresses used for Private Service Connect. | <code title="map&#40;object&#40;&#123;&#10;  address          &#61; string&#10;  description      &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  name             &#61; optional&#40;string&#41;&#10;  network          &#61; optional&#40;string&#41;&#10;  region           &#61; optional&#40;string&#41; &#35;&#10;  subnet_self_link &#61; optional&#40;string&#41;&#10;  service_attachment &#61; optional&#40;object&#40;&#123;&#10;    name                        &#61; string &#35; forwarding rule name&#10;    psc_service_attachment_link &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -193,5 +214,6 @@ module "addresses" {
 
 ## Fixtures
 
+- [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [net-vpc-ipv6.tf](../../tests/fixtures/net-vpc-ipv6.tf)
 <!-- END TFDOC -->
