@@ -379,6 +379,11 @@ output "dataplatform" {
   }
 }
 
+output "folder_ids" {
+  description = "Folder ids."
+  value       = local.folder_ids
+}
+
 output "gcve" {
   # tfdoc:output:consumers 03-gcve
   description = "Data for the GCVE stage."
