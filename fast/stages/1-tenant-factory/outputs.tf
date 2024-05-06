@@ -53,18 +53,18 @@ locals {
       automation = {
         federated_identity_pool      = null
         federated_identity_providers = {}
-        outputs_bucket               = module.tenant-automation-tf-output-gcs.name
-        project_id                   = module.tenant-automation-project.project_id
-        project_number               = module.tenant-automation-project.number
+        outputs_bucket               = module.tenant-automation-tf-output-gcs[k].name
+        project_id                   = module.tenant-automation-project[k].project_id
+        project_number               = module.tenant-automation-project[k].number
         service_accounts = {
-          resman   = module.tenant-automation-tf-resman-sa.email
-          resman-r = module.tenant-automation-tf-resman-r-sa.email
+          resman   = module.tenant-automation-tf-resman-sa[k].email
+          resman-r = module.tenant-automation-tf-resman-r-sa[k].email
         }
       }
       custom_roles = var.custom_roles
       logging = {
-        project_id        = module.tenant-log-export-project.project_id
-        project_number    = module.tenant-log-export-project.number
+        project_id        = module.tenant-log-export-project[k].project_id
+        project_number    = module.tenant-log-export-project[k].number
         writer_identities = {}
       }
       org_policy_tags = var.org_policy_tags

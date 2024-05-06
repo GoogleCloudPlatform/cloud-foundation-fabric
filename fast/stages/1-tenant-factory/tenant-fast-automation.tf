@@ -29,7 +29,7 @@ locals {
       principals = {
         for gk, gv in v.groups : gk => (
           can(regex("^[a-zA-Z]+:", gv))
-          ? v
+          ? gv
           : "group:${gv}@${v.organization.domain}"
         )
       }
@@ -71,7 +71,6 @@ module "tenant-automation-project" {
     "compute.googleapis.com",
     "container.googleapis.com",
   ]
-
   logging_data_access = {
     "iam.googleapis.com" = {
       ADMIN_READ = []
@@ -99,44 +98,44 @@ module "tenant-automation-project-iam" {
   # machine (service accounts) IAM bindings
   iam = {
     "roles/browser" = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/owner" = [
       "serviceAccount:${var.automation.service_accounts.resman}"
     ]
     "roles/cloudbuild.builds.editor" = [
-      module.tenant-automation-tf-resman-sa.iam_email
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
     "roles/cloudbuild.builds.viewer" = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/iam.serviceAccountAdmin" = [
-      module.tenant-automation-tf-resman-sa.iam_email
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
     "roles/iam.serviceAccountViewer" = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/iam.workloadIdentityPoolAdmin" = [
-      module.tenant-automation-tf-resman-sa.iam_email
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
     "roles/iam.workloadIdentityPoolViewer" = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/source.admin" = [
-      module.tenant-automation-tf-resman-sa.iam_email
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
     "roles/source.reader" = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/storage.admin" = [
-      module.tenant-automation-tf-resman-sa.iam_email
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
-    (module.organization.custom_role_id["storage_viewer"]) = [
-      module.tenant-automation-tf-resman-r-sa.iam_email
+    (var.custom_roles["storage_viewer"]) = [
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
     "roles/viewer" = [
       "serviceAccount:${var.automation.service_accounts.resman-r}",
-      module.tenant-automation-tf-resman-r-sa.iam_email
+      module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
   }
   iam_bindings = {
@@ -163,6 +162,7 @@ module "tenant-automation-project-iam" {
       role   = "roles/serviceusage.serviceUsageViewer"
     }
   }
+  depends_on = [module.tenant-automation-project]
 }
 
 # output files bucket
@@ -242,9 +242,6 @@ module "tenant-automation-tf-resman-r-sa" {
   #     }
   #   }
   # )
-  iam_folder_roles = {
-    (module.tenant-folder[each.key].id) = ["roles/viewer"]
-  }
   iam_storage_roles = {
     (module.tenant-automation-tf-output-gcs[each.key].name) = [
       var.custom_roles["storage_viewer"]

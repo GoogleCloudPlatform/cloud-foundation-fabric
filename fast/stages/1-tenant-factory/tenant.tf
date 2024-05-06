@@ -21,25 +21,48 @@ module "tenant-folder" {
   for_each = local.tenants
   parent   = module.tenant-core-folder[each.key].id
   name     = each.value.descriptive_name
+  contacts = { (split(":", each.value.admin_principal)[1]) = ["ALL"] }
+}
+
+module "tenant-folder-iam" {
+  source        = "../../../modules/folder"
+  for_each      = local.tenants
+  id            = module.tenant-folder[each.key].id
+  folder_create = false
   iam = {
-    "roles/logging.admin" = [
+    "roles/logging.admin" = compact([
       each.value.admin_principal,
-      module.tenant-sa[each.key].iam_email
-    ]
+      module.tenant-sa[each.key].iam_email,
+      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+    ])
+    "roles/orgpolicy.policyAdmin" = compact([
+      each.value.admin_principal,
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
+    ])
+    "roles/orgpolicy.policyViewer" = compact([
+      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+    ])
     "roles/owner" = [
       each.value.admin_principal,
       module.tenant-sa[each.key].iam_email
     ]
-    "roles/resourcemanager.folderAdmin" = [
+    "roles/resourcemanager.folderAdmin" = compact([
       each.value.admin_principal,
-      module.tenant-sa[each.key].iam_email
-    ]
+      module.tenant-sa[each.key].iam_email,
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
+    ])
     "roles/resourcemanager.projectCreator" = [
       each.value.admin_principal,
       module.tenant-sa[each.key].iam_email
     ]
+    "roles/serviceusage.serviceUsageViewer" = compact([
+      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+    ])
+    "roles/viewer" = compact([
+      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+    ])
   }
-  contacts = { (split(":", each.value.admin_principal)[1]) = ["ALL"] }
+  depends_on = [module.tenant-automation-project]
 }
 
 # automation service account
