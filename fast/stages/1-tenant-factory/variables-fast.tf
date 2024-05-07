@@ -58,6 +58,7 @@ variable "custom_roles" {
     organization_admin_viewer     = string
     service_project_network_admin = string
     storage_viewer                = string
+    tenant_network_admin          = string
   })
   default = null
 }

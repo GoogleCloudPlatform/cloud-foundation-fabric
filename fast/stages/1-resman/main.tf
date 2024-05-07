@@ -91,6 +91,11 @@ locals {
       : "group:${v}@${var.organization.domain}"
     )
   }
+  root_node = (
+    var.root_node == null
+    ? "organizations/${var.organization.id}"
+    : var.root_node
+  )
   tag_keys = (
     var.root_node == null
     ? module.organization.0.tag_keys

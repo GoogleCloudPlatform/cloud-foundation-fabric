@@ -33,7 +33,7 @@ module "tenant-folder-iam" {
     "roles/logging.admin" = compact([
       each.value.admin_principal,
       module.tenant-sa[each.key].iam_email,
-      try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
     ])
     "roles/owner" = [
       each.value.admin_principal,
@@ -44,16 +44,43 @@ module "tenant-folder-iam" {
       module.tenant-sa[each.key].iam_email,
       try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
     ])
-    "roles/resourcemanager.projectCreator" = [
+    "roles/resourcemanager.projectCreator" = compact([
       each.value.admin_principal,
-      module.tenant-sa[each.key].iam_email
-    ]
+      module.tenant-sa[each.key].iam_email,
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
+    ])
     "roles/serviceusage.serviceUsageViewer" = compact([
       try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
+    ])
+    "roles/resourcemanager.tagAdmin" = compact([
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
+    ])
+    "roles/resourcemanager.tagUser" = compact([
+      try(module.tenant-automation-tf-resman-sa[each.key].iam_email, null)
     ])
     "roles/viewer" = compact([
       try(module.tenant-automation-tf-resman-r-sa[each.key].iam_email, null)
     ])
+  }
+  iam_bindings = each.value.fast_config == null ? {} : {
+    tenant_iam_admin_conditional = {
+      members = [module.tenant-automation-tf-resman-sa[each.key].iam_email]
+      role    = "roles/resourcemanager.folderIamAdmin"
+      condition = {
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", [
+            "roles/accesscontextmanager.policyAdmin",
+            "roles/cloudasset.viewer",
+            "roles/compute.orgFirewallPolicyAdmin",
+            "roles/compute.xpnAdmin",
+            var.custom_roles["tenant_network_admin"]
+          ]))
+        )
+        title       = "tenant_automation_sa_delegated_grants"
+        description = "Automation service account delegated grants."
+      }
+    }
   }
   depends_on = [module.tenant-automation-project]
 }

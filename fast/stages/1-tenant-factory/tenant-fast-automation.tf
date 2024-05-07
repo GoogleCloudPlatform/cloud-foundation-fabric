@@ -126,9 +126,6 @@ module "tenant-automation-project-iam" {
     "roles/iam.workloadIdentityPoolViewer" = [
       module.tenant-automation-tf-resman-r-sa[each.key].iam_email
     ]
-    "roles/resourcemanager.tagAdmin" = [
-      module.tenant-automation-tf-resman-sa[each.key].iam_email
-    ]
     "roles/source.admin" = [
       module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]

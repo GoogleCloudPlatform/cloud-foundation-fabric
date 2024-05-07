@@ -41,7 +41,7 @@ locals {
 
 module "branch-network-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = local.root_node
   name   = "Networking"
   iam_by_principals = {
     (local.principals.gcp-network-admins) = [
