@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Organization-level IAM bindings locals.
+# tfdoc:file:description Organization or root node-level IAM bindings.
 
 locals {
   iam_bindings_additive = merge(
@@ -99,7 +99,7 @@ locals {
           title       = "org_policy_tag_pf_scoped_dev"
           description = "Org policy tag scoped grant for project factory dev."
           expression  = <<-END
-            resource.matchTag('${var.organization.id}/${var.tag_names.environment}', 'development')
+            resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'development')
           END
         }
       }
@@ -110,7 +110,7 @@ locals {
           title       = "org_policy_tag_pf_scoped_prod"
           description = "Org policy tag scoped grant for project factory prod."
           expression  = <<-END
-            resource.matchTag('${var.organization.id}/${var.tag_names.environment}', 'production')
+            resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'production')
           END
         }
       }
