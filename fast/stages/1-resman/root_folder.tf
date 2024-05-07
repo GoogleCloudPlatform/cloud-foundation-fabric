@@ -16,7 +16,7 @@
 
 module "root-folder" {
   source        = "../../../modules/folder"
-  count         = var.root_node == true ? 1 : 0
+  count         = var.root_node != null ? 1 : 0
   id            = var.root_node
   folder_create = false
   # additive bindings via delegated IAM grant set in stage 0
@@ -25,7 +25,7 @@ module "root-folder" {
 
 module "automation-project" {
   source         = "../../../modules/project"
-  count          = var.root_node == true ? 1 : 0
+  count          = var.root_node != null ? 1 : 0
   name           = var.automation.project_id
   project_create = false
   # do not assign tagViewer or tagUser roles here on tag keys and values as

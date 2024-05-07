@@ -247,13 +247,13 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the project factories. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [iam.tf](./iam.tf) | Organization or root node-level IAM bindings. |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
-| [organization-iam.tf](./organization-iam.tf) | Organization-level IAM bindings locals. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
 | [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [root_folder.tf](./root_folder.tf) | None | <code>folder</code> |  |
+| [root_folder.tf](./root_folder.tf) | None | <code>folder</code> · <code>project</code> |  |
 | [top-level-folders.tf](./top-level-folders.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |

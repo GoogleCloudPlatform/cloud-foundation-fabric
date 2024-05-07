@@ -92,17 +92,17 @@ locals {
     )
   }
   tag_keys = (
-    var.root_node != true
+    var.root_node == null
     ? module.organization.0.tag_keys
     : module.automation-project.0.tag_keys
   )
   tag_root = (
-    var.root_node != true
+    var.root_node == null
     ? var.organization.id
     : var.automation.project_id
   )
   tag_values = (
-    var.root_node != true
+    var.root_node == null
     ? module.organization.0.tag_values
     : module.automation-project.0.tag_values
   )
