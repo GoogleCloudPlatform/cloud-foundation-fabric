@@ -46,10 +46,11 @@ module "tenant-automation-project" {
   prefix          = each.value.stage_0_prefix
   # this is needed when destroying, resources cannot depend on the
   # project-iam module to avoid circular dependencies
-  iam = {
-    "roles/owner" = [
-      "serviceAccount:${var.automation.service_accounts.resman}"
-    ]
+  iam_bindings_additive = {
+    owner_org_resman = {
+      role   = "roles/owner"
+      member = "serviceAccount:${var.automation.service_accounts.resman}"
+    }
   }
   services = [
     "accesscontextmanager.googleapis.com",
@@ -124,6 +125,9 @@ module "tenant-automation-project-iam" {
     ]
     "roles/iam.workloadIdentityPoolViewer" = [
       module.tenant-automation-tf-resman-r-sa[each.key].iam_email
+    ]
+    "roles/resourcemanager.tagAdmin" = [
+      module.tenant-automation-tf-resman-sa[each.key].iam_email
     ]
     "roles/source.admin" = [
       module.tenant-automation-tf-resman-sa[each.key].iam_email
