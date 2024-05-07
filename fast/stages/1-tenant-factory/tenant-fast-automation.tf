@@ -25,7 +25,7 @@ locals {
   }
   fast_tenants = {
     for k, v in local._fast_tenants : k => merge(v, {
-      prefix = "${v.prefix}-prod"
+      stage_0_prefix = "${v.prefix}-prod"
       principals = {
         for gk, gv in v.groups : gk => (
           can(regex("^[a-zA-Z]+:", gv))
@@ -43,7 +43,14 @@ module "tenant-automation-project" {
   billing_account = each.value.billing_account
   name            = "iac-core-0"
   parent          = module.tenant-folder[each.key].id
-  prefix          = each.value.prefix
+  prefix          = each.value.stage_0_prefix
+  # this is needed when destroying, resources cannot depend on the
+  # project-iam module to avoid circular dependencies
+  iam = {
+    "roles/owner" = [
+      "serviceAccount:${var.automation.service_accounts.resman}"
+    ]
+  }
   services = [
     "accesscontextmanager.googleapis.com",
     "bigquery.googleapis.com",
@@ -99,9 +106,6 @@ module "tenant-automation-project-iam" {
   iam = {
     "roles/browser" = [
       module.tenant-automation-tf-resman-r-sa[each.key].iam_email
-    ]
-    "roles/owner" = [
-      "serviceAccount:${var.automation.service_accounts.resman}"
     ]
     "roles/cloudbuild.builds.editor" = [
       module.tenant-automation-tf-resman-sa[each.key].iam_email
@@ -172,7 +176,7 @@ module "tenant-automation-tf-output-gcs" {
   for_each      = local.fast_tenants
   project_id    = module.tenant-automation-project[each.key].project_id
   name          = "iac-core-outputs-0"
-  prefix        = each.value.prefix
+  prefix        = each.value.stage_0_prefix
   location      = each.value.locations.gcs
   storage_class = each.value.gcs_storage_class
   versioning    = true
@@ -185,7 +189,7 @@ module "tenant-automation-tf-resman-gcs" {
   for_each      = local.fast_tenants
   project_id    = module.tenant-automation-project[each.key].project_id
   name          = "iac-core-resman-0"
-  prefix        = each.value.prefix
+  prefix        = each.value.stage_0_prefix
   location      = each.value.locations.gcs
   storage_class = each.value.gcs_storage_class
   versioning    = true
@@ -205,7 +209,7 @@ module "tenant-automation-tf-resman-sa" {
   project_id   = module.tenant-automation-project[each.key].project_id
   name         = "resman-0"
   display_name = "Terraform stage 1 resman service account."
-  prefix       = each.value.prefix
+  prefix       = each.value.stage_0_prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   # TODO(ludo): uncomment once CI/CD has been added
@@ -230,7 +234,7 @@ module "tenant-automation-tf-resman-r-sa" {
   project_id   = module.tenant-automation-project[each.key].project_id
   name         = "resman-0r"
   display_name = "Terraform stage 1 resman service account (read-only)."
-  prefix       = each.value.prefix
+  prefix       = each.value.stage_0_prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   # TODO(ludo): uncomment once CI/CD has been added

@@ -22,7 +22,7 @@ module "tenant-log-export-project" {
   billing_account = each.value.billing_account
   name            = "audit-logs-0"
   parent          = module.tenant-folder[each.key].id
-  prefix          = each.value.prefix
+  prefix          = each.value.stage_0_prefix
   iam = {
     "roles/owner" = [
       "serviceAccount:${var.automation.service_accounts.resman}"
