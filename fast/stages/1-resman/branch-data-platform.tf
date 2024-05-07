@@ -24,7 +24,7 @@ module "branch-dp-folder" {
   iam    = var.folder_iam.data_platform
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/data"].id, null
+      local.tag_values["${var.tag_names.context}/data"].id, null
     )
   }
 }
@@ -52,7 +52,7 @@ module "branch-dp-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/development"].id,
       null
     )
   }
@@ -79,7 +79,7 @@ module "branch-dp-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/production"].id,
       null
     )
   }

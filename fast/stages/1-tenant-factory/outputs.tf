@@ -28,7 +28,7 @@ locals {
       backend_extra = null
       bucket        = module.tenant-automation-tf-resman-gcs[k].name
       name          = k
-      sa            = module.tenant-automation-tf-resman-sa[k].name
+      sa            = module.tenant-automation-tf-resman-sa[k].email
     })
   }
   tenant_providers_r = {
@@ -36,7 +36,7 @@ locals {
       backend_extra = null
       bucket        = module.tenant-automation-tf-resman-gcs[k].name
       name          = k
-      sa            = module.tenant-automation-tf-resman-r-sa[k].name
+      sa            = module.tenant-automation-tf-resman-r-sa[k].email
     })
   }
   tenant_globals = {
@@ -68,6 +68,7 @@ locals {
         writer_identities = {}
       }
       org_policy_tags = var.org_policy_tags
+      root_node       = module.tenant-folder[k].id
     }
   }
 }

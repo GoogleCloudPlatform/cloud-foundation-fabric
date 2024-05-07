@@ -53,7 +53,7 @@ module "branch-network-folder" {
   iam = local._network_folder_iam
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/networking"].id, null
+      local.tag_values["${var.tag_names.context}/networking"].id, null
     )
   }
 }
@@ -81,7 +81,7 @@ module "branch-network-prod-folder" {
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/production"].id,
       null
     )
   }
@@ -110,7 +110,7 @@ module "branch-network-dev-folder" {
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/development"].id,
       null
     )
   }

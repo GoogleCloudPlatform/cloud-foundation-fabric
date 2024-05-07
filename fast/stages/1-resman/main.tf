@@ -91,6 +91,16 @@ locals {
       : "group:${v}@${var.organization.domain}"
     )
   }
+  tag_keys = (
+    var.root_node != true
+    ? module.organization.0.tag_keys
+    : module.root-folder.0.tag_keys
+  )
+  tag_values = (
+    var.root_node != true
+    ? module.organization.0.tag_values
+    : module.root-folder.0.tag_values
+  )
 }
 
 data "google_client_openid_userinfo" "provider_identity" {

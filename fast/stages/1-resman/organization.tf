@@ -36,8 +36,14 @@ locals {
   }
 }
 
+moved {
+  from = module.organization
+  to   = module.organization.0
+}
+
 module "organization" {
   source          = "../../../modules/organization"
+  count           = var.root_node != true ? 1 : 0
   organization_id = "organizations/${var.organization.id}"
   # additive bindings via delegated IAM grant set in stage 0
   iam_bindings_additive = local.iam_bindings_additive

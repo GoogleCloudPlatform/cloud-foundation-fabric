@@ -47,7 +47,7 @@ module "branch-sandbox-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
+      local.tag_values["${var.tag_names.context}/sandbox"].id, null
     )
   }
 }

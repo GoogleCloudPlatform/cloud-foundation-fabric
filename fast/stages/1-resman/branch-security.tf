@@ -52,7 +52,7 @@ module "branch-security-folder" {
   iam = local._security_folder_iam
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/security"].id, null
+      local.tag_values["${var.tag_names.context}/security"].id, null
     )
   }
 }

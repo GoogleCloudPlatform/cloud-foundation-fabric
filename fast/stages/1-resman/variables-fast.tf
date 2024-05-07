@@ -99,3 +99,16 @@ variable "organization" {
   })
 }
 
+variable "root_node" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Root node for the hierarchy, if running in tenant mode."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.root_node == null ||
+      startswith(coalesce(var.root_node, "-"), "folders/")
+    )
+    error_message = "Root node must be in folders/nnnnn format if specified."
+  }
+}
