@@ -78,10 +78,23 @@ variable "tenant_configs" {
         gcp-security-admins     = optional(string, "gcp-security-admins")
         gcp-support             = optional(string, "gcp-devops")
       }))
-      prefix               = optional(string)
-      vpc_sc_policy_create = optional(bool, false)
+      prefix = optional(string)
     }))
+    vpc_sc_policy_create = optional(bool, false)
   }))
   nullable = false
   default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.tenant_configs :
+      length(coalesce(try(v.fast_config.prefix, null), "-")) < 11
+    ])
+    error_message = "Tenant prefix too long, use a maximum of 10 characters."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.tenant_configs : length(k) <= 3
+    ])
+    error_message = "Tenant short name too long, use a maximum of 3 characters."
+  }
 }

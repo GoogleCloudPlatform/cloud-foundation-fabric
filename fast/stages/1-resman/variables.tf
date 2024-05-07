@@ -158,7 +158,7 @@ variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
-
+  # real maximum length is 11 but we need to keep at least 2 for tenants
   validation {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
