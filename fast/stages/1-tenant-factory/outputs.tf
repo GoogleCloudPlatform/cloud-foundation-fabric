@@ -66,6 +66,23 @@ locals {
       }
       custom_roles = var.custom_roles
       logging = {
+        log_sinks = {
+          audit-logs = {
+            filter = <<-FILTER
+              log_id("cloudaudit.googleapis.com/activity") OR
+              log_id("cloudaudit.googleapis.com/system_event") OR
+              log_id("cloudaudit.googleapis.com/policy") OR
+              log_id("cloudaudit.googleapis.com/access_transparency")
+            FILTER
+            type   = "logging"
+          }
+          vpc-sc = {
+            filter = <<-FILTER
+              protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+            FILTER
+            type   = "logging"
+          }
+        }
         project_id        = module.tenant-log-export-project[k].project_id
         project_number    = module.tenant-log-export-project[k].number
         writer_identities = {}

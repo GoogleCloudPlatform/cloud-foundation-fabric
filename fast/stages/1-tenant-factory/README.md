@@ -87,5 +87,5 @@ The following is a high level diagram of this stage design.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tenants](outputs.tf#L79) | Tenant base configuration. |  |  |
+| [tenants](outputs.tf#L96) | Tenant base configuration. |  |  |
 <!-- END TFDOC -->

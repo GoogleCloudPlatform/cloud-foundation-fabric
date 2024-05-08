@@ -36,6 +36,7 @@ variable "automation" {
       resman-r = string
     })
   })
+  nullable = false
 }
 
 variable "billing_account" {
@@ -89,6 +90,19 @@ variable "locations" {
   default  = {}
 }
 
+variable "logging" {
+  # tfdoc:variable:source 1-tenant-factory
+  description = "Logging configuration for tenants."
+  type = object({
+    project_id = string
+    log_sinks = optional(map(object({
+      filter = string
+      type   = string
+    })), {})
+  })
+  nullable = false
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -97,6 +111,7 @@ variable "organization" {
     id          = number
     customer_id = string
   })
+  nullable = false
 }
 
 variable "root_node" {

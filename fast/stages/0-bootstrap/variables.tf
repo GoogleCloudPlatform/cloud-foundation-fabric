@@ -166,6 +166,7 @@ variable "log_sinks" {
     filter = string
     type   = string
   }))
+  nullable = false
   default = {
     audit-logs = {
       filter = <<-FILTER

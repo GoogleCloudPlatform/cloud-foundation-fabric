@@ -21,6 +21,14 @@ module "root-folder" {
   folder_create = false
   # additive bindings via delegated IAM grant set in stage 0
   iam_bindings_additive = local.iam_bindings_additive
+  logging_sinks = {
+    for name, attrs in local.log_sinks : name => {
+      bq_partitioned_table = attrs.type == "bigquery"
+      destination          = local.log_sink_destinations[name].id
+      filter               = attrs.filter
+      type                 = attrs.type
+    }
+  }
 }
 
 module "automation-project" {
