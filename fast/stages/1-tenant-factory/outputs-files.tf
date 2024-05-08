@@ -46,6 +46,13 @@ resource "local_file" "providers" {
   content         = try(each.value, null)
 }
 
+resource "local_file" "providers-r" {
+  for_each        = var.outputs_location == null ? {} : local.tenant_providers_r
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/providers/1-resman-r-providers.tf"
+  content         = try(each.value, null)
+}
+
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : local.tenant_tfvars
   file_permission = "0644"
@@ -60,10 +67,9 @@ resource "local_file" "tfvars_globals" {
   content         = jsonencode(each.value)
 }
 
-# TODO(ludo): uncomment and change once CI/CD support has been added
-# resource "local_file" "workflows" {
-#   for_each        = var.outputs_location == null ? {} : local.cicd_workflows
-#   file_permission = "0644"
-#   filename        = "${try(pathexpand(var.outputs_location), "")}/workflows/${each.key}-workflow.yaml"
-#   content         = try(each.value, null)
-# }
+resource "local_file" "workflows" {
+  for_each        = var.outputs_location == null ? {} : local.tenant_cicd_workflows
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/workflows/1-resman-workflow.yaml"
+  content         = try(each.value, null)
+}

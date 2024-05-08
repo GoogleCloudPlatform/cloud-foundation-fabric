@@ -67,10 +67,9 @@ resource "google_storage_bucket_object" "tfvars_globals" {
   content  = jsonencode(each.value)
 }
 
-# TODO(ludo): uncomment and change once CI/CD support has been added
-# resource "google_storage_bucket_object" "workflows" {
-#   for_each = local.cicd_workflows
-#   bucket   = module.automation-tf-output-gcs.name
-#   name     = "workflows/${each.key}-workflow.yaml"
-#   content  = each.value
-# }
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.tenant_cicd_workflows
+  bucket   = module.tenant-automation-tf-output-gcs[each.key].name
+  name     = "workflows/1-resman-workflow.yaml"
+  content  = each.value
+}

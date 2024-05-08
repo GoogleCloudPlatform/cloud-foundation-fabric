@@ -16,6 +16,33 @@
 
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  tenant_cicd_workflows = {
+    for k, v in local.cicd_repositories :
+    k => templatefile("${path.module}/templates/workflow-${v.type}.yaml", {
+      audiences = try(
+        local.identity_providers[v.identity_provider].audiences, null
+      )
+      identity_provider = try(
+        local.identity_providers[v.identity_provider].name, null
+      )
+      outputs_bucket = try(
+        module.tenant-automation-tf-output-gcs[k].name, null
+      )
+      service_accounts = {
+        apply = try(module.tenant-automation-tf-resman-sa[k].email, null)
+        plan  = try(module.tenant-automation-tf-resman-r-sa[k].email, null)
+      }
+      stage_name = "1-resman"
+      tf_providers_files = {
+        apply = "1-resman-providers.tf"
+        plan  = "1-resman-r-providers.tf"
+      }
+      tf_var_files = [
+        "0-bootstrap.auto.tfvars.json",
+        "0-globals.auto.tfvars.json"
+      ]
+    })
+  }
   tenant_data = {
     for k, v in local.tenants : k => {
       folder_id       = module.tenant-folder[k].id

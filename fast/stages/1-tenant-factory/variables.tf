@@ -64,7 +64,7 @@ variable "tenant_configs" {
       pubsub  = optional(list(string), [])
     }))
     fast_config = optional(object({
-      cicd_repository = optional(object({
+      cicd_config = optional(object({
         name              = string
         type              = string
         branch            = optional(string)

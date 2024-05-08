@@ -213,15 +213,14 @@ module "tenant-automation-tf-resman-sa" {
   prefix       = each.value.stage_0_prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
-  # TODO(ludo): uncomment once CI/CD has been added
-  # iam_bindings_additive = (
-  #   local.cicd_resman_sa == "" ? {} : {
-  #     cicd_token_creator = {
-  #       member = local.cicd_resman_sa
-  #       role   = "roles/iam.serviceAccountTokenCreator"
-  #     }
-  #   }
-  # )
+  iam_bindings_additive = (
+    lookup(local.cicd_repositories, each.key, null) == null ? {} : {
+      cicd_token_creator = {
+        member = module.tenant-automation-tf-cicd-sa[each.key].iam_email
+        role   = "roles/iam.serviceAccountTokenCreator"
+      }
+    }
+  )
   iam_storage_roles = {
     (module.tenant-automation-tf-output-gcs[each.key].name) = [
       "roles/storage.admin"
@@ -238,15 +237,14 @@ module "tenant-automation-tf-resman-r-sa" {
   prefix       = each.value.stage_0_prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
-  # TODO(ludo): uncomment once CI/CD has been added
-  # iam_bindings_additive = (
-  #   local.cicd_resman_r_sa == "" ? {} : {
-  #     cicd_token_creator = {
-  #       member = local.cicd_resman_r_sa
-  #       role   = "roles/iam.serviceAccountTokenCreator"
-  #     }
-  #   }
-  # )
+  iam_bindings_additive = (
+    lookup(local.cicd_repositories, each.key, null) == null ? {} : {
+      cicd_token_creator = {
+        member = module.automation-tf-cicd-r-sa[each.key].iam_email
+        role   = "roles/iam.serviceAccountTokenCreator"
+      }
+    }
+  )
   iam_storage_roles = {
     (module.tenant-automation-tf-output-gcs[each.key].name) = [
       var.custom_roles["storage_viewer"]
