@@ -143,6 +143,7 @@ locals {
       ]
       additive = concat(
         [
+          "roles/accesscontextmanager.policyAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
@@ -152,6 +153,7 @@ locals {
     }
     (module.automation-tf-resman-r-sa.iam_email) = {
       authoritative = [
+        "roles/accesscontextmanager.policyReader",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer",

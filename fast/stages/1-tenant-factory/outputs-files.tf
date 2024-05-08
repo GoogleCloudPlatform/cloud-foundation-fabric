@@ -16,6 +16,29 @@
 
 # tfdoc:file:description Output files persistence to local filesystem.
 
+resource "local_file" "providers-simple" {
+  for_each = var.outputs_location == null ? {} : {
+    for k, v in local.tenants : k => local.tenant_data[k]
+  }
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/tenant-${each.key}.tf"
+  content = templatefile(local._tpl_providers, {
+    backend_extra = null
+    bucket        = each.value.gcs_bucket
+    name          = each.key
+    sa            = each.value.service_account
+  })
+}
+
+resource "local_file" "tfvars-simple" {
+  for_each = var.outputs_location == null ? {} : {
+    for k, v in local.tenants : k => local.tenant_data[k]
+  }
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/tenant-${each.key}.auto.tfvars.json"
+  content         = jsonencode(each.value)
+}
+
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.tenant_providers
   file_permission = "0644"

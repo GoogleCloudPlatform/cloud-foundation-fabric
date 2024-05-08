@@ -21,6 +21,7 @@ locals {
       folder_id       = module.tenant-folder[k].id
       gcs_bucket      = module.tenant-gcs[k].id
       service_account = module.tenant-sa[k].email
+      vpcsc_policy_id = try(module.tenant-vpcsc-policy[k].id, null)
     }
   }
   tenant_providers = {
@@ -89,6 +90,9 @@ locals {
       }
       org_policy_tags = var.org_policy_tags
       root_node       = module.tenant-folder[k].id
+      security = {
+        access_policy_id = try(module.tenant-vpcsc-policy[k].id, null)
+      }
     }
   }
 }

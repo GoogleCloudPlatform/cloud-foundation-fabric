@@ -62,6 +62,7 @@ The following is a high level diagram of this stage design.
 | [tenant-core.tf](./tenant-core.tf) | Per-tenant centrally managed resources. | <code>folder</code> · <code>logging-bucket</code> |  |
 | [tenant-fast-automation.tf](./tenant-fast-automation.tf) | Per-tenant FAST bootstrap emulation (automation). | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [tenant-fast-logging.tf](./tenant-fast-logging.tf) | Per-tenant FAST bootstrap emulation (logging). | <code>project</code> |  |
+| [tenant-fast-vpcsc.tf](./tenant-fast-vpcsc.tf) | Per-tenant VPC-SC resources. | <code>vpc-sc</code> |  |
 | [tenant.tf](./tenant.tf) | Per-tenant resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
@@ -87,5 +88,5 @@ The following is a high level diagram of this stage design.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tenants](outputs.tf#L96) | Tenant base configuration. |  |  |
+| [tenants](outputs.tf#L100) | Tenant base configuration. |  |  |
 <!-- END TFDOC -->

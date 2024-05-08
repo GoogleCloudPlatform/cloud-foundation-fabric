@@ -16,6 +16,29 @@
 
 # tfdoc:file:description Output files persistence to automation GCS bucket.
 
+resource "google_storage_bucket_object" "providers-simple" {
+  for_each = {
+    for k, v in local.tenants : k => local.tenant_data[k]
+  }
+  bucket = var.automation.outputs_bucket
+  name   = "providers/tenant-${each.key}.tf"
+  content = templatefile(local._tpl_providers, {
+    backend_extra = null
+    bucket        = each.value.gcs_bucket
+    name          = each.key
+    sa            = each.value.service_account
+  })
+}
+
+resource "google_storage_bucket_object" "tfvars-simple" {
+  for_each = {
+    for k, v in local.tenants : k => local.tenant_data[k]
+  }
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/tenant-${each.key}.auto.tfvars.json"
+  content = jsonencode(each.value)
+}
+
 resource "google_storage_bucket_object" "providers" {
   for_each = local.tenant_providers
   bucket   = module.tenant-automation-tf-output-gcs[each.key].name
