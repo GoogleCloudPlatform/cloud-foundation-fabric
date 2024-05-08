@@ -253,8 +253,8 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
 | [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [root-folder-log-export.tf](./root-folder-log-export.tf) | Audit log project and sink for tenant root folder. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>pubsub</code> |  |
-| [root_folder.tf](./root_folder.tf) | None | <code>folder</code> · <code>project</code> |  |
+| [tenant-logging.tf](./tenant-logging.tf) | Audit log project and sink for tenant root folder. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>pubsub</code> |  |
+| [tenant-root.tf](./tenant-root.tf) | None | <code>folder</code> · <code>project</code> |  |
 | [top-level-folders.tf](./top-level-folders.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
