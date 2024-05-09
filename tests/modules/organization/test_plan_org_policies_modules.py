@@ -37,8 +37,8 @@ def test_policy_implementation():
       '@@ -55,2 +55,2 @@\n',
       '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
       '-      parent = "projects/${local.project.project_id}"\n',
-      '+      name   = "${local.folder.name}/policies/${k}"\n',
-      '+      parent = local.folder.name\n',
+      '+      name   = "${local.folder_id}/policies/${k}"\n',
+      '+      parent = local.folder_id\n',
   ]
 
   diff2 = difflib.unified_diff(lines['folder'], lines['organization'], 'folder',
