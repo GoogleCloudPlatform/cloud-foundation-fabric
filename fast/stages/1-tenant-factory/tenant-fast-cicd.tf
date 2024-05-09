@@ -15,11 +15,6 @@
  */
 
 # tfdoc:file:description Per-tenant CI/CD resources.
-output "foo" {
-  value = {
-    local = local.cicd_tenant_providers
-  }
-}
 
 locals {
   # alias resources for readability
@@ -34,9 +29,10 @@ locals {
       )
       issuer           = v.issuer
       issuer_uri       = try(local._wif_providers[k].oidc[0].issuer_uri, null)
-      name             = v.name
+      name             = local._wif_providers[k].name
       principal_branch = v.principal_branch
       principal_repo   = v.principal_repo
+      provider         = v.provider
       tenant           = v.tenant
     }
   ]
@@ -45,19 +41,21 @@ locals {
   }
   cicd_tenant_providers = {
     for k, v in local._cicd_tenant_providers : k => {
-      for pv in v : pv.name => pv
+      for pv in v : pv.provider => pv
     }
   }
   cicd_repositories = {
     for k, v in local.fast_tenants :
-    k => v.fast_config.cicd_config
+    k => merge(v.fast_config.cicd_config, {
+      tenant = k
+    })
     if(
       try(v.fast_config.cicd_config, null) != null &&
       (
         try(v.fast_config.cicd_config.type, null) == "sourcerepo"
         ||
         contains(
-          keys(local.identity_providers),
+          keys(local.identity_providers[k]),
           coalesce(try(v.fast_config.cicd_config.identity_provider, null), ":")
         )
       ) &&
@@ -66,15 +64,16 @@ locals {
       )
     )
   }
-  identity_providers = merge(
-    coalesce(
-      try(var.automation.federated_identity_providers, null), {}
-    ),
-    # TODO(ludo): we need a per-tenant map merging tenant-specific providers
-    {}
-  )
+  identity_providers = {
+    for k, v in local.fast_tenants : k => merge(
+      try(var.automation.federated_identity_providers, {}),
+      try(local.cicd_tenant_providers[k], {})
+    )
+  }
 }
-
+output "foo" {
+  value = local.identity_providers
+}
 module "tenant-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = {
@@ -127,12 +126,12 @@ module "tenant-automation-tf-cicd-sa" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principal_repo,
+          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_branch,
+          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
@@ -169,7 +168,7 @@ module "automation-tf-cicd-r-sa" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers[each.value.identity_provider].principal_repo,
+          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )

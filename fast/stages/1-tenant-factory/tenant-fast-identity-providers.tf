@@ -19,15 +19,16 @@
 locals {
   _workload_identity_providers = flatten([
     for k, v in local.fast_tenants : [
-      for pk, pv in v.fast_config.workload_identity_providers : {
-        key      = "${k}-${pk}"
-        prefix   = v.prefix
-        provider = pk
-        tenant   = k
-        data = merge(pv, lookup(
-          local.workload_identity_providers_defs, pv.issuer, {}
-        ))
-      }
+      for pk, pv in v.fast_config.workload_identity_providers : merge(
+        pv,
+        lookup(local.workload_identity_providers_defs, pv.issuer, {}),
+        {
+          key      = "${k}-${pk}"
+          prefix   = v.prefix
+          provider = pk
+          tenant   = k
+        }
+      )
     ]
   ])
   workload_identity_pools = {

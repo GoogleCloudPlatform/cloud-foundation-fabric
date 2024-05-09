@@ -54,7 +54,10 @@ resource "local_file" "providers-r" {
 }
 
 resource "local_file" "tfvars" {
-  for_each        = var.outputs_location == null ? {} : local.tenant_tfvars
+  # work around Terraform's botched ternary type check on maps
+  for_each = {
+    for k, v in local.tenant_tfvars : k => v if var.outputs_location != null
+  }
   file_permission = "0644"
   filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/tfvars/0-bootstrap.auto.tfvars.json"
   content         = jsonencode(each.value)

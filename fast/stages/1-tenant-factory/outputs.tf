@@ -20,10 +20,10 @@ locals {
     for k, v in local.cicd_repositories :
     k => templatefile("${path.module}/templates/workflow-${v.type}.yaml", {
       audiences = try(
-        local.identity_providers[v.identity_provider].audiences, null
+        local.identity_providers[v.tenant][v.identity_provider].audiences, null
       )
       identity_provider = try(
-        local.identity_providers[v.identity_provider].name, null
+        local.identity_providers[v.tenant][v.identity_provider].name, null
       )
       outputs_bucket = try(
         module.tenant-automation-tf-output-gcs[k].name, null
@@ -83,7 +83,7 @@ locals {
     for k, v in local.fast_tenants : k => {
       automation = {
         federated_identity_pool      = null
-        federated_identity_providers = {}
+        federated_identity_providers = local.identity_providers[k]
         outputs_bucket               = module.tenant-automation-tf-output-gcs[k].name
         project_id                   = module.tenant-automation-project[k].project_id
         project_number               = module.tenant-automation-project[k].number
