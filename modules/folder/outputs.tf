@@ -16,7 +16,7 @@
 
 output "folder" {
   description = "Folder resource."
-  value       = local.folder
+  value       = try(google_folder.folder[0], null)
 }
 
 output "id" {
@@ -32,7 +32,7 @@ output "id" {
 
 output "name" {
   description = "Folder name."
-  value       = local.folder.display_name
+  value       = try(google_folder.folder[0].display_name, null)
 }
 
 output "sink_writer_identities" {
