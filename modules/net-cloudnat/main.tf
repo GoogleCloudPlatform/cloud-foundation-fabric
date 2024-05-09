@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,21 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_nat" "nat" {
-  project = var.project_id
-  region  = var.region
-  name    = var.name
-  router  = local.router_name
-  nat_ips = var.addresses
+  provider = google-beta
+  project  = var.project_id
+  region   = var.region
+  name     = var.name
+  type     = var.type
+  router   = local.router_name
+  nat_ips  = var.addresses
   nat_ip_allocate_option = (
-    length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"
+    var.type == "PRIVATE"
+    ? null
+    : (
+      length(var.addresses) > 0
+      ? "MANUAL_ONLY"
+      : "AUTO_ONLY"
+    )
   )
   source_subnetwork_ip_ranges_to_nat = local.subnet_config
   icmp_idle_timeout_sec              = var.config_timeouts.icmp
@@ -114,7 +122,8 @@ resource "google_compute_router_nat" "nat" {
       description = rules.value.description
       match       = rules.value.match
       action {
-        source_nat_active_ips = rules.value.source_ips
+        source_nat_active_ips    = rules.value.source_ips
+        source_nat_active_ranges = rules.value.source_ranges
       }
     }
   }

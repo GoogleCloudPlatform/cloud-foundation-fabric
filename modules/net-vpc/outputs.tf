@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,6 +151,11 @@ output "subnets" {
 output "subnets_proxy_only" {
   description = "L7 ILB or L7 Regional LB subnet resources."
   value       = { for k, v in google_compute_subnetwork.proxy_only : k => v }
+}
+
+output "subnets_private_nat" {
+  description = "Private NAT subnet resources."
+  value       = { for k, v in google_compute_subnetwork.private_nat : k => v }
 }
 
 output "subnets_psc" {
