@@ -14,7 +14,7 @@
 
 counts:
   google_bigquery_default_service_account: 2
-  google_folder: 2
+  google_folder: 1
   google_folder_iam_binding: 5
   google_organization_iam_member: 39
   google_project: 2
