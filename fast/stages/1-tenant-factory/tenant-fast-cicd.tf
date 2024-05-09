@@ -17,11 +17,37 @@
 # tfdoc:file:description Per-tenant CI/CD resources.
 output "foo" {
   value = {
-    local = local.cicd_repositories
+    local = local.cicd_tenant_providers
   }
 }
 
 locals {
+  # alias resources for readability
+  _wif_providers = {
+    for k, v in google_iam_workload_identity_pool_provider.default : k => v
+  }
+  _cicd_providers = [
+    for k, v in local.workload_identity_providers : {
+      audiences = concat(
+        local._wif_providers[k].oidc[0].allowed_audiences,
+        ["https://iam.googleapis.com/${local._wif_providers[k].name}"]
+      )
+      issuer           = v.issuer
+      issuer_uri       = try(local._wif_providers[k].oidc[0].issuer_uri, null)
+      name             = v.name
+      principal_branch = v.principal_branch
+      principal_repo   = v.principal_repo
+      tenant           = v.tenant
+    }
+  ]
+  _cicd_tenant_providers = {
+    for v in local._cicd_providers : v.tenant => v...
+  }
+  cicd_tenant_providers = {
+    for k, v in local._cicd_tenant_providers : k => {
+      for pv in v : pv.name => pv
+    }
+  }
   cicd_repositories = {
     for k, v in local.fast_tenants :
     k => v.fast_config.cicd_config
@@ -40,8 +66,12 @@ locals {
       )
     )
   }
-  identity_providers = coalesce(
-    try(var.automation.federated_identity_providers, null), {}
+  identity_providers = merge(
+    coalesce(
+      try(var.automation.federated_identity_providers, null), {}
+    ),
+    # TODO(ludo): we need a per-tenant map merging tenant-specific providers
+    {}
   )
 }
 

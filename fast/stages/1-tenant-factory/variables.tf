@@ -79,6 +79,15 @@ variable "tenant_configs" {
         gcp-support             = optional(string, "gcp-devops")
       }))
       prefix = optional(string)
+      workload_identity_providers = optional(map(object({
+        attribute_condition = optional(string)
+        issuer              = string
+        custom_settings = optional(object({
+          issuer_uri = optional(string)
+          audiences  = optional(list(string), [])
+          jwks_json  = optional(string)
+        }), {})
+      })), {})
     }))
     vpc_sc_policy_create = optional(bool, false)
   }))

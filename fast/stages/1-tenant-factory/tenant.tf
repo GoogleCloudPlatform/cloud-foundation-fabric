@@ -21,7 +21,13 @@ module "tenant-folder" {
   for_each = local.tenants
   parent   = module.tenant-core-folder[each.key].id
   name     = each.value.descriptive_name
-  contacts = { (split(":", each.value.admin_principal)[1]) = ["ALL"] }
+  contacts = (
+    each.value.fast_config != null
+    ? {}
+    : {
+      (split(":", each.value.admin_principal)[1]) = ["ALL"]
+    }
+  )
 }
 
 module "tenant-folder-iam" {
