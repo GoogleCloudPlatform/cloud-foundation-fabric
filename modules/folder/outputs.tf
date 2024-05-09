@@ -16,12 +16,12 @@
 
 output "folder" {
   description = "Folder resource."
-  value       = local.folder
+  value       = try(google_folder.folder[0], null)
 }
 
 output "id" {
   description = "Fully qualified folder id."
-  value       = local.folder.name
+  value       = local.folder_id
   depends_on = [
     google_folder_iam_binding.authoritative,
     google_folder_iam_binding.bindings,
@@ -32,7 +32,7 @@ output "id" {
 
 output "name" {
   description = "Folder name."
-  value       = local.folder.display_name
+  value       = try(google_folder.folder[0].display_name, null)
 }
 
 output "sink_writer_identities" {
