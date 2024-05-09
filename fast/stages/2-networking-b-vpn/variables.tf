@@ -60,6 +60,12 @@ variable "billing_account" {
   }
 }
 
+variable "create_test_instances" {
+  description = "Enables the creation of test VMs in each VPC, useful to test and troubleshoot connectivity."
+  type        = bool
+  default     = false
+}
+
 variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."

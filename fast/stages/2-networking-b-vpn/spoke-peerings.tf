@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Peerings between landing and spokes.
+
 module "peering-dev" {
   for_each      = local.spoke_connection == "peering" ? { 1 = 1 } : {}
   source        = "../../../modules/net-vpc-peering"
