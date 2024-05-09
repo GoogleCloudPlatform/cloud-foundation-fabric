@@ -206,6 +206,55 @@ variable "service_accounts" {
   default = null
 }
 
+variable "spoke_configs" {
+  type = object({
+    peering_configs = optional(object({
+      dev = optional(object({
+        export        = optional(bool, true)
+        import        = optional(bool, true)
+        public_export = optional(bool)
+        public_import = optional(bool)
+      }), {})
+      prod = optional(object({
+        export        = optional(bool, true)
+        import        = optional(bool, true)
+        public_export = optional(bool)
+        public_import = optional(bool)
+      }), {})
+    }))
+    vpn_configs = optional(object({
+      dev = optional(object({
+        asn = optional(number, 65501)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+      }), {})
+      landing = optional(object({
+        asn = optional(number, 65500)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+      }), {})
+      prod = optional(object({
+        asn = optional(number, 65502)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+      }), {})
+    }))
+  })
+  default = {
+    peering_configs = {}
+  }
+  validation {
+    condition     = (var.spoke_configs.peering_configs == null) != (var.spoke_configs.vpn_configs == null)
+    error_message = "Only one of `var.spoke_configs.peering_configs` or `var.spoke_configs.vpn_configs` must be configured."
+  }
+}
+
 variable "vpn_onprem_primary_config" {
   description = "VPN gateway configuration for onprem interconnection in the primary region."
   type = object({

@@ -35,24 +35,25 @@ locals {
 }
 
 module "landing-to-spokes-primary-vpn" {
+  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.self_link
   region     = var.regions.primary
   name       = "to-spokes-${local.region_shortnames[var.regions.primary]}"
   peer_gateways = {
-    dev  = { gcp = module.dev-to-landing-primary-vpn.self_link }
-    prod = { gcp = module.prod-to-landing-primary-vpn.self_link }
+    dev  = { gcp = module.dev-to-landing-primary-vpn["1"].self_link }
+    prod = { gcp = module.prod-to-landing-primary-vpn["1"].self_link }
   }
   router_config = {
-    asn              = var.vpn_configs.landing.asn
-    custom_advertise = var.vpn_configs.landing.custom_advertise
+    asn              = var.spoke_configs.vpn_configs.landing.asn
+    custom_advertise = var.spoke_configs.vpn_configs.landing.custom_advertise
   }
   tunnels = {
     dev-0 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.dev-primary[0], 2)
-        asn     = var.vpn_configs.dev.asn
+        asn     = var.spoke_configs.vpn_configs.dev.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[0], 1)}/30"
       peer_gateway          = "dev"
@@ -61,7 +62,7 @@ module "landing-to-spokes-primary-vpn" {
     dev-1 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.dev-primary[1], 2)
-        asn     = var.vpn_configs.dev.asn
+        asn     = var.spoke_configs.vpn_configs.dev.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[1], 1)}/30"
       peer_gateway          = "dev"
@@ -70,7 +71,7 @@ module "landing-to-spokes-primary-vpn" {
     prod-0 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.prod-primary[0], 2)
-        asn     = var.vpn_configs.prod.asn
+        asn     = var.spoke_configs.vpn_configs.prod.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[0], 1)}/30"
       peer_gateway          = "prod"
@@ -79,7 +80,7 @@ module "landing-to-spokes-primary-vpn" {
     prod-1 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.prod-primary[1], 2)
-        asn     = var.vpn_configs.prod.asn
+        asn     = var.spoke_configs.vpn_configs.prod.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[1], 1)}/30"
       peer_gateway          = "prod"
@@ -89,23 +90,24 @@ module "landing-to-spokes-primary-vpn" {
 }
 
 module "landing-to-spokes-secondary-vpn" {
+  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.self_link
   region     = var.regions.secondary
   name       = "to-spokes-${local.region_shortnames[var.regions.secondary]}"
   peer_gateways = {
-    prod = { gcp = module.prod-to-landing-secondary-vpn.self_link }
+    prod = { gcp = module.prod-to-landing-secondary-vpn["1"].self_link }
   }
   router_config = {
-    asn              = var.vpn_configs.landing.asn
-    custom_advertise = var.vpn_configs.landing.custom_advertise
+    asn              = var.spoke_configs.vpn_configs.landing.asn
+    custom_advertise = var.spoke_configs.vpn_configs.landing.custom_advertise
   }
   tunnels = {
     prod-0 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.prod-secondary[0], 2)
-        asn     = var.vpn_configs.prod.asn
+        asn     = var.spoke_configs.vpn_configs.prod.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[0], 1)}/30"
       peer_gateway          = "prod"
@@ -114,7 +116,7 @@ module "landing-to-spokes-secondary-vpn" {
     prod-1 = {
       bgp_peer = {
         address = cidrhost(local.bgp_session_ranges.prod-secondary[1], 2)
-        asn     = var.vpn_configs.prod.asn
+        asn     = var.spoke_configs.vpn_configs.prod.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[1], 1)}/30"
       peer_gateway          = "prod"
