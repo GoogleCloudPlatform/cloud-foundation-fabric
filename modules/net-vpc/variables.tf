@@ -294,6 +294,18 @@ variable "subnets" {
   nullable = false
 }
 
+variable "subnets_private_nat" {
+  description = "List of private NAT subnets."
+  type = list(object({
+    name          = string
+    ip_cidr_range = string
+    region        = string
+    description   = optional(string)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "subnets_proxy_only" {
   description = "List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
@@ -323,18 +335,6 @@ variable "subnets_proxy_only" {
         description = optional(string)
       }))
     })), {})
-  }))
-  default  = []
-  nullable = false
-}
-
-variable "subnets_private_nat" {
-  description = "List of private NAT subnets."
-  type = list(object({
-    name          = string
-    ip_cidr_range = string
-    region        = string
-    description   = optional(string)
   }))
   default  = []
   nullable = false
