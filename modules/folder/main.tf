@@ -15,13 +15,10 @@
  */
 
 locals {
-  folder = (
+  folder_id = (
     var.folder_create
-    ? try(google_folder.folder[0], null)
-    : {
-      id   = var.id
-      name = var.id
-    }
+    ? try(google_folder.folder[0].id, null)
+    : var.id
   )
 }
 
@@ -34,7 +31,7 @@ resource "google_folder" "folder" {
 resource "google_essential_contacts_contact" "contact" {
   provider                            = google-beta
   for_each                            = var.contacts
-  parent                              = local.folder.name
+  parent                              = local.folder_id
   email                               = each.key
   language_tag                        = "en"
   notification_category_subscriptions = each.value
@@ -47,7 +44,7 @@ resource "google_essential_contacts_contact" "contact" {
 
 resource "google_compute_firewall_policy_association" "default" {
   count             = var.firewall_policy == null ? 0 : 1
-  attachment_target = local.folder.id
+  attachment_target = local.folder_id
   name              = var.firewall_policy.name
   firewall_policy   = var.firewall_policy.policy
 }

@@ -21,7 +21,7 @@ output "folder" {
 
 output "id" {
   description = "Fully qualified folder id."
-  value       = local.folder.name
+  value       = local.folder_id
   depends_on = [
     google_folder_iam_binding.authoritative,
     google_folder_iam_binding.bindings,
