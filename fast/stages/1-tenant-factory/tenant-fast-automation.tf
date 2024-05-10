@@ -40,7 +40,7 @@ locals {
 module "tenant-automation-project" {
   source          = "../../../modules/project"
   for_each        = local.fast_tenants
-  billing_account = each.value.billing_account
+  billing_account = each.value.billing_account.id
   name            = "iac-core-0"
   parent          = module.tenant-folder[each.key].id
   prefix          = each.value.stage_0_prefix

@@ -17,9 +17,16 @@
 locals {
   _tenants = {
     for k, v in var.tenant_configs : k => merge(v, {
-      billing_account = coalesce(v.billing_account, var.billing_account.id)
-      locations       = coalesce(v.locations, var.locations)
-      organization    = coalesce(v.cloud_identity, var.organization)
+      billing_account = merge(v.billing_account, {
+        id = coalesce(v.billing_account.id, var.billing_account.id)
+        # only set is_org_level when using the org billing account
+        is_org_level = (
+          v.billing_account.id == null ||
+          v.billing_account.id == var.billing_account.id
+        ) ? var.billing_account.is_org_level : false
+      })
+      locations    = coalesce(v.locations, var.locations)
+      organization = coalesce(v.cloud_identity, var.organization)
     })
   }
   tenants = {

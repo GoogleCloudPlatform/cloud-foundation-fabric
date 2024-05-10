@@ -51,7 +51,12 @@ variable "tenant_configs" {
   type = map(object({
     admin_principal  = string
     descriptive_name = string
-    billing_account  = optional(string)
+    billing_account = optional(object({
+      id = optional(string)
+      # is_org_level is only meaningful when using the org BA
+      # and set implicitly in tenant locals
+      no_iam = optional(bool, true)
+    }), {})
     cloud_identity = optional(object({
       customer_id = string
       domain      = string

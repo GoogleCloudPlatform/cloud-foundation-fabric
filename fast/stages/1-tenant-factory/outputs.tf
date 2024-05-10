@@ -69,14 +69,11 @@ locals {
   }
   tenant_globals = {
     for k, v in local.fast_tenants : k => {
-      billing_account = {
-        id     = v.billing_account
-        no_iam = true
-      }
-      groups       = v.principals
-      locations    = v.locations
-      organization = v.organization
-      prefix       = v.prefix
+      billing_account = v.billing_account
+      groups          = v.principals
+      locations       = v.locations
+      organization    = v.organization
+      prefix          = v.prefix
     }
   }
   tenant_tfvars = {
