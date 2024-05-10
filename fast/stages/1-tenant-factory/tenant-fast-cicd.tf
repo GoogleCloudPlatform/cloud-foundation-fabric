@@ -21,6 +21,7 @@ locals {
   _wif_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default : k => v
   }
+  # aggregate provider data from configurations and resources
   _cicd_providers = [
     for k, v in local.workload_identity_providers : {
       audiences = concat(
@@ -36,14 +37,17 @@ locals {
       tenant           = v.tenant
     }
   ]
+  # group provider data by tenant
   _cicd_tenant_providers = {
     for v in local._cicd_providers : v.tenant => v...
   }
+  # reconstitue per-tenant provider lists as maps
   cicd_tenant_providers = {
     for k, v in local._cicd_tenant_providers : k => {
       for pv in v : pv.provider => pv
     }
   }
+  # filter tenant provider definitions to only keep valid ones
   cicd_repositories = {
     for k, v in local.fast_tenants :
     k => merge(v.fast_config.cicd_config, {
@@ -64,6 +68,7 @@ locals {
       )
     )
   }
+  # merge org-level and tenant-level providers for each tenant
   identity_providers = {
     for k, v in local.fast_tenants : k => merge(
       try(var.automation.federated_identity_providers, {}),
@@ -71,9 +76,7 @@ locals {
     )
   }
 }
-output "foo" {
-  value = local.identity_providers
-}
+
 module "tenant-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = {
@@ -106,7 +109,6 @@ module "tenant-cicd-repo" {
   }
   depends_on = [module.tenant-automation-tf-cicd-sa]
 }
-
 
 # read-write (apply) SA used by CI/CD workflows to impersonate automation SA
 
