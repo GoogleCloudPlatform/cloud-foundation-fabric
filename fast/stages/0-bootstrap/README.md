@@ -276,7 +276,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 
 - `gcp-billing-admins`
 - `gcp-devops`
-- `gcp-network-admins`
+- `gcp-vpc-network-admins`
 - `gcp-organization-admins`
 - `gcp-security-admins`
 
