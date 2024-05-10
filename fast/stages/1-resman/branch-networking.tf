@@ -124,6 +124,9 @@ module "branch-network-sa" {
   name         = "prod-resman-net-0"
   display_name = "Terraform resman networking service account."
   prefix       = var.prefix
+  service_account_create = (
+    var.root_node == null || var.automation.service_accounts.network == null
+  )
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-network-sa-cicd[0].iam_email, null)

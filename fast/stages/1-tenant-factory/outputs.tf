@@ -85,6 +85,7 @@ locals {
         project_id                   = module.tenant-automation-project[k].project_id
         project_number               = module.tenant-automation-project[k].number
         service_accounts = {
+          network  = module.tenant-automation-tf-network-sa[k].email
           resman   = module.tenant-automation-tf-resman-sa[k].email
           resman-r = module.tenant-automation-tf-resman-r-sa[k].email
         }

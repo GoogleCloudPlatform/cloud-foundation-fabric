@@ -252,3 +252,20 @@ module "tenant-automation-tf-resman-r-sa" {
     ]
   }
 }
+
+# we create the network SA here as it needs org-level permissions which
+# the tenant cannot apply once sandboxed in their own folder
+
+module "tenant-automation-tf-network-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.fast_tenants
+  project_id   = module.tenant-automation-project[each.key].project_id
+  name         = "resman-net-0"
+  display_name = "Terraform resman networking service account."
+  prefix       = each.value.stage_0_prefix
+  iam_organization_roles = {
+    (var.organization.id) = [
+      var.custom_roles.tenant_network_admin
+    ]
+  }
+}
