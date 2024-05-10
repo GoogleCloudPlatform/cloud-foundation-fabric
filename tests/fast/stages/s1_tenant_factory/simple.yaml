@@ -1,0 +1,46 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_access_context_manager_access_policy: 2
+  google_access_context_manager_access_policy_iam_member: 2
+  google_bigquery_default_service_account: 4
+  google_essential_contacts_contact: 2
+  google_folder: 8
+  google_folder_iam_binding: 34
+  google_iam_workload_identity_pool: 1
+  google_iam_workload_identity_pool_provider: 1
+  google_logging_folder_sink: 4
+  google_logging_project_bucket_config: 4
+  google_org_policy_policy: 3
+  google_organization_iam_member: 4
+  google_project: 6
+  google_project_iam_audit_config: 2
+  google_project_iam_binding: 32
+  google_project_iam_member: 18
+  google_project_service: 56
+  google_project_service_identity: 8
+  google_service_account: 10
+  google_service_account_iam_binding: 6
+  google_service_account_iam_member: 2
+  google_storage_bucket: 8
+  google_storage_bucket_iam_binding: 8
+  google_storage_bucket_iam_member: 6
+  google_storage_bucket_object: 17
+  google_storage_project_service_account: 4
+  google_tags_tag_binding: 4
+  google_tags_tag_key: 1
+  google_tags_tag_value: 4
+  modules: 44
+  resources: 261

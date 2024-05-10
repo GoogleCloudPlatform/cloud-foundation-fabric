@@ -54,19 +54,35 @@ locals {
       tenant = k
     })
     if(
-      try(v.fast_config.cicd_config, null) != null &&
-      (
-        try(v.fast_config.cicd_config.type, null) == "sourcerepo"
-        ||
-        contains(
-          keys(local.identity_providers[k]),
-          coalesce(try(v.fast_config.cicd_config.identity_provider, null), ":")
-        )
-      ) &&
+      try(v.fast_config.cicd_config, null) != null
+      &&
       fileexists(
         "${path.module}/templates/workflow-${try(v.fast_config.cicd_config.type, "")}.yaml"
       )
+      &&
+      (
+        try(v.fast_config.cicd_config.type, null) == "sourcerepo"
+        ||
+        try(var.automation.federated_identity_providers[v.wif_provider], null) != null
+        ||
+        try(v.fast_config.workload_identity_providers[v.wif_provider], null) != null
+      )
     )
+    # if(
+    #   try(v.fast_config.cicd_config, null) != null &&
+    #   (
+    #     try(v.fast_config.cicd_config.type, null) == "sourcerepo"
+    #     ||
+    #     # check if the provider is in the tenant configuration
+    #     try(local.cicd_tenant_providers[k][v.wif_provider], null) != null
+    #     ||
+    #     # check if the provider is in the org-level configuration
+    #     try(var.automation.federated_identity_providers[v.wif_provider], null) != null
+    #   ) &&
+    #   fileexists(
+    #     "${path.module}/templates/workflow-${try(v.fast_config.cicd_config.type, "")}.yaml"
+    #   )
+    # )
   }
   # merge org-level and tenant-level providers for each tenant
   identity_providers = {

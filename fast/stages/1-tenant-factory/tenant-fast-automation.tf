@@ -19,8 +19,9 @@
 locals {
   _fast_tenants = {
     for k, v in local.tenants : k => merge(v, {
-      groups = coalesce(v.fast_config.groups, var.groups)
-      prefix = coalesce(v.fast_config.prefix, "${var.prefix}-${k}")
+      groups       = coalesce(v.fast_config.groups, var.groups)
+      prefix       = coalesce(v.fast_config.prefix, "${var.prefix}-${k}")
+      wif_provider = try(v.fast_config.cicd_config.identity_provider, "-")
     }) if v.fast_config != null
   }
   fast_tenants = {
