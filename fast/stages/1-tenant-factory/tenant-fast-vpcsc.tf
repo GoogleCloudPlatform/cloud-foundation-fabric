@@ -32,10 +32,30 @@ module "tenant-vpcsc-policy" {
     title  = "tenant-${each.key}"
     scopes = [module.tenant-core-folder[each.key].id]
   }
-  iam_bindings_additive = {
-    tenant_admins = {
-      role   = "roles/accesscontextmanager.policyAdmin"
-      member = each.value.admin_principal
+  iam_bindings_additive = merge(
+    {
+      tenant_admins = {
+        role   = "roles/accesscontextmanager.policyAdmin"
+        member = each.value.admin_principal
+      }
+      tenant_sa = {
+        role   = "roles/accesscontextmanager.policyAdmin"
+        member = module.tenant-sa[each.key].iam_email
+      }
+    },
+    each.value.fast_config == null ? {} : {
+      tenant_sa_resman = {
+        role   = "roles/accesscontextmanager.policyAdmin"
+        member = module.tenant-automation-tf-resman-sa[each.key].iam_email
+      }
+      tenant_sa_security = {
+        role   = "roles/accesscontextmanager.policyAdmin"
+        member = module.tenant-automation-tf-security-sa[each.key].iam_email
+      }
+      tenant_sa_security_r = {
+        role   = "roles/accesscontextmanager.policyReader"
+        member = module.tenant-automation-tf-security-r-sa[each.key].iam_email
+      }
     }
-  }
+  )
 }

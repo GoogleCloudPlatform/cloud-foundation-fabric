@@ -50,9 +50,13 @@ locals {
 }
 
 module "vpc-sc-discovery" {
-  source           = "../../../modules/projects-data-source"
-  count            = var.vpc_sc.resource_discovery.enabled == true ? 1 : 0
-  parent           = "organizations/${var.organization.id}"
+  source = "../../../modules/projects-data-source"
+  count  = var.vpc_sc.resource_discovery.enabled == true ? 1 : 0
+  parent = (
+    var.root_node == null
+    ? "organizations/${var.organization.id}"
+    : var.root_node
+  )
   ignore_folders   = var.vpc_sc.resource_discovery.ignore_folders
   ignore_projects  = var.vpc_sc.resource_discovery.ignore_projects
   include_projects = var.vpc_sc.resource_discovery.include_projects
@@ -65,8 +69,8 @@ module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
   count         = var.vpc_sc.perimeter_default == null ? 0 : 1
-  access_policy = null
-  access_policy_create = {
+  access_policy = try(var.access_policy, null)
+  access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }

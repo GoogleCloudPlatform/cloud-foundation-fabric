@@ -60,11 +60,12 @@ module "branch-security-folder" {
 # automation service account
 
 module "branch-security-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = var.automation.project_id
-  name         = "security-0"
-  display_name = "Terraform resman security service account."
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-sec-0"
+  display_name           = "Terraform resman security service account."
+  prefix                 = var.prefix
+  service_account_create = var.root_node == null
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-security-sa-cicd[0].iam_email, null)
@@ -81,11 +82,12 @@ module "branch-security-sa" {
 # automation read-only service account
 
 module "branch-security-r-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = var.automation.project_id
-  name         = "prod-resman-sec-0r"
-  display_name = "Terraform resman security service account (read-only)."
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-sec-0r"
+  display_name           = "Terraform resman security service account (read-only)."
+  prefix                 = var.prefix
+  service_account_create = var.root_node == null
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-security-r-sa-cicd[0].iam_email, null)

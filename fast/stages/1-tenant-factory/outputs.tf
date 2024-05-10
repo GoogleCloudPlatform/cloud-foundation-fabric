@@ -78,6 +78,7 @@ locals {
   }
   tenant_tfvars = {
     for k, v in local.fast_tenants : k => {
+      access_policy = try(module.tenant-vpcsc-policy[k].id, null)
       automation = {
         federated_identity_pool      = null
         federated_identity_providers = local.identity_providers[k]
@@ -85,9 +86,13 @@ locals {
         project_id                   = module.tenant-automation-project[k].project_id
         project_number               = module.tenant-automation-project[k].number
         service_accounts = {
-          network  = module.tenant-automation-tf-network-sa[k].email
           resman   = module.tenant-automation-tf-resman-sa[k].email
           resman-r = module.tenant-automation-tf-resman-r-sa[k].email
+        }
+        tenant_service_accounts = {
+          network    = module.tenant-automation-tf-network-sa[k].email
+          security   = module.tenant-automation-tf-security-sa[k].email
+          security-r = module.tenant-automation-tf-security-r-sa[k].email
         }
       }
       custom_roles = var.custom_roles

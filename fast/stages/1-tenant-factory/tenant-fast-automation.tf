@@ -253,8 +253,8 @@ module "tenant-automation-tf-resman-r-sa" {
   }
 }
 
-# we create the network SA here as it needs org-level permissions which
-# the tenant cannot apply once sandboxed in their own folder
+# tenant-level stage 2 service accounts are created here so that we can
+# grant permissions on the org or VPC SC policy
 
 module "tenant-automation-tf-network-sa" {
   source       = "../../../modules/iam-service-account"
@@ -268,4 +268,22 @@ module "tenant-automation-tf-network-sa" {
       var.custom_roles.tenant_network_admin
     ]
   }
+}
+
+module "tenant-automation-tf-security-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.fast_tenants
+  project_id   = module.tenant-automation-project[each.key].project_id
+  name         = "resman-sec-0"
+  display_name = "Terraform resman security service account."
+  prefix       = each.value.stage_0_prefix
+}
+
+module "tenant-automation-tf-security-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.fast_tenants
+  project_id   = module.tenant-automation-project[each.key].project_id
+  name         = "resman-sec-0r"
+  display_name = "Terraform resman security service account (read-only)."
+  prefix       = each.value.stage_0_prefix
 }

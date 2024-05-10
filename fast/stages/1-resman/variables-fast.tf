@@ -34,8 +34,6 @@ variable "automation" {
     }))
     service_accounts = object({
       resman-r = string
-      # tenant-level network SA is pre-created to get org-level permissions
-      network = optional(string)
     })
   })
   nullable = false
