@@ -53,36 +53,28 @@ locals {
     k => merge(v.fast_config.cicd_config, {
       tenant = k
     })
+    # only keep CI/CD configurations that
     if(
+      # are not null
       try(v.fast_config.cicd_config, null) != null
       &&
+      # are of a valid type (a template file exists for the type)
       fileexists(
         "${path.module}/templates/workflow-${try(v.fast_config.cicd_config.type, "")}.yaml"
       )
       &&
+      # either
       (
+        # don't need a WIF provider, or
         try(v.fast_config.cicd_config.type, null) == "sourcerepo"
         ||
+        # use an org-level WIF provider, or
         try(var.automation.federated_identity_providers[v.wif_provider], null) != null
         ||
+        # use a tenant-level WIF provider
         try(v.fast_config.workload_identity_providers[v.wif_provider], null) != null
       )
     )
-    # if(
-    #   try(v.fast_config.cicd_config, null) != null &&
-    #   (
-    #     try(v.fast_config.cicd_config.type, null) == "sourcerepo"
-    #     ||
-    #     # check if the provider is in the tenant configuration
-    #     try(local.cicd_tenant_providers[k][v.wif_provider], null) != null
-    #     ||
-    #     # check if the provider is in the org-level configuration
-    #     try(var.automation.federated_identity_providers[v.wif_provider], null) != null
-    #   ) &&
-    #   fileexists(
-    #     "${path.module}/templates/workflow-${try(v.fast_config.cicd_config.type, "")}.yaml"
-    #   )
-    # )
   }
   # merge org-level and tenant-level providers for each tenant
   identity_providers = {
