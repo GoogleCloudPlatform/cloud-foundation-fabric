@@ -14,7 +14,7 @@
 
 counts:
   google_access_context_manager_access_policy: 2
-  google_access_context_manager_access_policy_iam_member: 2
+  google_access_context_manager_access_policy_iam_member: 7
   google_bigquery_default_service_account: 4
   google_essential_contacts_contact: 2
   google_folder: 8
@@ -31,7 +31,7 @@ counts:
   google_project_iam_member: 18
   google_project_service: 56
   google_project_service_identity: 8
-  google_service_account: 12
+  google_service_account: 16
   google_service_account_iam_binding: 6
   google_service_account_iam_member: 2
   google_storage_bucket: 8
@@ -42,5 +42,5 @@ counts:
   google_tags_tag_binding: 4
   google_tags_tag_key: 1
   google_tags_tag_value: 4
-  modules: 46
-  resources: 265
+  modules: 50
+  resources: 274
