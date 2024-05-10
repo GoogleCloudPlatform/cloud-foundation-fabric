@@ -91,7 +91,7 @@ locals {
     },
     # scoped org policy admin grants for project factory
     # TODO: exclude security and networking
-    !var.fast_features.project_factory ? {} : {
+    !var.fast_features.project_factory || var.root_node != null ? {} : {
       sa_pf_dev_conditional_org_policy = {
         member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/orgpolicy.policyAdmin"

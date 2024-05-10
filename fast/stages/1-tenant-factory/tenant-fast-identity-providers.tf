@@ -17,7 +17,7 @@
 # tfdoc:file:description Per-tenant Workload Identity Federation providers.
 
 locals {
-  # flatten all tenant providers into a single list and derive key
+  # flatten tenant provider configurations into a single list and derive key
   _workload_identity_providers = flatten([
     for k, v in local.fast_tenants : [
       for pk, pv in v.fast_config.workload_identity_providers : merge(
@@ -37,7 +37,7 @@ locals {
     for k, v in local.fast_tenants : k => v.prefix
     if length(v.fast_config.workload_identity_providers) > 0
   }
-  # reconstitute all tenant providers as a map
+  # reconstitute all tenant provider configurations as a map
   workload_identity_providers = {
     for v in local._workload_identity_providers : v.key => v
   }

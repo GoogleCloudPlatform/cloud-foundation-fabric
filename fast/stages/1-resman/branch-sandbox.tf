@@ -34,16 +34,18 @@ locals {
   )
 }
 
-
 module "branch-sandbox-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.sandbox ? 1 : 0
   parent = local.root_node
   name   = "Sandbox"
   iam    = local._sandbox_folder_iam
-  org_policies = {
-    "sql.restrictPublicIp"       = { rules = [{ enforce = false }] }
-    "compute.vmExternalIpAccess" = { rules = [{ allow = { all = true } }] }
+  factories_config = {
+    org_policies = (
+      var.root_node != null || var.factories_config.org_policies == null
+      ? null
+      : "${var.factories_config.org_policies}/sandbox"
+    )
   }
   tag_bindings = {
     context = try(
