@@ -16,7 +16,7 @@
 
 output "folders" {
   description = "Folder ids."
-  value       = local.folders
+  value       = local.hierarchy
 }
 
 output "projects" {
