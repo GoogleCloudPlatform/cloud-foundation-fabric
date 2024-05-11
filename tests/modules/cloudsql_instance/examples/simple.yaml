@@ -54,10 +54,10 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: null
+    folder_id: '1122334455'
     labels: null
     name: test-db-prj
-    org_id: '1122334455'
+    org_id: null
     project_id: test-db-prj
     skip_delete: false
     timeouts: null
