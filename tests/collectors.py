@@ -92,7 +92,7 @@ class FabricTestItem(pytest.Item):
                              self.tf_var_files, self.extra_files)
     except AssertionError:
       def full_paths(x):
-        return [f'{self.parent.path.parent}/{x}' for x in x]
+        return [(self.parent.path.parent / x ) for x in x]
       print(f'Error in inventory file: {" ".join(full_paths(self.inventory))}')
       print(f'To regenerate inventory run: python tools/plan_summary.py {self.module} {" ".join(full_paths(self.tf_var_files))}')
       raise

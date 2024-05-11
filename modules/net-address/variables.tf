@@ -107,7 +107,6 @@ variable "psa_addresses" {
     prefix_length = number
     description   = optional(string, "Terraform managed.")
     name          = optional(string)
-
   }))
   default = {}
 }
@@ -115,16 +114,13 @@ variable "psa_addresses" {
 variable "psc_addresses" {
   description = "Map of internal addresses used for Private Service Connect."
   type = map(object({
-    address          = string
-    description      = optional(string, "Terraform managed.")
-    name             = optional(string)
-    network          = optional(string)
-    region           = optional(string) #
-    subnet_self_link = optional(string)
-    service_attachment = optional(object({
-      name                        = string # forwarding rule name
-      psc_service_attachment_link = string
-    }))
+    address            = string
+    description        = optional(string, "Terraform managed.")
+    name               = optional(string)
+    network            = optional(string)
+    region             = optional(string)
+    subnet_self_link   = optional(string)
+    service_attachment = optional(string)
   }))
   default = {}
   validation {

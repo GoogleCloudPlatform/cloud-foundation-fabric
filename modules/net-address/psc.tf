@@ -65,12 +65,12 @@ resource "google_compute_global_address" "psc" {
 
 resource "google_compute_global_forwarding_rule" "psc_consumer" {
   for_each              = { for name, psc in local.global_psc : name => psc if psc.service_attachment != null }
-  name                  = each.value.service_attachment.name
+  name                  = each.value.name
   project               = var.project_id
   subnetwork            = each.value.subnet_self_link
   ip_address            = google_compute_global_address.psc[each.key].self_link
   load_balancing_scheme = ""
-  target                = each.value.service_attachment.psc_service_attachment_link
+  target                = each.value.service_attachment
 }
 
 # regional PSC services
@@ -82,6 +82,7 @@ resource "google_compute_address" "psc" {
   address_type = "INTERNAL"
   description  = each.value.description
   network      = each.value.network
+  # purpose not applicable for regional address
   # purpose      = "PRIVATE_SERVICE_CONNECT"
   region     = each.value.region
   subnetwork = each.value.subnet_self_link
@@ -90,12 +91,12 @@ resource "google_compute_address" "psc" {
 
 resource "google_compute_forwarding_rule" "psc_consumer" {
   for_each              = { for name, psc in local.regional_psc : name => psc if psc.service_attachment != null }
-  name                  = each.value.service_attachment.name
+  name                  = each.value.name
   project               = var.project_id
   region                = each.value.region
   subnetwork            = each.value.subnet_self_link
   ip_address            = google_compute_address.psc[each.key].self_link
   load_balancing_scheme = ""
   recreate_closed_psc   = true
-  target                = each.value.service_attachment.psc_service_attachment_link
+  target                = each.value.service_attachment
 }

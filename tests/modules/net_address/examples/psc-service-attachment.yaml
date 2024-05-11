@@ -27,4 +27,3 @@ values:
     name: cloudsql-one
     project: project-id
     subnetwork: subnet_self_link
-    
