@@ -1,20 +1,8 @@
 # Tenant Factory
 
-This optional stage implements multitenancy for cases where a high degree of autonomy is needed for each tenant. Typical use cases are different legal entities in a larger group, or business units who own their cloud presence while still consuming shared resources like networking, and which are subject to some degree of central control.
+This optional stage implements multitenancy, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a degree of central control.
 
-Tenants can:
-
-- leverage their own billing account
-- leverage their own Cloud Identity / Workspace
-- have FAST compatibility so that they can deploy stages 1+ in their own context
-
-Our tenant design wraps each tenant's folder into an additional folder owned by the central cloud team, where organization policies and log sinks can be defined without the tenant being able to modify or remove them.
-
-Inside each tenant's folder, the FAST prerequisites needed for the tenant to independently run stages 1+ can be created. These are optional, so that they can be skipped when FAST compatibility is not needed.
-
-The following is a high level diagram of this stage design.
-
-![Stage diagram](diagram.png)
+Typical use cases include large organizations managing IT for separate semi-indipendent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
@@ -33,9 +21,39 @@ The following is a high level diagram of this stage design.
 
 ## Design overview and choices
 
-### FAST-compatible tenants
+Our tenant design creates two folders per tenant:
+
+- a higher level folder under central control, where services specific for the tenant but not controlled by them can be created (log sinks, shared networking connections)
+- a lower level folder which under almost complete control of the tenant, where their projects and services can be created
+
+Each tenant can optionally:
+
+- use a separate billing account
+- use a separate Cloud Identity / Workspace
+- be created with full FAST compatibility, so that they can independently deploy stages 1+ in their area
+
+This stage is configured as a factory and allows managing multiple tenants. From the point of view of FAST it acts as a bootstrap stage for each tenant configured in FAST compatible mode.
+
+The following is a high level diagram of this stage design.
+
+![Stage diagram](diagram.png)
 
 ### Autonomous tenants
+
+Where FAST compatibility is not needed this stage can be used to create very simple tenancy, configuring the minimum amount of resources to allow tenants to operate inside their area:
+
+- a centrally-managed folder with
+  - one log sink to export audit-related tenant events
+  - DRS organization policy configuration to optionally allow tenant-specific Cloud Identity
+- a minimal set of automation resources (service account, bucket) in the central IaC project
+- a tenant-managed folder with IAM roles assigned to the tenant administrators principal and the automation service account
+- an optional VPC SC policy scoped to the tenant folder and managed by the tenant
+
+This allows quick bootstrapping of a large number of tenants, which are either self-managed or where non-FAST blueprints are then applied to configure tenant-level services.
+
+This type of tenant can be "upgraded" at any time to FAST compatibility by simply extending its configuration.
+
+### FAST-compatible tenants
 
 ## How to run this stage
 
