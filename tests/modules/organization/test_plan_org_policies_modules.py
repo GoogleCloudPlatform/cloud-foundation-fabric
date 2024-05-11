@@ -37,8 +37,8 @@ def test_policy_implementation():
       '@@ -55,2 +55,2 @@\n',
       '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
       '-      parent = "projects/${local.project.project_id}"\n',
-      '+      name   = "${local.folder.name}/policies/${k}"\n',
-      '+      parent = local.folder.name\n',
+      '+      name   = "${local.folder_id}/policies/${k}"\n',
+      '+      parent = local.folder_id\n',
   ]
 
   diff2 = difflib.unified_diff(lines['folder'], lines['organization'], 'folder',
@@ -50,8 +50,8 @@ def test_policy_implementation():
       '-# tfdoc:file:description Folder-level organization policies.\n',
       '+# tfdoc:file:description Organization-level organization policies.\n',
       '@@ -55,2 +55,2 @@\n',
-      '-      name   = "${local.folder.name}/policies/${k}"\n',
-      '-      parent = local.folder.name\n',
+      '-      name   = "${local.folder_id}/policies/${k}"\n',
+      '-      parent = local.folder_id\n',
       '+      name   = "${var.organization_id}/policies/${k}"\n',
       '+      parent = var.organization_id\n',
       '@@ -113,0 +114,9 @@\n',

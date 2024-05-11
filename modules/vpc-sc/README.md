@@ -233,7 +233,7 @@ module "test" {
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
-        ingress_policies    = ["sa-tf-test"]
+        ingress_policies    = ["sa-tf-test-geo", "sa-tf-test"]
         vpc_accessible_services = {
           allowed_services   = ["storage.googleapis.com"]
           enable_restriction = true
@@ -242,7 +242,7 @@ module "test" {
     }
   }
 }
-# tftest modules=1 resources=3 files=a1,a2,e1,i1 inventory=factory.yaml
+# tftest modules=1 resources=3 files=a1,a2,e1,i1,i2 inventory=factory.yaml
 ```
 
 ```yaml
@@ -282,10 +282,27 @@ from:
     - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
 to:
   operations:
-    - service_name: "*"
+    - service_name: compute.googleapis.com
+      method_selectors:
+        - ProjectsService.Get
+        - RegionsService.Get
   resources:
     - "*"
 # tftest-file id=i1 path=data/ingress-policies/sa-tf-test.yaml
+```
+
+```yaml
+from:
+  access_levels:
+    - geo-it
+  identities:
+    - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - projects/1234567890
+# tftest-file id=i2 path=data/ingress-policies/sa-tf-test-geo.yaml
 ```
 
 ## Notes

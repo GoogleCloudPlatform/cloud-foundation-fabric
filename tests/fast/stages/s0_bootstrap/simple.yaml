@@ -16,9 +16,9 @@ values:
   module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
     condition: []
     members:
-    - group:gcp-network-admins@fast.example.com
     - group:gcp-security-admins@fast.example.com
     - group:gcp-support@example.com
+    - group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/cloudsupport.techSupportEditor
   module.organization.google_organization_iam_binding.authoritative["roles/logging.viewer"]:

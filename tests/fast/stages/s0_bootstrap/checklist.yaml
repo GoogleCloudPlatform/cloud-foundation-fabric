@@ -55,9 +55,9 @@ values:
   module.organization.google_organization_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
     members:
-    - group:gcp-network-admins@fast.example.com
     - group:gcp-organization-admins@fast.example.com
     - group:gcp-security-admins@fast.example.com
+    - group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/cloudasset.owner
   module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.admin"]:
@@ -70,8 +70,8 @@ values:
     condition: []
     members:
     - group:gcp-devops@fast.example.com
-    - group:gcp-network-admins@fast.example.com
     - group:gcp-security-admins@fast.example.com
+    - group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/cloudsupport.techSupportEditor
   module.organization.google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"]:
@@ -131,7 +131,7 @@ values:
     condition: []
     members:
     - group:gcp-devops@fast.example.com
-    - group:gcp-network-admins@fast.example.com
+    - group:gcp-vpc-network-admins@fast.example.com
     - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
@@ -240,19 +240,19 @@ values:
     member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/billing.viewer
-  ? module.organization.google_organization_iam_member.bindings["roles/compute.networkAdmin-group:gcp-network-admins@fast.example.com"]
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.networkAdmin-group:gcp-vpc-network-admins@fast.example.com"]
   : condition: []
-    member: group:gcp-network-admins@fast.example.com
+    member: group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.networkAdmin
-  ? module.organization.google_organization_iam_member.bindings["roles/compute.orgFirewallPolicyAdmin-group:gcp-network-admins@fast.example.com"]
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.orgFirewallPolicyAdmin-group:gcp-vpc-network-admins@fast.example.com"]
   : condition: []
-    member: group:gcp-network-admins@fast.example.com
+    member: group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.orgFirewallPolicyAdmin
-  ? module.organization.google_organization_iam_member.bindings["roles/compute.securityAdmin-group:gcp-network-admins@fast.example.com"]
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.securityAdmin-group:gcp-vpc-network-admins@fast.example.com"]
   : condition: []
-    member: group:gcp-network-admins@fast.example.com
+    member: group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.securityAdmin
   ? module.organization.google_organization_iam_member.bindings["roles/compute.viewer-group:gcp-security-admins@fast.example.com"]
@@ -260,9 +260,9 @@ values:
     member: group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.viewer
-  ? module.organization.google_organization_iam_member.bindings["roles/compute.xpnAdmin-group:gcp-network-admins@fast.example.com"]
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.xpnAdmin-group:gcp-vpc-network-admins@fast.example.com"]
   : condition: []
-    member: group:gcp-network-admins@fast.example.com
+    member: group:gcp-vpc-network-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.xpnAdmin
   ? module.organization.google_organization_iam_member.bindings["roles/container.viewer-group:gcp-security-admins@fast.example.com"]

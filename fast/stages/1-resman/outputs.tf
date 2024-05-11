@@ -419,7 +419,7 @@ output "dataplatform" {
 }
 
 output "gcve" {
-  # tfdoc:output:consumers 03-gke-multitenant
+  # tfdoc:output:consumers 03-gcve
   description = "Data for the GCVE stage."
   value = (
     var.fast_features.gcve

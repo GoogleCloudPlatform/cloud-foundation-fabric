@@ -19,7 +19,7 @@ folder_ids = {
   networking-prod = null
 }
 groups = {
-  gcp-network-admins = "gcp-network-admins"
+  gcp-network-admins = "gcp-vpc-network-admins"
 }
 service_accounts = {
   data-platform-dev    = "string"
