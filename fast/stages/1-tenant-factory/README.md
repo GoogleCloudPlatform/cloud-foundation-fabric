@@ -6,8 +6,8 @@ Typical use cases include large organizations managing IT for separate semi-indi
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [FAST-compatible tenants](#fast-compatible-tenants)
   - [Autonomous tenants](#autonomous-tenants)
+  - [FAST-compatible tenants](#fast-compatible-tenants)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
