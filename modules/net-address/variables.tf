@@ -114,13 +114,15 @@ variable "psa_addresses" {
 variable "psc_addresses" {
   description = "Map of internal addresses used for Private Service Connect."
   type = map(object({
-    address            = string
-    description        = optional(string, "Terraform managed.")
-    name               = optional(string)
-    network            = optional(string)
-    region             = optional(string)
-    subnet_self_link   = optional(string)
-    service_attachment = optional(string)
+    address          = string
+    description      = optional(string, "Terraform managed.")
+    name             = optional(string)
+    network          = optional(string)
+    region           = optional(string)
+    subnet_self_link = optional(string)
+    service_attachment = optional(object({ # so we can safely check if service_attachemnt != null in for_each
+      psc_service_attachment_link = string
+    }))
   }))
   default = {}
   validation {
