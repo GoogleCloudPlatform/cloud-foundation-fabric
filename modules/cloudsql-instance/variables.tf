@@ -228,7 +228,7 @@ variable "replicas" {
   description = "Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation."
   type = map(object({
     region              = string
-    encryption_key_name = string
+    encryption_key_name = optional(string)
   }))
   default = {}
 }

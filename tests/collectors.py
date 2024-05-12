@@ -87,8 +87,15 @@ class FabricTestItem(pytest.Item):
     self.extra_files = extra_files
 
   def runtest(self):
-    s = plan_validator(self.module, self.inventory, self.parent.path.parent,
-                       self.tf_var_files, self.extra_files)
+    try:
+      summary = plan_validator(self.module, self.inventory, self.parent.path.parent,
+                             self.tf_var_files, self.extra_files)
+    except AssertionError:
+      def full_paths(x):
+        return [(self.parent.path.parent / x ) for x in x]
+      print(f'Error in inventory file: {" ".join(full_paths(self.inventory))}')
+      print(f'To regenerate inventory run: python tools/plan_summary.py {self.module} {" ".join(full_paths(self.tf_var_files))}')
+      raise
 
   def reportinfo(self):
     return self.path, None, self.name
