@@ -26,15 +26,15 @@ Typical use cases include large organizations managing a single Cloud subscripti
 Our tenant design creates two folders per tenant:
 
 - a higher level folder under central control, where services specific for the tenant but not controlled by them can be created (log sinks, shared networking connections)
-- a lower level folder which under almost complete control of the tenant, where their projects and services can be created
+- a lower level folder under tenant control, where their projects and services can be created
 
 Each tenant can optionally:
 
 - use a separate billing account
 - use a separate Cloud Identity / Workspace
-- be created with full FAST compatibility, so that they can independently deploy stages 1+ in their area
+- be configured for full FAST compatibility, to allow independent deployment of a FAST Landing Zone in their environment
 
-This stage is configured as a factory and allows managing multiple tenants. When tenants are configured in FAST compatible mode, this stage acts as a bootstrap stage for the tenant.
+This stage is configured as a factory and allows managing multiple tenants together. When a tenant is configured in FAST compatible mode, this stage effectively acts as its bootstrap stage.
 
 The following is a high level diagram of this stage design.
 
@@ -42,42 +42,42 @@ The following is a high level diagram of this stage design.
 
 ### Regular tenants
 
-Where FAST compatibility is not needed this stage can be used to create very simple tenancy, configuring the minimum amount of resources to allow tenants to operate inside their area:
+Where FAST compatibility is not needed this stage creates minimal tenant environments, configuring the minimum amount of resources to allow them to operate independently:
 
 - a centrally-managed folder with
   - one log sink to export audit-related tenant events
-  - DRS organization policy configuration to optionally allow tenant-specific Cloud Identity
-- a minimal set of automation resources (service account, bucket) in the central IaC project
+  - DRS organization policy configuration to allow the tenants's own Cloud Identity in IAM policies (if one is used)
+- a minimal set of automation resources (service account, bucket) in the organization-level IaC project
 - a tenant-managed folder with IAM roles assigned to the tenant administrators principal and the automation service account
-- an optional VPC SC policy scoped to the tenant folder and managed by the tenant
+- an optional VPC-SC policy scoped to the tenant folder and managed by the tenant
 
-This allows quick bootstrapping of a large number of tenants, which are either self-managed or where non-FAST blueprints are then applied to configure tenant-level services.
+This allows quick bootstrapping of a large number of tenants which are either self-managed or which use customized IaC code.
 
-This type of tenant can be "upgraded" at any time to FAST compatibility by simply extending its configuration.
+Tenants of this type can be "upgraded" at any time to FAST compatibility by simply extending their configuration.
 
 ### FAST-compatible tenants
 
-Tenants can also be configured with (almost complete) FAST compatibility. This mode emulates the bootstrap stage, and then allows tenants to indipendently bring up a complete Landing Zone in their environment using FAST.
+Tenants can also be configured for FAST compatibility. This approach effectively emulates the org-level bootstrap stage, allowing tenants to indipendently bring up a complete Landing Zone in their environment using FAST.
 
-The only differences compared to organization-level FAST are:
+The main differences compared to organization-level FAST are:
 
-- no bootstrap service account is created for the tenant, as this stage is emulating bootstrap
-- tenant-defined log sinks can be configured in stage 1
-- secure tags are created in the tenant automation project
-- tenants cannot self-manage organization policies on their folder
+- no bootstrap service account is created for tenants, as this stage is their effective bootstrap
+- tenant-mamaged log sinks are configured in stage 1, cine their bootstrap stage (this one) is under central control
+- secure tags are created in the tenant automation project since tenants cannot operate at the organization level
+- tenants cannot self-manage organization policies on their folder (this might change in a future release)
 
-While this stage's approach to organization policies is to keep them under centralized management, it's still possible to allow tenants limited or full control over organization policies either
+While this stage's approach to organization policies is to keep them under centralized management, it's still possible to allow tenants limited or full control over organization policies by either
 
-- by assigning them permissions on secure tags used in policy conditions, or
-- by assignign them organization policy admin permissions on the organization, with a condition based on the secure tag value bound to their folder
+- assigning them permissions on secure tags used in policy conditions, or
+- assignign them organization policy admin permissions on the organization, with a condition based on the secure tag value bound to their folder
 
-Once a FAST-enabled tenant is created, the admin principal for the tenant has access to a dedicated resource management service account and set of input files (provider, tfvars) and can proceed to setup FAST using the regular stage 1.
+Once a FAST-enabled tenant is created, the admin principal for the tenant has access to a dedicated resource management service account and set of input files (provider, tfvars) and can then proceed to setup FAST using the regular stage 1.
 
 ## How to run this stage
 
 This stage uses a similar configuration to the [resource management](../1-resman/README.md) stage, with the only differences being the backend used, and the configuration of the specific variables that drive tenant creation.
 
-The only real prerequisite is having fully deployed the [bootstrap](../0-bootstrap) stage, but there's no need to run [resource management](../1-resman/) before creating tenants unless a top-level "Tenants" folder is wanted (and that can of course be created by hand if needed).
+The only real prerequisite is having fully deployed the [bootstrap](../0-bootstrap) stage, but there's no need to run [resource management](../1-resman/) before creating tenants unless a top-level "Tenants" folder is needed (and even that can be created by hand removing the dependency on stage 1).
 
 ### Provider and Terraform variables
 
@@ -114,16 +114,18 @@ The preconfigured provider file uses impersonation to run with this stage's auto
 Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
 
 - variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
-- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+- variables which refer to resources managed by previous stages, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and should be defined in a custom `1-tenant-factory.auto.tfvars` file
 
-The latter set is explained in the [Tenant configuration](#tenant-configuration) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
+The latter set is explained in the [Tenant configuration](#tenant-configuration) section below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
 
-Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
+Note that the `outputs_location` variable is disabled by default, if you want output files to be generated by this stage you need to explicitly set it in your `tfvars` file like this:
 
 ```tfvars
 outputs_location = "~/fast-config"
 ```
+
+For additional details on output files and how they are used, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables).
 
 ### Running the stage
 
@@ -139,18 +141,18 @@ terraform apply
 This stage has only three variables that can be customized:
 
 - `root_node` specifies the top-level folder under which all tenant folders are created; if it's not specified (the default) tenants are created directly under the organization
-- `tag_names.tenant` defines the name of the tag key used to hold one tag value per tenant, and defaults `tenant`
+- `tag_names.tenant` defines the name of the tag key used to hold one tag value per tenant, and defaults to `"tenant"`
 - `tenant_configs` is a map containing the configuration for each tenant, and is explained below
 
 ### Configurations for both simple and FAST tenants
 
 A small number of attributes can be configured for each tenant in `tenant_configs` regardless of its type (simple or FAST-enabled).
 
-The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names, so it should not exceed 3 characters unless a custom prefix is defined for the tenant.
+The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names. If the tenant plans on using FAST stages it should not exceed 3 characters, unless a custom prefix is also defined for the tenant.
 
-`admin_principal` is a IAM-format principal (e.g. `group:tenant-admins@example.org`) which is assigned administrative permissions on the tenant environment, and impersonation permissions on the automation service account.
+`admin_principal` is a IAM-format principal (e.g. `"group:tenant-admins@example.org"`) which is assigned administrative permissions on the tenant environment, and impersonation permissions on the automation service account.
 
-`descriptive_name` is the name used for the tenant folder, and some resource descriptions.
+`descriptive_name` is the name used for the tenant folder, and in some resource descriptions.
 
 `billing_account` is optional and defaults to the organization billing account if not specified. If a custom billing account is used by the tenant, set its id in `billing_account.id`. When a custom billing account is used, this stage can optionally manage billing account permissions for tenant principals and service accounts by setting `billing_account.no_iam` to `false`. By default IAM is not managed for external billing accounts.
 
@@ -186,11 +188,11 @@ tenant_configs = {
 }
 ```
 
-### Configurations FAST tenants
+### Configurations for FAST tenants
 
 FAST compatibility is enabled for a tenant by defining the `fast_config` attribute in their configuration, in addition to the attributes outlined above.
 
-The `fast_config` attributes control the FAST bootstrap emulation for the tenants, and behave in a similar way to the corresponding variables that control the [bootstrap stage](../0-bootstrap/README.md#variables). They are all optional, and their behaviour is explained in the bootstrap stage documentation.
+The `fast_config` attributes control the FAST bootstrap emulation for a tenant, and behave in a similar way to the corresponding variables that control the [bootstrap stage](../0-bootstrap/README.md#variables). They are all optional, and their behaviour is explained in the bootstrap stage documentation.
 
 This is an example of two FAST-enabled tenants:
 
