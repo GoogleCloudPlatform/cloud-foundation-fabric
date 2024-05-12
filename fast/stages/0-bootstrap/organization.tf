@@ -138,8 +138,14 @@ module "organization" {
   organization_id = module.organization-logging.id
   # human (groups) IAM bindings
   iam_by_principals = {
-    for k, v in local.iam_principals :
-    k => distinct(concat(v, lookup(var.iam_by_principals, k, [])))
+    for key in distinct(concat(
+      keys(local.iam_principals),
+      keys(var.iam_by_principals),
+    )) :
+    key => distinct(concat(
+      lookup(local.iam_principals, key, []),
+      lookup(var.iam_by_principals, key, []),
+    ))
   }
   # machine (service accounts) IAM bindings
   iam = merge(

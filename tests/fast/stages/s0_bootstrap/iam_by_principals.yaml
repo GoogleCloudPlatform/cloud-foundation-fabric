@@ -1,4 +1,3 @@
-# skip boilerplate check
 # Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/0-bootstrap
-
-tests:
-  checklist:
-    extra_files:
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-data.json
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-org-iam.json
-  simple:
-    inventory:
-      - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
-  
-  iam_by_principals:
+values:
+  module.organization.google_organization_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - domain:fast.example.com
+    - user:other@fast.example.com
+    org_id: '123456789012'
+    role: roles/browser
