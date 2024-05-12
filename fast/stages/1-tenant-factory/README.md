@@ -15,7 +15,7 @@ Typical use cases include large organizations managing a single Cloud subscripti
   - [Running the stage](#running-the-stage)
 - [Tenant configuration](#tenant-configuration)
   - [Configurations for both simple and FAST tenants](#configurations-for-both-simple-and-fast-tenants)
-  - [Configurations FAST tenants](#configurations-fast-tenants)
+  - [Configurations for FAST tenants](#configurations-for-fast-tenants)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
