@@ -1,8 +1,8 @@
 # Tenant Factory
 
-This optional stage implements multitenancy, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a degree of central control.
+This optional stage implements multitenancy, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a measure of central control.
 
-Typical use cases include large organizations managing IT for separate semi-indipendent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
+Typical use cases include large organizations managing a single Cloud subscription for multiple semi-indipendent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
