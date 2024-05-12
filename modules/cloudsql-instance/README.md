@@ -45,7 +45,8 @@ module "vpc" {
   name       = "my-network"
   # need only one - psa_config or subnets_psc
   psa_configs = [{
-    ranges = { cloud-sql = "10.60.0.0/16" }
+    ranges          = { cloud-sql = "10.60.0.0/16" }
+    deletion_policy = "ABANDON"
   }]
   subnets_psc = [
     {
