@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,27 +15,24 @@
 values:
   module.db.google_sql_database_instance.primary:
     database_version: POSTGRES_13
-    name: db
+    deletion_protection: false
+    name: myprefix-db
     project: project-id
     region: europe-west8
     settings:
     - activation_policy: ALWAYS
-      availability_type: ZONAL
+      availability_type: REGIONAL
       deletion_protection_enabled: false
-      disk_autoresize: true
-      disk_type: PD_SSD
-      insights_config:
-      - query_insights_enabled: true
-        query_plans_per_minute: 5
-        query_string_length: 2048
-        record_application_tags: false
-        record_client_address: false
       ip_configuration:
-      - allocated_ip_range: null
-        authorized_networks: []
-        ipv4_enabled: false
-        private_network: projects/xxx/global/networks/aaa
+      - ipv4_enabled: false
+        private_network: null
+        psc_config:
+        - allowed_consumer_projects:
+          - project-id
+          psc_enabled: true
       tier: db-g1-small
 
 counts:
   google_sql_database_instance: 1
+  modules: 1
+  resources: 1
