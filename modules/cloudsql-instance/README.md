@@ -12,6 +12,7 @@ Note that this module assumes that some options are the same for both the primar
   - [Cross-regional read replica](#cross-regional-read-replica)
   - [Custom flags, databases and users](#custom-flags-databases-and-users)
   - [CMEK encryption](#cmek-encryption)
+  - [Instance with PSC enabled](#instance-with-psc-enabled)
   - [Enable public IP](#enable-public-ip)
   - [Query Insights](#query-insights)
   - [Maintenance Config](#maintenance-config)
@@ -173,6 +174,30 @@ module "db" {
 }
 
 # tftest modules=1 resources=2 fixtures=fixtures/cloudsql-kms-iam-grant.tf e2e
+```
+
+### Instance with PSC enabled
+
+```hcl
+module "db" {
+  source     = "./fabric/modules/cloudsql-instance"
+  project_id = var.project_id
+  network_config = {
+    connectivity = {
+      psc_allowed_consumer_projects = [var.project_id]
+    }
+  }
+  prefix            = "myprefix"
+  name              = "db"
+  region            = var.region
+  availability_type = "REGIONAL"
+  database_version  = "POSTGRES_13"
+  tier              = "db-g1-small"
+
+  gcp_deletion_protection       = false
+  terraform_deletion_protection = false
+}
+# tftest modules=1 resources=1 inventory=psc.yaml e2e
 ```
 
 ### Enable public IP
