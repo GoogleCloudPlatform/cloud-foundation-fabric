@@ -18,17 +18,28 @@
 
 locals {
   # reassemble logical bindings into the formats expected by the module
-  _iam_bindings = merge(
-    local.iam_domain_bindings,
-    local.iam_sa_bindings,
-    local.iam_user_bootstrap_bindings,
-    {
-      for k, v in local.iam_principal_bindings : k => {
-        authoritative = []
-        additive      = v.additive
-      }
+  _iam_bindings = {
+    for key in toset(concat(
+      keys(local.iam_domain_bindings),
+      keys(local.iam_sa_bindings),
+      keys(local.iam_user_bootstrap_bindings),
+      keys(local.iam_principal_bindings),
+    )) :
+    key => {
+      authoritative = toset(concat(
+        try(local.iam_domain_bindings[key].authoritative, []),
+        try(local.iam_sa_bindings[key].authoritative, []),
+        try(local.iam_user_bootstrap_bindings[key].authoritative, []),
+        # try(local.iam_principal_bindings[key].authoritative, []),
+      ))
+      additive = toset(concat(
+        try(local.iam_domain_bindings[key].additive, []),
+        try(local.iam_sa_bindings[key].additive, []),
+        try(local.iam_user_bootstrap_bindings[key].additive, []),
+        try(local.iam_principal_bindings[key].additive, []),
+      ))
     }
-  )
+  }
   _iam_bindings_auth = flatten([
     for member, data in local._iam_bindings : [
       for role in data.authoritative : {
