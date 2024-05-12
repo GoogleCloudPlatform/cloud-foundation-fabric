@@ -16,10 +16,10 @@ values:
   module.db.google_sql_database_instance.primary:
     clone: []
     database_version: POSTGRES_13
-    deletion_protection: true
+    deletion_protection: false
     name: db
-    project: my-db-project
-    region: europe-west1
+    project: test-db-prj
+    region: europe-west8
     restore_backup_context: []
     root_password: null
     settings:
@@ -30,7 +30,7 @@ values:
       collation: null
       data_cache_config: []
       database_flags: []
-      deletion_protection_enabled: true
+      deletion_protection_enabled: false
       deny_maintenance_period: []
       disk_autoresize: true
       disk_autoresize_limit: 0
@@ -54,25 +54,25 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: null
+    folder_id: '1122334455'
     labels: null
-    name: my-db-project
-    org_id: '1122334455'
-    project_id: my-db-project
+    name: test-db-prj
+    org_id: null
+    project_id: test-db-prj
     skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.servicenetworking[0]:
     condition: []
-    project: my-db-project
+    project: test-db-prj
     role: roles/servicenetworking.serviceAgent
   module.project.google_project_service.project_services["servicenetworking.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: my-db-project
+    project: test-db-prj
     service: servicenetworking.googleapis.com
     timeouts: null
   module.project.google_project_service_identity.servicenetworking[0]:
-    project: my-db-project
+    project: test-db-prj
     service: servicenetworking.googleapis.com
     timeouts: null
   module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-cloud-sql"]:
@@ -82,7 +82,7 @@ values:
     ip_version: null
     name: servicenetworking-googleapis-com-cloud-sql
     prefix_length: 16
-    project: my-db-project
+    project: test-db-prj
     purpose: VPC_PEERING
     timeouts: null
   module.vpc.google_compute_network.network[0]:
@@ -92,14 +92,14 @@ values:
     enable_ula_internal_ipv6: null
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: my-db-project
+    project: test-db-prj
     routing_mode: GLOBAL
     timeouts: null
   module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
     export_custom_routes: false
     import_custom_routes: false
     network: my-network
-    project: my-db-project
+    project: test-db-prj
     timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
@@ -111,7 +111,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-db-project
+    project: test-db-prj
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
@@ -124,11 +124,11 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-db-project
+    project: test-db-prj
     tags: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
-    deletion_policy: null
+    deletion_policy: ABANDON
     reserved_peering_ranges:
     - servicenetworking-googleapis-com-cloud-sql
     service: servicenetworking.googleapis.com
@@ -141,11 +141,11 @@ counts:
   google_compute_route: 2
   google_project: 1
   google_project_iam_member: 1
-  google_project_service: 1
-  google_project_service_identity: 1
+  google_project_service: 2
+  google_project_service_identity: 2
   google_service_networking_connection: 1
   google_sql_database_instance: 1
   modules: 3
-  resources: 11
+  resources: 14
 
 outputs: {}

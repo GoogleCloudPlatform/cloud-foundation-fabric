@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,26 +13,17 @@
 # limitations under the License.
 
 values:
-  module.db.google_sql_database_instance.primary:
-    clone: []
-    database_version: POSTGRES_13
-    name: myprefix-db
+  module.addresses.google_compute_forwarding_rule.psc_consumer["cloudsql-one"]:
+    load_balancing_scheme: ''
+    name: cloudsql-one
     project: project-id
+    recreate_closed_psc: true
     region: europe-west8
-  module.db.google_sql_database_instance.replicas["replica1"]:
-    clone: []
-    database_version: POSTGRES_13
-    master_instance_name: myprefix-db
-    name: myprefix-replica1
+    subnetwork: subnet_self_link
+  module.addresses.google_compute_address.psc["cloudsql-one"]:
+    address: 10.0.16.32
+    address_type: INTERNAL
+    description: Terraform managed.
+    name: cloudsql-one
     project: project-id
-    region: europe-west3
-  module.db.google_sql_database_instance.replicas["replica2"]:
-    clone: []
-    database_version: POSTGRES_13
-    master_instance_name: myprefix-db
-    name: myprefix-replica2
-    project: project-id
-    region: us-central1
-
-counts:
-  google_sql_database_instance: 3
+    subnetwork: subnet_self_link

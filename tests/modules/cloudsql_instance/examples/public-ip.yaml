@@ -17,30 +17,11 @@ values:
     database_version: MYSQL_8_0
     name: db
     project: project-id
-    region: europe-west1
+    region: europe-west8
     settings:
     - activation_policy: ALWAYS
       availability_type: ZONAL
-      deletion_protection_enabled: true
-      disk_autoresize: true
-      disk_type: PD_SSD
-      insights_config: []
-      ip_configuration:
-      - allocated_ip_range: null
-        authorized_networks: []
-        ipv4_enabled: true
-        private_network: projects/xxx/global/networks/aaa
-      tier: db-g1-small
-  module.db.google_sql_database_instance.replicas["replica1"]:
-    database_version: MYSQL_8_0
-    master_instance_name: db
-    name: replica1
-    project: project-id
-    region: europe-west3
-    settings:
-    - activation_policy: ALWAYS
-      availability_type: ZONAL
-      deletion_protection_enabled: true
+      deletion_protection_enabled: false
       disk_autoresize: true
       disk_type: PD_SSD
       insights_config: []
@@ -52,4 +33,4 @@ values:
       tier: db-g1-small
 
 counts:
-  google_sql_database_instance: 2
+  google_sql_database_instance: 1
