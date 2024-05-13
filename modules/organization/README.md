@@ -533,6 +533,7 @@ module "org" {
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
+| [variables-logging.tf](./variables-logging.tf) | None |  |
 | [variables-tags.tf](./variables-tags.tf) | None |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
@@ -541,7 +542,7 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L155) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L92) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables.tf#L24) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [factories_config](variables.tf#L31) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  custom_roles                  &#61; optional&#40;string&#41;&#10;  org_policies                  &#61; optional&#40;string&#41;&#10;  org_policy_custom_constraints &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
