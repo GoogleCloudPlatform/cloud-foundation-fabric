@@ -16,7 +16,7 @@ The GCS object used for deployment uses a hash of the bundle zip contents in its
   - [Private Cloud Build Pool](#private-cloud-build-pool)
   - [Multiple Cloud Functions within project](#multiple-cloud-functions-within-project)
   - [Mounting secrets from Secret Manager](#mounting-secrets-from-secret-manager)
-  - [Using CMEK to encrypt function resources.](#using-cmek-to-encrypt-function-resources)
+  - [Using CMEK to encrypt function resources](#using-cmek-to-encrypt-function-resources)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -260,7 +260,7 @@ module "cf-http" {
 # tftest modules=1 resources=2  inventory=secrets.yaml
 ```
 
-### Using CMEK to encrypt function resources.
+### Using CMEK to encrypt function resources
 This encrypt bucket _gcf-sources-*_ with the provided kms key. The repository has to be encrypted with the same kms key.
 
 ```hcl
@@ -300,7 +300,7 @@ module "cf-http" {
 | [https_security_level](variables.tf#L85) | The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L91) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_settings](variables.tf#L97) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
-| [kms_key](variables.tf#L103) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. It must match the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}. If specified, you must also provide an artifact registry repository using the docker_repository field that was created with the same KMS crypto key | <code>string</code> |  | <code>null</code> |
+| [kms_key](variables.tf#L103) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. It must match the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}. If specified, you must also provide an artifact registry repository using the docker_repository field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L109) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L120) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [repository_settings](variables.tf#L140) | Docker Registry to use for storing the function's Docker images and specific repository. If kms_key is provided, the repository must be have already been encrypted with the key. | <code title="object&#40;&#123;&#10;  registry   &#61; optional&#40;string&#41;&#10;  repository &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  registry &#61; &#34;ARTIFACT_REGISTRY&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
