@@ -39,11 +39,12 @@ locals {
   _tag_values = flatten([
     for k, v in local.tags : [
       for vk, vv in v.values : {
-        description  = vv.description,
-        key          = "${k}/${vk}"
-        iam_bindings = keys(vv.iam_bindings)
-        id           = try(vv.id, null)
-        name         = vk
+        description           = vv.description,
+        key                   = "${k}/${vk}"
+        iam_bindings          = keys(vv.iam_bindings)
+        iam_bindings_additive = keys(vv.iam_bindings_additive)
+        id                    = try(vv.id, null)
+        name                  = vk
         # we only store keys here so we don't risk injecting dynamic values
         roles       = keys(vv.iam)
         tag         = k
@@ -64,12 +65,33 @@ locals {
       }
     }
   ]...)
+  tag_iam_bindings_additive = merge([
+    for k, v in local.tags : {
+      for bk in keys(v.iam_bindings_additive) : "${k}:${bk}" => {
+        binding = bk
+        tag     = k
+        tag_id  = v.id
+      }
+    }
+  ]...)
   tag_value_iam = {
     for v in local._tag_value_iam : "${v.key}:${v.role}" => v
   }
   tag_value_iam_bindings = merge([
     for k, v in local.tag_values : {
       for bk in v.iam_bindings : "${k}:${bk}" => {
+        binding = bk
+        id      = v.id
+        key     = k
+        name    = v.name
+        tag     = v.tag
+        tag_id  = v.id
+      }
+    }
+  ]...)
+  tag_value_iam_bindings_additive = merge([
+    for k, v in local.tag_values : {
+      for bk in v.iam_bindings_additive : "${k}:${bk}" => {
         binding = bk
         id      = v.id
         key     = k
@@ -131,6 +153,17 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
   )
 }
 
+resource "google_tags_tag_key_iam_member" "bindings" {
+  for_each = local.tag_iam_bindings_additive
+  tag_key = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
+  role   = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
+  member = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member
+}
+
 # values
 
 resource "google_tags_tag_value" "default" {
@@ -170,6 +203,21 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
   )
   members = (
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].members
+  )
+}
+
+resource "google_tags_tag_value_iam_member" "bindings" {
+  for_each = local.tag_value_iam_bindings_additive
+  tag_value = (
+    each.value.id == null
+    ? google_tags_tag_value.default[each.value.key].id
+    : each.value.id
+  )
+  role = (
+    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].role
+  )
+  member = (
+    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member
   )
 }
 
