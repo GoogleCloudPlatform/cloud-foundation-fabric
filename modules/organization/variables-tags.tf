@@ -54,11 +54,47 @@ variable "tags" {
   type = map(object({
     description = optional(string, "Managed by the Terraform organization module.")
     iam         = optional(map(list(string)), {})
-    id          = optional(string)
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    id = optional(string)
     values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
       iam         = optional(map(list(string)), {})
-      id          = optional(string)
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      id = optional(string)
     })), {})
   }))
   nullable = false
