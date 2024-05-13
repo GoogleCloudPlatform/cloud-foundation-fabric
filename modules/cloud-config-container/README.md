@@ -11,6 +11,7 @@ These modules are designed for several use cases:
 
 ## Available modules
 
+- [Bindplane](./bindplane)
 - [CoreDNS](./coredns)
 - [MySQL](./mysql)
 - [Nginx](./nginx)
