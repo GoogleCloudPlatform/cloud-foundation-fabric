@@ -87,7 +87,6 @@ variable "keys" {
       algorithm        = string
       protection_level = optional(string, "SOFTWARE")
     }))
-
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
