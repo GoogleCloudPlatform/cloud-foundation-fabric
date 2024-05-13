@@ -213,6 +213,7 @@ variable "service_accounts" {
 }
 
 variable "spoke_configs" {
+  description = "Spoke connectivity configurations."
   type = object({
     peering_configs = optional(object({
       dev = optional(object({

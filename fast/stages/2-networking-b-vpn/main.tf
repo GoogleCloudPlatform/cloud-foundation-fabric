@@ -17,7 +17,6 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  # combine all regions from variables and subnets
   custom_roles = coalesce(var.custom_roles, {})
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
@@ -32,6 +31,7 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]
+  # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
     values(module.dev-spoke-vpc.subnet_regions),
