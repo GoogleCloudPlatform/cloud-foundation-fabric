@@ -16,6 +16,7 @@ The GCS object used for deployment uses a hash of the bundle zip contents in its
   - [Private Cloud Build Pool](#private-cloud-build-pool)
   - [Multiple Cloud Functions within project](#multiple-cloud-functions-within-project)
   - [Mounting secrets from Secret Manager](#mounting-secrets-from-secret-manager)
+  - [Using CMEK to encrypt function resources.](#using-cmek-to-encrypt-function-resources)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -258,6 +259,28 @@ module "cf-http" {
 }
 # tftest modules=1 resources=2  inventory=secrets.yaml
 ```
+
+### Using CMEK to encrypt function resources.
+This encrypt bucket _gcf-sources-*_ with provided kms key. The repository has to be encrypted with the same kms key.
+
+```hcl
+module "cf-http" {
+  source      = "./fabric/modules/cloud-function-v1"
+  project_id  = "my-project"
+  region      = "europe-west1"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir  = "fabric/assets"
+    output_path = "bundle.zip"
+  }
+  kms_key = "projects/my-project/locations/europe-west1/keyRings/mykeyring/cryptoKeys/mykey"
+  repository_settings = {
+    repository = "projects/my-project/locations/europe-west1/repositories/myrepo"
+  }
+}
+# tftest modules=1 resources=2
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -265,9 +288,9 @@ module "cf-http" {
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L26) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
 | [bundle_config](variables.tf#L44) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L109) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L124) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L129) | Region used for all resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L115) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L130) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L135) | Region used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location                  &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_environment_variables](variables.tf#L32) | A set of key/value environment variable pairs available during build time. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [build_worker_pool](variables.tf#L38) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format. | <code>string</code> |  | <code>null</code> |
@@ -277,14 +300,16 @@ module "cf-http" {
 | [https_security_level](variables.tf#L85) | The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L91) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_settings](variables.tf#L97) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L103) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L114) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L134) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_account](variables.tf#L146) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L152) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L158) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L168) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L178) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [kms_key](variables.tf#L103) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. It must match the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}. If specified, you must also provide an artifact registry repository using the docker_repository field that was created with the same KMS crypto key | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L109) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L120) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [repository_settings](variables.tf#L140) | Docker Registry to use for storing the function's Docker images and specific repository. If kms_key is provided, the repository must be have already been encrypted with the key. | <code title="object&#40;&#123;&#10;  registry   &#61; optional&#40;string&#41;&#10;  repository &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  registry &#61; &#34;ARTIFACT_REGISTRY&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [secrets](variables.tf#L151) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account](variables.tf#L163) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L169) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [trigger_config](variables.tf#L175) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L185) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L195) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
