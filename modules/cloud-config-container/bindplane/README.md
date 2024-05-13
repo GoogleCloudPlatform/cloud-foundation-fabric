@@ -69,7 +69,7 @@ module "vm-nginx-tls" {
   }
   tags = ["http-server", "ssh"]
 }
-# tftest modules=2 resources=1
+# tftest modules=2 resources=2
 ```
 
 <!-- BEGIN TFDOC -->
