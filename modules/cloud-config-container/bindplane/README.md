@@ -43,7 +43,7 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-nginx" {
-  source = "./fabric/modules/cloud-config-container/bindplane"
+  source   = "./fabric/modules/cloud-config-container/bindplane"
   password = "secret"
 }
 
