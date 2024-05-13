@@ -35,6 +35,13 @@ locals {
   }
 }
 
+resource "google_logging_folder_settings" "default" {
+  count                = var.logging_settings != null ? 1 : 0
+  folder               = local.folder_id
+  disable_default_sink = var.logging_settings.disable_default_sink
+  storage_location     = var.logging_settings.storage_location
+}
+
 resource "google_folder_iam_audit_config" "default" {
   for_each = var.logging_data_access
   folder   = local.folder_id
