@@ -261,7 +261,7 @@ module "cf-http" {
 ```
 
 ### Using CMEK to encrypt function resources.
-This encrypt bucket _gcf-sources-*_ with provided kms key. The repository has to be encrypted with the same kms key.
+This encrypt bucket _gcf-sources-*_ with the provided kms key. The repository has to be encrypted with the same kms key.
 
 ```hcl
 module "cf-http" {
