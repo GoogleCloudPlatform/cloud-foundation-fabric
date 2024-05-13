@@ -87,6 +87,17 @@ locals {
         try(v.services, null),
         var.data_defaults.services
       )
+      shared_vpc_host_config = (
+        try(v.shared_vpc_host_config, null) != null
+        ? merge(
+          {
+            enabled          = false
+            service_projects = []
+          },
+          v.shared_vpc_host_config
+        )
+        : var.data_defaults.shared_vpc_host_config
+      )
       shared_vpc_service_config = (
         try(v.shared_vpc_service_config, null) != null
         ? merge(

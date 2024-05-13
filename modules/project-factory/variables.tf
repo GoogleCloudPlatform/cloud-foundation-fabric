@@ -25,6 +25,10 @@ variable "data_defaults" {
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
+    shared_vpc_host_config = optional(object({
+      enabled          = optional(bool, false)
+      service_projects = optional(list(string), [])
+    }), { enabled = false })
     shared_vpc_service_config = optional(object({
       host_project                = string
       network_users               = optional(list(string), [])
