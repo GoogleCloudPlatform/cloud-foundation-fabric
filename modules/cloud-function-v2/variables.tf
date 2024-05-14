@@ -95,7 +95,7 @@ variable "ingress_settings" {
 }
 
 variable "kms_key" {
-  description = "Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. It must match the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key."
+  description = "Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key."
   type        = string
   default     = null
 }
