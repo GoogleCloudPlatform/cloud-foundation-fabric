@@ -40,17 +40,25 @@ locals {
     : {
       audit-logs = {
         filter = <<-FILTER
-        log_id("cloudaudit.googleapis.com/activity") OR
-        log_id("cloudaudit.googleapis.com/system_event") OR
-        log_id("cloudaudit.googleapis.com/policy") OR
-        log_id("cloudaudit.googleapis.com/access_transparency")
-      FILTER
+          log_id("cloudaudit.googleapis.com/activity") OR
+          log_id("cloudaudit.googleapis.com/system_event") OR
+          log_id("cloudaudit.googleapis.com/policy") OR
+          log_id("cloudaudit.googleapis.com/access_transparency")
+        FILTER
+        type   = "logging"
+      }
+      iam = {
+        filter = <<-FILTER
+          protoPayload.serviceName="iamcredentials.googleapis.com" OR
+          protoPayload.serviceName="iam.googleapis.com" OR
+          protoPayload.serviceName="sts.googleapis.com"
+        FILTER
         type   = "logging"
       }
       vpc-sc = {
         filter = <<-FILTER
-        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
-      FILTER
+          protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+        FILTER
         type   = "logging"
       }
     }
