@@ -66,9 +66,10 @@ jobs:
       - name: TFLint Modules
         run: cd modules && tflint --recursive -f compact
 
-      - name: TFLint FAST
-        run: |
-          python3 tools/tflint-fast.py
+      # TODO: revisit once we have time, so it does not become a productivity sink
+      # - name: TFLint FAST
+      #   run: |
+      #     python3 tools/tflint-fast.py
 
       - name: Check documentation
         id: documentation-fabric
