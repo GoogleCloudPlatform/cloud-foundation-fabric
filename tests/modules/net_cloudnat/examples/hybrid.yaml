@@ -26,8 +26,8 @@ values:
     enable_endpoint_independent_mapping: false
     icmp_idle_timeout_sec: 30
     log_config:
-    - enable: false
-      filter: ALL
+      - enable: false
+        filter: ALL
     max_ports_per_vm: null
     name: vpc1-nat
     nat_ip_allocate_option: null
@@ -36,18 +36,18 @@ values:
     region: europe-west8
     router: vpc1-nat-nat
     rules:
-    - action:
-      - source_nat_active_ips: []
-        source_nat_drain_ips: []
-        source_nat_drain_ranges: []
-      description: private nat
-      match: nexthop.is_hybrid
-      rule_number: 0
+      - action:
+          - source_nat_active_ips: []
+            source_nat_drain_ips: []
+            source_nat_drain_ranges: []
+        description: private nat
+        match: nexthop.is_hybrid
+        rule_number: 0
     source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
     subnetwork:
-    - secondary_ip_range_names: []
-      source_ip_ranges_to_nat:
-      - ALL_IP_RANGES
+      - secondary_ip_range_names: []
+        source_ip_ranges_to_nat:
+          - ALL_IP_RANGES
     tcp_established_idle_timeout_sec: 1200
     tcp_time_wait_timeout_sec: 120
     tcp_transitory_idle_timeout_sec: 30
@@ -84,7 +84,6 @@ values:
     project: project-id
     region: europe-west8
     role: null
-    secondary_ip_range: []
 
 counts:
   google_compute_network: 1
