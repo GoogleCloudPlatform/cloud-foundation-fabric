@@ -304,7 +304,7 @@ module "vpc" {
     {
       ranges           = { netapp = "10.0.2.0/24" }
       service_producer = "netapp.servicenetworking.goog"
-      deletion_policy = "ABANDON"
+      deletion_policy  = "ABANDON"
     }
   ]
 }
