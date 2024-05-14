@@ -1,4 +1,4 @@
-# Internal Application Load Balancer Module
+# Cross-region Internal Application Load Balancer Module
 
 This module allows managing Cross-regional Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
