@@ -67,8 +67,10 @@ jobs:
         run: cd modules && tflint --recursive -f compact
 
       - name: TFLint FAST
+        id: tflint-fast
+        continue-on-error: true
         run: |
-          python3 tools/tflint-fast.py
+            python3 tools/tflint-fast.py
 
       - name: Check documentation
         id: documentation-fabric
@@ -103,3 +105,21 @@ jobs:
           OUTPUT=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;)
           echo "${OUTPUT}"
           [[ -z "${OUTPUT}" ]]
+
+      - name: Post lint errors
+        id: post-lint
+        if: steps.tflint-fast.outcome != 'success'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `### TFlint FAST warnings
+
+            \`$${{steps.tflint-fast.outputs.stdout}}\`
+            \`$${{steps.tflint-fast.outputs.stderr}}\`
+            `;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
