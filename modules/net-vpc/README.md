@@ -299,10 +299,12 @@ module "vpc" {
     {
       ranges = { myrange = "10.0.1.0/24" }
       # service_producer = "servicenetworking.googleapis.com" # default value
+      deletion_policy = "ABANDON"
     },
     {
       ranges           = { netapp = "10.0.2.0/24" }
       service_producer = "netapp.servicenetworking.goog"
+      deletion_policy = "ABANDON"
     }
   ]
 }
