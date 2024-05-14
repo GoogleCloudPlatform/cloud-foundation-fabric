@@ -50,13 +50,9 @@ locals {
 }
 
 module "vpc-sc-discovery" {
-  source = "../../../modules/projects-data-source"
-  count  = var.vpc_sc.resource_discovery.enabled == true ? 1 : 0
-  parent = (
-    var.root_node == null
-    ? "organizations/${var.organization.id}"
-    : var.root_node
-  )
+  source           = "../../../modules/projects-data-source"
+  count            = var.vpc_sc.resource_discovery.enabled == true ? 1 : 0
+  parent           = coalesce(var.root_node, "organizations/${var.organization.id}")
   ignore_folders   = var.vpc_sc.resource_discovery.ignore_folders
   ignore_projects  = var.vpc_sc.resource_discovery.ignore_projects
   include_projects = var.vpc_sc.resource_discovery.include_projects

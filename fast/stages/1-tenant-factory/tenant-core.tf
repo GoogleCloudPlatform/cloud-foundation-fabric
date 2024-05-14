@@ -17,11 +17,7 @@
 # tfdoc:file:description Per-tenant centrally managed resources.
 
 locals {
-  root_node = (
-    var.root_node == null
-    ? "organizations/${var.organization.id}"
-    : var.root_node
-  )
+  root_node = coalesce(var.root_node, "organizations/${var.organization.id}")
 }
 
 module "tenant-core-logbucket" {

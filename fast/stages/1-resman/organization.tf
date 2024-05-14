@@ -36,11 +36,6 @@ locals {
   }
 }
 
-moved {
-  from = module.organization
-  to   = module.organization.0
-}
-
 module "organization" {
   source          = "../../../modules/organization"
   count           = var.root_node == null ? 1 : 0

@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Per-tenant VPC-SC resources.
 
-moved {
-  from = module.test
-  to   = module.tenant-vpcsc-policy
-}
-
 module "tenant-vpcsc-policy" {
   source = "../../../modules/vpc-sc"
   for_each = {
