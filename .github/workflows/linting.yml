@@ -69,7 +69,7 @@ jobs:
       - name: TFLint FAST
         continue-on-error: true
         run: |
-          python3 tools/tflint-fast.py
+          python3 tools/tflint-fast.py | tee -a "${GITHUB_SUMMARY}"
 
       - name: Check documentation
         id: documentation-fabric

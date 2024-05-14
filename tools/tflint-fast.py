@@ -34,6 +34,8 @@ def main(junit):
       tftest = yaml.safe_load(f)
     module_path = Path(tftest['module'])
     var_path = (Path(tftest_path).parent / 'simple.tfvars')
+
+    print(f'## {Path(tftest_path).relative_to(BASEDIR)}')
     if var_path.exists():
       args = ['tflint']
       if junit:
