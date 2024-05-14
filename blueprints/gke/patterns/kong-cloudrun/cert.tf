@@ -1,6 +1,6 @@
 resource "google_privateca_ca_pool" "default" {
   project  = var.project_id
-  name     = "Acme-CA-pool"
+  name     = "Acme-ca-pool"
   location = var.region
   tier     = "ENTERPRISE"
   /* publishing_options {
@@ -11,7 +11,7 @@ resource "google_privateca_ca_pool" "default" {
 
 resource "google_privateca_certificate_authority" "default" {
   project  = var.project_id
-  certificate_authority_id = "Acme-CA"
+  certificate_authority_id = "Acme-CA-01"
   location                 = var.region
   pool                     = google_privateca_ca_pool.default.name
   config {
@@ -44,9 +44,10 @@ resource "google_privateca_certificate_authority" "default" {
     }
   }
   //type = "SELF_SIGNED"
-  lifetime = "7776000s" // 90 days
+  //lifetime = "7776000s" // 90 days
+  lifetime = "31536000s" // 1 year
   key_spec {
-    algorithm = "EC_P384_SHA384"
+    algorithm = "EC_P256_SHA256"
   }
 
   // Disable CA deletion related safe checks for easier cleanup while testing.
@@ -59,6 +60,8 @@ resource "tls_private_key" "cert_key" {
   /* algorithm   = "ECDSA"
   ecdsa_curve = "P256" */
   algorithm   = "RSA"
+  rsa_bits = 2048
+  //algorithm   = "ED25519"
 }
 
 resource "google_privateca_certificate" "default" {

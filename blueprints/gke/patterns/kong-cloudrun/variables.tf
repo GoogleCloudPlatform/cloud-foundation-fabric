@@ -40,37 +40,17 @@ variable "namespace" {
   default     = "kong"
 }
 
-/* variable "image" {
-  description = "Container image to use."
-  type        = string
-  nullable    = false
-  default     = "redis:6.2"
-}
-
-variable "statefulset_config" {
-  description = "Configure Redis cluster statefulset parameters."
-  type = object({
-    replicas = optional(number, 6)
-    resource_requests = optional(object({
-      cpu    = optional(string, "1")
-      memory = optional(string, "1Gi")
-    }), {})
-    volume_claim_size = optional(string, "10Gi")
-  })
-  nullable = false
-  default  = {}
-  validation {
-    condition     = var.statefulset_config.replicas >= 6
-    error_message = "The minimum number of Redis cluster replicas is 6."
-  }
-} */
-
 variable "templates_path" {
   description = "Path where manifest templates will be read from. Set to null to use the default manifests."
   type        = string
   default     = null
 }
 
+variable "cloudrun_svcname" {
+  description = "Name of the Cloud Run service."
+  type = string
+  default = "hello-service"
+}
 variable "created_resources" {
   description = "Names of the resources created by autopilot cluster to be consumed here."
   type = object({
@@ -105,20 +85,6 @@ variable "prefix" {
   }
 }
 
-variable "project_configs" {
-  description = "Service projects for Cloud Run services."
-  type = map(object({
-    billing_account_id = optional(string)
-    parent             = optional(string)
-    project_id         = optional(string)
-  }))
-  default = {
-    service-project-1 = {}
-    service-project-2 = {}
-  }
-  nullable = false
-}
-
 variable "project_id" {
   description = "Host project with (autopilot) cluster (without prefix)."
   type        = string
@@ -128,4 +94,18 @@ variable "region" {
   description = "Cloud region where resources will be deployed."
   type        = string
   default     = "europe-west1"
+}
+
+variable "service_project" {
+  description = "Service project for Cloud Run service."
+  type = object({
+    billing_account_id = optional(string)
+    parent             = optional(string)
+    project_id         = optional(string)
+  })
+  nullable = false
+  validation {
+    condition     = var.service_project.billing_account_id != null || var.service_project.project_id != null
+    error_message = "At least one of billing_account_id or project_id should be set."
+  }
 }

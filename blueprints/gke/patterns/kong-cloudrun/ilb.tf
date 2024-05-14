@@ -5,13 +5,13 @@ module "ilb-l7" {
   region     = var.region
   backend_service_configs = {
     default = {
-      project_id = module.service-project["service-project-1"].project_id
+      project_id = module.service-project.project_id
       backends = [{
-        group = "cr1"
+        group = "cr"
       }]
       health_checks = []
     }
-    svc-1 = {
+    /* svc-1 = {
       project_id = module.service-project["service-project-1"].project_id
       backends = [{
         group = "cr1"
@@ -24,25 +24,16 @@ module "ilb-l7" {
         group = "cr2"
       }]
       health_checks = []
-    }
+    } */
   }
   health_check_configs = {}
   neg_configs = {
-    cr1 = {
-      project_id = module.service-project["service-project-1"].project_id
+    cr = {
+      project_id = module.service-project.project_id
       cloudrun = {
         region = var.region
         target_service = {
-          name = local.cloudrun_svcnames[0]
-        }
-      }
-    }
-    cr2 = {
-      project_id = module.service-project["service-project-2"].project_id
-      cloudrun = {
-        region = var.region
-        target_service = {
-          name = local.cloudrun_svcnames[1]
+          name = var.cloudrun_svcname
         }
       }
     }
@@ -59,7 +50,7 @@ module "ilb-l7" {
       "projects/myprj/regions/europe-west1/sslCertificates/my-cert"
     ] */
   }
-  urlmap_config = {
+  /* urlmap_config = {
     default_service = "default"
     host_rules = [{
       hosts        = ["*"]
@@ -80,7 +71,7 @@ module "ilb-l7" {
         ]
       }
     }
-  }
+  } */
   vpc_config = {
     network    = data.google_compute_network.host-network.id
     subnetwork = data.google_compute_subnetwork.host-subnetwork.self_link

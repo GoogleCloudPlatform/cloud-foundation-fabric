@@ -15,7 +15,6 @@
  */
 
 locals {
-  cloudrun_svcnames = ["svc1", "svc2"]
   manifest_template_parameters = {
     kong_namespace = var.namespace
     kong_license   = "'{}'"
@@ -64,19 +63,18 @@ data "google_compute_subnetwork" "host-subnetwork" {
 
 module "service-project" {
   source          = "../../../../modules/project"
-  for_each        = var.project_configs
-  name            = each.value.project_id
+  name            = var.service_project.project_id
   prefix          = var.prefix
-  project_create  = each.value.billing_account_id != null
-  billing_account = try(each.value.billing_account_id, null)
-  parent          = try(each.value.parent, null)
+  project_create  = var.service_project.billing_account_id != null
+  billing_account = try(var.service_project.billing_account_id, null)
+  parent          = try(var.service_project.parent, null)
   services = [
     "compute.googleapis.com",
     "run.googleapis.com",
   ]
   shared_vpc_service_config = {
     host_project = var.project_id
-    //service_iam_grants = module.service-project[each.key].services
+    //service_iam_grants = module.service-project.services
   }
   skip_delete = true
 }
