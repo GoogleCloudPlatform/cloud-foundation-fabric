@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-03-20 13:57:56+00:00 -->
+<!-- None < 2024-05-14 19:52:57+00:00 -->
+
+## [31.0.0] - 2024-05-14
+<!-- 2024-05-14 19:52:57+00:00 < 2024-03-20 13:57:56+00:00 -->
 
 ### BLUEPRINTS
 
+- [[#2278](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2278)] Bump express from 4.18.2 to 4.19.2 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-14 19:30:35+00:00 -->
+- [[#2275](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2275)] Add support for reserved_internal_range in net-vpc ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-14 19:19:45+00:00 -->
+- [[#2277](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2277)] Added missing apigee org attributes to apigee x foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 18:48:05+00:00 -->
+- [[#2279](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2279)] Bump protobufjs, @google-cloud/logging-bunyan and @google-cloud/monitoring in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-14 18:37:16+00:00 -->
 - [[#2274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2274)] Added apigee-x-foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 14:53:38+00:00 -->
 - [[#2243](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2243)] Added new attributes Apigee organization and bumped up providers version ([apichick](https://github.com/apichick)) <!-- 2024-04-28 15:31:42+00:00 -->
 - [[#2239](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2239)] Update README.md ([vicenteg](https://github.com/vicenteg)) <!-- 2024-04-25 23:14:32+00:00 -->
@@ -56,6 +63,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2275](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2275)] Add support for reserved_internal_range in net-vpc ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-14 19:19:45+00:00 -->
 - [[#2274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2274)] Added apigee-x-foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 14:53:38+00:00 -->
 - [[#2270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2270)] Cloud function CMEK key support ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-05-14 12:56:10+00:00 -->
 - [[#2272](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2272)] New Bindplane cloud-config-container setup ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-14 12:45:40+00:00 -->
@@ -2135,7 +2143,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...HEAD
+[31.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...v31.0.0
 [30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
 [29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
 [28.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v27.0.0...v28.0.0
