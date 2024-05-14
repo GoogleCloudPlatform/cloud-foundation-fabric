@@ -269,8 +269,7 @@ variable "subnets" {
       # enable_private_access = optional(string)
     }))
     secondary_ip_ranges = optional(map(string))
-
-    iam = optional(map(list(string)), {})
+    iam                 = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)

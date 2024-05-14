@@ -30,10 +30,10 @@ values:
     region: europe-west1
     role: null
     secondary_ip_range:
-    - ip_cidr_range: 172.16.0.0/20
-      range_name: pods
-    - ip_cidr_range: 192.168.0.0/24
-      range_name: services
+      - ip_cidr_range: 172.16.0.0/20
+        range_name: pods
+      - ip_cidr_range: 192.168.0.0/24
+        range_name: services
   module.vpc.google_compute_subnetwork.subnetwork["europe-west2/production"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.16.0/24
@@ -43,7 +43,6 @@ values:
     project: project-id
     region: europe-west2
     role: null
-    secondary_ip_range: []
   module.vpc.google_compute_route.gateway["private-googleapis"]:
     dest_range: 199.36.153.8/30
     name: my-network-private-googleapis
