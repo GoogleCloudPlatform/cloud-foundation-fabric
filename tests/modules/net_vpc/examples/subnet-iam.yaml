@@ -57,7 +57,6 @@ values:
     project: project-id
     region: europe-west1
     role: null
-    secondary_ip_range: []
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-2"]:
     description: Terraform-managed.
@@ -69,23 +68,22 @@ values:
     project: project-id
     region: europe-west1
     role: null
-    secondary_ip_range: []
     timeouts: null
-  module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
-    condition: []
+  ? module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]
+  : condition: []
     members:
-    - group:organization-admins@example.org
+      - group:organization-admins@example.org
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
   module.vpc.google_compute_subnetwork_iam_binding.bindings["subnet-1-iam"]:
     condition:
-    - description: null
-      expression: resource.matchTag('123456789012/env', 'prod')
-      title: test_condition
+      - description: null
+        expression: resource.matchTag('123456789012/env', 'prod')
+        title: test_condition
     members:
-    - group:organization-admins@example.org
+      - group:organization-admins@example.org
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser

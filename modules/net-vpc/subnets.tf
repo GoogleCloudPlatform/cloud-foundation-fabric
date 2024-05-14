@@ -147,10 +147,6 @@ resource "google_compute_subnetwork" "subnetwork" {
     : each.value.description
   )
   private_ip_google_access = each.value.enable_private_access
-  secondary_ip_range = each.value.secondary_ip_ranges == null ? [] : [
-    for name, range in each.value.secondary_ip_ranges :
-    { range_name = name, ip_cidr_range = range }
-  ]
   stack_type = (
     try(each.value.ipv6, null) != null ? "IPV4_IPV6" : null
   )
@@ -158,6 +154,22 @@ resource "google_compute_subnetwork" "subnetwork" {
     try(each.value.ipv6, null) != null ? each.value.ipv6.access_type : null
   )
   # private_ipv6_google_access = try(each.value.ipv6.enable_private_access, null)
+  dynamic "secondary_ip_range" {
+    for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
+    content {
+      range_name = secondary_ip_range.key
+      ip_cidr_range = (
+        startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+        ? null
+        : secondary_ip_range.value
+      )
+      reserved_internal_range = (
+        startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+        ? secondary_ip_range.value
+        : null
+      )
+    }
+  }
   dynamic "log_config" {
     for_each = each.value.flow_logs_config != null ? [""] : []
     content {
