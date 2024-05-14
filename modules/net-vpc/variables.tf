@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -269,8 +269,7 @@ variable "subnets" {
       # enable_private_access = optional(string)
     }))
     secondary_ip_ranges = optional(map(string))
-
-    iam = optional(map(list(string)), {})
+    iam                 = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
@@ -289,18 +288,6 @@ variable "subnets" {
         description = optional(string)
       }))
     })), {})
-  }))
-  default  = []
-  nullable = false
-}
-
-variable "subnets_private_nat" {
-  description = "List of private NAT subnets."
-  type = list(object({
-    name          = string
-    ip_cidr_range = string
-    region        = string
-    description   = optional(string)
   }))
   default  = []
   nullable = false
