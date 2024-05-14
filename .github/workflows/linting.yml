@@ -69,12 +69,7 @@ jobs:
       - name: TFLint FAST
         continue-on-error: true
         run: |
-          python3 tools/tflint-fast.py --junit
-
-      - name: TFLint FAST report
-        uses: pmeier/pytest-results-action@035bda205f160abee0b277db11ac6ca01175ca7d # v0.6.0
-        with:
-          path: tflint-fast-*.xml
+          python3 tools/tflint-fast.py
 
       - name: Check documentation
         id: documentation-fabric
