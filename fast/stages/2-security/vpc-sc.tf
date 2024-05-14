@@ -65,7 +65,7 @@ module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
   count         = var.vpc_sc.perimeter_default == null ? 0 : 1
-  access_policy = try(var.access_policy, null)
+  access_policy = var.access_policy
   access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
     title  = "default"
