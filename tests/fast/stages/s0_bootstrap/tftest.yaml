@@ -25,3 +25,5 @@ tests:
       - simple.yaml
       - simple_projects.yaml
       - simple_sas.yaml
+  
+  iam_by_principals:

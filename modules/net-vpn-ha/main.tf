@@ -117,15 +117,6 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
-  dynamic "bfd" {
-    for_each = each.value.bgp_peer.bfd != null ? [each.value.bgp_peer.bfd] : []
-    content {
-      session_initialization_mode = bfd.value.session_initialization_mode
-      min_receive_interval        = bfd.value.min_receive_interval
-      min_transmit_interval       = bfd.value.min_transmit_interval
-      multiplier                  = bfd.value.multiplier
-    }
-  }
   dynamic "md5_authentication_key" {
     for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
     content {

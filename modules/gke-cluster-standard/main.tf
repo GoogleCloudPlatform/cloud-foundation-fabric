@@ -132,7 +132,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = local.cas == null ? [] : [""]
     content {
-      enabled             = true
+      enabled             = var.cluster_autoscaling.enabled
       autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []
@@ -511,6 +511,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   cluster  = google_container_cluster.cluster.id
   location = each.value.region
   project  = var.project_id
+  labels   = each.value.labels
   retention_policy {
     backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
     backup_retain_days      = try(each.value.retention_policy_days)

@@ -17,11 +17,11 @@ values:
     database_version: POSTGRES_13
     name: db
     project: project-id
-    region: europe-west1
+    region: europe-west8
     settings:
     - activation_policy: ALWAYS
       availability_type: ZONAL
-      deletion_protection_enabled: true
+      deletion_protection_enabled: false
       disk_autoresize: true
       disk_type: PD_SSD
       insights_config:

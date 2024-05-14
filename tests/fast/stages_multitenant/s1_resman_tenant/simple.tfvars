@@ -34,7 +34,7 @@ fast_features = {
 }
 groups = {
   gcp-devops          = "gcp-devops",
-  gcp-network-admins  = "gcp-network-admins",
+  gcp-network-admins  = "gcp-vpc-network-admins",
   gcp-security-admins = "gcp-security-admins",
 }
 organization = {

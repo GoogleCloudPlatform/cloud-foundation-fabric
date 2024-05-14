@@ -29,6 +29,12 @@ variable "bucket_name" {
   nullable    = false
 }
 
+variable "build_environment_variables" {
+  description = "A set of key/value environment variable pairs available during build time."
+  type        = map(string)
+  default     = {}
+}
+
 variable "build_worker_pool" {
   description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format."
   type        = string
@@ -94,6 +100,12 @@ variable "ingress_settings" {
   default     = null
 }
 
+variable "kms_key" {
+  description = "Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository field that was created with the same KMS crypto key."
+  type        = string
+  default     = null
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -123,6 +135,17 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
+}
+
+variable "repository_settings" {
+  description = "Docker Registry to use for storing the function's Docker images and specific repository. If kms_key is provided, the repository must have already been encrypted with the key."
+  type = object({
+    registry   = optional(string)
+    repository = optional(string)
+  })
+  default = {
+    registry = "ARTIFACT_REGISTRY"
+  }
 }
 
 variable "secrets" {
