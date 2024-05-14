@@ -19,11 +19,47 @@ variable "network_tags" {
   type = map(object({
     description = optional(string, "Managed by the Terraform project module.")
     iam         = optional(map(list(string)), {})
-    id          = optional(string)
-    network     = string # project_id/vpc_name
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    id      = optional(string)
+    network = string # project_id/vpc_name
     values = optional(map(object({
       description = optional(string, "Managed by the Terraform project module.")
       iam         = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
     })), {})
   }))
   nullable = false
@@ -45,7 +81,8 @@ variable "network_tags" {
 variable "tag_bindings" {
   description = "Tag bindings for this project, in key => tag value id format."
   type        = map(string)
-  default     = null
+  # we need default null here for the project factory module
+  default = null
 }
 
 variable "tags" {
@@ -53,11 +90,47 @@ variable "tags" {
   type = map(object({
     description = optional(string, "Managed by the Terraform project module.")
     iam         = optional(map(list(string)), {})
-    id          = optional(string)
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    id = optional(string)
     values = optional(map(object({
       description = optional(string, "Managed by the Terraform project module.")
       iam         = optional(map(list(string)), {})
-      id          = optional(string)
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      id = optional(string)
     })), {})
   }))
   nullable = false

@@ -23,11 +23,20 @@ values:
     purpose_data: null
     short_name: environment
     timeouts: null
+  module.org.google_tags_tag_key_iam_binding.bindings["environment:viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.org
+    role: roles/resourcemanager.tagViewer
   module.org.google_tags_tag_key_iam_binding.default["environment:roles/resourcemanager.tagAdmin"]:
     condition: []
     members:
     - group:organization-admins@example.org
     role: roles/resourcemanager.tagAdmin
+  module.org.google_tags_tag_key_iam_member.bindings["environment:user_app1"]:
+    condition: []
+    member: group:app1-team@example.org
+    role: roles/resourcemanager.tagUser
   module.org.google_tags_tag_value.default["environment/dev"]:
     description: Managed by the Terraform organization module.
     short_name: dev
@@ -36,14 +45,28 @@ values:
     description: 'Environment: production.'
     short_name: prod
     timeouts: null
+  module.org.google_tags_tag_value_iam_binding.bindings["environment/prod:admin"]:
+    condition: []
+    members:
+    - group:gcp-support@example.org
+    role: roles/resourcemanager.tagAdmin
   module.org.google_tags_tag_value_iam_binding.default["environment/prod:roles/resourcemanager.tagViewer"]:
     condition: []
     members:
-    - group:organization-admins@example.org
+    - group:app1-team@example.org
     role: roles/resourcemanager.tagViewer
+  module.org.google_tags_tag_value_iam_member.bindings["environment/dev:user_app2"]:
+    condition: []
+    member: group:app2-team@example.org
+    role: roles/resourcemanager.tagUser
 
 counts:
   google_tags_tag_binding: 1
   google_tags_tag_key: 1
-  google_tags_tag_key_iam_binding: 1
+  google_tags_tag_key_iam_binding: 2
+  google_tags_tag_key_iam_member: 1
   google_tags_tag_value: 2
+  google_tags_tag_value_iam_binding: 2
+  google_tags_tag_value_iam_member: 1
+  modules: 1
+  resources: 10
