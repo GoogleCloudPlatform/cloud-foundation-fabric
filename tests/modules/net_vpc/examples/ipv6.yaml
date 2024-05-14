@@ -58,7 +58,6 @@ values:
     project: project-id
     region: europe-west1
     role: null
-    secondary_ip_range: []
     stack_type: IPV4_IPV6
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west3/test"]:
@@ -71,7 +70,6 @@ values:
     project: project-id
     region: europe-west3
     role: null
-    secondary_ip_range: []
     stack_type: IPV4_IPV6
     timeouts: null
 
