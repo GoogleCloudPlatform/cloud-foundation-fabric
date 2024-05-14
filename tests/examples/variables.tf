@@ -62,11 +62,22 @@ variable "region" {
   default = "europe-west8"
 }
 
+variable "region_1" {
+  default = "europe-west4"
+}
+
 variable "service_account" {
   default = {
     id        = "service_account_id"
     email     = "service_account_email"
     iam_email = "service_account_iam_email"
+  }
+}
+
+variable "service_identities" {
+  default = {
+    secret_identity  = "secret_identity_email"
+    storage_identity = "storage_identity_email"
   }
 }
 

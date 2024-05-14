@@ -31,6 +31,9 @@ service_account = {
     email     = "${service_account.email}"
     iam_email = "${service_account.iam_email}"
   }
+service_identities = {
+    secret_identity = "${service_identities.secret.email}"
+}
 subnet = {
     name      = "${subnet.name}"
     region    = "${subnet.region}"

@@ -15,15 +15,15 @@ The secret replication policy is automatically managed if no location is set, or
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = "my-project"
+  project_id = var.project_id
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = ["europe-west1", "europe-west4"]
+      locations = [var.region, var.region_1]
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=secret.yaml e2e
 ```
 
 ### Secret IAM bindings
@@ -33,23 +33,23 @@ IAM bindings can be set per secret in the same way as for most other modules sup
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = "my-project"
+  project_id = var.project_id
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = ["europe-west1", "europe-west4"]
+      locations = [var.region, var.region_1]
     }
   }
   iam = {
     test-auto = {
-      "roles/secretmanager.secretAccessor" = ["group:auto-readers@example.com"]
+      "roles/secretmanager.secretAccessor" = ["group:${var.group_email}"]
     }
     test-manual = {
-      "roles/secretmanager.secretAccessor" = ["group:manual-readers@example.com"]
+      "roles/secretmanager.secretAccessor" = ["group:${var.group_email}"]
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam.yaml
+# tftest modules=1 resources=4 inventory=iam.yaml e2e
 ```
 
 ### Secret versions
@@ -59,11 +59,11 @@ As mentioned above, please be aware that **version data will be stored in state 
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = "my-project"
+  project_id = var.project_id
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = ["europe-west1", "europe-west4"]
+      locations = [var.region, var.region_1]
     }
   }
   versions = {
@@ -76,7 +76,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=versions.yaml
+# tftest modules=1 resources=5 inventory=versions.yaml e2e
 ```
 
 ### Secret with customer managed encryption key
@@ -86,24 +86,24 @@ CMEK will be used if an encryption key is set in the `keys` field of `secrets` o
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = "my-project"
+  project_id = var.project_id
   secrets = {
     test-auto = {
       keys = {
-        global = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
+        global = google_kms_crypto_key.key_gl.id
       }
     }
     test-auto-nokeys = {}
     test-manual = {
-      locations = ["europe-west1", "europe-west4"]
+      locations = [var.region, var.region_1]
       keys = {
-        europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
-        europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
+        "${var.region}"   = "${var.kms_key.id}"
+        "${var.region_1}" = google_kms_crypto_key.key_1.id
       }
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=8 fixtures=fixtures/secret.tf inventory=secret-cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
