@@ -81,6 +81,7 @@ module "projects" {
     each.value.services,
     var.data_merges.services
   ))
+  shared_vpc_host_config = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
   tag_bindings = merge(
     each.value.tag_bindings,
