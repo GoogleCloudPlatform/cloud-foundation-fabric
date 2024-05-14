@@ -23,6 +23,7 @@ from pathlib import Path
 
 BASEDIR = Path(__file__).parents[1]
 
+
 @click.option('--junit', default=False, is_flag=True)
 @click.command()
 def main(junit):
@@ -37,14 +38,17 @@ def main(junit):
       args = ['tflint']
       if junit:
         args += ['--format=junit']
-      args += ['--chdir',
+      args += [
+          '--chdir',
           str((BASEDIR / module_path).absolute()), '--var-file',
           str((BASEDIR / var_path).absolute())
       ]
       print(' '.join(args))
       if junit:
-        with open(f'tflint-fast-{str(module_path).replace("/", "_")}.xml', 'w+') as output:
-          ret |= subprocess.run(args, stderr=subprocess.STDOUT, stdout=output).returncode
+        with open(f'tflint-fast-{str(module_path).replace("/", "_")}.xml',
+                  'w+') as output:
+          ret |= subprocess.run(args, stderr=subprocess.STDOUT,
+                                stdout=output).returncode
       else:
         ret |= subprocess.run(args, stderr=subprocess.STDOUT).returncode
     else:
