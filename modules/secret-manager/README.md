@@ -125,6 +125,10 @@ module "secret-manager" {
 | [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
 | [version_versions](outputs.tf#L36) | Version versions keyed by secret name : version name. |  |
 | [versions](outputs.tf#L43) | Secret versions. | ✓ |
+
+## Fixtures
+
+- [secret.tf](../../tests/fixtures/secret.tf)
 <!-- END TFDOC -->
 ## Requirements
 
