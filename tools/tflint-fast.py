@@ -21,24 +21,32 @@ import yaml
 
 from pathlib import Path
 
+BASEDIR = Path(__file__).parents[1]
 
+@click.option('--junit', default=False, is_flag=True)
 @click.command()
-def main():
+def main(junit):
   ret = 0
   for tftest_path in sorted(
-      glob.glob("tests/fast/**/tftest.yaml", recursive=True)):
-    with open(tftest_path, "r") as f:
+      glob.glob(f'{BASEDIR}/tests/fast/**/tftest.yaml', recursive=True)):
+    with open(tftest_path, 'r') as f:
       tftest = yaml.safe_load(f)
     module_path = Path(tftest['module'])
-    var_path = (Path(tftest_path).parent / "simple.tfvars")
+    var_path = (Path(tftest_path).parent / 'simple.tfvars')
     if var_path.exists():
-      args = [
-          "tflint", "--chdir",
-          str(module_path.absolute()), "--var-file",
-          str(var_path.absolute())
+      args = ['tflint']
+      if junit:
+        args += ['--format=junit']
+      args += ['--chdir',
+          str((BASEDIR / module_path).absolute()), '--var-file',
+          str((BASEDIR / var_path).absolute())
       ]
-      print(" ".join(args))
-      ret |= subprocess.run(args).returncode
+      print(' '.join(args))
+      if junit:
+        with open(f'tflint-fast-{str(module_path).replace("/", "_")}.xml', 'w+') as output:
+          ret |= subprocess.run(args, stderr=subprocess.STDOUT, stdout=output).returncode
+      else:
+        ret |= subprocess.run(args, stderr=subprocess.STDOUT).returncode
     else:
       print(f'Skipping stage: {tftest_path} as no simple.tfvars found there')
   # end for

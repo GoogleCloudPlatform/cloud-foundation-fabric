@@ -66,10 +66,15 @@ jobs:
       - name: TFLint Modules
         run: cd modules && tflint --recursive -f compact
 
-      # TODO: revisit once we have time, so it does not become a productivity sink
-      # - name: TFLint FAST
-      #   run: |
-      #     python3 tools/tflint-fast.py
+      - name: TFLint FAST
+        continue-on-error: true
+        run: |
+          python3 tools/tflint-fast.py --junit
+
+      - name: TFLint FAST report
+        uses: pmeier/pytest-results-action@035bda205f160abee0b277db11ac6ca01175ca7d # v0.6.0
+        with:
+          path: tflint-fast-*.xml
 
       - name: Check documentation
         id: documentation-fabric
