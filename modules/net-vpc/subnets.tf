@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,10 @@ locals {
     { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
   )
+  subnets_private_nat = merge(
+    { for s in var.subnets_private_nat : "${s.region}/${s.name}" => s },
+    # { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
+  )
   subnets_psc = merge(
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v._is_psc }
@@ -195,6 +199,20 @@ resource "google_compute_subnetwork" "proxy_only" {
   )
   purpose = each.value.global ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
   role    = each.value.active ? "ACTIVE" : "BACKUP"
+}
+
+resource "google_compute_subnetwork" "private_nat" {
+  for_each      = local.subnets_private_nat
+  project       = var.project_id
+  network       = local.network.name
+  name          = each.value.name
+  region        = each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
+  description = coalesce(
+    each.value.description,
+    "Terraform-managed private NAT subnet."
+  )
+  purpose = "PRIVATE_NAT"
 }
 
 resource "google_compute_subnetwork" "psc" {
