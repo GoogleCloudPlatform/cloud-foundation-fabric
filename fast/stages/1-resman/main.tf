@@ -98,8 +98,8 @@ locals {
   )
   tag_keys = (
     var.root_node == null
-    ? module.organization.0.tag_keys
-    : module.automation-project.0.tag_keys
+    ? module.organization[0].tag_keys
+    : module.automation-project[0].tag_keys
   )
   tag_root = (
     var.root_node == null
