@@ -12,7 +12,7 @@ Connectivity between hub and spokes is configurable, and can be established via 
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (enabled by default),  which offers a complete isolation between environments, and no choke-points in the data plane. Different ways of implementing connectivity, and their respective pros and cons, are discussed below.
 - [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels, which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing
 
-The following diagram illustrates the high-level designs for the VPN and for the Peering configuration, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
+The following diagrams illustrate the high-level designs for the VPN and for the Peering configuration, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
 <p align="center">
   <img src="diagram-vpn.svg" alt="HA-VPN diagram">
@@ -56,7 +56,7 @@ The following diagram illustrates the high-level designs for the VPN and for the
 
 ### VPC design
 
-The hub/landing VPC hosts external connectivity and shared services for spoke VPCs, which are connected to it via HA VPN tunnels. Spokes are used here to partition environments, which is a fairly common pattern:
+The hub/landing VPC hosts external connectivity and shared services for spoke VPCs, which are connected to it via either VPC Peerings (by default) or HA VPN tunnels. Spokes are used here to partition environments, which is a fairly common pattern:
 
 - one spoke VPC for the production environment
 - one spoke VPC for the development environment
@@ -187,13 +187,15 @@ Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules
 
 #### Internal
 
-VPNs ([`net-vpn`](../../../modules/net-vpn-ha)) used to interconnect landing and spokes - if enabled in `var.spoke_configs`, are managed by `spoke-vpns.tf` files, each implementing both sides of the VPN connection. Per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `vpn_onprem_configs`. VPN gateways and IKE secrets are automatically generated and configured.
+Internal connectivity is controlled by `var.spoke_configs`, where you can either configure `peering-configs` or `vpn-configs` based on which spoke connectivity method you want to deploy. By default, an empty configuration will deploy a VPC Peering based hub-and-spoke.
+
+Peerings are managed by `spoke-peerings.tf`, and VPNs ([`net-vpn`](../../../modules/net-vpn-ha)) are managed by the `spoke-vpns.tf` file. In case of VPNs, per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `var.spoke_configs.vpn_configs`. VPN gateways and IKE secrets are automatically generated and configured.
 
 ### Routing and BGP
 
 Each VPC network ([`net-vpc`](../../../modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes from BGP sessions established with neighbor networks (e.g. landing receives routes from onprem and spokes, and spokes receive RFC1918 from landing).
 
-Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module.
+Static routes are defined in `net-*.tf` files, in the `routes` section of each `net-vpc` module.
 
 BGP sessions for landing-spoke are configured through variable `spoke_configs.vpn_configs`, while the ones for landing-onprem use variable `vpn_onprem_configs`
 
@@ -279,6 +281,14 @@ Note that the `outputs_location` variable is disabled by default, you need to ex
 
 ```tfvars
 outputs_location = "~/fast-config"
+```
+
+### Choosing between peering and VPN
+
+An empty configuration of `var.spoke_configs` will result in peerings to be used as a connection method between the hub and spokes. To switch to VPN without customising anything else, you can populate the `var.spoke_configs` variable as follows:
+
+```tfvars
+spoke_configs = { vpn_configs = {} }
 ```
 
 ### Using delayed billing association for projects
