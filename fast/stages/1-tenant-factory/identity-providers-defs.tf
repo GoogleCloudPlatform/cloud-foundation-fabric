@@ -17,6 +17,7 @@
 # tfdoc:file:description Identity provider definitions.
 
 locals {
+  # tflint-ignore: terraform_unused_declarations
   workforce_identity_providers_defs = {
     azuread = {
       attribute_mapping = {
