@@ -161,17 +161,6 @@ variable "initial_user" {
   default = null
 }
 
-variable "insights_config" {
-  description = "Query Insights configuration. Defaults to null which disables Query Insights."
-  type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
-  })
-  default = null
-}
-
 variable "instance_network_config" {
   description = "Network configuration for the instance. Only one between instance_network_config and instance_psc_config can be used."
   type = object({
