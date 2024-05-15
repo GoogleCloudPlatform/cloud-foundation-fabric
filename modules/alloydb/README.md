@@ -123,5 +123,7 @@ module "alloydb" {
 | [ips](outputs.tf#L49) | IP addresses of all instances. |  |
 | [name](outputs.tf#L56) | Name of the primary instance. |  |
 | [names](outputs.tf#L61) | Names of all instances. |  |
-| [user_passwords](outputs.tf#L69) | Map of containing the password of all users created through terraform. | ✓ |
+| [secondary_id](outputs.tf#L69) | Fully qualified primary instance id. |  |
+| [secondary_ip](outputs.tf#L74) | IP address of the primary instance. |  |
+| [user_passwords](outputs.tf#L79) | Map of containing the password of all users created through terraform. | ✓ |
 <!-- END TFDOC -->

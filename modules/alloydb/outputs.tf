@@ -19,7 +19,7 @@ locals {
   #    { primary = google_alloydb_instance.primary },
   #    google_alloydb_instance.replicas
   #  )
-  _all_instances = { primary = google_alloydb_instance.primary }
+  _all_instances = merge({ primary = google_alloydb_instance.primary }, var.cross_region_replication.enabled ? { secondary = google_alloydb_instance.secondary[0] } : {})
 }
 
 output "id" {
@@ -64,6 +64,16 @@ output "names" {
     for id, instance in local._all_instances :
     id => instance.name
   }
+}
+
+output "secondary_id" {
+  description = "Fully qualified primary instance id."
+  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary.id : null
+}
+
+output "secondary_ip" {
+  description = "IP address of the primary instance."
+  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary.ip_address : null
 }
 
 output "user_passwords" {

@@ -302,9 +302,9 @@ resource "google_alloydb_cluster" "secondary" {
 
 resource "google_alloydb_instance" "secondary" {
   count             = var.cross_region_replication.enabled ? 1 : 0
-  cluster           = google_alloydb_cluster.secondary.0.id
+  cluster           = google_alloydb_cluster.secondary[0].id
   instance_id       = "${local.prefix}${var.name}-secondary"
-  instance_type     = google_alloydb_cluster.secondary.0.cluster_type
+  instance_type     = google_alloydb_cluster.secondary[0].cluster_type
   availability_type = var.availability_type
   database_flags    = var.flags
   display_name      = "${local.prefix}${var.name}"
