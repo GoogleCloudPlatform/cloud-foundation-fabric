@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description CI/CD resources for the teams branch.
+# tfdoc:file:description CI/CD resources for the project factories.
 
 # source repositories
 
