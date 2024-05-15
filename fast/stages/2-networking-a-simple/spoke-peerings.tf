@@ -16,6 +16,11 @@
 
 # tfdoc:file:description Peerings between landing and spokes.
 
+moved {
+  from = module.peering-dev
+  to   = module.peering-dev[1]
+}
+
 module "peering-dev" {
   for_each      = local.spoke_connection == "peering" ? { 1 = 1 } : {}
   source        = "../../../modules/net-vpc-peering"
@@ -23,6 +28,11 @@ module "peering-dev" {
   local_network = module.dev-spoke-vpc.self_link
   peer_network  = module.landing-vpc.self_link
   routes_config = var.spoke_configs.peering_configs.dev
+}
+
+moved {
+  from = module.peering-prod
+  to   = module.peering-prod[1]
 }
 
 module "peering-prod" {

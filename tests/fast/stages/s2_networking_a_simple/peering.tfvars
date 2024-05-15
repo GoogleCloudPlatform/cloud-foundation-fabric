@@ -35,6 +35,7 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast2"
+# spoke_configs defaults to peering
 vpn_onprem_primary_config = {
   peer_external_gateways = {
     default = {
@@ -70,3 +71,4 @@ vpn_onprem_primary_config = {
     }
   }
 }
+

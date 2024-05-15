@@ -36,6 +36,11 @@ locals {
   }
 }
 
+moved {
+  from = module.landing-to-spokes-primary-vpn
+  to   = module.landing-to-spokes-primary-vpn[1]
+}
+
 module "landing-to-spokes-primary-vpn" {
   for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
   source     = "../../../modules/net-vpn-ha"
@@ -91,6 +96,11 @@ module "landing-to-spokes-primary-vpn" {
   }
 }
 
+moved {
+  from = module.landing-to-spokes-secondary-vpn
+  to   = module.landing-to-spokes-secondary-vpn[1]
+}
+
 module "landing-to-spokes-secondary-vpn" {
   for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
   source     = "../../../modules/net-vpn-ha"
@@ -125,6 +135,11 @@ module "landing-to-spokes-secondary-vpn" {
       vpn_gateway_interface = 1
     }
   }
+}
+
+moved {
+  from = module.dev-to-landing-primary-vpn
+  to   = module.dev-to-landing-primary-vpn[1]
 }
 
 module "dev-to-landing-primary-vpn" {
@@ -163,6 +178,10 @@ module "dev-to-landing-primary-vpn" {
   }
 }
 
+moved {
+  from = module.prod-to-landing-primary-vpn
+  to   = module.prod-to-landing-primary-vpn[1]
+}
 
 module "prod-to-landing-primary-vpn" {
   for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
@@ -200,6 +219,10 @@ module "prod-to-landing-primary-vpn" {
   }
 }
 
+moved {
+  from = module.prod-to-landing-secondary-vpn
+  to   = module.prod-to-landing-secondary-vpn[1]
+}
 module "prod-to-landing-secondary-vpn" {
   for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
   source     = "../../../modules/net-vpn-ha"
