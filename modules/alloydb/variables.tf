@@ -1,0 +1,303 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+variable "automated_backup_configuration" {
+  description = "Automated backup settings for cluster."
+  nullable    = false
+  type = object({
+    enabled       = optional(bool, false)
+    backup_window = optional(string, "1800s")
+    location      = optional(string)
+    weekly_schedule = optional(object({
+      days_of_week = optional(list(string), [
+        "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
+      ])
+      start_times = optional(object({
+        hours   = optional(number, 23)
+        minutes = optional(number, 0)
+        seconds = optional(number, 0)
+        nanos   = optional(number, 0)
+      }), {})
+    }), {})
+    retention_count  = optional(number, 7)
+    retention_period = optional(string, null)
+  })
+  default = {
+    enabled       = false
+    backup_window = "1800s"
+    location      = null
+    weekly_schedule = {
+      days_of_week = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+      start_times = {
+        hours   = 23
+        minutes = 0
+        seconds = 0
+        nanos   = 0
+      }
+    }
+    retention_count  = 7
+    retention_period = null
+  }
+  validation {
+    condition = (
+      var.automated_backup_configuration.enabled ? (
+        # Maintenance window validation below
+        !(var.automated_backup_configuration.retention_count != null && var.automated_backup_configuration.retention_period) &&
+        # Maintenance window day validation
+        contains([
+          "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
+      ], var.automated_backup_configuration.weekly_schedule.days_of_week)) : true
+    )
+    error_message = "Days of week must contains one or more days with the following format 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'. You can only specify retention_count or retention_period."
+  }
+}
+
+variable "availability_type" {
+  description = "Availability type for the primary replica. Either `ZONAL` or `REGIONAL`."
+  type        = string
+  default     = "REGIONAL"
+}
+
+variable "client_connection_config" {
+  description = "Client connection config."
+  type = object({
+    require_connectors = optional(bool, false)
+    ssl_config = optional(object({
+      ssl_mode = string
+    }), null)
+  })
+  default = null
+}
+
+variable "cluster_name" {
+  description = "Name of the primary cluster."
+  type        = string
+}
+
+variable "cluster_network_config" {
+  description = "Network configuration for the cluster. Only one between cluster_network_config and cluster_psc_config can be used."
+  type = object({
+    network            = string
+    allocated_ip_range = optional(string, null)
+  })
+  nullable = false
+}
+
+variable "continuous_backup_configuration" {
+  description = "Continuous backup settings for cluster."
+  nullable    = true
+  type = object({
+    enabled              = optional(bool, false)
+    recovery_window_days = optional(number, 14)
+  })
+  default = {
+    enabled              = false
+    recovery_window_days = 14
+  }
+}
+
+variable "cross_region_replication" {
+  description = "Cross region replication config."
+  type = object({
+    enabled           = optional(bool, false)
+    promote_secondary = optional(bool, false)
+    region            = optional(string, null)
+  })
+  default = {}
+  validation {
+    condition     = !var.cross_region_replication.enabled || var.cross_region_replication.enabled && var.cross_region_replication.region != null
+    error_message = "Region must be available when cross region replication is enabled."
+  }
+}
+
+variable "database_version" {
+  description = "Database type and version to create."
+  type        = string
+  default     = "POSTGRES_15"
+}
+
+variable "deletion_policy" {
+  description = "AlloyDB cluster and instance deletion policy."
+  type        = string
+  default     = null
+}
+
+variable "encryption_config" {
+  description = "Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'."
+  type = object({
+    primary_kms_key_name   = string
+    secondary_kms_key_name = optional(string, null)
+  })
+  default  = null
+  nullable = true
+}
+
+variable "flags" {
+  description = "Map FLAG_NAME=>VALUE for database-specific tuning."
+  type        = map(string)
+  default     = null
+}
+
+
+variable "initial_user" {
+  description = "AlloyDB cluster initial user credentials."
+  type = object({
+    user     = optional(string, "root")
+    password = string
+  })
+  default = null
+}
+
+variable "insights_config" {
+  description = "Query Insights configuration. Defaults to null which disables Query Insights."
+  type = object({
+    query_string_length     = optional(number, 1024)
+    record_application_tags = optional(bool, false)
+    record_client_address   = optional(bool, false)
+    query_plans_per_minute  = optional(number, 5)
+  })
+  default = null
+}
+
+variable "instance_network_config" {
+  description = "Network configuration for the instance. Only one between instance_network_config and instance_psc_config can be used."
+  type = object({
+    authorized_external_networks = list(string)
+    enable_public_ip             = bool
+  })
+  default = null
+  validation {
+    condition = var.instance_network_config == null ? true : (
+      (length(var.instance_network_config.authorized_external_networks) != 0 && var.instance_network_config.enable_public_ip) || !var.instance_network_config.enable_public_ip
+    ) ? true : false
+    error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
+  }
+}
+
+variable "labels" {
+  description = "Labels to be attached to all instances."
+  type        = map(string)
+  default     = null
+}
+
+variable "location" {
+  description = "Region or zone of the cluster and instance."
+  type        = string
+}
+
+variable "machine_config" {
+  description = "AlloyDB machine config."
+  type = object({
+    cpu_count = optional(number, 2)
+  })
+  nullable = false
+  default = {
+    cpu_count = 2
+  }
+}
+
+variable "maintenance_config" {
+  description = "Set maintenance window configuration."
+  type = object({
+    enabled = optional(bool, false)
+    day     = optional(string, "SUNDAY")
+    start_time = optional(object({
+      hours   = optional(number, 23)
+      minutes = optional(number, 0)
+      seconds = optional(number, 0)
+      nanos   = optional(number, 0)
+    }), {})
+  })
+  default = {
+    enabled = false
+    day     = "SUNDAY"
+    start_time = {
+      hours   = 23
+      minutes = 0
+      seconds = 0
+      nanos   = 0
+    }
+  }
+  validation {
+    condition = (
+      var.maintenance_config.enabled ? (
+        # Maintenance window validation below
+        var.maintenance_config.start_time.hours >= 0 &&
+        var.maintenance_config.start_time.hours <= 23 &&
+        var.maintenance_config.start_time.minutes == 0 &&
+        var.maintenance_config.start_time.seconds == 0 &&
+        var.maintenance_config.start_time.nanos == 0 &&
+        # Maintenance window day validation
+        contains([
+          "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
+      ], var.maintenance_config.day)) : true
+    )
+    error_message = "Maintenance window day must one of 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'. Maintenance window hour must be between 0 and 23 and maintenance window minutes, seconds and nanos should be 0."
+  }
+}
+
+variable "name" {
+  description = "Name of primary instance."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Optional prefix used to generate instance names."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
+}
+
+variable "project_id" {
+  description = "The ID of the project where this instances will be created."
+  type        = string
+}
+
+variable "query_insights_config" {
+  description = "Query insights config."
+  type = object({
+    query_string_length     = optional(number, 1024)
+    record_application_tags = optional(bool, true)
+    record_client_address   = optional(bool, true)
+    query_plans_per_minute  = optional(number, 5)
+  })
+  default = {
+    query_string_length     = 1024
+    record_application_tags = true
+    record_client_address   = true
+    query_plans_per_minute  = 5
+  }
+}
+
+variable "users" {
+  description = "Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'."
+  type = map(object({
+    password = optional(string)
+    roles    = optional(list(string), ["alloydbsuperuser"])
+    type     = optional(string)
+  }))
+  default = null
+  validation {
+    condition = alltrue([
+      for user in coalesce(var.users, {}) :
+      contains(["ALLOYDB_BUILT_IN", "ALLOYDB_IAM_USER"], user.type)
+    ])
+    error_message = "User type must one of 'ALLOYDB_BUILT_IN', 'ALLOYDB_IAM_USER'"
+  }
+}
