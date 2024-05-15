@@ -67,7 +67,6 @@ jobs:
         run: cd modules && tflint --recursive -f compact
 
       - name: TFLint FAST
-        continue-on-error: true
         run: |
           python3 tools/tflint-fast.py
 
