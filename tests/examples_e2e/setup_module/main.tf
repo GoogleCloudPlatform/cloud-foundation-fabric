@@ -17,7 +17,7 @@ locals {
   jit_services = [
     "storage.googleapis.com",       # no permissions granted by default
     "sqladmin.googleapis.com",      # roles/cloudsql.serviceAgent
-    "secretmanager.googleapis.com", # roles/cloudkms.cryptoKeyEncrypterDecrypter
+    "secretmanager.googleapis.com", # no permissions granted by default
   ]
   services = [
     # trimmed down list of services, to be extended as needed

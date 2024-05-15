@@ -63,7 +63,7 @@ variable "region" {
 }
 
 variable "region_1" {
-  default = "europe-west4"
+  default = "europe-west9"
 }
 
 variable "service_account" {
