@@ -30,7 +30,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Multitenancy
 
-Implemented directly in stage 1 for lightweight tenants, and for complex tenancy via separate FAST-enabled  hierarchies for each tenant available in the [multitenant stages folder](../stages-multitenant/).
+Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST compatibility for tenants.
 
 ## Shared resources (2)
 

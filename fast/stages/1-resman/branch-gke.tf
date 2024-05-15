@@ -19,12 +19,12 @@
 module "branch-gke-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
-  parent = "organizations/${var.organization.id}"
+  parent = local.root_node
   name   = "GKE"
   iam    = var.folder_iam.gke
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/gke"].id, null
+      local.tag_values["${var.tag_names.context}/gke"].id, null
     )
   }
 }
@@ -47,7 +47,7 @@ module "branch-gke-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/development"].id,
       null
     )
   }
@@ -71,7 +71,7 @@ module "branch-gke-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/production"].id,
       null
     )
   }

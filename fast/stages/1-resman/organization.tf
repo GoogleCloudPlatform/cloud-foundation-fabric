@@ -38,6 +38,7 @@ locals {
 
 module "organization" {
   source          = "../../../modules/organization"
+  count           = var.root_node == null ? 1 : 0
   organization_id = "organizations/${var.organization.id}"
   # additive bindings via delegated IAM grant set in stage 0
   iam_bindings_additive = local.iam_bindings_additive
@@ -54,8 +55,6 @@ module "organization" {
         networking = {}
         sandbox    = {}
         security   = {}
-        teams      = {}
-        tenant     = {}
       }
     }
     (var.tag_names.environment) = {
@@ -64,17 +63,6 @@ module "organization" {
       values = {
         development = {}
         production  = {}
-      }
-    }
-    (var.tag_names.tenant) = {
-      description = "Organization tenant."
-      values = {
-        for k, v in var.tenants : k => {
-          description = v.descriptive_name
-          iam = {
-            "roles/resourcemanager.tagViewer" = local.tenant_iam[k]
-          }
-        }
       }
     }
   })
