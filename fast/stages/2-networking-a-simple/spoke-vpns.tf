@@ -49,8 +49,8 @@ module "landing-to-spokes-primary-vpn" {
   region     = var.regions.primary
   name       = "to-spokes-${local.region_shortnames[var.regions.primary]}"
   peer_gateways = {
-    dev  = { gcp = module.dev-to-landing-primary-vpn["1"].self_link }
-    prod = { gcp = module.prod-to-landing-primary-vpn["1"].self_link }
+    dev  = { gcp = module.dev-to-landing-primary-vpn[0].self_link }
+    prod = { gcp = module.prod-to-landing-primary-vpn[0].self_link }
   }
   router_config = {
     asn              = var.spoke_configs.vpn_configs.landing.asn
@@ -109,7 +109,7 @@ module "landing-to-spokes-secondary-vpn" {
   region     = var.regions.secondary
   name       = "to-spokes-${local.region_shortnames[var.regions.secondary]}"
   peer_gateways = {
-    prod = { gcp = module.prod-to-landing-secondary-vpn["1"].self_link }
+    prod = { gcp = module.prod-to-landing-secondary-vpn[0].self_link }
   }
   router_config = {
     asn              = var.spoke_configs.vpn_configs.landing.asn
@@ -150,7 +150,7 @@ module "dev-to-landing-primary-vpn" {
   region     = var.regions.primary
   name       = "to-landing-${local.region_shortnames[var.regions.primary]}"
   peer_gateways = {
-    default = { gcp = module.landing-to-spokes-primary-vpn["1"].self_link }
+    default = { gcp = module.landing-to-spokes-primary-vpn[0].self_link }
   }
   router_config = {
     asn              = var.spoke_configs.vpn_configs.dev.asn
@@ -163,7 +163,7 @@ module "dev-to-landing-primary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[0], 2)}/30"
-      shared_secret         = module.landing-to-spokes-primary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-primary-vpn[0].random_secret
       vpn_gateway_interface = 0
     }
     1 = {
@@ -172,7 +172,7 @@ module "dev-to-landing-primary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.dev-primary[1], 2)}/30"
-      shared_secret         = module.landing-to-spokes-primary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-primary-vpn[0].random_secret
       vpn_gateway_interface = 1
     }
   }
@@ -191,7 +191,7 @@ module "prod-to-landing-primary-vpn" {
   region     = var.regions.primary
   name       = "to-landing-${local.region_shortnames[var.regions.primary]}"
   peer_gateways = {
-    default = { gcp = module.landing-to-spokes-primary-vpn["1"].self_link }
+    default = { gcp = module.landing-to-spokes-primary-vpn[0].self_link }
   }
   router_config = {
     asn              = var.spoke_configs.vpn_configs.prod.asn
@@ -204,7 +204,7 @@ module "prod-to-landing-primary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[0], 2)}/30"
-      shared_secret         = module.landing-to-spokes-primary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-primary-vpn[0].random_secret
       vpn_gateway_interface = 0
     }
     1 = {
@@ -213,7 +213,7 @@ module "prod-to-landing-primary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary[1], 2)}/30"
-      shared_secret         = module.landing-to-spokes-primary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-primary-vpn[0].random_secret
       vpn_gateway_interface = 1
     }
   }
@@ -231,7 +231,7 @@ module "prod-to-landing-secondary-vpn" {
   region     = var.regions.secondary
   name       = "to-landing-${local.region_shortnames[var.regions.secondary]}"
   peer_gateways = {
-    default = { gcp = module.landing-to-spokes-secondary-vpn["1"].self_link }
+    default = { gcp = module.landing-to-spokes-secondary-vpn[0].self_link }
   }
   router_config = {
     asn              = var.spoke_configs.vpn_configs.prod.asn
@@ -244,7 +244,7 @@ module "prod-to-landing-secondary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[0], 2)}/30"
-      shared_secret         = module.landing-to-spokes-secondary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-secondary-vpn[0].random_secret
       vpn_gateway_interface = 0
     }
     1 = {
@@ -253,7 +253,7 @@ module "prod-to-landing-secondary-vpn" {
         asn     = var.spoke_configs.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary[1], 2)}/30"
-      shared_secret         = module.landing-to-spokes-secondary-vpn["1"].random_secret
+      shared_secret         = module.landing-to-spokes-secondary-vpn[0].random_secret
       vpn_gateway_interface = 1
     }
   }
