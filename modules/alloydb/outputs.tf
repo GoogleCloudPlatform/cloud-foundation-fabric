@@ -68,12 +68,12 @@ output "names" {
 
 output "secondary_id" {
   description = "Fully qualified primary instance id."
-  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary.id : null
+  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary[0].id : null
 }
 
 output "secondary_ip" {
   description = "IP address of the primary instance."
-  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary.ip_address : null
+  value       = var.cross_region_replication.enabled ? google_alloydb_instance.secondary[0].ip_address : null
 }
 
 output "user_passwords" {
