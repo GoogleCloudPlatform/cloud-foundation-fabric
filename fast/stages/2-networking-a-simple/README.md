@@ -418,8 +418,8 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [net-prod.tf](./net-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
-| [spoke-peerings.tf](./spoke-peerings.tf) | Peerings between landing and spokes. |  |  |
-| [spoke-vpns.tf](./spoke-vpns.tf) | VPN between landing and spokes. |  |  |
+| [spoke-peerings.tf](./spoke-peerings.tf) | Peerings between landing and spokes. | <code>net-vpc-peering</code> |  |
+| [spoke-vpns.tf](./spoke-vpns.tf) | VPN between landing and spokes. | <code>net-vpn-ha</code> |  |
 | [test-resources.tf](./test-resources.tf) | Temporary instances for testing |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
