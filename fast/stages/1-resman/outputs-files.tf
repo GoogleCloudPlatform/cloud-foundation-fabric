@@ -35,7 +35,7 @@ resource "local_file" "tfvars" {
 }
 
 resource "local_file" "workflows" {
-  for_each        = var.outputs_location == null ? {} : merge(local.cicd_workflows, local.team_cicd_workflows)
+  for_each        = var.outputs_location == null ? {} : local.cicd_workflows
   file_permission = "0644"
   filename        = "${local.outputs_location}/workflows/${replace(each.key, "_", "-")}-workflow.yaml"
   content         = try(each.value, null)

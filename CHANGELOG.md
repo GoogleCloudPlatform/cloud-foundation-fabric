@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-05-14 19:52:57+00:00 -->
+<!-- None < 2024-05-15 09:01:39+00:00 -->
+
+## [31.1.0] - 2024-05-15
+<!-- 2024-05-15 09:01:39+00:00 < 2024-05-14 19:52:57+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2282](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2282)] Disable reserved_internal_range in net-vpc due to provider bug ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-15 05:46:18+00:00 -->
+
+### MODULES
+
+- [[#2282](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2282)] Disable reserved_internal_range in net-vpc due to provider bug ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-15 05:46:18+00:00 -->
 
 ## [31.0.0] - 2024-05-14
 <!-- 2024-05-14 19:52:57+00:00 < 2024-03-20 13:57:56+00:00 -->
@@ -2143,7 +2154,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...HEAD
+[31.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...v31.1.0
 [31.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...v31.0.0
 [30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
 [29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
