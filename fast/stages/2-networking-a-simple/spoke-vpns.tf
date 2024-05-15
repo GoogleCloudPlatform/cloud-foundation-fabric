@@ -38,11 +38,11 @@ locals {
 
 moved {
   from = module.landing-to-spokes-primary-vpn
-  to   = module.landing-to-spokes-primary-vpn[1]
+  to   = module.landing-to-spokes-primary-vpn[0]
 }
 
 module "landing-to-spokes-primary-vpn" {
-  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
+  count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.self_link
@@ -102,7 +102,7 @@ moved {
 }
 
 module "landing-to-spokes-secondary-vpn" {
-  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
+  count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.self_link
@@ -143,7 +143,7 @@ moved {
 }
 
 module "dev-to-landing-primary-vpn" {
-  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
+  count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
   project_id = module.dev-spoke-project.project_id
   network    = module.dev-spoke-vpc.self_link
@@ -184,7 +184,7 @@ moved {
 }
 
 module "prod-to-landing-primary-vpn" {
-  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
+  count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
   project_id = module.prod-spoke-project.project_id
   network    = module.prod-spoke-vpc.self_link
@@ -224,7 +224,7 @@ moved {
   to   = module.prod-to-landing-secondary-vpn[1]
 }
 module "prod-to-landing-secondary-vpn" {
-  for_each   = local.spoke_connection == "vpn" ? { 1 = 1 } : {}
+  count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
   project_id = module.prod-spoke-project.project_id
   network    = module.prod-spoke-vpc.self_link

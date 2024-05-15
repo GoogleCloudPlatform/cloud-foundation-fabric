@@ -18,11 +18,11 @@
 
 moved {
   from = module.peering-dev
-  to   = module.peering-dev[1]
+  to   = module.peering-dev[0]
 }
 
 module "peering-dev" {
-  for_each      = local.spoke_connection == "peering" ? { 1 = 1 } : {}
+  count         = local.spoke_connection == "peering" ? 1 : 0
   source        = "../../../modules/net-vpc-peering"
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
@@ -32,11 +32,11 @@ module "peering-dev" {
 
 moved {
   from = module.peering-prod
-  to   = module.peering-prod[1]
+  to   = module.peering-prod[0]
 }
 
 module "peering-prod" {
-  for_each      = local.spoke_connection == "peering" ? { 1 = 1 } : {}
+  count         = local.spoke_connection == "peering" ? 1 : 0
   source        = "../../../modules/net-vpc-peering"
   prefix        = "prod-peering-0"
   local_network = module.prod-spoke-vpc.self_link

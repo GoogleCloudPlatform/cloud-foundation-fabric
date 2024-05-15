@@ -107,13 +107,13 @@ Internal connectivity (e.g. between the landing landing VPC and the spokes) is r
 
 This is an options summary:
 
-- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the landing landing VPC with the spokes, also used by [02-networking-vpn](../2-networking-b-vpn/))
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the landing landing VPC with the spokes, also used by [02-networking-a-simple](../2-networking-a-simple/))
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the landing landing and dmz VPCs) and multi-NIC appliances with NCC/BGP support implemented [here](../2-networking-e-nva-bgp/)
   - Pros: provides additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies)
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (used by [02-networking-a-simple](../2-networking-a-simple/) in VPN mode)
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional costs, marginal increase in latency, requires multiple tunnels for full bandwidth
 
@@ -279,7 +279,7 @@ The commands to link or copy the provider and terraform variable files can be ea
 ```bash
 ../../stage-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 ln -s ~/fast-config/providers/2-networking-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
@@ -290,7 +290,7 @@ ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ```bash
 ../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./

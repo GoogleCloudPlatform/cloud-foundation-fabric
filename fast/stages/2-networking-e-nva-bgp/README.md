@@ -130,7 +130,7 @@ Internal connectivity (e.g. between the trusted landing VPC and the spokes) is r
 
 This is an options summary:
 
-- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the trusted landing VPC with the spokes, also used by [02-networking-vpn](../2-networking-b-vpn/))
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the trusted landing VPC with the spokes, also used by [02-networking-a-simple](../2-networking-a-simple/))
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the trusted landing and DMZ)
@@ -302,7 +302,7 @@ The commands to link or copy the provider and terraform variable files can be ea
 ```bash
 ../../stage-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 ln -s ~/fast-config/providers/2-networking-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
@@ -313,7 +313,7 @@ ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ```bash
 ../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
