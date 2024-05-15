@@ -61,21 +61,6 @@ locals {
       fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
     )
   }
-  team_cicd_repositories = {
-    for k, v in coalesce(var.team_folders, {}) : k => v
-    if(
-      v != null &&
-      (
-        try(v.cicd.type, null) == "sourcerepo"
-        ||
-        contains(
-          keys(local.identity_providers),
-          coalesce(try(v.cicd.identity_provider, null), ":")
-        )
-      ) &&
-      fileexists("${path.module}/templates/workflow-${try(v.cicd.type, "")}.yaml")
-    )
-  }
   cicd_workflow_var_files = {
     stage_2 = [
       "0-bootstrap.auto.tfvars.json",
@@ -106,6 +91,26 @@ locals {
       : "group:${v}@${var.organization.domain}"
     )
   }
+  root_node = (
+    var.root_node == null
+    ? "organizations/${var.organization.id}"
+    : var.root_node
+  )
+  tag_keys = (
+    var.root_node == null
+    ? module.organization[0].tag_keys
+    : module.automation-project[0].tag_keys
+  )
+  tag_root = (
+    var.root_node == null
+    ? var.organization.id
+    : var.automation.project_id
+  )
+  tag_values = (
+    var.root_node == null
+    ? module.organization[0].tag_values
+    : module.automation-project[0].tag_values
+  )
 }
 
 data "google_client_openid_userinfo" "provider_identity" {

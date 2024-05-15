@@ -135,6 +135,7 @@ locals {
     }
     (module.automation-tf-resman-sa.iam_email) = {
       authoritative = [
+        "roles/essentialcontacts.admin",
         "roles/logging.admin",
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.projectCreator",
@@ -143,6 +144,7 @@ locals {
       ]
       additive = concat(
         [
+          "roles/accesscontextmanager.policyAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
@@ -152,6 +154,8 @@ locals {
     }
     (module.automation-tf-resman-r-sa.iam_email) = {
       authoritative = [
+        "roles/accesscontextmanager.policyReader",
+        "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer",

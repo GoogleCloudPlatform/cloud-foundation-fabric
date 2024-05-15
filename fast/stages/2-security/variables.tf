@@ -14,27 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-}
-
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
-
 variable "essential_contacts" {
   description = "Email used for essential contacts, unset if null."
   type        = string
@@ -53,14 +32,6 @@ variable "factories_config" {
   })
   nullable = false
   default  = {}
-}
-
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder name => id mappings, the 'security' folder name must exist."
-  type = object({
-    security = string
-  })
 }
 
 variable "kms_keys" {
@@ -102,26 +73,6 @@ variable "kms_keys" {
   nullable = false
 }
 
-variable "logging" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Log writer identities for organization / folders."
-  type = object({
-    project_number    = string
-    writer_identities = map(string)
-  })
-  default = null
-}
-
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
-
 variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
@@ -136,17 +87,6 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
-}
-
-variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
 }
 
 variable "vpc_sc" {

@@ -29,6 +29,9 @@ groups = {
   gcp-security-admins     = "gcp-security-admins",
   gcp-support             = "gcp-support"
 }
+logging = {
+  project_id = "fast-prod-log-audit-0"
+}
 organization = {
   domain      = "fast.example.com"
   id          = 123456789012
