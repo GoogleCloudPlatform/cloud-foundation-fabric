@@ -157,17 +157,20 @@ resource "google_compute_subnetwork" "subnetwork" {
   dynamic "secondary_ip_range" {
     for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
     content {
-      range_name = secondary_ip_range.key
-      ip_cidr_range = (
-        startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
-        ? null
-        : secondary_ip_range.value
-      )
-      reserved_internal_range = (
-        startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
-        ? secondary_ip_range.value
-        : null
-      )
+      range_name    = secondary_ip_range.key
+      ip_cidr_range = secondary_ip_range.value
+      # TODO(sruffilli): Provider 5.29.1 disabled reserved_internal_range because of a bug.
+      #                  Revert to the following once fixed.
+      # ip_cidr_range = (
+      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+      #   ? null
+      #   : secondary_ip_range.value
+      # )    
+      # reserved_internal_range = (
+      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+      #   ? secondary_ip_range.value
+      #   : null
+      # )
     }
   }
   dynamic "log_config" {
