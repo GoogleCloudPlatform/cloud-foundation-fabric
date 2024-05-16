@@ -62,6 +62,7 @@ module "landing-vpc" {
       next_hop_type = "gateway"
       priority      = 1000
     }
+  }
 }
 
 module "landing-firewall" {
