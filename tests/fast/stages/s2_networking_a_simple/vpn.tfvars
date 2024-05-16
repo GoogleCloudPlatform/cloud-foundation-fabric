@@ -21,6 +21,12 @@ folder_ids = {
 groups = {
   gcp-network-admins = "gcp-vpc-network-admins"
 }
+organization = {
+  domain      = "fast.example.com"
+  id          = 123456789012
+  customer_id = "C00000000"
+}
+prefix = "fast2"
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"
@@ -29,9 +35,6 @@ service_accounts = {
   project-factory-dev  = "string"
   project-factory-prod = "string"
 }
-organization = {
-  domain      = "fast.example.com"
-  id          = 123456789012
-  customer_id = "C00000000"
+spoke_configs = {
+  vpn_configs = {}
 }
-prefix = "fast2"

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  # combine all regions from variables and subnets
-  regions = distinct(concat(
-    values(var.regions),
-    values(module.dev-spoke-vpc.subnet_regions),
-    values(module.landing-vpc.subnet_regions),
-    values(module.prod-spoke-vpc.subnet_regions),
-  ))
   custom_roles = coalesce(var.custom_roles, {})
+  service_accounts = {
+    for k, v in coalesce(var.service_accounts, {}) :
+    k => "serviceAccount:${v}" if v != null
+  }
+  spoke_connection = var.spoke_configs.peering_configs != null ? "peering" : "vpn"
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",
@@ -33,10 +31,13 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]
-  service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) :
-    k => "serviceAccount:${v}" if v != null
-  }
+  # combine all regions from variables and subnets
+  regions = distinct(concat(
+    values(var.regions),
+    values(module.dev-spoke-vpc.subnet_regions),
+    values(module.landing-vpc.subnet_regions),
+    values(module.prod-spoke-vpc.subnet_regions),
+  ))
 }
 
 module "folder" {

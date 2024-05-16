@@ -1,13 +1,12 @@
 # GCVE Private Clouds for Production Environment
 
-This stage provides the Terraform content for the creation and management of multiple GCVE private clouds which are connected to an existing network. The network infrastructure needs to be deployed before executing this stage by executing the respective Fabric FAST stage (`2-networking-*`). This stage can be replicated for complex GCVE designs requiring a separate management of the network infrastructure (VEN) and the access domain or for other constraints which make you decide to have indipendent GCVE environments (e.g dev/prod, region or team  serparation). 
+This stage provides the Terraform content for the creation and management of multiple GCVE private clouds which are connected to an existing network. The network infrastructure needs to be deployed before executing this stage by executing the respective Fabric FAST stage (`2-networking-*`). This stage can be replicated for complex GCVE designs requiring a separate management of the network infrastructure (VEN) and the access domain or for other constraints which make you decide to have indipendent GCVE environments (e.g dev/prod, region or team  serparation).
 
 ## Design overview and choices
 
 > A more comprehensive description of the GCVE architecture and approach can be found in the [GCVE Private Cloud Minimal blueprint](../../../../blueprints/gcve/pc-minimal/). The blueprint is wrapped and configured here to leverage the FAST flow.
 
 The GCVE stage creates a project and all the expected resources in a well-defined context, usually an ad-hoc folder managed by the resource management stage. Resources are organized by environment within this folder.
-
 
 ## How to run this stage
 
@@ -72,7 +71,7 @@ terraform apply
 
 ### Running in isolation
 
-This stage can be run in isolation by providing the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`0-bootstrap`](../../0-bootstrap), [`1-resman`](../../1-resman), [`2-networking`](../../2-networking-b-vpn).
+This stage can be run in isolation by providing the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`0-bootstrap`](../../0-bootstrap), [`1-resman`](../../1-resman), [`2-networking`](../../2-networking-a-simple).
 
 When running in isolation, the following roles are needed on the principal used to apply Terraform:
 
