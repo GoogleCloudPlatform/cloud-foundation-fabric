@@ -118,8 +118,3 @@ module "test-vms" {
     EOF
   }
 }
-
-output "ping_commands" {
-  description = "Ping commands that can be run to check VPC reachability."
-  value       = var.create_test_instances ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${module.test-vms[instance].internal_ip} # ${instance}"]) : ""
-}
