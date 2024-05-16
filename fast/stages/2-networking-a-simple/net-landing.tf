@@ -54,11 +54,6 @@ module "landing-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
   delete_default_routes_on_create = true
   routes = {
     default = {
@@ -67,7 +62,6 @@ module "landing-vpc" {
       next_hop_type = "gateway"
       priority      = 1000
     }
-  }
 }
 
 module "landing-firewall" {
