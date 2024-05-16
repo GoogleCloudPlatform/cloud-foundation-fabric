@@ -95,7 +95,8 @@ module "prod-spoke-vpc" {
       next_hop_type = "gateway"
       priority      = 1000
     }
-  } }
+  }
+}
 
 module "prod-spoke-firewall" {
   source     = "../../../modules/net-vpc-firewall"
