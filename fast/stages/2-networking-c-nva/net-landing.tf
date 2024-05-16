@@ -57,6 +57,15 @@ module "dmz-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
+  delete_default_routes_on_create = true
+  routes = {
+    default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+    }
+  }
 }
 
 module "dmz-firewall" {

@@ -18,21 +18,21 @@
 
 locals {
   test-vms = {
-    dev = {
+    dev-spoke-primary = {
       region     = var.regions.primary
       project_id = module.dev-spoke-project.project_id
       zone       = "b"
       network    = module.dev-spoke-vpc.self_link
       subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
     }
-    landing = {
+    landing-primary = {
       region     = var.regions.primary
       project_id = module.landing-project.project_id
       zone       = "b"
       network    = module.landing-vpc.self_link
       subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
     }
-    prod = {
+    prod-spoke-primary = {
       region     = var.regions.primary
       project_id = module.prod-spoke-project.project_id
       zone       = "b"
@@ -71,9 +71,4 @@ module "test-vms" {
       apt install -y iputils-ping bind9-dnsutils
     EOF
   }
-}
-
-output "ping_commands" {
-  description = "Ping commands that can be run to check VPC reachability."
-  value       = var.create_test_instances ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${module.test-vms[instance].internal_ip} # ${instance}"]) : ""
 }

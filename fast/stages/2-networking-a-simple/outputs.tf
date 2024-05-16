@@ -99,6 +99,11 @@ output "host_project_numbers" {
   value       = local.host_project_numbers
 }
 
+output "ping_commands" {
+  description = "Ping commands for test instances to be run to check VPC reachability."
+  value       = var.create_test_instances ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${module.test-vms[instance].internal_ip} # ${instance}"]) : ""
+}
+
 output "shared_vpc_self_links" {
   description = "Shared VPC host projects."
   value       = local.vpc_self_links
