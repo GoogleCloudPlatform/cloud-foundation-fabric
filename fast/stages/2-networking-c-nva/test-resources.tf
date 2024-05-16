@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,242 +14,112 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description temporary instances for testing
+# tfdoc:file:description Temporary instances for testing
 
-# # dmz (Landing)
+locals {
+  test-vms = {
+    dev-spoke-primary = {
+      network    = module.dev-spoke-vpc.self_link
+      project_id = module.dev-spoke-project.project_id
+      region     = var.regions.primary
+      subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
+      tags       = [local.region_shortnames[var.regions.primary]]
+      zone       = "b"
+    }
+    dev-spoke-secondary = {
+      network    = module.dev-spoke-vpc.self_link
+      project_id = module.dev-spoke-project.project_id
+      region     = var.regions.secondary
+      subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default"]
+      tags       = [local.region_shortnames[var.regions.secondary]]
+      zone       = "b"
+    }
+    dmz-primary = {
+      network    = module.dmz-vpc.self_link
+      project_id = module.landing-project.project_id
+      region     = var.regions.primary
+      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/dmz-default"]
+      tags       = [local.region_shortnames[var.regions.primary]]
+      zone       = "b"
+    }
+    dmz-secondary = {
+      network    = module.dmz-vpc.self_link
+      project_id = module.landing-project.project_id
+      region     = var.regions.secondary
+      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/dmz-default"]
+      tags       = [local.region_shortnames[var.regions.secondary]]
+      zone       = "b"
+    }
+    landing-primary = {
+      network    = module.landing-vpc.self_link
+      project_id = module.landing-project.project_id
+      region     = var.regions.primary
+      subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
+      tags       = [local.region_shortnames[var.regions.primary]]
+      zone       = "b"
+    }
+    landing-secondary = {
+      network    = module.landing-vpc.self_link
+      project_id = module.landing-project.project_id
+      region     = var.regions.secondary
+      subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default"]
+      tags       = [local.region_shortnames[var.regions.secondary]]
+      zone       = "b"
+    }
+    prod-spoke-primary = {
+      network    = module.prod-spoke-vpc.self_link
+      project_id = module.prod-spoke-project.project_id
+      region     = var.regions.primary
+      subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
+      tags       = [local.region_shortnames[var.regions.primary]]
+      zone       = "b"
+    }
+    prod-spoke-secondary = {
+      network    = module.prod-spoke-vpc.self_link
+      project_id = module.prod-spoke-project.project_id
+      region     = var.regions.secondary
+      subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default"]
+      tags       = [local.region_shortnames[var.regions.secondary]]
+      zone       = "b"
+    }
+  }
+}
 
-# module "test-vm-dmz-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.landing-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-unt-pri-0"
-#   network_interfaces = [{
-#     network    = module.dmz-vpc.self_link
-#     subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/dmz-default"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+module "test-vms" {
+  for_each = var.create_test_instances ? local.test-vms : {}
+  # for_each   = {}
+  source     = "../../../modules/compute-vm"
+  project_id = each.value.project_id
+  zone       = "${each.value.region}-${each.value.zone}"
+  name       = "test-vm-${each.key}"
+  network_interfaces = [{
+    network = each.value.network
+    # change the subnet name to match the values you are actually using
+    subnetwork = each.value.subnetwork
+  }]
+  instance_type = "e2-micro"
+  tags = concat(
+    ["ssh"],
+    each.value.tags == null ? [] : each.value.tags
+  )
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install -y iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-dmz-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.landing-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-unt-sec-0"
-#   network_interfaces = [{
-#     network    = module.dmz-vpc.self_link
-#     subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/dmz-default"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# # landing (hub)
-
-# module "test-vm-landing-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.landing-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-tru-pri-0"
-#   network_interfaces = [{
-#     network    = module.landing-vpc.self_link
-#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# module "test-vm-landing-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.landing-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-tru-sec-0"
-#   network_interfaces = [{
-#     network    = module.landing-vpc.self_link
-#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# # Dev spoke
-
-# module "test-vm-dev-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-spoke-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-dev-pri-0"
-#   network_interfaces = [{
-#     network = module.dev-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# module "test-vm-dev-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-spoke-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-dev-sec-0"
-#   network_interfaces = [{
-#     network = module.dev-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# # Prod spoke
-
-# module "test-vm-prod-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.prod-spoke-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-prod-pri-0"
-#   network_interfaces = [{
-#     network = module.prod-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#         type  = "pd-balanced"
-#         size  = 10
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# module "test-vm-prod-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.prod-spoke-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-prod-sec-0"
-#   network_interfaces = [{
-#     network = module.prod-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+output "ping_commands" {
+  description = "Ping commands that can be run to check VPC reachability."
+  value       = var.create_test_instances ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${module.test-vms[instance].internal_ip} # ${instance}"]) : ""
+}

@@ -89,6 +89,15 @@ module "dev-spoke-vpc" {
     private    = true
     restricted = true
   }
+  delete_default_routes_on_create = true
+  routes = {
+    default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+    }
+  }
 }
 
 module "dev-spoke-firewall" {

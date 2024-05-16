@@ -60,7 +60,7 @@ module "landing-dns-priv-gcp" {
     domain = "gcp.example.com."
     private = {
       client_networks = [
-        module.dmz-vpc.self_link,
+        # module.dmz-vpc.self_link,
         module.landing-vpc.self_link
       ]
     }

@@ -78,16 +78,24 @@ module "prod-spoke-vpc" {
   dns_policy = {
     logging = var.dns.enable_logging
   }
-  factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
-  }
-  psa_configs = var.psa_ranges.prod
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true
     restricted = true
   }
-}
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
+  }
+  psa_configs                     = var.psa_ranges.prod
+  delete_default_routes_on_create = true
+  routes = {
+    default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+    }
+  } }
 
 module "prod-spoke-firewall" {
   source     = "../../../modules/net-vpc-firewall"

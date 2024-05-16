@@ -4,7 +4,7 @@
 # You can retain `---` (start of the document) to indicate an empty document.
 
 ingress:
-  allow-onprem-probes-example:
+  allow-onprem-probes-landing-example:
     description: "Allow traffic from onprem probes"
     source_ranges:
       - onprem_probes
