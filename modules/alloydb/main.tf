@@ -18,6 +18,9 @@ locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   # has_replicas = try(length(var.replicas) > 0, false)
   is_regional = var.availability_type == "REGIONAL" ? true : false
+  # secondary instance type is aligned with cluster type unless apply is targeting a promotion, in that
+  # case cluster will be 'primary' while instance still 'secondary'.
+  secondary_instance_type = try(var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY" ? "SECONDARY" : google_alloydb_cluster.secondary[0].cluster_type, null)
 
   users = {
     for k, v in coalesce(var.users, {}) :
@@ -25,7 +28,7 @@ locals {
       name     = k
       password = try(v.type, "ALLOYDB_BUILT_IN") == "ALLOYDB_BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
       roles    = v.roles
-      type     = try(v.type, "ALLOYDB_BUILT_IN")
+      type     = coalesce(v.type, "ALLOYDB_BUILT_IN")
     }
   }
 }
@@ -39,15 +42,15 @@ resource "google_alloydb_cluster" "primary" {
   location         = var.location
 
   network_config {
-    network            = var.cluster_network_config.network
-    allocated_ip_range = var.cluster_network_config.allocated_ip_range
+    network            = var.network_config.network
+    allocated_ip_range = var.network_config.allocated_ip_range
   }
 
   dynamic "automated_backup_policy" {
     for_each = var.automated_backup_configuration.enabled ? { 1 = 1 } : {}
     content {
       enabled       = true
-      location      = var.automated_backup_configuration.location
+      location      = try(var.automated_backup_configuration.location, var.location)
       backup_window = var.automated_backup_configuration.backup_window
       labels        = var.labels
 
@@ -88,7 +91,7 @@ resource "google_alloydb_cluster" "primary" {
     for_each = var.continuous_backup_configuration.enabled ? { 1 = 1 } : {}
     content {
       enabled              = true
-      recovery_window_days = 14
+      recovery_window_days = var.continuous_backup_configuration.recovery_window_days
       dynamic "encryption_config" {
         for_each = var.encryption_config != null ? { 1 = 1 } : {}
         content {
@@ -113,16 +116,6 @@ resource "google_alloydb_cluster" "primary" {
     }
   }
 
-  #  TODO manage backup restore
-  #  restore_backup_source {
-  #    backup_name = ""
-  #  }
-
-  #  restore_continuous_backup_source {
-  #    cluster = ""
-  #    point_in_time = ""
-  #  }
-
   dynamic "maintenance_update_policy" {
     for_each = var.maintenance_config.enabled ? { 1 = 1 } : {}
     content {
@@ -141,30 +134,13 @@ resource "google_alloydb_cluster" "primary" {
 
 resource "google_alloydb_instance" "primary" {
   cluster           = google_alloydb_cluster.primary.id
-  instance_id       = "${local.prefix}${var.name}"
-  instance_type     = "PRIMARY"
   availability_type = var.availability_type
   database_flags    = var.flags
   display_name      = "${local.prefix}${var.name}"
-  gce_zone          = local.is_regional ? null : var.location
+  instance_id       = "${local.prefix}${var.name}"
+  instance_type     = "PRIMARY"
+  gce_zone          = local.is_regional ? null : var.gce_zone
   labels            = var.labels
-
-  dynamic "query_insights_config" {
-    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
-    content {
-      query_string_length     = var.query_insights_config.query_string_length
-      record_application_tags = var.query_insights_config.record_application_tags
-      record_client_address   = var.query_insights_config.record_client_address
-      query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
-    }
-  }
-
-  dynamic "machine_config" {
-    for_each = var.machine_config != null ? { 1 = 1 } : {}
-    content {
-      cpu_count = var.machine_config.cpu_count
-    }
-  }
 
   dynamic "client_connection_config" {
     for_each = var.client_connection_config != null ? { 1 = 1 } : {}
@@ -179,16 +155,33 @@ resource "google_alloydb_instance" "primary" {
     }
   }
 
+  dynamic "machine_config" {
+    for_each = var.machine_config != null ? { 1 = 1 } : {}
+    content {
+      cpu_count = var.machine_config.cpu_count
+    }
+  }
+
   dynamic "network_config" {
-    for_each = var.instance_network_config != null ? { 1 = 1 } : {}
+    for_each = var.network_config != null ? { 1 = 1 } : {}
     content {
       dynamic "authorized_external_networks" {
-        for_each = var.instance_network_config.authorized_external_networks
+        for_each = coalesce(var.network_config.authorized_external_networks, [])
         content {
           cidr_range = authorized_external_networks.value
         }
       }
-      enable_public_ip = var.instance_network_config.enable_public_ip
+      enable_public_ip = var.network_config.enable_public_ip
+    }
+  }
+
+  dynamic "query_insights_config" {
+    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
+    content {
+      query_string_length     = var.query_insights_config.query_string_length
+      record_application_tags = var.query_insights_config.record_application_tags
+      record_client_address   = var.query_insights_config.record_client_address
+      query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
     }
   }
 }
@@ -197,22 +190,22 @@ resource "google_alloydb_cluster" "secondary" {
   count            = var.cross_region_replication.enabled ? 1 : 0
   project          = var.project_id
   cluster_id       = "${local.prefix}${var.cluster_name}-secondary"
-  cluster_type     = "SECONDARY"
+  cluster_type     = var.cross_region_replication.promote_secondary ? "PRIMARY" : "SECONDARY"
   database_version = var.database_version
   deletion_policy  = "FORCE"
   labels           = var.labels
   location         = var.cross_region_replication.region
 
   network_config {
-    network            = var.cluster_network_config.network
-    allocated_ip_range = var.cluster_network_config.allocated_ip_range
+    network            = var.network_config.network
+    allocated_ip_range = var.network_config.allocated_ip_range
   }
 
   dynamic "automated_backup_policy" {
     for_each = var.automated_backup_configuration.enabled ? { 1 = 1 } : {}
     content {
       enabled       = true
-      location      = var.automated_backup_configuration.location
+      location      = var.cross_region_replication.region
       backup_window = var.automated_backup_configuration.backup_window
       labels        = var.labels
 
@@ -253,7 +246,7 @@ resource "google_alloydb_cluster" "secondary" {
     for_each = var.continuous_backup_configuration.enabled ? { 1 = 1 } : {}
     content {
       enabled              = true
-      recovery_window_days = 14
+      recovery_window_days = var.continuous_backup_configuration.recovery_window_days
       dynamic "encryption_config" {
         for_each = var.encryption_config != null ? { 1 = 1 } : {}
         content {
@@ -293,8 +286,11 @@ resource "google_alloydb_cluster" "secondary" {
     }
   }
 
-  secondary_config {
-    primary_cluster_name = google_alloydb_cluster.primary.id
+  dynamic "secondary_config" {
+    for_each = var.cross_region_replication.promote_secondary ? {} : { 1 = 1 }
+    content {
+      primary_cluster_name = google_alloydb_cluster.primary.id
+    }
   }
 
   depends_on = [google_alloydb_instance.primary]
@@ -302,31 +298,14 @@ resource "google_alloydb_cluster" "secondary" {
 
 resource "google_alloydb_instance" "secondary" {
   count             = var.cross_region_replication.enabled ? 1 : 0
-  cluster           = google_alloydb_cluster.secondary[0].id
-  instance_id       = "${local.prefix}${var.name}-secondary"
-  instance_type     = google_alloydb_cluster.secondary[0].cluster_type
   availability_type = var.availability_type
-  database_flags    = var.flags
+  cluster           = google_alloydb_cluster.secondary[0].id
+  database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
   display_name      = "${local.prefix}${var.name}"
-  gce_zone          = local.is_regional ? null : var.location
+  gce_zone          = local.is_regional ? null : var.gce_zone
+  instance_id       = "${local.prefix}${var.name}-secondary"
+  instance_type     = local.secondary_instance_type
   labels            = var.labels
-
-  dynamic "query_insights_config" {
-    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
-    content {
-      query_string_length     = var.query_insights_config.query_string_length
-      record_application_tags = var.query_insights_config.record_application_tags
-      record_client_address   = var.query_insights_config.record_client_address
-      query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
-    }
-  }
-
-  dynamic "machine_config" {
-    for_each = var.machine_config != null ? { 1 = 1 } : {}
-    content {
-      cpu_count = var.machine_config.cpu_count
-    }
-  }
 
   dynamic "client_connection_config" {
     for_each = var.client_connection_config != null ? { 1 = 1 } : {}
@@ -341,16 +320,33 @@ resource "google_alloydb_instance" "secondary" {
     }
   }
 
+  dynamic "machine_config" {
+    for_each = var.machine_config != null ? { 1 = 1 } : {}
+    content {
+      cpu_count = var.machine_config.cpu_count
+    }
+  }
+
   dynamic "network_config" {
-    for_each = var.instance_network_config != null ? { 1 = 1 } : {}
+    for_each = var.network_config != null ? { 1 = 1 } : {}
     content {
       dynamic "authorized_external_networks" {
-        for_each = var.instance_network_config.authorized_external_networks
+        for_each = coalesce(var.network_config.authorized_external_networks, [])
         content {
           cidr_range = authorized_external_networks.value
         }
       }
-      enable_public_ip = var.instance_network_config.enable_public_ip
+      enable_public_ip = var.network_config.enable_public_ip
+    }
+  }
+
+  dynamic "query_insights_config" {
+    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
+    content {
+      query_string_length     = var.query_insights_config.query_string_length
+      record_application_tags = var.query_insights_config.record_application_tags
+      record_client_address   = var.query_insights_config.record_client_address
+      query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
     }
   }
 }

@@ -55,11 +55,13 @@ variable "automated_backup_configuration" {
     condition = (
       var.automated_backup_configuration.enabled ? (
         # Maintenance window validation below
-        !(var.automated_backup_configuration.retention_count != null && var.automated_backup_configuration.retention_period) &&
+        !(var.automated_backup_configuration.retention_count != null && var.automated_backup_configuration.retention_period != null) &&
         # Maintenance window day validation
-        contains([
-          "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
-      ], var.automated_backup_configuration.weekly_schedule.days_of_week)) : true
+        length([
+          for day in var.automated_backup_configuration.weekly_schedule.days_of_week : true
+          if contains(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"], day)
+        ]) == length(var.automated_backup_configuration.weekly_schedule.days_of_week)
+      ) : true
     )
     error_message = "Days of week must contains one or more days with the following format 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'. You can only specify retention_count or retention_period."
   }
@@ -87,15 +89,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_network_config" {
-  description = "Network configuration for the cluster. Only one between cluster_network_config and cluster_psc_config can be used."
-  type = object({
-    network            = string
-    allocated_ip_range = optional(string, null)
-  })
-  nullable = false
-}
-
 variable "continuous_backup_configuration" {
   description = "Continuous backup settings for cluster."
   nullable    = true
@@ -104,7 +97,7 @@ variable "continuous_backup_configuration" {
     recovery_window_days = optional(number, 14)
   })
   default = {
-    enabled              = false
+    enabled              = true
     recovery_window_days = 14
   }
 }
@@ -151,6 +144,11 @@ variable "flags" {
   default     = null
 }
 
+variable "gce_zone" {
+  description = "The GCE zone that the instance should serve from. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown."
+  type        = string
+  default     = null
+}
 
 variable "initial_user" {
   description = "AlloyDB cluster initial user credentials."
@@ -159,21 +157,6 @@ variable "initial_user" {
     password = string
   })
   default = null
-}
-
-variable "instance_network_config" {
-  description = "Network configuration for the instance. Only one between instance_network_config and instance_psc_config can be used."
-  type = object({
-    authorized_external_networks = list(string)
-    enable_public_ip             = bool
-  })
-  default = null
-  validation {
-    condition = var.instance_network_config == null ? true : (
-      (length(var.instance_network_config.authorized_external_networks) != 0 && var.instance_network_config.enable_public_ip) || !var.instance_network_config.enable_public_ip
-    ) ? true : false
-    error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
-  }
 }
 
 variable "labels" {
@@ -243,6 +226,21 @@ variable "name" {
   type        = string
 }
 
+variable "network_config" {
+  description = "Network configuration for cluster and instance. Only one between cluster_network_config and cluster_psc_config can be used."
+  type = object({
+    network                      = string
+    allocated_ip_range           = optional(string, null)
+    authorized_external_networks = optional(list(string), null)
+    enable_public_ip             = optional(bool, false)
+  })
+  nullable = false
+  validation {
+    condition     = (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip) || try(length(var.network_config.authorized_external_networks), 0) == 0
+    error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
+  }
+}
+
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
   type        = string
@@ -285,7 +283,7 @@ variable "users" {
   validation {
     condition = alltrue([
       for user in coalesce(var.users, {}) :
-      contains(["ALLOYDB_BUILT_IN", "ALLOYDB_IAM_USER"], user.type)
+      try(contains(["ALLOYDB_BUILT_IN", "ALLOYDB_IAM_USER"], user.type), true)
     ])
     error_message = "User type must one of 'ALLOYDB_BUILT_IN', 'ALLOYDB_IAM_USER'"
   }
