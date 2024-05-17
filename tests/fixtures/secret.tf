@@ -18,7 +18,7 @@ resource "google_project_iam_binding" "bindings" {
   members = ["serviceAccount:${var.service_identities.secret_identity}"]
 }
 
-resource "google_kms_key_ring" "key_rings"{
+resource "google_kms_key_ring" "key_rings" {
   for_each = var.regions
   name     = "keyring-${each.key}"
   project  = var.project_id
