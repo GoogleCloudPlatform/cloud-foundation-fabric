@@ -10,7 +10,7 @@ The code is intentionally simple, as it's intended to provide a generic initial 
 The following diagram is a high level reference of the resources created and managed here:
 
 <p align="center">
-  <img src="diagram.svg" alt="Resource-management diagram">
+  <img src="diagram.png" alt="Resource-management diagram">
 </p>
 
 <!-- BEGIN TOC -->
