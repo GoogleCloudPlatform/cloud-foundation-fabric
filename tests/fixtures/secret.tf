@@ -18,28 +18,29 @@ resource "google_project_iam_binding" "bindings" {
   members = ["serviceAccount:${var.service_identities.secret_identity}"]
 }
 
-resource "google_kms_key_ring" "keyring_1" {
-  name     = "keyring-1"
+resource "google_kms_key_ring" "key_rings"{
+  for_each = var.regions
+  name     = "keyring-${each.key}"
   project  = var.project_id
-  location = var.region_1
+  location = each.value
 }
 
-resource "google_kms_crypto_key" "key_1" {
-  name            = "crypto-key-example-1"
-  key_ring        = google_kms_key_ring.keyring_1.id
+resource "google_kms_crypto_key" "keys" {
+  for_each        = var.regions
+  name            = "crypto-key-${each.key}"
+  key_ring        = google_kms_key_ring.key_rings[each.key].id
   rotation_period = "100000s"
-  depends_on      = [google_project_iam_binding.bindings]
 }
 
-resource "google_kms_key_ring" "keyring_gl" {
-  name     = "keyring-gl"
+resource "google_kms_key_ring" "keyring_global" {
+  name     = "keyring-global"
   project  = var.project_id
   location = "global"
 }
 
-resource "google_kms_crypto_key" "key_gl" {
-  name            = "crypto-key-example-gl"
-  key_ring        = google_kms_key_ring.keyring_gl.id
+resource "google_kms_crypto_key" "key_global" {
+  name            = "crypto-key-example-global"
+  key_ring        = google_kms_key_ring.keyring_global.id
   rotation_period = "100000s"
   depends_on      = [google_project_iam_binding.bindings]
 }
