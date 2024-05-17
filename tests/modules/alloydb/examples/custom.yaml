@@ -23,7 +23,7 @@ values:
         recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
-    display_name: null
+    display_name: primary
     encryption_config: []
     etag: null
     initial_user: []

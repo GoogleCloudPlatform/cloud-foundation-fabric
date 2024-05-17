@@ -17,9 +17,11 @@
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   # has_replicas = try(length(var.replicas) > 0, false)
-  is_regional = var.availability_type == "REGIONAL" ? true : false
+  is_regional = var.availability_type == "REGIONAL"
   # secondary instance type is aligned with cluster type unless apply is targeting a promotion, in that
   # case cluster will be 'primary' while instance still 'secondary'.
+  primary_cluster_name    = "${local.prefix}${var.cluster_name}"
+  primary_instance_name   = "${local.prefix}${var.name}"
   secondary_cluster_name  = coalesce(var.secondary_cluster_name, "${var.cluster_name}-sec")
   secondary_instance_name = coalesce(var.secondary_name, "${var.name}-sec")
   secondary_instance_type = try(var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY" ? "SECONDARY" : google_alloydb_cluster.secondary[0].cluster_type, null)
@@ -36,9 +38,12 @@ locals {
 
 resource "google_alloydb_cluster" "primary" {
   project          = var.project_id
-  cluster_id       = "${local.prefix}${var.cluster_name}"
+  annotations      = var.annotations
+  cluster_id       = local.primary_cluster_name
+  cluster_type     = "PRIMARY"
   database_version = var.database_version
   deletion_policy  = var.deletion_policy
+  display_name     = coalesce(var.cluster_display_name, local.primary_cluster_name)
   labels           = var.labels
   location         = var.location
 
@@ -48,7 +53,7 @@ resource "google_alloydb_cluster" "primary" {
   }
 
   dynamic "automated_backup_policy" {
-    for_each = var.automated_backup_configuration.enabled ? { 1 = 1 } : {}
+    for_each = var.automated_backup_configuration.enabled ? [""] : []
     content {
       enabled       = true
       location      = try(var.automated_backup_configuration.location, var.location)
@@ -56,7 +61,7 @@ resource "google_alloydb_cluster" "primary" {
       labels        = var.labels
 
       dynamic "encryption_config" {
-        for_each = var.encryption_config != null ? { 1 = 1 } : {}
+        for_each = var.encryption_config != null ? [""] : []
         content {
           kms_key_name = var.encryption_config.primary_kms_key_name
         }
@@ -73,14 +78,14 @@ resource "google_alloydb_cluster" "primary" {
       }
 
       dynamic "quantity_based_retention" {
-        for_each = var.automated_backup_configuration.retention_count != null ? { 1 = 1 } : {}
+        for_each = var.automated_backup_configuration.retention_count != null ? [""] : []
         content {
           count = var.automated_backup_configuration.retention_count
         }
       }
 
       dynamic "time_based_retention" {
-        for_each = var.automated_backup_configuration.retention_period != null ? { 1 = 1 } : {}
+        for_each = var.automated_backup_configuration.retention_period != null ? [""] : []
         content {
           retention_period = var.automated_backup_configuration.retention_period
         }
@@ -89,12 +94,12 @@ resource "google_alloydb_cluster" "primary" {
   }
 
   dynamic "continuous_backup_config" {
-    for_each = var.continuous_backup_configuration.enabled ? { 1 = 1 } : {}
+    for_each = var.continuous_backup_configuration.enabled ? [""] : []
     content {
       enabled              = true
       recovery_window_days = var.continuous_backup_configuration.recovery_window_days
       dynamic "encryption_config" {
-        for_each = var.encryption_config != null ? { 1 = 1 } : {}
+        for_each = var.encryption_config != null ? [""] : []
         content {
           kms_key_name = var.encryption_config.primary_kms_key_name
         }
@@ -103,14 +108,14 @@ resource "google_alloydb_cluster" "primary" {
   }
 
   dynamic "encryption_config" {
-    for_each = var.encryption_config != null ? { 1 = 1 } : {}
+    for_each = var.encryption_config != null ? [""] : []
     content {
       kms_key_name = var.encryption_config.primary_kms_key_name
     }
   }
 
   dynamic "initial_user" {
-    for_each = var.initial_user != null ? { 1 = 1 } : {}
+    for_each = var.initial_user != null ? [""] : []
     content {
       user     = var.initial_user.user
       password = var.initial_user.password
@@ -118,7 +123,7 @@ resource "google_alloydb_cluster" "primary" {
   }
 
   dynamic "maintenance_update_policy" {
-    for_each = var.maintenance_config.enabled ? { 1 = 1 } : {}
+    for_each = var.maintenance_config.enabled ? [""] : []
     content {
       maintenance_windows {
         day = var.maintenance_config.day
@@ -134,21 +139,22 @@ resource "google_alloydb_cluster" "primary" {
 }
 
 resource "google_alloydb_instance" "primary" {
-  cluster           = google_alloydb_cluster.primary.id
+  annotations       = var.annotations
   availability_type = var.availability_type
+  cluster           = google_alloydb_cluster.primary.id
   database_flags    = var.flags
-  display_name      = "${local.prefix}${var.name}"
-  instance_id       = "${local.prefix}${var.name}"
+  display_name      = coalesce(var.display_name, local.primary_instance_name)
+  instance_id       = local.primary_instance_name
   instance_type     = "PRIMARY"
   gce_zone          = local.is_regional ? null : var.gce_zone
   labels            = var.labels
 
   dynamic "client_connection_config" {
-    for_each = var.client_connection_config != null ? { 1 = 1 } : {}
+    for_each = var.client_connection_config != null ? [""] : []
     content {
       require_connectors = var.client_connection_config.require_connectors
       dynamic "ssl_config" {
-        for_each = var.client_connection_config.ssl_config != null ? { 1 = 1 } : {}
+        for_each = var.client_connection_config.ssl_config != null ? [""] : []
         content {
           ssl_mode = var.client_connection_config.ssl_config.ssl_mode
         }
@@ -157,14 +163,14 @@ resource "google_alloydb_instance" "primary" {
   }
 
   dynamic "machine_config" {
-    for_each = var.machine_config != null ? { 1 = 1 } : {}
+    for_each = var.machine_config != null ? [""] : []
     content {
       cpu_count = var.machine_config.cpu_count
     }
   }
 
   dynamic "network_config" {
-    for_each = var.network_config != null ? { 1 = 1 } : {}
+    for_each = var.network_config != null ? [""] : []
     content {
       dynamic "authorized_external_networks" {
         for_each = coalesce(var.network_config.authorized_external_networks, [])
@@ -177,7 +183,7 @@ resource "google_alloydb_instance" "primary" {
   }
 
   dynamic "query_insights_config" {
-    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
+    for_each = var.query_insights_config != null ? [""] : []
     content {
       query_string_length     = var.query_insights_config.query_string_length
       record_application_tags = var.query_insights_config.record_application_tags
@@ -190,10 +196,12 @@ resource "google_alloydb_instance" "primary" {
 resource "google_alloydb_cluster" "secondary" {
   count            = var.cross_region_replication.enabled ? 1 : 0
   project          = var.project_id
+  annotations      = var.annotations
   cluster_id       = local.secondary_cluster_name
   cluster_type     = var.cross_region_replication.promote_secondary ? "PRIMARY" : "SECONDARY"
   database_version = var.database_version
   deletion_policy  = "FORCE"
+  display_name     = coalesce(var.secondary_cluster_display_name, local.secondary_cluster_name)
   labels           = var.labels
   location         = var.cross_region_replication.region
 
@@ -203,7 +211,7 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "automated_backup_policy" {
-    for_each = var.automated_backup_configuration.enabled ? { 1 = 1 } : {}
+    for_each = var.automated_backup_configuration.enabled ? [""] : []
     content {
       enabled       = true
       location      = var.cross_region_replication.region
@@ -211,7 +219,7 @@ resource "google_alloydb_cluster" "secondary" {
       labels        = var.labels
 
       dynamic "encryption_config" {
-        for_each = var.encryption_config != null ? { 1 = 1 } : {}
+        for_each = var.encryption_config != null ? [""] : []
         content {
           kms_key_name = var.encryption_config.secondary_kms_key_name
         }
@@ -228,14 +236,14 @@ resource "google_alloydb_cluster" "secondary" {
       }
 
       dynamic "quantity_based_retention" {
-        for_each = var.automated_backup_configuration.retention_count != null ? { 1 = 1 } : {}
+        for_each = var.automated_backup_configuration.retention_count != null ? [""] : []
         content {
           count = var.automated_backup_configuration.retention_count
         }
       }
 
       dynamic "time_based_retention" {
-        for_each = var.automated_backup_configuration.retention_period != null ? { 1 = 1 } : {}
+        for_each = var.automated_backup_configuration.retention_period != null ? [""] : []
         content {
           retention_period = var.automated_backup_configuration.retention_period
         }
@@ -244,12 +252,12 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "continuous_backup_config" {
-    for_each = var.continuous_backup_configuration.enabled ? { 1 = 1 } : {}
+    for_each = var.continuous_backup_configuration.enabled ? [""] : []
     content {
       enabled              = true
       recovery_window_days = var.continuous_backup_configuration.recovery_window_days
       dynamic "encryption_config" {
-        for_each = var.encryption_config != null ? { 1 = 1 } : {}
+        for_each = var.encryption_config != null ? [""] : []
         content {
           kms_key_name = var.encryption_config.secondary_kms_key_name
         }
@@ -258,14 +266,14 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "encryption_config" {
-    for_each = var.encryption_config != null ? { 1 = 1 } : {}
+    for_each = var.encryption_config != null ? [""] : []
     content {
       kms_key_name = var.encryption_config.secondary_kms_key_name
     }
   }
 
   dynamic "initial_user" {
-    for_each = var.initial_user != null ? { 1 = 1 } : {}
+    for_each = var.initial_user != null ? [""] : []
     content {
       user     = var.initial_user.user
       password = var.initial_user.password
@@ -273,7 +281,7 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "maintenance_update_policy" {
-    for_each = var.maintenance_config.enabled ? { 1 = 1 } : {}
+    for_each = var.maintenance_config.enabled ? [""] : []
     content {
       maintenance_windows {
         day = var.maintenance_config.day
@@ -288,7 +296,7 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "secondary_config" {
-    for_each = var.cross_region_replication.promote_secondary ? {} : { 1 = 1 }
+    for_each = var.cross_region_replication.promote_secondary ? [""] : []
     content {
       primary_cluster_name = google_alloydb_cluster.primary.id
     }
@@ -299,21 +307,22 @@ resource "google_alloydb_cluster" "secondary" {
 
 resource "google_alloydb_instance" "secondary" {
   count             = var.cross_region_replication.enabled ? 1 : 0
+  annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
   database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
-  display_name      = local.secondary_instance_name
+  display_name      = coalesce(var.secondary_display_name, local.secondary_instance_name)
   gce_zone          = local.is_regional ? null : var.gce_zone
   instance_id       = local.secondary_instance_name
   instance_type     = local.secondary_instance_type
   labels            = var.labels
 
   dynamic "client_connection_config" {
-    for_each = var.client_connection_config != null ? { 1 = 1 } : {}
+    for_each = var.client_connection_config != null ? [""] : []
     content {
       require_connectors = var.client_connection_config.require_connectors
       dynamic "ssl_config" {
-        for_each = var.client_connection_config.ssl_config != null ? { 1 = 1 } : {}
+        for_each = var.client_connection_config.ssl_config != null ? [""] : []
         content {
           ssl_mode = var.client_connection_config.ssl_config.ssl_mode
         }
@@ -322,14 +331,14 @@ resource "google_alloydb_instance" "secondary" {
   }
 
   dynamic "machine_config" {
-    for_each = var.machine_config != null ? { 1 = 1 } : {}
+    for_each = var.machine_config != null ? [""] : []
     content {
       cpu_count = var.machine_config.cpu_count
     }
   }
 
   dynamic "network_config" {
-    for_each = var.network_config != null ? { 1 = 1 } : {}
+    for_each = var.network_config != null ? [""] : []
     content {
       dynamic "authorized_external_networks" {
         for_each = coalesce(var.network_config.authorized_external_networks, [])
@@ -342,7 +351,7 @@ resource "google_alloydb_instance" "secondary" {
   }
 
   dynamic "query_insights_config" {
-    for_each = var.query_insights_config != null ? { 1 = 1 } : {}
+    for_each = var.query_insights_config != null ? [""] : []
     content {
       query_string_length     = var.query_insights_config.query_string_length
       record_application_tags = var.query_insights_config.record_application_tags

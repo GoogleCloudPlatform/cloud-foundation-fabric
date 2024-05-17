@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "annotations" {
+  description = "Map FLAG_NAME=>VALUE for annotations which allow client tools to store small amount of arbitrary data."
+  type        = map(string)
+  default     = null
+}
+
 variable "automated_backup_configuration" {
   description = "Automated backup settings for cluster."
   nullable    = false
@@ -84,6 +90,12 @@ variable "client_connection_config" {
   default = null
 }
 
+variable "cluster_display_name" {
+  description = "Display name of the primary cluster."
+  type        = string
+  default     = null
+}
+
 variable "cluster_name" {
   description = "Name of the primary cluster."
   type        = string
@@ -124,6 +136,12 @@ variable "database_version" {
 
 variable "deletion_policy" {
   description = "AlloyDB cluster and instance deletion policy."
+  type        = string
+  default     = null
+}
+
+variable "display_name" {
+  description = "AlloyDB instance display name."
   type        = string
   default     = null
 }
@@ -272,8 +290,20 @@ variable "query_insights_config" {
   }
 }
 
+variable "secondary_cluster_display_name" {
+  description = "Display name of secondary cluster instance."
+  type        = string
+  default     = null
+}
+
 variable "secondary_cluster_name" {
   description = "Name of secondary cluster instance."
+  type        = string
+  default     = null
+}
+
+variable "secondary_display_name" {
+  description = "Display name of secondary instance."
   type        = string
   default     = null
 }
