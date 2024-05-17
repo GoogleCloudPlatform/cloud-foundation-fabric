@@ -20,8 +20,9 @@ locals {
   is_regional = var.availability_type == "REGIONAL" ? true : false
   # secondary instance type is aligned with cluster type unless apply is targeting a promotion, in that
   # case cluster will be 'primary' while instance still 'secondary'.
+  secondary_cluster_name  = coalesce(var.secondary_cluster_name, "${var.cluster_name}-sec")
+  secondary_instance_name = coalesce(var.secondary_name, "${var.name}-sec")
   secondary_instance_type = try(var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY" ? "SECONDARY" : google_alloydb_cluster.secondary[0].cluster_type, null)
-
   users = {
     for k, v in coalesce(var.users, {}) :
     k => {
@@ -189,7 +190,7 @@ resource "google_alloydb_instance" "primary" {
 resource "google_alloydb_cluster" "secondary" {
   count            = var.cross_region_replication.enabled ? 1 : 0
   project          = var.project_id
-  cluster_id       = "${local.prefix}${var.cluster_name}-secondary"
+  cluster_id       = local.secondary_cluster_name
   cluster_type     = var.cross_region_replication.promote_secondary ? "PRIMARY" : "SECONDARY"
   database_version = var.database_version
   deletion_policy  = "FORCE"
@@ -301,9 +302,9 @@ resource "google_alloydb_instance" "secondary" {
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
   database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
-  display_name      = "${local.prefix}${var.name}"
+  display_name      = local.secondary_instance_name
   gce_zone          = local.is_regional ? null : var.gce_zone
-  instance_id       = "${local.prefix}${var.name}-secondary"
+  instance_id       = local.secondary_instance_name
   instance_type     = local.secondary_instance_type
   labels            = var.labels
 
