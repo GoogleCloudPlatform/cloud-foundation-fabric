@@ -11,7 +11,7 @@ It is intentionally simple, to minimize usage of administrative-level permission
 Use the following diagram as a simple high level reference for the following sections, which describe the stage and its possible customizations in detail.
 
 <p align="center">
-  <img src="diagram.svg" alt="Organization-level diagram">
+  <img src="diagram.png" alt="Organization-level diagram">
 </p>
 
 <!-- BEGIN TOC -->

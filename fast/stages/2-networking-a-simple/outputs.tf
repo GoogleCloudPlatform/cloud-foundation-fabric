@@ -62,7 +62,6 @@ locals {
   }
   vpc_self_links = {
     prod-landing = module.landing-vpc.self_link
-    prod-dmz     = module.dmz-vpc.self_link
     dev-spoke-0  = module.dev-spoke-vpc.self_link
     prod-spoke-0 = module.prod-spoke-vpc.self_link
   }
@@ -84,6 +83,11 @@ resource "google_storage_bucket_object" "tfvars" {
 }
 
 # outputs
+
+output "cloud_dns_inbound_policy" {
+  description = "IP Addresses for Cloud DNS inbound policy."
+  value       = [for s in module.landing-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+}
 
 output "host_project_ids" {
   description = "Network project ids."
@@ -113,13 +117,9 @@ output "tfvars" {
 
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
-  value = {
-    onprem-primary = var.vpn_onprem_primary_config == null ? {} : {
+  value = var.vpn_onprem_primary_config == null ? null : {
+    onprem-primary = {
       for v in module.landing-to-onprem-primary-vpn[0].gateway.vpn_interfaces :
-      v.id => v.ip_address
-    }
-    onprem-secondary = var.vpn_onprem_secondary_config == null ? {} : {
-      for v in module.landing-to-onprem-secondary-vpn[0].gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }
