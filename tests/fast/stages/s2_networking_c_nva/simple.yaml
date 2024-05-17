@@ -26,7 +26,7 @@ counts:
   google_compute_network_peering: 4
   google_compute_region_backend_service: 4
   google_compute_region_instance_group_manager: 4
-  google_compute_route: 14
+  google_compute_route: 15
   google_compute_router: 4
   google_compute_router_interface: 4
   google_compute_router_nat: 2
@@ -53,4 +53,4 @@ counts:
   google_vpc_access_connector: 2
   modules: 43
   random_id: 2
-  resources: 201
+  resources: 202

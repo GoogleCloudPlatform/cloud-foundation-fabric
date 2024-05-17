@@ -139,21 +139,6 @@ variable "folder_ids" {
   })
 }
 
-variable "gcp_ranges" {
-  description = "GCP address ranges in name => range format."
-  type        = map(string)
-  default = {
-    gcp_dev_primary               = "10.68.0.0/16"
-    gcp_dev_secondary             = "10.84.0.0/16"
-    gcp_landing_landing_primary   = "10.64.0.0/17"
-    gcp_landing_landing_secondary = "10.80.0.0/17"
-    gcp_dmz_primary               = "10.64.127.0/17"
-    gcp_dmz_secondary             = "10.80.127.0/17"
-    gcp_prod_primary              = "10.72.0.0/16"
-    gcp_prod_secondary            = "10.88.0.0/16"
-  }
-}
-
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -182,7 +167,7 @@ variable "prefix" {
 }
 
 variable "psa_ranges" {
-  description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
+  description = "IP ranges used for Private Service Access (CloudSQL, etc.)."
   type = object({
     dev = optional(list(object({
       ranges         = map(string)
@@ -227,51 +212,58 @@ variable "service_accounts" {
   default = null
 }
 
-variable "vpn_onprem_primary_config" {
-  description = "VPN gateway configuration for onprem interconnection in the primary region."
+variable "spoke_configs" {
+  description = "Spoke connectivity configurations."
   type = object({
-    peer_external_gateways = map(object({
-      redundancy_type = string
-      interfaces      = list(string)
+    peering_configs = optional(object({
+      dev = optional(object({
+        export        = optional(bool, true)
+        import        = optional(bool, true)
+        public_export = optional(bool)
+        public_import = optional(bool)
+      }), {})
+      prod = optional(object({
+        export        = optional(bool, true)
+        import        = optional(bool, true)
+        public_export = optional(bool)
+        public_import = optional(bool)
+      }), {})
     }))
-    router_config = object({
-      create    = optional(bool, true)
-      asn       = number
-      name      = optional(string)
-      keepalive = optional(number)
-      custom_advertise = optional(object({
-        all_subnets = bool
-        ip_ranges   = map(string)
-      }))
-    })
-    tunnels = map(object({
-      bgp_peer = object({
-        address        = string
-        asn            = number
-        route_priority = optional(number, 1000)
+    vpn_configs = optional(object({
+      dev = optional(object({
+        asn = optional(number, 65501)
         custom_advertise = optional(object({
-          all_subnets          = bool
-          all_vpc_subnets      = bool
-          all_peer_vpc_subnets = bool
-          ip_ranges            = map(string)
+          all_subnets = bool
+          ip_ranges   = map(string)
         }))
-      })
-      # each BGP session on the same Cloud Router must use a unique /30 CIDR
-      # from the 169.254.0.0/16 block.
-      bgp_session_range               = string
-      ike_version                     = optional(number, 2)
-      peer_external_gateway_interface = optional(number)
-      peer_gateway                    = optional(string, "default")
-      router                          = optional(string)
-      shared_secret                   = optional(string)
-      vpn_gateway_interface           = number
+      }), {})
+      landing = optional(object({
+        asn = optional(number, 65500)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+      }), {})
+      prod = optional(object({
+        asn = optional(number, 65502)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+      }), {})
     }))
   })
-  default = null
+  default = {
+    peering_configs = {}
+  }
+  validation {
+    condition     = (var.spoke_configs.peering_configs == null) != (var.spoke_configs.vpn_configs == null)
+    error_message = "Only one of `var.spoke_configs.peering_configs` or `var.spoke_configs.vpn_configs` must be configured."
+  }
 }
 
-variable "vpn_onprem_secondary_config" {
-  description = "VPN gateway configuration for onprem interconnection in the secondary region."
+variable "vpn_onprem_primary_config" {
+  description = "VPN gateway configuration for onprem interconnection in the primary region."
   type = object({
     peer_external_gateways = map(object({
       redundancy_type = string

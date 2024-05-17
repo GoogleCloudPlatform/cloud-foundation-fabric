@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,16 @@ module "prod-spoke-project" {
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = concat([
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "iap.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "stackdriver.googleapis.com",
-    "vpcaccess.googleapis.com"
+  services = concat(
+    [
+      "container.googleapis.com",
+      "compute.googleapis.com",
+      "dns.googleapis.com",
+      "iap.googleapis.com",
+      "networkmanagement.googleapis.com",
+      "servicenetworking.googleapis.com",
+      "stackdriver.googleapis.com",
+      "vpcaccess.googleapis.com"
     ],
     (
       var.fast_features.gcve
@@ -80,41 +81,14 @@ module "prod-spoke-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
-  delete_default_routes_on_create = true
   psa_configs                     = var.psa_ranges.prod
-  # Set explicit routes for googleapis; send everything else to NVAs
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
+  delete_default_routes_on_create = true
   routes = {
-    nva-primary-to-primary = {
+    default = {
       dest_range    = "0.0.0.0/0"
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
       priority      = 1000
-      tags          = [local.region_shortnames[var.regions.primary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
-    }
-    nva-secondary-to-secondary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1000
-      tags          = [local.region_shortnames[var.regions.secondary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
-    }
-    nva-primary-to-secondary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = [local.region_shortnames[var.regions.primary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
-    }
-    nva-secondary-to-primary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = [local.region_shortnames[var.regions.secondary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
     }
   }
 }
@@ -132,9 +106,13 @@ module "prod-spoke-firewall" {
   }
 }
 
-module "peering-prod" {
-  source        = "../../../modules/net-vpc-peering"
-  prefix        = "prod-peering-0"
-  local_network = module.prod-spoke-vpc.self_link
-  peer_network  = module.landing-vpc.self_link
+module "prod-spoke-cloudnat" {
+  source         = "../../../modules/net-cloudnat"
+  for_each       = toset(var.enable_cloud_nat ? values(module.prod-spoke-vpc.subnet_regions) : [])
+  project_id     = module.prod-spoke-project.project_id
+  region         = each.value
+  name           = "prod-nat-${local.region_shortnames[each.value]}"
+  router_create  = true
+  router_network = module.prod-spoke-vpc.name
+  logging_filter = "ERRORS_ONLY"
 }

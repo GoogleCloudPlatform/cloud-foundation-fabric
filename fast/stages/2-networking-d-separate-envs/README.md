@@ -171,7 +171,7 @@ The commands to link or copy the provider and terraform variable files can be ea
 ```bash
 ../../stage-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 ln -s ~/fast-config/providers/2-networking-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
@@ -182,7 +182,7 @@ ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ```bash
 ../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-networking-a-peering'
+# copy and paste the following commands for '2-networking-*'
 
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
