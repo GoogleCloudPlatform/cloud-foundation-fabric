@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2024-05-15 09:01:39+00:00 -->
 
+### BLUEPRINTS
+
+- [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
+
+### FAST
+
+- [[#2286](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2286)] Switch FAST stages 0-1s to excalidraw diagrams ([ludoo](https://github.com/ludoo)) <!-- 2024-05-17 09:10:13+00:00 -->
+- [[#2287](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2287)] **incompatible change:** FAST: Cleanup/harmonization of Simple and NVA net stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 13:49:16+00:00 -->
+- [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
+- [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
+
+### TOOLS
+
+- [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
+
 ## [31.1.0] - 2024-05-15
 <!-- 2024-05-15 09:01:39+00:00 < 2024-05-14 19:52:57+00:00 -->
 
