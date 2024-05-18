@@ -42,8 +42,10 @@ One of our objectives with FAST is to provide a lightweight reference design for
 
 FAST has built-in support for multitenancy implemented in [an optional stage 1](./stages/1-tenant-factory/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
 
+The following diagram is a high-level overview of stages used with multitenancy.
+
 <p align="center">
-  <img src="stages-multitenant/stages.svg" alt="Stages diagram">
+  <img src="tenants-stages.svg" alt="Stages for multitenancy.">
 </p>
 
 ## Implementation
