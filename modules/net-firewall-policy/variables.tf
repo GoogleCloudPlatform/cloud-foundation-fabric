@@ -28,13 +28,14 @@ variable "description" {
 }
 
 variable "egress_rules" {
-  description = "List of egress rule definitions, action can be 'allow', 'deny', 'goto_next'. The match.layer4configs map is in protocol => optional [ports] format."
+  description = "List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format."
   type = map(object({
     priority                = number
     action                  = optional(string, "deny")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    security_profile_group  = optional(string, null)
     target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
@@ -57,9 +58,9 @@ variable "egress_rules" {
   validation {
     condition = alltrue([
       for k, v in var.egress_rules :
-      contains(["allow", "deny", "goto_next"], v.action)
+      contains(["allow", "deny", "goto_next", "apply_security_profile_group"], v.action)
     ])
-    error_message = "Action can only be one of 'allow', 'deny', 'goto_next'."
+    error_message = "Action can only be one of 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   }
 }
 
@@ -75,13 +76,14 @@ variable "factories_config" {
 }
 
 variable "ingress_rules" {
-  description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'."
+  description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   type = map(object({
     priority                = number
     action                  = optional(string, "allow")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    security_profile_group  = optional(string, null)
     target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
@@ -104,9 +106,9 @@ variable "ingress_rules" {
   validation {
     condition = alltrue([
       for k, v in var.ingress_rules :
-      contains(["allow", "deny", "goto_next"], v.action)
+      contains(["allow", "deny", "goto_next", "apply_security_profile_group"], v.action)
     ])
-    error_message = "Action can only be one of 'allow', 'deny', 'goto_next'."
+    error_message = "Action can only be one of 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   }
 }
 
