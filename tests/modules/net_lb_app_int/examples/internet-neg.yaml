@@ -1,0 +1,76 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ilb-l7.google_compute_forwarding_rule.default:                                                                                                                                                                                                                                                                                                                                                                                 
+    description: Terraform managed.
+    ip_protocol: TCP
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: ilb-test
+    network: projects/xxx/global/networks/aaa
+    port_range: '80'
+    project: project-id
+    region: europe-west8
+    subnetwork: subnet_self_link
+  module.ilb-l7.google_compute_region_backend_service.default["default"]:
+    backend:
+    - balancing_mode: UTILIZATION
+      capacity_scaler: 1
+      description: Terraform managed.
+    description: Terraform managed.
+    failover_policy: []
+    health_checks: null
+    iap: []
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: ilb-test-default
+    network: null
+    project: project-id
+    protocol: HTTP
+    region: europe-west8
+  module.ilb-l7.google_compute_region_network_endpoint.internet["neg-0-e-0"]:
+    fqdn: www.example.org
+    ip_address: null
+    port: 80
+    project: project-id
+    region: europe-west8
+    region_network_endpoint_group: ilb-test-neg-0
+  module.ilb-l7.google_compute_region_network_endpoint_group.internet["neg-0"]:
+    description: Terraform managed.
+    name: ilb-test-neg-0
+    network: projects/xxx/global/networks/aaa
+    network_endpoint_type: INTERNET_FQDN_PORT
+    project: project-id
+    region: europe-west8
+  module.ilb-l7.google_compute_region_target_http_proxy.default[0]:
+    description: Terraform managed.
+    name: ilb-test
+    project: project-id
+    region: europe-west8
+  module.ilb-l7.google_compute_region_url_map.default:
+    description: Terraform managed.
+    name: ilb-test
+    project: project-id
+    region: europe-west8
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_region_backend_service: 1
+  google_compute_region_network_endpoint: 1
+  google_compute_region_network_endpoint_group: 1
+  google_compute_region_target_http_proxy: 1
+  google_compute_region_url_map: 1
+  modules: 1
+  resources: 6
+
+outputs: {}
