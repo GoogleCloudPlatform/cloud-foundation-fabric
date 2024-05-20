@@ -16,31 +16,21 @@
 
 resource "google_privateca_ca_pool" "default" {
   project  = var.project_id
-  name     = "Acme-ca-pool-04"
+  name     = "Acme-ca-pool-05"
   location = var.region
   tier     = "ENTERPRISE"
-  /* publishing_options {
-    publish_ca_cert = true
-    publish_crl     = true
-  } */
 }
 
 resource "google_privateca_certificate_authority" "default" {
-  project  = var.project_id
-  certificate_authority_id = "Acme-CA-01"
+  project                  = var.project_id
+  certificate_authority_id = "Acme-CA"
   location                 = var.region
   pool                     = google_privateca_ca_pool.default.name
   config {
     subject_config {
       subject {
-        //country_code        = "us"
-        common_name         = "Acme-CA"
-        organization        = "Acme"
-        //organizational_unit = "enterprise"
-        //locality            = "mountain view"
-        //province            = "california"
-        //street_address      = "1600 amphitheatre parkway"
-        //postal_code         = "94109"
+        common_name  = "Acme-CA"
+        organization = "Acme"
       }
     }
     x509_config {
@@ -59,8 +49,6 @@ resource "google_privateca_certificate_authority" "default" {
       }
     }
   }
-  //type = "SELF_SIGNED"
-  //lifetime = "7776000s" // 90 days
   lifetime = "31536000s" // 1 year
   key_spec {
     algorithm = "EC_P256_SHA256"
@@ -75,26 +63,23 @@ resource "google_privateca_certificate_authority" "default" {
 # TLS certificate for the ILB
 #
 resource "tls_private_key" "ilb_cert_key" {
-  /* algorithm   = "ECDSA"
-  ecdsa_curve = "P256" */
-  algorithm   = "RSA"
-  rsa_bits = 2048
-  //algorithm   = "ED25519"
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
 
 resource "google_privateca_certificate" "ilb_cert" {
-  project  = var.project_id
+  project               = var.project_id
   certificate_authority = google_privateca_certificate_authority.default.certificate_authority_id
-  location                 = var.region
-  pool                     = google_privateca_ca_pool.default.name
+  location              = var.region
+  pool                  = google_privateca_ca_pool.default.name
   lifetime              = "2592000s" // 30 days
   name                  = "ilb-cert-01"
   config {
-    subject_config  {
+    subject_config {
       subject {
-        common_name = var.custom_domain
-        organization  = "Acme"
-      } 
+        common_name  = var.custom_domain
+        organization = "Acme"
+      }
       subject_alt_name {
         dns_names = [var.custom_domain]
       }
@@ -105,8 +90,6 @@ resource "google_privateca_certificate" "ilb_cert" {
       }
       key_usage {
         base_key_usage {
-          /* cert_sign = true
-          crl_sign = true */
           key_agreement = true
         }
         extended_key_usage {
@@ -116,7 +99,7 @@ resource "google_privateca_certificate" "ilb_cert" {
     }
     public_key {
       format = "PEM"
-      key = base64encode(tls_private_key.ilb_cert_key.public_key_pem)
+      key    = base64encode(tls_private_key.ilb_cert_key.public_key_pem)
     }
   }
 }

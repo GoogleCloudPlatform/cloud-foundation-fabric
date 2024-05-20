@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+variable "cloudrun_svcname" {
+  description = "Name of the Cloud Run service."
+  type        = string
+  default     = "hello-kong"
+}
+
+variable "created_resources" {
+  description = "Names of the resources created by autopilot cluster to be consumed here."
+  type = object({
+    vpc_name    = string
+    subnet_name = string
+  })
+  default = {
+    vpc_name    = "autopilot"
+    subnet_name = "cluster-default"
+  }
+  nullable = false
+}
+
 variable "credentials_config" {
   description = "Configure how Terraform authenticates to the cluster."
   type = object({
@@ -33,37 +52,6 @@ variable "credentials_config" {
   }
 }
 
-variable "namespace" {
-  description = "Namespace used for Kong cluster resources."
-  type        = string
-  nullable    = false
-  default     = "kong"
-}
-
-variable "templates_path" {
-  description = "Path where manifest templates will be read from. Set to null to use the default manifests."
-  type        = string
-  default     = null
-}
-
-variable "cloudrun_svcname" {
-  description = "Name of the Cloud Run service."
-  type = string
-  default = "hello-service"
-}
-variable "created_resources" {
-  description = "Names of the resources created by autopilot cluster to be consumed here."
-  type = object({
-    vpc_name    = string
-    subnet_name = string
-  })
-  default = {
-    vpc_name    = "autopilot"
-    subnet_name = "cluster-default"
-  }
-  nullable = false
-}
-
 variable "custom_domain" {
   description = "Custom domain for the Load Balancer."
   type        = string
@@ -76,6 +64,13 @@ variable "image" {
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
+variable "namespace" {
+  description = "Namespace used for Kong cluster resources."
+  type        = string
+  nullable    = false
+  default     = "kong"
+}
+
 variable "prefix" {
   description = "Prefix used for project names."
   type        = string
@@ -86,7 +81,7 @@ variable "prefix" {
 }
 
 variable "project_id" {
-  description = "Host project with (autopilot) cluster (without prefix)."
+  description = "Host project with autopilot cluster."
   type        = string
 }
 
@@ -108,4 +103,10 @@ variable "service_project" {
     condition     = var.service_project.billing_account_id != null || var.service_project.project_id != null
     error_message = "At least one of billing_account_id or project_id should be set."
   }
+}
+
+variable "templates_path" {
+  description = "Path where manifest templates will be read from. Set to null to use the default manifests."
+  type        = string
+  default     = null
 }

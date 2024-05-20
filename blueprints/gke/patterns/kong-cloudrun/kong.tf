@@ -34,7 +34,7 @@ resource "kubectl_manifest" "kong-license" {
   yaml_body = templatefile(
     "${local.wl_templates_path}/license.yaml", {
       kong_namespace = var.namespace
-      kong_license = "'{}'"
+      kong_license   = "'{}'"
     }
   )
   depends_on = [kubectl_manifest.kong-namespace]
@@ -44,7 +44,7 @@ resource "kubectl_manifest" "kong-cert" {
   yaml_body = templatefile(
     "${local.wl_templates_path}/cert.yaml", {
       kong_namespace = var.namespace
-      certificate = base64encode(tls_self_signed_cert.kong.cert_pem)
+      certificate    = base64encode(tls_self_signed_cert.kong.cert_pem)
       private_key    = base64encode(tls_self_signed_cert.kong.private_key_pem)
     }
   )
@@ -74,11 +74,7 @@ data "kubernetes_service" "admin_service" {
     name      = "kong-cp-kong-admin"
     namespace = var.namespace
   }
-  depends_on = [helm_release.kong-cp] 
-}
-
-output "admin_ip" {
-  value = data.kubernetes_service.admin_service.status.0.load_balancer.0.ingress.0.ip
+  depends_on = [helm_release.kong-cp]
 }
 
 data "kubernetes_service" "proxy_service" {
@@ -86,21 +82,16 @@ data "kubernetes_service" "proxy_service" {
     name      = "kong-dp-kong-proxy"
     namespace = var.namespace
   }
-  depends_on = [helm_release.kong-dp] 
-}
-
-output "proxy_ip" {
-  value = data.kubernetes_service.proxy_service.status.0.load_balancer.0.ingress.0.ip
+  depends_on = [helm_release.kong-dp]
 }
 
 resource "kubectl_manifest" "kong-config" {
   yaml_body = templatefile(
     "${local.wl_templates_path}/config-proxy.yaml", {
       kong_namespace = var.namespace
-      //admin_ip = data.kubernetes_service.admin_service.status.0.load_balancer.0.ingress.0.ip
-      admin_ip = data.kubernetes_service.admin_service.spec.0.cluster_ip
-      root_cer = indent(4, google_privateca_certificate_authority.default.pem_ca_certificates[0])
-      domain = var.custom_domain
+      admin_ip       = data.kubernetes_service.admin_service.spec.0.cluster_ip
+      root_cer       = indent(4, google_privateca_certificate_authority.default.pem_ca_certificates[0])
+      domain         = var.custom_domain
     }
   )
   depends_on = [helm_release.kong-cp]

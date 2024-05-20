@@ -20,12 +20,7 @@ metadata:
 data:
   config-proxy.sh: |-
     #!/bin/sh
-    echo "Hello"
     apk add curl jq
-    echo "admin_ip: "${admin_ip}
     CERT_ID="$(curl -s http://${admin_ip}:8001/ca_certificates -F cert='${root_cer}' | jq .id)"
-    echo "CERT_ID => "$CERT_ID
-    curl -s --trace-ascii - http://${admin_ip}:8001/services -H 'Content-Type: application/json' -d '{"name":"acme","protocol":"https","host":"${domain}","port":443,"path":"/","tls_verify":true,"ca_certificates":['$CERT_ID']}'
-    curl -s --trace-ascii - http://${admin_ip}:8001/routes -H 'Content-Type: application/json' -d '{"name":"acme","paths":["/"],"service":{"name":"acme"}}'
-    sleep 1d
-    echo "Bye!"
+    curl -s http://${admin_ip}:8001/services -H 'Content-Type: application/json' -d '{"name":"acme","protocol":"https","host":"${domain}","port":443,"path":"/","tls_verify":true,"ca_certificates":['$CERT_ID']}'
+    curl -s http://${admin_ip}:8001/routes -H 'Content-Type: application/json' -d '{"name":"acme","paths":["/"],"service":{"name":"acme"}}'

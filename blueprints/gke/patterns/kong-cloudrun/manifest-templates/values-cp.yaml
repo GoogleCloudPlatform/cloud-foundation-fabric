@@ -21,7 +21,7 @@ ingressController:
   
 image:
  repository: kong/kong-gateway
- tag: "3.6.1.3"
+ tag: "3.6.1.4"
   
 # Mount the secret created earlier
 secretVolumes:
@@ -63,7 +63,6 @@ enterprise:
 # The control plane serves the Admin API
 admin:
  enabled: true
- type: LoadBalancer
  http:
    enabled: true
   

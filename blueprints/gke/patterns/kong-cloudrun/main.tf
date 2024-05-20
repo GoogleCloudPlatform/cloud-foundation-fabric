@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-/* locals {
-  manifest_template_parameters = {
-    kong_namespace = var.namespace
-    kong_license   = "'{}'"
-    certificate    = base64encode(tls_self_signed_cert.kong.cert_pem)
-    private_key    = base64encode(tls_self_signed_cert.kong.private_key_pem)
-  }
-  wl_templates_path = (
-    var.templates_path == null
-    ? "${path.module}/manifest-templates"
-    : pathexpand(var.templates_path)
-  )
-} */
-
 data "google_compute_network" "host-network" {
   name    = var.created_resources.vpc_name
   project = var.project_id
@@ -52,7 +38,6 @@ module "service-project" {
   ]
   shared_vpc_service_config = {
     host_project = var.project_id
-    //service_iam_grants = module.service-project.services
   }
   skip_delete = true
 }
