@@ -47,4 +47,4 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
-- GCE Migration (in development)
+- [Google Cloud VMware Engine](3-gcve/dev/)
