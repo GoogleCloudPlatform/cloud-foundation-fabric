@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-locals {
+/* locals {
   manifest_template_parameters = {
     kong_namespace = var.namespace
     kong_license   = "'{}'"
@@ -26,29 +26,7 @@ locals {
     ? "${path.module}/manifest-templates"
     : pathexpand(var.templates_path)
   )
-}
-
-# TLS certificate to secure the control plane/data plane Kong communication
-resource "tls_private_key" "kong" {
-  algorithm   = "ECDSA"
-  ecdsa_curve = "P384"
-}
-
-resource "tls_self_signed_cert" "kong" {
-  allowed_uses = [
-    "cert_signing",
-    "client_auth",
-    "digital_signature",
-    "key_encipherment",
-    "server_auth",
-  ]
-  private_key_pem       = tls_private_key.kong.private_key_pem
-  validity_period_hours = 1095 * 24
-  is_ca_certificate     = true
-  subject {
-    common_name = "kong_clustering"
-  }
-}
+} */
 
 data "google_compute_network" "host-network" {
   name    = var.created_resources.vpc_name
