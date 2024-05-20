@@ -108,6 +108,7 @@ locals {
       additive = concat(
         [
           "roles/iam.organizationRoleAdmin",
+          "roles/iam.workforcePoolAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
@@ -126,6 +127,7 @@ locals {
         [
           # the organizationAdminViewer custom role is granted via the SA module
           "roles/iam.organizationRoleViewer",
+          "roles/iam.workforcePoolViewer",
           "roles/orgpolicy.policyViewer"
         ],
         local.billing_mode != "org" ? [] : [
