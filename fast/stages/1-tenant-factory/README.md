@@ -40,6 +40,12 @@ The following is a high level diagram of this stage design.
 
 ![Stage diagram](diagram.png)
 
+<!--
+And the flow through stages when using multitenancy.
+
+![Multitenant stage flows](diagram-flow.png)
+-->
+
 ### Regular tenants
 
 Where FAST compatibility is not needed this stage creates minimal tenant environments, configuring the minimum amount of resources to allow them to operate independently:
