@@ -15,10 +15,6 @@
  */
 
 locals {
-  #  _all_instances = merge(
-  #    { primary = google_alloydb_instance.primary },
-  #    google_alloydb_instance.replicas
-  #  )
   _all_instances = {
     primary   = google_alloydb_instance.primary
     secondary = one(google_alloydb_instance.secondary)

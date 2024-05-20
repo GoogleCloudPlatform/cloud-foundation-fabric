@@ -15,8 +15,7 @@
  */
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  # has_replicas = try(length(var.replicas) > 0, false)
+  prefix      = var.prefix == null ? "" : "${var.prefix}-"
   is_regional = var.availability_type == "REGIONAL"
   # secondary instance type is aligned with cluster type unless apply is targeting a promotion, in that
   # case cluster will be 'primary' while instance still 'secondary'.
@@ -24,7 +23,11 @@ locals {
   primary_instance_name   = "${local.prefix}${var.name}"
   secondary_cluster_name  = coalesce(var.secondary_cluster_name, "${var.cluster_name}-sec")
   secondary_instance_name = coalesce(var.secondary_name, "${var.name}-sec")
-  secondary_instance_type = try(var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY" ? "SECONDARY" : google_alloydb_cluster.secondary[0].cluster_type, null)
+  secondary_instance_type = try(
+    var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY"
+    ? "SECONDARY"
+    : google_alloydb_cluster.secondary[0].cluster_type, null
+  )
   users = {
     for k, v in coalesce(var.users, {}) :
     k => {

@@ -254,7 +254,10 @@ variable "network_config" {
   })
   nullable = false
   validation {
-    condition     = (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip) || try(length(var.network_config.authorized_external_networks), 0) == 0
+    condition = (
+      (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip)
+      || try(length(var.network_config.authorized_external_networks), 0) == 0
+    )
     error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
   }
 }

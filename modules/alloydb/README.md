@@ -1,7 +1,7 @@
 # AlloyDB module
 
-This module manages the creation of an AlloyDB cluster and instance with potential read replicas and an advanced cross region replication setup for disaster recovery scenarios. 
-It can also create an initial set of users via the `users` parameters.
+This module manages the creation of an AlloyDB cluster. It also supports cross-region replication scenario by setting up a secondary cluster. 
+It can also create an initial set of users via the `users` variable.
 
 Note that this module assumes that some options are the same for both the primary instance and the secondary one in case of cross regional replication configuration.
 
