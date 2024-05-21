@@ -91,6 +91,15 @@ variable "locations" {
   default  = {}
 }
 
+variable "logging" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Logging resources created by the bootstrap stage."
+  type = object({
+    project_id = string
+  })
+  nullable = false
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."

@@ -17,7 +17,7 @@
 # tfdoc:file:description Temporary instances for testing
 
 locals {
-  test-vms = {
+  test-vms = var.create_test_instances != true ? {} : {
     dev-spoke-primary = {
       region     = var.regions.primary
       project_id = module.dev-spoke-project.project_id
@@ -43,7 +43,7 @@ locals {
 }
 
 module "test-vms" {
-  for_each = var.create_test_instances ? local.test-vms : {}
+  for_each = local.test-vms
   # for_each   = {}
   source     = "../../../modules/compute-vm"
   project_id = each.value.project_id
