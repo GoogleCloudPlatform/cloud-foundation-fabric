@@ -12,21 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+resource "google_project_service_identity" "secretmanager" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "secretmanager.googleapis.com"
+}
+
 resource "google_project_iam_binding" "bindings" {
   project = var.project_id
   role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  members = ["serviceAccount:${var.service_identities.secret_identity}"]
+  members = ["serviceAccount:${resource.google_project_service_identity.secretmanager.email}"]
 }
 
 resource "google_kms_key_ring" "key_rings" {
-  for_each = var.regions
+  for_each = toset([var.region_primary, var.region_secondary])
   name     = "keyring-${each.key}"
   project  = var.project_id
   location = each.value
 }
 
 resource "google_kms_crypto_key" "keys" {
-  for_each        = var.regions
+  for_each        = toset([var.region_primary, var.region_secondary])
   name            = "crypto-key-${each.key}"
   key_ring        = google_kms_key_ring.key_rings[each.key].id
   rotation_period = "100000s"

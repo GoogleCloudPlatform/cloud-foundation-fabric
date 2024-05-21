@@ -26,14 +26,14 @@ folder_id       = "folders/${folder_id}"
 project_id      = "${project_id}"
 project_number  = "${project_number}"
 region          = "${region}"
+region_primary         = "${region_primary}"
+region_secondary       = "${region_secondary}"
 service_account = {
     id        = "${service_account.id}"
     email     = "${service_account.email}"
     iam_email = "${service_account.iam_email}"
   }
-service_identities = {
-    secret_identity = "${service_identities.secret.email}"
-}
+
 subnet = {
     name      = "${subnet.name}"
     region    = "${subnet.region}"

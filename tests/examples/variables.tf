@@ -62,11 +62,12 @@ variable "region" {
   default = "europe-west8"
 }
 
-variable "regions" {
-  default = {
-    primary   = "europe-west8"
-    secondary = "europe-west9"
-  }
+variable "region_primary" {
+  default = "europe-west8"
+}
+
+variable "region_secondary" {
+  default = "europe-west9"
 }
 
 variable "service_account" {

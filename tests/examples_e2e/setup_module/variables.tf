@@ -30,6 +30,13 @@ variable "prefix" {
 variable "region" {
   type = string
 }
+variable "region_primary" {
+  type    = string
+  default = null
+}
+variable "region_secondary" {
+  type = string
+}
 variable "suffix" {
   type    = string
   default = "0"

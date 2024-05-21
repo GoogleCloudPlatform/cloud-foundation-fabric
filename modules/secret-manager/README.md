@@ -19,7 +19,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
+      locations = [var.region_primary, var.region_secondary]
     }
   }
 }
@@ -37,7 +37,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
+      locations = [var.region_primary, var.region_secondary]
     }
   }
   iam = {
@@ -63,7 +63,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
+      locations = [var.region_primary, var.region_secondary]
     }
   }
   versions = {
@@ -95,15 +95,15 @@ module "secret-manager" {
     }
     test-auto-nokeys = {}
     test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
+      locations = [var.region_primary, var.region_secondary]
       keys = {
-        "${var.regions.primary}"   = google_kms_crypto_key.keys["primary"].id
-        "${var.regions.secondary}" = google_kms_crypto_key.keys["secondary"].id
+        "${var.region_primary}"   = google_kms_crypto_key.keys["${var.region_primary}"].id
+        "${var.region_secondary}" = google_kms_crypto_key.keys["${var.region_secondary}"].id
       }
     }
   }
 }
-# tftest modules=1 resources=10 fixtures=fixtures/secret.tf inventory=secret-cmek.yaml e2e
+# tftest modules=1 resources=11 fixtures=fixtures/secret.tf inventory=secret-cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
