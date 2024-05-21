@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ locals {
   discovery_roles = ["roles/compute.viewer", "roles/cloudasset.viewer"]
   function = (
     var.cloud_function_config.version == "v1"
-    ? module.cloud-function.0
-    : module.cloud-function-v2.0
+    ? module.cloud-function[0]
+    : module.cloud-function-v2[0]
   )
 }
 
@@ -66,7 +66,7 @@ module "cloud-function" {
   name       = var.name
   bucket_name = coalesce(
     var.cloud_function_config.bucket_name,
-    "${var.name}-${random_string.default.0.id}"
+    "${var.name}-${random_string.default[0].id}"
   )
   bucket_config = {
     location = var.region
@@ -110,7 +110,7 @@ resource "google_cloud_scheduler_job" "default" {
 
   pubsub_target {
     attributes = {}
-    topic_name = module.pubsub.0.topic.id
+    topic_name = module.pubsub[0].topic.id
     data = base64encode(jsonencode({
       discovery_root = var.discovery_config.discovery_root
       folders        = var.discovery_config.monitored_folders
@@ -138,7 +138,7 @@ module "cloud-function-v2" {
   name       = var.name
   bucket_name = coalesce(
     var.cloud_function_config.bucket_name,
-    "${var.name}-${random_string.default.0.id}"
+    "${var.name}-${random_string.default[0].id}"
   )
   bucket_config = {
     location = var.region
@@ -174,7 +174,7 @@ module "cloud-scheduler-service-account" {
   project_id = module.project.project_id
   name       = "scheduler-sa"
   iam_project_roles = {
-    "${module.project.project_id}" = [
+    (module.project.project_id) = [
       "roles/run.invoker",
     ]
   }
@@ -190,7 +190,7 @@ resource "google_cloud_scheduler_job" "scheduler-http" {
 
   http_target {
     http_method = "POST"
-    uri         = module.cloud-function-v2.0.uri
+    uri         = module.cloud-function-v2[0].uri
     body = base64encode(jsonencode({
       discovery_root = var.discovery_config.discovery_root
       folders        = var.discovery_config.monitored_folders
@@ -210,8 +210,8 @@ resource "google_cloud_scheduler_job" "scheduler-http" {
       "Content-Type" = "application/json"
     }
     oidc_token {
-      service_account_email = module.cloud-scheduler-service-account.0.email
-      audience              = module.cloud-function-v2.0.uri
+      service_account_email = module.cloud-scheduler-service-account[0].email
+      audience              = module.cloud-function-v2[0].uri
     }
   }
 }
@@ -227,7 +227,7 @@ resource "google_organization_iam_member" "discovery" {
   )
   org_id = split("/", var.discovery_config.discovery_root)[1]
   role   = each.key
-  member = var.cloud_function_config.version == "v1" ? module.cloud-function.0.service_account_iam_email : module.cloud-function-v2.0.service_account_iam_email
+  member = var.cloud_function_config.version == "v1" ? module.cloud-function[0].service_account_iam_email : module.cloud-function-v2[0].service_account_iam_email
 }
 
 resource "google_folder_iam_member" "discovery" {
@@ -239,13 +239,13 @@ resource "google_folder_iam_member" "discovery" {
   )
   folder = var.discovery_config.discovery_root
   role   = each.key
-  member = var.cloud_function_config.version == "v1" ? module.cloud-function.0.service_account_iam_email : module.cloud-function-v2.0.service_account_iam_email
+  member = var.cloud_function_config.version == "v1" ? module.cloud-function[0].service_account_iam_email : module.cloud-function-v2[0].service_account_iam_email
 }
 
 resource "google_project_iam_member" "monitoring" {
   project = module.project.project_id
   role    = "roles/monitoring.metricWriter"
-  member  = var.cloud_function_config.version == "v1" ? module.cloud-function.0.service_account_iam_email : module.cloud-function-v2.0.service_account_iam_email
+  member  = var.cloud_function_config.version == "v1" ? module.cloud-function[0].service_account_iam_email : module.cloud-function-v2[0].service_account_iam_email
 }
 
 # Importing default dashboard

@@ -60,15 +60,6 @@ variable "billing_account" {
   }
 }
 
-variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type = object({
-    service_project_network_admin = string
-  })
-  default = null
-}
-
 variable "dns" {
   description = "DNS configuration."
   type = object({
@@ -164,20 +155,21 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type = object({
-    dev = object({
+    dev = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
-    prod = object({
+    })), [])
+    prod = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
+    })), [])
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "regions" {

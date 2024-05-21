@@ -52,8 +52,8 @@ locals {
   org_policies = {
     for k, v in local._org_policies :
     k => merge(v, {
-      name   = "${local.folder.name}/policies/${k}"
-      parent = local.folder.name
+      name   = "${local.folder_id}/policies/${k}"
+      parent = local.folder_id
       is_boolean_policy = (
         alltrue([for r in v.rules : r.allow == null && r.deny == null])
       )

@@ -37,11 +37,11 @@ locals {
   load_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
-    : values(module.load-vpc.0.subnet_self_links)[0]
+    : values(module.load-vpc[0].subnet_self_links)[0]
   )
   load_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.load-vpc.0.self_link
+    : module.load-vpc[0].self_link
   )
 }

@@ -42,7 +42,7 @@ As per our GCP best practices the Data Platform relies on user groups to assign 
 
 ### Network
 
-A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-networking-b-vpn)) or from an external source.
+A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via Peering/VPN](../../2-networking-a-simple)) or from an external source.
 
 ### Encryption
 
@@ -141,7 +141,7 @@ terraform apply
 
 ### Running in isolation
 
-This stage can be run in isolation by providing the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`0-bootstrap`](../../0-bootstrap), [`1-resman`](../../1-resman), [`2-networking`](../../2-networking-b-vpn) and [`2-security`](../../2-security)).
+This stage can be run in isolation by providing the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`0-bootstrap`](../../0-bootstrap), [`1-resman`](../../1-resman), [`2-networking`](../../2-networking-a-simple) and [`2-security`](../../2-security)).
 
 When running in isolation, the following roles are needed on the principal used to apply Terraform:
 

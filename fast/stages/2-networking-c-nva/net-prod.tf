@@ -81,7 +81,7 @@ module "prod-spoke-vpc" {
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
   delete_default_routes_on_create = true
-  psa_config                      = try(var.psa_ranges.prod, null)
+  psa_configs                     = var.psa_ranges.prod
   # Set explicit routes for googleapis; send everything else to NVAs
   create_googleapis_routes = {
     private    = true
@@ -91,28 +91,28 @@ module "prod-spoke-vpc" {
     nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["primary"]
+      tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
     }
     nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["secondary"]
+      tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
     }
     nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["primary"]
+      tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
     }
     nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["secondary"]
+      tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
     }

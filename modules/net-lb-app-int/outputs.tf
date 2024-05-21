@@ -82,6 +82,6 @@ output "regional_neg_ids" {
 output "service_attachment_id" {
   description = "Id of the service attachment."
   value = try(
-    google_compute_service_attachment.default.0.id, null
+    google_compute_service_attachment.default[0].id, null
   )
 }

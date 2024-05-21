@@ -26,8 +26,8 @@ module "dev-dns-priv-example" {
     domain = "dev.gcp.example.com."
     private = {
       client_networks = [
+        # module.dmz-vpc.self_link
         module.landing-vpc.self_link,
-        module.dmz-vpc.self_link
       ]
     }
   }

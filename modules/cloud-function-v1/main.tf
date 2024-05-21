@@ -36,10 +36,11 @@ locals {
     : (
       try(var.vpc_connector.create, false) == false
       ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      : google_vpc_access_connector.connector[0].id
     )
   )
 }
+
 
 resource "google_vpc_access_connector" "connector" {
   count         = try(var.vpc_connector.create, false) == false ? 0 : 1
@@ -67,11 +68,13 @@ resource "google_cloudfunctions_function" "function" {
   labels                       = var.labels
   trigger_http                 = var.trigger_config == null ? true : null
   https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
-
-  ingress_settings  = var.ingress_settings
-  build_worker_pool = var.build_worker_pool
-
-  vpc_connector = local.vpc_connector
+  ingress_settings             = var.ingress_settings
+  build_worker_pool            = var.build_worker_pool
+  build_environment_variables  = var.build_environment_variables
+  kms_key_name                 = var.kms_key
+  docker_registry              = try(var.repository_settings.registry, "ARTIFACT_REGISTRY")
+  docker_repository            = try(var.repository_settings.repository, null)
+  vpc_connector                = local.vpc_connector
   vpc_connector_egress_settings = try(
     var.vpc_connector.egress_settings, null
   )
@@ -97,7 +100,7 @@ resource "google_cloudfunctions_function" "function" {
       key        = secret.key
       project_id = secret.value.project_id
       secret     = secret.value.secret
-      version    = try(secret.value.versions.0, "latest")
+      version    = try(secret.value.versions[0], "latest")
     }
   }
 

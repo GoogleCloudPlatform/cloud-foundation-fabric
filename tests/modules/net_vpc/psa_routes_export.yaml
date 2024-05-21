@@ -13,12 +13,12 @@
 # limitations under the License.
 
 values:
-  google_compute_global_address.psa_ranges["bar"]:
+  google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-bar"]:
     address: 172.16.100.0
     address_type: INTERNAL
     description: null
     ip_version: null
-    name: bar
+    name: servicenetworking-googleapis-com-bar
     prefix_length: 24
     project: test-project
     purpose: VPC_PEERING
@@ -30,13 +30,13 @@ values:
     name: test
     project: test-project
     routing_mode: GLOBAL
-  google_compute_network_peering_routes_config.psa_routes[0]:
+  google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
     export_custom_routes: true
     import_custom_routes: false
     project: test-project
-  google_service_networking_connection.psa_connection[0]:
+  google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
     reserved_peering_ranges:
-    - bar
+    - servicenetworking-googleapis-com-bar
     service: servicenetworking.googleapis.com
 
 counts:
@@ -46,10 +46,8 @@ counts:
   google_service_networking_connection: 1
 
 outputs:
-  name: __missing__
   network: __missing__
   project_id: test-project
-  self_link: __missing__
   subnet_ips: {}
   subnet_regions: {}
   subnet_secondary_ranges: {}

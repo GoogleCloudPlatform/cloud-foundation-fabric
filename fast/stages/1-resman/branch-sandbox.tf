@@ -19,10 +19,10 @@
 locals {
   # FAST-specific IAM
   _sandbox_folder_fast_iam = !var.fast_features.sandbox ? {} : {
-    "roles/logging.admin"                  = [module.branch-sandbox-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-sandbox-sa[0].iam_email]
+    "roles/owner"                          = [module.branch-sandbox-sa[0].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa[0].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa[0].iam_email]
   }
   # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
   _sandbox_folder_iam = merge(
@@ -34,20 +34,22 @@ locals {
   )
 }
 
-
 module "branch-sandbox-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.sandbox ? 1 : 0
-  parent = "organizations/${var.organization.id}"
+  parent = local.root_node
   name   = "Sandbox"
   iam    = local._sandbox_folder_iam
-  org_policies = {
-    "sql.restrictPublicIp"       = { rules = [{ enforce = false }] }
-    "compute.vmExternalIpAccess" = { rules = [{ allow = { all = true } }] }
+  factories_config = {
+    org_policies = (
+      var.root_node != null || var.factories_config.org_policies == null
+      ? null
+      : "${var.factories_config.org_policies}/sandbox"
+    )
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
+      local.tag_values["${var.tag_names.context}/sandbox"].id, null
     )
   }
 }
@@ -62,7 +64,7 @@ module "branch-sandbox-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-sandbox-sa[0].iam_email]
   }
 }
 

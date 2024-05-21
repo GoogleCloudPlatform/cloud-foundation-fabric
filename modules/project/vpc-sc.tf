@@ -16,30 +16,28 @@
 
 # tfdoc:file:description VPC-SC project-level perimeter configuration.
 
-moved {
-  from = google_access_context_manager_service_perimeter_resource.service-perimeter-resource-standard
-  to   = google_access_context_manager_service_perimeter_resource.standard
+locals {
+  vpc_sc_perimeters = compact(concat(
+    [try(var.vpc_sc.perimeter_name, null)],
+    try(var.vpc_sc.perimeter_bridges, [])
+  ))
+  vpc_sc_dry_run = try(var.vpc_sc.is_dry_run, false) == true
 }
 
-resource "google_access_context_manager_service_perimeter_resource" "standard" {
-  count = var.service_perimeter_standard != null ? 1 : 0
-  # this needs an additional lifecycle block in the vpc module on the
-  # google_access_context_manager_service_perimeter resource
-  perimeter_name = var.service_perimeter_standard
+# use only if the vpc-sc module has a lifecycle block to ignore resources
+
+resource "google_access_context_manager_service_perimeter_resource" "default" {
+  for_each = toset(
+    local.vpc_sc_dry_run ? [] : local.vpc_sc_perimeters
+  )
+  perimeter_name = each.key
   resource       = "projects/${local.project.number}"
 }
 
-moved {
-  from = google_access_context_manager_service_perimeter_resource.service-perimeter-resource-bridges
-  to   = google_access_context_manager_service_perimeter_resource.bridge
-}
-
-resource "google_access_context_manager_service_perimeter_resource" "bridge" {
+resource "google_access_context_manager_service_perimeter_dry_run_resource" "default" {
   for_each = toset(
-    var.service_perimeter_bridges != null ? var.service_perimeter_bridges : []
+    local.vpc_sc_dry_run ? local.vpc_sc_perimeters : []
   )
-  # this needs an additional lifecycle block in the vpc module on the
-  # google_access_context_manager_service_perimeter resource
-  perimeter_name = each.value
+  perimeter_name = each.key
   resource       = "projects/${local.project.number}"
 }

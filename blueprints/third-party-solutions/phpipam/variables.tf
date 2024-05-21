@@ -75,11 +75,13 @@ variable "ip_ranges" {
   description = "CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC."
   type = object({
     connector = string
+    proxy     = string
     psa       = string
     ilb       = string
   })
   default = {
     connector = "10.8.0.0/28"
+    proxy     = "10.10.0.0/26"
     psa       = "10.60.0.0/24"
     ilb       = "10.128.0.0/28"
   }

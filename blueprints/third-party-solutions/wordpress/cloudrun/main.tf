@@ -30,7 +30,7 @@ locals {
     "roles/iam.serviceAccountUser",
     "roles/iam.serviceAccountTokenCreator"
   ]
-  connector = var.connector == null ? google_vpc_access_connector.connector.0.self_link : var.connector
+  connector = var.connector == null ? google_vpc_access_connector.connector[0].self_link : var.connector
   wp_user   = "user"
   wp_pass   = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
 }

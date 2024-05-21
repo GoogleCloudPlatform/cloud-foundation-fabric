@@ -16,7 +16,7 @@
 
 output "ca_certificate" {
   description = "Public certificate of the cluster (base64-encoded)."
-  value       = google_container_cluster.cluster.master_auth.0.cluster_ca_certificate
+  value       = google_container_cluster.cluster.master_auth[0].cluster_ca_certificate
   sensitive   = true
 }
 

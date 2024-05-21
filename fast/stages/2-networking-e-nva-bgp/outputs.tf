@@ -117,11 +117,11 @@ output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
     onprem-primary = var.vpn_onprem_primary_config == null ? {} : {
-      for v in module.landing-to-onprem-primary-vpn.0.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-primary-vpn[0].gateway.vpn_interfaces :
       v.id => v.ip_address
     }
     onprem-secondary = var.vpn_onprem_secondary_config == null ? {} : {
-      for v in module.landing-to-onprem-secondary-vpn.0.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-secondary-vpn[0].gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }

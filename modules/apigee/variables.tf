@@ -46,16 +46,12 @@ variable "envgroups" {
 variable "environments" {
   description = "Environments."
   type = map(object({
-    display_name    = optional(string)
-    description     = optional(string, "Terraform-managed")
-    deployment_type = optional(string)
     api_proxy_type  = optional(string)
-    type            = optional(string)
-    node_config = optional(object({
-      min_node_count = optional(number)
-      max_node_count = optional(number)
-    }))
-    iam = optional(map(list(string)), {})
+    description     = optional(string, "Terraform-managed")
+    display_name    = optional(string)
+    deployment_type = optional(string)
+    envgroups       = optional(list(string), [])
+    iam             = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
@@ -64,7 +60,11 @@ variable "environments" {
       role   = string
       member = string
     })), {})
-    envgroups = optional(list(string), [])
+    node_config = optional(object({
+      min_node_count = optional(number)
+      max_node_count = optional(number)
+    }))
+    type = optional(string)
   }))
   default  = {}
   nullable = false
@@ -73,15 +73,15 @@ variable "environments" {
 variable "instances" {
   description = "Instances ([REGION] => [INSTANCE])."
   type = map(object({
-    name                          = optional(string)
-    display_name                  = optional(string)
-    description                   = optional(string, "Terraform-managed")
-    runtime_ip_cidr_range         = optional(string)
-    troubleshooting_ip_cidr_range = optional(string)
-    disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
+    description                   = optional(string, "Terraform-managed")
+    disk_encryption_key           = optional(string)
+    display_name                  = optional(string)
     enable_nat                    = optional(bool, false)
     environments                  = optional(list(string), [])
+    name                          = optional(string)
+    runtime_ip_cidr_range         = optional(string)
+    troubleshooting_ip_cidr_range = optional(string)
   }))
   validation {
     condition = alltrue([
@@ -98,15 +98,19 @@ variable "instances" {
 variable "organization" {
   description = "Apigee organization. If set to null the organization must already exist."
   type = object({
-    display_name            = optional(string)
-    description             = optional(string, "Terraform-managed")
-    authorized_network      = optional(string)
-    runtime_type            = optional(string, "CLOUD")
-    billing_type            = optional(string)
-    database_encryption_key = optional(string)
-    analytics_region        = optional(string, "europe-west1")
-    retention               = optional(string)
-    disable_vpc_peering     = optional(bool, false)
+    analytics_region                 = optional(string)
+    api_consumer_data_encryption_key = optional(string)
+    api_consumer_data_location       = optional(string)
+    authorized_network               = optional(string)
+    billing_type                     = optional(string)
+    control_plane_encryption_key     = optional(string)
+    database_encryption_key          = optional(string)
+    description                      = optional(string, "Terraform-managed")
+    disable_vpc_peering              = optional(bool, false)
+    display_name                     = optional(string)
+    properties                       = optional(map(string), {})
+    runtime_type                     = optional(string, "CLOUD")
+    retention                        = optional(string)
   })
   validation {
     condition = var.organization == null || (

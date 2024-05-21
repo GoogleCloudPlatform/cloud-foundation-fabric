@@ -31,12 +31,12 @@ locals {
   orch_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_link
-    : values(module.vpc.0.subnet_self_links)[0]
+    : values(module.vpc[0].subnet_self_links)[0]
   )
   orch_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.vpc.0.self_link
+    : module.vpc[0].self_link
   )
   # reassemble in a format suitable for for_each
   shared_vpc_bindings_map = {
@@ -62,7 +62,7 @@ locals {
   vpc_self_link = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.vpc.0.self_link
+    : module.vpc[0].self_link
   )
 }
 
@@ -141,7 +141,7 @@ module "nat" {
   project_id     = module.project.project_id
   region         = var.region
   name           = "${var.prefix}-default"
-  router_network = module.vpc.0.name
+  router_network = module.vpc[0].name
 }
 
 resource "google_project_iam_member" "shared_vpc" {

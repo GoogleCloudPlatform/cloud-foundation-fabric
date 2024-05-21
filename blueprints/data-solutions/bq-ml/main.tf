@@ -20,13 +20,13 @@ locals {
   subnet = (
     local.use_shared_vpc
     ? var.vpc_config.subnet_self_link
-    : values(module.vpc.0.subnet_self_links)[0]
+    : values(module.vpc[0].subnet_self_links)[0]
   )
   use_shared_vpc = var.vpc_config != null
   vpc = (
     local.use_shared_vpc
     ? var.vpc_config.network_self_link
-    : module.vpc.0.self_link
+    : module.vpc[0].self_link
   )
 }
 

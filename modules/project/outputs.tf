@@ -98,6 +98,22 @@ output "project_id" {
   ]
 }
 
+output "quota_configs" {
+  description = "Quota configurations."
+  value = {
+    for k, v in google_cloud_quotas_quota_preference.default :
+    k => {
+      granted   = v.quota_config[0].granted_value
+      preferred = v.quota_config[0].preferred_value
+    }
+  }
+}
+
+output "quotas" {
+  description = "Quota resources."
+  value       = google_cloud_quotas_quota_preference.default
+}
+
 output "service_accounts" {
   description = "Product robot service accounts in project."
   value = {

@@ -205,17 +205,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "protocol" {
-  description = "IP protocol used, defaults to TCP. UDP or L3_DEFAULT can also be used."
-  type        = string
-  default     = "TCP"
-  nullable    = false
-  validation {
-    condition     = contains(["L3_DEFAULT", "TCP", "UDP"], var.protocol)
-    error_message = "Allowed values are 'TCP', 'UDP', 'L3_DEFAULT'."
-  }
-}
-
 variable "region" {
   description = "GCP region."
   type        = string

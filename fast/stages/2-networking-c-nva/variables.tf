@@ -60,6 +60,12 @@ variable "billing_account" {
   }
 }
 
+variable "create_test_instances" {
+  description = "Enables the creation of test VMs in each VPC, useful to test and troubleshoot connectivity."
+  type        = bool
+  default     = false
+}
+
 variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
@@ -148,14 +154,6 @@ variable "gcp_ranges" {
   }
 }
 
-variable "onprem_cidr" {
-  description = "Onprem addresses in name => range format."
-  type        = map(string)
-  default = {
-    main = "10.0.0.0/24"
-  }
-}
-
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -186,20 +184,21 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
   type = object({
-    dev = object({
+    dev = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
-    prod = object({
+    })), [])
+    prod = optional(list(object({
       ranges         = map(string)
       export_routes  = optional(bool, false)
       import_routes  = optional(bool, false)
       peered_domains = optional(list(string), [])
-    })
+    })), [])
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "regions" {

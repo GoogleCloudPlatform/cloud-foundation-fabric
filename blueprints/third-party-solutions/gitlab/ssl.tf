@@ -41,7 +41,7 @@ resource "tls_private_key" "gitlab_ca_private_key" {
 
 resource "tls_self_signed_cert" "gitlab_ca_cert" {
   count             = local.self_signed_ssl_certs_required ? 1 : 0
-  private_key_pem   = tls_private_key.gitlab_ca_private_key.0.private_key_pem
+  private_key_pem   = tls_private_key.gitlab_ca_private_key[0].private_key_pem
   is_ca_certificate = true
   dynamic "subject" {
     for_each = toset(local.cert_subjects)
@@ -74,7 +74,7 @@ resource "tls_private_key" "gitlab_server_key" {
 # Create CSR for Gitlab Server certificate
 resource "tls_cert_request" "gitlab_server_csr" {
   count           = local.self_signed_ssl_certs_required ? 1 : 0
-  private_key_pem = tls_private_key.gitlab_server_key.0.private_key_pem
+  private_key_pem = tls_private_key.gitlab_server_key[0].private_key_pem
   dns_names       = [var.gitlab_config.hostname]
 
   dynamic "subject" {
@@ -92,9 +92,9 @@ resource "tls_cert_request" "gitlab_server_csr" {
 
 resource "tls_locally_signed_cert" "gitlab_server_singed_cert" {
   count              = local.self_signed_ssl_certs_required ? 1 : 0
-  cert_request_pem   = tls_cert_request.gitlab_server_csr.0.cert_request_pem
-  ca_private_key_pem = tls_private_key.gitlab_ca_private_key.0.private_key_pem
-  ca_cert_pem        = tls_self_signed_cert.gitlab_ca_cert.0.cert_pem
+  cert_request_pem   = tls_cert_request.gitlab_server_csr[0].cert_request_pem
+  ca_private_key_pem = tls_private_key.gitlab_ca_private_key[0].private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.gitlab_ca_cert[0].cert_pem
 
   validity_period_hours = 43800
 

@@ -242,6 +242,12 @@ variable "retention_policy" {
   default = null
 }
 
+variable "soft_delete_retention" {
+  description = "The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable."
+  type        = number
+  default     = null
+}
+
 variable "storage_class" {
   description = "Bucket storage class."
   type        = string
@@ -250,6 +256,12 @@ variable "storage_class" {
     condition     = contains(["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"], var.storage_class)
     error_message = "Storage class must be one of STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
   }
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this folder, in key => tag value id format."
+  type        = map(string)
+  default     = null
 }
 
 variable "uniform_bucket_level_access" {

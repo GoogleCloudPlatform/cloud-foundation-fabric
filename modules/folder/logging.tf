@@ -35,9 +35,16 @@ locals {
   }
 }
 
+resource "google_logging_folder_settings" "default" {
+  count                = var.logging_settings != null ? 1 : 0
+  folder               = local.folder_id
+  disable_default_sink = var.logging_settings.disable_default_sink
+  storage_location     = var.logging_settings.storage_location
+}
+
 resource "google_folder_iam_audit_config" "default" {
   for_each = var.logging_data_access
-  folder   = local.folder.name
+  folder   = local.folder_id
   service  = each.key
   dynamic "audit_log_config" {
     for_each = each.value
@@ -53,7 +60,7 @@ resource "google_logging_folder_sink" "sink" {
   for_each         = local.logging_sinks
   name             = each.key
   description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
-  folder           = local.folder.name
+  folder           = local.folder_id
   destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter           = each.value.filter
   include_children = each.value.include_children
@@ -108,10 +115,9 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
-
   condition {
     title       = "${each.key} bucket writer"
-    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder.id}"
+    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder_id}"
     expression  = "resource.name.endsWith('${each.value.destination}')"
   }
 }
@@ -126,7 +132,7 @@ resource "google_project_iam_member" "project-sinks-binding" {
 resource "google_logging_folder_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
-  folder      = local.folder.name
+  folder      = local.folder_id
   description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

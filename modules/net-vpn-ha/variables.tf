@@ -76,12 +76,6 @@ variable "tunnels" {
       address        = string
       asn            = number
       route_priority = optional(number, 1000)
-      bfd = optional(object({
-        min_receive_interval        = optional(number)
-        min_transmit_interval       = optional(number)
-        multiplier                  = optional(number)
-        session_initialization_mode = optional(string, "ACTIVE")
-      }))
       custom_advertise = optional(object({
         all_subnets          = bool
         all_vpc_subnets      = bool

@@ -45,6 +45,12 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    tenants = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
   })
   default = null
   validation {
@@ -101,34 +107,13 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "fast_features" {
-  description = "Selective control for top-level FAST features."
-  type = object({
-    data_platform   = optional(bool, false)
-    gcve            = optional(bool, false)
-    gke             = optional(bool, false)
-    project_factory = optional(bool, false)
-    sandbox         = optional(bool, false)
-    teams           = optional(bool, false)
-  })
-  default  = {}
-  nullable = false
-}
-
-variable "group_iam" {
-  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
     gcp-billing-admins      = optional(string, "gcp-billing-admins")
     gcp-devops              = optional(string, "gcp-devops")
-    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
     # aliased to gcp-devops as the checklist does not create it
@@ -187,17 +172,36 @@ variable "log_sinks" {
     filter = string
     type   = string
   }))
+  nullable = false
   default = {
     audit-logs = {
-      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\" OR protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.TransparencyLog\""
+      filter = <<-FILTER
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+      FILTER
+      type   = "logging"
+    }
+    iam = {
+      filter = <<-FILTER
+        protoPayload.serviceName="iamcredentials.googleapis.com" OR
+        protoPayload.serviceName="iam.googleapis.com" OR
+        protoPayload.serviceName="sts.googleapis.com"
+      FILTER
       type   = "logging"
     }
     vpc-sc = {
-      filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata\""
+      filter = <<-FILTER
+        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+      FILTER
       type   = "logging"
     }
     workspace-audit-logs = {
-      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Fdata_access\" and protoPayload.serviceName:\"login.googleapis.com\""
+      filter = <<-FILTER
+        log_id("cloudaudit.googleapis.com/data_access") AND
+        protoPayload.serviceName="login.googleapis.com"
+      FILTER
       type   = "logging"
     }
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ module "branch-network-cicd-repo" {
   name       = each.value.name
   iam = {
     "roles/source.admin"  = [module.branch-network-sa.iam_email]
-    "roles/source.reader" = [module.branch-network-sa-cicd.0.iam_email]
+    "roles/source.reader" = [module.branch-network-sa-cicd[0].iam_email]
   }
   triggers = {
     fast-02-networking = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.branch-network-sa-cicd.0.id
+      service_account = module.branch-network-sa-cicd[0].id
       substitutions   = {}
       template = {
         project_id  = null

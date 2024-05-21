@@ -20,7 +20,7 @@ From the perspective of FAST's overall design, stages also work as contacts or i
   <img src="stages.svg" alt="Stages diagram">
 </p>
 
-Please refer to the [stages](./stages/) section for further details on each stage. For details on tenant-level stages which introduce a deeper level of autonomy via nested FAST setups rooted in a top-level folder, refer to the [multitenant stages](#multitenant-organizations) section below.
+Please refer to the [stages](./stages/) section for further details on each stage. For details on tenant-level stages which introduce a deeper level of autonomy via nested FAST setups rooted in a top-level folder, refer to the [multitenant](#multitenant-organizations) section below.
 
 ### Security-first design
 
@@ -40,17 +40,12 @@ One of our objectives with FAST is to provide a lightweight reference design for
 
 ### Multitenant organizations
 
-FAST has built-in support for two types of multitenancy implemented in [stage 1](stages/1-resman/README.md):
+FAST has built-in support for multitenancy implemented in [an optional stage 1](./stages/1-tenant-factory/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
 
-- lightweight tenants that need extensive control over part of the organizational hierarchy, including potential use of their own billing account
-- complex tenants that need to behave like their own landing zone inside a shared GCP organization
-
-The first approach allows easy creation of branches with loose guardrails in place and wide control over their resources, and is suited where tenants implement highly specialized, custom architectures and don't need FAST compliance inside their own branch.
-
-The second approach is used when tenants need to behave as their own landing zone, and direct use of FAST stage 2s and 3s inside the tenant space is desired to achieve a full Landing Zone for each tenant. This approach leverages [dedicated stages](stages-multitenant) for tenant-level bootstrap and resource management that are run after organization-wide bootstrap and resource management. The diagram below shows the relationships between organization-level and tenant-level stages.
+The following diagram is a high-level overview of stages used with multitenancy.
 
 <p align="center">
-  <img src="stages-multitenant/stages.svg" alt="Stages diagram">
+  <img src="tenants-stages.svg" alt="Stages for multitenancy.">
 </p>
 
 ## Implementation

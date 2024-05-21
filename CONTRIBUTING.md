@@ -1007,8 +1007,7 @@ tests:
   # run a test named `test-plan`, load the specified tfvars files
   # use the default inventory file of `test-plan.yaml`
   test-plan:
-    tfvars: # if omitted, we load test-plan.tfvars by default
-      - test-plan.tfvars
+    tfvars: # test-plan.tfvars is always loaded
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml

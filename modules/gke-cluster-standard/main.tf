@@ -132,7 +132,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = local.cas == null ? [] : [""]
     content {
-      enabled             = true
+      enabled             = var.cluster_autoscaling.enabled
       autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []
@@ -338,6 +338,12 @@ resource "google_container_cluster" "cluster" {
         exclusion_name = exclusion.value.name
         start_time     = exclusion.value.start_time
         end_time       = exclusion.value.end_time
+        dynamic "exclusion_options" {
+          for_each = exclusion.value.scope != null ? [""] : []
+          content {
+            scope = exclusion.value.scope
+          }
+        }
       }
     }
   }
@@ -505,6 +511,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   cluster  = google_container_cluster.cluster.id
   location = each.value.region
   project  = var.project_id
+  labels   = each.value.labels
   retention_policy {
     backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
     backup_retain_days      = try(each.value.retention_policy_days)
@@ -558,7 +565,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   )
   project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
   peering = try(
-    google_container_cluster.cluster.private_cluster_config.0.peering_name,
+    google_container_cluster.cluster.private_cluster_config[0].peering_name,
     null
   )
   network              = element(reverse(split("/", var.vpc_config.network)), 0)

@@ -7,28 +7,12 @@ This directory contains a [GCVE single region private cloud for the `prod` envir
 
 With this stage and the [GCVE blueprints](./../../../blueprints/gcve/), you can rapidly deploy production-ready GCVE environments. These environments are fully optimized to integrate seamlessly with your Fabric FAST network topology. Explore the deployment patterns below to find the perfect fit for your use case."
 
-## TOC
-
-<!-- BEGIN TOC -->
-- [TOC](#toc)
-- [Deployment Patterns](#deployment-patterns)
-  - [Single Region](#single-region)
-    - [Standalone VPC for a sigle region GCVE deployment](#standalone-vpc-for-a-sigle-region-gcve-deployment)
-    - [Separate VPC Environments for individual dedicated GCVE deployments](#separate-vpc-environments-for-individual-dedicated-gcve-deployments)
-<!-- END TOC -->
-
-## Deployment Patterns
-### Single Region
-#### Standalone VPC for a sigle region GCVE deployment
+## Standalone VPC for a sigle region GCVE deployment
 <p align="center">
   <img src="diagram0.png" alt="Standalone Shared VPC for a sigle region GCVE deployment">
 </p>
 
-#### Separate VPC Environments for individual dedicated GCVE deployments 
+## Separate VPC Environments for individual dedicated GCVE deployments 
 <p align="center">
   <img src="diagram1.png" alt="Separate VPC Environments for individual dedicated GCVE deployments">
 </p>
-
-
-<!-- BEGIN TFDOC -->
-<!-- END TFDOC -->
