@@ -99,6 +99,7 @@ locals {
     (module.automation-tf-bootstrap-sa.iam_email) = {
       authoritative = [
         "roles/essentialcontacts.admin",
+        "roles/iam.workforcePoolAdmin",
         "roles/logging.admin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
@@ -108,7 +109,6 @@ locals {
       additive = concat(
         [
           "roles/iam.organizationRoleAdmin",
-          "roles/iam.workforcePoolAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
