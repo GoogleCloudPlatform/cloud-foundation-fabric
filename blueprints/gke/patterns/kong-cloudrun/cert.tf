@@ -16,7 +16,7 @@
 
 resource "google_privateca_ca_pool" "default" {
   project  = var.project_id
-  name     = "Acme-ca-pool-05"
+  name     = "Acme-CA-pool"
   location = var.region
   tier     = "ENTERPRISE"
 }
@@ -73,7 +73,7 @@ resource "google_privateca_certificate" "ilb_cert" {
   location              = var.region
   pool                  = google_privateca_ca_pool.default.name
   lifetime              = "2592000s" // 30 days
-  name                  = "ilb-cert-01"
+  name                  = var.cloudrun_svcname
   config {
     subject_config {
       subject {
