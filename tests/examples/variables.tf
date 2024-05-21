@@ -78,13 +78,6 @@ variable "service_account" {
   }
 }
 
-variable "service_identities" {
-  default = {
-    secret_identity  = "secret_identity_email"
-    storage_identity = "storage_identity_email"
-  }
-}
-
 variable "subnet" {
   default = {
     name      = "subnet_name"
