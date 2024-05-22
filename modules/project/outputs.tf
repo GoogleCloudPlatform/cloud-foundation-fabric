@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,9 @@ output "id" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    # google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
@@ -56,7 +55,7 @@ output "name" {
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek
+    # google_kms_crypto_key_iam_member.service_identity_cmek
   ]
 }
 
@@ -87,10 +86,9 @@ output "number" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    # google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
@@ -108,10 +106,9 @@ output "project_id" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    # google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
@@ -131,28 +128,50 @@ output "quotas" {
   value       = google_cloud_quotas_quota_preference.default
 }
 
-output "service_accounts" {
-  description = "Product robot service accounts in project."
-  value = {
-    cloud_services = local.service_account_cloud_services
-    default        = local.service_accounts_default
-    robots         = local.service_accounts_robots
-  }
+output "service_agents" {
+  value = merge(
+    local._project_service_agents,
+    {
+      for alias, name in local._agent_aliases :
+      alias => local._project_service_agents[name]
+      if contains(keys(local._project_service_agents), name)
+    }
+  )
   depends_on = [
-    google_project_service.project_services,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    data.google_bigquery_default_service_account.bq_sa,
-    data.google_storage_project_service_account.gcs_sa
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
+
+output "default_service_accounts" {
+  value = {
+    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
+  }
+}
+
+# output "service_accounts" {
+#   description = "Product robot service accounts in project."
+#   value = {
+#     cloud_services = local.service_account_cloud_services
+#     default        = local.service_accounts_default
+#     robots         = local.service_accounts_robots
+#   }
+#   depends_on = [
+#     google_project_service.project_services,
+#     google_kms_crypto_key_iam_member.service_identity_cmek,
+#     google_project_service_identity.jit_si,
+#     data.google_bigquery_default_service_account.bq_sa,
+#     data.google_storage_project_service_account.gcs_sa
+#   ]
+# }
 
 output "services" {
   description = "Service APIs to enabled in the project."
   value       = var.services
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
   ]
 }
 

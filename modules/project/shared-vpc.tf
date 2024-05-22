@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,15 +114,10 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
   for_each = local.svpc_service_iam
   project  = var.shared_vpc_service_config.host_project
   role     = each.value.role
-  member = (
-    each.value.service == "cloudservices"
-    ? "serviceAccount:${local.service_account_cloud_services}"
-    : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
-  )
+  member   = local._project_service_agents[lookup(local._agent_aliases, each.value.service, each.value.service)]
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.servicenetworking,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
     google_project_default_service_accounts.default_service_accounts,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,
@@ -143,15 +138,10 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
   region     = each.value.region
   subnetwork = each.value.subnet
   role       = "roles/compute.networkUser"
-  member = (
-    each.value.service == "cloudservices"
-    ? "serviceAccount:${local.service_account_cloud_services}"
-    : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
-  )
+  member     = local._project_service_agents[lookup(local._agent_aliases, each.value.service, each.value.service)]
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.servicenetworking,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
     google_project_default_service_accounts.default_service_accounts,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,

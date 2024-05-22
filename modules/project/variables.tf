@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,6 +206,15 @@ variable "project_create" {
   description = "Create project. When set to false, uses a data source to reference existing project."
   type        = bool
   default     = true
+}
+
+variable "service_agents_config" {
+  type = object({
+    create_primary_agents = optional(bool, true)
+    grant_default_roles   = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "service_config" {

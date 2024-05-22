@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,52 +17,87 @@
 # tfdoc:file:description Service identities and supporting resources.
 
 locals {
-  _service_accounts_cmek_service_dependencies = {
-    "composer" : [
-      "composer",
-      "artifactregistry", "container-engine", "compute", "pubsub", "storage"
-    ]
-    "dataflow" : ["dataflow", "compute"]
-  }
-  _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
-  service_accounts_default = {
-    cloudbuild   = "${local.project.number}@cloudbuild.gserviceaccount.com"
-    compute      = "${local.project.number}-compute@developer.gserviceaccount.com"
-    gae          = "${local.project.project_id}@appspot.gserviceaccount.com"
-    workstations = "service-${local.project.number}@gcp-sa-workstationsvm.iam.gserviceaccount.com"
-  }
-  service_account_cloud_services = (
-    "${local.project.number}@cloudservices.gserviceaccount.com"
-  )
-  service_accounts_robots = merge(
-    {
-      for agent in local._service_agents_data :
-      agent.name => format(agent.service_agent, local.project.number)
-    },
-    {
-      for agent in local._service_agents_data :
-      agent.alias => format(agent.service_agent, local.project.number)
-      if lookup(agent, "alias", null) != null
-    },
-    {
-      gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
-    }
-  )
-  service_accounts_jit_services = [
+  _service_agents_data = yamldecode(file("${path.module}/service-agents2.yaml"))
+  # map of api => list of agents
+  _service_agents_by_api = {
     for agent in local._service_agents_data :
-    "${agent.name}.googleapis.com"
-    if lookup(agent, "jit", false)
-  ]
-  service_accounts_cmek_service_keys = distinct(flatten([
-    for s in keys(var.service_encryption_key_ids) : [
-      for ss in try(local._service_accounts_cmek_service_dependencies[s], [s]) : [
-        for key in var.service_encryption_key_ids[s] : {
-          service = ss
-          key     = key
-        } if key != null
-      ]
-    ]
-  ]))
+    (agent.api) => agent...
+  }
+  # map of service agent name => agent details for this project
+  _project_service_agents = merge(
+    {
+      cloudservices = {
+        name         = "cloudservices"
+        display_name = "Google APIs Service Agent"
+        email        = "${local.project.number}@cloudservices.gserviceaccount.com"
+        iam_email    = "serviceAccount:${local.project.number}@cloudservices.gserviceaccount.com"
+        is_primary   = false
+        role         = null
+      }
+    },
+    [
+      for api in setintersection(var.services, keys(local._service_agents_by_api)) : {
+        for agent in local._service_agents_by_api[api] :
+        (agent.name) => merge(agent, {
+          email     = format(agent.identity, local.project.number)
+          iam_email = "serviceAccount:${format(agent.identity, local.project.number)}"
+        })
+      }
+    ]...
+  )
+
+  # service_accounts_robots = merge(
+  #   {
+  #     gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
+  #   }
+  # )
+
+  # list of APIs that with primary agents that should be created for
+  # the current project, if the user requested it
+  primary_service_agents = (
+    var.service_agents_config.create_primary_agents
+    ? [for agent in local._project_service_agents : agent.api if agent.is_primary]
+    : []
+  )
+  # list of roles that should be granted to service agents for the
+  # current project, if the user requested it
+  service_agent_roles = (
+    var.service_agents_config.grant_default_roles
+    ? {
+      for agent in local._project_service_agents :
+      (agent.name) => {
+        role      = agent.role
+        iam_email = agent.iam_email
+      }
+      if agent.role != null
+    }
+    : {}
+  )
+  service_accounts_cmek_service_keys = merge([
+    for service, keys in var.service_encryption_key_ids : {
+      for key in keys :
+      "${service}.${key}" => {
+        service = service
+        key     = key
+      }
+    }
+  ]...)
+
+  ## FIXME: do we want to keep the old aliases?
+  _agent_aliases = {
+    cloudrun         = "serverless-robot-prod"
+    composer         = "cloudcomposer-accounts"
+    compute          = "compute-system"
+    container-engine = "container-engine-robot"
+    dataproc         = "dataproc-accounts"
+    cloudfunctions   = "gcf-admin-robot"
+    dataflow         = "dataflow-service-producer-prod"
+    gae-flex         = "gae-api-prod"
+    gae-standard     = "gcp-gae-service"
+    gke-mcs          = "multiclusterservicediscovery"
+    monitoring       = "monitoring-notifications"
+    storage          = "gs-project-accounts"
+  }
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
@@ -77,43 +112,33 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_services]
 }
 
-resource "google_project_service_identity" "servicenetworking" {
+resource "google_project_service_identity" "default" {
   provider   = google-beta
-  count      = contains(var.services, "servicenetworking.googleapis.com") ? 1 : 0
+  for_each   = toset(local.primary_service_agents)
   project    = local.project.project_id
-  service    = "servicenetworking.googleapis.com"
+  service    = each.key
   depends_on = [google_project_service.project_services]
 }
-
-resource "google_project_iam_member" "servicenetworking" {
-  count   = contains(var.services, "servicenetworking.googleapis.com") ? 1 : 0
-  project = local.project.project_id
-  role    = "roles/servicenetworking.serviceAgent"
-  member  = "serviceAccount:${google_project_service_identity.servicenetworking[0].email}"
-}
-
-# Secret Manager SA created just in time, we need to trigger the creation.
-resource "google_project_service_identity" "jit_si" {
-  for_each   = setintersection(var.services, local.service_accounts_jit_services)
-  provider   = google-beta
-  project    = local.project.project_id
-  service    = each.value
-  depends_on = [google_project_service.project_services]
+resource "google_project_iam_member" "service_agents" {
+  for_each = local.service_agent_roles
+  project  = local.project.project_id
+  role     = each.value.role
+  member   = each.value.iam_email
+  depends_on = [
+    google_project_service.project_services,
+    google_project_service_identity.default
+  ]
 }
 
 resource "google_kms_crypto_key_iam_member" "service_identity_cmek" {
-  for_each = {
-    for service_key in local.service_accounts_cmek_service_keys :
-    "${service_key.service}.${service_key.key}" => service_key
-    if service_key != service_key.key
-  }
+  for_each      = local.service_accounts_cmek_service_keys
   crypto_key_id = each.value.key
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:${local.service_accounts_robots[each.value.service]}"
+  member        = local._project_service_agents[lookup(local._agent_aliases, each.value.service, each.value.service)].iam_email
   depends_on = [
     google_project.project,
     google_project_service.project_services,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_project.project,
     data.google_storage_project_service_account.gcs_sa,

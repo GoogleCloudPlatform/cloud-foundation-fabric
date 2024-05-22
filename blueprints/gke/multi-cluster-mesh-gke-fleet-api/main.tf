@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ module "mgmt_project" {
   parent          = var.parent
   name            = var.mgmt_project_id
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.host_project.project_id
-    service_identity_iam = null
+    attach       = true
+    host_project = module.host_project.project_id
   }
   services = [
     "cloudresourcemanager.googleapis.com",
