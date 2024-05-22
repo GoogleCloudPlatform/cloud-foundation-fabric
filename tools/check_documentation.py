@@ -183,7 +183,7 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
     else:
       print('Errored modules:')
       print('\n'.join([e[0] for e in errors]))
-
+    print(errors)
     raise SystemExit('Errors found.')
 
 
