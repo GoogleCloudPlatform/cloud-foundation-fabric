@@ -205,7 +205,7 @@ module "project-factory" {
     projects_data_path = "data/projects"
   }
 }
-# tftest modules=16 resources=55 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100,h-0-0,h-1-0,h-0-1,h-1-1,h-1-1-p0 inventory=example.yaml
+# tftest modules=16 resources=56 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100,h-0-0,h-1-0,h-0-1,h-1-1,h-1-1-p0 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -326,6 +326,8 @@ iam:
     - rw
   "roles/viewer":
     - ro
+shared_vpc_host_config:
+  enabled: true
 automation:
   project: bar-baz-iac-0
   service_accounts:
