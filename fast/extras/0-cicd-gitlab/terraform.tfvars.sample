@@ -1,0 +1,66 @@
+gitlab_config = {
+  access_token = "{token}"
+}
+modules_config = {
+  project_name = "modules"
+  key_config = {
+    create_key     = true
+    create_secrets = true
+  }
+  group = "shared"
+}
+projects = {
+  fast_00_bootstrap = {
+    create_options = {
+      description = "FAST bootstrap."
+      features = {
+        issues = true
+      }
+    }
+    group            = "org-admins"
+    populate_from    = "../../stages/0-bootstrap"
+    populate_samples = true
+    workflow_file    = "bootstrap-workflow.yaml"
+  }
+  fast_01_resman = {
+    create_options = {
+      description = "FAST resource management."
+      features = {
+        issues = true
+      }
+    }
+    group            = "org-admins"
+    populate_from    = "../../stages/1-resman"
+    populate_samples = true
+    workflow_file    = "resman-workflow.yaml"
+  }
+  fast_02_networking = {
+    create_options = {
+      description = "FAST networking management."
+      features = {
+        issues = true
+      }
+    }
+    group            = "net-admins"
+    populate_from    = "../../stages/2-networking-a-peering"
+    populate_samples = true
+    workflow_file    = "networking-workflow.yaml"
+  }
+}
+groups = {
+  org-admins = {
+    name        = "gcp-org-admins"
+    path        = "gcp-org-admins"
+    description = "GCP Organization administrators"
+  }
+  net-admins = {
+    name        = "gcp-net-admins"
+    path        = "gcp-net-admins"
+    description = "GCP Network administrators"
+  }
+  shared = {
+    name        = "shared"
+    path        = "shared"
+    description = "Shared repositories"
+  }
+}
