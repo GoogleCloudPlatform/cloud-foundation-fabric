@@ -104,16 +104,15 @@ import {
     !var.org_policies_config.import_defaults || var.bootstrap_user != null
     ? toset([])
     : toset([
-      "compute.requireOsLogin",
-      "compute.skipDefaultNetworkCreation",
-      "compute.vmExternalIpAccess",
-      "iam.allowedPolicyMemberDomains",
-      "iam.automaticIamGrantsForDefaultServiceAccounts",
+      # source: https://cloud.google.com/resource-manager/docs/secure-by-default-organizations#organization_policies_enforced_on_organization_resources
+      # listed in the order as on page
       "iam.disableServiceAccountKeyCreation",
       "iam.disableServiceAccountKeyUpload",
-      "sql.restrictAuthorizedNetworks",
-      "sql.restrictPublicIp",
+      "iam.automaticIamGrantsForDefaultServiceAccounts",
+      "iam.allowedPolicyMemberDomains",
+      "essentialcontacts.allowedContactDomains",
       "storage.uniformBucketLevelAccess",
+      # "compute.setNewProjectDefaultToZonalDNSOnly", # not confirmed, that this is already live
     ])
   )
   id = "organizations/${var.organization.id}/policies/${each.key}"

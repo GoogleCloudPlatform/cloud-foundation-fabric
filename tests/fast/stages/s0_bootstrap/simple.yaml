@@ -36,7 +36,6 @@ values:
     org_id: '123456789012'
     role: roles/monitoring.viewer
 counts:
-counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
   google_essential_contacts_contact: 3
@@ -46,7 +45,7 @@ counts:
   google_org_policy_policy: 22
   google_organization_iam_binding: 28
   google_organization_iam_custom_role: 7
-  google_organization_iam_member: 23
+  google_organization_iam_member: 24
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
@@ -64,7 +63,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 8
   modules: 17
-  resources: 197
+  resources: 198
 
 outputs:
   custom_roles:
