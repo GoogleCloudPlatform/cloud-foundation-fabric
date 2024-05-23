@@ -226,6 +226,16 @@ variable "neg_configs" {
         port       = number
       })))
     }))
+    internet = optional(object({
+      region   = string
+      use_fqdn = optional(bool, true)
+      # re-enable once provider properly support this
+      # default_port = optional(number)
+      endpoints = optional(map(object({
+        destination = string
+        port        = number
+      })))
+    }))
     psc = optional(object({
       region         = string
       target_service = string
@@ -240,6 +250,7 @@ variable "neg_configs" {
       for k, v in var.neg_configs : (
         (try(v.gce, null) == null ? 0 : 1) +
         (try(v.hybrid, null) == null ? 0 : 1) +
+        (try(v.internet, null) == null ? 0 : 1) +
         (try(v.psc, null) == null ? 0 : 1) == 1
       )
     ])
@@ -261,6 +272,21 @@ variable "project_id" {
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
+}
+
+variable "service_attachment" {
+  description = "PSC service attachment."
+  type = object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {}) # map of `project_id` => `connection_limit`
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  })
+  default = null
 }
 
 variable "vpc_config" {
