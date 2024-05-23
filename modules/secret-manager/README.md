@@ -19,7 +19,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.region_primary, var.region_secondary]
+      locations = [var.regions.primary, var.regions.secondary]
     }
   }
 }
@@ -37,7 +37,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.region_primary, var.region_secondary]
+      locations = [var.regions.primary, var.regions.secondary]
     }
   }
   iam = {
@@ -63,7 +63,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {}
     test-manual = {
-      locations = [var.region_primary, var.region_secondary]
+      locations = [var.regions.primary, var.regions.secondary]
     }
   }
   versions = {
@@ -95,10 +95,10 @@ module "secret-manager" {
     }
     test-auto-nokeys = {}
     test-manual = {
-      locations = [var.region_primary, var.region_secondary]
+      locations = [var.regions.primary, var.regions.secondary]
       keys = {
-        "${var.region_primary}"   = google_kms_crypto_key.keys["${var.region_primary}"].id
-        "${var.region_secondary}" = google_kms_crypto_key.keys["${var.region_secondary}"].id
+        "${var.regions.primary}"   = google_kms_crypto_key.keys["${var.regions.primary}"].id
+        "${var.regions.secondary}" = google_kms_crypto_key.keys["${var.regions.secondary}"].id
       }
     }
   }

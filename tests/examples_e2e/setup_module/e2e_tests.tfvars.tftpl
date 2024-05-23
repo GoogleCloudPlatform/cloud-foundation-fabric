@@ -26,8 +26,10 @@ folder_id       = "folders/${folder_id}"
 project_id      = "${project_id}"
 project_number  = "${project_number}"
 region          = "${region}"
-region_primary         = "${region_primary}"
-region_secondary       = "${region_secondary}"
+regions         = {
+  primary       = "${regions.primary}"
+  secondary     = "${regions.secondary}"
+}
 service_account = {
     id        = "${service_account.id}"
     email     = "${service_account.email}"

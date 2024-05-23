@@ -25,14 +25,14 @@ resource "google_project_iam_binding" "bindings" {
 }
 
 resource "google_kms_key_ring" "key_rings" {
-  for_each = toset([var.region_primary, var.region_secondary])
+  for_each = toset([var.regions.primary, var.regions.secondary])
   name     = "keyring-${each.key}"
   project  = var.project_id
   location = each.value
 }
 
 resource "google_kms_crypto_key" "keys" {
-  for_each        = toset([var.region_primary, var.region_secondary])
+  for_each        = toset([var.regions.primary, var.regions.secondary])
   name            = "crypto-key-${each.key}"
   key_ring        = google_kms_key_ring.key_rings[each.key].id
   rotation_period = "100000s"
