@@ -20,6 +20,7 @@ locals {
   ]
   services = [
     # trimmed down list of services, to be extended as needed
+    "alloydb.googleapis.com",
     "apigee.googleapis.com",
     "bigquery.googleapis.com",
     "cloudbuild.googleapis.com",

@@ -115,6 +115,7 @@ values:
 
 counts:
   google_billing_budget: 1
+  google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork_iam_member: 3
   google_essential_contacts_contact: 4
@@ -132,4 +133,4 @@ counts:
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
   modules: 16
-  resources: 55
+  resources: 56

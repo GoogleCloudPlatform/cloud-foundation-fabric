@@ -68,7 +68,7 @@ Tenants can also be configured for FAST compatibility. This approach effectively
 The main differences compared to organization-level FAST are:
 
 - no bootstrap service account is created for tenants, as this stage is their effective bootstrap
-- tenant-mamaged log sinks are configured in stage 1, cine their bootstrap stage (this one) is under central control
+- tenant-mamaged log sinks are configured in stage 1, since their bootstrap stage (this one) is under central control
 - secure tags are created in the tenant automation project since tenants cannot operate at the organization level
 - tenants cannot self-manage organization policies on their folder (this might change in a future release)
 
@@ -154,7 +154,7 @@ This stage has only three variables that can be customized:
 
 A small number of attributes can be configured for each tenant in `tenant_configs` regardless of its type (simple or FAST-enabled).
 
-The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names. If the tenant plans on using FAST stages it should not exceed 3 characters, unless a custom prefix is also defined for the tenant.
+The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names. If the tenant plans on using FAST stages, the total combined length of string `{fast-prefix}-{tenant-shortname}` should not exceed 11 characters combined, unless a custom prefix is also defined for the tenant.
 
 `admin_principal` is a IAM-format principal (e.g. `"group:tenant-admins@example.org"`) which is assigned administrative permissions on the tenant environment, and impersonation permissions on the automation service account.
 
