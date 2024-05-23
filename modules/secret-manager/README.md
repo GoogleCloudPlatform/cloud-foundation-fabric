@@ -128,7 +128,7 @@ module "secret-manager" {
 
 ## Fixtures
 
-- [secret.tf](../../tests/fixtures/secret.tf)
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->
 ## Requirements
 
