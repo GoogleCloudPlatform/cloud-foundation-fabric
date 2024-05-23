@@ -68,7 +68,7 @@ Tenants can also be configured for FAST compatibility. This approach effectively
 The main differences compared to organization-level FAST are:
 
 - no bootstrap service account is created for tenants, as this stage is their effective bootstrap
-- tenant-mamaged log sinks are configured in stage 1, cine their bootstrap stage (this one) is under central control
+- tenant-mamaged log sinks are configured in stage 1, since their bootstrap stage (this one) is under central control
 - secure tags are created in the tenant automation project since tenants cannot operate at the organization level
 - tenants cannot self-manage organization policies on their folder (this might change in a future release)
 
