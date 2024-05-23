@@ -28,7 +28,6 @@ values:
     log_config:
       - enable: false
         filter: ALL
-    max_ports_per_vm: null
     name: vpc1-nat
     nat_ip_allocate_option: null
     nat_ips: null
