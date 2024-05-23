@@ -90,20 +90,20 @@ module "secret-manager" {
   secrets = {
     test-auto = {
       keys = {
-        global = google_kms_crypto_key.key_global.id
+        global = module.kms_global.keys.key-gl.id
       }
     }
     test-auto-nokeys = {}
     test-manual = {
       locations = [var.regions.primary, var.regions.secondary]
       keys = {
-        "${var.regions.primary}"   = google_kms_crypto_key.keys["${var.regions.primary}"].id
-        "${var.regions.secondary}" = google_kms_crypto_key.keys["${var.regions.secondary}"].id
+        "${var.regions.primary}"   = module.kms_regional_primary.keys.key-a.id
+        "${var.regions.secondary}" = module.kms_regional_secondary.keys.key-b.id
       }
     }
   }
 }
-# tftest modules=1 resources=11 fixtures=fixtures/secret.tf inventory=secret-cmek.yaml e2e
+# tftest modules=4 resources=11 fixtures=fixtures/kms-global-regional-keys.tf inventory=secret-cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

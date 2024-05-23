@@ -24,29 +24,44 @@ resource "google_project_iam_binding" "bindings" {
   members = ["serviceAccount:${resource.google_project_service_identity.secretmanager.email}"]
 }
 
-resource "google_kms_key_ring" "key_rings" {
-  for_each = toset([var.regions.primary, var.regions.secondary])
-  name     = "keyring-${each.key}"
-  project  = var.project_id
-  location = each.value
+module "kms_regional_primary" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.regions.primary
+    name     = "keyring-primary"
+  }
+  keys = {
+    "key-a" = {
+    }
+  }
+  depends_on = [google_project_iam_binding.bindings]
 }
 
-resource "google_kms_crypto_key" "keys" {
-  for_each        = toset([var.regions.primary, var.regions.secondary])
-  name            = "crypto-key-${each.key}"
-  key_ring        = google_kms_key_ring.key_rings[each.key].id
-  rotation_period = "100000s"
+module "kms_regional_secondary" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.regions.secondary
+    name     = "keyring-secondary"
+  }
+  keys = {
+    "key-b" = {
+    }
+  }
+  depends_on = [google_project_iam_binding.bindings]
 }
 
-resource "google_kms_key_ring" "keyring_global" {
-  name     = "keyring-global"
-  project  = var.project_id
-  location = "global"
-}
-
-resource "google_kms_crypto_key" "key_global" {
-  name            = "crypto-key-example-global"
-  key_ring        = google_kms_key_ring.keyring_global.id
-  rotation_period = "100000s"
-  depends_on      = [google_project_iam_binding.bindings]
+module "kms_global" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = "global"
+    name     = "keyring-gl"
+  }
+  keys = {
+    "key-gl" = {
+    }
+  }
+  depends_on = [google_project_iam_binding.bindings]
 }
