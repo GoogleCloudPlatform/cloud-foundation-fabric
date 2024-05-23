@@ -154,7 +154,7 @@ This stage has only three variables that can be customized:
 
 A small number of attributes can be configured for each tenant in `tenant_configs` regardless of its type (simple or FAST-enabled).
 
-The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names. If the tenant plans on using FAST stages it should not exceed 3 characters, unless a custom prefix is also defined for the tenant.
+The key in the tenant map is used as the tenant shortname, and should be selected with care as it becomes part of resource names. If the tenant plans on using FAST stages, the total combined length of string `{fast-prefix}-{tenant-shortname}` should not exceed 11 characters combined, unless a custom prefix is also defined for the tenant.
 
 `admin_principal` is a IAM-format principal (e.g. `"group:tenant-admins@example.org"`) which is assigned administrative permissions on the tenant environment, and impersonation permissions on the automation service account.
 
