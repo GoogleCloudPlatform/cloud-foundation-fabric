@@ -1515,7 +1515,6 @@ values:
     log_config:
       - enable: false
         filter: ALL
-    max_ports_per_vm: null
     name: ew1
     nat_ip_allocate_option: AUTO_ONLY
     nat_ips: null
@@ -1548,7 +1547,6 @@ values:
     log_config:
       - enable: false
         filter: ALL
-    max_ports_per_vm: null
     name: ew4
     nat_ip_allocate_option: AUTO_ONLY
     nat_ips: null
