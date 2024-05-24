@@ -29,7 +29,6 @@ variable "description" {
 variable "location" {
   description = "Data Catalog Taxonomy location."
   type        = string
-  default     = "eu"
 }
 
 variable "name" {
