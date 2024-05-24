@@ -21,6 +21,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   versioning = true
   labels = {
     cost-center = "devops"
@@ -62,8 +63,8 @@ module "bucket" {
   project_id     = var.project_id
   prefix         = var.prefix
   name           = "my-bucket"
-  encryption_key = module.kms.keys.bucket_key.id
   location       = "EU"
+  encryption_key = module.kms.keys.bucket_key.id
 }
 
 # tftest modules=3 skip e2e
@@ -77,6 +78,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   retention_policy = {
     retention_period = 100
     is_locked        = true
@@ -98,6 +100,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   lifecycle_rules = {
     lr-0 = {
       action = {
@@ -127,6 +130,7 @@ module "bucket-gcs-notification" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   notification_config = {
     enabled           = true
     payload_format    = "JSON_API_V1"
@@ -147,6 +151,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   objects_to_upload = {
     sample-data = {
       name         = "example-file.csv"
@@ -176,6 +181,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   iam = {
     "roles/storage.admin" = ["group:${var.group_email}"]
   }
@@ -189,6 +195,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   iam_bindings = {
     storage-admin-with-delegated_roles = {
       role    = "roles/storage.admin"
@@ -217,6 +224,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   iam_bindings_additive = {
     storage-admin-with-delegated_roles = {
       role   = "roles/storage.admin"
@@ -264,6 +272,7 @@ module "bucket" {
   project_id = var.project_id
   prefix     = var.prefix
   name       = "my-bucket"
+  location   = "EU"
   tag_bindings = {
     env-sandbox = module.org.tag_values["environment/sandbox"].id
   }
