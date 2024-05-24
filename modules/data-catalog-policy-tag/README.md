@@ -35,6 +35,7 @@ module "cmn-dc" {
   source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
+  location   = "eu"
   tags = {
     low    = {}
     medium = {}
@@ -51,6 +52,7 @@ module "cmn-dc" {
   source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
+  location   = "eu"
   tags = {
     low    = {}
     medium = {}
@@ -79,17 +81,17 @@ module "cmn-dc" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L35) | Name of this taxonomy. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L50) | GCP project id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L29) | Data Catalog Taxonomy location. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L34) | Name of this taxonomy. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L49) | GCP project id. | <code>string</code> | ✓ |  |
 | [activated_policy_types](variables.tf#L17) | A list of policy types that are activated for this taxonomy. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;FINE_GRAINED_ACCESS_CONTROL&#34;&#93;</code> |
 | [description](variables.tf#L23) | Description of this taxonomy. | <code>string</code> |  | <code>&#34;Taxonomy - Terraform managed&#34;</code> |
 | [iam](variables-iam.tf#L23) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L29) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L44) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L17) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L29) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [prefix](variables.tf#L40) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L55) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L39) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L54) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
