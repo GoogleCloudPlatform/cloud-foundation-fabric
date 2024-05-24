@@ -209,6 +209,7 @@ module "gcs" {
   project_id    = var.project_id
   prefix        = var.prefix
   name          = "gcs_sink"
+  location      = "EU"
   force_destroy = true
 }
 

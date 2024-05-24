@@ -149,7 +149,7 @@ variable "lifecycle_rules" {
 variable "location" {
   description = "Bucket location."
   type        = string
-  default     = "EU"
+  # default     = "EU"
 }
 
 variable "logging_config" {
