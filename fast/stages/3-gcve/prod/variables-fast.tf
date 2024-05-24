@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-variable "access_policy" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Access policy id for tenant-level VPC-SC configurations."
-  type        = number
-  default     = null
-}
-
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
@@ -44,24 +37,22 @@ variable "billing_account" {
 
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
-  description = "Folder name => id mappings, the 'security' folder name must exist."
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
-    security = string
+    gcve-prod = string
   })
 }
 
-variable "logging" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Log writer identities for organization / folders."
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Host project for the shared VPC."
   type = object({
-    project_number    = string
-    writer_identities = map(string)
+    prod-spoke-0 = string
   })
-  default = null
 }
 
 variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 00-globals
   description = "Organization details."
   type = object({
     domain      = string
@@ -80,27 +71,12 @@ variable "prefix" {
   }
 }
 
-variable "root_node" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Root node for the hierarchy, if running in tenant mode."
-  type        = string
-  default     = null
-  validation {
-    condition = (
-      var.root_node == null ||
-      startswith(coalesce(var.root_node, "-"), "folders/")
-    )
-    error_message = "Root node must be in folders/nnnnn format if specified."
-  }
-}
-
-variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
+variable "vpc_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Self link for the shared VPC."
   type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    project-factory-dev  = string
-    project-factory-prod = string
+    prod-spoke-0 = string
   })
 }
+
+

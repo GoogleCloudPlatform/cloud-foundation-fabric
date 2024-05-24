@@ -114,6 +114,19 @@ variable "organization" {
   nullable = false
 }
 
+check "prefix_validator" {
+  assert {
+    condition     = (try(length(var.prefix), 0) < 10) || (try(length(var.prefix), 0) < 12 && var.root_node != null)
+    error_message = "var.prefix must be 9 characters or shorter for organizations, and 11 chars or shorter for tenants."
+  }
+}
+
+variable "prefix" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Prefix used for resources that need unique names. Use 9 characters or less."
+  type        = string
+}
+
 variable "root_node" {
   # tfdoc:variable:source 0-bootstrap
   description = "Root node for the hierarchy, if running in tenant mode."

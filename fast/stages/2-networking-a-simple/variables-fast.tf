@@ -78,12 +78,11 @@ variable "organization" {
 
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
-  description = "Prefix used for resources that need unique names. Use 9 characters or less."
+  description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
-
   validation {
-    condition     = try(length(var.prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
+    condition     = try(length(var.prefix), 0) < 12
+    error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   }
 }
 
