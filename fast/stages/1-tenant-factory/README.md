@@ -264,7 +264,7 @@ For example:
 ```bash
 /path/to/stage-links.sh ~/fast-config/tenants/tenant-a
 
-# copy and paste the following commands for '1-tenant-factory'
+# copy and paste the following commands for 'tenant-a/1-resman'
 
 ln -s ~/fast-config/tenants/tenant-a/providers/1-tenant-factory-providers.tf ./
 ln -s ~/fast-config/tenants/tenant-a/tfvars/0-globals.auto.tfvars.json ./
@@ -274,7 +274,7 @@ ln -s ~/fast-config/tenants/tenant-a/tfvars/0-bootstrap.auto.tfvars.json ./
 ```bash
 ../../stage-links.sh gs://{prefix}-{tenant-shortname}-prod-iac-core-0
 
-# copy and paste the following commands for '1-tenant-factory'
+# copy and paste the following commands for 'tenant-a/1-resman'
 
 gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/providers/1-tenant-factory-providers.tf ./
 gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-globals.auto.tfvars.json ./
