@@ -208,7 +208,8 @@ variable "startup_cpu_boost" {
 variable "tag_bindings" {
   description = "Tag bindings for this service, in key => tag value id format."
   type        = map(string)
-  default     = null
+  nullable    = false
+  default     = {}
 }
 
 variable "timeout_seconds" {
