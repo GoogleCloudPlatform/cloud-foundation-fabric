@@ -136,6 +136,7 @@ module "bucket_export" {
   source     = "../../../modules/gcs"
   project_id = module.project.project_id
   name       = "${module.project.project_id}-export"
+  location   = var.organization.analytics_region
   iam = {
     "roles/storage.objectViewer" = [
       module.function_gcs2bq.service_account_iam_email
