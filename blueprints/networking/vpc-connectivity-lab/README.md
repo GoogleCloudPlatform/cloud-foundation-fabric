@@ -65,6 +65,7 @@ $ tcpdump -i any icmp -n
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [backend.tf](./backend.tf) | None |  |  |
 | [dns-hub.tf](./dns-hub.tf) | DNS setup. | <code>dns</code> |  |
 | [main.tf](./main.tf) | Project setup. | <code>project</code> |  |
 | [nva.tf](./nva.tf) | None | <code>compute-vm</code> · <code>simple-nva</code> | <code>google_compute_instance_group</code> |
