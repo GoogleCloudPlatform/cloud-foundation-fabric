@@ -252,6 +252,34 @@ tenant_configs = {
 }
 ```
 
+#### Deploying FAST stages
+
+Mirroring the regular FAST behavior, the provider and variable files for a bootstrapped tenant will be generated on a tenant-specific storage bucket named `{prefix}-{tenant-shortname}-prod-iac-core-outputs-0` in (also tenant-specific) project `{prefix}-{tenant-shortname}-prod-iac-core-0`.
+
+Since the tenant is already bootstrapped, a FAST deployment for tenants start from stage `1-resman`, which can be configured as usual, leveraging `stage-links.sh`, which should point to either the tenant-specific `var.outputs_location`, or to the tenant-specific GCS bucket.
+
+For example:
+
+```bash
+/path/to/stage-links.sh ~/fast-config/tenants/tenant-a
+
+# copy and paste the following commands for '1-tenant-factory'
+
+ln -s ~/fast-config/tenants/tenant-a/providers/1-tenant-factory-providers.tf ./
+ln -s ~/fast-config/tenants/tenant-a/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/tenants/tenant-a/tfvars/0-bootstrap.auto.tfvars.json ./
+```
+
+```bash
+../../stage-links.sh gs://{prefix}-{tenant-shortname}-prod-iac-core-0
+
+# copy and paste the following commands for '1-tenant-factory'
+
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/providers/1-tenant-factory-providers.tf ./
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-bootstrap.auto.tfvars.json ./
+```
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 ## Files

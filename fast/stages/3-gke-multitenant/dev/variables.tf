@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-# we deal with one env here
-# 1 project, m clusters
-# cloud dns for gke?
-
-variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-}
-
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
 
 variable "clusters" {
   description = "Clusters configuration. Refer to the gke-cluster-standard module for type details."
@@ -116,7 +91,6 @@ variable "fleet_configmanagement_clusters" {
   nullable    = false
 }
 
-
 variable "fleet_configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
@@ -170,22 +144,6 @@ variable "fleet_workload_identity" {
   type        = bool
   default     = false
   nullable    = false
-}
-
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type = object({
-    gke-dev = string
-  })
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
 }
 
 variable "iam" {
@@ -247,26 +205,9 @@ variable "outputs_location" {
   default     = null
 }
 
-variable "prefix" {
-  description = "Prefix used for resources that need unique names."
-  type        = string
-  validation {
-    condition     = try(length(var.prefix), 0) < 13
-    error_message = "Use a maximum of 12 characters for prefix."
-  }
-}
-
 variable "project_services" {
   description = "Additional project services to enable."
   type        = list(string)
   default     = []
   nullable    = false
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
 }

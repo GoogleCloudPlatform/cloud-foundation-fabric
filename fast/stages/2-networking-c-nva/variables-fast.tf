@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-variable "access_policy" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Access policy id for tenant-level VPC-SC configurations."
-  type        = number
-  default     = null
-}
-
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
@@ -42,31 +35,32 @@ variable "billing_account" {
   }
 }
 
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder name => id mappings, the 'security' folder name must exist."
-  type = object({
-    security = string
-  })
-}
-
-variable "logging" {
+variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
-  description = "Log writer identities for organization / folders."
+  description = "Custom roles defined at the org level, in key => id format."
   type = object({
-    project_number    = string
-    writer_identities = map(string)
+    service_project_network_admin = string
   })
   default = null
 }
 
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
   type = object({
-    domain      = string
-    id          = number
-    customer_id = string
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
+  type = object({
+    networking      = string
+    networking-dev  = string
+    networking-prod = string
   })
 }
 
@@ -80,27 +74,16 @@ variable "prefix" {
   }
 }
 
-variable "root_node" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Root node for the hierarchy, if running in tenant mode."
-  type        = string
-  default     = null
-  validation {
-    condition = (
-      var.root_node == null ||
-      startswith(coalesce(var.root_node, "-"), "folders/")
-    )
-    error_message = "Root node must be in folders/nnnnn format if specified."
-  }
-}
-
 variable "service_accounts" {
   # tfdoc:variable:source 1-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
+  description = "Automation service accounts in name => email format."
   type = object({
     data-platform-dev    = string
     data-platform-prod   = string
+    gke-dev              = string
+    gke-prod             = string
     project-factory-dev  = string
     project-factory-prod = string
   })
+  default = null
 }
