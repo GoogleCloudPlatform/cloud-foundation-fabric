@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-resource "google_tags_tag_binding" "binding" {
+resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
-  parent    = "//bigquery.googleapis.com/${google_bigquery_dataset.default.dataset_id}"
+  parent    = "//bigquery.googleapis.com/${google_bigquery_dataset.default.id}"
   tag_value = each.value
+  location  = var.location
 }
