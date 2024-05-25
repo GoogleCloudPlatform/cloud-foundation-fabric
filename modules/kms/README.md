@@ -11,6 +11,7 @@ When using an existing keyring be mindful about applying IAM bindings, as all bi
   - [Using an existing keyring](#using-an-existing-keyring)
   - [Crypto key purpose](#crypto-key-purpose)
   - [Import job](#import-job)
+  - [Tag Bindings](#tag-bindings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -114,6 +115,41 @@ module "kms" {
 }
 # tftest modules=1 resources=2 inventory=import-job.yaml e2e
 ```
+
+### Tag Bindings
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev     = {}
+        prod    = {}
+        sandbox = {}
+      }
+    }
+  }
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = var.region
+    name     = "test-3"
+  }
+  tag_bindings = {
+    env-sandbox = module.org.tag_values["environment/sandbox"].id
+  }
+}
+# tftest modules=2 resources=6
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
