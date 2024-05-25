@@ -2,26 +2,24 @@
 
 Cloud Run management, with support for IAM roles, revision annotations and optional Eventarc trigger creation.
 
-## Examples
-
 <!-- BEGIN TOC -->
-- [Examples](#examples)
-  - [IAM and environment variables](#iam-and-environment-variables)
-  - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
-  - [Revision annotations](#revision-annotations)
-  - [Second generation execution environment](#second-generation-execution-environment)
-  - [VPC Access Connector creation](#vpc-access-connector-creation)
-  - [Traffic split](#traffic-split)
-  - [Eventarc triggers](#eventarc-triggers)
-    - [PubSub](#pubsub)
-    - [Audit logs](#audit-logs)
-    - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
-  - [Service account](#service-account)
+- [IAM and environment variables](#iam-and-environment-variables)
+- [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+- [Revision annotations](#revision-annotations)
+- [Second generation execution environment](#second-generation-execution-environment)
+- [VPC Access Connector creation](#vpc-access-connector-creation)
+- [Traffic split](#traffic-split)
+- [Eventarc triggers](#eventarc-triggers)
+  - [PubSub](#pubsub)
+  - [Audit logs](#audit-logs)
+  - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
+- [Service account](#service-account)
+- [Tag bindings](#tag-bindings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-### IAM and environment variables
+## IAM and environment variables
 
 IAM bindings support the usual syntax. Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there's no duplication of keys:
 
@@ -68,7 +66,7 @@ module "cloud_run" {
 # tftest modules=2 resources=5 inventory=simple.yaml e2e
 ```
 
-### Mounting secrets as volumes
+## Mounting secrets as volumes
 
 ```hcl
 module "secret-manager" {
@@ -117,7 +115,7 @@ module "cloud_run" {
 # tftest modules=2 resources=5 inventory=secrets.yaml e2e
 ```
 
-### Revision annotations
+## Revision annotations
 
 Annotations can be specified via the `revision_annotations` variable:
 
@@ -145,7 +143,7 @@ module "cloud_run" {
 # tftest modules=1 resources=1 inventory=revision-annotations.yaml
 ```
 
-### Second generation execution environment
+## Second generation execution environment
 
 Second generation execution environment (gen2) can be enabled by setting the `gen2_execution_environment` variable to true:
 
@@ -165,7 +163,7 @@ module "cloud_run" {
 # tftest modules=1 resources=1 inventory=gen2.yaml e2e
 ```
 
-### VPC Access Connector creation
+## VPC Access Connector creation
 
 If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector_create` variable which also support optional attributes for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
 
@@ -211,7 +209,7 @@ module "cloud_run" {
 # tftest modules=1 resources=2 inventory=connector-shared.yaml
 ```
 
-### Traffic split
+## Traffic split
 
 This deploys a Cloud Run service with traffic split between two revisions.
 
@@ -235,9 +233,9 @@ module "cloud_run" {
 # tftest modules=1 resources=1 inventory=traffic.yaml
 ```
 
-### Eventarc triggers
+## Eventarc triggers
 
-#### PubSub
+### PubSub
 
 This deploys a Cloud Run service that will be triggered when messages are published to Pub/Sub topics.
 
@@ -267,7 +265,7 @@ module "cloud_run" {
 # tftest modules=2 resources=3 inventory=eventarc.yaml e2e
 ```
 
-#### Audit logs
+### Audit logs
 
 This deploys a Cloud Run service that will be triggered when specific log events are written to Google Cloud audit logs.
 
@@ -307,7 +305,7 @@ module "cloud_run" {
 # tftest modules=2 resources=5 inventory=audit-logs.yaml
 ```
 
-#### Using custom service accounts for triggers
+### Using custom service accounts for triggers
 
 By default `Compute default service account` is used to trigger Cloud Run. If you want to use custom Service Account you can either provide your own in `eventarc_triggers.service_account_email` or set `eventarc_triggers.service_account_create` to true and service account named `tf-cr-trigger-${var.name}` will be created with `roles/run.invoker` granted on this Cloud Run service.
 
@@ -342,7 +340,7 @@ module "cloud_run" {
 # tftest modules=2 resources=5 inventory=trigger-service-account.yaml e2e
 ```
 
-### Service account
+## Service account
 
 To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` value (default).
 
@@ -379,6 +377,43 @@ module "cloud_run" {
 }
 # tftest modules=1 resources=1 inventory=service-account-external.yaml e2e
 ```
+
+## Tag bindings
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev     = {}
+        prod    = {}
+        sandbox = {}
+      }
+    }
+  }
+}
+
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  tag_bindings = {
+    env-sandbox = module.org.tag_values["environment/sandbox"].id
+  }
+}
+# tftest modules=2 resources=6
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -400,10 +435,11 @@ module "cloud_run" {
 | [service_account](variables.tf#L190) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L196) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | [startup_cpu_boost](variables.tf#L202) | Enable startup cpu boost. | <code>bool</code> |  | <code>false</code> |
-| [timeout_seconds](variables.tf#L208) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
-| [traffic](variables.tf#L214) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [volumes](variables.tf#L225) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpc_connector_create](variables.tf#L239) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L208) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [timeout_seconds](variables.tf#L215) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
+| [traffic](variables.tf#L221) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [volumes](variables.tf#L232) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_connector_create](variables.tf#L246) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

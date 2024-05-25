@@ -214,6 +214,13 @@ variable "service_account_create" {
   default     = false
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this service, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "volumes" {
   description = "Named volumes in containers in name => attributes format."
   type = map(object({

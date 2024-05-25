@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,7 @@
 
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
-  parent    = "//storage.googleapis.com/projects/_/buckets/${local.prefix}${lower(var.name)}"
+  parent    = "//bigquery.googleapis.com/${google_bigquery_dataset.default.id}"
   tag_value = each.value
   location  = var.location
-  depends_on = [
-    google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
-  ]
 }

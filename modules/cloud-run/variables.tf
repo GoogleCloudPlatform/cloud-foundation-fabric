@@ -205,6 +205,13 @@ variable "startup_cpu_boost" {
   default     = false
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this service, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "timeout_seconds" {
   description = "Maximum duration the instance is allowed for responding to a request."
   type        = number
