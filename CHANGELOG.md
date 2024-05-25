@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2307)] Extend support for tag bindings to more modules ([ludoo](https://github.com/ludoo)) <!-- 2024-05-25 08:42:45+00:00 -->
 - [[#2306](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2306)] Internet NEG for internal proxy LB ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-24 10:56:28+00:00 -->
 - [[#2304](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2304)] **incompatible change:** Remove default location from container-registry, datacatalog-policy-tag, workstation-cluster ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:20:53+00:00 -->
 - [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
