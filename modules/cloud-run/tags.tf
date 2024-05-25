@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-resource "google_tags_tag_binding" "binding" {
-  for_each  = var.tag_bindings
-  parent    = "//run.googleapis.com/${google_cloud_run_service.service.id}"
+resource "google_tags_location_tag_binding" "binding" {
+  for_each = var.tag_bindings
+  parent = (
+    "//run.googleapis.com/projects/${var.project_id}/locations/europe-west1/services/${google_cloud_run_service.service.name}"
+  )
   tag_value = each.value
+  location  = var.region
 }
+
+//run.googleapis.com/projects/1076190955083/locations/europe-west1/services/test-0
+//run.googleapis.com/locations/europe-west1/namespaces/tf-playground-svpc-cr-0/services/test-0
