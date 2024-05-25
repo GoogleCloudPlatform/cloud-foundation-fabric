@@ -8,7 +8,7 @@
 - [GCS notifications](#gcs-notifications)
 - [Object upload](#object-upload)
 - [IAM](#iam)
-- [Tags](#tags)
+- [Tag Bindings](#tag-bindings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -247,7 +247,7 @@ module "bucket" {
 # tftest modules=1 resources=2 inventory=iam-bindings-additive.yaml e2e
 ```
 
-## Tags
+## Tag Bindings
 
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
 
