@@ -1,9 +1,0 @@
-# skip boilerplate check
-
-name: dev-gke-nodes
-region: europe-west1
-description: Default subnet for prod gke nodes
-ip_cidr_range: 10.68.1.0/24
-secondary_ip_ranges:
-   pods: 100.68.0.0/16
-   services: 100.71.1.0/24

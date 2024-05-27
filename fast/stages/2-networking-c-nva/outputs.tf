@@ -26,11 +26,15 @@ locals {
     prod-spoke-0 = module.prod-spoke-project.number
   }
   subnet_self_links = {
+    prod-dmz     = module.dmz-vpc.subnet_self_links
     prod-landing = module.landing-vpc.subnet_self_links
     dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
     prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
   }
   subnet_proxy_only_self_links = {
+    prod-dmz = {
+      for k, v in module.dmz-vpc.subnets_proxy_only : k => v.id
+    }
     prod-landing = {
       for k, v in module.landing-vpc.subnets_proxy_only : k => v.id
     }
@@ -42,6 +46,9 @@ locals {
     }
   }
   subnet_psc_self_links = {
+    prod-dmz = {
+      for k, v in module.dmz-vpc.subnets_psc : k => v.id
+    }
     prod-landing = {
       for k, v in module.landing-vpc.subnets_psc : k => v.id
     }

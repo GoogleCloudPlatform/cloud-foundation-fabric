@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
+locals {
+  ncc_asn = {
+    dmz           = 64512
+    landing       = 64515
+    nva_primary   = 64513
+    nva_secondary = 64514
+  }
+}
+
 resource "google_network_connectivity_hub" "hub_landing" {
+  count       = var.enable_ncc_ra ? 1 : 0
   name        = "prod-hub-landing"
   description = "Prod hub landing (trusted)"
   project     = module.landing-project.project_id
 }
 
 resource "google_network_connectivity_hub" "hub_dmz" {
+  count       = var.enable_ncc_ra ? 1 : 0
   name        = "prod-hub-dmz"
   description = "Prod hub DMZ (untrusted)"
   project     = module.landing-project.project_id
 }
 
-module "spokes-landing" {
-  for_each   = var.regions
+module "ncc-spokes-landing" {
+  for_each   = var.enable_ncc_ra ? var.regions : {}
   source     = "../../../modules/ncc-spoke-ra"
   name       = "prod-spoke-landing-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id
@@ -35,19 +46,19 @@ module "spokes-landing" {
 
   hub = {
     create = false,
-    id     = google_network_connectivity_hub.hub_landing.id
+    id     = google_network_connectivity_hub.hub_landing[0].id
   }
 
   router_appliances = [
-    for key, config in local.nva_configs :
+    for key, config in local.bgp_nva_configs :
     {
-      internal_ip  = module.nva[key].internal_ips[1]
-      vm_self_link = module.nva[key].self_link
+      internal_ip  = module.nva-bgp[key].internal_ips[1]
+      vm_self_link = module.nva-bgp[key].self_link
     } if config.region == each.value
   ]
 
   router_config = {
-    asn = var.ncc_asn.landing
+    asn = local.ncc_asn.landing
     ip_interface0 = cidrhost(
       module.landing-vpc.subnet_ips["${each.value}/landing-default"], 201
     )
@@ -56,8 +67,8 @@ module "spokes-landing" {
     )
     peer_asn = (
       each.key == "primary"
-      ? var.ncc_asn.nva_primary
-      : var.ncc_asn.nva_secondary
+      ? local.ncc_asn.nva_primary
+      : local.ncc_asn.nva_secondary
     )
     routes_priority = 100
 
@@ -80,8 +91,8 @@ module "spokes-landing" {
   }
 }
 
-module "spokes-dmz" {
-  for_each   = var.regions
+module "ncc-spokes-dmz" {
+  for_each   = var.enable_ncc_ra ? var.regions : {}
   source     = "../../../modules/ncc-spoke-ra"
   name       = "prod-spoke-dmz-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id
@@ -89,19 +100,19 @@ module "spokes-dmz" {
 
   hub = {
     create = false,
-    id     = google_network_connectivity_hub.hub_dmz.id
+    id     = google_network_connectivity_hub.hub_dmz[0].id
   }
 
   router_appliances = [
-    for key, config in local.nva_configs :
+    for key, config in local.bgp_nva_configs :
     {
-      internal_ip  = module.nva[key].internal_ips[0]
-      vm_self_link = module.nva[key].self_link
+      internal_ip  = module.nva-bgp[key].internal_ips[0]
+      vm_self_link = module.nva-bgp[key].self_link
     } if config.region == each.value
   ]
 
   router_config = {
-    asn = var.ncc_asn.dmz
+    asn = local.ncc_asn.dmz
     ip_interface0 = cidrhost(
       module.dmz-vpc.subnet_ips["${each.value}/dmz-default"], 201
     )
@@ -110,8 +121,8 @@ module "spokes-dmz" {
     )
     peer_asn = (
       each.key == "primary"
-      ? var.ncc_asn.nva_primary
-      : var.ncc_asn.nva_secondary
+      ? local.ncc_asn.nva_primary
+      : local.ncc_asn.nva_secondary
     )
     routes_priority = 100
 

@@ -15,19 +15,17 @@
  */
 
 locals {
-  _nva_zones = ["b", "c"]
-
   # The configurations used to create the NVA VMs.
   #
   # Rendered as following:
-  # nva_configs = {
+  # bgp_nva_configs = {
   #   primary-b   = {...}
   #   primary-c   = {...}
   #   secondary-b = {...}
   #   secondary-c = {...}
   # }
-  nva_configs = {
-    for v in setproduct(keys(var.regions), local._nva_zones) :
+  bgp_nva_configs = {
+    for v in setproduct(keys(var.regions), local.nva_zones) :
     join("-", v) => {
       # Each NVA announces its trusted regional subnets
       announce-to-nva = upper(v[0])
@@ -35,16 +33,16 @@ locals {
       # and peer with cross-regional NVAs.
       asn_nva = (
         v[0] == "primary"
-        ? var.ncc_asn.nva_primary
-        : var.ncc_asn.nva_secondary
+        ? local.ncc_asn.nva_primary
+        : local.ncc_asn.nva_secondary
       )
       asn_nva_cross_region = (
         v[0] == "primary"
-        ? var.ncc_asn.nva_secondary
-        : var.ncc_asn.nva_primary
+        ? local.ncc_asn.nva_secondary
+        : local.ncc_asn.nva_primary
       )
-      asn_landing = var.ncc_asn.landing
-      asn_dmz     = var.ncc_asn.dmz
+      asn_landing = local.ncc_asn.landing
+      asn_dmz     = local.ncc_asn.dmz
       # To guarantee traffic to remain symmetric,
       # NVAs need to advertise cross-region routes with a higher cost (10100)
       cost_primary                  = v[0] == "primary" ? "100" : "10100"
@@ -82,11 +80,11 @@ locals {
       # in the landing and in the DMZ VPCs.
       ip_landing = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v[0]]}/landing-default"],
-        101 + index(var.zones, v[1])
+        101 + index(local.nva_zones, v[1])
       )
       ip_dmz = cidrhost(
         module.dmz-vpc.subnet_ips["${var.regions[v[0]]}/dmz-default"],
-        101 + index(var.zones, v[1])
+        101 + index(local.nva_zones, v[1])
       )
       # Either primary or secondary
       name = v[0]
@@ -100,11 +98,11 @@ locals {
     }
   }
 
-  # The routing_config should be aligned to the NVA NICs.
+  # The bgp_routing_config should be aligned to the NVA NICs.
   # For example:
-  # local.routing_config[0] configures eth0;
-  # local.routing_config[0] configures eth1.
-  routing_config = [
+  # local.bgp_routing_config[0] configures eth0;
+  # local.bgp_routing_config[0] configures eth1.
+  bgp_routing_config = [
     {
       enable_masquerading = true
       name                = "dmz"
@@ -124,10 +122,10 @@ locals {
 }
 
 module "nva-bgp-cloud-config" {
-  for_each             = local.nva_configs
+  for_each             = var.enable_ncc_ra ? local.bgp_nva_configs : {}
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
-  network_interfaces   = local.routing_config
+  network_interfaces   = local.bgp_routing_config
   frr_config = {
     config_file     = templatefile("data/bgp-config.tftpl", each.value)
     daemons_enabled = ["bgpd"]
@@ -137,7 +135,7 @@ module "nva-bgp-cloud-config" {
 # TODO: use address module
 
 resource "google_compute_address" "nva_static_ip_landing" {
-  for_each     = local.nva_configs
+  for_each     = var.enable_ncc_ra ? local.bgp_nva_configs : {}
   name         = "nva-ip-landing-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
   subnetwork   = module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"]
@@ -147,7 +145,7 @@ resource "google_compute_address" "nva_static_ip_landing" {
 }
 
 resource "google_compute_address" "nva_static_ip_dmz" {
-  for_each     = local.nva_configs
+  for_each     = var.enable_ncc_ra ? local.bgp_nva_configs : {}
   name         = "nva-ip-dmz-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
   subnetwork   = module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"]
@@ -156,8 +154,8 @@ resource "google_compute_address" "nva_static_ip_dmz" {
   region       = each.value.region
 }
 
-module "nva" {
-  for_each       = local.nva_configs
+module "nva-bgp" {
+  for_each       = var.enable_ncc_ra ? local.bgp_nva_configs : {}
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
   name           = "nva-${each.value.shortname}-${each.value.zone}"

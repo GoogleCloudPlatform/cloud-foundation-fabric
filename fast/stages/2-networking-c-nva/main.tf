@@ -18,6 +18,7 @@
 
 locals {
   custom_roles = coalesce(var.custom_roles, {})
+  nva_zones    = ["b", "c"]
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),

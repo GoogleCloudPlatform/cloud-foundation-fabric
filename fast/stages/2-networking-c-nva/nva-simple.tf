@@ -16,8 +16,8 @@
 
 locals {
   # routing_config should be aligned to the NVA network interfaces - i.e.
-  # local.routing_config[0] sets up the first interface, and so on.
-  routing_config = [
+  # local.simple_routing_config[0] sets up the first interface, and so on.
+  simple_routing_config = [
     {
       name                = "dmz"
       enable_masquerading = true
@@ -31,8 +31,8 @@ locals {
       routes = [
         var.gcp_ranges.gcp_dev_primary,
         var.gcp_ranges.gcp_dev_secondary,
-        var.gcp_ranges.gcp_landing_landing_primary,
-        var.gcp_ranges.gcp_landing_landing_secondary,
+        var.gcp_ranges.gcp_landing_primary,
+        var.gcp_ranges.gcp_landing_secondary,
         var.gcp_ranges.gcp_prod_primary,
         var.gcp_ranges.gcp_prod_secondary,
       ]
@@ -46,23 +46,23 @@ locals {
       zone   = v[1]
     }
   }
-  nva_zones = ["b", "c"]
 }
 
 # NVA config
-module "nva-cloud-config" {
+module "nva-simple-cloud-config" {
+  count                = var.enable_ncc_ra ? 0 : 1
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
-  network_interfaces   = local.routing_config
+  network_interfaces   = local.simple_routing_config
 }
 
-module "nva-template" {
-  for_each        = local.nva_locality
+module "nva-simple-template" {
+  for_each        = var.enable_ncc_ra ? {} : local.nva_locality
   source          = "../../../modules/compute-vm"
   project_id      = module.landing-project.project_id
-  name            = "nva-template-${each.key}"
+  name            = "nva-simple-template-${each.key}"
   zone            = "${each.value.region}-${each.value.zone}"
-  instance_type   = "e2-standard-2"
+  instance_type   = "e2-micro"
   tags            = ["nva"]
   create_template = true
   can_ip_forward  = true
@@ -96,17 +96,17 @@ module "nva-template" {
     termination_action        = "STOP"
   }
   metadata = {
-    user-data = module.nva-cloud-config.cloud_config
+    user-data = module.nva-simple-cloud-config[0].cloud_config
   }
 }
 
-module "nva-mig" {
-  for_each          = local.nva_locality
+module "nva-simple-mig" {
+  for_each          = var.enable_ncc_ra ? {} : local.nva_locality
   source            = "../../../modules/compute-mig"
   project_id        = module.landing-project.project_id
   location          = each.value.region
   name              = "nva-cos-${each.key}"
-  instance_template = module.nva-template[each.key].template.self_link
+  instance_template = module.nva-simple-template[each.key].template.self_link
   target_size       = 1
   auto_healing_policies = {
     initial_delay_sec = 30
@@ -120,7 +120,7 @@ module "nva-mig" {
 }
 
 module "ilb-nva-dmz" {
-  for_each = {
+  for_each = var.enable_ncc_ra ? {} : {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/dmz-default"
@@ -141,7 +141,7 @@ module "ilb-nva-dmz" {
     subnetwork = try(module.dmz-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
-    for k, v in module.nva-mig :
+    for k, v in module.nva-simple-mig :
     { group = v.group_manager.instance_group }
     if startswith(k, each.key)
   ]
@@ -154,7 +154,7 @@ module "ilb-nva-dmz" {
 }
 
 module "ilb-nva-landing" {
-  for_each = {
+  for_each = var.enable_ncc_ra ? {} : {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/landing-default"
@@ -175,7 +175,7 @@ module "ilb-nva-landing" {
     subnetwork = try(module.landing-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
-    for k, v in module.nva-mig :
+    for k, v in module.nva-simple-mig :
     { group = v.group_manager.instance_group }
     if startswith(k, each.key)
   ]

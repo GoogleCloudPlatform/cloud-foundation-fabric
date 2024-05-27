@@ -64,6 +64,16 @@ variable "folder_ids" {
   })
 }
 
+variable "organization" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization details."
+  type = object({
+    domain      = string
+    id          = number
+    customer_id = string
+  })
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

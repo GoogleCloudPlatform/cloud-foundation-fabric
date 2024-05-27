@@ -87,7 +87,7 @@ module "prod-spoke-vpc" {
     private    = true
     restricted = true
   }
-  routes = {
+  routes = var.enable_ncc_ra ? null : {
     nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
