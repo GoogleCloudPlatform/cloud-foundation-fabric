@@ -16,3 +16,4 @@ module: fast/stages/3-gcve/prod
 
 tests:
   simple:
+  simple_with_monitoring:
