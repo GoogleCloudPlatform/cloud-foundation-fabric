@@ -44,7 +44,7 @@ resource "google_storage_bucket_object" "tfvars" {
 # outputs
 
 output "gcve-monitoring" {
-  description = "VMware Monitoring"
+  description = "VMware Monitoring."
   value       = module.gcve-pc.gcve-monitoring
 }
 
