@@ -74,7 +74,7 @@ locals {
         }, try(v.from, {}))
         to = {
           operations = [
-            for o in try(v.operations, []) : merge({
+            for o in try(v.to.operations, []) : merge({
               method_selectors     = []
               permission_selectors = []
               service_name         = null

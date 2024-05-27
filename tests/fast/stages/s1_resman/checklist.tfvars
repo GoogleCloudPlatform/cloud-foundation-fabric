@@ -24,10 +24,13 @@ factories_config = {
 groups = {
   gcp-billing-admins      = "gcp-billing-admins",
   gcp-devops              = "gcp-devops",
-  gcp-network-admins      = "gcp-network-admins",
+  gcp-network-admins      = "gcp-vpc-network-admins",
   gcp-organization-admins = "gcp-organization-admins",
   gcp-security-admins     = "gcp-security-admins",
   gcp-support             = "gcp-support"
+}
+logging = {
+  project_id = "fast-prod-log-audit-0"
 }
 organization = {
   domain      = "fast.example.com"

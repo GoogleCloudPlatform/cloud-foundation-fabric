@@ -15,10 +15,10 @@
 values:
   module.apigee.google_apigee_envgroup.envgroups["prod"]:
     hostnames:
-    - prod.example.com
+      - prod.example.com
     name: prod
-  module.apigee.google_apigee_envgroup_attachment.envgroup_attachments["apis-prod-prod"]:
-    environment: apis-prod
+  ? module.apigee.google_apigee_envgroup_attachment.envgroup_attachments["apis-prod-prod"]
+  : environment: apis-prod
   module.apigee.google_apigee_environment.environments["apis-prod"]:
     description: Terraform-managed
     display_name: APIs prod
@@ -27,7 +27,7 @@ values:
     description: Terraform-managed
     disk_encryption_key_name: null
     display_name: null
-    ip_range: ''
+    ip_range: null
     location: europe-west1
     name: instance-europe-west1
   module.apigee.google_apigee_organization.organization[0]:

@@ -20,15 +20,30 @@ locals {
 }
 
 resource "google_apigee_organization" "organization" {
-  count                                = var.organization == null ? 0 : 1
-  analytics_region                     = var.organization.analytics_region
-  project_id                           = var.project_id
-  authorized_network                   = var.organization.authorized_network
-  billing_type                         = var.organization.billing_type
-  runtime_type                         = var.organization.runtime_type
-  runtime_database_encryption_key_name = var.organization.database_encryption_key
-  retention                            = var.organization.retention
-  disable_vpc_peering                  = var.organization.disable_vpc_peering
+  count                                 = var.organization == null ? 0 : 1
+  analytics_region                      = var.organization.analytics_region
+  project_id                            = var.project_id
+  authorized_network                    = var.organization.authorized_network
+  billing_type                          = var.organization.billing_type
+  runtime_type                          = var.organization.runtime_type
+  runtime_database_encryption_key_name  = var.organization.database_encryption_key
+  retention                             = var.organization.retention
+  disable_vpc_peering                   = var.organization.disable_vpc_peering
+  api_consumer_data_location            = var.organization.api_consumer_data_location
+  api_consumer_data_encryption_key_name = var.organization.api_consumer_data_encryption_key
+  control_plane_encryption_key_name     = var.organization.control_plane_encryption_key
+  dynamic "properties" {
+    for_each = length(var.organization.properties) > 0 ? [""] : []
+    content {
+      dynamic "property" {
+        for_each = var.organization.properties
+        content {
+          name  = properties.key
+          value = properties.value
+        }
+      }
+    }
+  }
 }
 
 resource "google_apigee_envgroup" "envgroups" {
@@ -81,7 +96,7 @@ resource "google_apigee_instance" "instances" {
   location     = each.key
   org_id       = local.org_id
   ip_range = (
-    compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]) == []
+    length(compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range])) == 0
     ? null
     : join(",", compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]))
   )

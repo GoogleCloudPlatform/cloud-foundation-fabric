@@ -41,7 +41,7 @@ locals {
 
 module "branch-network-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = local.root_node
   name   = "Networking"
   iam_by_principals = {
     (local.principals.gcp-network-admins) = [
@@ -53,7 +53,7 @@ module "branch-network-folder" {
   iam = local._network_folder_iam
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.context}/networking"].id, null
+      local.tag_values["${var.tag_names.context}/networking"].id, null
     )
   }
 }
@@ -81,7 +81,7 @@ module "branch-network-prod-folder" {
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/production"].id,
       null
     )
   }
@@ -101,16 +101,16 @@ module "branch-network-dev-folder" {
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
-      local.branch_optional_r_sa_lists.dp-prod,
-      local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.dp-dev,
+      local.branch_optional_r_sa_lists.gke-dev,
       local.branch_optional_r_sa_lists.gcve-dev,
-      local.branch_optional_r_sa_lists.pf-prod,
+      local.branch_optional_r_sa_lists.pf-dev,
     )
     (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/development"].id,
       null
     )
   }
@@ -119,14 +119,15 @@ module "branch-network-dev-folder" {
 # automation service account
 
 module "branch-network-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = var.automation.project_id
-  name         = "prod-resman-net-0"
-  display_name = "Terraform resman networking service account."
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-net-0"
+  display_name           = "Terraform resman networking service account."
+  prefix                 = var.prefix
+  service_account_create = var.root_node == null
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-sa-cicd.0.iam_email, null)
+      try(module.branch-network-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -147,7 +148,7 @@ module "branch-network-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-r-sa-cicd.0.iam_email, null)
+      try(module.branch-network-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {

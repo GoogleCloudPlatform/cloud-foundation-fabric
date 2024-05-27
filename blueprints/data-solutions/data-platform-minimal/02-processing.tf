@@ -75,14 +75,14 @@ locals {
     local.use_shared_vpc
     ? var.network_config.subnet_self_link
     : try(
-      module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"],
+      module.processing-vpc[0].subnet_self_links["${var.region}/${var.prefix}-processing"],
       null
     )
   )
   processing_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : try(module.processing-vpc.0.self_link, null)
+    : try(module.processing-vpc[0].self_link, null)
   )
 }
 
@@ -184,7 +184,7 @@ module "processing-vpc-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.processing-project.project_id
-  network    = module.processing-vpc.0.name
+  network    = module.processing-vpc[0].name
   default_rules_config = {
     admin_ranges = ["10.10.0.0/24"]
   }
@@ -196,5 +196,5 @@ module "processing-nat" {
   project_id     = module.processing-project.project_id
   name           = "${var.prefix}-processing"
   region         = var.region
-  router_network = module.processing-vpc.0.name
+  router_network = module.processing-vpc[0].name
 }

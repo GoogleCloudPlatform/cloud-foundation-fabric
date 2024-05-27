@@ -35,7 +35,7 @@ locals {
     }
     : {
       project_id = var.fleet_project_id
-      number     = module.fleet-project.0.number
+      number     = module.fleet-project[0].number
     }
   )
   proxy_only_subnet = (local.vpc_create && try(var.vpc_create.proxy_only_subnet, null) != null) ? [
@@ -88,7 +88,7 @@ module "project" {
         member = (
           var.fleet_project_id == null
           ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-          : "serviceAccount:${module.fleet-project.0.service_accounts.robots.gkehub}"
+          : "serviceAccount:${module.fleet-project[0].service_accounts.robots.gkehub}"
         )
       }
     },
@@ -142,7 +142,7 @@ module "fleet" {
   clusters = {
     (var.cluster_name) = (
       var.cluster_create != null
-      ? module.cluster.0.id
+      ? module.cluster[0].id
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
     )
   }

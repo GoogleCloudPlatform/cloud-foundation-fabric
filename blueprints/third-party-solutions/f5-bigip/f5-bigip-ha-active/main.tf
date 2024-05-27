@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ module "bigip-vms" {
         internal = module.vm-addresses-dp.internal_addresses["${var.prefix}-${each.key}-dp"].address
       }
       alias_ips = {
-        "${each.value.network_config.alias_ip_range_name}" = each.value.network_config.alias_ip_range_address
+        (each.value.network_config.alias_ip_range_name) = each.value.network_config.alias_ip_range_address
       }
     },
     {

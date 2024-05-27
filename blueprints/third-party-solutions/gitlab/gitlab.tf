@@ -30,10 +30,10 @@ locals {
     saml     = var.gitlab_config.saml
     hostname = var.gitlab_config.hostname
   })
-  gitlab_ssl_crt                 = local.self_signed_ssl_certs_required ? tls_locally_signed_cert.gitlab_server_singed_cert.0.cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.crt")
-  gitlab_ssl_key                 = local.self_signed_ssl_certs_required ? tls_private_key.gitlab_server_key.0.private_key_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.key")
-  gitlab_ssl_ca_crt              = local.self_signed_ssl_certs_required ? tls_self_signed_cert.gitlab_ca_cert.0.cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.ca.crt")
-  gitlab_ssl_ca_key              = local.self_signed_ssl_certs_required ? tls_private_key.gitlab_ca_private_key.0.private_key_pem : ""
+  gitlab_ssl_crt                 = local.self_signed_ssl_certs_required ? tls_locally_signed_cert.gitlab_server_singed_cert[0].cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.crt")
+  gitlab_ssl_key                 = local.self_signed_ssl_certs_required ? tls_private_key.gitlab_server_key[0].private_key_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.key")
+  gitlab_ssl_ca_crt              = local.self_signed_ssl_certs_required ? tls_self_signed_cert.gitlab_ca_cert[0].cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.ca.crt")
+  gitlab_ssl_ca_key              = local.self_signed_ssl_certs_required ? tls_private_key.gitlab_ca_private_key[0].private_key_pem : ""
   self_signed_ssl_certs_required = fileexists("${path.module}/certs/${var.gitlab_config.hostname}.crt") && fileexists("${path.module}/certs/${var.gitlab_config.hostname}.key") && fileexists("${path.module}/certs/${var.gitlab_config.hostname}.ca.crt") ? false : true
   gitlab_user_data = templatefile("${path.module}/assets/cloud-config.yaml", {
     gitlab_config      = var.gitlab_config

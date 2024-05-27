@@ -24,7 +24,7 @@ resource "google_network_security_gateway_security_policy" "policy" {
   name                  = var.name
   location              = var.region
   description           = var.description
-  tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.tls-policy.0.id : null
+  tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.tls-policy[0].id : null
 }
 
 resource "google_network_security_tls_inspection_policy" "tls-policy" {

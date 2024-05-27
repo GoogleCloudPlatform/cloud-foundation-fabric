@@ -82,7 +82,7 @@ module "dev-spoke-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
-  psa_config = try(var.psa_ranges.dev, null)
+  psa_configs = var.psa_ranges.dev
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true

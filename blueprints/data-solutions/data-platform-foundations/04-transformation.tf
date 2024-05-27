@@ -135,7 +135,7 @@ module "transf-vpc-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.transf-project.project_id
-  network    = module.transf-vpc.0.name
+  network    = module.transf-vpc[0].name
   default_rules_config = {
     admin_ranges = ["10.10.0.0/24"]
   }
@@ -147,5 +147,5 @@ module "transf-nat" {
   project_id     = module.transf-project.project_id
   name           = "${var.prefix}-trf"
   region         = var.region
-  router_network = module.transf-vpc.0.name
+  router_network = module.transf-vpc[0].name
 }

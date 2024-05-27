@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ FABRIC_ROOT = Path(__file__).parents[2]
 FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
 FIXTURE_TEST_RE = re.compile(r'# tftest-fixture +id=([\w_.-]+)')
 
-Example = collections.namedtuple('Example', 'name code module files fixtures')
+Example = collections.namedtuple('Example',
+                                 'name code module files fixtures type')
 File = collections.namedtuple('File', 'path content')
 
 
@@ -74,9 +75,11 @@ def pytest_generate_tests(metafunc, test_group='example',
           index += 1
           code = child.children[0].children
           tftest_tag = get_tftest_directive(code)
+          if tftest_tag is None:
+            continue
           if tftest_tag and not filter_tests(tftest_tag):
             continue
-          if child.lang == 'hcl':
+          if child.lang in ('hcl', 'tfvars'):
             path = module.relative_to(FABRIC_ROOT)
             name = f'{path}:{last_header}'
             if index > 1:
@@ -88,7 +91,8 @@ def pytest_generate_tests(metafunc, test_group='example',
             # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
             marks = [pytest.mark.xdist_group("serial")
                     ] if 'serial' in tftest_tag else []
-            example = Example(name, code, path, files[last_header], fixtures)
+            example = Example(name, code, path, files[last_header], fixtures,
+                              child.lang)
             examples.append(pytest.param(example, marks=marks))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children

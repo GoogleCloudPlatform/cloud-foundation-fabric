@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,21 +67,23 @@ locals {
       name          = "resman"
       sa            = module.automation-tf-resman-r-sa.email
     })
-    "0-bootstrap-tenant" = templatefile(local._tpl_providers, {
-      backend_extra = join("\n", [
-        "# remove the newline between quotes and set the tenant name as prefix",
-        "prefix = \"",
-        "\""
-      ])
-      bucket = module.automation-tf-resman-gcs.name
-      name   = "bootstrap-tenant"
-      sa     = module.automation-tf-resman-sa.email
+    "1-tenant-factory" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"tenant-factory\""
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "tenant-factory"
+      sa            = module.automation-tf-resman-sa.email
+    })
+    "1-tenant-factory-r" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"tenant-factory\""
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "tenant-factory"
+      sa            = module.automation-tf-resman-r-sa.email
     })
   }
   tfvars = {
     automation = {
       federated_identity_pool = try(
-        google_iam_workload_identity_pool.default.0.name, null
+        google_iam_workload_identity_pool.default[0].name, null
       )
       federated_identity_providers = local.cicd_providers
       outputs_bucket               = module.automation-tf-output-gcs.name
@@ -113,7 +115,6 @@ locals {
   }
   tfvars_globals = {
     billing_account = var.billing_account
-    fast_features   = var.fast_features
     groups          = local.principals
     locations       = local.locations
     organization    = var.organization
@@ -128,7 +129,7 @@ output "automation" {
 
 output "billing_dataset" {
   description = "BigQuery dataset prepared for billing export."
-  value       = try(module.billing-export-dataset.0.id, null)
+  value       = try(module.billing-export-dataset[0].id, null)
 }
 
 output "cicd_repositories" {
@@ -157,7 +158,7 @@ output "project_ids" {
   description = "Projects created by this stage."
   value = {
     automation     = module.automation-project.project_id
-    billing-export = try(module.billing-export-project.0.project_id, null)
+    billing-export = try(module.billing-export-project[0].project_id, null)
     log-export     = module.log-export-project.project_id
   }
 }
@@ -198,7 +199,7 @@ output "workforce_identity_pool" {
   description = "Workforce Identity Federation pool."
   value = {
     pool = try(
-      google_iam_workforce_pool.default.0.name, null
+      google_iam_workforce_pool.default[0].name, null
     )
   }
 }
@@ -207,7 +208,7 @@ output "workload_identity_pool" {
   description = "Workload Identity Federation pool and providers."
   value = {
     pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
+      google_iam_workload_identity_pool.default[0].name, null
     )
     providers = local.cicd_providers
   }

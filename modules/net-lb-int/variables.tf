@@ -191,12 +191,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "protocol" {
-  description = "Forwarding rule protocol used, defaults to TCP."
-  type        = string
-  default     = "TCP"
-}
-
 variable "region" {
   description = "GCP region."
   type        = string

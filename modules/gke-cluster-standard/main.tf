@@ -29,19 +29,20 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version          = var.min_master_version
-  network                     = var.vpc_config.network
-  subnetwork                  = var.vpc_config.subnetwork
-  resource_labels             = var.labels
-  default_max_pods_per_node   = var.max_pods_per_node
-  enable_intranode_visibility = var.enable_features.intranode_visibility
-  enable_l4_ilb_subsetting    = var.enable_features.l4_ilb_subsetting
-  enable_shielded_nodes       = var.enable_features.shielded_nodes
-  enable_fqdn_network_policy  = var.enable_features.fqdn_network_policy
-  enable_tpu                  = var.enable_features.tpu
-  initial_node_count          = var.default_nodepool.initial_node_count
-  remove_default_node_pool    = var.default_nodepool.remove_pool
-  deletion_protection         = var.deletion_protection
+  min_master_version                       = var.min_master_version
+  network                                  = var.vpc_config.network
+  subnetwork                               = var.vpc_config.subnetwork
+  resource_labels                          = var.labels
+  default_max_pods_per_node                = var.max_pods_per_node
+  enable_intranode_visibility              = var.enable_features.intranode_visibility
+  enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
+  enable_shielded_nodes                    = var.enable_features.shielded_nodes
+  enable_fqdn_network_policy               = var.enable_features.fqdn_network_policy
+  enable_tpu                               = var.enable_features.tpu
+  initial_node_count                       = var.default_nodepool.initial_node_count
+  remove_default_node_pool                 = var.default_nodepool.remove_pool
+  deletion_protection                      = var.deletion_protection
+  enable_cilium_clusterwide_network_policy = var.enable_features.cilium_clusterwide_network_policy
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
@@ -131,7 +132,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = local.cas == null ? [] : [""]
     content {
-      enabled             = true
+      enabled             = var.cluster_autoscaling.enabled
       autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []
@@ -337,6 +338,12 @@ resource "google_container_cluster" "cluster" {
         exclusion_name = exclusion.value.name
         start_time     = exclusion.value.start_time
         end_time       = exclusion.value.end_time
+        dynamic "exclusion_options" {
+          for_each = exclusion.value.scope != null ? [""] : []
+          content {
+            scope = exclusion.value.scope
+          }
+        }
       }
     }
   }
@@ -504,6 +511,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   cluster  = google_container_cluster.cluster.id
   location = each.value.region
   project  = var.project_id
+  labels   = each.value.labels
   retention_policy {
     backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
     backup_retain_days      = try(each.value.retention_policy_days)
@@ -557,7 +565,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   )
   project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
   peering = try(
-    google_container_cluster.cluster.private_cluster_config.0.peering_name,
+    google_container_cluster.cluster.private_cluster_config[0].peering_name,
     null
   )
   network              = element(reverse(split("/", var.vpc_config.network)), 0)

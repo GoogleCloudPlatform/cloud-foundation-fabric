@@ -28,7 +28,7 @@ output "cloudsql_password" {
 
 output "phpipam_ip_address" {
   description = "PHPIPAM IP Address either external or internal according to app exposure."
-  value       = local.glb_create ? module.addresses.0.global_addresses["phpipam"].address : module.ilb-l7.0.address
+  value       = local.glb_create ? module.addresses[0].global_addresses["phpipam"].address : module.ilb-l7[0].address
 }
 
 output "phpipam_password" {

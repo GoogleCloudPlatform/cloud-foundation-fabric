@@ -17,20 +17,30 @@
 locals {
   network = (
     var.vpc_create
-    ? try(google_compute_network.network.0, null)
-    : try(data.google_compute_network.network.0, null)
+    ? {
+      id        = try(google_compute_network.network[0].id, null)
+      name      = try(google_compute_network.network[0].name, null)
+      self_link = try(google_compute_network.network[0].self_link, null)
+    }
+    : {
+      id = format(
+        "projects/%s/global/networks/%s",
+        var.project_id,
+        var.name
+      )
+      name = var.name
+      self_link = format(
+        "https://www.googleapis.com/compute/v1/projects/%s/global/networks/%s",
+        var.project_id,
+        var.name
+      )
+    }
   )
   peer_network = (
     var.peering_config == null
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
-}
-
-data "google_compute_network" "network" {
-  count   = var.vpc_create ? 0 : 1
-  project = var.project_id
-  name    = var.name
 }
 
 resource "google_compute_network" "network" {

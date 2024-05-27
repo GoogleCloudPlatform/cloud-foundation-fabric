@@ -1,6 +1,6 @@
 # Data Playground
 
-This blueprint creates a minimum viable architecture for a data experimentation project with the needed APIs enabled, VPC and Firewall set in place, BigQuesy dataset, GCS bucket and an AI notebook to get started.
+This blueprint creates a minimum viable architecture for a data experimentation project with the needed APIs enabled, VPC and Firewall set in place, BigQuery dataset, GCS bucket and an AI notebook to get started.
 
 This is the high level diagram:
 

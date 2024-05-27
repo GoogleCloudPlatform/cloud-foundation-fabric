@@ -44,7 +44,7 @@ locals {
     : (
       try(var.vpc_connector.create, false) == false
       ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      : google_vpc_access_connector.connector[0].id
     )
   )
 }
@@ -59,11 +59,12 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 resource "google_cloudfunctions2_function" "function" {
-  provider    = google-beta
-  project     = var.project_id
-  location    = var.region
-  name        = "${local.prefix}${var.name}"
-  description = var.description
+  provider     = google-beta
+  project      = var.project_id
+  location     = var.region
+  name         = "${local.prefix}${var.name}"
+  description  = var.description
+  kms_key_name = var.kms_key
   build_config {
     worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
@@ -121,7 +122,7 @@ resource "google_cloudfunctions2_function" "function" {
         key        = secret.key
         project_id = secret.value.project_id
         secret     = secret.value.secret
-        version    = try(secret.value.versions.0, "latest")
+        version    = try(secret.value.versions[0], "latest")
       }
     }
 

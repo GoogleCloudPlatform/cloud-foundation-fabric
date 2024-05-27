@@ -27,9 +27,9 @@ END
 output "bootstrap-ssh" {
   description = "Command to SSH to the bootstrap instance."
   value       = !local.bootstrapping ? null : <<END
-gcloud compute ssh core@${google_compute_instance.bootstrap.0.name} \
-  --project ${google_compute_instance.bootstrap.0.project} \
-  --zone ${google_compute_instance.bootstrap.0.zone} \
+gcloud compute ssh core@${google_compute_instance.bootstrap[0].name} \
+  --project ${google_compute_instance.bootstrap[0].project} \
+  --zone ${google_compute_instance.bootstrap[0].zone} \
   --ssh-key-file ${replace(var.fs_paths.ssh_key, ".pub", "")}
 END
 }

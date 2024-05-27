@@ -84,7 +84,7 @@ variable "subnet_psc_1" {
     name      = "subnet_name"
     region    = "subnet_region"
     cidr      = "subnet_cidr"
-    self_link = "subnet_self_link"
+    self_link = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/subnet"
   }
 }
 

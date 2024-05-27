@@ -4,9 +4,15 @@ The blueprints in this folder contain a variety of deployment scenarios for Apig
 
 ## Blueprints
 
+### Apigee X foundations
+
+<a href="./apigee-x-foundations/" title="Apigee X foundations"><img src="./apigee-x-foundations/diagram1.png" align="left" width="280px"></a> This [blueprint](./apigee-x-foundations/) creates all the resources necessary to set up Apigee X on Google Cloud.
+
+<br clear="left">
+
 ### Apigee Hybrid on GKE
 
-<a href="./hybrid-gke/" title="Apigee Hybrid on GKE"><img src="./hybrid-gke/diagram.png" align="left" width="280px"></a> This [blueprint](./hybrid-gke/) shows how to do a non-prod deployment of Apigee Hybrid on GKE(../factories/net-vpc-firewall-yaml/).
+<a href="./hybrid-gke/" title="Apigee Hybrid on GKE"><img src="./hybrid-gke/diagram.png" align="left" width="280px"></a> This [blueprint](./hybrid-gke/) shows how to do a non-prod deployment of Apigee Hybrid on GKE.
 
 <br clear="left">
 

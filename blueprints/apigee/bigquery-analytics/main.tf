@@ -65,14 +65,14 @@ module "vpc" {
     name          = "subnet-psc-${k}"
     region        = k
   }]
-  psa_config = {
+  psa_configs = [{
     ranges = merge({ for k, v in var.instances :
       "apigee-runtime-${k}" => v.runtime_ip_cidr_range
       }, { for k, v in var.instances :
       "apigee-troubleshooting-${k}" => v.troubleshooting_ip_cidr_range
       }
     )
-  }
+  }]
 }
 
 module "apigee" {
@@ -136,6 +136,7 @@ module "bucket_export" {
   source     = "../../../modules/gcs"
   project_id = module.project.project_id
   name       = "${module.project.project_id}-export"
+  location   = var.organization.analytics_region
   iam = {
     "roles/storage.objectViewer" = [
       module.function_gcs2bq.service_account_iam_email

@@ -87,7 +87,6 @@ variable "keys" {
       algorithm        = string
       protection_level = optional(string, "SOFTWARE")
     }))
-
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
@@ -120,6 +119,6 @@ variable "project_id" {
 variable "tag_bindings" {
   description = "Tag bindings for this keyring, in key => tag value id format."
   type        = map(string)
-  default     = {}
   nullable    = false
+  default     = {}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 resource "google_apigee_environment_iam_binding" "authoritative" {
   for_each = merge(concat([for k1, v1 in var.environments : {
     for k2, v2 in v1.iam : "${k1}-${k2}" => {
-      environment = "${k1}"
+      environment = k1
       role        = k2
       members     = v2
     }
@@ -31,7 +31,7 @@ resource "google_apigee_environment_iam_binding" "authoritative" {
 resource "google_apigee_environment_iam_binding" "bindings" {
   for_each = merge(concat([for k1, v1 in var.environments : {
     for k2, v2 in coalesce(v1.iam_bindings, {}) : "${k1}-${k2}" => {
-      environment = "${k1}"
+      environment = k1
       role        = v2.role
       members     = v2.members
     }
@@ -45,7 +45,7 @@ resource "google_apigee_environment_iam_binding" "bindings" {
 resource "google_apigee_environment_iam_member" "bindings" {
   for_each = merge(concat([for k1, v1 in var.environments : {
     for k2, v2 in coalesce(v1.iam_bindings_additive, {}) : "${k1}-${k2}" => {
-      environment = "${k1}"
+      environment = k1
       role        = v2.role
       member      = v2.member
     }

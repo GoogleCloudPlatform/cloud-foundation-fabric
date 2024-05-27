@@ -2,14 +2,19 @@
 
 This module allows managing a single BigQuery dataset, including access configuration, tables and views.
 
-## TODO
+<!-- BEGIN TOC -->
+- [Simple dataset with access configuration](#simple-dataset-with-access-configuration)
+- [IAM roles](#iam-roles)
+- [Authorized Views, Datasets, and Routines](#authorized-views-datasets-and-routines)
+- [Dataset options](#dataset-options)
+- [Tables and views](#tables-and-views)
+- [Tag bindings](#tag-bindings)
+- [TODO](#todo)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
-- [ ] check for dynamic values in tables and views
-- [ ] add support for external tables
-
-## Examples
-
-### Simple dataset with access configuration
+## Simple dataset with access configuration
 
 Access configuration defaults to using the separate `google_bigquery_dataset_access` resource, so as to leave the default dataset access rules untouched.
 
@@ -21,7 +26,7 @@ The access variables are split into `access` and `access_identities` variables, 
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   access = {
     reader-group   = { role = "READER", type = "group" }
     owner          = { role = "OWNER", type = "user" }
@@ -32,13 +37,13 @@ module "bigquery-dataset" {
     reader-group   = "playground-test@ludomagno.net"
     owner          = "ludo@ludomagno.net"
     project_owners = "projectOwners"
-    view_1         = "my-project|my-dataset|my-table"
+    view_1         = "my-project|my_dataset|my-table"
   }
 }
 # tftest modules=1 resources=5 inventory=simple.yaml
 ```
 
-### IAM roles
+## IAM roles
 
 Access configuration can also be specified via IAM instead of basic roles via the `iam` variable. When using IAM, basic roles cannot be used via the `access` family variables.
 
@@ -46,7 +51,7 @@ Access configuration can also be specified via IAM instead of basic roles via th
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   iam = {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }
@@ -54,7 +59,7 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=2 inventory=iam.yaml
 ```
 
-### Authorized Views, Datasets, and Routines
+## Authorized Views, Datasets, and Routines
 
 You can specify authorized [views](https://cloud.google.com/bigquery/docs/authorized-views), [datasets](https://cloud.google.com/bigquery/docs/authorized-datasets?hl=en), and [routines](https://cloud.google.com/bigquery/docs/authorized-routines) via the `authorized_views`, `authorized_datasets` and `authorized_routines` variables, respectively.
 
@@ -143,7 +148,7 @@ Authorized views can be specified both using the standard `access` options and t
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   authorized_views = [
     {
       project_id = "view_project"
@@ -168,7 +173,7 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=4 inventory=authorized_resources_views.yaml
 ```
 
-### Dataset options
+## Dataset options
 
 Dataset options are set via the `options` variable. all options must be specified, but a `null` value can be set to options that need to use defaults.
 
@@ -176,7 +181,7 @@ Dataset options are set via the `options` variable. all options must be specifie
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   options = {
     default_table_expiration_ms     = 3600000
     default_partition_expiration_ms = null
@@ -187,7 +192,7 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=1 inventory=options.yaml
 ```
 
-### Tables and views
+## Tables and views
 
 Tables are created via the `tables` variable, or the `view` variable for views. Support for external tables will be added in a future release.
 
@@ -227,7 +232,7 @@ locals {
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   tables = {
     table_a = {
       deletion_protection = true
@@ -275,6 +280,42 @@ module "bigquery-dataset" {
 
 # tftest modules=1 resources=3 inventory=views.yaml
 ```
+
+## Tag bindings
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev     = {}
+        prod    = {}
+        sandbox = {}
+      }
+    }
+  }
+}
+
+module "bigquery-dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "my_dataset"
+  tag_bindings = {
+    env-sandbox = module.org.tag_values["environment/sandbox"].id
+  }
+}
+# tftest modules=2 resources=6
+```
+
+## TODO
+
+- [ ] check for dynamic values in tables and views
+- [ ] add support for external tables
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -297,7 +338,8 @@ module "bigquery-dataset" {
 | [materialized_views](variables.tf#L115) | Materialized views definitions. | <code title="map&#40;object&#40;&#123;&#10;  query                            &#61; string&#10;  allow_non_incremental_definition &#61; optional&#40;bool&#41;&#10;  deletion_protection              &#61; optional&#40;bool&#41;&#10;  description                      &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_refresh                   &#61; optional&#40;bool&#41;&#10;  friendly_name                    &#61; optional&#40;string&#41;&#10;  labels                           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  refresh_interval_ms              &#61; optional&#40;bool&#41;&#10;  require_partition_filter         &#61; optional&#40;bool&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    clustering      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    expiration_time &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  partitioning &#61; optional&#40;object&#40;&#123;&#10;    field &#61; optional&#40;string&#41;&#10;    range &#61; optional&#40;object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#41;&#10;    time &#61; optional&#40;object&#40;&#123;&#10;      type          &#61; string&#10;      expiration_ms &#61; optional&#40;number&#41;&#10;      field         &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [options](variables.tf#L148) | Dataset options. | <code title="object&#40;&#123;&#10;  default_collation               &#61; optional&#40;string&#41;&#10;  default_table_expiration_ms     &#61; optional&#40;number&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  is_case_insensitive             &#61; optional&#40;bool&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;  storage_billing_model           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tables](variables.tf#L167) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  deletion_protection      &#61; optional&#40;bool&#41;&#10;  description              &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  friendly_name            &#61; optional&#40;string&#41;&#10;  labels                   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  require_partition_filter &#61; optional&#40;bool&#41;&#10;  schema                   &#61; optional&#40;string&#41;&#10;  external_data_configuration &#61; optional&#40;object&#40;&#123;&#10;    autodetect                &#61; bool&#10;    source_uris               &#61; list&#40;string&#41;&#10;    avro_logical_types        &#61; optional&#40;bool&#41;&#10;    compression               &#61; optional&#40;string&#41;&#10;    connection_id             &#61; optional&#40;string&#41;&#10;    file_set_spec_type        &#61; optional&#40;string&#41;&#10;    ignore_unknown_values     &#61; optional&#40;bool&#41;&#10;    metadata_cache_mode       &#61; optional&#40;string&#41;&#10;    object_metadata           &#61; optional&#40;string&#41;&#10;    json_options_encoding     &#61; optional&#40;string&#41;&#10;    reference_file_schema_uri &#61; optional&#40;string&#41;&#10;    schema                    &#61; optional&#40;string&#41;&#10;    source_format             &#61; optional&#40;string&#41;&#10;    max_bad_records           &#61; optional&#40;number&#41;&#10;    csv_options &#61; optional&#40;object&#40;&#123;&#10;      quote                 &#61; string&#10;      allow_jagged_rows     &#61; optional&#40;bool&#41;&#10;      allow_quoted_newlines &#61; optional&#40;bool&#41;&#10;      encoding              &#61; optional&#40;string&#41;&#10;      field_delimiter       &#61; optional&#40;string&#41;&#10;      skip_leading_rows     &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    google_sheets_options &#61; optional&#40;object&#40;&#123;&#10;      range             &#61; optional&#40;string&#41;&#10;      skip_leading_rows &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    hive_partitioning_options &#61; optional&#40;object&#40;&#123;&#10;      mode                     &#61; optional&#40;string&#41;&#10;      require_partition_filter &#61; optional&#40;bool&#41;&#10;      source_uri_prefix        &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    parquet_options &#61; optional&#40;object&#40;&#123;&#10;      enum_as_string        &#61; optional&#40;bool&#41;&#10;      enable_list_inference &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;&#10;&#10;  &#125;&#41;&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    clustering      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    encryption_key  &#61; optional&#40;string&#41;&#10;    expiration_time &#61; optional&#40;number&#41;&#10;    max_staleness   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  partitioning &#61; optional&#40;object&#40;&#123;&#10;    field &#61; optional&#40;string&#41;&#10;    range &#61; optional&#40;object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#41;&#10;    time &#61; optional&#40;object&#40;&#123;&#10;      type          &#61; string&#10;      expiration_ms &#61; optional&#40;number&#41;&#10;      field         &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  table_constraints &#61; optional&#40;object&#40;&#123;&#10;    primary_key_columns &#61; optional&#40;list&#40;string&#41;&#41;&#10;    foreign_keys &#61; optional&#40;object&#40;&#123;&#10;      referenced_table &#61; object&#40;&#123;&#10;        project_id &#61; string&#10;        dataset_id &#61; string&#10;        table_id   &#61; string&#10;      &#125;&#41;&#10;      column_references &#61; object&#40;&#123;&#10;        referencing_column &#61; string&#10;        referenced_column  &#61; string&#10;      &#125;&#41;&#10;      name &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L252) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  query               &#61; string&#10;  deletion_protection &#61; optional&#40;bool&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  friendly_name       &#61; optional&#40;string&#41;&#10;  labels              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  use_legacy_sql      &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L252) | Tag bindings for this dataset, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L259) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  query               &#61; string&#10;  deletion_protection &#61; optional&#40;bool&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  friendly_name       &#61; optional&#40;string&#41;&#10;  labels              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  use_legacy_sql      &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

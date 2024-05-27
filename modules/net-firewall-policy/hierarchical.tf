@@ -25,7 +25,7 @@ resource "google_compute_firewall_policy_association" "hierarchical" {
   for_each          = local.use_hierarchical ? var.attachments : {}
   name              = "${var.name}-${each.key}"
   attachment_target = each.value
-  firewall_policy   = google_compute_firewall_policy.hierarchical.0.name
+  firewall_policy   = google_compute_firewall_policy.hierarchical[0].name
 }
 
 resource "google_compute_firewall_policy_rule" "hierarchical" {
@@ -33,10 +33,11 @@ resource "google_compute_firewall_policy_rule" "hierarchical" {
   for_each = toset(
     local.use_hierarchical ? keys(local.rules) : []
   )
-  firewall_policy         = google_compute_firewall_policy.hierarchical.0.name
+  firewall_policy         = google_compute_firewall_policy.hierarchical[0].name
   action                  = local.rules[each.key].action
   description             = local.rules[each.key].description
   direction               = local.rules[each.key].direction
+  security_profile_group  = local.rules[each.key].security_profile_group
   disabled                = local.rules[each.key].disabled
   enable_logging          = local.rules[each.key].enable_logging
   priority                = local.rules[each.key].priority

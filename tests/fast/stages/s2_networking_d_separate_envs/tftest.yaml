@@ -13,10 +13,8 @@
 # limitations under the License.
 
 module: fast/stages/2-networking-d-separate-envs
-common_tfvars:
-  - common.tfvars
 
 tests:
-  stage:
+  simple:
     extra_files:
       - ../../plugins/2-networking-serverless-connector/*.tf

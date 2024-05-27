@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,10 @@ locals {
     { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
   )
+  subnets_private_nat = merge(
+    { for s in var.subnets_private_nat : "${s.region}/${s.name}" => s },
+    # { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
+  )
   subnets_psc = merge(
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v._is_psc }
@@ -143,10 +147,6 @@ resource "google_compute_subnetwork" "subnetwork" {
     : each.value.description
   )
   private_ip_google_access = each.value.enable_private_access
-  secondary_ip_range = each.value.secondary_ip_ranges == null ? [] : [
-    for name, range in each.value.secondary_ip_ranges :
-    { range_name = name, ip_cidr_range = range }
-  ]
   stack_type = (
     try(each.value.ipv6, null) != null ? "IPV4_IPV6" : null
   )
@@ -154,6 +154,25 @@ resource "google_compute_subnetwork" "subnetwork" {
     try(each.value.ipv6, null) != null ? each.value.ipv6.access_type : null
   )
   # private_ipv6_google_access = try(each.value.ipv6.enable_private_access, null)
+  dynamic "secondary_ip_range" {
+    for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
+    content {
+      range_name    = secondary_ip_range.key
+      ip_cidr_range = secondary_ip_range.value
+      # TODO(sruffilli): Provider 5.29.1 disabled reserved_internal_range because of a bug.
+      #                  Revert to the following once fixed.
+      # ip_cidr_range = (
+      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+      #   ? null
+      #   : secondary_ip_range.value
+      # )    
+      # reserved_internal_range = (
+      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
+      #   ? secondary_ip_range.value
+      #   : null
+      # )
+    }
+  }
   dynamic "log_config" {
     for_each = each.value.flow_logs_config != null ? [""] : []
     content {
@@ -183,6 +202,20 @@ resource "google_compute_subnetwork" "proxy_only" {
   )
   purpose = each.value.global ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
   role    = each.value.active ? "ACTIVE" : "BACKUP"
+}
+
+resource "google_compute_subnetwork" "private_nat" {
+  for_each      = local.subnets_private_nat
+  project       = var.project_id
+  network       = local.network.name
+  name          = each.value.name
+  region        = each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
+  description = coalesce(
+    each.value.description,
+    "Terraform-managed private NAT subnet."
+  )
+  purpose = "PRIVATE_NAT"
 }
 
 resource "google_compute_subnetwork" "psc" {

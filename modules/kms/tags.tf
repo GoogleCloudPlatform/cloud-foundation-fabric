@@ -16,6 +16,6 @@
 
 resource "google_tags_tag_binding" "binding" {
   for_each  = var.tag_bindings
-  parent    = "//cloudresourcemanager.googleapis.com/${local.keyring.id}"
+  parent    = "//cloudkms.googleapis.com/${local.keyring.id}"
   tag_value = each.value
 }

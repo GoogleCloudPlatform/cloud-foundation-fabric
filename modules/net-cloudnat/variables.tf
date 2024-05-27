@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ variable "config_port_allocation" {
   type = object({
     enable_endpoint_independent_mapping = optional(bool, true)
     enable_dynamic_port_allocation      = optional(bool, false)
-    min_ports_per_vm                    = optional(number, 64)
+    min_ports_per_vm                    = optional(number)
     max_ports_per_vm                    = optional(number, 65536)
   })
   default  = {}
@@ -58,11 +58,11 @@ output "foo" {
 variable "config_timeouts" {
   description = "Timeout configurations."
   type = object({
-    icmp            = optional(number, 30)
-    tcp_established = optional(number, 1200)
-    tcp_time_wait   = optional(number, 120)
-    tcp_transitory  = optional(number, 30)
-    udp             = optional(number, 30)
+    icmp            = optional(number)
+    tcp_established = optional(number)
+    tcp_time_wait   = optional(number)
+    tcp_transitory  = optional(number)
+    udp             = optional(number)
   })
   default  = {}
   nullable = false
@@ -116,10 +116,30 @@ variable "router_network" {
 variable "rules" {
   description = "List of rules associated with this NAT."
   type = list(object({
-    description = optional(string),
-    match       = string
-    source_ips  = list(string)
+    description   = optional(string)
+    match         = string
+    source_ips    = optional(list(string))
+    source_ranges = optional(list(string))
   }))
   default  = []
   nullable = false
+  validation {
+    condition = alltrue([
+      for r in var.rules :
+      r.source_ips != null || r.source_ranges != null
+    ])
+
+    error_message = "All rules must specify either source_ips or source_ranges."
+  }
+}
+
+variable "type" {
+  description = "Whether this Cloud NAT is used for public or private IP translation. One of 'PUBLIC' or 'PRIVATE'."
+  type        = string
+  default     = "PUBLIC"
+  nullable    = false
+  validation {
+    condition     = var.type == "PUBLIC" || var.type == "PRIVATE"
+    error_message = "Field type must be either PUBLIC or PRIVATE."
+  }
 }

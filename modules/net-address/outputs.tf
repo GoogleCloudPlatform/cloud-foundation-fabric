@@ -64,8 +64,14 @@ output "psa_addresses" {
 
 output "psc_addresses" {
   description = "Allocated internal addresses for PSC endpoints."
-  value = {
-    for address in google_compute_global_address.psc :
-    address.name => address
-  }
+  value = merge(
+    {
+      for address in google_compute_global_address.psc :
+      address.name => address
+    },
+    {
+      for address in google_compute_address.psc :
+      address.name => address
+    }
+  )
 }

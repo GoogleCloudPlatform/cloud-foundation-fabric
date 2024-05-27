@@ -65,6 +65,13 @@ variable "connector_enforcement" {
   default     = null
 }
 
+variable "data_cache" {
+  description = "Enable data cache. Only used for Enterprise MYSQL and PostgreSQL."
+  type        = bool
+  nullable    = false
+  default     = false
+}
+
 variable "database_version" {
   description = "Database type and version to create."
   type        = string
@@ -221,7 +228,7 @@ variable "replicas" {
   description = "Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation."
   type = map(object({
     region              = string
-    encryption_key_name = string
+    encryption_key_name = optional(string)
   }))
   default = {}
 }

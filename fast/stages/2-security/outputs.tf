@@ -66,5 +66,5 @@ output "tfvars" {
 output "vpc_sc_perimeter_default" {
   description = "Raw default perimeter resource."
   sensitive   = true
-  value       = try(module.vpc-sc.0.service_perimeters_regular["default"], null)
+  value       = try(module.vpc-sc[0].service_perimeters_regular["default"], null)
 }

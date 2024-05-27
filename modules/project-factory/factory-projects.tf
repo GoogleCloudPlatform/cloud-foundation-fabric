@@ -82,20 +82,18 @@ locals {
         try(v.service_encryption_key_ids, null),
         var.data_defaults.service_encryption_key_ids
       )
-      service_perimeter_bridges = coalesce(
-        var.data_overrides.service_perimeter_bridges,
-        try(v.service_perimeter_bridges, null),
-        var.data_defaults.service_perimeter_bridges
-      )
-      service_perimeter_standard = try(coalesce(
-        var.data_overrides.service_perimeter_standard,
-        try(v.service_perimeter_standard, null),
-        var.data_defaults.service_perimeter_standard
-      ), null)
       services = coalesce(
         var.data_overrides.services,
         try(v.services, null),
         var.data_defaults.services
+      )
+      shared_vpc_host_config = (
+        try(v.shared_vpc_host_config, null) != null
+        ? merge(
+          { service_projects = [] },
+          v.shared_vpc_host_config
+        )
+        : null
       )
       shared_vpc_service_config = (
         try(v.shared_vpc_service_config, null) != null
@@ -115,6 +113,11 @@ locals {
         var.data_overrides.tag_bindings,
         try(v.tag_bindings, null),
         var.data_defaults.tag_bindings
+      )
+      vpc_sc = (
+        var.data_overrides.vpc_sc != null
+        ? var.data_overrides.vpc_sc
+        : try(v.vpc_sc, var.data_defaults.vpc_sc, null)
       )
       # non-project resources
       service_accounts = try(v.service_accounts, {})

@@ -126,13 +126,6 @@ variable "neg_configs" {
   }
 }
 
-variable "network_tier_premium" {
-  description = "Use premium network tier. Defaults to true."
-  type        = bool
-  default     = true
-  nullable    = false
-}
-
 variable "ports" {
   description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
   type        = list(string)

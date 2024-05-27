@@ -36,11 +36,11 @@ locals {
   region_shortnames = {
     for k, v in local._region_tokens : k => join("", [
       # first token via geo alias map or first character
-      lookup(local._region_geo, v.0, substr(v.0, 0, 1)),
+      lookup(local._region_geo, v[0], substr(v[0], 0, 1)),
       # first token via cardinal alias map or first character
-      lookup(local._region_cardinal, v.1, substr(v.1, 0, 1)),
+      lookup(local._region_cardinal, v[1], substr(v[1], 0, 1)),
       # region number as is
-      v.2
+      v[2]
     ])
   }
 }
