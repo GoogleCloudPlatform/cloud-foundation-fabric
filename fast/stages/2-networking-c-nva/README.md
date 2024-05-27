@@ -110,7 +110,7 @@ This is an options summary:
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the landing landing VPC with the spokes, also used by [02-networking-a-simple](../2-networking-a-simple/))
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the landing landing and dmz VPCs) and multi-NIC appliances with NCC/BGP support implemented [here](../2-networking-e-nva-bgp/)
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the landing landing and dmz VPCs) and multi-NIC appliances with NCC/BGP support
   - Pros: provides additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 - [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (used by [02-networking-a-simple](../2-networking-a-simple/) in VPN mode)

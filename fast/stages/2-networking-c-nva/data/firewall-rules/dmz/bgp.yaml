@@ -1,4 +1,5 @@
-#This is only relevant when using NCC-RA, and can be safely removed otherwise
+# skip boilerplate check
+# This is only relevant when using NCC-RA, and can be safely removed otherwise
 ingress:
   allow-ncc-nva-bgp-dmz:
     description: "Allow BGP traffic from NCC Cloud Routers to NVAs"
