@@ -78,5 +78,3 @@ variable "vpc_self_links" {
     prod-spoke-0 = string
   })
 }
-
-

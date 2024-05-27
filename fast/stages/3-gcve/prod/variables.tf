@@ -75,14 +75,6 @@ variable "project_services" {
   nullable    = false
 }
 
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    prod-spoke-0 = string
-  })
-}
-
 variable "gcve_monitoring" {
   description = "Inputs for GCVE Monitoring"
   type = object({
