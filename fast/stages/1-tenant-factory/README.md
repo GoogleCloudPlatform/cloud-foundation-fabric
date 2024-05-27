@@ -272,7 +272,7 @@ ln -s ~/fast-config/tenants/tenant-a/tfvars/0-bootstrap.auto.tfvars.json ./
 ```
 
 ```bash
-../../stage-links.sh gs://{prefix}-{tenant-shortname}-prod-iac-core-0
+/path/to/stage-links.sh gs://{prefix}-{tenant-shortname}-prod-iac-core-0
 
 # copy and paste the following commands for 'tenant-a/1-resman'
 
