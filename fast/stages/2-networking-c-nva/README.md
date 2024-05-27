@@ -14,13 +14,20 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
 
-The diagram shows the high-level design and it should be used as a reference throughout the following sections.
+The diagram shows the high-level designs of the two proposed flavors ("Simple NVA" and "NCC-RA") and it should be used as a reference throughout the following sections.
 
 The final number of subnets, and their IP addressing will depend on the user-specific requirements. It can be easily changed via variables or external data files, without any need to edit the code.
 
 <p align="center">
-  <img src="diagram.svg" alt="Networking diagram">
+  <img src="diagram-simple.svg" alt="Simple NVA">
+  </br>Simple NVA diagram
 </p>
+<hr/>
+<p align="center">
+  <img src="diagram-ncc.svg" alt="NCC-RA diagram">
+  </br>NCC-RA diagram
+</p>
+
 
 ## Table of contents
 
@@ -73,7 +80,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 This stage deploys networking resources in two different regions, deployed and configured in order to allow for a manual ("simple" mode) or automated ("ncc-ra") failover in case of failures.
 Two different architectural flavors are provided which, while similar, implement a completely different routing strategy:
 
-- **Simple NVA**, where the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group
+- **Simple NVA**, where the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
 - **NCC-RA**, where the network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
   - avoid using network tags to route traffic
   - automatically send all traffic through the cross-regional NVAs if the ones in-region fail
