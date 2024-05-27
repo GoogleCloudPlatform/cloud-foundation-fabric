@@ -159,7 +159,7 @@ module "nva-bgp" {
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
   name           = "nva-${each.value.shortname}-${each.value.zone}"
-  instance_type  = "e2-standard-2"
+  instance_type  = "e2-micro"
   can_ip_forward = true
   zone           = "${each.value.region}-${each.value.zone}"
   tags           = ["nva"]
