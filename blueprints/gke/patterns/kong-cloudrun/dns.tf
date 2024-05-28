@@ -21,7 +21,7 @@ module "private_dns_ilb" {
   zone_config = {
     domain = format("%s.", var.custom_domain)
     private = {
-      client_networks = [data.google_compute_network.host-network.id]
+      client_networks = [var.created_resources.vpc_id]
     }
   }
   recordsets = {

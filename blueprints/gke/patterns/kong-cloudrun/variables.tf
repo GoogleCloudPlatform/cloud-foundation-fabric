@@ -21,15 +21,11 @@ variable "cloudrun_svcname" {
 }
 
 variable "created_resources" {
-  description = "Names of the resources created by autopilot cluster to be consumed here."
+  description = "IDs of the resources created by autopilot cluster to be consumed here."
   type = object({
-    vpc_name    = string
-    subnet_name = string
+    vpc_id    = string
+    subnet_id = string
   })
-  default = {
-    vpc_name    = "autopilot"
-    subnet_name = "cluster-default"
-  }
   nullable = false
 }
 

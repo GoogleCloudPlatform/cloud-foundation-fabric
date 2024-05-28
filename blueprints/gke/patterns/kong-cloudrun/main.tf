@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-data "google_compute_network" "host-network" {
-  name    = var.created_resources.vpc_name
-  project = var.project_id
-}
-
-data "google_compute_subnetwork" "host-subnetwork" {
-  name    = var.created_resources.subnet_name
-  project = var.project_id
-  region  = var.region
-}
-
 module "service-project" {
   source          = "../../../../modules/project"
   name            = var.service_project.project_id

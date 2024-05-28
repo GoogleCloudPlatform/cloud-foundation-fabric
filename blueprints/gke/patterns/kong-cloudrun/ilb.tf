@@ -50,7 +50,7 @@ module "ilb-l7" {
     }
   }
   vpc_config = {
-    network    = data.google_compute_network.host-network.id
-    subnetwork = data.google_compute_subnetwork.host-subnetwork.self_link
+    network    = var.created_resources.vpc_id
+    subnetwork = var.created_resources.subnet_id
   }
 }
