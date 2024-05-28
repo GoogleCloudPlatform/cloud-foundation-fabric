@@ -12,20 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ip_cidr_range: ip()
 region: str()
-description: str()
-ip_cidr_range: str()
 # optional attributes
+description: str(required=False)
 enable_private_access: bool(required=False) # defaults to true
-iam_users: list(str(), required=False)
-iam_groups: list(str(), required=False)
-iam_service_accounts: list(str(), required=False)
+flow_logs_config: any(include('flow_logs'), required=False)
+iam: map(str(), key=str(), required=False)
+iam_bindings: map(include('binding_entry'), key=str(), required=False)
+iam_bindings_additive: map(include('binding_entry'), key=str(), required=False)
+ipv6: include('ipv6', required=False)
+name: str(required=False) # Name is required, but inferred from filename if missing.
 secondary_ip_ranges: map(str(), key=str(), required=False)
-flow_logs: any(include('flow_logs'), required=False)
 ---
 flow_logs:
-  - aggregation_interval: enum('INTERVAL_5_SEC', 'INTERVAL_30_SEC', 'INTERVAL_1_MIN', 'INTERVAL_5_MIN', 'INTERVAL_10_MIN', 'INTERVAL_15_MIN', required=False)
-  - filter_expression: str()
-  - flow_sampling: num(min=0, max=1, required=False)
-  - metadata: enum('EXCLUDE_ALL_METADATA', 'INCLUDE_ALL_METADATA', 'CUSTOM_METADATA', required=False)
-  - metadata_fields: map(str(), key=str(), required=False)
+  aggregation_interval: enum('INTERVAL_5_SEC', 'INTERVAL_30_SEC', 'INTERVAL_1_MIN', 'INTERVAL_5_MIN', 'INTERVAL_10_MIN', 'INTERVAL_15_MIN', required=False)
+  filter_expression: str()
+  flow_sampling: num(min=0, max=1, required=False)
+  metadata: enum('EXCLUDE_ALL_METADATA', 'INCLUDE_ALL_METADATA', 'CUSTOM_METADATA', required=False)
+  metadata_fields: map(str(), key=str(), required=False)
+---
+ipv6:
+  access_type: enum('EXTERNAL', 'INTERNAL', required=False)
+---
+binding_entry:
+  role: str()
+  members: list(str())
+  condition: include('iam_binding_condition', required=False)
+---
+iam_binding_condition:
+  expression: str()
+  title: str()
+  description: str(required=False)

@@ -15,11 +15,27 @@
 map(include('hierarchical_rule'))
 ---
 hierarchical_rule:
-  description: str()
-  direction: enum("INGRESS", "EGRESS")
-  action: enum("allow", "deny", "goto_next")
   priority: int()
-  ranges: list(str())
-  target_resources: any(null(), list(str()))
-  ports: map(list(str(), required=False))
-  enable_logging: bool()
+  action: enum('allow', 'deny', 'goto_next', 'apply_security_profile_group', required=False)
+  description: str(required=False)
+  disabled: bool(required=False)
+  enable_logging: bool(required=False)
+  security_profile_group: str(required=False)
+  target_resources: list(str(), required=False)
+  target_service_accounts: list(str(), required=False)
+  target_tags: list(str(), required=False)
+  match: include('match_entry')
+---
+match_entry:
+  address_groups: list(str(), required=False)
+  fqdns: list(str(), required=False)
+  region_codes: list(str(), required=False)
+  threat_intelligences: list(str(), required=False)
+  destination_ranges: list(str(), required=False)
+  source_ranges: list(str(), required=False)
+  source_tags: list(str(), required=False)
+  layer4_configs: list(include('layer4_config'), required=False)
+---
+layer4_config:
+  protocol: str(required=False)
+  ports: list(str(), required=False)

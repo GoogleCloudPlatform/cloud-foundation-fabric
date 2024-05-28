@@ -85,6 +85,19 @@ jobs:
         run: |
           python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
+      - name: Validate factory data (fast)
+        id: factory-data-fast
+        run: |
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-a-simple/data/subnets fast/assets/schemas/subnet.schema.yaml
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-c-nva/data/subnets fast/assets/schemas/subnet.schema.yaml
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-d-separate-envs/data/subnets fast/assets/schemas/subnet.schema.yaml
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-a-simple/data/firewall-rules fast/assets/schemas/firewall_rules.schema.yaml
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-c-nva/data/firewall-rules fast/assets/schemas/firewall_rules.schema.yaml
+          python3 tools/validate_schema.py --quiet --recursive --directory fast/stages/2-networking-d-separate-envs/data/firewall-rules fast/assets/schemas/firewall_rules.schema.yaml
+          python3 tools/validate_schema.py --quiet --file fast/stages/2-networking-a-simple/data/hierarchical-ingress-rules.yaml fast/assets/schemas/hierarchical_rules.schema.yaml
+          python3 tools/validate_schema.py --quiet --file fast/stages/2-networking-c-nva/data/hierarchical-ingress-rules.yaml fast/assets/schemas/hierarchical_rules.schema.yaml
+          python3 tools/validate_schema.py --quiet --file fast/stages/2-networking-d-separate-envs/data/hierarchical-ingress-rules.yaml fast/assets/schemas/hierarchical_rules.schema.yaml
+
       - name: Check python formatting
         id: yapf
         run: |

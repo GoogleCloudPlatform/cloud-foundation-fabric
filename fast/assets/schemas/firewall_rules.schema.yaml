@@ -20,15 +20,17 @@ firewall_rule:
   description: str(required=False)
   destination_ranges: list(str(), required=False)
   disabled: bool(required=False)
-  # enable_logging:
-  #   include_metadata: bool(required=False)
+  enable_logging: include('enable_logging', required=False)
   priority: int(required=False)
+  rules: list(include('rule'), required=False)
   source_ranges: list(str(), required=False)
   sources: list(str(), required=False)
   targets: list(str(), required=False)
   use_service_accounts: bool(required=False)
-  rules: list(include('rule'), required=False)
 ---
 rule:
   protocol: str()
   ports: list(num())
+---
+enable_logging:
+  include_metadata: bool(required=False)
