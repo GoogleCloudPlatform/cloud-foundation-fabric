@@ -29,7 +29,7 @@ module "project" {
   source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
-  name            = "alloydb-prj"
+  name            = "alloydb"
   prefix          = var.prefix
   services = [
     "servicenetworking.googleapis.com",
@@ -76,7 +76,7 @@ module "alloydb" {
   location     = var.region
   name         = "db"
   network_config = {
-    network = var.vpc.self_link
+    network = var.vpc.id
   }
   cross_region_replication = {
     enabled = true
@@ -104,7 +104,7 @@ module "alloydb" {
     timezone                            = "'UTC'"
   }
   network_config = {
-    network = var.vpc.self_link
+    network = var.vpc.id
   }
   users = {
     # generate a password for user1
@@ -130,7 +130,7 @@ module "alloydb" {
   location     = var.region
   name         = "primary"
   network_config = {
-    network = var.vpc.self_link
+    network = var.vpc.id
   }
   encryption_config = {
     primary_kms_key_name = var.kms_key.id
