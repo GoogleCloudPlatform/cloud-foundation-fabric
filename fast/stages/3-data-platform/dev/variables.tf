@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,27 +13,6 @@
 # limitations under the License.
 
 # tfdoc:file:description Terraform Variables.
-
-variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-}
-
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
 
 variable "composer_config" {
   description = "Cloud Composer config."
@@ -145,14 +124,6 @@ variable "deletion_protection" {
   nullable    = false
 }
 
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type = object({
-    data-platform-dev = string
-  })
-}
-
 variable "groups_dp" {
   description = "Data Platform groups."
   type        = map(string)
@@ -161,14 +132,6 @@ variable "groups_dp" {
     data-engineers = "gcp-data-engineers"
     data-security  = "gcp-data-security"
   }
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 2-networking
-  description = "Shared VPC project ids."
-  type = object({
-    dev-spoke-0 = string
-  })
 }
 
 variable "location" {
@@ -193,30 +156,10 @@ variable "network_config_composer" {
   }
 }
 
-variable "organization" {
-  # tfdoc:variable:source 00-globals
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
-
 variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
-}
-
-variable "prefix" {
-  # tfdoc:variable:source 00-globals
-  description = "Unique prefix used for resource names. Not used for projects if 'project_create' is null."
-  type        = string
-  validation {
-    condition     = try(length(var.prefix), 0) < 13
-    error_message = "Use a maximum of 12 characters for prefix."
-  }
 }
 
 variable "project_config" {
@@ -270,24 +213,6 @@ variable "service_encryption_keys" {
     dataflow = string
     storage  = string
     pubsub   = string
-  })
-  default = null
-}
-
-variable "subnet_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Shared VPC subnet self links."
-  type = object({
-    dev-spoke-0 = map(string)
-  })
-  default = null
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Shared VPC self links."
-  type = object({
-    dev-spoke-0 = string
   })
   default = null
 }

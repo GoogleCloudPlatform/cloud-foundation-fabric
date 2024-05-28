@@ -249,6 +249,13 @@ variable "tables" {
   default = {}
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this dataset, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "views" {
   description = "View definitions."
   type = map(object({

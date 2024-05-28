@@ -8,11 +8,13 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
 - [[#2296](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2296)] Bump requests from 2.31.0 to 2.32.0 in /blueprints/cloud-operations/network-quota-monitoring/src ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-21 07:20:53+00:00 -->
 - [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
 
 ### FAST
 
+- [[#2305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2305)] FAST MT: Readme updates and more prefix validation  ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-24 10:01:55+00:00 -->
 - [[#2232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2232)] New extra stage for FAST gitlab setup ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:17:14+00:00 -->
 - [[#2294](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2294)] Avoid unnecessary terraform plans for closed (unmerged) PRs ([pbrumblay](https://github.com/pbrumblay)) <!-- 2024-05-21 13:03:07+00:00 -->
 - [[#2298](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2298)] Adjust list of imported org policies to official docs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-21 09:27:57+00:00 -->
@@ -28,6 +30,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2307)] Extend support for tag bindings to more modules ([ludoo](https://github.com/ludoo)) <!-- 2024-05-25 08:42:45+00:00 -->
+- [[#2306](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2306)] Internet NEG for internal proxy LB ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-24 10:56:28+00:00 -->
+- [[#2304](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2304)] **incompatible change:** Remove default location from container-registry, datacatalog-policy-tag, workstation-cluster ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:20:53+00:00 -->
+- [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
 - [[#2301](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2301)] Fix permadiff in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-23 06:38:03+00:00 -->
 - [[#2300](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2300)] Add support for shared vpc host to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-05-22 07:56:34+00:00 -->
 - [[#2285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2285)] New alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:40:26+00:00 -->
@@ -36,6 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2302](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2302)] Add AlloyDB service for e2e tests harness ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-23 09:44:41+00:00 -->
 - [[#2285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2285)] New alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:40:26+00:00 -->
 - [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
 

@@ -116,7 +116,6 @@ variable "subscriptions" {
       minimum_backoff = optional(number)
       maximum_backoff = optional(number)
     }))
-
     bigquery = optional(object({
       table               = string
       use_topic_schema    = optional(bool, false)

@@ -46,7 +46,6 @@ variable "labels" {
 variable "location" {
   description = "Location."
   type        = string
-  default     = null
 }
 
 variable "network_config" {

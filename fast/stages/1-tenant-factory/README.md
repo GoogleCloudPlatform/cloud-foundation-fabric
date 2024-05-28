@@ -16,6 +16,7 @@ Typical use cases include large organizations managing a single Cloud subscripti
 - [Tenant configuration](#tenant-configuration)
   - [Configurations for both simple and FAST tenants](#configurations-for-both-simple-and-fast-tenants)
   - [Configurations for FAST tenants](#configurations-for-fast-tenants)
+    - [Deploying FAST stages](#deploying-fast-stages)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -252,6 +253,34 @@ tenant_configs = {
 }
 ```
 
+#### Deploying FAST stages
+
+Mirroring the regular FAST behavior, the provider and variable files for a bootstrapped tenant will be generated on a tenant-specific storage bucket named `{prefix}-{tenant-shortname}-prod-iac-core-outputs-0` in (also tenant-specific) project `{prefix}-{tenant-shortname}-prod-iac-core-0`.
+
+Since the tenant is already bootstrapped, a FAST deployment for tenants start from stage `1-resman`, which can be configured as usual, leveraging `stage-links.sh`, which should point to either the tenant-specific `var.outputs_location`, or to the tenant-specific GCS bucket.
+
+For example:
+
+```bash
+/path/to/stage-links.sh ~/fast-config/tenants/tenant-a
+
+# copy and paste the following commands for 'tenant-a/1-resman'
+
+ln -s ~/fast-config/tenants/tenant-a/providers/1-tenant-factory-providers.tf ./
+ln -s ~/fast-config/tenants/tenant-a/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/tenants/tenant-a/tfvars/0-bootstrap.auto.tfvars.json ./
+```
+
+```bash
+/path/to/stage-links.sh gs://{prefix}-{tenant-shortname}-prod-iac-core-0
+
+# copy and paste the following commands for 'tenant-a/1-resman'
+
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/providers/1-tenant-factory-providers.tf ./
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-bootstrap.auto.tfvars.json ./
+```
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -283,7 +312,7 @@ tenant_configs = {
 | [logging](variables-fast.tf#L94) | Logging resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [org_policy_tags](variables-fast.tf#L113) | Organization policy tags. | <code title="object&#40;&#123;&#10;  key_id   &#61; string&#10;  key_name &#61; string&#10;  values   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [organization](variables-fast.tf#L103) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L123) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L130) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [custom_roles](variables-fast.tf#L53) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  gcve_network_admin            &#61; string&#10;  organization_admin_viewer     &#61; string&#10;  service_project_network_admin &#61; string&#10;  storage_viewer                &#61; string&#10;  tenant_network_admin          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 | [groups](variables-fast.tf#L66) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code title="object&#40;&#123;&#10;  gcp-billing-admins      &#61; optional&#40;string, &#34;gcp-billing-admins&#34;&#41;&#10;  gcp-devops              &#61; optional&#40;string, &#34;gcp-devops&#34;&#41;&#10;  gcp-network-admins      &#61; optional&#40;string, &#34;gcp-vpc-network-admins&#34;&#41;&#10;  gcp-organization-admins &#61; optional&#40;string, &#34;gcp-organization-admins&#34;&#41;&#10;  gcp-security-admins     &#61; optional&#40;string, &#34;gcp-security-admins&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
 | [locations](variables-fast.tf#L81) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  gcs     &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |

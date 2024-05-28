@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "address" {
+  description = "Forwarding rule address."
+  value       = google_compute_forwarding_rule.default.ip_address
+}
+
 output "backend_service" {
   description = "Backend resource."
   value       = google_compute_region_backend_service.default
@@ -71,4 +76,11 @@ output "neg_ids" {
   value = {
     for k, v in google_compute_network_endpoint_group.default : k => v.id
   }
+}
+
+output "service_attachment_id" {
+  description = "Id of the service attachment."
+  value = try(
+    google_compute_service_attachment.default[0].id, null
+  )
 }
