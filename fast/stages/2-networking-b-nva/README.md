@@ -14,7 +14,7 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
 
-The diagram shows the high-level designs of the two proposed flavors ("Simple NVA" and "NCC-RA") and it should be used as a reference throughout the following sections.
+The diagram shows the high-level designs of the two proposed flavors ("Simple NVA" and "NCC-RA") and it should be used as a reference throughout the following sections. 
 
 The final number of subnets, and their IP addressing will depend on the user-specific requirements. It can be easily changed via variables or external data files, without any need to edit the code.
 
@@ -85,6 +85,8 @@ Two different architectural flavors are provided which, while similar, implement
   - avoid using network tags to route traffic
   - automatically send all traffic through the cross-regional NVAs if the ones in-region fail
   - avoid cross-regional traffic unless absolutely necessary for disaster recovery
+
+Switching between the two different models is controlled by `var.enable_ncc_ra`.
 
 ### VPC design
 
@@ -165,28 +167,28 @@ The first /24 range in every area is allocated for a default subnet, which can b
 
 This is a summary of the subnets allocated by default in this setup:
 
-| name | description | CIDR |
-|---|---|---|
-| landing-default-ew1 | Trusted landing subnet - europe-west1 | 10.128.64.0/24 |
-| landing-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
-| dmz-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
-| dmz-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
-| dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
-| dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.253.0/24 |
-| dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.254.0/24 |
-| dev-default-ew1 | Free (L7 ILB) - europe-west1 | 10.68.255.0/24 |
-| dev-default-ew4 | Dev spoke subnet - europe-west4 | 10.84.0.0/24 |
-| dev-default-ew4 | Free (PSA) - europe-west4 | 10.84.253.0/24 |
-| dev-default-ew4 | Free (PSA) - europe-west4 | 10.84.254.0/24 |
-| dev-default-ew4 | Free (L7 ILB) - europe-west4 | 10.84.255.0/24 |
-| prod-default-ew1 | Prod spoke subnet - europe-west1 | 10.72.0.0/24 |
-| prod-default-ew1 | Free (PSA) - europe-west1 | 10.72.253.0/24 |
-| prod-default-ew1 | Free (PSA) - europe-west1 | 10.72.254.0/24 |
-| prod-default-ew1 | Free (L7 ILB) - europe-west1 | 10.72.255.0/24 |
-| prod-default-ew4 | Prod spoke subnet - europe-west4 | 10.88.0.0/24 |
-| prod-default-ew4 | Free (PSA) - europe-west4 | 10.88.253.0/24 |
-| prod-default-ew4 | Free (PSA) - europe-west4 | 10.88.254.0/24 |
-| prod-default-ew4 | Free (L7 ILB) - europe-west4 | 10.88.255.0/24 |
+| name                | description                             | CIDR           |
+| ------------------- | --------------------------------------- | -------------- |
+| landing-default-ew1 | Trusted landing subnet - europe-west1   | 10.128.64.0/24 |
+| landing-default-ew4 | Trusted landing subnet - europe-west4   | 10.128.96.0/24 |
+| dmz-default-ew1     | Untrusted landing subnet - europe-west1 | 10.128.0.0/24  |
+| dmz-default-ew4     | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
+| dev-default-ew1     | Dev spoke subnet - europe-west1         | 10.68.0.0/24   |
+| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.253.0/24 |
+| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.254.0/24 |
+| dev-default-ew1     | Free (L7 ILB) - europe-west1            | 10.68.255.0/24 |
+| dev-default-ew4     | Dev spoke subnet - europe-west4         | 10.84.0.0/24   |
+| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.253.0/24 |
+| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.254.0/24 |
+| dev-default-ew4     | Free (L7 ILB) - europe-west4            | 10.84.255.0/24 |
+| prod-default-ew1    | Prod spoke subnet - europe-west1        | 10.72.0.0/24   |
+| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.253.0/24 |
+| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.254.0/24 |
+| prod-default-ew1    | Free (L7 ILB) - europe-west1            | 10.72.255.0/24 |
+| prod-default-ew4    | Prod spoke subnet - europe-west4        | 10.88.0.0/24   |
+| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.253.0/24 |
+| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.254.0/24 |
+| prod-default-ew4    | Free (L7 ILB) - europe-west4            | 10.88.255.0/24 |
 
 These subnets can be advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
@@ -316,6 +318,8 @@ This stage is meant to be executed after the [resource management](../1-resman) 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
 Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+
+Note that by default the "Simple NVA" architecture is deployed - in order to enable the "NCC-RA" features, variable `enable_ncc_ra` should be set to `true`.
 
 ### Provider and Terraform variables
 
