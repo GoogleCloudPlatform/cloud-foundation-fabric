@@ -80,7 +80,7 @@ The only current exception to the factory approach is the `iam.allowedPolicyMemb
 
 Organization policy exceptions are managed via a dedicated resource management tag hierarchy, rooted in the `org-policies` tag key. A default condition is already present for the the `iam.allowedPolicyMemberDomains` constraint, that relaxes the policy on resources that have the `org-policies/allowed-policy-member-domains-all` tag value bound or inherited.
 
-Further tag values can be defined via the `org_policies_config.tag_values` variable, and IAM access can be granted on them via the same variable. Once a tag value has been created, its id can be used in constraint rule conditions.
+Further tag values can be defined via the `org_policies_config.tag_values` variable, and IAM access can be granted on them via the same variable. Once a tag value has been created, its id can be used in constraint rule conditions. Note that only one tag value from a given tag key can be bound to an organization, a folder or a project in the resource hierarchy. Since these tag values are all rooted in the `org-policies` key, this limits the ability to apply fine-grained policy constraints. It may be more desirable to model policy overrides using coarser groups of tag values to create a policy "profile". For example, instead of separating `compute.skipDefaultNetworkCreation` and `compute.vmExternalIpAccess`, enforce both constraints by default and relax them both using the same tag value such as `sandbox`. See [tags overview](https://cloud.google.com/resource-manager/docs/tags/tags-overview) for more information. 
 
 Management of the rest of the tag hierarchy is delegated to the resource management stage, as that is often intimately tied to the folder hierarchy design.
 
