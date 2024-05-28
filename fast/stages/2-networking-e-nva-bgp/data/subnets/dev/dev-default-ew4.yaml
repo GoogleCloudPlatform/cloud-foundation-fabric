@@ -1,6 +1,0 @@
-# skip boilerplate check
-
-name: dev-default
-region: europe-west4
-ip_cidr_range: 10.84.0.0/24
-description: Default europe-west4 subnet for dev
