@@ -26,7 +26,7 @@ variable "config_port_allocation" {
     enable_endpoint_independent_mapping = optional(bool, true)
     enable_dynamic_port_allocation      = optional(bool, false)
     min_ports_per_vm                    = optional(number)
-    max_ports_per_vm                    = optional(number)
+    max_ports_per_vm                    = optional(number, 65536)
   })
   default  = {}
   nullable = false

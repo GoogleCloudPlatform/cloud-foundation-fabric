@@ -14,35 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-}
-
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
-
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type = object({
-    gcve-prod = string
-  })
-}
-
 variable "groups_gcve" {
   description = "GCVE groups."
   type = object({
@@ -54,14 +25,6 @@ variable "groups_gcve" {
     gcp-gcve-viewers = "gcp-gcve-viewers"
   }
   nullable = false
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
-  type = object({
-    prod-spoke-0 = string
-  })
 }
 
 variable "iam" {
@@ -77,26 +40,10 @@ variable "labels" {
   default     = {}
 }
 
-variable "organization" {
-  # tfdoc:variable:source 00-globals
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
-
 variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
-}
-
-variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Prefix used for resources that need unique names. Use 9 characters or less."
-  type        = string
 }
 
 variable "private_cloud_configs" {
@@ -127,13 +74,3 @@ variable "project_services" {
   default     = []
   nullable    = false
 }
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    prod-spoke-0 = string
-  })
-}
-
-

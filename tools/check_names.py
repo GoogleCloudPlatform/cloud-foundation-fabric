@@ -72,6 +72,7 @@ def get_names(dir_name):
 
 @click.command()
 @click.argument('dirs', type=str, nargs=-1)
+# max len(f'{fast prefix max length = 9}-{tenant prefix}') = 11
 @click.option('--prefix-length', default=11, type=int)
 @click.option('--failed-only', is_flag=True, default=False)
 def main(dirs, prefix_length=None, failed_only=False):

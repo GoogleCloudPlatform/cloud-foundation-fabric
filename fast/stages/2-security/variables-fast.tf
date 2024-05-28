@@ -70,6 +70,16 @@ variable "organization" {
   })
 }
 
+variable "prefix" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
+  type        = string
+  validation {
+    condition     = try(length(var.prefix), 0) < 12
+    error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
+  }
+}
+
 variable "root_node" {
   # tfdoc:variable:source 0-bootstrap
   description = "Root node for the hierarchy, if running in tenant mode."

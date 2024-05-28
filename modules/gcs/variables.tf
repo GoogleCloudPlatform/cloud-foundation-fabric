@@ -149,7 +149,7 @@ variable "lifecycle_rules" {
 variable "location" {
   description = "Bucket location."
   type        = string
-  default     = "EU"
+  # default     = "EU"
 }
 
 variable "logging_config" {
@@ -261,7 +261,8 @@ variable "storage_class" {
 variable "tag_bindings" {
   description = "Tag bindings for this folder, in key => tag value id format."
   type        = map(string)
-  default     = null
+  nullable    = false
+  default     = {}
 }
 
 variable "uniform_bucket_level_access" {

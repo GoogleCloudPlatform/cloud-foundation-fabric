@@ -1107,6 +1107,7 @@ export TFTEST_E2E_organization_id="1234567890" # your organization id
 export TFTEST_E2E_parent="folders/1234567890"  # folder under which test resources will be created
 export TFTEST_E2E_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
 export TFTEST_E2E_region="europe-west4"  # region to use
+export TFTEST_E2E_region_secondary="europe-west5" # secondary region to use
 ```
 
 To use Service Account Impersonation, use provider environment variable
@@ -1136,6 +1137,7 @@ organization_id = "1234567890"  # your organization id
 parent          = "folders/1234567890"  # folder under which test resources will be created
 prefix          = "your-unique-prefix"  # unique prefix for projects
 region          = "europe-west4"  # region to use
+region_secondary = "europe-west5" # secondary region to use
 timestamp       = "1696444185" # generate your own timestamp - will be used as a part of prefix for globally unique resources
 ```
 

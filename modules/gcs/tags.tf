@@ -15,7 +15,7 @@
  */
 
 resource "google_tags_location_tag_binding" "binding" {
-  for_each  = coalesce(var.tag_bindings, {})
+  for_each  = var.tag_bindings
   parent    = "//storage.googleapis.com/projects/_/buckets/${local.prefix}${lower(var.name)}"
   tag_value = each.value
   location  = var.location

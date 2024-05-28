@@ -543,6 +543,7 @@ module "gcs" {
   source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
+  location      = "EU"
   prefix        = var.prefix
   force_destroy = true
 }
@@ -1133,6 +1134,7 @@ module "gcs" {
   source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
+  location      = "EU"
   prefix        = var.prefix
   force_destroy = true
 }

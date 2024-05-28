@@ -26,3 +26,5 @@ values:
 counts:
   google_secret_manager_secret: 2
   google_secret_manager_secret_version: 3
+
+outputs: {}
