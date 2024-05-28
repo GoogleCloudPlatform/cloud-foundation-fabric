@@ -32,7 +32,7 @@ values:
     maintenance_update_policy: []
     network_config:
       - allocated_ip_range: null
-    project: test-alloydb-prj
+    project: test-alloydb
     restore_backup_source: []
     restore_continuous_backup_source: []
     secondary_config: []
@@ -62,29 +62,29 @@ values:
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
     labels: null
-    name: test-alloydb-prj
+    name: test-alloydb
     org_id: null
-    project_id: test-alloydb-prj
+    project_id: test-alloydb
     skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.servicenetworking[0]:
     condition: []
-    project: test-alloydb-prj
+    project: test-alloydb
     role: roles/servicenetworking.serviceAgent
   module.project.google_project_service.project_services["alloydb.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-alloydb-prj
+    project: test-alloydb
     service: alloydb.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["servicenetworking.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-alloydb-prj
+    project: test-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
   module.project.google_project_service_identity.servicenetworking[0]:
-    project: test-alloydb-prj
+    project: test-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
   module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-alloydb"]:
@@ -94,7 +94,7 @@ values:
     ip_version: null
     name: servicenetworking-googleapis-com-alloydb
     prefix_length: 16
-    project: test-alloydb-prj
+    project: test-alloydb
     purpose: VPC_PEERING
     timeouts: null
   module.vpc.google_compute_network.network[0]:
@@ -104,14 +104,14 @@ values:
     enable_ula_internal_ipv6: null
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: test-alloydb-prj
+    project: test-alloydb
     routing_mode: GLOBAL
     timeouts: null
   module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
     export_custom_routes: false
     import_custom_routes: false
     network: my-network
-    project: test-alloydb-prj
+    project: test-alloydb
     timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
@@ -123,7 +123,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: test-alloydb-prj
+    project: test-alloydb
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
@@ -136,7 +136,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: test-alloydb-prj
+    project: test-alloydb
     tags: null
     timeouts: null
   module.vpc.google_compute_subnetwork.psc["europe-west8/psc"]:
@@ -146,7 +146,7 @@ values:
     log_config: []
     name: psc
     network: my-network
-    project: test-alloydb-prj
+    project: test-alloydb
     purpose: PRIVATE_SERVICE_CONNECT
     region: europe-west8
     role: null
