@@ -134,7 +134,8 @@ resource "google_container_node_pool" "nodepool" {
     disk_size_gb      = var.node_config.disk_size_gb
     disk_type         = var.node_config.disk_type
     image_type        = var.node_config.image_type
-    resource_labels   = var.labels
+    labels            = var.labels
+    resource_labels   = var.resource_labels
     local_ssd_count   = var.node_config.local_ssd_count
     machine_type      = var.node_config.machine_type
     metadata          = local.node_metadata

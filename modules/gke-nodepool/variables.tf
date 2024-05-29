@@ -38,6 +38,13 @@ variable "labels" {
   nullable    = false
 }
 
+variable "resource_labels" {
+  description = "The resource labels to be applied to the cluster."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
 variable "location" {
   description = "Cluster location."
   type        = string

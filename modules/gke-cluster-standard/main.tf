@@ -54,6 +54,8 @@ resource "google_container_cluster" "cluster" {
     boot_disk_kms_key = var.node_config.boot_disk_kms_key
     service_account   = var.node_config.service_account
     tags              = var.node_config.tags
+    labels            = var.labels
+    resource_labels   = var.resource_labels
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {
