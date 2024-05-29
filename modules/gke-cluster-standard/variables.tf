@@ -229,13 +229,12 @@ variable "issue_client_certificate" {
 variable "labels" {
   description = "Cluster resource labels."
   type        = map(string)
-  default     = null
+  nullable    = false
 }
 
 variable "resource_labels" {
   description = "The resource labels to be applied to the cluster."
   type        = map(string)
-  default     = {}
   nullable    = false
 }
 

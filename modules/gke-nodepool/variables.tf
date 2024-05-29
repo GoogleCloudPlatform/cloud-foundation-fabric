@@ -34,14 +34,12 @@ variable "gke_version" {
 variable "labels" {
   description = "Kubernetes labels applied to each node."
   type        = map(string)
-  default     = {}
   nullable    = false
 }
 
 variable "resource_labels" {
   description = "The resource labels to be applied to the cluster."
   type        = map(string)
-  default     = {}
   nullable    = false
 }
 
