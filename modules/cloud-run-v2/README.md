@@ -3,26 +3,24 @@
 Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger creation.
 
 <!-- BEGIN TOC -->
-- [Examples](#examples)
-  - [IAM and environment variables](#iam-and-environment-variables)
-  - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
-  - [Beta features](#beta-features)
-  - [VPC Access Connector](#vpc-access-connector)
-  - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
-  - [Eventarc triggers](#eventarc-triggers)
-    - [PubSub](#pubsub)
-    - [Audit logs](#audit-logs)
-    - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
-  - [Cloud Run Service Account](#cloud-run-service-account)
-  - [Creating Cloud Run Jobs](#creating-cloud-run-jobs)
+- [IAM and environment variables](#iam-and-environment-variables)
+- [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+- [Beta features](#beta-features)
+- [VPC Access Connector](#vpc-access-connector)
+- [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
+- [Eventarc triggers](#eventarc-triggers)
+  - [PubSub](#pubsub)
+  - [Audit logs](#audit-logs)
+  - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
+- [Cloud Run Service Account](#cloud-run-service-account)
+- [Creating Cloud Run Jobs](#creating-cloud-run-jobs)
+- [Tag bindings](#tag-bindings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
 <!-- END TOC -->
 
-## Examples
-
-### IAM and environment variables
+## IAM and environment variables
 
 IAM bindings support the usual syntax. Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there is no duplication of keys:
 
@@ -54,7 +52,7 @@ module "cloud_run" {
 # tftest modules=2 resources=5 fixtures=fixtures/secret-credentials.tf inventory=service-iam-env.yaml e2e
 ```
 
-### Mounting secrets as volumes
+## Mounting secrets as volumes
 
 ```hcl
 module "cloud_run" {
@@ -83,7 +81,7 @@ module "cloud_run" {
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
 
-### Beta features
+## Beta features
 
 To use beta features like Direct VPC Egress, set the launch stage to a preview stage.
 
@@ -112,7 +110,7 @@ module "cloud_run" {
 # tftest modules=1 resources=1 inventory=service-beta-features.yaml
 ```
 
-### VPC Access Connector
+## VPC Access Connector
 
 You can use an existing [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) to connect to a VPC from Cloud Run.
 
@@ -186,7 +184,7 @@ module "cloud_run" {
 # tftest modules=4 resources=40 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
-### Using Customer-Managed Encryption Key
+## Using Customer-Managed Encryption Key
 
 Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key (CMEK). Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey and that Cloud Run Service agent (`service-<PROJECT_NUMBER>@serverless-robot-prod.iam.gserviceaccount.com`) has permission to use the key, for example `roles/cloudkms.cryptoKeyEncrypterDecrypter` IAM role. This setup adds an extra layer of security by utilizing your own encryption keys.
 
@@ -206,9 +204,9 @@ module "cloud_run" {
 # tftest modules=1 resources=2 fixtures=fixtures/cloud-run-kms-iam-grant.tf e2e
 ```
 
-### Eventarc triggers
+## Eventarc triggers
 
-#### PubSub
+### PubSub
 
 This deploys a Cloud Run service that will be triggered when messages are published to Pub/Sub topics.
 
@@ -232,7 +230,7 @@ module "cloud_run" {
 # tftest modules=2 resources=4 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub.yaml e2e
 ```
 
-#### Audit logs
+### Audit logs
 
 This deploys a Cloud Run service that will be triggered when specific log events are written to Google Cloud audit logs.
 
@@ -260,7 +258,7 @@ module "cloud_run" {
 # tftest modules=1 resources=4 inventory=service-eventarc-auditlogs-sa-create.yaml
 ```
 
-#### Using custom service accounts for triggers
+### Using custom service accounts for triggers
 
 By default `Compute default service account` is used to trigger Cloud Run. If you want to use custom Service Accounts you can either provide your own in `eventarc_triggers.service_account_email` or set `eventarc_triggers.service_account_create` to true and service account named `tf-cr-trigger-${var.name}` will be created with `roles/run.invoker` granted on this Cloud Run service.
 
@@ -313,7 +311,7 @@ module "cloud_run" {
 # tftest modules=2 resources=6 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub-sa-create.yaml e2e
 ```
 
-### Cloud Run Service Account
+## Cloud Run Service Account
 
 To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` (default).
 
@@ -351,17 +349,19 @@ module "cloud_run" {
 # tftest modules=2 resources=2 fixtures=fixtures/iam-service-account.tf inventory=service-external-sa.yaml e2e
 ```
 
-### Creating Cloud Run Jobs
+## Creating Cloud Run Jobs
+
 To create a job instead of service set `create_job` to `true`. Jobs support all functions above apart from triggers.
 
 Unsupported variables / attributes:
-* ingress
-* revision.gen2_execution_environment (they run by default in gen2)
-* revision.name
-* containers.liveness_probe
-* containers.startup_probe
-* containers.resources.cpu_idle
-* containers.resources.startup_cpu_boost
+
+- ingress
+- revision.gen2_execution_environment (they run by default in gen2)
+- revision.name
+- containers.liveness_probe
+- containers.startup_probe
+- containers.resources.cpu_idle
+- containers.resources.startup_cpu_boost
 
 ```hcl
 module "cloud_run" {
@@ -386,6 +386,50 @@ module "cloud_run" {
 
 # tftest modules=1 resources=2 inventory=job-iam-env.yaml e2e
 ```
+
+## Tag bindings
+
+Tag bindings are not yet supported for jobs. Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description = "Environment specification."
+      values = {
+        dev     = {}
+        prod    = {}
+        sandbox = {}
+      }
+    }
+  }
+}
+
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      env = {
+        VAR1 = "VALUE1"
+        VAR2 = "VALUE2"
+      }
+    }
+  }
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
+  tag_bindings = {
+    env-sandbox = module.org.tag_values["environment/sandbox"].id
+  }
+}
+# tftest modules=2 resources=7
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -406,7 +450,8 @@ module "cloud_run" {
 | [revision](variables.tf#L178) | Revision template configurations. | <code title="object&#40;&#123;&#10;  name                       &#61; optional&#40;string&#41;&#10;  gen2_execution_environment &#61; optional&#40;bool&#41;&#10;  max_concurrency            &#61; optional&#40;number&#41;&#10;  max_instance_count         &#61; optional&#40;number&#41;&#10;  min_instance_count         &#61; optional&#40;number&#41;&#10;  vpc_access &#61; optional&#40;object&#40;&#123;&#10;    connector &#61; optional&#40;string&#41;&#10;    egress    &#61; optional&#40;string&#41;&#10;    subnet    &#61; optional&#40;string&#41;&#10;    tags      &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  timeout &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account](variables.tf#L205) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L211) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [volumes](variables.tf#L217) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret &#61; optional&#40;object&#40;&#123;&#10;    name         &#61; string&#10;    default_mode &#61; optional&#40;string&#41;&#10;    path         &#61; optional&#40;string&#41;&#10;    version      &#61; optional&#40;string&#41;&#10;    mode         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloud_sql_instances &#61; optional&#40;list&#40;string&#41;&#41;&#10;  empty_dir_size      &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L217) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [volumes](variables.tf#L224) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret &#61; optional&#40;object&#40;&#123;&#10;    name         &#61; string&#10;    default_mode &#61; optional&#40;string&#41;&#10;    path         &#61; optional&#40;string&#41;&#10;    version      &#61; optional&#40;string&#41;&#10;    mode         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloud_sql_instances &#61; optional&#40;list&#40;string&#41;&#41;&#10;  empty_dir_size      &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | Populate this to create a Serverless VPC Access connector. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  network       &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number, 1000&#41; &#35; workaround for a wrong default in provider&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
