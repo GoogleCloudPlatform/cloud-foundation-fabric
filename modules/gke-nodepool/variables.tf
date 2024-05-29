@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,15 @@ variable "gke_version" {
   default     = null
 }
 
-variable "labels" {
+variable "k8s_labels" {
   description = "Kubernetes labels applied to each node."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
+variable "labels" {
+  description = "The resource labels to be applied each node (vm)."
   type        = map(string)
   default     = {}
   nullable    = false

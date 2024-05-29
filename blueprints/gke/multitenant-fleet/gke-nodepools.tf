@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ module "gke-nodepool" {
   cluster_name         = module.gke-cluster[each.value.cluster].name
   location             = module.gke-cluster[each.value.cluster].location
   gke_version          = each.value.gke_version
-  labels               = each.value.labels
+  k8s_labels           = each.value.k8s_labels
   max_pods_per_node    = each.value.max_pods_per_node
   node_config          = each.value.node_config
   node_count           = each.value.node_count
