@@ -15,6 +15,7 @@
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   jit_services = [
+    "alloydb.googleapis.com",  # no permissions granted by default
     "storage.googleapis.com",  # no permissions granted by default
     "sqladmin.googleapis.com", # roles/cloudsql.serviceAgent
   ]
@@ -164,6 +165,13 @@ resource "google_kms_crypto_key" "key" {
   name            = "crypto-key-example"
   key_ring        = google_kms_key_ring.keyring.id
   rotation_period = "100000s"
+}
+
+resource "google_kms_crypto_key_iam_member" "crypto_key" {
+  crypto_key_id = google_kms_crypto_key.key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:service-${google_project.project.number}@gcp-sa-alloydb.iam.gserviceaccount.com"
+  depends_on    = [google_project_service_identity.jit_si]
 }
 
 resource "google_project_service_identity" "jit_si" {
