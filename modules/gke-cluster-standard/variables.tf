@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,12 +232,6 @@ variable "labels" {
   nullable    = false
 }
 
-variable "resource_labels" {
-  description = "The resource labels to be applied to the cluster."
-  type        = map(string)
-  nullable    = false
-}
-
 variable "location" {
   description = "Cluster zone or region."
   type        = string
@@ -382,10 +376,13 @@ variable "node_config" {
   description = "Node-level configuration."
   type = object({
     boot_disk_kms_key = optional(string)
+    k8s_labels        = optional(map(string))
+    labels            = optional(map(string))
     service_account   = optional(string)
     tags              = optional(list(string))
   })
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "node_locations" {

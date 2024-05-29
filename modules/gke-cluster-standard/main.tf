@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ resource "google_container_cluster" "cluster" {
     boot_disk_kms_key = var.node_config.boot_disk_kms_key
     service_account   = var.node_config.service_account
     tags              = var.node_config.tags
-    labels            = var.labels
-    resource_labels   = var.resource_labels
+    labels            = var.node_config.k8s_labels
+    resource_labels   = var.node_config.labels
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {
