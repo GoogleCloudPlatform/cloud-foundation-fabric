@@ -170,7 +170,7 @@ variable "nodepools" {
   description = "Nodepools configuration. Refer to the gke-nodepool module for type details."
   type = map(map(object({
     gke_version       = optional(string)
-    labels            = optional(map(string), {})
+    k8s_labels        = optional(map(string), {})
     max_pods_per_node = optional(number)
     name              = optional(string)
     node_config = optional(any, {

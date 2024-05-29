@@ -32,7 +32,7 @@ echo -- FAST Names --
 python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
 echo -- Python formatting --
-yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d -r \
+yapf -p -d -r \
      tools/*.py \
      blueprints
 
