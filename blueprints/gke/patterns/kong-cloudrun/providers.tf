@@ -35,23 +35,6 @@ provider "kubectl" {
   token = try(data.google_client_config.identity.0.access_token, null)
 }
 
-provider "kubernetes" {
-  config_path = (
-    var.credentials_config.kubeconfig == null
-    ? null
-    : pathexpand(var.credentials_config.kubeconfig.path)
-  )
-  config_context = try(
-    var.credentials_config.kubeconfig.context, null
-  )
-  host = (
-    var.credentials_config.fleet_host == null
-    ? null
-    : var.credentials_config.fleet_host
-  )
-  token = try(data.google_client_config.identity.0.access_token, null)
-}
-
 provider "helm" {
   kubernetes {
     config_path = (

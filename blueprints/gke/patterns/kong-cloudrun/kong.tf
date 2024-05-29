@@ -69,27 +69,10 @@ resource "helm_release" "kong-dp" { # Kong Gateway data plane release
   depends_on = [kubectl_manifest.kong-cert]
 }
 
-data "kubernetes_service" "admin_service" {
-  metadata {
-    name      = "kong-cp-kong-admin"
-    namespace = var.namespace
-  }
-  depends_on = [helm_release.kong-cp]
-}
-
-data "kubernetes_service" "proxy_service" {
-  metadata {
-    name      = "kong-dp-kong-proxy"
-    namespace = var.namespace
-  }
-  depends_on = [helm_release.kong-dp]
-}
-
 resource "kubectl_manifest" "kong-config" {
   yaml_body = templatefile(
     "${local.wl_templates_path}/config-proxy.yaml", {
       kong_namespace = var.namespace
-      admin_ip       = data.kubernetes_service.admin_service.spec.0.cluster_ip
       root_cer       = indent(4, google_privateca_certificate_authority.default.pem_ca_certificates[0])
       domain         = var.custom_domain
     }

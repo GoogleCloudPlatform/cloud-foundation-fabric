@@ -21,6 +21,7 @@ data:
   config-proxy.sh: |-
     #!/bin/sh
     apk add curl jq
-    CERT_ID="$(curl -s http://${admin_ip}:8001/ca_certificates -F cert='${root_cer}' | jq .id)"
-    curl -s http://${admin_ip}:8001/services -H 'Content-Type: application/json' -d '{"name":"acme","protocol":"https","host":"${domain}","port":443,"path":"/","tls_verify":true,"ca_certificates":['$CERT_ID']}'
-    curl -s http://${admin_ip}:8001/routes -H 'Content-Type: application/json' -d '{"name":"acme","paths":["/"],"service":{"name":"acme"}}'
+    ADMIN_IP="$(nslookup kong-cp-kong-admin.${kong_namespace}.svc.cluster.local | awk '/^Address: / { print $2 }')"
+    CERT_ID="$(curl -s http://$ADMIN_IP:8001/ca_certificates -F cert='${root_cer}' | jq .id)"
+    curl -s http://$ADMIN_IP:8001/services -H 'Content-Type: application/json' -d '{"name":"acme","protocol":"https","host":"${domain}","port":443,"path":"/","tls_verify":true,"ca_certificates":['$CERT_ID']}'
+    curl -s http://$ADMIN_IP:8001/routes -H 'Content-Type: application/json' -d '{"name":"acme","paths":["/"],"service":{"name":"acme"}}'
