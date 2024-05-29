@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,7 +157,7 @@ variable "nodepools" {
   description = "Nodepools configuration. Refer to the gke-nodepool module for type details."
   type = map(map(object({
     gke_version       = optional(string)
-    labels            = optional(map(string), {})
+    k8s_labels        = optional(map(string), {})
     max_pods_per_node = optional(number)
     name              = optional(string)
     node_config = optional(any, {

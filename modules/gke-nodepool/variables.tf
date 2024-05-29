@@ -41,6 +41,8 @@ variable "k8s_labels" {
 variable "labels" {
   description = "The resource labels to be applied each node (vm)."
   type        = map(string)
+  default     = {}
+  nullable    = false
 }
 
 variable "location" {
