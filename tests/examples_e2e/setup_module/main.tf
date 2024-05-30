@@ -167,13 +167,6 @@ resource "google_kms_crypto_key" "key" {
   rotation_period = "100000s"
 }
 
-resource "google_kms_crypto_key_iam_member" "crypto_key" {
-  crypto_key_id = google_kms_crypto_key.key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:service-${google_project.project.number}@gcp-sa-alloydb.iam.gserviceaccount.com"
-  depends_on    = [google_project_service_identity.jit_si]
-}
-
 resource "google_project_service_identity" "jit_si" {
   for_each   = toset(local.jit_services)
   provider   = google-beta
