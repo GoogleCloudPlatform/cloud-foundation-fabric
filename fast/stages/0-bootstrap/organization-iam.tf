@@ -121,7 +121,8 @@ locals {
         "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
-        "roles/resourcemanager.tagViewer"
+        "roles/resourcemanager.tagViewer",
+        module.organization.custom_role_id["organization_logsettings_viewer"]
       ]
       additive = concat(
         [
