@@ -35,6 +35,7 @@ run.allowedIngress:
 #   - enforce: true
 
 # constraints/cloudfunctions.restrictAllowedGenerations:
+#   rules:
 #   - allow:
 #       values:
 #       - is:2ndGen
