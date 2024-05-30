@@ -61,7 +61,7 @@ values:
     project: project-id
     restore_backup_source: []
     restore_continuous_backup_source: []
-    secondary_config: []
+    secondary_config: [{}]
     timeouts: null
   module.alloydb.google_alloydb_instance.primary:
     annotations: null

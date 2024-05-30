@@ -43,7 +43,7 @@ module "vpc" {
   name       = "my-network"
   # need only one - psa_config or subnets_psc
   psa_configs = [{
-    ranges          = { alloydb = "10.60.0.0/16" }
+    ranges = { alloydb = "10.60.0.0/16" }
   }]
   subnets_psc = [{
     ip_cidr_range = "10.0.3.0/24"
@@ -136,7 +136,7 @@ module "alloydb" {
   }
 }
 
-# tftest modules=1 resources=2 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e
+# tftest modules=1 resources=3 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
