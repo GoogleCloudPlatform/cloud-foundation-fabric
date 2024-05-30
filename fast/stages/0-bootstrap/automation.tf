@@ -238,6 +238,7 @@ module "automation-tf-bootstrap-r-sa" {
   iam_organization_roles = {
     (var.organization.id) = [
       module.organization.custom_role_id["organization_admin_viewer"],
+      module.organization.custom_role_id["organization_logsettings_viewer"],
       module.organization.custom_role_id["tag_viewer"]
     ]
   }
