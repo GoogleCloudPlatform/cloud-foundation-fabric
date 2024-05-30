@@ -41,6 +41,8 @@ repos:
     language: system
     entry: tools/check_boilerplate.py
     pass_filenames: true
+    args:
+    -  --scan-files
   - id: tflint-fast
     name: Checking FAST code with tflint
     entry: tools/tflint-fast.py
