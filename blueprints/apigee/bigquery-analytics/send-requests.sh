@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,18 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
-#!/bin/bash
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 ENVGROUP_HOSTNAME NUM_REQUESTS"
-    exit 1
-fi    
+	echo "Usage: $0 ENVGROUP_HOSTNAME NUM_REQUESTS"
+	exit 1
+fi
 
 ENVGROUP_HOSTNAME=$1
 NUM_REQUESTS=$2
 
-for i in $(seq 1 $NUM_REQUESTS)
-do
-curl -v https://$ENVGROUP_HOSTNAME/httpbin/headers
+# shellcheck disable=SC2034
+for i in $(seq 1 "$NUM_REQUESTS"); do
+	curl -v "https://$ENVGROUP_HOSTNAME/httpbin/headers"
 done
