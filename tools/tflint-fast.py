@@ -42,8 +42,11 @@ def main(junit):
         args += ['--format=junit']
       args += [
           '--chdir',
-          str((BASEDIR / module_path).absolute()), '--var-file',
-          str((BASEDIR / var_path).absolute())
+          str((BASEDIR / module_path).absolute()),
+          '--var-file',
+          str((BASEDIR / var_path).absolute()),
+          '--config',
+          str((BASEDIR / ".tflint.hcl").absolute()),
       ]
       print(' '.join(args))
       if junit:
