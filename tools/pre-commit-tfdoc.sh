@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sudo apt -y update
-sudo apt -y install apt-transport-https ca-certificates gnupg jq
-echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-sudo apt-get update && sudo apt-get install google-cloud-sdk
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+files=("$@")
+declare -A directories
+
+for file in "${files[@]}"; do
+	dir=$(dirname "${file}")
+	if [ -f "${dir}/README.md" ] && [ -f "${dir}/main.tf" ]; then
+		directories["${dir}"]=1
+	fi
+done
+
+for dir in "${!directories[@]}"; do # iterate over keys in directories
+	echo python "${SCRIPT_DIR}/tfdoc.py" "${dir}"
+	python "${SCRIPT_DIR}/tfdoc.py" "${dir}"
+done
