@@ -15,6 +15,7 @@
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   jit_services = [
+    "alloydb.googleapis.com",  # no permissions granted by default
     "storage.googleapis.com",  # no permissions granted by default
     "sqladmin.googleapis.com", # roles/cloudsql.serviceAgent
   ]

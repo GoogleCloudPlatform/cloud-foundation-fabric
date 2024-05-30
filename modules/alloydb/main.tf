@@ -139,6 +139,12 @@ resource "google_alloydb_cluster" "primary" {
       }
     }
   }
+  # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
+  lifecycle {
+    ignore_changes = [
+      display_name
+    ]
+  }
 }
 
 resource "google_alloydb_instance" "primary" {
@@ -193,6 +199,13 @@ resource "google_alloydb_instance" "primary" {
       record_client_address   = var.query_insights_config.record_client_address
       query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
     }
+  }
+
+  # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
+  lifecycle {
+    ignore_changes = [
+      network_config
+    ]
   }
 }
 
@@ -299,13 +312,19 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "secondary_config" {
-    for_each = var.cross_region_replication.promote_secondary ? [""] : []
+    for_each = var.cross_region_replication.promote_secondary ? [] : [""]
     content {
       primary_cluster_name = google_alloydb_cluster.primary.id
     }
   }
 
   depends_on = [google_alloydb_instance.primary]
+  # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
+  lifecycle {
+    ignore_changes = [
+      display_name
+    ]
+  }
 }
 
 resource "google_alloydb_instance" "secondary" {
@@ -362,6 +381,13 @@ resource "google_alloydb_instance" "secondary" {
       query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
     }
   }
+
+  # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
+  lifecycle {
+    ignore_changes = [
+      network_config
+    ]
+  }
 }
 
 resource "random_password" "passwords" {
@@ -381,4 +407,5 @@ resource "google_alloydb_user" "users" {
   user_type      = each.value.type
   password       = each.value.password
   database_roles = each.value.roles
+  depends_on     = [google_alloydb_instance.primary]
 }

@@ -1,6 +1,6 @@
 # AlloyDB module
 
-This module manages the creation of an AlloyDB cluster. It also supports cross-region replication scenario by setting up a secondary cluster. 
+This module manages the creation of an AlloyDB cluster. It also supports cross-region replication scenario by setting up a secondary cluster.
 It can also create an initial set of users via the `users` variable.
 
 Note that this module assumes that some options are the same for both the primary instance and the secondary one in case of cross regional replication configuration.
@@ -43,8 +43,7 @@ module "vpc" {
   name       = "my-network"
   # need only one - psa_config or subnets_psc
   psa_configs = [{
-    ranges          = { alloydb = "10.60.0.0/16" }
-    deletion_policy = "ABANDON"
+    ranges = { alloydb = "10.60.0.0/16" }
   }]
   subnets_psc = [{
     ip_cidr_range = "10.0.3.0/24"
@@ -86,7 +85,7 @@ module "alloydb" {
 # tftest modules=1 resources=4 inventory=cross_region_replication.yaml e2e
 ```
 
-In a cross-region replication scenario (like in the previous example) this module also supports [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.  
+In a cross-region replication scenario (like in the previous example) this module also supports [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
 
 ### Custom flags and users definition
 
@@ -137,7 +136,7 @@ module "alloydb" {
   }
 }
 
-# tftest modules=1 resources=2 inventory=cmek.yaml e2e
+# tftest modules=1 resources=3 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -188,4 +187,8 @@ module "alloydb" {
 | [secondary_id](outputs.tf#L68) | Fully qualified primary instance id. |  |
 | [secondary_ip](outputs.tf#L73) | IP address of the primary instance. |  |
 | [user_passwords](outputs.tf#L78) | Map of containing the password of all users created through terraform. | ✓ |
+
+## Fixtures
+
+- [alloydb-kms-iam-grant.tf](../../tests/fixtures/alloydb-kms-iam-grant.tf)
 <!-- END TFDOC -->
