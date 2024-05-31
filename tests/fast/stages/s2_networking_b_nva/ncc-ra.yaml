@@ -45,9 +45,9 @@ counts:
   google_project: 3
   google_project_iam_binding: 6
   google_project_iam_member: 2
-  google_project_service: 21
+  google_project_service: 22
   google_project_service_identity: 5
   google_storage_bucket_object: 2
   modules: 39
   random_id: 2
-  resources: 219
+  resources: 220
