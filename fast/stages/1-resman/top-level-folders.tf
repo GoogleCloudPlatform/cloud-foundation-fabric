@@ -44,6 +44,7 @@ locals {
         firewall_policy       = try(v.firewall_policy, null)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
+        logging_settings      = try(v.logging_settings, null)
         logging_sinks         = try(v.logging_sinks, {})
         iam                   = try(v.iam, {})
         iam_bindings          = try(v.iam_bindings, {})
