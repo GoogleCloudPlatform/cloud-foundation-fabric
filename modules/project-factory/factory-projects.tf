@@ -117,7 +117,14 @@ locals {
       vpc_sc = (
         var.data_overrides.vpc_sc != null
         ? var.data_overrides.vpc_sc
-        : try(v.vpc_sc, var.data_defaults.vpc_sc, null)
+        : (
+          try(v.vpc_sc, null) != null
+          ? merge({
+            perimeter_bridges = []
+            is_dry_run        = false
+          }, v.vpc_sc)
+          : var.data_defaults.vpc_sc
+        )
       )
       # non-project resources
       service_accounts = try(v.service_accounts, {})
