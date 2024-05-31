@@ -8,12 +8,28 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
+- [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
+- [[#2299](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2299)] Kong Gateway on GKE offloading to Cloud Run ([juliodiez](https://github.com/juliodiez)) <!-- 2024-05-29 14:26:25+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2106)] Gitlab Runner blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-27 08:34:35+00:00 -->
 - [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
 - [[#2296](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2296)] Bump requests from 2.31.0 to 2.32.0 in /blueprints/cloud-operations/network-quota-monitoring/src ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-21 07:20:53+00:00 -->
 - [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
 
+### DOCUMENTATION
+
+- [[#2106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2106)] Gitlab Runner blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-27 08:34:35+00:00 -->
+
 ### FAST
 
+- [[#2329](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2329)] FAST: Enable networkconnectivity when using NCC-RA in 2-b ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-31 08:22:24+00:00 -->
+- [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
+- [[#2325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2325)] Fix restrictAllowedGenerations org policy example ([juliocc](https://github.com/juliocc)) <!-- 2024-05-30 12:19:24+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2319](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2319)] Pbrumblay/clarify org policy tags ([pbrumblay](https://github.com/pbrumblay)) <!-- 2024-05-29 06:19:39+00:00 -->
+- [[#2309](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2309)] **incompatible change:** Merge FAST C and E network stages into a new B stage. ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 15:27:28+00:00 -->
+- [[#2315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2315)] FAST: Obsolete assets cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 09:35:13+00:00 -->
 - [[#2305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2305)] FAST MT: Readme updates and more prefix validation  ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-24 10:01:55+00:00 -->
 - [[#2232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2232)] New extra stage for FAST gitlab setup ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:17:14+00:00 -->
 - [[#2294](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2294)] Avoid unnecessary terraform plans for closed (unmerged) PRs ([pbrumblay](https://github.com/pbrumblay)) <!-- 2024-05-21 13:03:07+00:00 -->
@@ -30,6 +46,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2321)] Fixed e2e tests for alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-30 09:41:15+00:00 -->
+- [[#2312](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2312)] Fixes for Alloydb E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-29 14:46:15+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2280](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2280)] Secret manager e2etests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-05-28 07:28:09+00:00 -->
 - [[#2307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2307)] Extend support for tag bindings to more modules ([ludoo](https://github.com/ludoo)) <!-- 2024-05-25 08:42:45+00:00 -->
 - [[#2306](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2306)] Internet NEG for internal proxy LB ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-24 10:56:28+00:00 -->
 - [[#2304](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2304)] **incompatible change:** Remove default location from container-registry, datacatalog-policy-tag, workstation-cluster ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:20:53+00:00 -->
@@ -42,6 +62,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
+- [[#2315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2315)] FAST: Obsolete assets cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 09:35:13+00:00 -->
+- [[#2314](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2314)] Explicit YAPF style ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-28 08:53:14+00:00 -->
 - [[#2302](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2302)] Add AlloyDB service for e2e tests harness ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-23 09:44:41+00:00 -->
 - [[#2285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2285)] New alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:40:26+00:00 -->
 - [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
