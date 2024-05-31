@@ -66,6 +66,7 @@ module "top-level-folder" {
   firewall_policy       = each.value.firewall_policy
   logging_data_access   = each.value.logging_data_access
   logging_exclusions    = each.value.logging_exclusions
+  logging_settings      = each.value.logging_settings
   logging_sinks         = each.value.logging_sinks
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
