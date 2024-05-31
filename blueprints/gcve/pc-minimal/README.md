@@ -30,7 +30,7 @@ Based on our GCP best practices, a GCVE private cloud relies on user groups to a
 
 ### Network
 
-This blueprints expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [Networking with separated single environment](../../../fast/stages/2-networking-d-separate-envs)) or from an external source.
+This blueprints expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [Networking with separated single environment](../../../fast/stages/2-networking-c-separate-envs)) or from an external source.
 The blueprint can optionally configure the [VMware Engine Network peering](https://cloud.google.com/vmware-engine/docs/networking/peer-vpc-network) on the peer VPC by granting the following permissions on the project that hosts the VPC:
 - vmwareengine.networkPeerings.create
 - vmwareengine.networkPeerings.get
