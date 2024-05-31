@@ -6,6 +6,12 @@
 accounts:
   dns_name: "accounts.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+aiplatform-notebook-cloud-all:
+  dns_name: "*.aiplatform-notebook.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+aiplatform-notebook-gu-all:
+  dns_name: "*.aiplatform-notebook.googleusercontent.com"
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 backupdr-cloud:
   dns_name: "backupdr.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
@@ -87,6 +93,9 @@ kernels-gu:
 kernels-gu-all:
   dns_name: "*.kernels.googleusercontent.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+ltsapis-all:
+  dns_name: "*.ltsapis.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 notebooks-all:
   dns_name: "*.notebooks.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
@@ -116,4 +125,7 @@ run-all:
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 source:
   dns_name: "source.developers.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+storage:
+  dns_name: "storage.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
