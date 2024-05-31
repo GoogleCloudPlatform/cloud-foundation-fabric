@@ -47,22 +47,38 @@ module "organization" {
   tags = merge(local.tags, {
     (var.tag_names.context) = {
       description = "Resource management context."
-      iam         = {}
+      iam         = try(local.tags.context.iam, {})
       values = {
-        data       = {}
-        gke        = {}
-        gcve       = {}
-        networking = {}
-        sandbox    = {}
-        security   = {}
+        data = {
+          iam = try(local.tags.context.values.data.iam, {})
+        }
+        gke = {
+          iam = try(local.tags.context.values.gke.iam, {})
+        }
+        gcve = {
+          iam = try(local.tags.context.values.gcve.iam, {})
+        }
+        networking = {
+          iam = try(local.tags.context.values.networking.iam, {})
+        }
+        sandbox = {
+          iam = try(local.tags.context.values.sandbox.iam, {})
+        }
+        security = {
+          iam = try(local.tags.context.values.security.iam, {})
+        }
       }
     }
     (var.tag_names.environment) = {
       description = "Environment definition."
-      iam         = {}
+      iam         = try(local.tags.environment.iam, {})
       values = {
-        development = {}
-        production  = {}
+        development = {
+          iam = try(local.tags.environment.values.development.iam, {})
+        }
+        production = {
+          iam = try(local.tags.environment.values.production.iam, {})
+        }
       }
     }
   })
