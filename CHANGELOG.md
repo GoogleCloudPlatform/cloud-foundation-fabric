@@ -23,6 +23,12 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2335)] Add perimeter ids in vpc-sc module outputs, fix vpc-sc in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 18:08:00+00:00 -->
+- [[#2334](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2334)] Support setting IAM for FAST tags in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 12:57:14+00:00 -->
+- [[#2333](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2333)] Fix resman top-level folders variable types ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 12:45:32+00:00 -->
+- [[#2332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2332)] Fix dns policy ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-31 11:27:31+00:00 -->
+- [[#2331](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2331)] Enable hierarchy in fast project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 11:11:13+00:00 -->
+- [[#2330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2330)] Update PGA domains ([juliocc](https://github.com/juliocc)) <!-- 2024-05-31 10:53:50+00:00 -->
 - [[#2329](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2329)] FAST: Enable networkconnectivity when using NCC-RA in 2-b ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-31 08:22:24+00:00 -->
 - [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
 - [[#2325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2325)] Fix restrictAllowedGenerations org policy example ([juliocc](https://github.com/juliocc)) <!-- 2024-05-30 12:19:24+00:00 -->
@@ -46,6 +52,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2335)] Add perimeter ids in vpc-sc module outputs, fix vpc-sc in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 18:08:00+00:00 -->
 - [[#2321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2321)] Fixed e2e tests for alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-30 09:41:15+00:00 -->
 - [[#2312](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2312)] Fixes for Alloydb E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-29 14:46:15+00:00 -->
 - [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
@@ -62,6 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2327](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2327)] Add outstanding checks from lint.sh to pre-commit ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-31 10:22:21+00:00 -->
 - [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
 - [[#2315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2315)] FAST: Obsolete assets cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 09:35:13+00:00 -->
 - [[#2314](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2314)] Explicit YAPF style ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-28 08:53:14+00:00 -->
