@@ -11,6 +11,7 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
   - [PSC service attachments](#psc-service-attachments)
   - [End to end example](#end-to-end-example)
+- [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Issues](#issues)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -346,6 +347,10 @@ module "ilb" {
 }
 # tftest modules=3 resources=7 e2e
 ```
+
+## Deploying changes to load balancer configurations
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
+
 
 ## Issues
 

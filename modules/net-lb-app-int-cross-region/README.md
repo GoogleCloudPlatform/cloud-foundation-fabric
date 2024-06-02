@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
+- [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Recipes](#recipes)
 - [Files](#files)
 - [Variables](#variables)
@@ -719,6 +720,9 @@ module "ilb-l7" {
 }
 # tftest modules=1 resources=19
 ```
+
+## Deploying changes to load balancer configurations
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

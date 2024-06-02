@@ -194,6 +194,10 @@ module "nlb" {
 }
 # tftest modules=3 resources=7 inventory=e2e.yaml e2e
 ```
+
+## Deploying changes to load balancer configurations
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
