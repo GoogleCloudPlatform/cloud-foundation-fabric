@@ -856,21 +856,24 @@ module "glb-0" {
 ```
 
 ## Deploying changes to load balancer configurations
-Load balancers consists of many resources depending on each other. The [Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/load-balancing/docs/application-load-balancer#global-external) shows structure of a Global external Application Load Balancer, but others are similiar.
+Load balancers consists of many resources depending on each other. The [Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/load-balancing/docs/application-load-balancer#global-external) shows the structure of a Global external Application Load Balancer, but others are similiar.
 
 ![Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/static/load-balancing/images/lb-serverless-simple-ext-https.svg)
 
-To prevent disruption to the traffic change configuration of the load balancer that requires replacing a resource currently in use by other resources will fail. For example, replacing a backend service that a URL map still references will fail because it would disrupt traffic during the replacement process.
+To prevent disruption to the traffic, any change to the configuration of the load balancer that requires replacing a resource currently in use by other resources will fail. For example, replacing a backend service that a URL map still references will fail because it would disrupt traffic during the replacement process.
 
-Following changes result in resource replacement:
+The following changes result in resource replacements:
+
 * changing name, project, network, subnetwork, region, zone
 * (Backend service) changing of the load balancing scheme
-* (Forwarding rule) almost all changes
+* (Forwarding rule) almost any change
 * (SSL certificate) changing of the key/certificate for un-managed and list of domains for managed SSL certificates
-* (Network Endpoint Groups) almost all changes
+* (Network Endpoint Groups) almost any change
 
 ### Changing the Network Endpoint Group
-Lets start with the example of Load Balancer that is using Cloud Run in Serverless NEG:
+
+Let's start with the example of a Load Balancer that is using Cloud Run via Serverless NEG:
+
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
@@ -918,9 +921,11 @@ module "glb-0" {
 
 # tftest skip
 ```
+
 Changing the target Cloud Run service name, tags, or URL mask requires replacing the associated network endpoint group (NEG). However, this replacement will fail if the NEG is currently used by a backend service. Forcing the replacement of the backend service will also fail if it's referenced by a URL map, and this cascade of failures continues until the entire load balancer is replaced.
 
 To successfully implement the change, create a new NEG that points to the new Cloud Run service before modifying the existing load balancer configuration.
+
 ```hcl
   ...
   neg_configs = {
@@ -944,7 +949,9 @@ To successfully implement the change, create a new NEG that points to the new Cl
   ...
 # tftest skip
 ```
+
 After applying this change, you can update the backend service to point to the new Cloud Run service:
+
 ```hcl
   backend_service_configs = {
     default = {
@@ -956,12 +963,15 @@ After applying this change, you can update the backend service to point to the n
     }
   }
 ```
-If you prefer to maintain the original naming convention, you can modify `neg-0` to point to the `hello2` service. After making this change, switch the backend configuration back to `neg-0`, and finally, remove `neg-1`.
+
+If you prefer to maintain the original naming convention, you can modify `neg-0` to point to the `hello2` service. After making this change, switch the backend configuration back to `neg-0`, and finally remove `neg-1`.
 
 ### Updating SSL certificate
+
 Most material changes to SSL certificates, such as adding a new domain or rotating the certificate, necessitate resource recreation. Modifying an existing certificate fails because it's currently used by the load balancer. To implement such a change, provision a new certificate first, then remove the old one in a separate step.
 
 To illustrate, let's add an domain to the certificate in the previous example:
+
 ```hcl
   ...
   ssl_certificates = {
@@ -980,6 +990,7 @@ To illustrate, let's add an domain to the certificate in the previous example:
   ...
 # tftest skip
 ```
+
 After provisioning this change, and verifying that the new certificate is provisioned (in the case of managed certificates), you can remove the old `default` certificate.
 
 <!-- TFDOC OPTS files:1 -->
