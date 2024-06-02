@@ -860,9 +860,9 @@ Load balancers consists of many resources depending on each other. The [Global e
 
 ![Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/static/load-balancing/images/lb-serverless-simple-ext-https.svg)
 
-To prevent disruption to the traffic change configuration of the load balancer that requires recreation of the resource that is used by others fails. For example recreation of the backend service while URL map still references it, fails as this would disrupt the traffic for the time of the resource recreation.
+To prevent disruption to the traffic change configuration of the load balancer that requires replacing a resource currently in use by other resources will fail. For example, replacing a backend service that a URL map still references will fail because it would disrupt traffic during the replacement process.
 
-Following changes result in resource recreation:
+Following changes result in resource replacement:
 * changing name, project, network, subnetwork, region, zone
 * (Backend service) changing of the load balancing scheme
 * (Forwarding rule) almost all changes
@@ -918,9 +918,9 @@ module "glb-0" {
 
 # tftest skip
 ```
-Changing the target Cloud Run service name (or tags or URL mask) forces relacement of the endpoint group and such change will fail because it is in use by backend service. If you force the replacement of the backend service, it will fail because backend service is in use by URL map, and so on until you replace the whole load balancer.
+Changing the target Cloud Run service name, tags, or URL mask requires replacing the associated network endpoint group (NEG). However, this replacement will fail if the NEG is currently used by a backend service. Forcing the replacement of the backend service will also fail if it's referenced by a URL map, and this cascade of failures continues until the entire load balancer is replaced.
 
-To perform the change, you need to first create a new NEG pointing to a new Cloud Run service:
+To successfully implement the change, create a new NEG that points to the new Cloud Run service before modifying the existing load balancer configuration.
 ```hcl
   ...
   neg_configs = {
@@ -944,7 +944,7 @@ To perform the change, you need to first create a new NEG pointing to a new Clou
   ...
 # tftest skip
 ```
-Apply this change and then you can update the backend to point to a new service:
+After applying this change, you can update the backend service to point to the new Cloud Run service:
 ```hcl
   backend_service_configs = {
     default = {
@@ -956,12 +956,12 @@ Apply this change and then you can update the backend to point to a new service:
     }
   }
 ```
-And now, if you want to keep the original naming, you may change the `neg-0` to point to `hello2` service and then switch back to `neg-0` in the backend configuration and in the end, remove the `neg-1`.
+If you prefer to maintain the original naming convention, you can modify `neg-0` to point to the `hello2` service. After making this change, switch the backend configuration back to `neg-0`, and finally, remove `neg-1`.
 
 ### Updating SSL certificate
-Most of the material changes to SSL certificates requires resource recreation, such as adding a new domain or rotating the certificate. Changing existing certificate fails because it is already in use by the load balancer. To intruduce such a change you need to provision a new certificate and in separate step - remove the old one.
+Most material changes to SSL certificates, such as adding a new domain or rotating the certificate, necessitate resource recreation. Modifying an existing certificate fails because it's currently used by the load balancer. To implement such a change, provision a new certificate first, then remove the old one in a separate step.
 
-Let's add additional certificate to the example above:
+To illustrate, let's add an domain to the certificate in the previous example:
 ```hcl
   ...
   ssl_certificates = {
@@ -980,7 +980,7 @@ Let's add additional certificate to the example above:
   ...
 # tftest skip
 ```
-After provisioning this change and in case of managed certitifcates - you verified that the certificate is already provisioned, you may remove old `default` certificate
+After provisioning this change, and verifying that the new certificate is provisioned (in the case of managed certificates), you can remove the old `default` certificate.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
