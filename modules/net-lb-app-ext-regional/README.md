@@ -25,6 +25,7 @@ The variable space of this module closely mirrors that of  [net-lb-app-ext](../n
     - [Serverless NEG creation](#serverless-neg-creation)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
+- [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -692,6 +693,8 @@ module "ralb-0" {
 }
 # tftest modules=3 resources=18 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
+## Deploying changes to load balancer configurations
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
