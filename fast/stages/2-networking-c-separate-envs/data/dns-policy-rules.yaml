@@ -10,7 +10,7 @@ aiplatform-notebook-cloud-all:
   dns_name: "*.aiplatform-notebook.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 aiplatform-notebook-gu-all:
-  dns_name: "*.aiplatform-notebook.googleusercontent.com"
+  dns_name: "*.aiplatform-notebook.googleusercontent.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 backupdr-cloud:
   dns_name: "backupdr.cloud.google.com."
