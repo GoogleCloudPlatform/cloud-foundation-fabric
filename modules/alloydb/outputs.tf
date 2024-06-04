@@ -67,13 +67,13 @@ output "names" {
 
 output "psc_dns_name" {
   description = "AlloyDB Primary instance PSC DNS name."
-  value       = try(google_alloydb_instance.primary.psc_instance_config.0.psc_dns_name, null)
+  value       = try(google_alloydb_instance.primary.psc_instance_config[0].psc_dns_name, null)
 }
 
 output "psc_dns_names" {
   description = "AlloyDB instances PSC DNS names."
   value = {
-    for id, instance in local._all_instances : id => try(instance.psc_instance_config.0.psc_dns_name, null)
+    for id, instance in local._all_instances : id => try(instance.psc_instance_config[0].psc_dns_name, null)
   }
 }
 
@@ -89,13 +89,13 @@ output "secondary_ip" {
 
 output "service_attachment" {
   description = "AlloyDB Primary instance service attachment."
-  value       = try(google_alloydb_instance.primary.psc_instance_config.0.service_attachment_link, null)
+  value       = try(google_alloydb_instance.primary.psc_instance_config[0].service_attachment_link, null)
 }
 
 output "service_attachments" {
   description = "AlloyDB instances service attachment."
   value = {
-    for id, instance in local._all_instances : id => try(instance.psc_instance_config.0.service_attachment_link, null)
+    for id, instance in local._all_instances : id => try(instance.psc_instance_config[0].service_attachment_link, null)
   }
 }
 
