@@ -247,12 +247,12 @@ variable "name" {
 variable "network_config" {
   description = "Network configuration for cluster and instance. Only one between cluster_network_config and cluster_psc_config can be used."
   type = object({
-    network                      = string
+    network                      = optional(string, null)
     allocated_ip_range           = optional(string, null)
     authorized_external_networks = optional(list(string), null)
     enable_public_ip             = optional(bool, false)
   })
-  nullable = false
+  default = {}
   validation {
     condition = (
       (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip)
@@ -275,6 +275,15 @@ variable "prefix" {
 variable "project_id" {
   description = "The ID of the project where this instances will be created."
   type        = string
+}
+
+variable "psc_config" {
+  description = "PSC config for cluster and instance. Only one between network_config and psc_config can be used."
+  type = object({
+    enabled                   = optional(bool, null)
+    allowed_consumer_projects = optional(list(string), [])
+  })
+  default = {}
 }
 
 variable "query_insights_config" {

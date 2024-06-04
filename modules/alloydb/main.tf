@@ -139,10 +139,17 @@ resource "google_alloydb_cluster" "primary" {
       }
     }
   }
+
+  psc_config {
+    psc_enabled = var.psc_config.enabled
+  }
+
   # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
   lifecycle {
     ignore_changes = [
-      display_name
+      display_name,
+      network_config,
+      psc_config
     ]
   }
 }
@@ -188,6 +195,13 @@ resource "google_alloydb_instance" "primary" {
         }
       }
       enable_public_ip = var.network_config.enable_public_ip
+    }
+  }
+
+  dynamic "psc_instance_config" {
+    for_each = coalesce(var.psc_config.enabled, false) ? [""] : []
+    content {
+      allowed_consumer_projects = var.psc_config.allowed_consumer_projects
     }
   }
 
@@ -311,6 +325,10 @@ resource "google_alloydb_cluster" "secondary" {
     }
   }
 
+  psc_config {
+    psc_enabled = var.psc_config.enabled
+  }
+
   dynamic "secondary_config" {
     for_each = var.cross_region_replication.promote_secondary ? [] : [""]
     content {
@@ -322,7 +340,9 @@ resource "google_alloydb_cluster" "secondary" {
   # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
   lifecycle {
     ignore_changes = [
-      display_name
+      display_name,
+      network_config,
+      psc_config
     ]
   }
 }
@@ -369,6 +389,13 @@ resource "google_alloydb_instance" "secondary" {
         }
       }
       enable_public_ip = var.network_config.enable_public_ip
+    }
+  }
+
+  dynamic "psc_instance_config" {
+    for_each = coalesce(var.psc_config.enabled, false) ? [""] : []
+    content {
+      allowed_consumer_projects = var.psc_config.allowed_consumer_projects
     }
   }
 
