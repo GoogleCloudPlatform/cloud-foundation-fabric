@@ -73,26 +73,14 @@ resource "google_container_cluster" "cluster" {
     }
   }
   addons_config {
-    dns_cache_config {
-      enabled = var.enable_addons.dns_cache
-    }
-    http_load_balancing {
-      disabled = !var.enable_addons.http_load_balancing
-    }
-    horizontal_pod_autoscaling {
-      disabled = !var.enable_addons.horizontal_pod_autoscaling
-    }
-    network_policy_config {
-      disabled = !var.enable_addons.network_policy
-    }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
     }
-    istio_config {
-      disabled = var.enable_addons.istio == null
-      auth = (
-        try(var.enable_addons.istio.enable_tls, false) ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
-      )
+    config_connector_config {
+      enabled = var.enable_addons.config_connector
+    }
+    dns_cache_config {
+      enabled = var.enable_addons.dns_cache
     }
     gce_persistent_disk_csi_driver_config {
       enabled = var.enable_addons.gce_persistent_disk_csi_driver
@@ -103,14 +91,29 @@ resource "google_container_cluster" "cluster" {
     gcs_fuse_csi_driver_config {
       enabled = var.enable_addons.gcs_fuse_csi_driver
     }
+    gke_backup_agent_config {
+      enabled = var.backup_configs.enable_backup_agent
+    }
+    horizontal_pod_autoscaling {
+      disabled = !var.enable_addons.horizontal_pod_autoscaling
+    }
+    http_load_balancing {
+      disabled = !var.enable_addons.http_load_balancing
+    }
+    istio_config {
+      disabled = var.enable_addons.istio == null
+      auth = (
+        try(var.enable_addons.istio.enable_tls, false) ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
+      )
+    }
     kalm_config {
       enabled = var.enable_addons.kalm
     }
-    config_connector_config {
-      enabled = var.enable_addons.config_connector
+    network_policy_config {
+      disabled = !var.enable_addons.network_policy
     }
-    gke_backup_agent_config {
-      enabled = var.backup_configs.enable_backup_agent
+    stateful_ha_config {
+      enabled = var.enable_addons.stateful_ha
     }
   }
   dynamic "authenticator_groups_config" {
