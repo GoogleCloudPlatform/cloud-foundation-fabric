@@ -26,7 +26,7 @@ resource "google_tags_location_tag_binding" "primary_binding" {
 resource "google_tags_location_tag_binding" "secondary_binding" {
   for_each = var.cross_region_replication.enabled ? var.tag_bindings : {}
   parent = (
-    "//alloydb.googleapis.com/${google_alloydb_cluster.secondary.0.id}"
+    "//alloydb.googleapis.com/${google_alloydb_cluster.secondary[0].id}"
   )
   tag_value = each.value
   location  = var.cross_region_replication.region
