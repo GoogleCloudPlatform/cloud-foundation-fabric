@@ -248,11 +248,11 @@ variable "network_config" {
   description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
   type = object({
     psa_config = optional(object({
-      network                      = optional(string, null)
-      allocated_ip_range           = optional(string, null)
-      authorized_external_networks = optional(list(string), null)
+      network                      = optional(string)
+      allocated_ip_range           = optional(string)
+      authorized_external_networks = optional(list(string), [])
       enable_public_ip             = optional(bool, false)
-    }), null)
+    }))
     psc_config = optional(object({
       allowed_consumer_projects = optional(list(string), [])
     }), null)
