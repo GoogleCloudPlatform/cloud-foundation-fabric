@@ -245,20 +245,32 @@ variable "name" {
 }
 
 variable "network_config" {
-  description = "Network configuration for cluster and instance. Only one between cluster_network_config and cluster_psc_config can be used."
+  description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
   type = object({
-    network                      = optional(string, null)
-    allocated_ip_range           = optional(string, null)
-    authorized_external_networks = optional(list(string), null)
-    enable_public_ip             = optional(bool, false)
+    psa_config = optional(object({
+      network                      = optional(string, null)
+      allocated_ip_range           = optional(string, null)
+      authorized_external_networks = optional(list(string), null)
+      enable_public_ip             = optional(bool, false)
+    }), null)
+    psc_config = optional(object({
+      allowed_consumer_projects = optional(list(string), [])
+    }), null)
   })
-  default = {}
+  nullable = false
   validation {
     condition = (
-      (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip)
-      || try(length(var.network_config.authorized_external_networks), 0) == 0
+      var.network_config.psa_config == null || (
+        (try(var.network_config.psa_config.enable_public_ip, false) &&
+        try(length(var.network_config.psa_config.authorized_external_networks), 0) > 0) ||
+        try(length(var.network_config.authorized_external_networks), 0) == 0
+      )
     )
     error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
+  }
+  validation {
+    condition     = (var.network_config.psc_config == null) != (var.network_config.psa_config == null)
+    error_message = "Please specify either psa_config or psc_config."
   }
 }
 
@@ -275,15 +287,6 @@ variable "prefix" {
 variable "project_id" {
   description = "The ID of the project where this instances will be created."
   type        = string
-}
-
-variable "psc_config" {
-  description = "PSC config for cluster and instance. Only one between network_config and psc_config can be used."
-  type = object({
-    enabled                   = optional(bool, null)
-    allowed_consumer_projects = optional(list(string), [])
-  })
-  default = {}
 }
 
 variable "query_insights_config" {
