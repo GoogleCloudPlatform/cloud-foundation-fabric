@@ -50,11 +50,10 @@ values:
     labels: null
     machine_config:
       - cpu_count: 2
-    network_config:
-      - authorized_external_networks: []
-        enable_public_ip: false
+    network_config: []
     psc_instance_config:
-      - allowed_consumer_projects: []
+      - allowed_consumer_projects:
+          - '123'
     query_insights_config:
       - query_plans_per_minute: 5
         query_string_length: 1024
