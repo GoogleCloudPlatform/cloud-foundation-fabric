@@ -201,7 +201,7 @@ module "alloydb" {
     env-sandbox = module.org.tag_values["environment/sandbox"].id
   }
 }
-# tftest modules=2 resources=6
+# tftest modules=2 resources=7
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
