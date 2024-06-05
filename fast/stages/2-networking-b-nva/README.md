@@ -379,7 +379,7 @@ This configuration is possible but unsupported and only exists for development p
     `terraform apply -target 'module.landing-project.google_project.project[0]'`
   - untaint the project resource after applying, for example
     `terraform untaint 'module.landing-project.google_project.project[0]'`
-- go through the process to associate the billing account with the two projects
+- go through the process to associate the billing account with the three projects
 - switch `billing_account.id` back to the real billing account id
 - resume applying normally
 

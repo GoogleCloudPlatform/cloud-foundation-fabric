@@ -26,31 +26,45 @@ The following diagrams illustrate the high-level designs for the VPN and for the
 
 ## Table of contents
 
-- [Design overview and choices](#design-overview-and-choices)
-  - [VPC design](#vpc-design)
-  - [External connectivity](#external-connectivity)
-  - [Internal connectivity](#internal-connectivity)
-  - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
-  - [Internet egress](#internet-egress)
-  - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
-  - [DNS](#dns)
-- [Stage structure and files layout](#stage-structure-and-files-layout)
-  - [VPCs](#vpcs)
-  - [VPNs](#vpns)
-  - [Routing and BGP](#routing-and-bgp)
-  - [Firewall](#firewall)
-  - [DNS architecture](#dns-architecture)
-  - [Private Google Access](#private-google-access)
-- [How to run this stage](#how-to-run-this-stage)
-  - [Provider and Terraform variables](#provider-and-terraform-variables)
-  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
-  - [Variable configuration](#variable-configuration)
-  - [Running the stage](#running-the-stage)
-  - [Post-deployment activities](#post-deployment-activities)
-- [Customizations](#customizations)
-  - [Changing default regions](#changing-default-regions)
-  - [Configuring the VPN to on prem](#configuring-the-vpn-to-on-prem)
-  - [Adding an environment](#adding-an-environment)
+- [Networking with "simple" hub and spoke](#networking-with-simple-hub-and-spoke)
+  - [Table of contents](#table-of-contents)
+  - [Design overview and choices](#design-overview-and-choices)
+    - [VPC design](#vpc-design)
+    - [External connectivity](#external-connectivity)
+    - [Internal connectivity](#internal-connectivity)
+    - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
+      - [Peering specific routing setup](#peering-specific-routing-setup)
+      - [HA VPN specific routing setup](#ha-vpn-specific-routing-setup)
+    - [Internet egress](#internet-egress)
+    - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
+    - [DNS](#dns)
+  - [Stage structure and files layout](#stage-structure-and-files-layout)
+    - [VPCs](#vpcs)
+    - [VPNs](#vpns)
+      - [External](#external)
+      - [Internal](#internal)
+    - [Routing and BGP](#routing-and-bgp)
+    - [Firewall](#firewall)
+    - [DNS architecture](#dns-architecture)
+      - [Cloud environment](#cloud-environment)
+      - [Cloud to on-prem](#cloud-to-on-prem)
+      - [On-prem to cloud](#on-prem-to-cloud)
+  - [How to run this stage](#how-to-run-this-stage)
+    - [Provider and Terraform variables](#provider-and-terraform-variables)
+    - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+    - [Variable configuration](#variable-configuration)
+    - [Choosing between peering and VPN](#choosing-between-peering-and-vpn)
+    - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
+    - [Running the stage](#running-the-stage)
+    - [Post-deployment activities](#post-deployment-activities)
+      - [Private Google Access](#private-google-access)
+  - [Customizations](#customizations)
+    - [Changing default regions](#changing-default-regions)
+    - [Configuring the VPN to on prem](#configuring-the-vpn-to-on-prem)
+    - [Adding an environment](#adding-an-environment)
+  - [Files](#files)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 
 ## Design overview and choices
 
@@ -301,7 +315,7 @@ This configuration is possible but unsupported and only exists for development p
     `terraform apply -target 'module.landing-project.google_project.project[0]'`
   - untaint the project resource after applying, for example
     `terraform untaint 'module.landing-project.google_project.project[0]'`
-- go through the process to associate the billing account with the two projects
+- go through the process to associate the billing account with the three projects
 - switch `billing_account.id` back to the real billing account id
 - resume applying normally
 
