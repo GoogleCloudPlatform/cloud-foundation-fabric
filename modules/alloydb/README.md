@@ -104,7 +104,7 @@ module "alloydb" {
   location     = var.region
   name         = "db"
   network_config = {
-    psc_config = {}
+    psc_config = { allowed_consumer_projects = [var.project_id] }
   } 
 }
 # tftest modules=1 resources=2 inventory=psc.yaml e2e
