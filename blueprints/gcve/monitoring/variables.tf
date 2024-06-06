@@ -47,6 +47,21 @@ variable "network_self_link" {
   type        = string
 }
 
+variable "project_create" {
+  description = "Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation."
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+    shared_vpc_host = optional(string)
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Project id of existing or created project."
+  type        = string
+}
+
 variable "sa_gcve_monitoring" {
   description = "Service account for GCVE monitoring agent."
   type        = string
@@ -90,20 +105,5 @@ variable "vm_mon_type" {
 
 variable "vm_mon_zone" {
   description = "GCP zone where GCE VM will be deployed."
-  type        = string
-}
-
-variable "project_create" {
-  description = "Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation."
-  type = object({
-    billing_account = string
-    parent          = optional(string)
-    shared_vpc_host = optional(string)
-  })
-  default = null
-}
-
-variable "project_id" {
-  description = "Project id of existing or created project."
   type        = string
 }

@@ -47,18 +47,19 @@ module "gcve-monitoring" {
 | [gcve_region](variables.tf#L23) | Region where the Private Cloud is deployed. | <code>string</code> | ✓ |  |
 | [network_project_id](variables.tf#L40) | Project ID of shared VPC. | <code>string</code> | ✓ |  |
 | [network_self_link](variables.tf#L45) | Self link of VPC in which Monitoring instance is deployed. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L50) | ID of the project that will contain the GCVE private cloud. | <code>string</code> | ✓ |  |
-| [subnetwork](variables.tf#L79) | Subnetwork where the VM will be deployed to. | <code>string</code> | ✓ |  |
-| [vm_mon_zone](variables.tf#L96) | GCP zone where GCE VM will be deployed. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L60) | Project id of existing or created project. | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L89) | Subnetwork where the VM will be deployed to. | <code>string</code> | ✓ |  |
+| [vm_mon_zone](variables.tf#L106) | GCP zone where GCE VM will be deployed. | <code>string</code> | ✓ |  |
 | [create_dashboards](variables.tf#L17) | Define if sample GCVE monitoring dashboards should be installed. | <code>bool</code> |  | <code>true</code> |
 | [initial_delay_sec](variables.tf#L28) | How long to delay checking for healthcheck upon initialization. | <code>number</code> |  | <code>180</code> |
 | [monitoring_image](variables.tf#L34) | Resource URI for OS image used to deploy monitoring agent. | <code>string</code> |  | <code>&#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;</code> |
-| [sa_gcve_monitoring](variables.tf#L55) | Service account for GCVE monitoring agent. | <code>string</code> |  | <code>&#34;gcve-mon-sa&#34;</code> |
-| [secret_vsphere_password](variables.tf#L61) | The secret name containing the password for the vCenter admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-password&#34;</code> |
-| [secret_vsphere_server](variables.tf#L67) | The secret name conatining the FQDN of the vSphere vCenter server. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-server&#34;</code> |
-| [secret_vsphere_user](variables.tf#L73) | The secret name containing the user for the vCenter server. Must be an admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-user&#34;</code> |
-| [vm_mon_name](variables.tf#L84) | GCE VM name where GCVE monitoring agent will run. | <code>string</code> |  | <code>&#34;bp-agent&#34;</code> |
-| [vm_mon_type](variables.tf#L90) | GCE VM machine type. | <code>string</code> |  | <code>&#34;e2-small&#34;</code> |
+| [project_create](variables.tf#L50) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [sa_gcve_monitoring](variables.tf#L65) | Service account for GCVE monitoring agent. | <code>string</code> |  | <code>&#34;gcve-mon-sa&#34;</code> |
+| [secret_vsphere_password](variables.tf#L71) | The secret name containing the password for the vCenter admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-password&#34;</code> |
+| [secret_vsphere_server](variables.tf#L77) | The secret name conatining the FQDN of the vSphere vCenter server. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-server&#34;</code> |
+| [secret_vsphere_user](variables.tf#L83) | The secret name containing the user for the vCenter server. Must be an admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-user&#34;</code> |
+| [vm_mon_name](variables.tf#L94) | GCE VM name where GCVE monitoring agent will run. | <code>string</code> |  | <code>&#34;bp-agent&#34;</code> |
+| [vm_mon_type](variables.tf#L100) | GCE VM machine type. | <code>string</code> |  | <code>&#34;e2-small&#34;</code> |
 
 ## Outputs
 
