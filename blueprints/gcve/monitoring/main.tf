@@ -27,12 +27,6 @@ locals {
   )
 }
 
-data "google_compute_subnetwork" "gcve-subnetwork" {
-  name    = var.subnetwork
-  region  = var.gcve_region
-  project = var.network_project_id
-}
-
 resource "google_service_account" "sa_gcve_monitoring" {
   project    = var.project_id
   account_id = var.sa_gcve_monitoring
@@ -46,9 +40,10 @@ resource "google_project_iam_member" "gcve_monitoring_permissions" {
 }
 
 resource "google_compute_firewall" "healthcheck" {
+  count   = var.create_firewall_rule ? 1 : 0
   project = var.network_project_id
   name    = "gcve-mon-hc-rule"
-  network = data.google_compute_subnetwork.gcve-subnetwork.network
+  network = var.network_self_link
 
   allow {
     protocol = "tcp"
@@ -76,7 +71,7 @@ module "gcve-mon-template" {
   network_interfaces = [
     {
       network    = var.network_self_link
-      subnetwork = data.google_compute_subnetwork.gcve-subnetwork.self_link
+      subnetwork = var.subnetwork_self_link
       nat        = false
       addresses  = null
     }

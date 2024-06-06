@@ -15,7 +15,13 @@
  */
 
 variable "create_dashboards" {
-  description = "Define if sample GCVE monitoring dashboards should be installed."
+  description = "Specify sample GCVE monitoring dashboards should be installed."
+  type        = bool
+  default     = true
+}
+
+variable "create_firewall_rule" {
+  description = "Specify whether a firewall rule to allow Load Balancer Healthcheck should be implemented."
   type        = bool
   default     = true
 }
@@ -86,7 +92,7 @@ variable "secret_vsphere_user" {
   default     = "gcve-mon-vsphere-user"
 }
 
-variable "subnetwork" {
+variable "subnetwork_self_link" {
   description = "Subnetwork where the VM will be deployed to."
   type        = string
 }
