@@ -23,6 +23,8 @@ Note that to complete the Monitoring setup you need to configure vCenter to send
 
 <!-- BEGIN TOC -->
 - [Basic Monitoring setup with default settings](#basic-monitoring-setup-with-default-settings)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Basic Monitoring setup with default settings
