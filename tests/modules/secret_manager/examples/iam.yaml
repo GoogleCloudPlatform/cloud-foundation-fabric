@@ -14,34 +14,36 @@
 
 values:
   module.secret-manager.google_secret_manager_secret.default["test-auto"]:
-    project: my-project
+    project: project-id
     replication:
     - auto:
       - customer_managed_encryption: []
       user_managed: []
     secret_id: test-auto
   module.secret-manager.google_secret_manager_secret.default["test-manual"]:
-    project: my-project
+    project: project-id
     replication:
     - auto: []
       user_managed:
       - replicas:
         - customer_managed_encryption: []
-          location: europe-west1
+          location: europe-west8
         - customer_managed_encryption: []
-          location: europe-west4
+          location: europe-west9
     secret_id: test-manual
   module.secret-manager.google_secret_manager_secret_iam_binding.default["test-auto.roles/secretmanager.secretAccessor"]:
     condition: []
     members:
-    - group:auto-readers@example.com
+    - group:organization-admins@example.org
     role: roles/secretmanager.secretAccessor
   module.secret-manager.google_secret_manager_secret_iam_binding.default["test-manual.roles/secretmanager.secretAccessor"]:
     condition: []
     members:
-    - group:manual-readers@example.com
+    - group:organization-admins@example.org
     role: roles/secretmanager.secretAccessor
 
 counts:
   google_secret_manager_secret: 2
   google_secret_manager_secret_iam_binding: 2
+
+outputs: {}

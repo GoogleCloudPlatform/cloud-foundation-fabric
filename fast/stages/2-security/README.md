@@ -256,7 +256,7 @@ Some references that might be useful in setting up this stage:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [kms_keys](outputs.tf#L55) | KMS key ids. |  |  |
-| [tfvars](outputs.tf#L60) | Terraform variable files for the following stages. | ✓ |  |
-| [vpc_sc_perimeter_default](outputs.tf#L66) | Raw default perimeter resource. | ✓ |  |
+| [kms_keys](outputs.tf#L65) | KMS key ids. |  |  |
+| [tfvars](outputs.tf#L70) | Terraform variable files for the following stages. | ✓ |  |
+| [vpc_sc_perimeter_default](outputs.tf#L76) | Raw default perimeter resource. | ✓ |  |
 <!-- END TFDOC -->

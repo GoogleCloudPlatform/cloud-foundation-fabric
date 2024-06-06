@@ -80,7 +80,7 @@ The only current exception to the factory approach is the `iam.allowedPolicyMemb
 
 Organization policy exceptions are managed via a dedicated resource management tag hierarchy, rooted in the `org-policies` tag key. A default condition is already present for the the `iam.allowedPolicyMemberDomains` constraint, that relaxes the policy on resources that have the `org-policies/allowed-policy-member-domains-all` tag value bound or inherited.
 
-Further tag values can be defined via the `org_policies_config.tag_values` variable, and IAM access can be granted on them via the same variable. Once a tag value has been created, its id can be used in constraint rule conditions.
+Further tag values can be defined via the `org_policies_config.tag_values` variable, and IAM access can be granted on them via the same variable. Once a tag value has been created, its id can be used in constraint rule conditions. Note that only one tag value from a given tag key can be bound to a node (organization, folder, or project) in the resource hierarchy. Since these tag values are all rooted in the `org-policies` key, this limits the ability to apply fine-grained policy constraints. It may be more desirable to model policy overrides using coarser groups of tag values to create a policy "profile". For example, instead of separating `compute.skipDefaultNetworkCreation` and `compute.vmExternalIpAccess`, enforce both constraints by default and relax them both using the same tag value such as `sandbox`. See [tags overview](https://cloud.google.com/resource-manager/docs/tags/tags-overview) for more information. 
 
 Management of the rest of the tag hierarchy is delegated to the resource management stage, as that is often intimately tied to the folder hierarchy design.
 
@@ -264,7 +264,7 @@ gcloud beta billing accounts add-iam-policy-binding $FAST_BILLING_ACCOUNT_ID \
 
 This configuration is possible but unsupported and only present for development purposes, use at your own risk:
 
-- configure `billing_account.id` as `null` and `billing.no_iam` to `true` in your `tfvars` file
+- configure `billing_account.id` as `null` and `billing_account.no_iam` to `true` in your `tfvars` file
 - apply with `terraform apply -target 'module.automation-project.google_project.project[0]'` in addition to the initial user variable
 - once Terraform raises an error run `terraform untaint 'module.automation-project.google_project.project[0]'`
 - repeat the two steps above for `'module.log-export-project.google_project.project[0]'`
@@ -331,7 +331,7 @@ prefix = "abcd"
 
 Each foundational FAST stage generates provider configurations and variable files can be consumed by the following stages, and saves them in a dedicated GCS bucket in the automation project. These files are a handy way to simplify stage configuration, and are also used by our CI/CD workflows to configure the repository files in the pipelines that validate and apply the code.
 
-Alongisde the GCS stored files, you can also configure a second copy to be saves on the local filesystem, as a convenience when developing or bringing up the infrastructure before a proper CI/CD setup is in place.
+Alongside the GCS stored files, you can also configure a second copy to be saves on the local filesystem, as a convenience when developing or bringing up the infrastructure before a proper CI/CD setup is in place.
 
 This second set of files is disabled by default, you can enable it by setting the `outputs_location` variable to a valid path on a local filesystem, e.g.
 

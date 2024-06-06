@@ -14,7 +14,6 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
-    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null

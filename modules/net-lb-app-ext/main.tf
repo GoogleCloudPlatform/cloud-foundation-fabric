@@ -53,9 +53,6 @@ resource "google_compute_ssl_certificate" "default" {
   name        = "${var.name}-${each.key}"
   certificate = trimspace(each.value.certificate)
   private_key = trimspace(each.value.private_key)
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "google_compute_managed_ssl_certificate" "default" {
@@ -65,9 +62,6 @@ resource "google_compute_managed_ssl_certificate" "default" {
   description = each.value.description
   managed {
     domains = each.value.domains
-  }
-  lifecycle {
-    create_before_destroy = true
   }
 }
 

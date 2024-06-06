@@ -65,6 +65,6 @@ counts:
   google_alloydb_cluster: 1
   google_alloydb_instance: 1
   modules: 1
-  resources: 2
+  resources: 3
 
 outputs: {}
