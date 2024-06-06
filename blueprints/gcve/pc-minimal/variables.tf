@@ -24,6 +24,7 @@ variable "folder_id" {
   type        = string
 }
 
+/*
 variable "gcve_monitoring" {
   description = "Inputs for GCVE Monitoring."
   type = object({
@@ -49,6 +50,7 @@ variable "gcve_monitoring" {
   nullable = true
   default  = {}
 }
+*/
 
 variable "groups" {
   description = "GCVE groups."

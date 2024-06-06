@@ -22,6 +22,9 @@ locals {
     "roles/monitoring.admin",
     "roles/logging.logWriter",
   ])
+  use_shared_vpc = (
+    try(var.project_create.shared_vpc_host, null) != null
+  )
 }
 
 data "google_compute_subnetwork" "gcve-subnetwork" {
@@ -63,7 +66,7 @@ resource "google_monitoring_dashboard" "gcve_mon_dashboards" {
 }
 
 module "gcve-mon-template" {
-  source          = "../compute-vm"
+  source          = "../../../modules/compute-vm"
   project_id      = var.project_id
   name            = "gcve-mon-template"
   zone            = var.vm_mon_zone
@@ -112,7 +115,7 @@ module "gcve-mon-template" {
 }
 
 module "gcve-mon-mig" {
-  source            = "../compute-mig"
+  source            = "../../../modules/compute-mig"
   project_id        = var.project_id
   location          = var.gcve_region
   name              = "${var.vm_mon_name}-mig"
@@ -130,11 +133,29 @@ module "gcve-mon-mig" {
 }
 
 module "secret-manager" {
-  source     = "../secret-manager"
+  source     = "../../../modules/secret-manager"
   project_id = var.project_id
   secrets = {
     (var.secret_vsphere_server)   = { locations = [var.gcve_region] },
     (var.secret_vsphere_user)     = { locations = [var.gcve_region] },
     (var.secret_vsphere_password) = { locations = [var.gcve_region] }
+  }
+}
+
+module "project" {
+  source          = "../../../modules/project"
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account, null)
+  name            = var.project_id
+  project_create  = var.project_create != null
+  services = compact([
+    "compute.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "secretmanager.googleapis.com"
+  ])
+  shared_vpc_service_config = !local.use_shared_vpc ? null : {
+    attach       = true
+    host_project = var.project_create.shared_vpc_host
   }
 }

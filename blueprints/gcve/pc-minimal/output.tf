@@ -14,10 +14,6 @@
 
 # tfdoc:file:description Output variables.
 
-output "gcve-monitoring" {
-  value = module.gcve-monitoring
-}
-
 output "project_id" {
   description = "GCVE project id."
   value       = module.gcve-project-0.project_id
