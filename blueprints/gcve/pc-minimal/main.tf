@@ -35,4 +35,5 @@ module "gcve-project-0" {
     ],
     var.project_services
   )
+  # specify project-level org policies here if you need them
 }

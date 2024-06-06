@@ -34,7 +34,7 @@ module "gcve-pc" {
   source             = "../../../../blueprints/gcve/pc-minimal"
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gcve-prod
-  project_id         = "gcve-3"
+  project_id         = "gcve-0"
   groups             = local.groups_gcve
   iam                = var.iam
   labels             = merge(var.labels, { environment = "prod" })
@@ -56,5 +56,4 @@ module "gcve-pc" {
   }
 
   private_cloud_configs = var.private_cloud_configs
-  gcve_monitoring       = var.gcve_monitoring
 }

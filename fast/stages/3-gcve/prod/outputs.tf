@@ -43,11 +43,6 @@ resource "google_storage_bucket_object" "tfvars" {
 
 # outputs
 
-output "gcve-monitoring" {
-  description = "VMware Monitoring."
-  value       = module.gcve-pc.gcve-monitoring
-}
-
 output "project_id" {
   description = "GCVE project id."
   value       = module.gcve-pc.project_id
@@ -72,3 +67,4 @@ output "vmw_private_cloud_network" {
   description = "VMware engine network."
   value       = module.gcve-pc.vmw_private_cloud_network
 }
+

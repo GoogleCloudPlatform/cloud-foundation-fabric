@@ -19,9 +19,3 @@ includedPermissions:
   - vmwareengine.networkPeerings.get
   - vmwareengine.networkPeerings.list
   - vmwareengine.operations.get
-  - compute.subnetworks.get
-  - compute.subnetworks.use
-  - compute.networks.updatePolicy
-  - compute.firewalls.create
-  - compute.firewalls.get
-  - compute.firewalls.delete

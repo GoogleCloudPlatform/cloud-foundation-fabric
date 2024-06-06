@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-variable "gcve_monitoring" {
-  description = "Inputs for GCVE Monitoring."
-  type = object({
-    create_dashboards       = optional(bool, true)
-    gcve_region             = optional(string)
-    initial_delay_sec       = optional(number, 180)
-    network_project_id      = optional(string)
-    network_self_link       = optional(string)
-    sa_gcve_monitoring      = optional(string, "gcve-mon-sa")
-    secret_vsphere_password = optional(string, "gcve-mon-vsphere-password")
-    secret_vsphere_server   = optional(string, "gcve-mon-vsphere-server")
-    secret_vsphere_user     = optional(string, "gcve-mon-vsphere-user")
-    setup_monitoring        = optional(bool, false)
-    subnetwork              = optional(string)
-    vm_mon_name             = optional(string, "bp-agent")
-    vm_mon_type             = optional(string, "e2-small")
-    vm_mon_zone             = optional(string)
-  })
-  nullable = true
-  default  = {}
-}
-
 variable "groups_gcve" {
   description = "GCVE groups."
   type = object({
