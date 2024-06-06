@@ -28,21 +28,35 @@ Note that to complete the Monitoring setup you need to configure vCenter to send
 ## Basic Monitoring setup with default settings
 
 ```hcl
+
 module "gcve-monitoring" {
-  source     = "./fabric/modules/gcve-private-cloud"
-  project_id = "gcve-test-project"
+  source         = ".fabric/blueprints/gcve/monitoring"
+  project_id     = "gcve-mon-project"
+  project_create = {
+    billing_account = "0123AB-ABCDEF-123456"
+    parent          = "folders/1234567890"
+    shared_vpc_host = "abcde-prod-net-spoke-0"
+  }
 
+  vm_mon_name             = "bp-agent"
+  vm_mon_type             = "e2-small"
   vm_mon_zone             = "europe-west1-b"
-  subnetwork              = "prod-default-ew1"
+  subnetwork_self_link    = "projects/abcde-prod-net-spoke-0/regions/europe-west1/subnetworks/prod-default-ew1"
+  sa_gcve_monitoring      = "gcve-mon-sa"
+  secret_vsphere_server   = "gcve-mon-vsphere-server"
+  secret_vsphere_user     = "gcve-mon-vsphere-user"
+  secret_vsphere_password = "gcve-mon-vsphere-password"
   gcve_region             = "europe-west1"
-  create_dashboards       = "true"
-  network_project_id      = "test-prj-gcve-01"
-  network_self_link       = "projects/test-prj-gcve-01/global/networks/default"
+  initial_delay_sec       = 180
+  create_dashboards       = true
+  create_firewall_rule    = true
+  network_project_id      = "abcde-prod-net-spoke-0"
+  network_self_link       = "https://www.googleapis.com/compute/v1/projects/abcde-prod-net-spoke-0/global/networks/prod-spoke-0"
 }
+
 ```
 
 
-```
 <!-- BEGIN TFDOC -->
 ## Variables
 
