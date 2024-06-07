@@ -1,27 +1,51 @@
 # Google Cloud VMWare Engine Logging Monitoring Module
 
-The Blueprinte sets up Monitoring and Syslog Logging for Google Cloud VMWare Engine Private Clouds.
+This Blueprint simplifies the setup of monitoring and syslog logging for Google Cloud VMware Engine (GCVE) private clouds.
 
-Infrastructure monitoring and logging for GCVE is commonly set up using a [standalone Bindplane agent](https://cloud.google.com/vmware-engine/docs/environment/howto-cloud-monitoring-standalone). This module deploys the bindplane agent using a Managed Instance Group to accept metrics and Syslog logs from VMware vCenter and forward them to Cloud Monitoring and Cloud Logging. To forward syslog messages, please refer to the following documentation on [how to configure a private cloud for syslog forwarding](https://cloud.google.com/vmware-engine/docs/environment/howto-forward-syslog).
+## Overview
+
+Infrastructure monitoring and logging for GCVE are typically set up using a [standalone Bindplane agent](https://cloud.google.com/vmware-engine/docs/environment/howto-cloud-monitoring-standalone). This blueprint automates the deployment of the Bindplane agent using a Managed Instance Group. The agent collects metrics and syslog logs from VMware vCenter and forwards them to Cloud Monitoring and Cloud Logging.
 
 <p align="center">
   <img src="gcve-mon-diagram.png" alt="GCVE Logging and Monitoring Blueprint">
 </p>
 
-This module deploys and configures the following resources:
- * Service Account for Bindplane Agent with permissions to write logs/metrics and access Secret Manager
- * A firewall rule to allow a healthcheck of port TCP 5142 to check whether the agent runs correctly.
- * Default Monitoring Dashboards for GCVE
- * A GCE VM template using Debian 11 for the bindplane agent
- * A GCE Managed Instance Group for the bindplane agent
- * Secret Manager secrets:
-    * vCenter Username
-    * vCenter Password
-    * vCenter FQDN
+## Deployed Resources
 
-Note that to complete the Monitoring setup you need to configure vCenter to send traffic to the Bindplane agent which listens by default on port TCP 5142.
+This blueprint deploys and configures the following resources:
+
+* **Service Account:** Grants the Bindplane agent permissions to write logs/metrics and access Secret Manager.
+* **Firewall Rule (optional):** Allows health checks on TCP port 5142 to ensure the agent is running.
+* **Monitoring Dashboards (optional):** Provides default dashboards for GCVE metrics.
+* **VM Template:** Creates a Debian 11-based template for the Bindplane agent.
+* **Managed Instance Group:** Manages the deployment and provides autohealing to the Bindplane agent.
+* **Secret Manager Secrets:** Stores vCenter credentials (username, password, FQDN).
+
+## Completing the Setup
+
+After deploying this blueprint, you need to complete the following steps:
+* [Configure GCVE to send traffic to the Bindplane agent](https://cloud.google.com/vmware-engine/docs/environment/howto-forward-syslog), which listens on TCP port 5142 by default.
+* Update secrets in Secret Manager with vCenter credentials and FQDN.
+
+## Troubleshooting
+
+If you encounter issues, check the following:
+
+* **Firewall:** Ensure that the firewall rule allows traffic to TCP port 5142.
+* **vCenter Configuration:** Verify that GCVE is correctly configured to forward syslog messages.
+* **Agent Logs:** Examine the Bindplane agent logs for errors.
+
+## Security Considerations
+
+* **Least Privilege:** Grant the Bindplane agent service account only the necessary permissions.
+* **Secret Management:** Store vCenter credentials securely in Secret Manager.
 
 <!-- BEGIN TOC -->
+- [Overview](#overview)
+- [Deployed Resources](#deployed-resources)
+- [Completing the Setup](#completing-the-setup)
+- [Troubleshooting](#troubleshooting)
+- [Security Considerations](#security-considerations)
 - [Basic Monitoring setup with default settings](#basic-monitoring-setup-with-default-settings)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -57,30 +81,22 @@ module "gcve-monitoring" {
 }
 
 ```
-
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [gcve_region](variables.tf#L29) | Region where the Private Cloud is deployed. | <code>string</code> | ✓ |  |
-| [network_project_id](variables.tf#L46) | Project ID of shared VPC. | <code>string</code> | ✓ |  |
-| [network_self_link](variables.tf#L51) | Self link of VPC in which Monitoring instance is deployed. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L66) | Project id of existing or created project. | <code>string</code> | ✓ |  |
-| [subnetwork_self_link](variables.tf#L95) | Subnetwork where the VM will be deployed to. | <code>string</code> | ✓ |  |
-| [vm_mon_zone](variables.tf#L112) | GCP zone where GCE VM will be deployed. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L56) | Project id of existing or created project. | <code>string</code> | ✓ |  |
+| [vm_mon_config](variables.tf#L67) | GCE monitoring instance configuration. | <code title="object&#40;&#123;&#10;  vm_mon_name &#61; optional&#40;string, &#34;bp-agent&#34;&#41;&#10;  vm_mon_type &#61; optional&#40;string, &#34;e2-small&#34;&#41;&#10;  vm_mon_zone &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L77) | Shared VPC project and VPC details. | <code title="object&#40;&#123;&#10;  host_project_id      &#61; string&#10;  vpc_self_link        &#61; string&#10;  subnetwork_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vsphere_secrets](variables.tf#L87) | Secret Manager secrets that contain vSphere credentials and FQDN. | <code title="object&#40;&#123;&#10;  secret_vsphere_password &#61; optional&#40;string, &#34;gcve-mon-vsphere-password&#34;&#41;&#10;  secret_vsphere_server   &#61; optional&#40;string, &#34;gcve-mon-vsphere-server&#34;&#41;&#10;  secret_vsphere_user     &#61; optional&#40;string, &#34;gcve-mon-vsphere-user&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [create_dashboards](variables.tf#L17) | Specify sample GCVE monitoring dashboards should be installed. | <code>bool</code> |  | <code>true</code> |
 | [create_firewall_rule](variables.tf#L23) | Specify whether a firewall rule to allow Load Balancer Healthcheck should be implemented. | <code>bool</code> |  | <code>true</code> |
 | [initial_delay_sec](variables.tf#L34) | How long to delay checking for healthcheck upon initialization. | <code>number</code> |  | <code>180</code> |
 | [monitoring_image](variables.tf#L40) | Resource URI for OS image used to deploy monitoring agent. | <code>string</code> |  | <code>&#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;</code> |
-| [project_create](variables.tf#L56) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [sa_gcve_monitoring](variables.tf#L71) | Service account for GCVE monitoring agent. | <code>string</code> |  | <code>&#34;gcve-mon-sa&#34;</code> |
-| [secret_vsphere_password](variables.tf#L77) | The secret name containing the password for the vCenter admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-password&#34;</code> |
-| [secret_vsphere_server](variables.tf#L83) | The secret name conatining the FQDN of the vSphere vCenter server. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-server&#34;</code> |
-| [secret_vsphere_user](variables.tf#L89) | The secret name containing the user for the vCenter server. Must be an admin user. | <code>string</code> |  | <code>&#34;gcve-mon-vsphere-user&#34;</code> |
-| [vm_mon_name](variables.tf#L100) | GCE VM name where GCVE monitoring agent will run. | <code>string</code> |  | <code>&#34;bp-agent&#34;</code> |
-| [vm_mon_type](variables.tf#L106) | GCE VM machine type. | <code>string</code> |  | <code>&#34;e2-small&#34;</code> |
+| [project_create](variables.tf#L46) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [sa_gcve_monitoring](variables.tf#L61) | Service account for GCVE monitoring agent. | <code>string</code> |  | <code>&#34;gcve-mon-sa&#34;</code> |
 
 ## Outputs
 

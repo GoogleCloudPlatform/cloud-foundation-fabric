@@ -41,9 +41,9 @@ resource "google_project_iam_member" "gcve_monitoring_permissions" {
 
 resource "google_compute_firewall" "healthcheck" {
   count   = var.create_firewall_rule ? 1 : 0
-  project = var.network_project_id
+  project = var.vpc_config.host_project_id
   name    = "gcve-mon-hc-rule"
-  network = var.network_self_link
+  network = var.vpc_config.vpc_self_link
 
   allow {
     protocol = "tcp"
@@ -64,14 +64,14 @@ module "gcve-mon-template" {
   source          = "../../../modules/compute-vm"
   project_id      = var.project_id
   name            = "gcve-mon-template"
-  zone            = var.vm_mon_zone
-  instance_type   = var.vm_mon_type
+  zone            = var.vm_mon_config.vm_mon_zone
+  instance_type   = var.vm_mon_config.vm_mon_type
   create_template = true
   can_ip_forward  = false
   network_interfaces = [
     {
-      network    = var.network_self_link
-      subnetwork = var.subnetwork_self_link
+      network    = var.vpc_config.vpc_self_link
+      subnetwork = var.vpc_config.subnetwork_self_link
       nat        = false
       addresses  = null
     }
@@ -95,9 +95,9 @@ module "gcve-mon-template" {
       {
         endpoint_agent                 = "${local.base_gcve_agent_endpoint}/artifacts/bpagent-headless-vmware.tar.gz"
         endpoint_install               = "${local.base_gcve_agent_endpoint}/installer/install.sh"
-        gcloud_secret_vsphere_server   = "${local.base_gcloud_secret_manager}${var.secret_vsphere_server}"
-        gcloud_secret_vsphere_user     = "${local.base_gcloud_secret_manager}${var.secret_vsphere_user}"
-        gcloud_secret_vsphere_password = "${local.base_gcloud_secret_manager}${var.secret_vsphere_password}"
+        gcloud_secret_vsphere_server   = "${local.base_gcloud_secret_manager}${var.vsphere_secrets.secret_vsphere_server}"
+        gcloud_secret_vsphere_user     = "${local.base_gcloud_secret_manager}${var.vsphere_secrets.secret_vsphere_user}"
+        gcloud_secret_vsphere_password = "${local.base_gcloud_secret_manager}${var.vsphere_secrets.secret_vsphere_password}"
         gcve_region                    = var.gcve_region
         project_id                     = var.project_id
     })
@@ -113,7 +113,7 @@ module "gcve-mon-mig" {
   source            = "../../../modules/compute-mig"
   project_id        = var.project_id
   location          = var.gcve_region
-  name              = "${var.vm_mon_name}-mig"
+  name              = "${var.vm_mon_config.vm_mon_name}-mig"
   instance_template = module.gcve-mon-template.template.self_link
   target_size       = 1
   auto_healing_policies = {
@@ -131,9 +131,9 @@ module "secret-manager" {
   source     = "../../../modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    (var.secret_vsphere_server)   = { locations = [var.gcve_region] },
-    (var.secret_vsphere_user)     = { locations = [var.gcve_region] },
-    (var.secret_vsphere_password) = { locations = [var.gcve_region] }
+    (var.vsphere_secrets.secret_vsphere_server)   = { locations = [var.gcve_region] },
+    (var.vsphere_secrets.secret_vsphere_user)     = { locations = [var.gcve_region] },
+    (var.vsphere_secrets.secret_vsphere_password) = { locations = [var.gcve_region] }
   }
 }
 

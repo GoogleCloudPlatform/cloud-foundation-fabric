@@ -43,16 +43,6 @@ variable "monitoring_image" {
   default     = "projects/debian-cloud/global/images/family/debian-11"
 }
 
-variable "network_project_id" {
-  description = "Project ID of shared VPC."
-  type        = string
-}
-
-variable "network_self_link" {
-  description = "Self link of VPC in which Monitoring instance is deployed."
-  type        = string
-}
-
 variable "project_create" {
   description = "Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation."
   type = object({
@@ -74,42 +64,32 @@ variable "sa_gcve_monitoring" {
   default     = "gcve-mon-sa"
 }
 
-variable "secret_vsphere_password" {
-  type        = string
-  description = "The secret name containing the password for the vCenter admin user."
-  default     = "gcve-mon-vsphere-password"
+variable "vm_mon_config" {
+  description = "GCE monitoring instance configuration."
+  type = object({
+    vm_mon_name = optional(string, "bp-agent")
+    vm_mon_type = optional(string, "e2-small")
+    vm_mon_zone = string
+  })
+  nullable = false
 }
 
-variable "secret_vsphere_server" {
-  type        = string
-  description = "The secret name conatining the FQDN of the vSphere vCenter server."
-  default     = "gcve-mon-vsphere-server"
+variable "vpc_config" {
+  description = "Shared VPC project and VPC details."
+  type = object({
+    host_project_id      = string
+    vpc_self_link        = string
+    subnetwork_self_link = string
+  })
+  nullable = false
 }
 
-variable "secret_vsphere_user" {
-  type        = string
-  description = "The secret name containing the user for the vCenter server. Must be an admin user."
-  default     = "gcve-mon-vsphere-user"
-}
-
-variable "subnetwork_self_link" {
-  description = "Subnetwork where the VM will be deployed to."
-  type        = string
-}
-
-variable "vm_mon_name" {
-  description = "GCE VM name where GCVE monitoring agent will run."
-  type        = string
-  default     = "bp-agent"
-}
-
-variable "vm_mon_type" {
-  description = "GCE VM machine type."
-  type        = string
-  default     = "e2-small"
-}
-
-variable "vm_mon_zone" {
-  description = "GCP zone where GCE VM will be deployed."
-  type        = string
+variable "vsphere_secrets" {
+  description = "Secret Manager secrets that contain vSphere credentials and FQDN."
+  type = object({
+    secret_vsphere_password = optional(string, "gcve-mon-vsphere-password")
+    secret_vsphere_server   = optional(string, "gcve-mon-vsphere-server")
+    secret_vsphere_user     = optional(string, "gcve-mon-vsphere-user")
+  })
+  nullable = false
 }
