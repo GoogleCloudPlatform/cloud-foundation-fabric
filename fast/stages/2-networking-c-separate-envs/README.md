@@ -16,6 +16,8 @@ The following diagram illustrates the high-level design, and should be used as a
 
 ## Table of contents
 
+<!-- BEGIN TOC -->
+- [Table of contents](#table-of-contents)
 - [Design overview and choices](#design-overview-and-choices)
   - [VPC design](#vpc-design)
   - [External connectivity](#external-connectivity)
@@ -29,16 +31,23 @@ The following diagram illustrates the high-level design, and should be used as a
   - [Routing and BGP](#routing-and-bgp)
   - [Firewall](#firewall)
   - [DNS architecture](#dns-architecture)
-  - [Private Google Access](#private-google-access)
+    - [Cloud to on-prem](#cloud-to-on-prem)
+    - [On-prem to cloud](#on-prem-to-cloud)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
+  - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
   - [Running the stage](#running-the-stage)
   - [Post-deployment activities](#post-deployment-activities)
+    - [Private Google Access](#private-google-access)
 - [Customizations](#customizations)
   - [Configuring the VPNs to on prem](#configuring-the-vpns-to-on-prem)
   - [Changing default regions](#changing-default-regions)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Design overview and choices
 
