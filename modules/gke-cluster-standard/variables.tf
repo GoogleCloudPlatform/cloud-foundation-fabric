@@ -162,6 +162,7 @@ variable "enable_addons" {
     }))
     kalm           = optional(bool, false)
     network_policy = optional(bool, false)
+    stateful_ha    = optional(bool, false)
   })
   default = {
     horizontal_pod_autoscaling = true

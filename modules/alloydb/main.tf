@@ -51,8 +51,8 @@ resource "google_alloydb_cluster" "primary" {
   location         = var.location
 
   network_config {
-    network            = var.network_config.network
-    allocated_ip_range = var.network_config.allocated_ip_range
+    network            = try(var.network_config.psa_config.network, null)
+    allocated_ip_range = try(var.network_config.psa_config.allocated_ip_range, null)
   }
 
   dynamic "automated_backup_policy" {
@@ -139,10 +139,17 @@ resource "google_alloydb_cluster" "primary" {
       }
     }
   }
+
+  psc_config {
+    psc_enabled = var.network_config.psc_config != null ? true : null
+  }
+
   # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
   lifecycle {
     ignore_changes = [
-      display_name
+      display_name,
+      network_config,
+      psc_config
     ]
   }
 }
@@ -179,15 +186,22 @@ resource "google_alloydb_instance" "primary" {
   }
 
   dynamic "network_config" {
-    for_each = var.network_config != null ? [""] : []
+    for_each = var.network_config.psa_config != null ? [""] : []
     content {
       dynamic "authorized_external_networks" {
-        for_each = coalesce(var.network_config.authorized_external_networks, [])
+        for_each = coalesce(var.network_config.psa_config.authorized_external_networks, [])
         content {
           cidr_range = authorized_external_networks.value
         }
       }
-      enable_public_ip = var.network_config.enable_public_ip
+      enable_public_ip = var.network_config.psa_config.enable_public_ip
+    }
+  }
+
+  dynamic "psc_instance_config" {
+    for_each = var.network_config.psc_config != null ? [""] : []
+    content {
+      allowed_consumer_projects = var.network_config.psc_config.allowed_consumer_projects
     }
   }
 
@@ -222,8 +236,8 @@ resource "google_alloydb_cluster" "secondary" {
   location         = var.cross_region_replication.region
 
   network_config {
-    network            = var.network_config.network
-    allocated_ip_range = var.network_config.allocated_ip_range
+    network            = try(var.network_config.psa_config.network, null)
+    allocated_ip_range = try(var.network_config.psa_config.allocated_ip_range, null)
   }
 
   dynamic "automated_backup_policy" {
@@ -311,6 +325,10 @@ resource "google_alloydb_cluster" "secondary" {
     }
   }
 
+  psc_config {
+    psc_enabled = var.network_config.psc_config != null ? true : null
+  }
+
   dynamic "secondary_config" {
     for_each = var.cross_region_replication.promote_secondary ? [] : [""]
     content {
@@ -322,7 +340,9 @@ resource "google_alloydb_cluster" "secondary" {
   # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
   lifecycle {
     ignore_changes = [
-      display_name
+      display_name,
+      network_config,
+      psc_config
     ]
   }
 }
@@ -360,15 +380,22 @@ resource "google_alloydb_instance" "secondary" {
   }
 
   dynamic "network_config" {
-    for_each = var.network_config != null ? [""] : []
+    for_each = var.network_config.psa_config != null ? [""] : []
     content {
       dynamic "authorized_external_networks" {
-        for_each = coalesce(var.network_config.authorized_external_networks, [])
+        for_each = coalesce(var.network_config.psa_config.authorized_external_networks, [])
         content {
           cidr_range = authorized_external_networks.value
         }
       }
-      enable_public_ip = var.network_config.enable_public_ip
+      enable_public_ip = var.network_config.psa_config.enable_public_ip
+    }
+  }
+
+  dynamic "psc_instance_config" {
+    for_each = var.network_config.psc_config != null ? [""] : []
+    content {
+      allowed_consumer_projects = var.network_config.psc_config.allowed_consumer_projects
     }
   }
 

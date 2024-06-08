@@ -245,20 +245,35 @@ variable "name" {
 }
 
 variable "network_config" {
-  description = "Network configuration for cluster and instance. Only one between cluster_network_config and cluster_psc_config can be used."
+  description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
   type = object({
-    network                      = string
-    allocated_ip_range           = optional(string, null)
-    authorized_external_networks = optional(list(string), null)
-    enable_public_ip             = optional(bool, false)
+    psa_config = optional(object({
+      network                      = optional(string)
+      allocated_ip_range           = optional(string)
+      authorized_external_networks = optional(list(string), [])
+      enable_public_ip             = optional(bool, false)
+    }))
+    psc_config = optional(object({
+      allowed_consumer_projects = optional(list(string), [])
+    }), null)
   })
   nullable = false
   validation {
     condition = (
-      (try(length(var.network_config.authorized_external_networks), 0) != 0 && var.network_config.enable_public_ip)
-      || try(length(var.network_config.authorized_external_networks), 0) == 0
+      var.network_config.psa_config == null || (
+        (
+          try(var.network_config.psa_config.enable_public_ip, false) &&
+          try(length(var.network_config.psa_config.authorized_external_networks), 0) > 0
+          ) || (
+          try(length(var.network_config.psa_config.authorized_external_networks), 0) == 0
+        )
+      )
     )
     error_message = "A list of external network authorized to access this instance is required only in case public ip is enabled for the instance."
+  }
+  validation {
+    condition     = (var.network_config.psc_config == null) != (var.network_config.psa_config == null)
+    error_message = "Please specify either psa_config or psc_config."
   }
 }
 
@@ -315,6 +330,13 @@ variable "secondary_name" {
   description = "Name of secondary instance."
   type        = string
   default     = null
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this service, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "users" {
