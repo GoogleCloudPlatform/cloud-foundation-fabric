@@ -490,7 +490,6 @@ module "org" {
 }
 # tftest modules=1 resources=10 inventory=tags.yaml
 ```
-<!-- TODO: reinstate e2e serial -->
 
 You can also define network tags, through a dedicated variable *network_tags*:
 

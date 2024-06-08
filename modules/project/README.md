@@ -18,7 +18,8 @@ This module implements the creation and management of one GCP project including 
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
-- [Attaching Tags](#attaching-tags)
+- [Tags](#tags)
+- [Tag Bindings](#tag-bindings)
 - [Project-scoped Tags](#project-scoped-tags)
 - [Custom Roles](#custom-roles)
   - [Custom Roles Factory](#custom-roles-factory)
@@ -679,9 +680,113 @@ module "project" {
 # tftest modules=1 resources=6 e2e
 ```
 
-## Attaching Tags
+## Tags
 
-You can attach secure tags to a project with the `tag_bindings` attribute
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com",
+  ]
+  tags = {
+    environment = {
+      description = "Environment specification."
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      iam_bindings = {
+        viewer = {
+          role    = "roles/resourcemanager.tagViewer"
+          members = ["group:gcp-support@example.org"]
+        }
+      }
+      iam_bindings_additive = {
+        user_app1 = {
+          role   = "roles/resourcemanager.tagUser"
+          member = "group:app1-team@example.org"
+        }
+      }
+      values = {
+        dev = {
+          iam_bindings_additive = {
+            user_app2 = {
+              role   = "roles/resourcemanager.tagUser"
+              member = "group:app2-team@example.org"
+            }
+          }
+        }
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagViewer" = ["group:app1-team@example.org"]
+          }
+          iam_bindings = {
+            admin = {
+              role    = "roles/resourcemanager.tagAdmin"
+              members = ["group:gcp-support@example.org"]
+              condition = {
+                title      = "gcp_support"
+                expression = <<-END
+                  request.time.getHours("Europe/Berlin") <= 9 &&
+                  request.time.getHours("Europe/Berlin") >= 17
+                END
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  tag_bindings = {
+    env-prod = module.project.tag_values["environment/prod"].id
+  }
+}
+# tftest modules=1 resources=12 inventory=tags.yaml
+```
+
+You can also define network tags through the dedicated `network_tags` variable:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com"
+  ]
+  network_tags = {
+    net-environment = {
+      description = "This is a network tag."
+      network     = "${var.project_id}/${var.vpc.name}"
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      values = {
+        dev = {}
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagUser" = ["group:${var.group_email}"]
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=7 inventory=tags-network.yaml
+```
+
+## Tag Bindings
+
+You can bind secure tags to a project with the `tag_bindings` attribute
 
 ```hcl
 module "org" {
@@ -1230,13 +1335,15 @@ module "bucket" {
 | [custom_roles](outputs.tf#L27) | Map of custom roles resources created in the project. |  |
 | [id](outputs.tf#L32) | Project id. |  |
 | [name](outputs.tf#L51) | Project name. |  |
-| [number](outputs.tf#L63) | Project number. |  |
-| [project_id](outputs.tf#L82) | Project id. |  |
-| [quota_configs](outputs.tf#L101) | Quota configurations. |  |
-| [quotas](outputs.tf#L112) | Quota resources. |  |
-| [service_accounts](outputs.tf#L117) | Product robot service accounts in project. |  |
-| [services](outputs.tf#L133) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L142) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L149) | Tag key resources. |  |
-| [tag_values](outputs.tf#L158) | Tag value resources. |  |
+| [network_tag_keys](outputs.tf#L63) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L72) | Tag value resources. |  |
+| [number](outputs.tf#L80) | Project number. |  |
+| [project_id](outputs.tf#L99) | Project id. |  |
+| [quota_configs](outputs.tf#L118) | Quota configurations. |  |
+| [quotas](outputs.tf#L129) | Quota resources. |  |
+| [service_accounts](outputs.tf#L134) | Product robot service accounts in project. |  |
+| [services](outputs.tf#L150) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L159) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L166) | Tag key resources. |  |
+| [tag_values](outputs.tf#L175) | Tag value resources. |  |
 <!-- END TFDOC -->
