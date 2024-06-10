@@ -56,7 +56,7 @@ If you encounter issues, check the following:
 ```hcl
 
 module "gcve-monitoring" {
-  source         = ".fabric/blueprints/gcve/monitoring"
+  source         = "./fabric/blueprints/gcve/monitoring"
   project_id     = "gcve-mon-project"
   project_create = {
     billing_account = "0123AB-ABCDEF-123456"
