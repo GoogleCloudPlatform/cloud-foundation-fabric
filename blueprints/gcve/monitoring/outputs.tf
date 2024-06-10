@@ -16,7 +16,7 @@
 
 output "gcve-mon-firewall" {
   description = "Ingress rule to allow GCVE Syslog traffic."
-  value       = google_compute_firewall.healthcheck
+  value       = module.firewall
 }
 
 output "gcve-mon-mig" {
@@ -24,12 +24,7 @@ output "gcve-mon-mig" {
   value       = module.gcve-mon-mig
 }
 
-output "gcve-mon-permissions" {
-  description = "IAM roles of Service Account for GCVE Monitoring."
-  value       = google_project_iam_member.gcve_monitoring_permissions
-}
-
 output "gcve-mon-sa" {
   description = "Service Account for GCVE Monitoring."
-  value       = google_service_account.sa_gcve_monitoring
+  value       = module.sa_gcve_monitoring
 }

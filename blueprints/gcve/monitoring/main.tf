@@ -25,39 +25,39 @@ locals {
   use_shared_vpc = (
     try(var.project_create.shared_vpc_host, null) != null
   )
+  vpc_name = split("/", var.vpc_config.vpc_self_link)[length(split("/", var.vpc_config.vpc_self_link)) - 1]
 }
 
-resource "google_service_account" "sa_gcve_monitoring" {
-  project    = var.project_id
-  account_id = var.sa_gcve_monitoring
-}
-
-resource "google_project_iam_member" "gcve_monitoring_permissions" {
-  for_each = local.sa_gcve_monitoring_roles
-  role     = each.key
-  project  = var.project_id
-  member   = "serviceAccount:${google_service_account.sa_gcve_monitoring.email}"
-}
-
-resource "google_compute_firewall" "healthcheck" {
-  count   = var.create_firewall_rule ? 1 : 0
-  project = var.vpc_config.host_project_id
-  name    = "gcve-mon-hc-rule"
-  network = var.vpc_config.vpc_self_link
-
-  allow {
-    protocol = "tcp"
-    ports    = ["5142"]
+module "project" {
+  source          = "../../../modules/project"
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account, null)
+  name            = var.project_id
+  project_create  = var.project_create != null
+  services = [
+    "compute.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
+    "secretmanager.googleapis.com"
+  ]
+  shared_vpc_service_config = !local.use_shared_vpc ? null : {
+    //attach       = true
+    host_project       = var.project_create.shared_vpc_host
+    service_iam_grants = module.project.services
   }
-
-  source_ranges           = ["35.191.0.0/16", "130.211.0.0/22"]
-  target_service_accounts = [google_service_account.sa_gcve_monitoring.email]
 }
 
-resource "google_monitoring_dashboard" "gcve_mon_dashboards" {
-  for_each       = var.create_dashboards ? fileset("${path.module}/dashboards", "*.json") : []
-  dashboard_json = file("${path.module}/dashboards/${each.value}")
-  project        = var.project_id
+module "sa_gcve_monitoring" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_id
+  name       = var.sa_gcve_monitoring
+  iam_project_roles = {
+    "${var.project_id}" = [
+      "roles/secretmanager.secretAccessor",
+      "roles/monitoring.admin",
+      "roles/logging.logWriter",
+    ]
+  }
 }
 
 module "gcve-mon-template" {
@@ -104,7 +104,7 @@ module "gcve-mon-template" {
   }
 
   service_account = {
-    email  = google_service_account.sa_gcve_monitoring.email
+    email  = module.sa_gcve_monitoring.email
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
@@ -137,20 +137,32 @@ module "secret-manager" {
   }
 }
 
-module "project" {
-  source          = "../../../modules/project"
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account, null)
-  name            = var.project_id
-  project_create  = var.project_create != null
-  services = compact([
-    "compute.googleapis.com",
-    "monitoring.googleapis.com",
-    "logging.googleapis.com",
-    "secretmanager.googleapis.com"
-  ])
-  shared_vpc_service_config = !local.use_shared_vpc ? null : {
-    attach       = true
-    host_project = var.project_create.shared_vpc_host
+module "firewall" {
+  source = "../../../modules/net-vpc-firewall"
+  count  = var.create_firewall_rule ? 1 : 0
+
+  project_id = var.vpc_config.host_project_id
+  network    = local.vpc_name
+  default_rules_config = {
+    disabled = true
   }
+
+  ingress_rules = {
+    allow-healthcheck = {
+      description = "Allow healthcheck for Syslog port."
+      source_ranges : ["35.191.0.0/16", "130.211.0.0/22"]
+      targets : [module.sa_gcve_monitoring.email]
+      use_service_accounts : true
+      rules = [{
+        protocol = "tcp"
+        ports    = [5142]
+      }]
+    }
+  }
+}
+
+resource "google_monitoring_dashboard" "gcve_mon_dashboards" {
+  for_each       = var.create_dashboards ? fileset("${path.module}/dashboards", "*.json") : []
+  dashboard_json = file("${path.module}/dashboards/${each.value}")
+  project        = var.project_id
 }
