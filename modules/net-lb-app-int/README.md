@@ -290,7 +290,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=8
+# tftest modules=1 resources=8 inventory=zonal-neg.yaml
 ```
 
 #### Hybrid NEG creation

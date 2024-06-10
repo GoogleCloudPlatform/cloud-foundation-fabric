@@ -199,7 +199,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=zonal-neg.yaml
 ```
 
 #### Hybrid NEG creation

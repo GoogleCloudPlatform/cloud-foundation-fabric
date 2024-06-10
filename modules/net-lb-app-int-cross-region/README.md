@@ -352,7 +352,7 @@ module "ilb-l7" {
     }
   }
 }
-# tftest modules=1 resources=12
+# tftest modules=1 resources=12 inventory=zonal-neg.yaml
 ```
 
 #### Hybrid NEG creation
