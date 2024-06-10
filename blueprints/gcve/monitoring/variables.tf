@@ -92,9 +92,5 @@ variable "vsphere_secrets" {
     secret_vsphere_user     = optional(string, "gcve-mon-vsphere-user")
   })
   nullable = false
-  default = {
-    secret_vsphere_password = "gcve-mon-vsphere-password"
-    secret_vsphere_server   = "gcve-mon-vsphere-server"
-    secret_vsphere_user     = "gcve-mon-vsphere-user"
-  }
+  default = {}
 }
