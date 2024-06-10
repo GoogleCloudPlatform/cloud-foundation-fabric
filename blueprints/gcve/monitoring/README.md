@@ -77,9 +77,9 @@ module "gcve-monitoring" {
   }
 
   vsphere_secrets = {
-    secret_vsphere_server   = "gcve-mon-vsphere-server"
-    secret_vsphere_user     = "gcve-mon-vsphere-user"
-    secret_vsphere_password = "gcve-mon-vsphere-password"
+    vsphere_server   = "gcve-mon-vsphere-server"
+    vsphere_user     = "gcve-mon-vsphere-user"
+    vsphere_password = "gcve-mon-vsphere-password"
   }
 
   sa_gcve_monitoring   = "gcve-mon-sa"
@@ -105,7 +105,7 @@ module "gcve-monitoring" {
 | [monitoring_image](variables.tf#L40) | Resource URI for OS image used to deploy monitoring agent. | <code>string</code> |  | <code>&#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;</code> |
 | [project_create](variables.tf#L46) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [sa_gcve_monitoring](variables.tf#L61) | Service account for GCVE monitoring agent. | <code>string</code> |  | <code>&#34;gcve-mon-sa&#34;</code> |
-| [vsphere_secrets](variables.tf#L87) | Secret Manager secrets that contain vSphere credentials and FQDN. | <code title="object&#40;&#123;&#10;  secret_vsphere_password &#61; optional&#40;string, &#34;gcve-mon-vsphere-password&#34;&#41;&#10;  secret_vsphere_server   &#61; optional&#40;string, &#34;gcve-mon-vsphere-server&#34;&#41;&#10;  secret_vsphere_user     &#61; optional&#40;string, &#34;gcve-mon-vsphere-user&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vsphere_secrets](variables.tf#L87) | Secret Manager secrets that contain vSphere credentials and FQDN. | <code title="object&#40;&#123;&#10;  vsphere_password &#61; optional&#40;string, &#34;gcve-mon-vsphere-password&#34;&#41;&#10;  vsphere_server   &#61; optional&#40;string, &#34;gcve-mon-vsphere-server&#34;&#41;&#10;  vsphere_user     &#61; optional&#40;string, &#34;gcve-mon-vsphere-user&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

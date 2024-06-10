@@ -87,9 +87,9 @@ variable "vpc_config" {
 variable "vsphere_secrets" {
   description = "Secret Manager secrets that contain vSphere credentials and FQDN."
   type = object({
-    secret_vsphere_password = optional(string, "gcve-mon-vsphere-password")
-    secret_vsphere_server   = optional(string, "gcve-mon-vsphere-server")
-    secret_vsphere_user     = optional(string, "gcve-mon-vsphere-user")
+    vsphere_password = optional(string, "gcve-mon-vsphere-password")
+    vsphere_server   = optional(string, "gcve-mon-vsphere-server")
+    vsphere_user     = optional(string, "gcve-mon-vsphere-user")
   })
   nullable = false
   default  = {}
