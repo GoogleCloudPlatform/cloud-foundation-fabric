@@ -29,6 +29,7 @@ locals {
     gcve-prod = compact([try(module.branch-gcve-prod-sa[0].iam_email, "")])
     gke-dev   = compact([try(module.branch-gke-dev-sa[0].iam_email, "")])
     gke-prod  = compact([try(module.branch-gke-prod-sa[0].iam_email, "")])
+    pf        = compact([try(module.branch-pf-sa[0].iam_email, "")])
     pf-dev    = compact([try(module.branch-pf-dev-sa[0].iam_email, "")])
     pf-prod   = compact([try(module.branch-pf-prod-sa[0].iam_email, "")])
   }
@@ -39,6 +40,7 @@ locals {
     gcve-prod = compact([try(module.branch-gcve-prod-r-sa[0].iam_email, "")])
     gke-dev   = compact([try(module.branch-gke-dev-r-sa[0].iam_email, "")])
     gke-prod  = compact([try(module.branch-gke-prod-r-sa[0].iam_email, "")])
+    pf        = compact([try(module.branch-pf-r-sa[0].iam_email, "")])
     pf-dev    = compact([try(module.branch-pf-dev-r-sa[0].iam_email, "")])
     pf-prod   = compact([try(module.branch-pf-prod-r-sa[0].iam_email, "")])
   }

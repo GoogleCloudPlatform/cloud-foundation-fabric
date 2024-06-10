@@ -25,6 +25,6 @@ counts:
   google_storage_bucket_object: 5
   google_tags_tag_binding: 4
   google_tags_tag_key: 2
-  google_tags_tag_value: 8
+  google_tags_tag_value: 9
   modules: 11
-  resources: 74
+  resources: 75

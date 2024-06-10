@@ -28,6 +28,7 @@ service_accounts = {
   security             = "foobar@iam.gserviceaccount.com"
   data-platform-dev    = "foobar@iam.gserviceaccount.com"
   data-platform-prod   = "foobar@iam.gserviceaccount.com"
+  project-factory      = "foobar@iam.gserviceaccount.com"
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"
 }
