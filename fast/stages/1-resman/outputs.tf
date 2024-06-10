@@ -94,6 +94,17 @@ locals {
       }
       tf_var_files = local.cicd_workflow_var_files.stage_2
     }
+    project_factory = {
+      service_accounts = {
+        apply = try(module.branch-pf-sa-cicd[0].email, null)
+        plan  = try(module.branch-pf-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-project-factory-providers.tf"
+        plan  = "3-project-factory-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
     project_factory_dev = {
       service_accounts = {
         apply = try(module.branch-pf-dev-sa-cicd[0].email, null)
@@ -276,28 +287,40 @@ locals {
       })
     },
     !var.fast_features.project_factory ? {} : {
+      "3-project-factory" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-gcs[0].name
+        name          = "project-factory"
+        sa            = module.branch-pf-sa[0].email
+      })
+      "3-project-factory-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-gcs[0].name
+        name          = "project-factory"
+        sa            = module.branch-pf-r-sa[0].email
+      })
       "3-project-factory-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs[0].name
-        name          = "team-dev"
+        name          = "project-factory-dev"
         sa            = module.branch-pf-dev-sa[0].email
       })
       "3-project-factory-dev-r" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs[0].name
-        name          = "team-dev"
+        name          = "project-factory-dev"
         sa            = module.branch-pf-dev-r-sa[0].email
       })
       "3-project-factory-prod" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs[0].name
-        name          = "team-prod"
+        name          = "project-factory-prod"
         sa            = module.branch-pf-prod-sa[0].email
       })
       "3-project-factory-prod-r" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs[0].name
-        name          = "team-prod"
+        name          = "project-factory-prod"
         sa            = module.branch-pf-prod-r-sa[0].email
       })
     },
@@ -326,6 +349,8 @@ locals {
       gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
       networking             = module.branch-network-sa.email
       networking-r           = module.branch-network-r-sa.email
+      project-factory        = try(module.branch-pf-sa[0].email, null)
+      project-factory-r      = try(module.branch-pf-r-sa[0].email, null)
       project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
       project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
       project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
@@ -441,6 +466,10 @@ output "project_factories" {
     dev = {
       bucket = module.branch-pf-dev-gcs[0].name
       sa     = module.branch-pf-dev-sa[0].email
+    }
+    main = {
+      bucket = module.branch-pf-gcs[0].name
+      sa     = module.branch-pf-sa[0].email
     }
     prod = {
       bucket = module.branch-pf-prod-gcs[0].name
