@@ -50,7 +50,7 @@ counts:
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
   google_project_iam_member: 7
-  google_project_service: 31
+  google_project_service: 30
   google_project_service_identity: 4
   google_service_account: 4
   google_service_account_iam_binding: 2
@@ -63,7 +63,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 8
   modules: 17
-  resources: 198
+  resources: 197
 
 outputs:
   custom_roles:
