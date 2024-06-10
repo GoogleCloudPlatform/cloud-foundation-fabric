@@ -56,8 +56,8 @@ If you encounter issues, check the following:
 ```hcl
 
 module "gcve-monitoring" {
-  source         = "./fabric/blueprints/gcve/monitoring"
-  project_id     = "gcve-mon-project"
+  source     = "./fabric/blueprints/gcve/monitoring"
+  project_id = "gcve-mon-project"
   project_create = {
     billing_account = "0123AB-ABCDEF-123456"
     parent          = "folders/1234567890"
@@ -65,11 +65,11 @@ module "gcve-monitoring" {
   }
 
   vm_mon_config = {
-    vm_mon_name             = "bp-agent"
-    vm_mon_type             = "e2-small"
-    vm_mon_zone             = "europe-west1-b"
+    vm_mon_name = "bp-agent"
+    vm_mon_type = "e2-small"
+    vm_mon_zone = "europe-west1-b"
   }
-  
+
   vpc_config = {
     host_project_id      = "abcde-prod-net-spoke-0"
     vpc_self_link        = "https://www.googleapis.com/compute/v1/projects/abcde-prod-net-spoke-0/global/networks/prod-spoke-0"
@@ -82,11 +82,11 @@ module "gcve-monitoring" {
     secret_vsphere_password = "gcve-mon-vsphere-password"
   }
 
-  sa_gcve_monitoring      = "gcve-mon-sa"
-  gcve_region             = "europe-west1"
-  initial_delay_sec       = 180
-  create_dashboards       = true
-  create_firewall_rule    = true
+  sa_gcve_monitoring   = "gcve-mon-sa"
+  gcve_region          = "europe-west1"
+  initial_delay_sec    = 180
+  create_dashboards    = true
+  create_firewall_rule = true
 }
 # tftest modules=7 resources=22
 ```
