@@ -28,6 +28,7 @@ service_accounts = {
   data-platform-prod   = "string"
   gke-dev              = "string"
   gke-prod             = "string"
+  project-factory      = "string"
   project-factory-dev  = "string"
   project-factory-prod = "string"
 }
