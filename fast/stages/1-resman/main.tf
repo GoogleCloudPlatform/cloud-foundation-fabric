@@ -15,15 +15,9 @@
  */
 
 locals {
-  # convenience flags that express where billing account resides
-  automation_resman_sa = try(
-    data.google_client_openid_userinfo.provider_identity[0].email, null
-  )
-  automation_resman_sa_iam = (
-    local.automation_resman_sa == null
-    ? []
-    : ["serviceAccount:${local.automation_resman_sa}"]
-  )
+  # automation_resman_sa = try(
+  #   data.google_client_openid_userinfo.provider_identity[0].email, null
+  # )
   # service accounts that receive additional grants on networking/security
   branch_optional_sa_lists = {
     dp-dev    = compact([try(module.branch-dp-dev-sa[0].iam_email, "")])
