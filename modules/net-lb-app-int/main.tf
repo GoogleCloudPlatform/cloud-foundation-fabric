@@ -167,7 +167,7 @@ resource "google_compute_network_endpoint_group" "default" {
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : try(each.value.subnetwork, var.vpc_config.subnetwork)
+    : coalesce(each.value.subnetwork, var.vpc_config.subnetwork)
   )
 }
 

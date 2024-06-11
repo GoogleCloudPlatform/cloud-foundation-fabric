@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Copyright 2024 Google LLC
 #
@@ -16,19 +16,16 @@
 
 set -e
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
 
-files=("$@")
-declare -A directories
-
-for file in "${files[@]}"; do
-	dir=$(dirname "${file}")
-	if [ -f "${dir}/README.md" ] && [ -f "${dir}/main.tf" ]; then
-		directories["${dir}"]=1
+for file in "$@"; do
+	if [ -d "${file}" ]; then
+		dir="${file}"
+	else
+		dir=$(dirname "${file}")
 	fi
-done
+	if [ -f "${dir}/README.md" ] && [ -f "${dir}/main.tf" ]; then
+		echo "${dir}"
+	fi
 
-for dir in "${!directories[@]}"; do # iterate over keys in directories
-	echo python "${SCRIPT_DIR}/tfdoc.py" "${dir}"
-	python "${SCRIPT_DIR}/tfdoc.py" "${dir}"
-done
+done | sort | uniq | xargs -I {} /bin/sh -c "echo python \"${SCRIPT_DIR}/tfdoc.py\" {} ; python \"${SCRIPT_DIR}/tfdoc.py\" {}"

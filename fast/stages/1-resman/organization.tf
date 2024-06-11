@@ -61,6 +61,9 @@ module "organization" {
         networking = {
           iam = try(local.tags.context.values.networking.iam, {})
         }
+        project-factory = {
+          iam = try(local.tags.context.values.project-factory.iam, {})
+        }
         sandbox = {
           iam = try(local.tags.context.values.sandbox.iam, {})
         }

@@ -65,9 +65,6 @@ locals {
       &&
       # either
       (
-        # don't need a WIF provider, or
-        try(v.fast_config.cicd_config.type, null) == "sourcerepo"
-        ||
         # use an org-level WIF provider, or
         try(var.automation.federated_identity_providers[v.wif_provider], null) != null
         ||
@@ -85,39 +82,6 @@ locals {
   }
 }
 
-module "tenant-cicd-repo" {
-  source = "../../../modules/source-repository"
-  for_each = {
-    for k, v in local.cicd_repositories :
-    k => v if v.type == "sourcerepo"
-  }
-  project_id = module.tenant-automation-project[each.key].project_id
-  name       = "tenant-${each.key}-resman"
-  iam = {
-    "roles/source.admin" = [
-      module.tenant-automation-tf-resman-sa[each.key].iam_email
-    ]
-    "roles/source.reader" = [
-      module.tenant-automation-tf-cicd-sa[each.key].iam_email
-    ]
-  }
-  triggers = {
-    fast-02-security = {
-      filename        = ".cloudbuild/workflow.yaml"
-      included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.tenant-automation-tf-cicd-sa[each.key].id
-      substitutions   = {}
-      template = {
-        project_id  = null
-        branch_name = each.value.branch
-        repo_name   = each.value.name
-        tag_name    = null
-      }
-    }
-  }
-  depends_on = [module.tenant-automation-tf-cicd-sa]
-}
-
 # read-write (apply) SA used by CI/CD workflows to impersonate automation SA
 
 module "tenant-automation-tf-cicd-sa" {
@@ -127,28 +91,22 @@ module "tenant-automation-tf-cicd-sa" {
   name         = "${each.key}-1"
   display_name = "Terraform CI/CD ${each.key} service account."
   prefix       = var.prefix
-  iam = (
-    each.value.type == "sourcerepo"
-    # used directly from the cloud build trigger for source repos
-    ? {}
-    # impersonated via workload identity federation for external repos
-    : {
-      "roles/iam.workloadIdentityUser" = [
-        each.value.branch == null
-        ? format(
-          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
-          var.automation.federated_identity_pool,
-          each.value.name
-        )
-        : format(
-          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
-          var.automation.federated_identity_pool,
-          each.value.name,
-          each.value.branch
-        )
-      ]
-    }
-  )
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      each.value.branch == null
+      ? format(
+        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
+        var.automation.federated_identity_pool,
+        each.value.name
+      )
+      : format(
+        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
+        var.automation.federated_identity_pool,
+        each.value.name,
+        each.value.branch
+      )
+    ]
+  }
   iam_project_roles = {
     (module.tenant-automation-project[each.key].project_id) = [
       "roles/logging.logWriter"
@@ -170,21 +128,15 @@ module "automation-tf-cicd-r-sa" {
   name         = "tenant-${each.key}-1r"
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = var.prefix
-  iam = (
-    each.value.type == "sourcerepo"
-    # build trigger for read-only SA is optionally defined by users
-    ? {}
-    # impersonated via workload identity federation for external repos
-    : {
-      "roles/iam.workloadIdentityUser" = [
-        format(
-          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
-          var.automation.federated_identity_pool,
-          each.value.name
-        )
-      ]
-    }
-  )
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      format(
+        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
+        var.automation.federated_identity_pool,
+        each.value.name
+      )
+    ]
+  }
   iam_project_roles = {
     (module.tenant-automation-project[each.key].project_id) = [
       "roles/logging.logWriter"
