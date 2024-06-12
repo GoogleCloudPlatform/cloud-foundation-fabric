@@ -118,6 +118,7 @@ variable "subscriptions" {
     }))
     bigquery = optional(object({
       table               = string
+      use_table_schema    = optional(bool, false)
       use_topic_schema    = optional(bool, false)
       write_metadata      = optional(bool, false)
       drop_unknown_fields = optional(bool, false)
