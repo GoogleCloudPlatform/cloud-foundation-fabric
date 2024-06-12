@@ -104,6 +104,7 @@ resource "google_pubsub_subscription" "default" {
     for_each = each.value.bigquery == null ? [] : [""]
     content {
       table               = each.value.bigquery.table
+      use_table_schema    = each.value.bigquery.use_table_schema
       use_topic_schema    = each.value.bigquery.use_topic_schema
       write_metadata      = each.value.bigquery.write_metadata
       drop_unknown_fields = each.value.bigquery.drop_unknown_fields
