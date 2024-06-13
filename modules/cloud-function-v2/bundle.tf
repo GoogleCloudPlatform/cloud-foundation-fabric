@@ -16,9 +16,9 @@
 
 locals {
   bundle = {
-    md5 = try(
-      data.archive_file.bundle[0].output_md5,
-      data.local_file.bundle[0].content_md5
+    name = try(
+      "bundle-${data.archive_file.bundle[0].output_md5}.zip",
+      basename(var.bundle_config.path)
     )
     path = try(
       data.archive_file.bundle[0].output_path,
@@ -57,7 +57,7 @@ resource "google_storage_bucket" "bucket" {
 }
 
 resource "google_storage_bucket_object" "bundle" {
-  name   = "bundle-${local.bundle.md5}.zip"
+  name   = local.bundle.name
   bucket = local.bucket
   source = local.bundle.path
 }
@@ -71,11 +71,4 @@ data "archive_file" "bundle" {
   output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
   output_file_mode = "0644"
   excludes         = var.bundle_config.excludes
-}
-
-data "local_file" "bundle" {
-  count = (
-    try(fileexists(var.bundle_config.path), null) == null ? 0 : 1
-  )
-  filename = var.bundle_config.path
 }
