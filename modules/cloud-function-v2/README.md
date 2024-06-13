@@ -171,7 +171,7 @@ The Cloud Function bundle can be configured via the `bundle_config` variable, so
 
 If a `zip` archive is already available, simply set the archive path in `bundle_config.path`. If a dynamically generated archive is needed, set `bundle_config.path` to the source folder path, then optionally configure the path where the archive will be created, and any exclusions needed in the archive.
 
-In order to help prevent `archive_zip.output_md5` from changing cross platform (e.g. Cloud Build vs your local development environment), you'll have to make sure that the files included in the zip are always the same.
+If you use a folder and dynamic archive bundling, be mindful that the MD5 checksum of the generated `zip` file does not change across environments (e.g. Cloud Build vs your local development environment), by ensuring that the files in the folder are always the same.
 
 ```hcl
 module "cf-http" {
