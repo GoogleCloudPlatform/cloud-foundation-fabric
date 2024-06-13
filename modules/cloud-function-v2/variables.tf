@@ -36,11 +36,11 @@ variable "build_worker_pool" {
 }
 
 variable "bundle_config" {
-  description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
+  description = "Cloud function source. If path points to a .zip archive it is uploaded as-is, otherwise an archive is created on the fly. A null output path will use a unique name for the bundle in /tmp."
   type = object({
-    source_dir  = string
-    output_path = optional(string)
+    path        = string
     excludes    = optional(list(string))
+    output_path = optional(string)
   })
 }
 

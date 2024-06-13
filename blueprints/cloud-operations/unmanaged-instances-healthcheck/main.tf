@@ -117,7 +117,7 @@ module "cf-restarter" {
     location = var.region
   }
   bundle_config = {
-    source_dir  = "${path.module}/function/restarter"
+    path        = "${path.module}/function/restarter"
     output_path = "restarter.zip"
   }
   service_account = module.service-account-restarter.email
@@ -145,7 +145,7 @@ module "cf-healthchecker" {
   region      = var.region
   bucket_name = module.cf-restarter.bucket_name
   bundle_config = {
-    source_dir  = "${path.module}/function/healthchecker"
+    path        = "${path.module}/function/healthchecker"
     output_path = "healthchecker.zip"
   }
   service_account = module.service-account-healthchecker.email
