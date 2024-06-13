@@ -38,7 +38,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
 }
@@ -68,7 +68,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
   trigger_config = {
@@ -95,7 +95,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
   iam = {
@@ -121,7 +121,7 @@ module "cf-http" {
     lifecycle_delete_age_days = 1
   }
   bundle_config = {
-    source_dir = "fabric/assets/"
+    path = "fabric/assets/"
   }
 }
 # tftest modules=1 resources=3 inventory=bucket-creation.yaml
@@ -139,7 +139,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
   service_account_create = true
@@ -157,7 +157,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
   service_account = "non-existent@serice.account.email"
@@ -166,6 +166,10 @@ module "cf-http" {
 ```
 
 ### Custom bundle config
+
+The Cloud Function bundle can be configured via the `bundle_config` variable, so that either a `zip` archive or a source folder can be used.
+
+If a `zip` archive is already available, simply set the archive path in `bundle_config.path`. If a dynamically generated archive is needed, set `bundle_config.path` to the source folder path, then optionally configure the path where the archive will be created, and any exclusions needed in the archive.
 
 In order to help prevent `archive_zip.output_md5` from changing cross platform (e.g. Cloud Build vs your local development environment), you'll have to make sure that the files included in the zip are always the same.
 
@@ -177,7 +181,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
     excludes    = ["__pycache__"]
   }
@@ -198,7 +202,7 @@ module "cf-http" {
   bucket_name       = "test-cf-bundles"
   build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
   bundle_config = {
-    source_dir  = "fabric/assets"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
 }
@@ -217,7 +221,7 @@ module "cf-http-one" {
   name        = "test-cf-http-one"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir = "fabric/assets"
+    path = "fabric/assets"
   }
 }
 
@@ -228,17 +232,20 @@ module "cf-http-two" {
   name        = "test-cf-http-two"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir = "fabric/assets"
+    path = "fabric/assets"
   }
 }
 # tftest modules=2 resources=4 inventory=multiple_functions.yaml
 ```
 
 ### Mounting secrets from Secret Manager
+
 This provides the latest value of the secret `var_secret` as `VARIABLE_SECRET` environment variable and three values of `path_secret` mounted in filesystem:
-* `/app/secret/first` contains version 1
-* `/app/secret/second` contains version 2
-* `/app/secret/latest` contains latest version of the secret
+
+- `/app/secret/first` contains version 1
+- `/app/secret/second` contains version 2
+- `/app/secret/latest` contains latest version of the secret
+
 ```hcl
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
@@ -247,7 +254,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets"
+    path        = "fabric/assets/"
     output_path = "bundle.zip"
   }
   secrets = {
@@ -280,7 +287,7 @@ module "cf-http" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L26) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
-| [bundle_config](variables.tf#L38) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [bundle_config](variables.tf#L38) | Cloud function source. If path points to a .zip archive it is uploaded as-is, otherwise an archive is created on the fly. A null output path will use a unique name for the bundle in /tmp. | <code title="object&#40;&#123;&#10;  path        &#61; string&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  output_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L109) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L124) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L129) | Region used for all resources. | <code>string</code> | ✓ |  |

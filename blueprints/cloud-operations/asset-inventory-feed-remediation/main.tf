@@ -85,7 +85,7 @@ module "cf" {
     location = var.region
   }
   bundle_config = {
-    source_dir  = "${path.module}/cf"
+    path        = "${path.module}/cf"
     output_path = var.bundle_path
   }
   service_account = module.service-account.email

@@ -41,7 +41,6 @@ locals {
   )
 }
 
-
 resource "google_vpc_access_connector" "connector" {
   count         = try(var.vpc_connector.create, false) == false ? 0 : 1
   project       = var.project_id
@@ -130,51 +129,6 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   cloud_function = google_cloudfunctions_function.function.id
   role           = each.key
   members        = each.value
-}
-
-resource "google_storage_bucket" "bucket" {
-  count                       = var.bucket_config == null ? 0 : 1
-  project                     = var.project_id
-  name                        = "${local.prefix}${var.bucket_name}"
-  uniform_bucket_level_access = true
-  location = (
-    var.bucket_config.location == null
-    ? var.region
-    : var.bucket_config.location
-  )
-  labels = var.labels
-
-  dynamic "lifecycle_rule" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      action { type = "Delete" }
-      condition {
-        age        = var.bucket_config.lifecycle_delete_age_days
-        with_state = "ARCHIVED"
-      }
-    }
-  }
-
-  dynamic "versioning" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      enabled = true
-    }
-  }
-}
-
-resource "google_storage_bucket_object" "bundle" {
-  name   = "bundle-${data.archive_file.bundle.output_md5}.zip"
-  bucket = local.bucket
-  source = data.archive_file.bundle.output_path
-}
-
-data "archive_file" "bundle" {
-  type             = "zip"
-  source_dir       = var.bundle_config.source_dir
-  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
-  output_file_mode = "0644"
-  excludes         = var.bundle_config.excludes
 }
 
 resource "google_service_account" "service_account" {
