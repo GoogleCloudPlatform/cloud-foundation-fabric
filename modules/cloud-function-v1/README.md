@@ -164,8 +164,8 @@ module "cf-http" {
   bundle_config = {
     path = "fabric/assets/"
     folder_options = {
-      output_path = "bundle.zip"
-      excludes    = ["__pycache__"]
+      archive_path = "bundle.zip"
+      excludes     = ["__pycache__"]
     }
   }
 }
@@ -193,7 +193,7 @@ module "cf-http" {
 
 ### Multiple Cloud Functions within project
 
-When deploying multiple functions do not reuse `bundle_config.output_path` between instances as the result is undefined. Default `output_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
+When deploying multiple functions do not reuse `bundle_config.archive_path` between instances as the result is undefined. Default `archive_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
 
 ```hcl
 module "cf-http-one" {
