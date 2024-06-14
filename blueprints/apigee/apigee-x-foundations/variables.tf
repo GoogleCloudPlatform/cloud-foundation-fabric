@@ -25,18 +25,26 @@ variable "apigee_config" {
       monetization        = optional(bool, false)
     }))
     organization = object({
-      analytics_region                 = optional(string)
-      api_consumer_data_encryption_key = optional(string)
-      api_consumer_data_location       = optional(string)
-      authorized_network               = optional(string)
-      billing_type                     = optional(string)
-      control_plane_encryption_key     = optional(string)
-      database_encryption_key          = optional(string)
-      description                      = optional(string, "Terraform-managed")
-      disable_vpc_peering              = optional(bool, false)
-      display_name                     = optional(string)
-      properties                       = optional(map(string), {})
-      retention                        = optional(string)
+      analytics_region = optional(string)
+      api_consumer_data_encryption_key_config = optional(object({
+        auto_create = optional(bool, false)
+        id          = optional(string)
+      }), {})
+      api_consumer_data_location = optional(string)
+      billing_type               = optional(string)
+      control_plane_encryption_key_config = optional(object({
+        auto_create = optional(bool, false)
+        id          = optional(string)
+      }), {})
+      database_encryption_key_config = optional(object({
+        auto_create = optional(bool, false)
+        id          = optional(string)
+      }), {})
+      description         = optional(string, "Terraform-managed")
+      disable_vpc_peering = optional(bool, false)
+      display_name        = optional(string)
+      properties          = optional(map(string), {})
+      retention           = optional(string)
     })
     envgroups = optional(map(list(string)), {})
     environments = optional(map(object({
@@ -69,7 +77,10 @@ variable "apigee_config" {
       type = optional(string)
     })), {})
     instances = optional(map(object({
-      disk_encryption_key           = optional(string)
+      disk_encryption_key_config = optional(object({
+        auto_create = optional(bool, false)
+        id          = optional(string)
+      }), {})
       environments                  = optional(list(string), [])
       external                      = optional(bool, true)
       runtime_ip_cidr_range         = optional(string)
@@ -85,6 +96,18 @@ variable "apigee_config" {
     condition = (!var.apigee_config.organization.disable_vpc_peering ||
     alltrue([for k, v in var.apigee_config.endpoint_attachments : length(v.dns_names) == 0]))
     error_message = "If disable_vpc_peering is true for the organization, DNS names cannot be used for endpoint attachments."
+  }
+  validation {
+    condition     = !(var.apigee_config.organization.database_encryption_key_config.auto_create && var.apigee_config.organization.database_encryption_key_config.id != null)
+    error_message = "If the database encryption key is to be created you should not be passing an id."
+  }
+  validation {
+    condition     = !(var.apigee_config.organization.api_consumer_data_encryption_key_config.auto_create && var.apigee_config.organization.api_consumer_data_encryption_key_config.id != null)
+    error_message = "If the api consumer data encryption key is to be created you should not be passing an id."
+  }
+  validation {
+    condition     = !(var.apigee_config.organization.control_plane_encryption_key_config.auto_create && var.apigee_config.organization.control_plane_encryption_key_config.id != null)
+    error_message = "If the control plane encryption key is to be created you should not be passing an id."
   }
   nullable = false
 }
