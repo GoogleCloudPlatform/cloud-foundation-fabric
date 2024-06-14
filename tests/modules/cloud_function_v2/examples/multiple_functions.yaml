@@ -13,9 +13,9 @@
 # limitations under the License.
 
 values:
-  module.cf-http-one.google_storage_bucket_object.bundle:
+  module.cf-http-one.google_storage_bucket_object.bundle[0]:
     source: /tmp/bundle-my-project-test-cf-http-one.zip
-  module.cf-http-two.google_storage_bucket_object.bundle:
+  module.cf-http-two.google_storage_bucket_object.bundle[0]:
     source: /tmp/bundle-my-project-test-cf-http-two.zip
 
 counts:

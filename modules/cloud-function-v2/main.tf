@@ -74,7 +74,11 @@ resource "google_cloudfunctions2_function" "function" {
     source {
       storage_source {
         bucket = local.bucket
-        object = google_storage_bucket_object.bundle.name
+        object = (
+          local.bundle_type == "gcs"
+          ? var.bundle_config.path
+          : google_storage_bucket_object.bundle[0].name
+        )
       }
     }
   }
