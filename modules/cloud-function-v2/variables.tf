@@ -42,6 +42,18 @@ variable "bundle_config" {
     excludes    = optional(list(string))
     output_path = optional(string)
   })
+  validation {
+    condition = (
+      var.bundle_config.path != null && (
+        (
+          try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+          endswith(var.bundle_config.path, ".zip")
+        ) ||
+        length(fileset(pathexpand(var.bundle_config.path), "**/*")) > 0
+      )
+    )
+    error_message = "Bundle path must be set to a local folder or zip file."
+  }
 }
 
 variable "description" {

@@ -22,7 +22,7 @@ locals {
     )
     path = try(
       data.archive_file.bundle[0].output_path,
-      var.bundle_config.path
+      pathexpand(var.bundle_config.path)
     )
   }
 }
@@ -56,19 +56,23 @@ resource "google_storage_bucket" "bucket" {
   }
 }
 
+# compress bundle in a zip archive if it's a folder
+
+data "archive_file" "bundle" {
+  count = (
+    try(fileexists(pathexpand(var.bundle_config.path)), null) == null ? 1 : 0
+  )
+  type             = "zip"
+  source_dir       = pathexpand(var.bundle_config.path)
+  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
+  output_file_mode = "0644"
+  excludes         = var.bundle_config.excludes
+}
+
+# upload to GCS
+
 resource "google_storage_bucket_object" "bundle" {
   name   = local.bundle.name
   bucket = local.bucket
   source = local.bundle.path
-}
-
-data "archive_file" "bundle" {
-  count = (
-    try(fileexists(var.bundle_config.path), null) == null ? 1 : 0
-  )
-  type             = "zip"
-  source_dir       = var.bundle_config.path
-  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
-  output_file_mode = "0644"
-  excludes         = var.bundle_config.excludes
 }
