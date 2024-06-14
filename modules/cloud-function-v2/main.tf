@@ -76,7 +76,7 @@ resource "google_cloudfunctions2_function" "function" {
         bucket = local.bucket
         object = (
           local.bundle_type == "gcs"
-          ? var.bundle_config.path
+          ? replace(var.bundle_config.path, "/^gs:\\/\\/[^\\/]+\\//", "")
           : google_storage_bucket_object.bundle[0].name
         )
       }
