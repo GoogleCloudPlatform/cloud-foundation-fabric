@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2361)] **incompatible change:** Support GCS objects in cloud function modules bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 11:44:01+00:00 -->
+- [[#2358](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2358)] **incompatible change:** Support pre-made bundle archives in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 12:58:23+00:00 -->
+- [[#2347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2347)] Add GCVE Logging and Monitoring Blueprint ([KonradSchieban](https://github.com/KonradSchieban)) <!-- 2024-06-11 14:36:23+00:00 -->
+- [[#2356](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2356)] Add Terraform installation step to meet the versions.tf requirements ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-11 13:40:31+00:00 -->
+- [[#2355](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2355)] Bump @grpc/grpc-js from 1.10.7 to 1.10.9 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-06-11 05:21:41+00:00 -->
 - [[#2341](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2341)] Alloydb add support for psc ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-06-05 11:39:03+00:00 -->
 - [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
 - [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
@@ -58,6 +63,15 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2364](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2364)] Relax dataproc master config type ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 14:19:57+00:00 -->
+- [[#2363](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2363)] Add support for different endpoint types for Cloud NAT ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-14 13:37:58+00:00 -->
+- [[#2362](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2362)] Strip bucket name from bundle URI in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 12:31:01+00:00 -->
+- [[#2361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2361)] **incompatible change:** Support GCS objects in cloud function modules bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 11:44:01+00:00 -->
+- [[#2360](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2360)] Validate bundle, use pathexpand in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 07:23:50+00:00 -->
+- [[#2359](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2359)] Don't compute checksum in cloud function modules for static bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 16:08:12+00:00 -->
+- [[#2358](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2358)] **incompatible change:** Support pre-made bundle archives in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 12:58:23+00:00 -->
+- [[#2357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2357)] Add use_table_schema parameter for PubSub subscription to BigQuery ([mdaddetta](https://github.com/mdaddetta)) <!-- 2024-06-12 22:36:19+00:00 -->
+- [[#2354](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2354)] Use var.vpc_config.subnetwork in NEGs when var.neg_config.*.subnetwork is not provided ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-10 14:57:12+00:00 -->
 - [[#2351](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2351)] Added missing validation values for backend services ([deanosaurx](https://github.com/deanosaurx)) <!-- 2024-06-09 07:15:22+00:00 -->
 - [[#2350](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2350)] Add network tags outputs and examples to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-09 05:52:15+00:00 -->
 - [[#2341](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2341)] Alloydb add support for psc ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-06-05 11:39:03+00:00 -->
@@ -80,6 +94,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2363](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2363)] Add support for different endpoint types for Cloud NAT ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-14 13:37:58+00:00 -->
 - [[#2346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2346)] use /bin/sh for pre-commit script for portability ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-07 06:15:33+00:00 -->
 - [[#2343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2343)] Change shebang on pre-commit checks ([albertogeniola](https://github.com/albertogeniola)) <!-- 2024-06-05 17:55:09+00:00 -->
 - [[#2327](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2327)] Add outstanding checks from lint.sh to pre-commit ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-31 10:22:21+00:00 -->
