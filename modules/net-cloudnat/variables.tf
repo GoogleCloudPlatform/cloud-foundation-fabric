@@ -51,10 +51,6 @@ variable "config_source_subnetworks" {
   default  = {}
 }
 
-output "foo" {
-  value = var.config_source_subnetworks.subnetworks
-}
-
 variable "config_timeouts" {
   description = "Timeout configurations."
   type = object({
@@ -66,6 +62,25 @@ variable "config_timeouts" {
   })
   default  = {}
   nullable = false
+}
+
+variable "endpoint_types" {
+  description = "Specifies the endpoint Types supported by the NAT Gateway. Supported values include: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG, ENDPOINT_TYPE_MANAGED_PROXY_LB."
+  type        = list(string)
+  default     = null
+  validation {
+    condition = (var.endpoint_types == null ? true : setunion([
+      "ENDPOINT_TYPE_VM",
+      "ENDPOINT_TYPE_SWG",
+      "ENDPOINT_TYPE_MANAGED_PROXY_LB",
+      ], var.endpoint_types) == toset([
+      "ENDPOINT_TYPE_VM",
+      "ENDPOINT_TYPE_SWG",
+      "ENDPOINT_TYPE_MANAGED_PROXY_LB",
+      ])
+    )
+    error_message = "Proivde one of: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG or ENDPOINT_TYPE_MANAGED_PROXY_LB as endpoint_types"
+  }
 }
 
 variable "logging_filter" {

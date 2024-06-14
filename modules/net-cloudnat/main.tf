@@ -47,13 +47,14 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_nat" "nat" {
-  provider = google-beta
-  project  = var.project_id
-  region   = var.region
-  name     = var.name
-  type     = var.type
-  router   = local.router_name
-  nat_ips  = var.addresses
+  provider       = google-beta
+  project        = var.project_id
+  region         = var.region
+  name           = var.name
+  endpoint_types = var.endpoint_types
+  type           = var.type
+  router         = local.router_name
+  nat_ips        = var.addresses
   nat_ip_allocate_option = (
     var.type == "PRIVATE"
     ? null
@@ -128,4 +129,3 @@ resource "google_compute_router_nat" "nat" {
     }
   }
 }
-
