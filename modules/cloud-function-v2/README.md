@@ -179,7 +179,7 @@ module "cf-http" {
     path = "fabric/assets/"
     folder_options = {
       archive_path = "bundle.zip"
-      excludes    = ["__pycache__"]
+      excludes     = ["__pycache__"]
     }
   }
 }
