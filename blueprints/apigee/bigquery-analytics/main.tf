@@ -164,9 +164,7 @@ module "function_export" {
     lifecycle_delete_age = 1
   }
   bundle_config = {
-    source_dir  = "${path.module}/functions/export"
-    output_path = "${path.module}/bundle-export.zip"
-    excludes    = null
+    path = "${path.module}/functions/export"
   }
   function_config = {
     entry_point = "export"
@@ -200,9 +198,7 @@ module "function_gcs2bq" {
     lifecycle_delete_age = 1
   }
   bundle_config = {
-    source_dir  = "${path.module}/functions/gcs2bq"
-    output_path = "${path.module}/bundle-gcs2bq.zip"
-    excludes    = null
+    path = "${path.module}/functions/gcs2bq"
   }
   function_config = {
     entry_point = "gcs2bq"

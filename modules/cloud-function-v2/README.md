@@ -1,8 +1,6 @@
 # Cloud Function Module (v2)
 
-Cloud Function management, with support for IAM roles and optional bucket creation.
-
-The GCS object used for deployment uses a hash of the bundle zip contents in its name, which ensures change tracking and avoids recreating the function if the GCS object is deleted and needs recreating.
+Cloud Function management, with support for IAM roles, optional bucket creation and bundle via GCS URI, local zip, or local source folder.
 
 <!-- BEGIN TOC -->
 - [TODO](#todo)
@@ -38,8 +36,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
 }
 # tftest modules=1 resources=2
@@ -68,8 +65,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
   trigger_config = {
     event_type            = "google.cloud.pubsub.topic.v1.messagePublished"
@@ -95,8 +91,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
   iam = {
     "roles/run.invoker" = ["allUsers"]
@@ -121,7 +116,7 @@ module "cf-http" {
     lifecycle_delete_age_days = 1
   }
   bundle_config = {
-    source_dir = "fabric/assets/"
+    path = "fabric/assets/"
   }
 }
 # tftest modules=1 resources=3 inventory=bucket-creation.yaml
@@ -139,8 +134,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
   service_account_create = true
 }
@@ -157,8 +151,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
   service_account = "non-existent@serice.account.email"
 }
@@ -167,7 +160,13 @@ module "cf-http" {
 
 ### Custom bundle config
 
-In order to help prevent `archive_zip.output_md5` from changing cross platform (e.g. Cloud Build vs your local development environment), you'll have to make sure that the files included in the zip are always the same.
+The Cloud Function bundle can be configured via the `bundle_config` variable. The only mandatory argument is `bundle_config.path` which can point to:
+
+- a GCS URI of a ZIP archive
+- a local path to a ZIP archive
+- a local path to a source folder
+
+When a GCS URI or a local zip file are used, a change in their names will trigger redeployment. When a local source folder is used a ZIP archive will be automatically generated and its internally derived checksum will drive redeployment. You can optionally control its name and exclusions via the attributes in `bundle_config.folder_options`.
 
 ```hcl
 module "cf-http" {
@@ -177,9 +176,11 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets"
-    output_path = "bundle.zip"
-    excludes    = ["__pycache__"]
+    path = "fabric/assets/"
+    folder_options = {
+      archive_path = "bundle.zip"
+      excludes     = ["__pycache__"]
+    }
   }
 }
 # tftest modules=1 resources=2
@@ -198,8 +199,7 @@ module "cf-http" {
   bucket_name       = "test-cf-bundles"
   build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
   bundle_config = {
-    source_dir  = "fabric/assets"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
 }
 # tftest modules=1 resources=2
@@ -207,7 +207,7 @@ module "cf-http" {
 
 ### Multiple Cloud Functions within project
 
-When deploying multiple functions do not reuse `bundle_config.output_path` between instances as the result is undefined. Default `output_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
+When deploying multiple functions via local folders do not reuse `bundle_config.archive_path` between instances as the result is undefined. Default `archive_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
 
 ```hcl
 module "cf-http-one" {
@@ -217,7 +217,7 @@ module "cf-http-one" {
   name        = "test-cf-http-one"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir = "fabric/assets"
+    path = "fabric/assets"
   }
 }
 
@@ -228,17 +228,20 @@ module "cf-http-two" {
   name        = "test-cf-http-two"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir = "fabric/assets"
+    path = "fabric/assets"
   }
 }
 # tftest modules=2 resources=4 inventory=multiple_functions.yaml
 ```
 
 ### Mounting secrets from Secret Manager
+
 This provides the latest value of the secret `var_secret` as `VARIABLE_SECRET` environment variable and three values of `path_secret` mounted in filesystem:
-* `/app/secret/first` contains version 1
-* `/app/secret/second` contains version 2
-* `/app/secret/latest` contains latest version of the secret
+
+- `/app/secret/first` contains version 1
+- `/app/secret/second` contains version 2
+- `/app/secret/latest` contains latest version of the secret
+
 ```hcl
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
@@ -247,8 +250,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
-    source_dir  = "fabric/assets"
-    output_path = "bundle.zip"
+    path = "fabric/assets/"
   }
   secrets = {
     VARIABLE_SECRET = {
@@ -280,27 +282,27 @@ module "cf-http" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L26) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
-| [bundle_config](variables.tf#L38) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L109) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L124) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L129) | Region used for all resources. | <code>string</code> | ✓ |  |
+| [bundle_config](variables.tf#L38) | Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified. | <code title="object&#40;&#123;&#10;  path &#61; string&#10;  folder_options &#61; optional&#40;object&#40;&#123;&#10;    archive_path &#61; optional&#40;string&#41;&#10;    excludes     &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L133) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L148) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L153) | Region used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location                  &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_worker_pool](variables.tf#L32) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format. | <code>string</code> |  | <code>null</code> |
-| [description](variables.tf#L47) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [docker_repository_id](variables.tf#L53) | User managed repository created in Artifact Registry. | <code>string</code> |  | <code>null</code> |
-| [environment_variables](variables.tf#L59) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [function_config](variables.tf#L65) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code title="object&#40;&#123;&#10;  entry_point     &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instance_count  &#61; optional&#40;number, 1&#41;&#10;  memory_mb       &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  cpu             &#61; optional&#40;string, &#34;0.166&#34;&#41;&#10;  runtime         &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout_seconds &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point     &#61; &#34;main&#34;&#10;  instance_count  &#61; 1&#10;  memory_mb       &#61; 256&#10;  cpu             &#61; &#34;0.166&#34;&#10;  runtime         &#61; &#34;python310&#34;&#10;  timeout_seconds &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [iam](variables.tf#L85) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_settings](variables.tf#L91) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
-| [kms_key](variables.tf#L97) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L103) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L114) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L134) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_account](variables.tf#L146) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L152) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L158) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L176) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L186) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L71) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [docker_repository_id](variables.tf#L77) | User managed repository created in Artifact Registry. | <code>string</code> |  | <code>null</code> |
+| [environment_variables](variables.tf#L83) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [function_config](variables.tf#L89) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code title="object&#40;&#123;&#10;  entry_point     &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instance_count  &#61; optional&#40;number, 1&#41;&#10;  memory_mb       &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  cpu             &#61; optional&#40;string, &#34;0.166&#34;&#41;&#10;  runtime         &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout_seconds &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point     &#61; &#34;main&#34;&#10;  instance_count  &#61; 1&#10;  memory_mb       &#61; 256&#10;  cpu             &#61; &#34;0.166&#34;&#10;  runtime         &#61; &#34;python310&#34;&#10;  timeout_seconds &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [iam](variables.tf#L109) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_settings](variables.tf#L115) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
+| [kms_key](variables.tf#L121) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L127) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L138) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L158) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account](variables.tf#L170) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L176) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [trigger_config](variables.tf#L182) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L200) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L210) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

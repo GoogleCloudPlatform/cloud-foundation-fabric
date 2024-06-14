@@ -94,8 +94,10 @@ module "cf" {
     location = var.region
   }
   bundle_config = {
-    source_dir  = "${path.module}/cf"
-    output_path = var.bundle_path
+    path = "${path.module}/cf"
+    folder_options = {
+      archive_path = var.bundle_path
+    }
   }
   service_account = module.service-account.email
   trigger_config = {
@@ -116,9 +118,10 @@ module "cffile" {
     lifecycle_delete_age_days = null
   }
   bundle_config = {
-    source_dir  = "${path.module}/cffile"
-    output_path = var.bundle_path_cffile
-    excludes    = null
+    path = "${path.module}/cffile"
+    folder_options = {
+      archive_path = var.bundle_path_cffile
+    }
   }
   service_account = module.service-account.email
   trigger_config = {
