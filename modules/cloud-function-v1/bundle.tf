@@ -15,16 +15,16 @@
  */
 
 locals {
-  bundle = {
-    name = try(
-      "bundle-${data.archive_file.bundle[0].output_md5}.zip",
-      basename(var.bundle_config.path)
+  bundle_type = (
+    startswith(var.bundle_config.path, "gs://")
+    ? "gcs"
+    : (
+      try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+      endswith(var.bundle_config.path, ".zip")
+      ? "local-file"
+      : "local-folder"
     )
-    path = try(
-      data.archive_file.bundle[0].output_path,
-      pathexpand(var.bundle_config.path)
-    )
-  }
+  )
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -59,20 +59,29 @@ resource "google_storage_bucket" "bucket" {
 # compress bundle in a zip archive if it's a folder
 
 data "archive_file" "bundle" {
-  count = (
-    try(fileexists(pathexpand(var.bundle_config.path)), null) == null ? 1 : 0
+  count      = local.bundle_type == "local-folder" ? 1 : 0
+  type       = "zip"
+  source_dir = pathexpand(var.bundle_config.path)
+  output_path = (
+    var.bundle_config.folder_options.archive_path != null
+    ? pathexpand(var.bundle_config.folder_options.archive_path)
+    : "/tmp/bundle-${var.project_id}-${var.name}.zip"
   )
-  type             = "zip"
-  source_dir       = pathexpand(var.bundle_config.path)
-  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
   output_file_mode = "0644"
-  excludes         = var.bundle_config.excludes
+  excludes         = var.bundle_config.folder_options.excludes
 }
 
 # upload to GCS
 
 resource "google_storage_bucket_object" "bundle" {
-  name   = local.bundle.name
+  count = local.bundle_type != "gcs" ? 1 : 0
+  name = try(
+    "bundle-${data.archive_file.bundle[0].output_md5}.zip",
+    basename(var.bundle_config.path)
+  )
   bucket = local.bucket
-  source = local.bundle.path
+  source = try(
+    data.archive_file.bundle[0].output_path,
+    pathexpand(var.bundle_config.path)
+  )
 }

@@ -1,8 +1,6 @@
 # Cloud Function Module (v2)
 
-Cloud Function management, with support for IAM roles and optional bucket creation.
-
-The GCS object used for deployment uses a hash of the bundle zip contents in its name, which ensures change tracking and avoids recreating the function if the GCS object is deleted and needs recreating.
+Cloud Function management, with support for IAM roles, optional bucket creation and bundle via GCS URI, local zip, or local source folder.
 
 <!-- BEGIN TOC -->
 - [TODO](#todo)

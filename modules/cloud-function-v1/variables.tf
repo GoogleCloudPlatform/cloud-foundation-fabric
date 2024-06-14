@@ -42,23 +42,35 @@ variable "build_worker_pool" {
 }
 
 variable "bundle_config" {
-  description = "Cloud function source. If path points to a .zip archive it is uploaded as-is, otherwise an archive is created on the fly. A null output path will use a unique name for the bundle in /tmp."
+  description = "Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified."
   type = object({
-    path        = string
-    excludes    = optional(list(string))
-    output_path = optional(string)
+    path = string
+    folder_options = optional(object({
+      archive_path = optional(string)
+      excludes     = optional(list(string))
+    }), {})
   })
+  nullable = false
   validation {
     condition = (
       var.bundle_config.path != null && (
+        # GCS object
+        (
+          startswith(var.bundle_config.path, "gs://") &&
+          endswith(var.bundle_config.path, ".zip")
+        )
+        ||
+        # local folder
+        length(fileset(pathexpand(var.bundle_config.path), "**/*")) > 0
+        ||
+        # local ZIP archive
         (
           try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
           endswith(var.bundle_config.path, ".zip")
-        ) ||
-        length(fileset(pathexpand(var.bundle_config.path), "**/*")) > 0
+        )
       )
     )
-    error_message = "Bundle path must be set to a local folder or zip file."
+    error_message = "Bundle path must be set to a GCS object URI, a local folder or a local zip file."
   }
 }
 
