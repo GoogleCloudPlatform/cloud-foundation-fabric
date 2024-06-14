@@ -65,7 +65,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = local.bucket
   source_archive_object = (
     local.bundle_type == "gcs"
-    ? var.bundle_config.path
+    ? replace(var.bundle_config.path, "/^gs:\\/\\/[^\\/]+\\//", "")
     : google_storage_bucket_object.bundle[0].name
   )
   labels                       = var.labels
