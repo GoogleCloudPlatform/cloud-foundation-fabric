@@ -22,12 +22,12 @@ values:
     role: roles/run.invoker
     service: test-cf-http
   module.cf-http.google_cloudfunctions2_function.function: {}
-  module.cf-http.google_storage_bucket_object.bundle:
+  module.cf-http.google_storage_bucket_object.bundle[0]:
     bucket: test-cf-bundles
     customer_encryption: []
     detect_md5hash: different hash
     name: bundle-6f1ece136848fee658e335b05fe2d79d.zip
-    source: bundle.zip
+    source: /tmp/bundle-my-project-test-cf-http.zip
 
 counts:
   google_cloud_run_service_iam_binding: 1

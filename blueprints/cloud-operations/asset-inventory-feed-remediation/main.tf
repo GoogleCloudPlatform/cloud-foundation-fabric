@@ -85,8 +85,10 @@ module "cf" {
     location = var.region
   }
   bundle_config = {
-    path        = "${path.module}/cf"
-    output_path = var.bundle_path
+    path = "${path.module}/cf"
+    folder_options = {
+      archive_path = var.bundle_path
+    }
   }
   service_account = module.service-account.email
   trigger_config = {
