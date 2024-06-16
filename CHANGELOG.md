@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2024-05-15 09:01:39+00:00 -->
 
+## [32.0.0] - 2024-06-16
+
 ### BLUEPRINTS
 
 - [[#2361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2361)] **incompatible change:** Support GCS objects in cloud function modules bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 11:44:01+00:00 -->
@@ -2253,7 +2255,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...HEAD
+[32.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...v32.0.0
 [31.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...v31.1.0
 [31.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...v31.0.0
 [30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
