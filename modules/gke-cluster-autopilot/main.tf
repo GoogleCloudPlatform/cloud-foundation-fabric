@@ -122,7 +122,7 @@ resource "google_container_cluster" "cluster" {
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
       stack_type               = var.vpc_config.stack_type
       dynamic "additional_pod_ranges_config" {
-        for_each = var.vpc_config.secondary_range_blocks.additional_ranges != null ? [""] : []
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
         content {
           pod_range_names = var.vpc_config.additional_ranges
         }
@@ -137,7 +137,7 @@ resource "google_container_cluster" "cluster" {
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
       stack_type                    = var.vpc_config.stack_type
       dynamic "additional_pod_ranges_config" {
-        for_each = var.vpc_config.secondary_range_blocks.additional_ranges != null ? [""] : []
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
         content {
           pod_range_names = var.vpc_config.additional_ranges
         }
