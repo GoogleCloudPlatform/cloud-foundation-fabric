@@ -272,6 +272,12 @@ resource "google_container_cluster" "cluster" {
         var.vpc_config.secondary_range_blocks.services
       )
       stack_type = var.vpc_config.stack_type
+      dynamic "additional_pod_ranges_config" {
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
+        content {
+          pod_range_names = var.vpc_config.additional_ranges
+        }
+      }
     }
   }
   dynamic "ip_allocation_policy" {
@@ -284,6 +290,12 @@ resource "google_container_cluster" "cluster" {
         var.vpc_config.secondary_range_names.services
       )
       stack_type = var.vpc_config.stack_type
+      dynamic "additional_pod_ranges_config" {
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
+        content {
+          pod_range_names = var.vpc_config.additional_ranges
+        }
+      }
     }
   }
   # Send GKE cluster logs from chosen sources to Cloud Logging.
@@ -408,9 +420,6 @@ resource "google_container_cluster" "cluster" {
         )
         enable_relay = (
           var.monitoring_config.advanced_datapath_observability.enable_relay
-        )
-        relay_mode = (
-          var.monitoring_config.advanced_datapath_observability.relay_mode
         )
       }
     }
