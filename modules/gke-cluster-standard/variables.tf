@@ -315,7 +315,6 @@ variable "monitoring_config" {
     advanced_datapath_observability = optional(object({
       enable_metrics = bool
       enable_relay   = optional(bool)
-      relay_mode     = optional(string)
     }))
   })
   default  = {}
@@ -433,6 +432,7 @@ variable "vpc_config" {
       pods     = optional(string, "pods")
       services = optional(string, "services")
     }))
+    additional_ranges        = optional(list(string))
     master_authorized_ranges = optional(map(string))
     stack_type               = optional(string)
   })
