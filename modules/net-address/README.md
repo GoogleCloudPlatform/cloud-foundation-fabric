@@ -141,6 +141,25 @@ module "addresses" {
 # tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-service-attachment.yaml e2e
 ```
 
+Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to targe Google APIs.
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  psc_addresses = {
+    googleapis = {
+      address = "10.0.32.32"
+      network = var.vpc.self_link
+      service_attachment = {
+        psc_service_attachment_link = "all-apis"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=psc-service-attachment-all-apis.yaml e2e
+```
+
+
 
 ### IPSec Interconnect addresses
 

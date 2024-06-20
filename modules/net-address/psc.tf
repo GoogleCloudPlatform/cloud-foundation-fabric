@@ -67,7 +67,7 @@ resource "google_compute_global_forwarding_rule" "psc_consumer" {
   for_each              = { for name, psc in local.global_psc : name => psc if psc.service_attachment != null }
   name                  = coalesce(each.value.name, each.key)
   project               = var.project_id
-  subnetwork            = each.value.subnet_self_link
+  network               = each.value.network
   ip_address            = google_compute_global_address.psc[each.key].self_link
   load_balancing_scheme = ""
   target                = each.value.service_attachment.psc_service_attachment_link
