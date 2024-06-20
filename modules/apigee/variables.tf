@@ -46,12 +46,13 @@ variable "envgroups" {
 variable "environments" {
   description = "Environments."
   type = map(object({
-    api_proxy_type  = optional(string)
-    description     = optional(string, "Terraform-managed")
-    display_name    = optional(string)
-    deployment_type = optional(string)
-    envgroups       = optional(list(string), [])
-    iam             = optional(map(list(string)), {})
+    api_proxy_type    = optional(string)
+    description       = optional(string, "Terraform-managed")
+    display_name      = optional(string)
+    deployment_type   = optional(string)
+    envgroups         = optional(list(string), [])
+    forward_proxy_uri = optional(string)
+    iam               = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       role    = string
       members = list(string)
