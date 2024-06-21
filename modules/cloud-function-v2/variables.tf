@@ -29,6 +29,12 @@ variable "bucket_name" {
   nullable    = false
 }
 
+variable "build_service_account" {
+  description = "Build service account email."
+  type        = string
+  default     = null
+}
+
 variable "build_worker_pool" {
   description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format."
   type        = string
