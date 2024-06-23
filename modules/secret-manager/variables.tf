@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+variable "expire_time" {
+  description = "Timestamp in UTC when the Secret is scheduled to expire."
+  type        = string
+  default     = null
+}
 
 variable "iam" {
   description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
@@ -24,12 +29,6 @@ variable "labels" {
   description = "Optional labels for each secret."
   type        = map(map(string))
   default     = {}
-}
-
-variable "expire_time" {
-  description = "Timestamp in UTC when the Secret is scheduled to expire."
-  type        = string
-  default     = null
 }
 
 variable "project_id" {
