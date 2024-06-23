@@ -26,6 +26,12 @@ variable "labels" {
   default     = {}
 }
 
+variable "expire_time" {
+  description = "Timestamp in UTC when the Secret is scheduled to expire."
+  type        = string
+  default     = null
+}
+
 variable "project_id" {
   description = "Project id where the keyring will be created."
   type        = string

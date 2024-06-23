@@ -33,13 +33,15 @@ locals {
   version_keypairs = {
     for pair in local.version_pairs : "${pair.secret}:${pair.name}" => pair
   }
+  expire_time = var.expire_time != null ? var.expire_time : ""
 }
 
 resource "google_secret_manager_secret" "default" {
-  for_each  = var.secrets
-  project   = var.project_id
-  secret_id = each.key
-  labels    = lookup(var.labels, each.key, null)
+  for_each    = var.secrets
+  project     = var.project_id
+  secret_id   = each.key
+  labels      = lookup(var.labels, each.key, null)
+  expire_time = local.expire_time != "" ? local.expire_time : null
 
   dynamic "replication" {
     for_each = each.value.locations == null ? [""] : []
