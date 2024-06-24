@@ -104,11 +104,7 @@ resource "google_compute_router_peer" "bgp_peer" {
     ? "CUSTOM"
     : "DEFAULT"
   )
-  advertised_groups = concat(
-    try(each.value.bgp_peer.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : [],
-    try(each.value.bgp_peer.custom_advertise.all_vpc_subnets, false) ? ["ALL_VPC_SUBNETS"] : [],
-    try(each.value.bgp_peer.custom_advertise.all_peer_vpc_subnets, false) ? ["ALL_PEER_VPC_SUBNETS"] : []
-  )
+  advertised_groups = try(each.value.bgp_peer.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : []
   dynamic "advertised_ip_ranges" {
     for_each = try(each.value.bgp_peer.custom_advertise.ip_ranges, {})
     iterator = range
