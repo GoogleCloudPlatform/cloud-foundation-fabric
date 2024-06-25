@@ -66,6 +66,7 @@ resource "google_cloudfunctions2_function" "function" {
   description  = var.description
   kms_key_name = var.kms_key
   build_config {
+    service_account       = var.build_service_account
     worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
     entry_point           = var.function_config.entry_point

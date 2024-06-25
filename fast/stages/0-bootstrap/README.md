@@ -18,7 +18,9 @@ Use the following diagram as a simple high level reference for the following sec
 - [Design overview and choices](#design-overview-and-choices)
   - [User groups](#user-groups)
   - [Organization-level IAM](#organization-level-iam)
-  - [Organization policies and tag-based conditions](#organization-policies-and-tag-based-conditions)
+  - [Organization policies](#organization-policies)
+    - [Security Command Center Enterprise](#security-command-center-enterprise)
+    - [Tags and Organization Policy conditions](#tags-and-organization-policy-conditions)
   - [Automation project and resources](#automation-project-and-resources)
   - [Billing account](#billing-account)
   - [Organization-level logging](#organization-level-logging)
@@ -70,13 +72,19 @@ One consequence of the above setup is the need to configure IAM bindings that ca
 
 A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
-### Organization policies and tag-based conditions
+### Organization policies
 
 It's often desirable to have organization policies deployed before any other resource in the org, so as to ensure compliance with specific requirements (e.g. location restrictions), or control the configuration of specific resources (e.g. default network at project creation or service account grants).
 
 To cover this use case, organization policies have been moved from the resource management to the bootstrap stage in FAST versions after 26.0.0. They are managed via the usual factory approach, and a [sample set of data files](./data/org-policies/) is included with this stage. They are not applied during the initial run when the `bootstrap_user` variable is set, to work around incompatibilities with user credentials.
 
-The only current exception to the factory approach is the `iam.allowedPolicyMemberDomains` constraint, which is managed in code so as to be able to auto-allow the organization's domain. More domains can be added via the `org_policies_config` variable, which also serves as an umbrella for future policies that will need to be managed in code.
+The only current exception to the factory approach is the `iam.allowedPolicyMemberDomains` constraint (DRS), which is managed in code so as to be able to auto-allow the organization's domain. More domains can be added via the `org_policies_config` variable, which also serves as an umbrella for future policies that will need to be managed in code.
+
+#### Security Command Center Enterprise
+
+The DRS policy mentioned above might make it complex to [enable Security Command Center Enterprise](https://cloud.google.com/security-command-center/docs/activate-enterprise-tier#verify_organization_policies). If this is the case, you can temporarily disable it via the Cloud Console, enable SCC Enterprise, then re-enable the policy.
+
+#### Tags and Organization Policy conditions
 
 Organization policy exceptions are managed via a dedicated resource management tag hierarchy, rooted in the `org-policies` tag key. A default condition is already present for the the `iam.allowedPolicyMemberDomains` constraint, that relaxes the policy on resources that have the `org-policies/allowed-policy-member-domains-all` tag value bound or inherited.
 

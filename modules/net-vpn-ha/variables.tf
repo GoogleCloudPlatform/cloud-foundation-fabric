@@ -77,10 +77,8 @@ variable "tunnels" {
       asn            = number
       route_priority = optional(number, 1000)
       custom_advertise = optional(object({
-        all_subnets          = bool
-        all_vpc_subnets      = bool
-        all_peer_vpc_subnets = bool
-        ip_ranges            = map(string)
+        all_subnets = bool
+        ip_ranges   = map(string)
       }))
       md5_authentication_key = optional(object({
         name = string
