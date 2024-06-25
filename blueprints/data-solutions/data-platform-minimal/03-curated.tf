@@ -20,7 +20,8 @@ locals {
     "roles/bigquery.dataViewer" = [
       module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
+      local.groups_iam.data-engineers,
+      "user:reporting-admin@timeout.com",
     ]
     "roles/bigquery.jobUser" = [
       module.processing-sa-0.iam_email, # Remove once bug is fixed. https://github.com/apache/airflow/issues/32106
