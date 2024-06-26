@@ -53,7 +53,7 @@ variable "config_source_subnetworks" {
   validation {
     condition = alltrue([
       for s in var.config_source_subnetworks.subnetworks :
-      (s.all_ranges == true) != ((s.primary_range == true) || (s.secondary_ranges == true))
+      (s.all_ranges == true) != ((s.primary_range == true) || (s.secondary_ranges == []))
     ])
     error_message = "Either config_source_subnetworks.subnetworks.all_ranges is true or one of primary_range or secondary_ranges must be defined."
   }
