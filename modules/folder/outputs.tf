@@ -40,7 +40,7 @@ output "name" {
   value = (
     var.assured_workload_config == null
     ? try(google_folder.folder[0].display_name, null)
-    : try(google_assured_workloads_workload.folder[0].resource_settings.0.display_name, null)
+    : try(google_assured_workloads_workload.folder[0].resource_settings[0].display_name, null)
   )
 }
 
