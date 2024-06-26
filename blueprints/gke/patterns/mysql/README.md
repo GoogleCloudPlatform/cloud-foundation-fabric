@@ -31,7 +31,7 @@ The database admin password is generated in Terraform and stored as a Kubernetes
 
 `mysql-server` Pods are spread across different zones using `topologySpreadConstraints`  with `maxSkew` of 1, `minDomains` of 3 and Pod antiAffinity preventing the Pods to run on the same host. This permits running two nodes in one zone (but on different hosts) in case of one zone failure in 3-zoned region.
 
-`mysql-router` Pods hava affinity to run in the same zones as `mysql-server` nodes and antiAffinity to run on the same host (required) or zone (preferred) as other `mysql-router` . With two instances of `mysql-router` this might result in 2 instances running in the same region
+`mysql-router` Pods have affinity to run in the same zones as `mysql-server` nodes and antiAffinity to run on the same host (required) or zone (preferred) as other `mysql-router` . With two instances of `mysql-router` this might result in 2 instances running in the same region
 
 ## Usage
 ### Prerequisites

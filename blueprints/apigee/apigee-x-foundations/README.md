@@ -2,7 +2,7 @@
 
 This  blueprint creates all the resources necessary to set up Apigee X on Google Cloud.
 
-Apigee can be exposed to clients using Regional Internal Application Load Balancer, Global External Application Load Balancer or both. When using the Regional Internal Application Load Balancer, used self-managed certificates (incuding self-signed certificates generated in this same module). When using the Global External Application Load Balancer Google-managed certificates or self-managed certificates (including self-signed certificates generated in this same module). When using Cross-region Internal Application Load Balancer a certificate manager needs to be used and it needs to be created in the same project as Apigee.
+Apigee can be exposed to clients using Regional Internal Application Load Balancer, Global External Application Load Balancer or both. When using the Regional Internal Application Load Balancer, used self-managed certificates (including self-signed certificates generated in this same module). When using the Global External Application Load Balancer Google-managed certificates or self-managed certificates (including self-signed certificates generated in this same module). When using Cross-region Internal Application Load Balancer a certificate manager needs to be used and it needs to be created in the same project as Apigee.
 
 Find below a few examples of different Apigee architectures that can be created using this module.
 

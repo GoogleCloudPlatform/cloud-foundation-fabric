@@ -15,7 +15,7 @@
 <img width="200px" src="../../../../assets/images/cloud-shell-button.png">
 </a>
 
-This blueprints shows how to a hihgly available Kakfa instance on GKE using the Strimzi operator.
+This blueprints shows how to a hihgly available Kafka instance on GKE using the Strimzi operator.
 
 ## Requirements
 
