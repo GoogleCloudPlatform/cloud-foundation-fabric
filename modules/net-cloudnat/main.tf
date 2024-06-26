@@ -100,7 +100,12 @@ resource "google_compute_router_nat" "nat" {
         subnetwork.value.all_ranges == true
         ? ["ALL_IP_RANGES"]
         : concat(
-          ["PRIMARY_IP_RANGE"],
+          (
+            subnetwork.value.primary_range == null
+            ? []
+            : ["PRIMARY_IP_RANGE"]
+          )
+          ,
           (
             subnetwork.value.secondary_ranges == null
             ? []
