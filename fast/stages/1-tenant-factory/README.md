@@ -2,7 +2,7 @@
 
 This optional stage implements multitenancy, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a measure of central control.
 
-Typical use cases include large organizations managing a single Cloud subscription for multiple semi-indipendent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
+Typical use cases include large organizations managing a single Cloud subscription for multiple semi-independent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
@@ -64,7 +64,7 @@ Tenants of this type can be "upgraded" at any time to FAST compatibility by simp
 
 ### FAST-compatible tenants
 
-Tenants can also be configured for FAST compatibility. This approach effectively emulates the org-level bootstrap stage, allowing tenants to indipendently bring up a complete Landing Zone in their environment using FAST.
+Tenants can also be configured for FAST compatibility. This approach effectively emulates the org-level bootstrap stage, allowing tenants to independently bring up a complete Landing Zone in their environment using FAST.
 
 The main differences compared to organization-level FAST are:
 
