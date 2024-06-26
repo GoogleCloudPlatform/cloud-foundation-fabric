@@ -14,24 +14,45 @@
  * limitations under the License.
  */
 
-module "apigee" {
-  source     = "../../../modules/apigee"
-  project_id = module.project.project_id
-  organization = merge(var.apigee_config.organization, var.network_config.apigee_vpc != null && !var.apigee_config.organization.disable_vpc_peering ? {
-    authorized_network = module.apigee_vpc[0].id
-    } : var.network_config.shared_vpc != null && !var.apigee_config.organization.disable_vpc_peering ? {
-    authorized_network = module.shared_vpc[0].id
-    } : {},
-    var.apigee_config.organization.database_encryption_key == null ? {} : {
-      database_encryption_key = module.database_kms[0].keys["database-key"].id
-      }, {
+locals {
+  control_plan_in_eu_or_us = (
+    try(contains(["europe", "us"],
+    split("-", var.apigee_config.organization.api_consumer_data_location)[0]), false)
+  )
+  organization = merge(var.apigee_config.organization,
+    {
+      authorized_network = (var.apigee_config.organization.disable_vpc_peering
+        ? null :
+        try(module.apigee_vpc[0].id, module.shared_vpc[0].id)
+      )
+      database_encryption_key = try(
+        module.database_kms[0].key_ids["database-key"],
+      var.apigee_config.organization.database_encryption_key_config.id)
+      api_consumer_data_encryption_key = try(
+        module.api_consumer_data_kms[0].key_ids["api-consumer-data-key"],
+      var.apigee_config.organization.api_consumer_data_encryption_key_config.id)
+      control_plane_encryption_key = try(
+        module.control_plane_kms[0].key_ids["control-plane-key"],
+      var.apigee_config.organization.control_plane_encryption_key_config.id)
       runtime_type = "CLOUD"
-  })
-  envgroups    = var.apigee_config.envgroups
-  environments = var.apigee_config.environments
-  instances = { for k, v in var.apigee_config.instances : k => merge(v, v.disk_encryption_key == null ? {
-    disk_encryption_key = module.disks_kms[k].key_ids["disk-key"]
-  } : {}) }
+    }
+  )
+  instances = { for k, v in var.apigee_config.instances : k => merge(v, {
+    disk_encryption_key = try(
+      module.disks_kms[k].key_ids["disk-key"],
+      v.disk_encryption_key_config.id,
+      null
+    )
+  }) }
+}
+
+module "apigee" {
+  source               = "../../../modules/apigee"
+  project_id           = module.project.project_id
+  organization         = local.organization
+  envgroups            = var.apigee_config.envgroups
+  environments         = var.apigee_config.environments
+  instances            = local.instances
   endpoint_attachments = var.apigee_config.endpoint_attachments
   addons_config        = var.apigee_config.addons_config
 }
