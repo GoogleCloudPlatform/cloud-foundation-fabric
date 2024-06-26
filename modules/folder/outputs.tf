@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-output "folder" {
-  description = "Folder resource."
-  value       = try(google_folder.folder[0], null)
-}
-
 output "assured_workload" {
   description = "Assured Workloads workload resource."
   value       = try(google_assured_workloads_workload.folder[0], null)
+}
+
+output "folder" {
+  description = "Folder resource."
+  value       = try(google_folder.folder[0], null)
 }
 
 output "id" {

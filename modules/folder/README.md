@@ -404,8 +404,8 @@ module "folder" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [assured_workload](outputs.tf#L22) | Assured Workloads workload resource. |  |
-| [folder](outputs.tf#L17) | Folder resource. |  |
+| [assured_workload](outputs.tf#L17) | Assured Workloads workload resource. |  |
+| [folder](outputs.tf#L22) | Folder resource. |  |
 | [id](outputs.tf#L27) | Fully qualified folder id. |  |
 | [name](outputs.tf#L38) | Folder name. |  |
 | [sink_writer_identities](outputs.tf#L47) | Writer identities created for each sink. |  |
