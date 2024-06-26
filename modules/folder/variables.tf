@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- variable "assured_workload_config" {
+variable "assured_workload_config" {
   description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
   type = object({
     compliance_regime         = string
