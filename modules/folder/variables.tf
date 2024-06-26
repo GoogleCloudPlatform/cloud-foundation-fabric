@@ -99,3 +99,24 @@ variable "tag_bindings" {
   type        = map(string)
   default     = null
 }
+
+variable "assured_workload_config" {
+  description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
+  type = object({
+    compliance_regime         = string
+    display_name              = string
+    location                  = string
+    organization              = string
+    enable_sovereign_controls = optional(bool)
+    labels                    = optional(map(string), {})
+    partner                   = optional(string)
+    partner_permissions = optional(object({
+      assured_workloads_monitoring = optional(bool)
+      data_logs_viewer             = optional(bool)
+      service_access_approver      = optional(bool)
+    }))
+    violation_notifications_enabled = optional(bool)
+
+  })
+  default = null
+}

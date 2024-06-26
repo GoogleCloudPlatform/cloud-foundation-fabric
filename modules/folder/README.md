@@ -55,6 +55,26 @@ The authoritative and additive approaches can be used together, provided differe
 
 Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
 
+## Assured Workload Folder
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+
+  assured_workload_config = {
+    compliance_regime         = "EU_REGIONS_AND_SUPPORT"
+    display_name              = "workload-name"
+    location                  = "europe-west1"
+    organization              = "organizations/0123456789"
+    enable_sovereign_controls = true
+  }
+
+}
+# tftest modules=1 resources=1 inventory=assured-workload.yaml e2e
+```
+
 ## Organization policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
@@ -347,7 +367,7 @@ module "folder" {
 |---|---|---|
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_settings</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
@@ -360,6 +380,7 @@ module "folder" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
+| [assured_workload_config](variables.tf#L103) | Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false. | <code title="object&#40;&#123;&#10;  compliance_regime         &#61; string&#10;  display_name              &#61; string&#10;  location                  &#61; string&#10;  organization              &#61; string&#10;  enable_sovereign_controls &#61; optional&#40;bool&#41;&#10;  labels                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  partner                   &#61; optional&#40;string&#41;&#10;  partner_permissions &#61; optional&#40;object&#40;&#123;&#10;    assured_workloads_monitoring &#61; optional&#40;bool&#41;&#10;    data_logs_viewer             &#61; optional&#40;bool&#41;&#10;    service_access_approver      &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  violation_notifications_enabled &#61; optional&#40;bool&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [factories_config](variables.tf#L24) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  org_policies &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [firewall_policy](variables.tf#L33) | Hierarchical firewall policy to associate to this folder. | <code title="object&#40;&#123;&#10;  name   &#61; string&#10;  policy &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
@@ -382,8 +403,9 @@ module "folder" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| [assured_workload](outputs.tf#L22) | Assured Workloads workload resource. |  |
 | [folder](outputs.tf#L17) | Folder resource. |  |
-| [id](outputs.tf#L22) | Fully qualified folder id. |  |
-| [name](outputs.tf#L33) | Folder name. |  |
-| [sink_writer_identities](outputs.tf#L38) | Writer identities created for each sink. |  |
+| [id](outputs.tf#L27) | Fully qualified folder id. |  |
+| [name](outputs.tf#L38) | Folder name. |  |
+| [sink_writer_identities](outputs.tf#L47) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->
