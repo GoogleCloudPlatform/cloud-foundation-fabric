@@ -26,8 +26,8 @@ locals {
   )
   aw_parent = (
     # Assured Workload only accepls folder as a parent and uses organization as a parent when no value provided.
-    var.parent == null 
-    ? null 
+    var.parent == null
+    ? null
     : (
       try(startswith(var.parent, "folders/"))
       ? var.parent
