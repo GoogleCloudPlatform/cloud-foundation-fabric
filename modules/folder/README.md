@@ -5,6 +5,7 @@ This module allows the creation and management of folders, including support for
 <!-- BEGIN TOC -->
 - [Basic example with IAM bindings](#basic-example-with-iam-bindings)
 - [IAM](#iam)
+- [Assured Workload Folder](#assured-workload-folder)
 - [Organization policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
