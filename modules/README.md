@@ -113,6 +113,7 @@ These modules are used in the examples included in this repository. If you are u
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
 - [Secure Web Proxy](./net-swp)
+- [Certificate Manager](./certificate-manager)
 
 ## Serverless
 
