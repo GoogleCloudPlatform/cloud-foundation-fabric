@@ -53,7 +53,7 @@ variable "assured_workload_config" {
       "IL2",
       "JP_REGIONS_AND_SUPPORT"
     ], var.assured_workload_config.compliance_regime), true)
-    error_message = "Allowed values for assured_workload_config.compliance_regime are listed in the documentation https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
+    error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
   }
   validation {
     condition = try(contains([
@@ -63,7 +63,7 @@ variable "assured_workload_config" {
       "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
       "SOVEREIGN_CONTROLS_BY_PSN"
     ], var.assured_workload_config.partner), true)
-    error_message = "Allowed values for assured_workload_config.partner are listed in the documentation https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
+    error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
 }
 
