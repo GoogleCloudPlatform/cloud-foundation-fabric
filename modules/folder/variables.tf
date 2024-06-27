@@ -35,33 +35,33 @@ variable "assured_workload_config" {
   default = null
   validation {
     condition = try(contains([
-      "COMPLIANCE_REGIME_UNSPECIFIED",
-      "IL4",
+      "ASSURED_WORKLOADS_FOR_PARTNERS",
+      "AU_REGIONS_AND_US_SUPPORT",
+      "CA_PROTECTED_B, IL5",
+      "CA_REGIONS_AND_SUPPORT",
       "CJIS",
+      "COMPLIANCE_REGIME_UNSPECIFIED",
+      "EU_REGIONS_AND_SUPPORT",
       "FEDRAMP_HIGH",
       "FEDRAMP_MODERATE",
-      "US_REGIONAL_ACCESS",
       "HIPAA, HITRUST",
-      "EU_REGIONS_AND_SUPPORT",
-      "CA_REGIONS_AND_SUPPORT",
-      "ITAR",
-      "AU_REGIONS_AND_US_SUPPORT",
-      "ASSURED_WORKLOADS_FOR_PARTNERS",
-      "ISR_REGIONS",
-      "ISR_REGIONS_AND_SUPPORT",
-      "CA_PROTECTED_B, IL5",
       "IL2",
-      "JP_REGIONS_AND_SUPPORT"
+      "IL4",
+      "ISR_REGIONS_AND_SUPPORT",
+      "ISR_REGIONS",
+      "ITAR",
+      "JP_REGIONS_AND_SUPPORT",
+      "US_REGIONAL_ACCESS"
     ], var.assured_workload_config.compliance_regime), true)
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
   }
   validation {
     condition = try(contains([
-      "PARTNER_UNSPECIFIED",
       "LOCAL_CONTROLS_BY_S3NS",
-      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
+      "PARTNER_UNSPECIFIED",
+      "SOVEREIGN_CONTROLS_BY_PSN",
       "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
-      "SOVEREIGN_CONTROLS_BY_PSN"
+      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
     ], var.assured_workload_config.partner), true)
     error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
