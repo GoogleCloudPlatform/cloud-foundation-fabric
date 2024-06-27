@@ -32,7 +32,7 @@ Once you have a cluster with Internet connectivity, create a `terraform.tfvars` 
 
 Only two variables are available to control Kueue's configuration:
 - `teams_namespaces` which controls the namespaces used by different teams to run jobs.
-- `kueue_namespace` which controls the namepsace to deploy Kueue's own resources.
+- `kueue_namespace` which controls the namespace to deploy Kueue's own resources.
 
 Any other configuration can be applied by directly modifying the YAML manifests under the [manifest-templates](manifest-templates) directory.
 

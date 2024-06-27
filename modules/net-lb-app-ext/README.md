@@ -856,7 +856,7 @@ module "glb-0" {
 ```
 
 ## Deploying changes to load balancer configurations
-Load balancers consists of many resources depending on each other. The [Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/load-balancing/docs/application-load-balancer#global-external) shows the structure of a Global external Application Load Balancer, but others are similiar.
+Load balancers consists of many resources depending on each other. The [Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/load-balancing/docs/application-load-balancer#global-external) shows the structure of a Global external Application Load Balancer, but others are similar.
 
 ![Global external Application Load Balancer architecture for serverless apps diagram](https://cloud.google.com/static/load-balancing/images/lb-serverless-simple-ext-https.svg)
 
