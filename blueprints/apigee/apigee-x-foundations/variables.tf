@@ -48,10 +48,11 @@ variable "apigee_config" {
     })
     envgroups = optional(map(list(string)), {})
     environments = optional(map(object({
-      description  = optional(string)
-      display_name = optional(string)
-      envgroups    = optional(list(string), [])
-      iam          = optional(map(list(string)), {})
+      description       = optional(string)
+      display_name      = optional(string)
+      envgroups         = optional(list(string), [])
+      forward_proxy_uri = optional(string)
+      iam               = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         role    = string
         members = list(string)
