@@ -222,7 +222,7 @@ tags = {
 
 ### IAM
 
-The `folder_iam` variable can be used to manage authoritative bindings for all top-level folders. For additional control, IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies throuth the IAM-related variables (`iam`, `iam_bindings`, `iam_bindings_additive`) of the relevant modules.
+The `folder_iam` variable can be used to manage authoritative bindings for all top-level folders. For additional control, IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies through the IAM-related variables (`iam`, `iam_bindings`, `iam_bindings_additive`) of the relevant modules.
 
 A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 

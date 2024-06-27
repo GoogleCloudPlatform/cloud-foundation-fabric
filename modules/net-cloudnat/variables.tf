@@ -94,7 +94,7 @@ variable "endpoint_types" {
       "ENDPOINT_TYPE_MANAGED_PROXY_LB",
       ])
     )
-    error_message = "Proivde one of: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG or ENDPOINT_TYPE_MANAGED_PROXY_LB as endpoint_types"
+    error_message = "Provide one of: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG or ENDPOINT_TYPE_MANAGED_PROXY_LB as endpoint_types"
   }
 }
 

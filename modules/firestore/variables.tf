@@ -156,7 +156,7 @@ variable "fields" {
     condition = alltrue([for v1 in var.fields :
       v1.indexes == null ? true : alltrue([for v2 in coalesce(v1.indexes, []) :
     !(v2.order != null && v2.array_config != null)])])
-    error_message = "Either order or array_config should be specificied, but not both."
+    error_message = "Either order or array_config should be specified, but not both."
   }
 
 }
