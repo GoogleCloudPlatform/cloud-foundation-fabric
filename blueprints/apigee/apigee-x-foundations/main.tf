@@ -42,13 +42,16 @@ module "project" {
     "dns.googleapis.com",
     "iam.googleapis.com",
     "servicenetworking.googleapis.com",
-    ], var.enable_monitoring ? [
-    "cloudbuild.googleapis.com",
-    "cloudfunctions.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "pubsub.googleapis.com",
-    "run.googleapis.com"
+    ], var.int_cross_region_lb_config == null ?
+    [] : [
+      "certificatemanager.googleapis.com"
+      ], var.enable_monitoring ? [
+      "cloudbuild.googleapis.com",
+      "cloudfunctions.googleapis.com",
+      "logging.googleapis.com",
+      "monitoring.googleapis.com",
+      "pubsub.googleapis.com",
+      "run.googleapis.com"
   ] : []))
 
   shared_vpc_service_config = var.project_config.shared_vpc_service_config
@@ -85,7 +88,7 @@ module "apigee_vpc" {
       ip_cidr_range = v.ip_cidr_range
       description   = "Subnet in ${k} region"
     }
-  if v.ip_cidr_range != null && (var.int_cross_region_lb_config != null || nonsensitive(var.int_lb_config != null))]
+  if v.ip_cidr_range != null && (nonsensitive(var.int_cross_region_lb_config != null) || nonsensitive(var.int_lb_config != null))]
   subnets_proxy_only = [for k, v in var.network_config.apigee_vpc.subnets_proxy_only :
     {
       name          = coalesce(v.name, "subnet-proxy-only-${k}")
@@ -94,7 +97,7 @@ module "apigee_vpc" {
       description   = "Proxy-only subnet in ${k} region"
       global        = var.int_cross_region_lb_config != null
     }
-  if v.ip_cidr_range != null && (var.int_cross_region_lb_config != null || nonsensitive(var.int_lb_config != null))]
+  if v.ip_cidr_range != null && (nonsensitive(var.int_cross_region_lb_config != null) || nonsensitive(var.int_lb_config != null))]
   subnets_psc = [for k, v in var.network_config.apigee_vpc.subnets_psc :
     {
       name          = coalesce(v.name, "subnet-psc-${k}")

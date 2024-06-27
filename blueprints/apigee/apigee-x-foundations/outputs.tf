@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+output "apigee_vpc" {
+  description = "Apigee VPC."
+  value       = var.network_config.apigee_vpc == null ? null : module.apigee_vpc[0]
+}
+
+output "apigee_vpc_id" {
+  description = "Apigee VPC."
+  value       = var.network_config.apigee_vpc == null ? null : module.apigee_vpc[0].id
+}
+
+output "apigee_vpc_self_link" {
+  description = "Apigee VPC."
+  value       = var.network_config.apigee_vpc == null ? null : module.apigee_vpc[0].self_link
+}
 output "endpoint_attachment_hosts" {
   description = "Endpoint attachment hosts."
   value       = module.apigee.endpoint_attachment_hosts
@@ -39,8 +53,12 @@ output "int_lb_ip_addresses" {
   value       = var.int_lb_config != null && length(local.int_instances) > 0 ? { for k, v in module.int_lb : k => v.address } : null
 }
 
-output "project_id" {
+output "project" {
   description = "Project."
-  value       = module.project.project_id
+  value       = module.project
 }
 
+output "project_id" {
+  description = "Project id."
+  value       = module.project.project_id
+}
