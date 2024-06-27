@@ -101,9 +101,9 @@ resource "google_compute_router_nat" "nat" {
         ? ["ALL_IP_RANGES"]
         : concat(
           (
-            subnetwork.value.primary_range == null
-            ? []
-            : ["PRIMARY_IP_RANGE"]
+            subnetwork.value.primary_range 
+            ? ["PRIMARY_IP_RANGE"]
+            :  []
           )
           ,
           (

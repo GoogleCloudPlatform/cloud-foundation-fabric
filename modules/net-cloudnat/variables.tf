@@ -44,7 +44,7 @@ variable "config_source_subnetworks" {
     subnetworks = optional(list(object({
       self_link        = string
       all_ranges       = optional(bool, true)
-      primary_range    = optional(bool)
+      primary_range    = optional(bool, false)
       secondary_ranges = optional(list(string))
     })), [])
   })
