@@ -84,7 +84,7 @@ module "folder" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=assured-workload.yaml e2e
+# tftest modules=1 resources=3 inventory=assured-workload.yaml e2e
 ```
 
 ## Organization policies
