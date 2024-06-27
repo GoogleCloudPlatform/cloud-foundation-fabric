@@ -58,8 +58,8 @@ Refer to the [project module](../project/README.md#iam) for examples of the IAM 
 
 ## Assured Workload Folder
 
-To create [Assured Workload](https://cloud.google.com/security/products/assured-workloads) folder instead of regular folder. 
-Note that an existing folder can not be converted to an Assured Workload folder, hence `assured_workload_config` is mutually exclusive with `folder_create=false`. 
+To create [Assured Workload](https://cloud.google.com/security/products/assured-workloads) folder instead of regular folder.
+Note that an existing folder can not be converted to an Assured Workload folder, hence `assured_workload_config` is mutually exclusive with `folder_create=false`.
 
 ```hcl
 module "folder" {
@@ -71,7 +71,7 @@ module "folder" {
     compliance_regime         = "EU_REGIONS_AND_SUPPORT"
     display_name              = "workload-name"
     location                  = "europe-west1"
-    organization              = "organizations/0123456789"
+    organization              = var.organization_id
     enable_sovereign_controls = true
   }
   iam = {
