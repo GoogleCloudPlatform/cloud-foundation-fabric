@@ -16,7 +16,7 @@ values:
   module.folder.google_assured_workloads_workload.folder[0]:
     compliance_regime: EU_REGIONS_AND_SUPPORT
     display_name: workload-name
-    organization: organizations/0123456789
+    organization: organizations/1122334455
     location: europe-west1
     enable_sovereign_controls: true
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
