@@ -58,6 +58,9 @@ Refer to the [project module](../project/README.md#iam) for examples of the IAM 
 
 ## Assured Workload Folder
 
+To create [Assured Workload](https://cloud.google.com/security/products/assured-workloads) folder instead of regular folder. 
+Note that an existing folder can not be converted to an Assured Workload folder, hence `assured_workload_config` is mutually exclusive with `folder_create=false`. 
+
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
@@ -71,7 +74,15 @@ module "folder" {
     organization              = "organizations/0123456789"
     enable_sovereign_controls = true
   }
-
+  iam = {
+    "roles/owner" = ["serviceAccount:${var.service_account.email}"]
+  }
+  iam_bindings_additive = {
+    am1-storage-admin = {
+      member = "serviceAccount:${var.service_account.email}"
+      role   = "roles/storage.admin"
+    }
+  }
 }
 # tftest modules=1 resources=1 inventory=assured-workload.yaml e2e
 ```

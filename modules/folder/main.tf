@@ -64,20 +64,20 @@ resource "google_compute_firewall_policy_association" "default" {
 }
 
 resource "google_assured_workloads_workload" "folder" {
-  count                     = var.assured_workload_config == null ? 0 : 1
+  count                     = (var.assured_workload_config != null && var.folder_create) ? 1 : 0
   compliance_regime         = var.assured_workload_config.compliance_regime
   display_name              = var.assured_workload_config.display_name
   location                  = var.assured_workload_config.location
   organization              = var.assured_workload_config.organization
-  enable_sovereign_controls = try(var.assured_workload_config.enable_sovereign_controls, null)
-  labels                    = try(var.assured_workload_config.labels, {})
-  partner                   = try(var.assured_workload_config.partner, null)
+  enable_sovereign_controls = var.assured_workload_config.enable_sovereign_controls
+  labels                    = var.assured_workload_config.labels
+  partner                   = var.assured_workload_config.partner
   dynamic "partner_permissions" {
     for_each = try(var.assured_workload_config.partner_permissions, null) == null ? [] : [""]
     content {
-      assured_workloads_monitoring = try(var.assured_workload_config.partner_permissions.assured_workloads_monitoring, null)
-      data_logs_viewer             = try(var.assured_workload_config.partner_permissions.data_logs_viewer, null)
-      service_access_approver      = try(var.assured_workload_config.partner_permissions.service_access_approver, null)
+      assured_workloads_monitoring = var.assured_workload_config.partner_permissions.assured_workloads_monitoring
+      data_logs_viewer             = var.assured_workload_config.partner_permissions.data_logs_viewer
+      service_access_approver      = var.assured_workload_config.partner_permissions.service_access_approver
     }
   }
 
@@ -87,5 +87,5 @@ resource "google_assured_workloads_workload" "folder" {
     display_name  = var.name
     resource_type = "CONSUMER_FOLDER"
   }
-  violation_notifications_enabled = try(var.assured_workload_config.violation_notifications_enabled, null)
+  violation_notifications_enabled = var.assured_workload_config.violation_notifications_enabled
 }

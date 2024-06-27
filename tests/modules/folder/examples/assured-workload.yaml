@@ -19,10 +19,20 @@ values:
     organization: organizations/0123456789
     location: europe-west1
     enable_sovereign_controls: true
-
+  module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:service_account_email
+    role: roles/owner
+  module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
+    condition: []
+    member: serviceAccount:service_account_email
+    role: roles/storage.admin
 counts:
   google_assured_workloads_workload: 1
+  google_folder_iam_binding: 1
+  google_folder_iam_member: 1
   modules: 1
-  resources: 1
+  resources: 3
 
 outputs: {}
