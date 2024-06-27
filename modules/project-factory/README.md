@@ -15,7 +15,7 @@ The factory is implemented as a thin data translation layer for the underlying m
 
 The code is meant to be executed by a high level service accounts with powerful permissions:
 
-- forlder admin permissions for the hierarchy
+- folder admin permissions for the hierarchy
 - project creation on the nodes (folder or org) where projects will be defined
 - Shared VPC connection if service project attachment is desired
 - billing cost manager permissions to manage budgets and monitoring permissions if notifications should also be managed here

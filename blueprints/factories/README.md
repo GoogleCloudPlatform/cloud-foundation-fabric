@@ -16,7 +16,7 @@ Managing large sets of uniform resources with Terraform usually involves differe
 
 Factories are a way to simplify all above use cases, by moving repetitive resource definitions out of the Terraform codebase and into sets of files that leverage different formats.
 
-Using factories, repetive resource creation and management becomes easier
+Using factories, repetitive resource creation and management becomes easier
 
 - for humans who have no direct experience with Terraform, by exposing filesystem hierarchies and YAML-based configuration data
 - for connected systems, by accepting well know data exchange formats like JSON or CSV
