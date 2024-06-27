@@ -64,9 +64,9 @@ module "nat" {
       },
       {
         # secondary range only
-        self_link     = "projects/${var.project_id}/regions/${var.region}/subnetworks/net-3"
-        all_ranges    = false
-        primary_range = false
+        self_link        = "projects/${var.project_id}/regions/${var.region}/subnetworks/net-3"
+        all_ranges       = false
+        primary_range    = false
         secondary_ranges = ["pods"]
       }
     ]
