@@ -96,6 +96,7 @@ variable "node_config" {
     machine_type          = optional(string)
     metadata              = optional(map(string))
     min_cpu_platform      = optional(string)
+    placement_policy      = optional(string)
     preemptible           = optional(bool)
     sandbox_config_gvisor = optional(bool)
     shielded_instance_config = optional(object({
