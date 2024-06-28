@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,12 @@ output "id" {
   value       = google_artifact_registry_repository.registry.id
 }
 
-output "image_path" {
-  description = "Repository path for images."
-  value = join("/", [
-    "${var.location}-${local.format_string}.pkg.dev",
-    var.project_id,
-    var.name
-  ])
-  depends_on = [google_artifact_registry_repository.registry]
-}
-
 output "name" {
   description = "Repository name."
   value       = google_artifact_registry_repository.registry.name
+}
+
+output "repository" {
+  description = "Repository object."
+  value       = google_artifact_registry_repository.registry
 }

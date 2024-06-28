@@ -154,8 +154,7 @@ module "registry" {
   project_id = module.project.project_id
   location   = var.region
   name       = var.prefix
-  format     = { docker = {} }
-  mode       = { remote = true }
+  format     = { docker = { remote = { public_repository = "DOCKER_HUB" } } }
 }
 
 module "nat" {
