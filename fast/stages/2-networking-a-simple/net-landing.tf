@@ -22,13 +22,18 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = [
+  services = concat([
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
-  ]
+    ], (
+    local.spoke_connection == "ncc"
+    ? ["networkconnectivity.googleapis.com"]
+    : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
   }
