@@ -133,18 +133,14 @@ variable "spoke_configs" {
     ncc_configs = optional(object({
       dev = optional(object({
         exclude_export_ranges = list(string)
-        }),
-        {
-          exclude_export_ranges = []
-        }
-      )
+        }), {
+        exclude_export_ranges = []
+      })
       prod = optional(object({
         exclude_export_ranges = list(string)
-        }),
-        {
-          exclude_export_ranges = []
-        }
-      )
+        }), {
+        exclude_export_ranges = []
+      })
     }))
     peering_configs = optional(object({
       dev = optional(object({
