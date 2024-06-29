@@ -201,6 +201,15 @@ variable "top_level_folders" {
       sa_impersonation_principals = optional(list(string), [])
     }), {})
     contacts = optional(map(list(string)), {})
+    fast_profile = optional(object({
+      type = string
+      cicd_config = optional(object({
+        name              = string
+        type              = string
+        branch            = optional(string)
+        identity_provider = optional(string)
+      }))
+    }))
     firewall_policy = optional(object({
       name   = string
       policy = string
@@ -267,4 +276,14 @@ variable "top_level_folders" {
   }))
   nullable = false
   default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.top_level_folders :
+      v.fast_profile == null ||
+      try(v.fast_profile.type, "-") == "NETWORKING" ||
+      try(v.fast_profile.type, "-") == "SECURITY" ||
+      try(v.fast_profile.type, "-") == "PROJECT_FACTORY"
+    ])
+    error_message = "available FAST folder profile types: NETWORKING, SECURITY, PROJECT_FACTORY"
+  }
 }

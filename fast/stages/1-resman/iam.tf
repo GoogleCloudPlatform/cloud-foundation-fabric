@@ -18,6 +18,21 @@
 
 locals {
   iam_bindings_additive = merge(
+    # folder profiles
+    {
+      for v in local.folder_profile_org_iam : v.key => {
+        condition = v.condition
+        member    = module.top-level-sa[v.folder].iam_email
+        role      = v.role
+      }
+    },
+    # folder profile billing
+    local.billing_mode != "org" ? {} : {
+      for k, v in local.folder_profile_iam : "${k}-billing" => {
+        member = module.top-level-sa[k].iam_email
+        role   = "roles/billing.user"
+      }
+    },
     # network and security
     {
       sa_net_fw_policy_admin = {

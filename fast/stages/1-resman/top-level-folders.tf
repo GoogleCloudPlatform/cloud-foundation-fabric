@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Top-level folders resources.
+
 locals {
   _top_level_path = try(
     pathexpand(var.factories_config.top_level_folders), null
@@ -29,13 +31,14 @@ locals {
     ))
   }
   top_level_automation = {
-    for k, v in local.top_level_folders :
-    k => v.automation if try(v.automation.enable, null) == true
+    for k, v in local.top_level_folders : k => v.automation
+    if try(v.automation.enable, null) == true || v.fast_profile != null
   }
   top_level_folders = merge(
     {
       for k, v in local._top_level_folders : k => merge(v, {
-        name = try(v.name, k)
+        fast_profile = try(v.fast_profile, null)
+        name         = try(v.name, k)
         automation = try(v.automation, {
           enable                      = true
           sa_impersonation_principals = []
@@ -59,17 +62,22 @@ locals {
 }
 
 module "top-level-folder" {
-  source                = "../../../modules/folder"
-  for_each              = local.top_level_folders
-  parent                = "organizations/${var.organization.id}"
-  name                  = each.value.name
-  contacts              = each.value.contacts
-  firewall_policy       = each.value.firewall_policy
-  logging_data_access   = each.value.logging_data_access
-  logging_exclusions    = each.value.logging_exclusions
-  logging_settings      = each.value.logging_settings
-  logging_sinks         = each.value.logging_sinks
-  iam                   = each.value.iam
+  source              = "../../../modules/folder"
+  for_each            = local.top_level_folders
+  parent              = "organizations/${var.organization.id}"
+  name                = each.value.name
+  contacts            = each.value.contacts
+  firewall_policy     = each.value.firewall_policy
+  logging_data_access = each.value.logging_data_access
+  logging_exclusions  = each.value.logging_exclusions
+  logging_settings    = each.value.logging_settings
+  logging_sinks       = each.value.logging_sinks
+  # merge user-defined roles with folder profile roles
+  iam = (
+    each.value.fast_profile == null
+    ? each.value.iam
+    : local.folder_profile_iam[each.key]
+  )
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
   iam_by_principals     = each.value.iam_by_principals
@@ -92,6 +100,24 @@ module "top-level-sa" {
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+  }
+}
+
+module "top-level-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.top_level_automation
+  project_id   = var.automation.project_id
+  name         = "prod-resman-${each.key}-0r"
+  display_name = "Terraform resman ${each.key} folder service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = each.value.sa_impersonation_principals
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }
 

@@ -23,6 +23,11 @@ locals {
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
     ],
+    # folder profiles
+    [
+      for k, v in local.folder_profile_iam :
+      module.top-level-sa[k].iam_email
+    ],
     local.branch_optional_sa_lists.dp-dev,
     local.branch_optional_sa_lists.dp-prod,
     local.branch_optional_sa_lists.gke-dev,
