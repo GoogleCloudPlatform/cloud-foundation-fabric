@@ -54,8 +54,9 @@ jobs:
           # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          # disable waiting for  opentofu/opentofu#1483
+          # - flavour: tofu
+          #  version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
     steps:
       - uses: actions/checkout@v4
 
@@ -136,8 +137,9 @@ jobs:
           # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          # disable waiting for  opentofu/opentofu#1483
+          # - flavour: tofu
+          #   version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
@@ -196,8 +198,9 @@ jobs:
           # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          # disable waiting for  opentofu/opentofu#1483
+          # - flavour: tofu
+          #   version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
