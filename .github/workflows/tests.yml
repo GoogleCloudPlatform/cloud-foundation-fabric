@@ -25,19 +25,51 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
   PYTHON_VERSION: "3.10"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-  TF_VERSION: 1.7.4
   TFTEST_COPY: 1
+  DEFAULT_TERRAFORM_FLAVOUR: terraform
+  DEFAULT_TERRAFORM_VERSION: "1.7.4"
+  DEFAULT_TOFU_VERSION: "1.7.2"
 
 jobs:
+  compute-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      DEFAULT_TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
+      DEFAULT_TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
+      DEFAULT_TOFU_VERSION: ${{ env.DEFAULT_TOFU_VERSION }}
+    steps:
+      - name: dummy
+        run: echo
+
   setup-tf-providers:
     runs-on: ubuntu-latest
+    needs:
+      - compute-matrix
+    strategy:
+      matrix:
+        include:
+          # compatibility with MPLv2 licesned Terraform
+          - flavour: terraform
+            version: "1.5.7"
+          # recent version of terraform
+          - flavour: terraform
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
     steps:
       - uses: actions/checkout@v4
 
       - uses: hashicorp/setup-terraform@v3
+        if: ${{ matrix.flavour == 'terraform' }}
         with:
-          terraform_version: ${{ env.TF_VERSION }}
+          terraform_version: ${{ matrix.version  }}
           terraform_wrapper: false
+
+      - uses: opentofu/setup-opentofu@v1
+        if: ${{ matrix.flavour == 'tofu' }}
+        with:
+          tofu_version: ${{ matrix.version }}
+          tofu_wrapper: false
 
       - name: Build lockfile and fetch providers
         shell: bash
@@ -46,20 +78,24 @@ jobs:
           echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' | tee -a /home/runner/.terraformrc
           echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
           cp default-versions.tf tools/lockfile
-          sed -i 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/default-versions.tf
+          sed -i -e 's/>=\(.*# tftest\)/=\1/g'  tools/lockfile/default-versions.tf
+
+          # change terraform version to the one that is running
+          sed -i 's/required_version = .*$/required_version = ">= ${{ matrix.version }}"/g' tools/lockfile/default-versions.tf
+
           cd tools/lockfile
-          terraform init -upgrade=true
+          ${{ matrix.flavour }} init -upgrade=true
 
       - name: Upload Terraform provider cache
         uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+          key: ${{ runner.os }}-${{ matrix.flavour }}-${{ matrix.version }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
 
       - name: Upload lockfile
         uses: actions/upload-artifact@v4
         with:
-          name: lockfile
+          name: lockfile-${{ runner.os }}-${{ matrix.flavour }}-${{ matrix.version }}
           path: tools/lockfile/.terraform.lock.hcl
           overwrite: true
 
@@ -74,7 +110,8 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
+          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
+          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
 
       - name: Run tests on documentation examples
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k blueprints/ tests/examples
@@ -87,7 +124,21 @@ jobs:
 
   examples-modules:
     runs-on: ubuntu-latest
-    needs: setup-tf-providers
+    needs:
+      - setup-tf-providers
+      - compute-matrix
+    strategy:
+      matrix:
+        include:
+          # compatibility with MPLv2 licesned Terraform
+          - flavour: terraform
+            version: "1.5.7"
+          # recent version of terraform
+          - flavour: terraform
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -95,9 +146,12 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
+          TERRAFORM_VERSION: ${{ matrix.version }}
+          TERRAFORM_FLAVOUR: ${{ matrix.flavour }}
 
       - name: Run tests on documentation examples
+        env:
+          TERRAFORM: ${{ matrix.flavour }}
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k modules/ tests/examples
 
       - name: Create report
@@ -116,7 +170,8 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
+          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
+          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
 
       - name: Run tests environments
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/blueprints
@@ -129,15 +184,32 @@ jobs:
 
   modules:
     runs-on: ubuntu-latest
-    needs: setup-tf-providers
+    needs:
+      - setup-tf-providers
+      - compute-matrix
+    strategy:
+      matrix:
+        include:
+          # compatibility with MPLv2 licesned Terraform
+          - flavour: terraform
+            version: "1.5.7"
+          # recent version of terraform
+          - flavour: terraform
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
+        env:
+          TERRAFORM: ${{ matrix.flavour }}
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
+          TERRAFORM_VERSION: ${{ matrix.version }}
+          TERRAFORM_FLAVOUR: ${{ matrix.flavour }}
 
       - name: Run tests modules
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/modules
@@ -158,7 +230,8 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
+          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
+          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
 
       - name: Run tests on FAST stages
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/fast
