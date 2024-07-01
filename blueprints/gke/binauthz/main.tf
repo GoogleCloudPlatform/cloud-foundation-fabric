@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +170,7 @@ module "docker_artifact_registry" {
   project_id = module.project.project_id
   location   = var.region
   name       = "${var.prefix}-registry"
+  format     = { docker = { standard = {} } }
   iam = {
     "roles/artifactregistry.writer" = [module.image_cb_sa.iam_email]
     "roles/artifactregistry.reader" = [module.cluster_nodepool.service_account_iam_email]

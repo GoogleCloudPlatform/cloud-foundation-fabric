@@ -45,6 +45,15 @@ variable "group_configs" {
   nullable = false
 }
 
+variable "https_proxy_config" {
+  description = "HTTPS proxy configuration."
+  type = object({
+    ssl_policy = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "labels" {
   description = "Labels set on resources."
   type        = map(string)
