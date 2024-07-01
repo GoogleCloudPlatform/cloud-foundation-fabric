@@ -92,7 +92,7 @@ cluster_name   = "gke-patterns-cluster"
 cluster_create = {
   deletion_protection = false
   labels = {
-    pattern = "kafka"
+    pattern = "batch"
   }
 }
 region         = "europe-west1"

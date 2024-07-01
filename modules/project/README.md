@@ -194,7 +194,7 @@ module "project" {
 
 ### Service Identities Requiring Manual IAM Grants
 
-The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
+The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.
 
 You can grant roles to service identities using the following construct:
 
@@ -225,6 +225,7 @@ This table lists all affected services and roles that you need to grant to servi
 | artifactregistry.googleapis.com    | artifactregistry     | roles/artifactregistry.serviceAgent    |
 | cloudasset.googleapis.com          | cloudasset           | roles/cloudasset.serviceAgent          |
 | cloudbuild.googleapis.com          | cloudbuild           | roles/cloudbuild.builds.builder        |
+| connectors.googleapis.com          | connectors           | roles/connectors.serviceAgent |
 | dataform.googleapis.com            | dataform             | roles/dataform.serviceAgent            |
 | dataplex.googleapis.com            | dataplex             | roles/dataplex.serviceAgent            |
 | dlp.googleapis.com                 | dlp                  | roles/dlp.serviceAgent                 |
