@@ -28,13 +28,13 @@ workflow:
       variables:
         COMMAND: apply
         FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
-        TF_PROVIDERS_FILE: 0-bootstrap-providers.tf
+        TF_PROVIDERS_FILE: ${tf_providers_files.apply}
     # pr / plan
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       variables:
         COMMAND: plan
         FAST_SERVICE_ACCOUNT: ${service_accounts.plan}
-        TF_PROVIDERS_FILE: 0-bootstrap-r-providers.tf
+        TF_PROVIDERS_FILE: ${tf_providers_files.plan}
 
 stages:
   - gcp-setup
@@ -50,6 +50,9 @@ gcp-setup:
     paths:
       - cicd-sa-credentials.json
       - providers.tf
+      %{~ for f in tf_var_files ~}
+      - ${f}
+      %{~ endfor ~}
   id_tokens:
     GITLAB_TOKEN:
       aud:
@@ -68,6 +71,10 @@ gcp-setup:
         --credential-source-file=token.txt
     - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
     - gcloud alpha storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
+    %{~ for f in tf_var_files ~}
+    - gcloud alpha storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
+    %{~ endfor ~}
+
 
 tf-plan-apply:
   stage: tf-plan-apply

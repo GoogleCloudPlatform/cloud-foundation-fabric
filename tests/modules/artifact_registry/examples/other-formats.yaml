@@ -1,0 +1,134 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.apt-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: APT
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: apt-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.generic-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: GENERIC
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: generic-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.go-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: GO
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: go-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.googet-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: GOOGET
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: googet-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.kfp-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: KFP
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: kfp-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.npm-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: NPM
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: npm-registry
+    timeouts: null
+    virtual_repository_config: []
+  module.yum-registry.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    format: YUM
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: project-id
+    remote_repository_config: []
+    repository_id: yum-registry
+    timeouts: null
+    virtual_repository_config: []
+
+counts:
+  google_artifact_registry_repository: 7
+  modules: 7
+  resources: 7
+
+outputs: {}
