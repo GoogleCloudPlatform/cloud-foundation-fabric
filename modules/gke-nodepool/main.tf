@@ -133,7 +133,7 @@ resource "google_container_node_pool" "nodepool" {
     content {
       type         = try(var.nodepool_config.placement_policy.type, null)
       policy_name  = try(var.nodepool_config.placement_policy.policy_name, null)
-      tpu_topology = try(var.nodepool_config.tpu_topology.type, null)
+      tpu_topology = try(var.nodepool_config.placement_policy.tpu_topology, null)
     }
   }
 
