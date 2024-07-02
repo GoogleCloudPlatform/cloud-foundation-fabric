@@ -55,8 +55,8 @@ jobs:
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           # disable waiting for  opentofu/opentofu#1483
-          # - flavour: tofu
-          #  version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
     steps:
       - uses: actions/checkout@v4
 
@@ -138,8 +138,8 @@ jobs:
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           # disable waiting for  opentofu/opentofu#1483
-          # - flavour: tofu
-          #   version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
@@ -154,7 +154,7 @@ jobs:
       - name: Run tests on documentation examples
         env:
           TERRAFORM: ${{ matrix.flavour }}
-        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k modules/ tests/examples
+        run: pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '' }} --tb=line --junit-xml=test-results-raw.xml -k modules/ tests/examples
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
@@ -199,8 +199,8 @@ jobs:
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           # disable waiting for  opentofu/opentofu#1483
-          # - flavour: tofu
-          #   version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
+          - flavour: tofu
+            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
