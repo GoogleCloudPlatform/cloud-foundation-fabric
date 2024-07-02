@@ -175,6 +175,16 @@ variable "pod_range" {
   default = null
 }
 
+variable "placement_policy" {
+  description = "Placement policy for the node pool. Contains a type attribute that must be COMPACT."
+  type = object({
+    type         = string
+    policy_name  = optional(string)
+    tpu_topology = optional(string)
+  })
+  default = null
+}
+
 variable "project_id" {
   description = "Cluster project id."
   type        = string
