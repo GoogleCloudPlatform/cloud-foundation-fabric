@@ -96,7 +96,6 @@ variable "node_config" {
     machine_type          = optional(string)
     metadata              = optional(map(string))
     min_cpu_platform      = optional(string)
-    placement_policy      = optional(string)
     preemptible           = optional(bool)
     sandbox_config_gvisor = optional(bool)
     shielded_instance_config = optional(object({
@@ -153,7 +152,11 @@ variable "nodepool_config" {
       auto_repair  = optional(bool)
       auto_upgrade = optional(bool)
     }))
-    # placement_policy = optional(bool)
+    placement_policy = optional(object({
+      type       = string
+      policy_name = optional(string)
+      tpu_topology = optional(string)
+    }))
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number
@@ -171,16 +174,6 @@ variable "pod_range" {
       create               = optional(bool)
       enable_private_nodes = optional(bool)
     })
-  })
-  default = null
-}
-
-variable "placement_policy" {
-  description = "Placement policy for the node pool. Contains a type attribute that must be COMPACT."
-  type = object({
-    type         = string
-    policy_name  = optional(string)
-    tpu_topology = optional(string)
   })
   default = null
 }
