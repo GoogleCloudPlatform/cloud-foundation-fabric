@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+egress-allow-rfc1918:
+  description: "Allow all hosts to RFC-1918"
+  match:
+   destination_ranges:
+   - rfc1918
+  priority: 2147483642

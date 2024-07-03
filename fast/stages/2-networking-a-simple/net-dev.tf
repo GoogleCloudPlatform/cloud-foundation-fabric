@@ -153,17 +153,21 @@ module "dev-firewall-policy" {
   # These egress firewall policy rules can't be set
   # by default in factories as we share factories with firwall rules.
   egress_rules = {
-    all-to-rfc-1918 = {
-      priority = 2147483642
+    # This needs to be kept here as it references
+    # the security profile group resource
+    all-to-0-0-0-0 = {
+      priority               = 2147483643
+      action                 = "apply_security_profile_group"
+      security_profile_group = google_network_security_security_profile_group.dev_sec_profile_group.id
       match = {
-        destination_ranges = [
-          "10.0.0.0/8",
-          "172.16.0.0/12",
-          "192.168.0.0/16"
-        ]
+        destination_ranges = ["0.0.0.0/0"]
       }
     }
-    all-to-0-0-0-0 = {
+  }
+  ingress_rules = {
+    # This needs to be kept here as it references
+    # the security profile group resource
+    cross-env-to-all = {
       priority               = 2147483643
       action                 = "apply_security_profile_group"
       security_profile_group = google_network_security_security_profile_group.dev_sec_profile_group.id
@@ -174,7 +178,8 @@ module "dev-firewall-policy" {
   }
   factories_config = {
     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-rules/dev"
+    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-rules/dev/egress"
+    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-rules/dev/ingress"
   }
 }
 
