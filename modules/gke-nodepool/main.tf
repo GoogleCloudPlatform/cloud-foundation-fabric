@@ -131,9 +131,9 @@ resource "google_container_node_pool" "nodepool" {
   dynamic "placement_policy" {
     for_each = try(var.nodepool_config.placement_policy, null) != null ? [""] : []
     content {
-      type         = try(var.nodepool_config.placement_policy.type, null)
-      policy_name  = try(var.nodepool_config.placement_policy.policy_name, null)
-      tpu_topology = try(var.nodepool_config.placement_policy.tpu_topology, null)
+      type         = var.nodepool_config.placement_policy.type
+      policy_name  = var.nodepool_config.placement_policy.policy_name
+      tpu_topology = var.nodepool_config.placement_policy.tpu_topology
     }
   }
 
