@@ -75,9 +75,7 @@ variable "factories_config" {
     dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
     firewall_policy_name  = optional(string, "net-default")
   })
-  default = {
-    data_dir = "data"
-  }
+  default  = {}
   nullable = false
   validation {
     condition     = var.factories_config.data_dir != null
@@ -87,6 +85,17 @@ variable "factories_config" {
     condition     = var.factories_config.firewall_policy_name != null
     error_message = "Firewall policy name needs to be non-null."
   }
+}
+
+variable "ngfw_enterprise_config" {
+  description = "NGFW Enterprise configuration."
+  type = object({
+    enabled                         = optional(bool, false)
+    endpoint_primary_region_zones   = optional(set(string), ["a", "b", "c"])
+    endpoint_secondary_region_zones = optional(set(string), ["a", "b", "c"])
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "outputs_location" {

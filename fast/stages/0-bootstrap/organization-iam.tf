@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ locals {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.techSupportEditor",
+        "roles/ngfwEnterpriseAdmin"
       ]
       additive = [
         "roles/compute.orgFirewallPolicyAdmin",
@@ -76,6 +77,7 @@ locals {
         "roles/cloudsupport.techSupportEditor",
         "roles/iam.securityReviewer",
         "roles/logging.admin",
+        "roles/ngfwEnterpriseAdmin",
         "roles/securitycenter.admin",
       ]
       additive = [

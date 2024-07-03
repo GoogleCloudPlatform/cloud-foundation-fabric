@@ -22,13 +22,20 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = [
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "iap.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
+  services = concat(
+    [
+      "compute.googleapis.com",
+      "dns.googleapis.com",
+      "iap.googleapis.com",
+      "networkmanagement.googleapis.com",
+      "stackdriver.googleapis.com"
+    ],
+    (
+      var.ngfw_enterprise_config.enabled
+      ? ["networksecurity.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
   }
