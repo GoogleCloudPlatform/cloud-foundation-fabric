@@ -47,6 +47,7 @@ runs:
       if: ${{ inputs.TERRAFORM_FLAVOUR == 'tofu' }}
       with:
         tofu_version: ${{ inputs.TERRAFORM_VERSION }}
+        tofu_wrapper: false
 
     - name: Configure provider cache
       shell: bash
