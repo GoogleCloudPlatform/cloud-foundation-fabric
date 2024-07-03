@@ -85,6 +85,11 @@ variable "cluster_autoscaling" {
       min           = number
       max           = number
     })))
+    tpu_resources = optional(list(object({
+      resource_type = string
+      min           = number
+      max           = number
+    })))
   })
   default = null
   validation {

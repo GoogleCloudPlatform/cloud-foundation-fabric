@@ -233,6 +233,19 @@ resource "google_container_cluster" "cluster" {
           maximum       = gpu_resources.value.max
         }
       }
+      dynamic "resource_limits" {
+        for_each = (
+          try(local.cas.tpu_resources, null) == null
+          ? []
+          : local.cas.tpu_resources
+        )
+        iterator = tpu_resources
+        content {
+          resource_type = tpu_resources.value.resource_type
+          minimum       = tpu_resources.value.min
+          maximum       = tpu_resources.value.max
+        }
+      }
     }
   }
   dynamic "database_encryption" {
