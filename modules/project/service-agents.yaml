@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# When setting `jit: true` idenitify relevant role in docs:
+# https://cloud.google.com/iam/docs/service-agents
+#
+# and add information in README.md in section:
+# Service Identities Requiring Manual IAM Grants
+
 - name: "accessapproval"
   service_agent: "service-p%s@gcp-sa-accessapproval.iam.gserviceaccount.com"
 - name: "adsdatahub"
@@ -121,7 +127,7 @@
   service_agent: "service-%s@gcp-sa-anthossupport.iam.gserviceaccount.com"
 - name: "connectors"
   service_agent: "service-%s@gcp-sa-connectors.iam.gserviceaccount.com"
-  jit: true
+  jit: true # roles/connectors.serviceAgent
 - name: "contactcenteraiplatform"
   service_agent: "service-%s@gcp-sa-ccaip.iam.gserviceaccount.com"
 - name: "contactcenterinsights"
