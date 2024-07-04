@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import collections
 import pathlib
 import requests
@@ -24,6 +25,18 @@ from bs4 import BeautifulSoup
 
 # BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 SERVICE_AGENTS_URL = "https://cloud.google.com/iam/docs/service-agents"
+
+# old names used by Fabric
+ALIASES = {
+    'bigquery-encryption': ['bq'],
+    'cloudservices': ['cloudsvc'],
+    'container-engine-robot': ['container', 'container-engine'],
+    'gae-api-prod': ['gae-flex'],
+    'gcf-admin-robot': ['cloudfunctions', 'gcf'],
+    'gkehub': ['fleet'],
+    'monitoring-notification': ['monitoring'],
+    'serverless-robot-prod': ['cloudrun', 'run'],
+}
 
 
 def main():
@@ -52,21 +65,37 @@ def main():
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
     identity = identity.replace('PROJECT_NUMBER', '%s')
+
+    if name == 'monitoring':
+      # monitoring is deprecated in favor of monitoring-notification.
+      # Switch names to preserve old Fabric convention
+      name = 'monitoring-deprecated'
+
     agent = {
         'name': name,
         'display_name': col1.h4.get_text(),
-        'api': col1.span.code.get_text(),
+        'api': col1.span.code.get_text() if name != 'cloudservices' else None,
         'identity': identity,
         'role': col2.code.get_text() if 'roles/' in agent_text else None,
         'is_primary': 'Primary service agent' in agent_text,
     }
+    if aliases := ALIASES.get(name):
+      agent['aliases'] = aliases
 
     # agent['identity'] = identity
     agents.append(agent)
 
+  # make sure all names and aliases are different:
+  names = set(agent['name'] for agent in agents)
+  assert len(names) == len(agents)
+  aliases = [agent['aliases'] for agent in agents if 'aliases' in agent]
+  aliases = set(itertools.chain.from_iterable(aliases))
+  assert aliases.isdisjoint(names)
+
   # take the header from the first lines of this file
   header = open(__file__).readlines()[2:15]
   print("".join(header))
+  # and print all the agents
   print(yaml.safe_dump(agents, sort_keys=False))
 
 
