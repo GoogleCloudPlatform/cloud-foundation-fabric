@@ -19,6 +19,13 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      terraform_version:
+        description: "Use '1.5.7' to test last MPLv2 Terraform version"
+        required: true
+        default: 1.7.4
+        type: string
 
 env:
   GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
@@ -27,7 +34,7 @@ env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TFTEST_COPY: 1
   DEFAULT_TERRAFORM_FLAVOUR: terraform
-  DEFAULT_TERRAFORM_VERSION: "1.7.4"
+  DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.7.4' }}
   DEFAULT_TOFU_VERSION: "1.7.2"
 
 jobs:
@@ -48,13 +55,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # compatibility with MPLv2 licesned Terraform
-          - flavour: terraform
-            version: "1.5.7"
-          # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          # disable waiting for  opentofu/opentofu#1483
           - flavour: tofu
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
     steps:
@@ -131,13 +133,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # compatibility with MPLv2 licesned Terraform
-          - flavour: terraform
-            version: "1.5.7"
-          # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          # disable waiting for  opentofu/opentofu#1483
           - flavour: tofu
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
@@ -192,13 +189,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # compatibility with MPLv2 licesned Terraform
-          - flavour: terraform
-            version: "1.5.7"
-          # recent version of terraform
           - flavour: terraform
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
-          # disable waiting for  opentofu/opentofu#1483
           - flavour: tofu
             version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
