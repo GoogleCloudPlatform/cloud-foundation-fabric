@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cf-http.google_cloudfunctions_function_iam_binding.default["roles/cloudfunctions.invoker"]:
-    condition: []
-    members:
-    - allUsers
-    project: project-id
-    region: europe-west9
-    role: roles/cloudfunctions.invoker
+import functions_framework
 
-counts:
-  google_cloudfunctions_function: 1
-  google_storage_bucket_object: 1
-  modules: 1
-  resources: 6
+
+@functions_framework.http
+def main(request):
+  return "Hello World!"
