@@ -7,12 +7,40 @@ This directory contains a [GCVE single region private cloud for the `prod` envir
 
 With this stage and the [GCVE blueprints](./../../../blueprints/gcve/), you can rapidly deploy production-ready GCVE environments. These environments are fully optimized to integrate seamlessly with your Fabric FAST network topology. Explore the deployment patterns below to find the perfect fit for your use case."
 
-## Standalone VPC for a sigle region GCVE deployment
+## Single region deployments
+### Standalone VPC for a single GCVE deployment
 <p align="center">
-  <img src="diagram0.png" alt="Standalone Shared VPC for a sigle region GCVE deployment">
+  <img src="diagram-0.png" alt="Standalone VPC for a single GCVE deployment">
 </p>
 
-## Separate VPC Environments for individual dedicated GCVE deployments 
+### Separate VPC Environments for individual dedicated GCVE deployments 
 <p align="center">
-  <img src="diagram1.png" alt="Separate VPC Environments for individual dedicated GCVE deployments">
+  <img src="diagram-1.png" alt="Separate VPC Environments for individual dedicated GCVE deployments ">
+</p>
+
+### Separate VPC Environments for shared GCVE deployment
+<p align="center">
+  <img src="diagram-2.png" alt="Separate VPC Environments for shared GCVE deployment">
+</p>
+
+### Hub and Spoke VPC Environments for individual dedicated GCVE deployments
+<p align="center">
+  <img src="diagram-3.png" alt="Hub and Spoke VPC Environments for individual dedicated GCVE deployments">
+</p>
+
+### Hub and Spoke VPC Environments for shared GCVE deployment
+<p align="center">
+  <img src="diagram-4.png" alt="Hub and Spoke VPC Environments for shared GCVE deployment">
+</p>
+
+## Multi region deployments
+
+### Standalone VPC for a multi-region GCVE deployment
+<p align="center">
+  <img src="diagram-5.png" alt="Standalone VPC for a multi-region GCVE deployment">
+</p>
+
+### Separate production and DR VPC environments for individual dedicated GCVE deployments
+<p align="center">
+  <img src="diagram-6.png" alt="Separate production and DR VPC environments for individual dedicated GCVE deployments">
 </p>
