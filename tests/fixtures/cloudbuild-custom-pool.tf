@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-module "secret-manager" {
-  source     = "./fabric/modules/secret-manager"
-  project_id = var.project_id
-  secrets = {
-    credentials = {}
-  }
-  iam = {
-    credentials = {
-      "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
-        "serviceAccount:${var.project_id}@appspot.gserviceaccount.com",
-      ]
-    }
-  }
-  versions = {
-    credentials = {
-      v1 = { enabled = true, data = "manual foo bar spam" }
-    }
+resource "google_cloudbuild_worker_pool" "pool" {
+  project  = var.project_id
+  name     = "custom-pool"
+  location = var.regions.secondary
+  worker_config {
+    disk_size_gb   = 100
+    machine_type   = "e2-standard-4"
+    no_external_ip = false
   }
 }
