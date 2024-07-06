@@ -34,11 +34,6 @@ module "dev-spoke-project" {
       "vpcaccess.googleapis.com"
     ],
     (
-      var.ngfw_enterprise_config.tls_inspection.enabled
-      ? ["certificateauthority.googleapis.com"]
-      : []
-    ),
-    (
       var.ngfw_enterprise_config.enabled
       ? ["networksecurity.googleapis.com"]
       : []
@@ -135,12 +130,11 @@ resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_asso
     ? toset(local.ngfw_endpoint_locations)
     : toset([])
   )
-  name                  = "${var.prefix}-dev-endpoint-association-${each.key}"
-  parent                = module.dev-spoke-project.project_id
-  location              = each.value.zone
-  firewall_endpoint     = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
-  network               = module.dev-spoke-vpc.self_link
-  tls_inspection_policy = google_network_security_tls_inspection_policy.tls_inspection_policy[each.value.region].id
+  name              = "${var.prefix}-dev-endpoint-association-${each.key}"
+  parent            = module.dev-spoke-project.project_id
+  location          = each.value.zone
+  firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
+  network           = module.dev-spoke-vpc.self_link
 }
 
 module "dev-firewall-policy" {
