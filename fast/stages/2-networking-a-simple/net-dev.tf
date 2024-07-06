@@ -147,39 +147,16 @@ module "dev-firewall-policy" {
   source    = "../../../modules/net-firewall-policy"
   name      = "${var.prefix}-dev-fw-policy"
   parent_id = module.dev-spoke-project.project_id
+  security_profile_group_ids = {
+    dev = google_network_security_security_profile_group.dev_sec_profile_group.id
+  }
   attachments = {
     dev-spoke = module.dev-spoke-vpc.self_link
   }
-  # These egress firewall policy rules can't be set
-  # by default in factories as we share factories with firwall rules.
-  egress_rules = {
-    # This needs to be kept here as it references
-    # the security profile group resource
-    all-to-0-0-0-0 = {
-      priority               = 2147483643
-      action                 = "apply_security_profile_group"
-      security_profile_group = google_network_security_security_profile_group.dev_sec_profile_group.id
-      match = {
-        destination_ranges = ["0.0.0.0/0"]
-      }
-    }
-  }
-  ingress_rules = {
-    # This needs to be kept here as it references
-    # the security profile group resource
-    cross-env-to-all = {
-      priority               = 2147483643
-      action                 = "apply_security_profile_group"
-      security_profile_group = google_network_security_security_profile_group.dev_sec_profile_group.id
-      match = {
-        destination_ranges = ["0.0.0.0/0"]
-      }
-    }
-  }
   factories_config = {
     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-rules/dev/egress"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-rules/dev/ingress"
+    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policy-rules/dev/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policy-rules/dev/ingress.yaml"
   }
 }
 
