@@ -253,6 +253,63 @@ issue-1995:
       - 1-65535
     - protocol: icmp
 ```
+
+You might need to reference external security profile groups in your firewall rules, using thier Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+}
+
+resource "google_network_security_security_profile" "security_profile" {
+  name     = "security-profile"
+  type     = "THREAT_PREVENTION"
+  parent   = "organizations/0123456789"
+  location = "global"
+}
+
+resource "google_network_security_security_profile_group" "security_profile_group" {
+  name                      = "security-profile-group"
+  parent                    = "organizations/0123456789"
+  location                  = "global"
+  description               = "Sample security profile group."
+  threat_prevention_profile = google_network_security_security_profile.security_profile.id
+}
+
+module "firewall-policy" {
+  source    = "./fabric/modules/net-firewall-policy"
+  name      = "fw-policy"
+  parent_id = "my-project"
+
+  security_profile_group_ids = {
+    http-sg = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}"
+  }
+  attachments = {
+    my-vpc = module.vpc.self_link
+  }
+  factories_config = {
+    ingress_rules_file_path = "configs/ingress"
+  }
+}
+# tftest modules=2 resources=7 files=ingress inventory=factory-spg.yaml
+```
+
+```yaml
+# tftest-file id=ingress path=configs/ingress.yaml
+http:
+  priority: 1000
+  action: apply_security_profile_group
+  security_profile_group: http-sg
+  match:
+    source_ranges:
+    - 10.0.0.0/8
+    layer4_configs:
+    - protocol: tcp
+      ports:
+      - 80
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 

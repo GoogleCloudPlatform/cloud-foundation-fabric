@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ variable "egress_rules" {
     target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
+    tls_inspect             = optional(bool, null)
     match = object({
       address_groups       = optional(list(string))
       fqdns                = optional(list(string))
@@ -87,6 +88,7 @@ variable "ingress_rules" {
     target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
+    tls_inspect             = optional(bool, null)
     match = object({
       address_groups       = optional(list(string))
       fqdns                = optional(list(string))
@@ -128,4 +130,11 @@ variable "region" {
   description = "Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy."
   type        = string
   default     = null
+}
+
+variable "security_profile_group_ids" {
+  description = "The optional security groups ids to be referenced in factories."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
