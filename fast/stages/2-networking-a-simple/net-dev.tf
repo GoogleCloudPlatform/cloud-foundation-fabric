@@ -121,7 +121,7 @@ resource "google_network_security_security_profile_group" "dev_sec_profile_group
   parent                    = "organizations/${var.organization.id}"
   location                  = "global"
   description               = "Dev security profile group."
-  threat_prevention_profile = google_network_security_security_profile.dev_sec_profile[0].id
+  threat_prevention_profile = try(google_network_security_security_profile.dev_sec_profile[0].id)
 }
 
 resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_association" {
@@ -142,7 +142,7 @@ module "dev-firewall-policy" {
   name      = "${var.prefix}-dev-fw-policy"
   parent_id = module.dev-spoke-project.project_id
   security_profile_group_ids = {
-    dev = google_network_security_security_profile_group.dev_sec_profile_group.id
+    dev = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.dev_sec_profile_group[0].id, "")}"
   }
   attachments = {
     dev-spoke = module.dev-spoke-vpc.self_link

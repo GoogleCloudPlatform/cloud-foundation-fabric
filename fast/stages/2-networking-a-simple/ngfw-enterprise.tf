@@ -28,13 +28,13 @@ locals {
   ngfw_endpoint_locations = merge(
     {
       for zone in var.ngfw_enterprise_config.endpoint_primary_region_zones
-      : "${local.region_shortnames[var.region.primary]}${zone}"
-      => { region = var.region.primary, zone = "${var.region.primary}-${zone}" }
+      : "${local.region_shortnames[var.regions.primary]}${zone}"
+      => { region = var.regions.primary, zone = "${var.regions.primary}-${zone}" }
     },
     {
-      for zone in var.endpoint_secondary_region_zones
-      : "${local.region_shortnames[var.region.secondary]}${zone}"
-      => { region = var.region.secondary, zone = "${var.region.secondary}-${zone}" }
+      for zone in var.ngfw_enterprise_config.endpoint_secondary_region_zones
+      : "${local.region_shortnames[var.regions.secondary]}${zone}"
+      => { region = var.regions.secondary, zone = "${var.regions.secondary}-${zone}" }
     }
   )
 }
