@@ -49,10 +49,9 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
   priority                = local.rules[each.key].priority
   target_service_accounts = local.rules[each.key].target_service_accounts
   tls_inspect             = local.rules[each.key].tls_inspect
-  security_profile_group = (
-    try(var.security_profile_group_ids[local.rules[each.key].security_profile_group], null) == null
-    ? local.rules[each.key].security_profile_group
-    : var.security_profile_group_ids[local.rules[each.key].security_profile_group]
+  security_profile_group = try(
+    var.security_profile_group_ids[local.rules[each.key].security_profile_group],
+    local.rules[each.key].security_profile_group
   )
   match {
     dest_ip_ranges = local.rules[each.key].match.destination_ranges

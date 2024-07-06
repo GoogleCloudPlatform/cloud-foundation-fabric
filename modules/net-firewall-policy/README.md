@@ -254,7 +254,7 @@ issue-1995:
     - protocol: icmp
 ```
 
-You might need to reference external security profile groups in your firewall rules, using thier Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
+You might need to reference external security profile groups in your firewall rules, using their Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
 
 ```hcl
 module "vpc" {
@@ -282,7 +282,6 @@ module "firewall-policy" {
   source    = "./fabric/modules/net-firewall-policy"
   name      = "fw-policy"
   parent_id = "my-project"
-
   security_profile_group_ids = {
     http-sg = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}"
   }
