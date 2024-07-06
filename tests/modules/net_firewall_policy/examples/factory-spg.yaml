@@ -33,7 +33,32 @@ values:
     short_name: fw-policy
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["my-vpc"]:
     name: fw-policy-my-vpc
-    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/http"]:
+    action: apply_security_profile_group
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '80'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+    tls_inspect: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: false
@@ -71,9 +96,10 @@ values:
 counts:
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 1
   google_compute_network: 1
   google_compute_route: 2
   google_network_security_security_profile: 1
   google_network_security_security_profile_group: 1
   modules: 2
-  resources: 7
+  resources: 8

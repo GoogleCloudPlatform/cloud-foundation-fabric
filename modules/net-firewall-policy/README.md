@@ -290,14 +290,14 @@ module "firewall-policy" {
     my-vpc = module.vpc.self_link
   }
   factories_config = {
-    ingress_rules_file_path = "configs/ingress"
+    ingress_rules_file_path = "configs/ingress-spg.yaml"
   }
 }
-# tftest modules=2 resources=7 files=ingress inventory=factory-spg.yaml
+# tftest modules=2 resources=8 files=ingress-spg inventory=factory-spg.yaml
 ```
 
 ```yaml
-# tftest-file id=ingress path=configs/ingress.yaml
+# tftest-file id=ingress-spg path=configs/ingress-spg.yaml
 http:
   priority: 1000
   action: apply_security_profile_group
