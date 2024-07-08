@@ -157,6 +157,7 @@ variable "nodepool_config" {
       policy_name  = optional(string)
       tpu_topology = optional(string)
     }))
+    queued_provisioning = optional(bool)
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number
