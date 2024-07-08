@@ -305,6 +305,43 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1
 ```
+
+### Node auto-provisioning with GPUs and TPUs
+
+You can use `var.cluster_autoscaling` block to configure node auto-provisioning for the GKE cluster. The example below configures limits for CPU, memory, GPUs and TPUs.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_blocks = {}
+  }
+  cluster_autoscaling = {
+    cpu_limits = {
+      max = 48
+    }
+    mem_limits = {
+      max = 182
+    }
+    # Can be GPUs or TPUs
+    accelerator_resources = [{
+        resource_type = "nvidia-l4"
+        max = 2
+      },
+      {
+        resource_type = "tpu-v5-lite-podslice"
+        max = 2
+      }
+    ]
+  }
+}
+# tftest modules=1 resources=1
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 

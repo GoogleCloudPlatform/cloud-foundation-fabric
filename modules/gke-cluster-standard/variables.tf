@@ -73,21 +73,16 @@ variable "cluster_autoscaling" {
       # add validation rule to ensure only one is present if upgrade settings is defined
     }))
     cpu_limits = optional(object({
-      min = number
+      min = optional(number, 0)
       max = number
     }))
     mem_limits = optional(object({
-      min = number
+      min = optional(number, 0)
       max = number
     }))
-    gpu_resources = optional(list(object({
+    accelerator_resources = optional(list(object({
       resource_type = string
-      min           = number
-      max           = number
-    })))
-    tpu_resources = optional(list(object({
-      resource_type = string
-      min           = number
+      min           = optional(number, 0)
       max           = number
     })))
   })
