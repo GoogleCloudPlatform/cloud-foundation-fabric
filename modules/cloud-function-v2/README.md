@@ -40,7 +40,7 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
 }
-# tftest modules=1 resources=2 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### PubSub and non-HTTP triggers
@@ -74,7 +74,7 @@ module "cf-http" {
     service_account_email = module.trigger-service-account.email
   }
 }
-# tftest modules=2 resources=4 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=3 resources=9 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 Ensure that pubsub service identity (`service-[project number]@gcp-sa-pubsub.iam.gserviceaccount.com` has `roles/iam.serviceAccountTokenCreator`
@@ -98,7 +98,7 @@ module "cf-http" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=3  fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
 ```
 
 ### GCS bucket creation
@@ -121,7 +121,7 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
 }
-# tftest modules=1 resources=3  fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
 ```
 
 ### Service account management
@@ -140,7 +140,7 @@ module "cf-http" {
   }
   service_account_create = true
 }
-# tftest modules=1 resources=3 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -157,7 +157,7 @@ module "cf-http" {
   }
   service_account = var.service_account.email
 }
-# tftest modules=1 resources=2 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### Custom bundle config
@@ -185,7 +185,7 @@ module "cf-http" {
     }
   }
 }
-# tftest modules=1 resources=2 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### Private Cloud Build Pool
@@ -204,7 +204,7 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
 }
-# tftest modules=1 resources=2 fixtures=fixtures/functions-default-sa-iam-grants.tf,fixtures/cloudbuild-custom-pool.tf e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf,fixtures/cloudbuild-custom-pool.tf e2e
 ```
 
 ### Multiple Cloud Functions within project
@@ -233,7 +233,7 @@ module "cf-http-two" {
     path = "assets/sample-function/"
   }
 }
-# tftest modules=2 resources=4 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
+# tftest modules=2 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
 ```
 
 ### Mounting secrets from Secret Manager
@@ -272,7 +272,7 @@ module "cf-http" {
   }
 }
 
-# tftest modules=1 resources=2 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
+# tftest modules=2 resources=8 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
