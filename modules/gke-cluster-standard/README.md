@@ -320,7 +320,10 @@ module "cluster-1" {
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    secondary_range_blocks = {}
+    secondary_range_blocks = {
+      pods     = ""
+      services = "/20" # can be an empty string as well
+    }
   }
   cluster_autoscaling = {
     cpu_limits = {
