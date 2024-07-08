@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ locals {
     for k, v in local._projects : [
       for b in try(v.billing_budgets, []) : {
         budget  = b
-        project = k
+        project = lookup(v, "name", k)
       }
     ]
   ])
@@ -47,7 +47,7 @@ locals {
     for v in local._project_budgets : v.budget => v.project...
   }
   projects = {
-    for k, v in local._projects : k => merge(v, {
+    for k, v in local._projects : lookup(v, "name", k) => merge(v, {
       billing_account = try(coalesce(
         var.data_overrides.billing_account,
         try(v.billing_account, null),

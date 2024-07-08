@@ -17,8 +17,9 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location                  = optional(string)
+    force_destroy             = optional(bool)
     lifecycle_delete_age_days = optional(number)
+    location                  = optional(string)
   })
   default = null
 }
@@ -176,7 +177,7 @@ variable "secrets" {
   description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
   type = map(object({
     is_volume  = bool
-    project_id = number
+    project_id = string
     secret     = string
     versions   = list(string)
   }))

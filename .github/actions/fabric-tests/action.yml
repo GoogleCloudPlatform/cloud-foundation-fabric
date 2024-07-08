@@ -19,6 +19,8 @@ inputs:
     required: true
   TERRAFORM_VERSION:
     required: true
+  TERRAFORM_FLAVOUR:
+    required: true
 runs:
   using: composite
   steps:
@@ -33,11 +35,20 @@ runs:
         python-version: ${{ inputs.PYTHON_VERSION }}
         cache: 'pip'
         cache-dependency-path: 'tests/requirements.txt'
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3
+      if: ${{ inputs.TERRAFORM_FLAVOUR == 'terraform' }}
       with:
         terraform_version: ${{ inputs.TERRAFORM_VERSION }}
         terraform_wrapper: false
+
+    - uses: opentofu/setup-opentofu@v1
+      if: ${{ inputs.TERRAFORM_FLAVOUR == 'tofu' }}
+      with:
+        tofu_version: ${{ inputs.TERRAFORM_VERSION }}
+        tofu_wrapper: false
+
     - name: Configure provider cache
       shell: bash
       run: |
@@ -49,19 +60,19 @@ runs:
     - name: Download lockfile
       uses: actions/download-artifact@v4
       with:
-        name: lockfile
+        name: lockfile-${{ runner.os }}-${{ inputs.TERRAFORM_FLAVOUR  }}-${{ inputs.TERRAFORM_VERSION }}
         path: tools/lockfile
     - name: Download Terraform provider cache
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-        key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+        key: ${{ runner.os }}-${{ inputs.TERRAFORM_FLAVOUR  }}-${{ inputs.TERRAFORM_VERSION }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions
       shell: bash
       run: |
         for f in $(find . -name versions.tf); do
-          sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          sed -i -e 's/>=\(.*# tftest\)/=\1/g' -e 's/required_version = .*$/required_version = ">= ${{ inputs.TERRAFORM_VERSION }}"/g' $f;
         done
     - name: Install Python Dependencies
       shell: bash

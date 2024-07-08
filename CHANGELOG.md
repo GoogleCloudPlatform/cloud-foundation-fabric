@@ -4,7 +4,53 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-05-15 09:01:39+00:00 -->
+<!-- None < 2024-06-16 07:51:14+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2395](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2395)] Fix tutorial error. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-29 06:55:33+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2392)] Added forward_proxy_uri to apigee environments in apigee-x-foundation… ([apichick](https://github.com/apichick)) <!-- 2024-06-27 17:48:24+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2382](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2382)] Fixes related to Apigee KMS keys ([apichick](https://github.com/apichick)) <!-- 2024-06-26 06:12:26+00:00 -->
+- [[#2372](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2372)] Added spanner-instance module ([apichick](https://github.com/apichick)) <!-- 2024-06-23 17:25:22+00:00 -->
+
+### FAST
+
+- [[#2411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2411)] [FAST] Fix IAM bindings to impersonate resman CICD SAs at bootstrap stage ([jayBana](https://github.com/jayBana)) <!-- 2024-07-08 10:58:41+00:00 -->
+- [[#2404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2404)] Documented new GCVE design options ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-07-02 14:46:55+00:00 -->
+- [[#2402](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2402)] gitlab workflow template fixes #2401 ([sudhirrs](https://github.com/sudhirrs)) <!-- 2024-07-01 09:42:55+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2378](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2378)] Add wording for SCC Enterprise to FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-06-24 17:03:07+00:00 -->
+
+### MODULES
+
+- [[#2409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2409)] Adds support for external SPGs to net-firewall-policy ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-06 10:33:09+00:00 -->
+- [[#2407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2407)] Allow project factory projects to override name ([juliocc](https://github.com/juliocc)) <!-- 2024-07-04 18:14:04+00:00 -->
+- [[#2405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2405)] Adding placement_policy for GKE nodepools (ex: GPU compact placement or TPU topology) ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-03 10:21:31+00:00 -->
+- [[#2400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2400)] Add info about roles for connectors service agent ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-30 18:17:51+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2393)] Add support for SSL policy to net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-28 07:03:10+00:00 -->
+- [[#2387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2387)] Added certificate-manager module ([apichick](https://github.com/apichick)) <!-- 2024-06-27 13:05:35+00:00 -->
+- [[#2390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2390)] Add AssuredWorkload support to the folder module ([averbuks](https://github.com/averbuks)) <!-- 2024-06-27 12:28:17+00:00 -->
+- [[#2384](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2384)] Allow Cloud NAT to only use secondary ranges ([juliocc](https://github.com/juliocc)) <!-- 2024-06-27 08:05:45+00:00 -->
+- [[#2388](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2388)] Added missing links to firestore module is READMEs. ([apichick](https://github.com/apichick)) <!-- 2024-06-27 06:54:03+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2374](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2374)] Added firestore module ([apichick](https://github.com/apichick)) <!-- 2024-06-26 12:18:42+00:00 -->
+- [[#2380](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2380)] Added private_endpoint_subnetwork parameters to GKE standard and autopilot modules ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-06-25 14:16:01+00:00 -->
+- [[#2370](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2370)] Apigee - Add forward_proxy_uri support on environment resource ([diogo-j-n-teixeira](https://github.com/diogo-j-n-teixeira)) <!-- 2024-06-25 07:50:19+00:00 -->
+- [[#2376](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2376)] Removed advertised_groups ALL_VPC_SUBNETS, ALL_VPC_SUBNETS as they ar… ([apichick](https://github.com/apichick)) <!-- 2024-06-24 07:15:20+00:00 -->
+- [[#2375](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2375)] Minor fixes in workstations IAM ([apichick](https://github.com/apichick)) <!-- 2024-06-24 06:59:29+00:00 -->
+- [[#2372](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2372)] Added spanner-instance module ([apichick](https://github.com/apichick)) <!-- 2024-06-23 17:25:22+00:00 -->
+- [[#2373](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2373)] Added expire_time option to the secret-manager module ([deanosaurx](https://github.com/deanosaurx)) <!-- 2024-06-23 15:20:10+00:00 -->
+- [[#2371](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2371)] Support build service account in cloud function v2 module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-21 18:19:29+00:00 -->
+- [[#2369](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2369)] Add example, tests and fix for Google APIs PSC endpoint ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-20 10:44:43+00:00 -->
+- [[#2368](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2368)] Fix for plan not in sync when creating billing budgets in project factory #2365 ([sudhirrs](https://github.com/sudhirrs)) <!-- 2024-06-20 05:23:20+00:00 -->
+- [[#2366](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2366)] Added additional range field to GKE standand and autopilot ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-06-18 12:17:09+00:00 -->
+
+### TOOLS
+
+- [[#2399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2399)] Test different versions of Terraform ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-05 11:21:41+00:00 -->
 
 ## [32.0.0] - 2024-06-16
 
