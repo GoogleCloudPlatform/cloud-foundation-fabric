@@ -334,13 +334,13 @@ module "cluster-1" {
     }
     # Can be GPUs or TPUs
     accelerator_resources = [
-    {
+      {
         resource_type = "nvidia-l4"
-        max = 2
+        max           = 2
       },
       {
         resource_type = "tpu-v5-lite-podslice"
-        max = 2
+        max           = 2
       }
     ]
   }
