@@ -139,6 +139,17 @@ locals {
           }
           : null
         )
+        sql_assertion = (
+          can(rule.sqlAssertion) || can(rule.sql_assertion)
+          ? {
+            sql_statement = try(
+              rule.sqlAssertion.sqlStatement,
+              rule.sql_assertion.sql_statement,
+              null
+            )
+          }
+          : null
+        )
       }
     ]
     sampling_percent = try(
