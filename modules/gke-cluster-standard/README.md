@@ -333,7 +333,8 @@ module "cluster-1" {
       max = 182
     }
     # Can be GPUs or TPUs
-    accelerator_resources = [{
+    accelerator_resources = [
+    {
         resource_type = "nvidia-l4"
         max = 2
       },
