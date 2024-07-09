@@ -3,14 +3,15 @@
 This module manages the creation of Dataplex DataScan resources.
 
 <!-- BEGIN TOC -->
-- [Data Profiling](#data-profiling)
-- [Data Quality](#data-quality)
-- [Data Source](#data-source)
-- [Execution Schedule](#execution-schedule)
-- [IAM](#iam)
-- [TODO](#todo)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [Dataplex DataScan](#dataplex-datascan)
+  - [Data Profiling](#data-profiling)
+  - [Data Quality](#data-quality)
+  - [Data Source](#data-source)
+  - [Execution Schedule](#execution-schedule)
+  - [IAM](#iam)
+  - [TODO](#todo)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Data Profiling
@@ -43,7 +44,7 @@ module "dataplex-datascan" {
 
 To create an Data Quality scan, provide the `data_quality_spec` input arguments as documented in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec>.
 
-Documentation for the supported rule types and rule specifications can be found in <https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule>.
+Documentation for the supported rule types and rule specifications can be found in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule>.
 
 This example shows how to create a Data Quality scan.
 
