@@ -3,15 +3,14 @@
 This module manages the creation of Dataplex DataScan resources.
 
 <!-- BEGIN TOC -->
-- [Dataplex DataScan](#dataplex-datascan)
-  - [Data Profiling](#data-profiling)
-  - [Data Quality](#data-quality)
-  - [Data Source](#data-source)
-  - [Execution Schedule](#execution-schedule)
-  - [IAM](#iam)
-  - [TODO](#todo)
-  - [Variables](#variables)
-  - [Outputs](#outputs)
+- [Data Profiling](#data-profiling)
+- [Data Quality](#data-quality)
+- [Data Source](#data-source)
+- [Execution Schedule](#execution-schedule)
+- [IAM](#iam)
+- [TODO](#todo)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Data Profiling
