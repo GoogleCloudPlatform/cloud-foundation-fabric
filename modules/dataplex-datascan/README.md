@@ -141,7 +141,7 @@ module "dataplex-datascan" {
       {
         dimension = "VALIDITY"
         sql_assertion = {
-          sql_statement = <<EOT
+          sql_statement = <<-EOT
             SELECT
               city_asset_number, council_district
             FROM $${data()}
@@ -240,7 +240,7 @@ rules:
       sql_expression: COUNT(*) > 0
   - dimension: VALIDITY
     sql_assertion:
-      sql_statement: >
+      sql_statement: |
         SELECT
           city_asset_number, council_district
         FROM ${data()}
@@ -332,7 +332,7 @@ rules:
       sqlExpression: COUNT(*) > 0
   - dimension: VALIDITY
     sqlAssertion:
-      sqlStatement: >
+      sqlStatement: |
         SELECT
           city_asset_number, council_district
         FROM ${data()}

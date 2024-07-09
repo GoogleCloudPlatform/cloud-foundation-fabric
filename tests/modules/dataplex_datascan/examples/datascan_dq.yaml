@@ -32,6 +32,7 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: 0.99
@@ -50,6 +51,7 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: 0.9
@@ -68,6 +70,7 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: 0.8
@@ -83,6 +86,7 @@ values:
         - regex: .*solar.*
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: null
@@ -100,6 +104,7 @@ values:
         - values:
           - sidewalk
           - parkland
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: null
@@ -114,6 +119,7 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: null
@@ -129,6 +135,7 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation:
         - max_value: '15'
           min_value: '5'
@@ -149,6 +156,7 @@ values:
         row_condition_expectation:
         - sql_expression: footprint_length > 0 AND footprint_length <= 10
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation: []
         threshold: null
@@ -163,9 +171,32 @@ values:
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []
+        sql_assertion: []
         statistic_range_expectation: []
         table_condition_expectation:
         - sql_expression: COUNT(*) > 0
+        threshold: null
+        uniqueness_expectation: []
+      - column: null
+        name: null
+        description: null
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        sql_assertion:
+        - sql_statement: |
+            SELECT
+              city_asset_number, council_district
+            FROM ${data()}
+            WHERE city_asset_number IS NOT NULL
+            GROUP BY 1,2
+            HAVING COUNT(*) > 1
+        statistic_range_expectation: []
+        table_condition_expectation: []
         threshold: null
         uniqueness_expectation: []
       sampling_percent: 100

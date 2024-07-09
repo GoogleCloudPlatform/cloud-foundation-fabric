@@ -111,6 +111,19 @@ data_quality_spec = {
       table_condition_expectation = {
         sql_expression = "COUNT(*) > 0"
       }
+    },
+    {
+      dimension = "VALIDITY"
+      sql_assertion = {
+        sql_statement = <<-EOT
+          SELECT
+            city_asset_number, council_district
+          FROM $${data()}
+          WHERE city_asset_number IS NOT NULL
+          GROUP BY 1,2
+          HAVING COUNT(*) > 1
+        EOT
+      }
     }
   ]
 }
