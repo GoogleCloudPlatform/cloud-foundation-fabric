@@ -138,7 +138,7 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   dynamic "queued_provisioning" {
-    for_each = try(var.nodepool_config.queued_provisioning, null) != null ? [""] : []
+    for_each = try(var.nodepool_config.queued_provisioning, false) ? [""] : []
     content {
       enabled = var.nodepool_config.queued_provisioning
     }
