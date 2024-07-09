@@ -272,13 +272,13 @@ module "automation-tf-resman-sa" {
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
     local.cicd_resman_sa == "" ? {} : {
-      cicd_token_creator = {
+      cicd_token_creator_resman = {
         member = local.cicd_resman_sa
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     },
     local.cicd_tenants_sa == "" ? {} : {
-      cicd_token_creator = {
+      cicd_token_creator_tenants = {
         member = local.cicd_tenants_sa
         role   = "roles/iam.serviceAccountTokenCreator"
       }
@@ -299,13 +299,13 @@ module "automation-tf-resman-r-sa" {
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
     local.cicd_resman_r_sa == "" ? {} : {
-      cicd_token_creator = {
+      cicd_token_creator_resman = {
         member = local.cicd_resman_r_sa
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     },
     local.cicd_tenants_r_sa == "" ? {} : {
-      cicd_token_creator = {
+      cicd_token_creator_tenants = {
         member = local.cicd_tenants_r_sa
         role   = "roles/iam.serviceAccountTokenCreator"
       }
