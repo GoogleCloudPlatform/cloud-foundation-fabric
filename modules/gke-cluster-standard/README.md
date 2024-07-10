@@ -322,7 +322,7 @@ module "cluster-1" {
     subnetwork = var.subnet.self_link
     secondary_range_blocks = {
       pods     = ""
-      services = "/20" # can be an empty string as well
+      services = "/20"
     }
   }
   cluster_autoscaling = {
