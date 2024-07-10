@@ -15,6 +15,7 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [St
   - [Cloud DNS](#cloud-dns)
   - [Backup for GKE](#backup-for-gke)
   - [Automatic creation of new secondary ranges](#automatic-creation-of-new-secondary-ranges)
+  - [Node auto-provisioning with GPUs and TPUs](#node-auto-provisioning-with-gpus-and-tpus)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -305,6 +306,47 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1
 ```
+
+### Node auto-provisioning with GPUs and TPUs
+
+You can use `var.cluster_autoscaling` block to configure node auto-provisioning for the GKE cluster. The example below configures limits for CPU, memory, GPUs and TPUs.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_blocks = {
+      pods     = ""
+      services = "/20" # can be an empty string as well
+    }
+  }
+  cluster_autoscaling = {
+    cpu_limits = {
+      max = 48
+    }
+    mem_limits = {
+      max = 182
+    }
+    # Can be GPUs or TPUs
+    accelerator_resources = [
+      {
+        resource_type = "nvidia-l4"
+        max           = 2
+      },
+      {
+        resource_type = "tpu-v5-lite-podslice"
+        max           = 2
+      }
+    ]
+  }
+}
+# tftest modules=1 resources=1
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -315,7 +357,7 @@ module "cluster-1" {
 | [project_id](variables.tf#L410) | Cluster project id. | <code>string</code> | ✓ |  |
 | [vpc_config](variables.tf#L421) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                    &#61; string&#10;  subnetwork                 &#61; string&#10;  master_ipv4_cidr_block     &#61; optional&#40;string&#41;&#10;  master_endpoint_subnetwork &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  additional_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backup_configs](variables.tf#L17) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    region                            &#61; string&#10;    applications                      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    labels                            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    schedule                          &#61; optional&#40;string&#41;&#10;    retention_policy_days             &#61; optional&#40;number&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cluster_autoscaling](variables.tf#L39) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  enabled             &#61; optional&#40;bool, true&#41;&#10;  autoscaling_profile &#61; optional&#40;string, &#34;BALANCED&#34;&#41;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    disk_size         &#61; optional&#40;number&#41;&#10;    disk_type         &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;    management &#61; optional&#40;object&#40;&#123;&#10;      auto_repair  &#61; optional&#40;bool, true&#41;&#10;      auto_upgrade &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;    shielded_instance_config &#61; optional&#40;object&#40;&#123;&#10;      integrity_monitoring &#61; optional&#40;bool, true&#41;&#10;      secure_boot          &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;&#41;&#10;    upgrade_settings &#61; optional&#40;object&#40;&#123;&#10;      blue_green &#61; optional&#40;object&#40;&#123;&#10;        node_pool_soak_duration &#61; optional&#40;string&#41;&#10;        standard_rollout_policy &#61; optional&#40;object&#40;&#123;&#10;          batch_percentage    &#61; optional&#40;number&#41;&#10;          batch_node_count    &#61; optional&#40;number&#41;&#10;          batch_soak_duration &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      surge &#61; optional&#40;object&#40;&#123;&#10;        max         &#61; optional&#40;number&#41;&#10;        unavailable &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  gpu_resources &#61; optional&#40;list&#40;object&#40;&#123;&#10;    resource_type &#61; string&#10;    min           &#61; number&#10;    max           &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [cluster_autoscaling](variables.tf#L39) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  enabled             &#61; optional&#40;bool, true&#41;&#10;  autoscaling_profile &#61; optional&#40;string, &#34;BALANCED&#34;&#41;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    disk_size         &#61; optional&#40;number&#41;&#10;    disk_type         &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;    management &#61; optional&#40;object&#40;&#123;&#10;      auto_repair  &#61; optional&#40;bool, true&#41;&#10;      auto_upgrade &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;    shielded_instance_config &#61; optional&#40;object&#40;&#123;&#10;      integrity_monitoring &#61; optional&#40;bool, true&#41;&#10;      secure_boot          &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;&#41;&#10;    upgrade_settings &#61; optional&#40;object&#40;&#123;&#10;      blue_green &#61; optional&#40;object&#40;&#123;&#10;        node_pool_soak_duration &#61; optional&#40;string&#41;&#10;        standard_rollout_policy &#61; optional&#40;object&#40;&#123;&#10;          batch_percentage    &#61; optional&#40;number&#41;&#10;          batch_node_count    &#61; optional&#40;number&#41;&#10;          batch_soak_duration &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      surge &#61; optional&#40;object&#40;&#123;&#10;        max         &#61; optional&#40;number&#41;&#10;        unavailable &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; optional&#40;number, 0&#41;&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; optional&#40;number, 0&#41;&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  accelerator_resources &#61; optional&#40;list&#40;object&#40;&#123;&#10;    resource_type &#61; string&#10;    min           &#61; optional&#40;number, 0&#41;&#10;    max           &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [default_nodepool](variables.tf#L118) | Enable default nodepool. | <code title="object&#40;&#123;&#10;  remove_pool        &#61; optional&#40;bool, true&#41;&#10;  initial_node_count &#61; optional&#40;number, 1&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deletion_protection](variables.tf#L136) | Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail. | <code>bool</code> |  | <code>true</code> |
 | [description](variables.tf#L143) | Cluster description. | <code>string</code> |  | <code>null</code> |
