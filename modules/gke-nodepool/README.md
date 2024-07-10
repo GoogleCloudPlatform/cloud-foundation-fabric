@@ -141,12 +141,12 @@ module "cluster-1-nodepool-gpu-1" {
 This example uses Dynamic Workload Scheduler (DWS) to configure a GPU nodepool.
 
 ```hcl
-module "cluster-1-nodepool-gpu-1" {
+module "cluster-1-nodepool-dws" {
   source       = "./fabric/modules/gke-nodepool"
   project_id   = "myproject"
   cluster_name = "cluster-1"
   location     = "europe-west4-a"
-  name         = "nodepool-gpu-1"
+  name         = "nodepool-dws"
   k8s_labels   = { environment = "dev" }
   service_account = {
     create       = true
@@ -182,7 +182,7 @@ module "cluster-1-nodepool-gpu-1" {
     consume_reservation_type = "NO_RESERVATION"
   }
 }
-# tftest modules=1 resources=2 inventory=guest-accelerator.yaml
+# tftest modules=1 resources=2 inventory=dws.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
