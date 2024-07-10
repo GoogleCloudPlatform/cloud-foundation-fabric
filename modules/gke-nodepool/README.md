@@ -153,7 +153,7 @@ module "cluster-1-nodepool-gpu-1" {
     email        = "nodepool-gpu-1" # optional
     oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
-  nnode_config = {
+  node_config = {
     machine_type        = "g2-standard-4"
     disk_size_gb        = 50
     disk_type           = "pd-ssd"
