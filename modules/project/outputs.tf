@@ -129,14 +129,7 @@ output "quotas" {
 }
 
 output "service_agents" {
-  value = merge(
-    local._project_service_agents,
-    {
-      for alias, name in local._agent_aliases :
-      alias => local._project_service_agents[name]
-      if contains(keys(local._project_service_agents), name)
-    }
-  )
+  value = local.aliased_service_agents
   depends_on = [
     google_project_service_identity.default,
     google_project_iam_member.service_agents

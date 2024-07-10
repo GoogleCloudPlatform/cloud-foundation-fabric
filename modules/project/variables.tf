@@ -229,10 +229,11 @@ variable "service_config" {
   }
 }
 
-variable "service_encryption_key_ids" {
-  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
+variable "service_agent_encryption_key_ids" {
+  description = "Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "services" {
@@ -254,12 +255,12 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project                = string
-    network_users               = optional(list(string), [])
-    service_identity_iam        = optional(map(list(string)), {})
-    service_identity_subnet_iam = optional(map(list(string)), {})
-    service_iam_grants          = optional(list(string), [])
-    network_subnet_users        = optional(map(list(string)), {})
+    host_project             = string
+    network_users            = optional(list(string), [])
+    service_agent_iam        = optional(map(list(string)), {})
+    service_agent_subnet_iam = optional(map(list(string)), {})
+    service_iam_grants       = optional(list(string), [])
+    network_subnet_users     = optional(map(list(string)), {})
   })
   default = {
     host_project = null
@@ -270,8 +271,8 @@ variable "shared_vpc_service_config" {
       var.shared_vpc_service_config.host_project == null &&
       length(var.shared_vpc_service_config.network_users) == 0 &&
       length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
-      length(var.shared_vpc_service_config.service_identity_iam) == 0 &&
-      length(var.shared_vpc_service_config.service_identity_subnet_iam) == 0 &&
+      length(var.shared_vpc_service_config.service_agent_iam) == 0 &&
+      length(var.shared_vpc_service_config.service_agent_subnet_iam) == 0 &&
       length(var.shared_vpc_service_config.network_subnet_users) == 0
     )
     error_message = "You need to provide host_project when providing Shared VPC host and subnet IAM permissions."

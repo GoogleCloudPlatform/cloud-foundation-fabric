@@ -30,18 +30,23 @@ SERVICE_AGENTS_URL = "https://cloud.google.com/iam/docs/service-agents"
 ALIASES = {
     'bigquery-encryption': ['bq'],
     'cloudservices': ['cloudsvc'],
+    'compute-system': ['compute'],
+    'cloudcomposer-accounts': ['composer'],
     'container-engine-robot': ['container', 'container-engine'],
+    'dataflow-service-producer-prod': ['dataflow'],
+    'dataproc-accounts': ['dataproc'],
     'gae-api-prod': ['gae-flex'],
     'gcf-admin-robot': ['cloudfunctions', 'gcf'],
     'gkehub': ['fleet'],
+    'gs-project-accounts': ['storage'],
     'monitoring-notification': ['monitoring'],
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
 
 
 def main():
-  page = requests.get(SERVICE_AGENTS_URL)
-  soup = BeautifulSoup(page.content, 'html.parser')
+  page = requests.get(SERVICE_AGENTS_URL).content
+  soup = BeautifulSoup(page, 'html.parser')
   agents = []
   for content in soup.find(id='service-agents').select('tbody tr'):
     agent_text = content.get_text()
@@ -62,6 +67,9 @@ def main():
     if identity == 'PROJECT_NUMBER@cloudbuild.gserviceaccount.com':
       name = "cloudbuild-sa"  # Cloud Build Service Account
     else:
+      # most service agents have the format
+      # service-PROJECT_NUMBER@gcp-sa-SERVICE_NAME.iam.gserviceaccount.com.
+      # We keep the SERVICE_NAME part as the agent's name
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
     identity = identity.replace('PROJECT_NUMBER', '%s')
@@ -79,6 +87,10 @@ def main():
         'role': col2.code.get_text() if 'roles/' in agent_text else None,
         'is_primary': 'Primary service agent' in agent_text,
     }
+    if agent['name'] == 'cloudservices':
+      # cloudservices role is granted automatically, we don't want to manage it
+      agent['role'] = None
+
     if aliases := ALIASES.get(name):
       agent['aliases'] = aliases
 

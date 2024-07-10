@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,398 +12,1341 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# When setting `jit: true` idenitify relevant role in docs:
-# https://cloud.google.com/iam/docs/service-agents
-#
-# and add information in README.md in section:
-# Service Identities Requiring Manual IAM Grants
+- name: aiplatform-cc
+  display_name: AI Platform Custom Code Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform-cc.iam.gserviceaccount.com
+  role: roles/aiplatform.customCodeServiceAgent
+  is_primary: false
+- name: vertex-es
+  display_name: AI Platform Example Store Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-es.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: aiplatform-ft
+  display_name: AI Platform Fine Tuning Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform-ft.iam.gserviceaccount.com
+  role: roles/aiplatform.serviceAgent
+  is_primary: false
+- name: aiplatform-is
+  display_name: AI Platform Infra Spanner Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform-is.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: vertex-eval
+  display_name: AI Platform Rapid Eval Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-eval.iam.gserviceaccount.com
+  role: roles/aiplatform.rapidevalServiceAgent
+  is_primary: false
+- name: aiplatform-re
+  display_name: AI Platform Reasoning Engine Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform-re.iam.gserviceaccount.com
+  role: roles/aiplatform.reasoningEngineServiceAgent
+  is_primary: false
+- name: gcp-ri-aiplatform
+  display_name: AI Platform Resource Identity
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-ri-aiplatform.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: aiplatform
+  display_name: AI Platform Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform.iam.gserviceaccount.com
+  role: roles/aiplatform.serviceAgent
+  is_primary: true
+- name: apihub
+  display_name: API Hub Service Account
+  api: apihub.googleapis.com
+  identity: service-%s@gcp-sa-apihub.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: apikeys
+  display_name: API Keys Service Account
+  api: apikeys.googleapis.com
+  identity: service-%s@gcp-sa-apikeys.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: apim
+  display_name: APIM Service Account
+  api: apim.googleapis.com
+  identity: service-%s@gcp-sa-apim.iam.gserviceaccount.com
+  role: roles/apim.apiDiscoveryServiceAgent
+  is_primary: true
+- name: meshcontrolplane
+  display_name: ASM Mesh Control Plane Service Account
+  api: meshconfig.googleapis.com
+  identity: service-%s@gcp-sa-meshcontrolplane.iam.gserviceaccount.com
+  role: roles/meshcontrolplane.serviceAgent
+  is_primary: false
+- name: meshdataplane
+  display_name: ASM Mesh Data Plane Service Account
+  api: meshconfig.googleapis.com
+  identity: service-%s@gcp-sa-meshdataplane.iam.gserviceaccount.com
+  role: roles/meshdataplane.serviceAgent
+  is_primary: false
+- name: adsdatahub
+  display_name: Ads Data Hub Service Account
+  api: adsdatahub.googleapis.com
+  identity: service-%s@gcp-sa-adsdatahub.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: alloydb
+  display_name: AlloyDB Service Account
+  api: alloydb.googleapis.com
+  identity: service-%s@gcp-sa-alloydb.iam.gserviceaccount.com
+  role: roles/alloydb.serviceAgent
+  is_primary: true
+- name: anthosaudit
+  display_name: Anthos Audit Service Account
+  api: anthosaudit.googleapis.com
+  identity: service-%s@gcp-sa-anthosaudit.iam.gserviceaccount.com
+  role: roles/anthosaudit.serviceAgent
+  is_primary: true
+- name: anthosconfigmanagement
+  display_name: Anthos Config Management Service Account
+  api: anthosconfigmanagement.googleapis.com
+  identity: service-%s@gcp-sa-anthosconfigmanagement.iam.gserviceaccount.com
+  role: roles/anthosconfigmanagement.serviceAgent
+  is_primary: true
+- name: anthosidentityservice
+  display_name: Anthos Identity Service Account
+  api: anthosidentityservice.googleapis.com
+  identity: service-%s@gcp-sa-anthosidentityservice.iam.gserviceaccount.com
+  role: roles/anthosidentityservice.serviceAgent
+  is_primary: true
+- name: gkemulticloudcontainer
+  display_name: Anthos Multi-Cloud Container Service Agent
+  api: gkemulticloud.googleapis.com
+  identity: service-%s@gcp-sa-gkemulticloudcontainer.iam.gserviceaccount.com
+  role: roles/gkemulticloud.containerServiceAgent
+  is_primary: false
+- name: gkemulticloudcpmachine
+  display_name: Anthos Multi-Cloud Control Plane Machine Service Agent
+  api: gkemulticloud.googleapis.com
+  identity: service-%s@gcp-sa-gkemulticloudcpmachine.iam.gserviceaccount.com
+  role: roles/gkemulticloud.controlPlaneMachineServiceAgent
+  is_primary: false
+- name: gkemulticloudnpmachine
+  display_name: Anthos Multi-Cloud Node Pool Machine Service Agent
+  api: gkemulticloud.googleapis.com
+  identity: service-%s@gcp-sa-gkemulticloudnpmachine.iam.gserviceaccount.com
+  role: roles/gkemulticloud.nodePoolMachineServiceAgent
+  is_primary: false
+- name: gkemulticloud
+  display_name: Anthos Multi-Cloud Service Agent
+  api: gkemulticloud.googleapis.com
+  identity: service-%s@gcp-sa-gkemulticloud.iam.gserviceaccount.com
+  role: roles/gkemulticloud.serviceAgent
+  is_primary: true
+- name: anthospolicycontroller
+  display_name: Anthos Policy Controller Service Account
+  api: anthospolicycontroller.googleapis.com
+  identity: service-%s@gcp-sa-anthospolicycontroller.iam.gserviceaccount.com
+  role: roles/anthospolicycontroller.serviceAgent
+  is_primary: true
+- name: anthos
+  display_name: Anthos Service Account
+  api: anthos.googleapis.com
+  identity: service-%s@gcp-sa-anthos.iam.gserviceaccount.com
+  role: roles/anthos.serviceAgent
+  is_primary: true
+- name: servicemesh
+  display_name: Anthos Service Mesh Service Account
+  api: meshconfig.googleapis.com
+  identity: service-%s@gcp-sa-servicemesh.iam.gserviceaccount.com
+  role: roles/anthosservicemesh.serviceAgent
+  is_primary: false
+- name: anthossupport
+  display_name: Anthos Support Service Account
+  api: connectgateway.googleapis.com
+  identity: service-%s@gcp-sa-anthossupport.iam.gserviceaccount.com
+  role: roles/anthossupport.serviceAgent
+  is_primary: true
+- name: apigeeregistry
+  display_name: Apigee Registry Service Account
+  api: apigeeregistry.googleapis.com
+  identity: service-%s@gcp-sa-apigeeregistry.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: apigee
+  display_name: Apigee Service Agent
+  api: apigee.googleapis.com
+  identity: service-%s@gcp-sa-apigee.iam.gserviceaccount.com
+  role: roles/apigee.serviceAgent
+  is_primary: true
+- name: appdevexperience
+  display_name: App Development Experience Service Account
+  api: appdevelopmentexperience.googleapis.com
+  identity: service-%s@gcp-sa-appdevexperience.iam.gserviceaccount.com
+  role: roles/appdevelopmentexperience.serviceAgent
+  is_primary: true
+- name: gae-api-prod
+  display_name: App Engine Flexible Environment Service Agent
+  api: appengineflex.googleapis.com
+  identity: service-%s@gae-api-prod.google.com.iam.gserviceaccount.com
+  role: roles/appengineflex.serviceAgent
+  is_primary: true
+  aliases:
+  - gae-flex
+- name: gcp-gae-service
+  display_name: App Engine Standard Environment Service Agent
+  api: appenginestandard.googleapis.com
+  identity: service-%s@gcp-gae-service.iam.gserviceaccount.com
+  role: roles/appengine.serviceAgent
+  is_primary: true
+- name: apphub
+  display_name: App Hub Service Account
+  api: apphub.googleapis.com
+  identity: service-%s@gcp-sa-apphub.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: integrations
+  display_name: Application Integration Service Agent
+  api: integrations.googleapis.com
+  identity: service-%s@gcp-sa-integrations.iam.gserviceaccount.com
+  role: roles/integrations.serviceAgent
+  is_primary: true
+- name: artifactregistry
+  display_name: Artifact Registry Service Agent
+  api: artifactregistry.googleapis.com
+  identity: service-%s@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+  is_primary: true
+- name: assuredworkloads
+  display_name: AssuredWorkloads Service Account
+  api: assuredworkloads.googleapis.com
+  identity: service-%s@gcp-sa-assuredworkloads.iam.gserviceaccount.com
+  role: roles/assuredworkloads.serviceAgent
+  is_primary: true
+- name: audit-manager
+  display_name: Audit Manager Service Agent
+  api: auditmanager.googleapis.com
+  identity: service-%s@gcp-sa-audit-manager.iam.gserviceaccount.com
+  role: roles/auditmanager.serviceAgent
+  is_primary: true
+- name: recommendationengine
+  display_name: AutoML Recommendations Service Account
+  api: recommendationengine.googleapis.com
+  identity: service-%s@gcp-sa-recommendationengine.iam.gserviceaccount.com
+  role: roles/automlrecommendations.serviceAgent
+  is_primary: true
+- name: automl
+  display_name: AutoML Service Agent
+  api: automl.googleapis.com
+  identity: service-%s@gcp-sa-automl.iam.gserviceaccount.com
+  role: roles/automl.serviceAgent
+  is_primary: true
+- name: backupdr-run
+  display_name: Backup and DR Runner Service Agent
+  api: backupdr.googleapis.com
+  identity: service-%s@gcp-sa-backupdr-run.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: backupdr
+  display_name: Backup and DR Service Agent
+  api: backupdr.googleapis.com
+  identity: service-%s@gcp-sa-backupdr.iam.gserviceaccount.com
+  role: roles/backupdr.serviceAgent
+  is_primary: true
+- name: backupdr-pr
+  display_name: Backup and DR Vault Service Agent
+  api: backupdr.googleapis.com
+  identity: vault-%s-IDENTIFIER@gcp-sa-backupdr-pr.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: gkebackup
+  display_name: Backup for GKE Service Account
+  api: gkebackup.googleapis.com
+  identity: service-%s@gcp-sa-gkebackup.iam.gserviceaccount.com
+  role: roles/gkebackup.serviceAgent
+  is_primary: true
+- name: bms
+  display_name: Bare Metal Solution Service Account
+  api: baremetalsolution.googleapis.com
+  identity: service-%s@gcp-sa-bms.iam.gserviceaccount.com
+  role: roles/baremetalsolution.serviceAgent
+  is_primary: true
+- name: cloudbatch
+  display_name: Batch Service Account
+  api: batch.googleapis.com
+  identity: service-%s@gcp-sa-cloudbatch.iam.gserviceaccount.com
+  role: roles/batch.serviceAgent
+  is_primary: true
+- name: bigquery-encryption
+  display_name: Big Query Service Agent
+  api: bigquery.googleapis.com
+  identity: bq-%s@bigquery-encryption.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases:
+  - bq
+- name: bigqueryconnection
+  display_name: BigQuery Connection Service Agent
+  api: bigqueryconnection.googleapis.com
+  identity: service-%s@gcp-sa-bigqueryconnection.iam.gserviceaccount.com
+  role: roles/bigqueryconnection.serviceAgent
+  is_primary: true
+- name: bigquerytardis
+  display_name: BigQuery Continuous Query Service Agent
+  api: bigquery.googleapis.com
+  identity: service-%s@gcp-sa-bigquerytardis.iam.gserviceaccount.com
+  role: roles/bigquerycontinuousquery.serviceAgent
+  is_primary: false
+- name: bigquerydatatransfer
+  display_name: BigQuery Data Transfer Service Agent
+  api: bigquerydatatransfer.googleapis.com
+  identity: service-%s@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com
+  role: roles/bigquerydatatransfer.serviceAgent
+  is_primary: true
+- name: prod-bigqueryomni
+  display_name: BigQuery Omni Service Agent
+  api: bigquery.googleapis.com
+  identity: service-%s@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com
+  role: roles/bigqueryomni.serviceAgent
+  is_primary: false
+- name: bigqueryri
+  display_name: BigQuery Resource Identity Service Account
+  api: bigquery.googleapis.com
+  identity: service-%s@gcp-sa-bigqueryri.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: bigquery-consp
+  display_name: BigQuery Spark Connection Delegate Service Agent
+  api: bigqueryconnection.googleapis.com
+  identity: bqcx-%s-IDENTIFIER@gcp-sa-bigquery-consp.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: bigqueryspark
+  display_name: BigQuery Spark Service Agent
+  api: bigquery.googleapis.com
+  identity: service-%s@gcp-sa-bigqueryspark.iam.gserviceaccount.com
+  role: roles/bigqueryspark.serviceAgent
+  is_primary: false
+- name: binaryauthorization
+  display_name: Binary Authorization Service Agent
+  api: binaryauthorization.googleapis.com
+  identity: service-%s@gcp-sa-binaryauthorization.iam.gserviceaccount.com
+  role: roles/binaryauthorization.serviceAgent
+  is_primary: true
+- name: bne
+  display_name: Blockchain Node Engine Service Account
+  api: blockchainnodeengine.googleapis.com
+  identity: service-%s@gcp-sa-bne.iam.gserviceaccount.com
+  role: roles/blockchainnodeengine.serviceAgent
+  is_primary: true
+- name: bundles
+  display_name: Bundles Service Agent
+  api: integrations.googleapis.com
+  identity: b%s-IDENTIFIER@gcp-sa-bundles.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: chronicle
+  display_name: Chronicle Service Account
+  api: chronicle.googleapis.com
+  identity: service-%s@gcp-sa-chronicle.iam.gserviceaccount.com
+  role: roles/chronicle.serviceAgent
+  is_primary: true
+- name: notebooks
+  display_name: Cloud AI Platform Notebooks Service Account
+  api: notebooks.googleapis.com
+  identity: service-%s@gcp-sa-notebooks.iam.gserviceaccount.com
+  role: roles/notebooks.serviceAgent
+  is_primary: true
+- name: apigateway-mgmt
+  display_name: Cloud API Gateway Management Plane Service Account
+  api: apigateway.googleapis.com
+  identity: service-%s@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com
+  role: roles/apigateway_management.serviceAgent
+  is_primary: false
+- name: apigateway
+  display_name: Cloud API Gateway Service Account
+  api: apigateway.googleapis.com
+  identity: service-%s@gcp-sa-apigateway.iam.gserviceaccount.com
+  role: roles/apigateway.serviceAgent
+  is_primary: false
+- name: cloudasset
+  display_name: Cloud Asset Service Agent
+  api: cloudasset.googleapis.com
+  identity: service-%s@gcp-sa-cloudasset.iam.gserviceaccount.com
+  role: roles/cloudasset.serviceAgent
+  is_primary: true
+- name: bigtable
+  display_name: Cloud Bigtable Service Agent
+  api: bigtableadmin.googleapis.com
+  identity: service-%s@gcp-sa-bigtable.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: cloudbuild-sa
+  display_name: Cloud Build Service Agent
+  api: cloudbuild.googleapis.com
+  identity: '%s@cloudbuild.gserviceaccount.com'
+  role: roles/cloudbuild.builds.builder
+  is_primary: false
+- name: cloudbuild
+  display_name: Cloud Build Service Agent
+  api: cloudbuild.googleapis.com
+  identity: service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+  is_primary: false
+- name: certificatemanager
+  display_name: Cloud Certificate Manager Service Account
+  api: certificatemanager.googleapis.com
+  identity: service-%s@gcp-sa-certificatemanager.iam.gserviceaccount.com
+  role: roles/certificatemanager.serviceAgent
+  is_primary: true
+- name: cloudcomposer-accounts
+  display_name: Cloud Composer Service Agent
+  api: composer.googleapis.com
+  identity: service-%s@cloudcomposer-accounts.iam.gserviceaccount.com
+  role: roles/composer.serviceAgent
+  is_primary: true
+  aliases:
+  - composer
+- name: dns
+  display_name: Cloud DNS Service Account
+  api: dns.googleapis.com
+  identity: service-%s@gcp-sa-dns.iam.gserviceaccount.com
+  role: roles/dns.serviceAgent
+  is_primary: true
+- name: datafusion
+  display_name: Cloud Data Fusion Service Account
+  api: datafusion.googleapis.com
+  identity: service-%s@gcp-sa-datafusion.iam.gserviceaccount.com
+  role: roles/datafusion.serviceAgent
+  is_primary: true
+- name: dlp-api
+  display_name: Cloud Data Loss Prevention Service Agent
+  api: dlp.googleapis.com
+  identity: service-%s@dlp-api.iam.gserviceaccount.com
+  role: roles/dlp.serviceAgent
+  is_primary: true
+- name: datamigration
+  display_name: Cloud Database Migration Service Account
+  api: datamigration.googleapis.com
+  identity: service-%s@gcp-sa-datamigration.iam.gserviceaccount.com
+  role: roles/datamigration.serviceAgent
+  is_primary: true
+- name: dataflow-service-producer-prod
+  display_name: Cloud Dataflow Service Account
+  api: dataflow.googleapis.com
+  identity: service-%s@dataflow-service-producer-prod.iam.gserviceaccount.com
+  role: roles/dataflow.serviceAgent
+  is_primary: true
+  aliases:
+  - dataflow
+- name: dataplex
+  display_name: Cloud Dataplex Service Account
+  api: dataplex.googleapis.com
+  identity: service-%s@gcp-sa-dataplex.iam.gserviceaccount.com
+  role: roles/dataplex.serviceAgent
+  is_primary: true
+- name: datastream
+  display_name: Cloud Datastream Service Account
+  api: datastream.googleapis.com
+  identity: service-%s@gcp-sa-datastream.iam.gserviceaccount.com
+  role: roles/datastream.serviceAgent
+  is_primary: true
+- name: clouddeploy
+  display_name: Cloud Deploy Service Account
+  api: clouddeploy.googleapis.com
+  identity: service-%s@gcp-sa-clouddeploy.iam.gserviceaccount.com
+  role: roles/clouddeploy.serviceAgent
+  is_primary: true
+- name: endpoints
+  display_name: Cloud Endpoints Service Agent
+  api: endpoints.googleapis.com
+  identity: service-%s@gcp-sa-endpoints.iam.gserviceaccount.com
+  role: roles/endpoints.serviceAgent
+  is_primary: true
+- name: cloud-filer
+  display_name: Cloud File Storage Service Account
+  api: file.googleapis.com
+  identity: service-%s@cloud-filer.iam.gserviceaccount.com
+  role: roles/file.serviceAgent
+  is_primary: true
+- name: firestore
+  display_name: Cloud Firestore Service Agent
+  api: firestore.googleapis.com
+  identity: service-%s@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+  is_primary: true
+- name: healthcare
+  display_name: Cloud Healthcare Service Agent
+  api: healthcare.googleapis.com
+  identity: service-%s@gcp-sa-healthcare.iam.gserviceaccount.com
+  role: roles/healthcare.serviceAgent
+  is_primary: true
+- name: identitytoolkit
+  display_name: Cloud Identity Platform Service Agent
+  api: identitytoolkit.googleapis.com
+  identity: service-%s@gcp-sa-identitytoolkit.iam.gserviceaccount.com
+  role: roles/identitytoolkit.serviceAgent
+  is_primary: true
+- name: cloudkms
+  display_name: Cloud KMS Service Agent
+  api: cloudkms.googleapis.com
+  identity: service-%s@gcp-sa-cloudkms.iam.gserviceaccount.com
+  role: roles/cloudkms.serviceAgent
+  is_primary: false
+- name: lifesciences
+  display_name: Cloud Life Sciences Service Agent
+  api: lifesciences.googleapis.com
+  identity: service-%s@gcp-sa-lifesciences.iam.gserviceaccount.com
+  role: roles/lifesciences.serviceAgent
+  is_primary: true
+- name: logging
+  display_name: Cloud Logging Service Account
+  api: logging.googleapis.com
+  identity: service-%s@gcp-sa-logging.iam.gserviceaccount.com
+  role: roles/logging.serviceAgent
+  is_primary: false
+- name: mi
+  display_name: Cloud Managed Identities Service Agent
+  api: managedidentities.googleapis.com
+  identity: service-%s@gcp-sa-mi.iam.gserviceaccount.com
+  role: roles/managedidentities.serviceAgent
+  is_primary: true
+- name: cloud-memcache-sa
+  display_name: Cloud Memorystore Memcache Service Agent
+  api: memcache.googleapis.com
+  identity: service-%s@cloud-memcache-sa.iam.gserviceaccount.com
+  role: roles/memcache.serviceAgent
+  is_primary: true
+- name: cloud-redis
+  display_name: Cloud Memorystore Redis Service Agent
+  api: redis.googleapis.com
+  identity: service-%s@cloud-redis.iam.gserviceaccount.com
+  role: roles/redis.serviceAgent
+  is_primary: true
+- name: migcenter
+  display_name: Cloud Migration Center Service Account
+  api: migrationcenter.googleapis.com
+  identity: service-%s@gcp-sa-migcenter.iam.gserviceaccount.com
+  role: roles/migrationcenter.serviceAgent
+  is_primary: true
+- name: networkmanagement
+  display_name: Cloud Network Management Service Account
+  api: networkmanagement.googleapis.com
+  identity: service-%s@gcp-sa-networkmanagement.iam.gserviceaccount.com
+  role: roles/networkmanagement.serviceAgent
+  is_primary: true
+- name: cloudoptim
+  display_name: Cloud Optimization Service Agent
+  api: cloudoptimization.googleapis.com
+  identity: service-%s@gcp-sa-cloudoptim.iam.gserviceaccount.com
+  role: roles/cloudoptimization.serviceAgent
+  is_primary: true
+- name: routeoptim
+  display_name: Cloud Optimization Service Agent
+  api: routeoptimization.googleapis.com
+  identity: service-%s@gcp-sa-routeoptim.iam.gserviceaccount.com
+  role: roles/routeoptimization.serviceAgent
+  is_primary: true
+- name: pubsub
+  display_name: Cloud Pub/Sub Service Account
+  api: pubsub.googleapis.com
+  identity: service-%s@gcp-sa-pubsub.iam.gserviceaccount.com
+  role: roles/pubsub.serviceAgent
+  is_primary: true
+- name: cloud-sql
+  display_name: Cloud SQL Service Account
+  api: sqladmin.googleapis.com
+  identity: service-%s@gcp-sa-cloud-sql.iam.gserviceaccount.com
+  role: roles/cloudsql.serviceAgent
+  is_primary: true
+- name: cloudscheduler
+  display_name: Cloud Scheduler Service Account
+  api: cloudscheduler.googleapis.com
+  identity: service-%s@gcp-sa-cloudscheduler.iam.gserviceaccount.com
+  role: roles/cloudscheduler.serviceAgent
+  is_primary: true
+- name: scc-notification
+  display_name: Cloud Security Command Center Notification Service Account
+  api: securitycenter.googleapis.com
+  identity: service-%s@gcp-sa-scc-notification.iam.gserviceaccount.com
+  role: roles/securitycenter.notificationServiceAgent
+  is_primary: false
+- name: securitycenter
+  display_name: Cloud Security Command Center Service Account
+  api: securitycenter.googleapis.com
+  identity: service-%s@gcp-sa-securitycenter.iam.gserviceaccount.com
+  role: roles/securitycenter.serviceAgent
+  is_primary: false
+- name: spanner
+  display_name: Cloud Spanner Production Service Account
+  api: spanner.googleapis.com
+  identity: service-%s@gcp-sa-spanner.iam.gserviceaccount.com
+  role: roles/spanner.serviceAgent
+  is_primary: true
+- name: firebasestorage
+  display_name: Cloud Storage for Firebase Service Agent
+  api: firebasestorage.googleapis.com
+  identity: service-%s@gcp-sa-firebasestorage.iam.gserviceaccount.com
+  role: roles/firebasestorage.serviceAgent
+  is_primary: true
+- name: cloudtasks
+  display_name: Cloud Tasks Service Account
+  api: cloudtasks.googleapis.com
+  identity: service-%s@gcp-sa-cloudtasks.iam.gserviceaccount.com
+  role: roles/cloudtasks.serviceAgent
+  is_primary: true
+- name: cloud-trace
+  display_name: Cloud Trace Service Account
+  api: cloudtrace.googleapis.com
+  identity: service-%s@gcp-sa-cloud-trace.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: translation
+  display_name: Cloud Translation Service Agent
+  api: translate.googleapis.com
+  identity: service-%s@gcp-sa-translation.iam.gserviceaccount.com
+  role: roles/cloudtranslate.serviceAgent
+  is_primary: true
+- name: vmmigration
+  display_name: Cloud VM Migration Service Account
+  api: vmmigration.googleapis.com
+  identity: service-%s@gcp-sa-vmmigration.iam.gserviceaccount.com
+  role: roles/vmmigration.serviceAgent
+  is_primary: true
+- name: websecurityscanner
+  display_name: Cloud Web Security Scanner Service Agent
+  api: websecurityscanner.googleapis.com
+  identity: service-%s@gcp-sa-websecurityscanner.iam.gserviceaccount.com
+  role: roles/websecurityscanner.serviceAgent
+  is_primary: true
+- name: workflows
+  display_name: Cloud Workflows Service Agent
+  api: workflows.googleapis.com
+  identity: service-%s@gcp-sa-workflows.iam.gserviceaccount.com
+  role: roles/workflows.serviceAgent
+  is_primary: true
+- name: compute-system
+  display_name: Compute Engine Service Agent
+  api: compute.googleapis.com
+  identity: service-%s@compute-system.iam.gserviceaccount.com
+  role: roles/compute.serviceAgent
+  is_primary: false
+  aliases:
+  - compute
+- name: compute-usage
+  display_name: Compute Usage Export Service Agent
+  api: compute.googleapis.com
+  identity: service-%s@gcp-sa-compute-usage.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: configdelivery
+  display_name: Config Delivery Service Account
+  api: configdelivery.googleapis.com
+  identity: service-%s@gcp-sa-configdelivery.iam.gserviceaccount.com
+  role: roles/configdelivery.serviceAgent
+  is_primary: true
+- name: connectors
+  display_name: Connectors Service Account
+  api: connectors.googleapis.com
+  identity: service-%s@gcp-sa-connectors.iam.gserviceaccount.com
+  role: roles/connectors.serviceAgent
+  is_primary: true
+- name: contactcenterinsights
+  display_name: Contact Center AI Insights Service Account
+  api: contactcenterinsights.googleapis.com
+  identity: service-%s@gcp-sa-contactcenterinsights.iam.gserviceaccount.com
+  role: roles/contactcenterinsights.serviceAgent
+  is_primary: true
+- name: ccinsights-cmek
+  display_name: Contact Center AI Insights Service Account for CMEK (prod)
+  api: contactcenterinsights.googleapis.com
+  identity: service-%s@gcp-sa-ccinsights-cmek.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: ccaip
+  display_name: Contact Center AI Platform Service Account
+  api: contactcenteraiplatform.googleapis.com
+  identity: service-%s@gcp-sa-ccaip.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: ccai-cmek
+  display_name: Contact Center AI shared Service Account for CMEK (prod)
+  api: contactcenterinsights.googleapis.com
+  identity: service-%s@gcp-sa-ccai-cmek.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: container-analysis
+  display_name: Container Analysis Service Agent
+  api: containeranalysis.googleapis.com
+  identity: service-%s@container-analysis.iam.gserviceaccount.com
+  role: roles/containeranalysis.ServiceAgent
+  is_primary: true
+- name: containerscanning
+  display_name: Container Scanning Service Agent
+  api: containerscanning.googleapis.com
+  identity: service-%s@gcp-sa-containerscanning.iam.gserviceaccount.com
+  role: roles/containerscanning.ServiceAgent
+  is_primary: true
+- name: ktd-control
+  display_name: Container Threat Detection Service Agent
+  api: containerthreatdetection.googleapis.com
+  identity: service-%s@gcp-sa-ktd-control.iam.gserviceaccount.com
+  role: roles/containerthreatdetection.serviceAgent
+  is_primary: true
+- name: cloud-cw
+  display_name: Content Warehouse Service Account
+  api: contentwarehouse.googleapis.com
+  identity: service-%s@gcp-sa-cloud-cw.iam.gserviceaccount.com
+  role: roles/contentwarehouse.serviceAgent
+  is_primary: true
+- name: dataconnectors
+  display_name: Data Connectors Service Account
+  api: dataconnectors.googleapis.com
+  identity: service-%s@gcp-sa-dataconnectors.iam.gserviceaccount.com
+  role: roles/dataconnectors.serviceAgent
+  is_primary: true
+- name: datalabeling
+  display_name: Data Labeling Service Account
+  api: datalabeling.googleapis.com
+  identity: service-%s@gcp-sa-datalabeling.iam.gserviceaccount.com
+  role: roles/datalabeling.serviceAgent
+  is_primary: true
+- name: datapipelines
+  display_name: Data Pipelines Service Agent
+  api: datapipelines.googleapis.com
+  identity: service-%s@gcp-sa-datapipelines.iam.gserviceaccount.com
+  role: roles/datapipelines.serviceAgent
+  is_primary: true
+- name: datastudio
+  display_name: Data Studio Service Account
+  api: datastudio.googleapis.com
+  identity: service-%s@gcp-sa-datastudio.iam.gserviceaccount.com
+  role: roles/datastudio.serviceAgent
+  is_primary: true
+- name: dataform
+  display_name: Dataform Service Account
+  api: dataform.googleapis.com
+  identity: service-%s@gcp-sa-dataform.iam.gserviceaccount.com
+  role: roles/dataform.serviceAgent
+  is_primary: true
+- name: metastore
+  display_name: Dataproc Metastore Service Account
+  api: metastore.googleapis.com
+  identity: service-%s@gcp-sa-metastore.iam.gserviceaccount.com
+  role: roles/metastore.serviceAgent
+  is_primary: true
+- name: monitoring-deprecated
+  display_name: Deprecated Monitoring Service Account
+  api: monitoring.googleapis.com
+  identity: service-%s@gcp-sa-monitoring.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: devconnect
+  display_name: Developer Connect Service Account
+  api: developerconnect.googleapis.com
+  identity: service-%s@gcp-sa-devconnect.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: dialogflow-cmek
+  display_name: Dialogflow Service Account for CMEK (prod)
+  api: dialogflow.googleapis.com
+  identity: service-%s@gcp-sa-dialogflow-cmek.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: dialogflow
+  display_name: Dialogflow Service Agent
+  api: dialogflow.googleapis.com
+  identity: service-%s@gcp-sa-dialogflow.iam.gserviceaccount.com
+  role: roles/dialogflow.serviceAgent
+  is_primary: true
+- name: discoveryengine
+  display_name: Discovery Engine Service Account
+  api: discoveryengine.googleapis.com
+  identity: service-%s@gcp-sa-discoveryengine.iam.gserviceaccount.com
+  role: roles/discoveryengine.serviceAgent
+  is_primary: true
+- name: cloud-cw-cmek
+  display_name: Document AI Warehouse CMEK Infra Spanner Service Account
+  api: contentwarehouse.googleapis.com
+  identity: service-%s@gcp-sa-cloud-cw-cmek.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: prod-dai-core
+  display_name: DocumentAI Core Service Agent
+  api: documentai.googleapis.com
+  identity: service-%s@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+  is_primary: true
+- name: edgecontainercluster
+  display_name: Edge Container Cluster Service Agent
+  api: edgecontainer.googleapis.com
+  identity: service-%s@gcp-sa-edgecontainercluster.iam.gserviceaccount.com
+  role: roles/edgecontainer.clusterServiceAgent
+  is_primary: false
+- name: edgecontainergcr
+  display_name: Edge Container GCR Service Agent
+  api: edgecontainer.googleapis.com
+  identity: service-%s@gcp-sa-edgecontainergcr.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: edgecontainer
+  display_name: Edge Container Service Agent
+  api: edgecontainer.googleapis.com
+  identity: service-%s@gcp-sa-edgecontainer.iam.gserviceaccount.com
+  role: roles/edgecontainer.serviceAgent
+  is_primary: true
+- name: cloud-ekg
+  display_name: Enterprise Knowledge Graph Service Agent
+  api: enterpriseknowledgegraph.googleapis.com
+  identity: service-%s@gcp-sa-cloud-ekg.iam.gserviceaccount.com
+  role: roles/enterpriseknowledgegraph.serviceAgent
+  is_primary: true
+- name: eventarc
+  display_name: Eventarc Service Agent
+  api: eventarc.googleapis.com
+  identity: service-%s@gcp-sa-eventarc.iam.gserviceaccount.com
+  role: roles/eventarc.serviceAgent
+  is_primary: true
+- name: ekms
+  display_name: External Key Management Service Service Account
+  api: cloudkms.googleapis.com
+  identity: service-%s@gcp-sa-ekms.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: firebaseappcheck
+  display_name: Firebase App Check Service Account
+  api: firebaseappcheck.googleapis.com
+  identity: service-%s@gcp-sa-firebaseappcheck.iam.gserviceaccount.com
+  role: roles/firebaseappcheck.serviceAgent
+  is_primary: true
+- name: firebaseapphosting
+  display_name: Firebase App Hosting Service Account
+  api: firebaseapphosting.googleapis.com
+  identity: service-%s@gcp-sa-firebaseapphosting.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: firebasemods
+  display_name: Firebase Extensions Service Agent
+  api: firebaseextensions.googleapis.com
+  identity: service-%s@gcp-sa-firebasemods.iam.gserviceaccount.com
+  role: roles/firebasemods.serviceAgent
+  is_primary: true
+- name: firebaseml
+  display_name: Firebase Machine Learning Service Account
+  api: firebaseml.googleapis.com
+  identity: service-%s@gcp-sa-firebaseml.iam.gserviceaccount.com
+  role: roles/firebaseml.serviceAgent
+  is_primary: true
+- name: firebase
+  display_name: Firebase Management Service Agent
+  api: firebase.googleapis.com
+  identity: service-%s@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+  is_primary: false
+- name: firebasedatabase
+  display_name: Firebase Realtime Database Service Agent
+  api: firebasedatabase.googleapis.com
+  identity: service-%s@gcp-sa-firebasedatabase.iam.gserviceaccount.com
+  role: roles/firebasedatabase.serviceAgent
+  is_primary: true
+- name: firebase-rules
+  display_name: Firebase Rules Service Agent
+  api: firebaserules.googleapis.com
+  identity: service-%s@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+  is_primary: true
+- name: firewallinsights
+  display_name: Firewall Insights Service Account
+  api: firewallinsights.googleapis.com
+  identity: service-%s@gcp-sa-firewallinsights.iam.gserviceaccount.com
+  role: roles/firewallinsights.serviceAgent
+  is_primary: true
+- name: gsuiteaddons
+  display_name: G Suite Add-ons Service Account
+  api: gsuiteaddons.googleapis.com
+  identity: service-%s@gcp-sa-gsuiteaddons.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: gkedataplanev2
+  display_name: GKE Dataplane V2 Service Account
+  api: gkedataplanev2.googleapis.com
+  identity: service-%s@gcp-sa-gkedataplanev2.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: gkehub
+  display_name: GKE Hub API Service Account
+  api: gkehub.googleapis.com
+  identity: service-%s@gcp-sa-gkehub.iam.gserviceaccount.com
+  role: roles/gkehub.serviceAgent
+  is_primary: true
+  aliases:
+  - fleet
+- name: cloudaicompanion
+  display_name: Gemini for Google Cloud Service Agent
+  api: cloudaicompanion.googleapis.com
+  identity: service-%s@gcp-sa-cloudaicompanion.iam.gserviceaccount.com
+  role: roles/cloudaicompanion.serviceAgent
+  is_primary: true
+- name: gkeonprem
+  display_name: Gke On-Prem Service Account
+  api: gkeonprem.googleapis.com
+  identity: service-%s@gcp-sa-gkeonprem.iam.gserviceaccount.com
+  role: roles/gkeonprem.serviceAgent
+  is_primary: true
+- name: cloudservices
+  display_name: Google APIs Service Agent
+  api: null
+  identity: '%s@cloudservices.gserviceaccount.com'
+  role: null
+  is_primary: false
+  aliases:
+  - cloudsvc
+- name: dep
+  display_name: Google Cloud Dataplane Extensibility Platform (DEP) Service Account
+  api: networkservices.googleapis.com
+  identity: service-%s@gcp-sa-dep.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: dataproc-accounts
+  display_name: Google Cloud Dataproc Service Agent
+  api: dataproc.googleapis.com
+  identity: service-%s@dataproc-accounts.iam.gserviceaccount.com
+  role: roles/dataproc.serviceAgent
+  is_primary: true
+  aliases:
+  - dataproc
+- name: gcf-admin-robot
+  display_name: Google Cloud Functions Service Agent
+  api: cloudfunctions.googleapis.com
+  identity: service-%s@gcf-admin-robot.iam.gserviceaccount.com
+  role: roles/cloudfunctions.serviceAgent
+  is_primary: true
+  aliases:
+  - cloudfunctions
+  - gcf
+- name: cloud-ml
+  display_name: Google Cloud ML Engine Service Agent
+  api: ml.googleapis.com
+  identity: service-%s@cloud-ml.google.com.iam.gserviceaccount.com
+  role: roles/ml.serviceAgent
+  is_primary: true
+- name: netapp
+  display_name: Google Cloud NetApp Volumes Service Account
+  api: netapp.googleapis.com
+  identity: service-%s@gcp-sa-netapp.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: osconfig-rollout
+  display_name: Google Cloud OS Config Rollout Service Agent
+  api: osconfig.googleapis.com
+  identity: service-%s@gcp-sa-osconfig-rollout.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: osconfig
+  display_name: Google Cloud OS Config Service Agent
+  api: osconfig.googleapis.com
+  identity: service-%s@gcp-sa-osconfig.iam.gserviceaccount.com
+  role: roles/osconfig.serviceAgent
+  is_primary: true
+- name: serverless-robot-prod
+  display_name: Google Cloud Run Service Agent
+  api: run.googleapis.com
+  identity: service-%s@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+  is_primary: true
+  aliases:
+  - cloudrun
+  - run
+- name: containerregistry
+  display_name: Google Container Registry Service Agent
+  api: containerregistry.googleapis.com
+  identity: service-%s@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+  is_primary: true
+- name: gs-project-accounts
+  display_name: Google Storage Service Agent
+  api: storage.googleapis.com
+  identity: service-%s@gs-project-accounts.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases:
+  - storage
+- name: iap
+  display_name: IAP Service Account
+  api: iap.googleapis.com
+  identity: service-%s@gcp-sa-iap.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: gcp-ri-identitypool
+  display_name: Identity Pool Resource Identity
+  api: iam.googleapis.com
+  identity: service-%s@gcp-ri-identitypool.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: config
+  display_name: Infrastructure Manager Service Account
+  api: config.googleapis.com
+  identity: service-%s@gcp-sa-config.iam.gserviceaccount.com
+  role: roles/cloudconfig.serviceAgent
+  is_primary: true
+- name: ivs
+  display_name: Integrated Vulnerability Scanner Service Account
+  api: securitycenter.googleapis.com
+  identity: service-%s@gcp-sa-ivs.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: chronicle-spanner
+  display_name: Internal Chronicle Spanner Service Account
+  api: chronicle.googleapis.com
+  identity: service-%s@gcp-sa-chronicle-spanner.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: fs-spanner
+  display_name: Internal Cloud Firestore Spanner Service Agent
+  api: firestore.googleapis.com
+  identity: service-%s@gcp-sa-fs-spanner.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: issuerswitch
+  display_name: Issuer Switch Service Account
+  api: issuerswitch.googleapis.com
+  identity: service-%s@gcp-sa-issuerswitch.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: krmapihosting
+  display_name: KRM API Hosting Service Account
+  api: krmapihosting.googleapis.com
+  identity: service-%s@gcp-sa-krmapihosting.iam.gserviceaccount.com
+  role: roles/krmapihosting.serviceAgent
+  is_primary: false
+- name: krmapihosting-dataplane
+  display_name: KRM API Hosting Service Account
+  api: krmapihosting.googleapis.com
+  identity: service-%s@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com
+  role: roles/krmapihosting.anthosApiEndpointServiceAgent
+  is_primary: false
+- name: gkenode
+  display_name: Kubernetes Engine Node Service Agent
+  api: container.googleapis.com
+  identity: service-%s@gcp-sa-gkenode.iam.gserviceaccount.com
+  role: roles/container.nodeServiceAgent
+  is_primary: false
+- name: container-engine-robot
+  display_name: Kubernetes Engine Service Agent
+  api: container.googleapis.com
+  identity: service-%s@container-engine-robot.iam.gserviceaccount.com
+  role: roles/container.serviceAgent
+  is_primary: true
+  aliases:
+  - container
+  - container-engine
+- name: livestream
+  display_name: Livestream Service Account
+  api: livestream.googleapis.com
+  identity: service-%s@gcp-sa-livestream.iam.gserviceaccount.com
+  role: roles/livestream.serviceAgent
+  is_primary: true
+- name: looker
+  display_name: Looker Service Account
+  api: looker.googleapis.com
+  identity: service-%s@gcp-sa-looker.iam.gserviceaccount.com
+  role: roles/looker.serviceAgent
+  is_primary: true
+- name: managedkafka
+  display_name: Managed Kafka Service Account
+  api: managedkafka.googleapis.com
+  identity: service-%s@gcp-sa-managedkafka.iam.gserviceaccount.com
+  role: roles/managedkafka.serviceAgent
+  is_primary: true
+- name: meshconfig
+  display_name: Mesh Config Service Account
+  api: meshconfig.googleapis.com
+  identity: service-%s@gcp-sa-meshconfig.iam.gserviceaccount.com
+  role: roles/meshconfig.serviceAgent
+  is_primary: true
+- name: monitoring-notification
+  display_name: Monitoring Service Account
+  api: monitoring.googleapis.com
+  identity: service-%s@gcp-sa-monitoring-notification.iam.gserviceaccount.com
+  role: roles/monitoring.notificationServiceAgent
+  is_primary: true
+  aliases:
+  - monitoring
+- name: multiclusteringress
+  display_name: Multi Cluster Ingress Service Account
+  api: multiclusteringress.googleapis.com
+  identity: service-%s@gcp-sa-multiclusteringress.iam.gserviceaccount.com
+  role: roles/multiclusteringress.serviceAgent
+  is_primary: true
+- name: mcmetering
+  display_name: Multi cluster metering Service Account
+  api: multiclustermetering.googleapis.com
+  identity: service-%s@gcp-sa-mcmetering.iam.gserviceaccount.com
+  role: roles/multiclustermetering.serviceAgent
+  is_primary: true
+- name: mcsd
+  display_name: Multi-cluster Service Discovery Service Account
+  api: multiclusterservicediscovery.googleapis.com
+  identity: service-%s@gcp-sa-mcsd.iam.gserviceaccount.com
+  role: roles/multiclusterservicediscovery.serviceAgent
+  is_primary: true
+- name: networkactions
+  display_name: Network Actions Service Account
+  api: networkservices.googleapis.com
+  identity: service-%s@gcp-sa-networkactions.iam.gserviceaccount.com
+  role: roles/networkactions.serviceAgent
+  is_primary: false
+- name: networkconnectivity
+  display_name: Network Connectivity Service Account
+  api: networkconnectivity.googleapis.com
+  identity: service-%s@gcp-sa-networkconnectivity.iam.gserviceaccount.com
+  role: roles/networkconnectivity.serviceAgent
+  is_primary: true
+- name: networksecurity
+  display_name: Network Security Service Account
+  api: networksecurity.googleapis.com
+  identity: service-%s@gcp-sa-networksecurity.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: ondemandscanning
+  display_name: On-Demand Scanning Service Account
+  api: ondemandscanning.googleapis.com
+  identity: service-%s@gcp-sa-ondemandscanning.iam.gserviceaccount.com
+  role: roles/ondemandscanning.serviceAgent
+  is_primary: true
+- name: parallelstore
+  display_name: Parallelstore Service Agent
+  api: parallelstore.googleapis.com
+  identity: service-%s@gcp-sa-parallelstore.iam.gserviceaccount.com
+  role: roles/parallelstore.serviceAgent
+  is_primary: true
+- name: privateca
+  display_name: Private CA Service Account
+  api: privateca.googleapis.com
+  identity: service-%s@gcp-sa-privateca.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: pubsublite
+  display_name: Pub/Sub Lite Service Account
+  api: pubsublite.googleapis.com
+  identity: service-%s@gcp-sa-pubsublite.iam.gserviceaccount.com
+  role: roles/pubsublite.serviceAgent
+  is_primary: true
+- name: rma
+  display_name: Rapid Migration Assessment Service Account
+  api: rapidmigrationassessment.googleapis.com
+  identity: service-%s@gcp-sa-rma.iam.gserviceaccount.com
+  role: roles/rapidmigrationassessment.serviceAgent
+  is_primary: true
+- name: rbe
+  display_name: Remote Build Execution Service Agent
+  api: remotebuildexecution.googleapis.com
+  identity: service-%s@gcp-sa-rbe.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: remotebuildexecution
+  display_name: Remote Build Execution Service Agent
+  api: remotebuildexecution.googleapis.com
+  identity: service-%s@remotebuildexecution.iam.gserviceaccount.com
+  role: roles/remotebuildexecution.serviceAgent
+  is_primary: false
+- name: remotebuild
+  display_name: Remote Build Execution Service Agent
+  api: remotebuildexecution.googleapis.com
+  identity: service-%s@gcp-sa-remotebuild.iam.gserviceaccount.com
+  role: roles/remotebuildexecution.serviceAgent
+  is_primary: false
+- name: retail
+  display_name: Retail Service Account
+  api: retail.googleapis.com
+  identity: service-%s@gcp-sa-retail.iam.gserviceaccount.com
+  role: roles/retail.serviceAgent
+  is_primary: true
+- name: secretmanager
+  display_name: Secret Manager Service Account
+  api: secretmanager.googleapis.com
+  identity: service-%s@gcp-sa-secretmanager.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: securewebproxy
+  display_name: Secure Web Proxy Service Account
+  api: networkservices.googleapis.com
+  identity: service-%s@gcp-sa-securewebproxy.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: runapps
+  display_name: Serverless Integrations Service Account
+  api: runapps.googleapis.com
+  identity: service-%s@gcp-sa-runapps.iam.gserviceaccount.com
+  role: roles/runapps.serviceAgent
+  is_primary: true
+- name: vpcaccess
+  display_name: Serverless VPC Access Service Agent
+  api: vpcaccess.googleapis.com
+  identity: service-%s@gcp-sa-vpcaccess.iam.gserviceaccount.com
+  role: roles/vpcaccess.serviceAgent
+  is_primary: true
+- name: service-consumer-management
+  display_name: Service Consumer Management Service Agent
+  api: serviceconsumermanagement.googleapis.com
+  identity: service-%s@service-consumer-management.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: servicedirectory
+  display_name: Service Directory Service Account
+  api: servicedirectory.googleapis.com
+  identity: service-%s@gcp-sa-servicedirectory.iam.gserviceaccount.com
+  role: roles/servicedirectory.serviceAgent
+  is_primary: true
+- name: service-networking
+  display_name: Service Networking Service Agent
+  api: servicenetworking.googleapis.com
+  identity: service-%s@service-networking.iam.gserviceaccount.com
+  role: roles/servicenetworking.serviceAgent
+  is_primary: true
+- name: spectrumsas
+  display_name: Spectrum SAS Service Account
+  api: sasportal.googleapis.com
+  identity: service-%s@gcp-sa-spectrumsas.iam.gserviceaccount.com
+  role: roles/spectrumsas.serviceAgent
+  is_primary: true
+- name: speech
+  display_name: Speech-to-Text Service Account
+  api: speech.googleapis.com
+  identity: service-%s@gcp-sa-speech.iam.gserviceaccount.com
+  role: roles/speech.serviceAgent
+  is_primary: true
+- name: storageinsights
+  display_name: Storage Insights Service Account
+  api: storageinsights.googleapis.com
+  identity: service-%s@gcp-sa-storageinsights.iam.gserviceaccount.com
+  role: roles/storageinsights.serviceAgent
+  is_primary: true
+- name: storage-transfer-service
+  display_name: Storage Transfer Service Service Agent
+  api: storagetransfer.googleapis.com
+  identity: project-%s@storage-transfer-service.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: stream
+  display_name: Stream Service Account
+  api: stream.googleapis.com
+  identity: service-%s@gcp-sa-stream.iam.gserviceaccount.com
+  role: roles/stream.serviceAgent
+  is_primary: true
+- name: cloud-tpu
+  display_name: TPU Service Agent
+  api: tpu.googleapis.com
+  identity: service-%s@cloud-tpu.iam.gserviceaccount.com
+  role: roles/tpu.serviceAgent
+  is_primary: true
+- name: tpu
+  display_name: TPU Service Agent (v2)
+  api: tpu.googleapis.com
+  identity: service-%s@gcp-sa-tpu.iam.gserviceaccount.com
+  role: roles/cloudtpu.serviceAgent
+  is_primary: false
+- name: transcoder
+  display_name: Transcoder Service Account
+  api: transcoder.googleapis.com
+  identity: service-%s@gcp-sa-transcoder.iam.gserviceaccount.com
+  role: roles/transcoder.serviceAgent
+  is_primary: true
+- name: transferappliance
+  display_name: Transfer Appliance Service Account
+  api: transferappliance.googleapis.com
+  identity: service-%s@gcp-sa-transferappliance.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+- name: vmwareengine
+  display_name: VMwareEngine Service Account
+  api: vmwareengine.googleapis.com
+  identity: service-%s@gcp-sa-vmwareengine.iam.gserviceaccount.com
+  role: roles/vmwareengine.serviceAgent
+  is_primary: true
+- name: vertex-shtune
+  display_name: Vertex AI Ancillary Secure Fine Tuning Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-shtune.iam.gserviceaccount.com
+  role: roles/aiplatform.user
+  is_primary: false
+- name: vertex-nb
+  display_name: Vertex AI Colab Service Account
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-nb.iam.gserviceaccount.com
+  role: roles/aiplatform.colabServiceAgent
+  is_primary: false
+- name: vertex-ex
+  display_name: Vertex AI Extension Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-ex.iam.gserviceaccount.com
+  role: roles/aiplatform.extensionServiceAgent
+  is_primary: false
+- name: vertex-ex-cc
+  display_name: Vertex AI Extension Service Agent for Custom Code
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-ex-cc.iam.gserviceaccount.com
+  role: roles/aiplatform.extensionCustomCodeServiceAgent
+  is_primary: false
+- name: vertex-mm
+  display_name: Vertex AI Model Monitoring Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-mm.iam.gserviceaccount.com
+  role: roles/aiplatform.modelMonitoringServiceAgent
+  is_primary: false
+- name: aiplatform-vm
+  display_name: Vertex AI Notebook Service Account
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-aiplatform-vm.iam.gserviceaccount.com
+  role: roles/aiplatform.notebookServiceAgent
+  is_primary: false
+- name: vertex-tune
+  display_name: Vertex AI Secure Fine Tuning Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-tune.iam.gserviceaccount.com
+  role: roles/aiplatform.tuningServiceAgent
+  is_primary: false
+- name: vertex-agent
+  display_name: Vertex Agent Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-agent.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: vertex-rag
+  display_name: Vertex RAG Data Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-rag.iam.gserviceaccount.com
+  role: roles/aiplatform.ragServiceAgent
+  is_primary: false
+- name: scc-vmtd
+  display_name: Virtual Machine Threat Detection Service Account
+  api: securitycenter.googleapis.com
+  identity: service-%s@gcp-sa-scc-vmtd.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+- name: visionai
+  display_name: Vision AI Service Account
+  api: visionai.googleapis.com
+  identity: service-%s@gcp-sa-visionai.iam.gserviceaccount.com
+  role: roles/visionai.serviceAgent
+  is_primary: true
+- name: workloadmanager
+  display_name: Workload Manager Service Account
+  api: workloadmanager.googleapis.com
+  identity: service-%s@gcp-sa-workloadmanager.iam.gserviceaccount.com
+  role: roles/workloadmanager.serviceAgent
+  is_primary: true
+- name: workstations
+  display_name: Workstations Service Account
+  api: workstations.googleapis.com
+  identity: service-%s@gcp-sa-workstations.iam.gserviceaccount.com
+  role: roles/workstations.serviceAgent
+  is_primary: true
+- name: workstationsvm
+  display_name: Workstations VM Default Service Account
+  api: workstations.googleapis.com
+  identity: service-%s@gcp-sa-workstationsvm.iam.gserviceaccount.com
+  role: null
+  is_primary: false
 
-- name: "accessapproval"
-  service_agent: "service-p%s@gcp-sa-accessapproval.iam.gserviceaccount.com"
-- name: "adsdatahub"
-  service_agent: "service-%s@gcp-sa-adsdatahub.iam.gserviceaccount.com"
-- name: "aiplatform"
-  service_agent: "service-%s@gcp-sa-aiplatform.iam.gserviceaccount.com"
-  jit: true # roles/aiplatform.customCodeServiceAgent
-- name: "aiplatform-cc"
-  service_agent: "service-%s@gcp-sa-aiplatform-cc.iam.gserviceaccount.com"
-- name: "alloydb"
-  service_agent: "service-%s@gcp-sa-alloydb.iam.gserviceaccount.com"
-- name: "anthos"
-  service_agent: "service-%s@gcp-sa-anthos.iam.gserviceaccount.com"
-- name: "anthosaudit"
-  service_agent: "service-%s@gcp-sa-anthosaudit.iam.gserviceaccount.com"
-- name: "anthosconfigmanagement"
-  service_agent: "service-%s@gcp-sa-anthosconfigmanagement.iam.gserviceaccount.com"
-- name: "anthosidentityservice"
-  service_agent: "service-%s@gcp-sa-anthosidentityservice.iam.gserviceaccount.com"
-- name: "apigateway"
-  service_agent: "service-%s@gcp-sa-apigateway.iam.gserviceaccount.com"
-- name: "apigateway-mgmt"
-  service_agent: "service-%s@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com"
-- name: "apigee"
-  service_agent: "service-%s@gcp-sa-apigee.iam.gserviceaccount.com"
-  jit: true # roles/apigee.serviceAgent
-- name: "apigeeregistry"
-  service_agent: "service-%s@gcp-sa-apigeeregistry.iam.gserviceaccount.com"
-- name: "appdevelopmentexperience"
-  service_agent: "service-%s@gcp-sa-appdevexperience.iam.gserviceaccount.com"
-- name: "appengineflex"
-  alias: "gae-flex"
-  service_agent: "service-%s@gae-api-prod.google.com.iam.gserviceaccount.com"
-- name: "appenginestandard"
-  service_agent: "service-%s@gcp-gae-service.iam.gserviceaccount.com"
-- name: "artifactregistry"
-  service_agent: "service-%s@gcp-sa-artifactregistry.iam.gserviceaccount.com"
-  jit: true # roles/artifactregistry.serviceAgent
-- name: "assuredworkloads"
-  service_agent: "service-%s@gcp-sa-assuredworkloads.iam.gserviceaccount.com"
-- name: "automl"
-  service_agent: "service-%s@gcp-sa-automl.iam.gserviceaccount.com"
-- name: "backupdr"
-  service_agent: "service-%s@gcp-sa-backupdr.iam.gserviceaccount.com"
-- name: "backupdr-run"
-  service_agent: "service-%s@gcp-sa-backupdr-run.iam.gserviceaccount.com"
-- name: "baremetalsolution"
-  service_agent: "service-%s@gcp-sa-bms.iam.gserviceaccount.com"
-- name: "batch"
-  service_agent: "service-%s@gcp-sa-cloudbatch.iam.gserviceaccount.com"
-- name: "bigquery"
-  alias: "bq"
-  service_agent: "bq-%s@bigquery-encryption.iam.gserviceaccount.com"
-- name: "bigquery-omni"
-  service_agent: "service-%s@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com"
-- name: "bigquery-ri"
-  service_agent: "service-%s@gcp-sa-bigqueryri.iam.gserviceaccount.com"
-- name: "bigquerydatatransfer"
-  service_agent: "service-%s@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
-- name: "bigtableadmin"
-  service_agent: "service-%s@gcp-sa-bigtable.iam.gserviceaccount.com"
-  jit: true
-- name: "binaryauthorization"
-  service_agent: "service-%s@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
-- name: "certificatemanager"
-  service_agent: "service-%s@gcp-sa-certificatemanager.iam.gserviceaccount.com"
-- name: "chronicle"
-  service_agent: "service-%s@gcp-sa-chronicle.iam.gserviceaccount.com"
-- name: "cloudasset"
-  service_agent: "service-%s@gcp-sa-cloudasset.iam.gserviceaccount.com"
-  jit: true # roles/cloudasset.serviceAgent
-- name: "cloudbuild"
-  service_agent: "service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com"
-  jit: true # roles/cloudbuild.builds.builder
-- name: "cloudbuild-builder"
-  service_agent: "%s@cloudbuild.gserviceaccount.com"
-- name: "cloudbuild-logging"
-  service_agent: "service-%s@gcp-sa-log-cloudbuild.iam.gserviceaccount.com"
-- name: "clouddeploy"
-  service_agent: "service-%s@gcp-sa-clouddeploy.iam.gserviceaccount.com"
-- name: "cloudfunctions"
-  alias: "gcf"
-  service_agent: "service-%s@gcf-admin-robot.iam.gserviceaccount.com"
-- name: "cloudiot"
-  service_agent: "service-%s@gcp-sa-cloudiot.iam.gserviceaccount.com"
-- name: "cloudkms"
-  service_agent: "service-%s@gcp-sa-cloudkms.iam.gserviceaccount.com"
-- name: "cloudkms-ekms"
-  service_agent: "service-%s@gcp-sa-ekms.iam.gserviceaccount.com"
-- name: "cloudoptimization"
-  service_agent: "service-%s@gcp-sa-cloudoptim.iam.gserviceaccount.com"
-- name: "cloudscheduler"
-  service_agent: "service-%s@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
-- name: "cloudtasks"
-  service_agent: "service-%s@gcp-sa-cloudtasks.iam.gserviceaccount.com"
-- name: "cloudtrace"
-  service_agent: "service-%s@gcp-sa-cloud-trace.iam.gserviceaccount.com"
-- name: "composer"
-  service_agent: "service-%s@cloudcomposer-accounts.iam.gserviceaccount.com"
-- name: "compute"
-  service_agent: "service-%s@compute-system.iam.gserviceaccount.com"
-- name: "compute-usage"
-  service_agent: "service-%s@gcp-sa-compute-usage.iam.gserviceaccount.com"
-- name: "config"
-  service_agent: "service-%s@gcp-sa-config.iam.gserviceaccount.com"
-- name: "connectgateway"
-  service_agent: "service-%s@gcp-sa-anthossupport.iam.gserviceaccount.com"
-- name: "connectors"
-  service_agent: "service-%s@gcp-sa-connectors.iam.gserviceaccount.com"
-  jit: true # roles/connectors.serviceAgent
-- name: "contactcenteraiplatform"
-  service_agent: "service-%s@gcp-sa-ccaip.iam.gserviceaccount.com"
-- name: "contactcenterinsights"
-  service_agent: "service-%s@gcp-sa-contactcenterinsights.iam.gserviceaccount.com"
-- name: "container"
-  alias: "container-engine"
-  service_agent: "service-%s@container-engine-robot.iam.gserviceaccount.com"
-- name: "container-gkenode"
-  service_agent: "service-%s@gcp-sa-gkenode.iam.gserviceaccount.com"
-- name: "containeranalysis"
-  service_agent: "service-%s@container-analysis.iam.gserviceaccount.com"
-- name: "containerregistry"
-  service_agent: "service-%s@containerregistry.iam.gserviceaccount.com"
-- name: "containerscanning"
-  service_agent: "service-%s@gcp-sa-containerscanning.iam.gserviceaccount.com"
-- name: "containerthreatdetection"
-  service_agent: "service-%s@gcp-sa-ktd-control.iam.gserviceaccount.com"
-- name: "contentwarehouse"
-  service_agent: "service-%s@gcp-sa-cloud-cw.iam.gserviceaccount.com"
-- name: "dataconnectors"
-  service_agent: "service-%s@gcp-sa-dataconnectors.iam.gserviceaccount.com"
-- name: "dataflow"
-  service_agent: "service-%s@dataflow-service-producer-prod.iam.gserviceaccount.com"
-- name: "dataform"
-  service_agent: "service-%s@gcp-sa-dataform.iam.gserviceaccount.com"
-  jit: true  # roles/dataform.serviceAgent
-- name: "datafusion"
-  service_agent: "service-%s@gcp-sa-datafusion.iam.gserviceaccount.com"
-- name: "datalabeling"
-  service_agent: "service-%s@gcp-sa-datalabeling.iam.gserviceaccount.com"
-- name: "datamigration"
-  service_agent: "service-%s@gcp-sa-datamigration.iam.gserviceaccount.com"
-- name: "datapipelines"
-  service_agent: "service-%s@gcp-sa-datapipelines.iam.gserviceaccount.com"
-- name: "dataplex"
-  service_agent: "service-%s@gcp-sa-dataplex.iam.gserviceaccount.com"
-  jit: true # roles/dataplex.serviceAgent
-- name: "dataproc"
-  service_agent: "service-%s@dataproc-accounts.iam.gserviceaccount.com"
-- name: "datastream"
-  service_agent: "service-%s@gcp-sa-datastream.iam.gserviceaccount.com"
-- name: "datastudio"
-  service_agent: "service-%s@gcp-sa-datastudio.iam.gserviceaccount.com"
-- name: "dialogflow"
-  service_agent: "service-%s@gcp-sa-dialogflow.iam.gserviceaccount.com"
-- name: "discoveryengine"
-  service_agent: "service-%s@gcp-sa-discoveryengine.iam.gserviceaccount.com"
-  # dlp                          ="organizations-ORGANIZATION_NUMBER@gcp-sa-riskmanager"
-- name: "dlp"
-  service_agent: "service-%s@dlp-api.iam.gserviceaccount.com"
-  jit: true
-- name: "documentai"
-  service_agent: "service-%s@gcp-sa-prod-dai-core.iam.gserviceaccount.com"
-- name: "edgecontainer"
-  service_agent: "service-%s@gcp-sa-edgecontainer.iam.gserviceaccount.com"
-- name: "edgecontainer-cluster"
-  service_agent: "service-%s@gcp-sa-edgecontainercluster.iam.gserviceaccount.com"
-- name: "endpoints"
-  service_agent: "service-%s@gcp-sa-endpoints.iam.gserviceaccount.com"
-- name: "endpointsportal"
-  service_agent: "service-%s@endpoints-portal.iam.gserviceaccount.com"
-- name: "enterpriseknowledgegraph"
-  service_agent: "service-%s@gcp-sa-cloud-ekg.iam.gserviceaccount.com"
-- name: "eventarc"
-  service_agent: "service-%s@gcp-sa-eventarc.iam.gserviceaccount.com"
-- name: "file"
-  service_agent: "service-%s@cloud-filer.iam.gserviceaccount.com"
-- name: "firebase"
-  service_agent: "service-%s@gcp-sa-firebase.iam.gserviceaccount.com"
-- name: "firebaseappcheck"
-  service_agent: "service-%s@gcp-sa-firebaseappcheck.iam.gserviceaccount.com"
-- name: "firebasedatabase"
-  service_agent: "service-%s@gcp-sa-firebasedatabase.iam.gserviceaccount.com"
-- name: "firebaseextensions"
-  service_agent: "service-%s@gcp-sa-firebasemods.iam.gserviceaccount.com"
-- name: "firebaserules"
-  service_agent: "service-%s@firebase-rules.iam.gserviceaccount.com"
-- name: "firebasestorage"
-  service_agent: "service-%s@gcp-sa-firebasestorage.iam.gserviceaccount.com"
-- name: "firestore"
-  service_agent: "service-%s@gcp-sa-firestore.iam.gserviceaccount.com"
-- name: "firewallinsights"
-  service_agent: "service-%s@gcp-sa-firewallinsights.iam.gserviceaccount.com"
-- name: "gameservices"
-  service_agent: "service-%s@gcp-sa-gameservices.iam.gserviceaccount.com"
-- name: "genomics"
-  service_agent: "service-%s@genomics-api.google.com.iam.gserviceaccount.com"
-- name: "gkebackup"
-  service_agent: "service-%s@gcp-sa-gkebackup.iam.gserviceaccount.com"
-- name: "gkehub"
-  alias: "fleet"
-  service_agent: "service-%s@gcp-sa-gkehub.iam.gserviceaccount.com"
-  jit: true # roles/gkehub.serviceAgent
-- name: "gkemulticloud"
-  service_agent: "service-%s@gcp-sa-gkemulticloud.iam.gserviceaccount.com"
-- name: "gkeonprem"
-  service_agent: "service-%s@gcp-sa-gkeonprem.iam.gserviceaccount.com"
-- name: "gsuiteaddons"
-  service_agent: "service-%s@gcp-sa-gsuiteaddons.iam.gserviceaccount.com"
-- name: "healthcare"
-  service_agent: "service-%s@gcp-sa-healthcare.iam.gserviceaccount.com"
-- name: "iap"
-  service_agent: "service-%s@gcp-sa-iap.iam.gserviceaccount.com"
-  jit: true # none
-- name: "identitytoolkit"
-  service_agent: "service-%s@gcp-sa-identitytoolkit.iam.gserviceaccount.com"
-- name: "ids"
-  service_agent: "service-%s@gcp-sa-cloud-ids.iam.gserviceaccount.com"
-- name: "integrations"
-  service_agent: "service-%s@gcp-sa-integrations.iam.gserviceaccount.com"
-- name: "krmapihosting"
-  service_agent: "service-%s@gcp-sa-krmapihosting.iam.gserviceaccount.com"
-- name: "krmapihosting-dataplane"
-  service_agent: "service-%s@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com"
-- name: "lifesciences"
-  service_agent: "service-%s@gcp-sa-lifesciences.iam.gserviceaccount.com"
-- name: "livestream"
-  service_agent: "service-%s@gcp-sa-livestream.iam.gserviceaccount.com"
-- name: "logging"
-  service_agent: "service-%s@gcp-sa-logging.iam.gserviceaccount.com"
-- name: "managedidentities"
-  service_agent: "service-%s@gcp-sa-mi.iam.gserviceaccount.com"
-- name: "memcache"
-  service_agent: "service-%s@cloud-memcache-sa.iam.gserviceaccount.com"
-- name: "meshconfig"
-  service_agent: "service-%s@gcp-sa-meshconfig.iam.gserviceaccount.com"
-  jit: true # roles/anthosservicemesh.serviceAgent
-- name: "meshconfig-servicemesh"
-  alias: "servicemesh"
-  service_agent: "service-%s@gcp-sa-servicemesh.iam.gserviceaccount.com"
-- name: "meshconfig-controlplane"
-  service_agent: "service-%s@gcp-sa-meshcontrolplane.iam.gserviceaccount.com"
-- name: "meshconfig-dataplane"
-  service_agent: "service-%s@gcp-sa-meshdataplane.iam.gserviceaccount.com"
-- name: "metastore"
-  service_agent: "service-%s@gcp-sa-metastore.iam.gserviceaccount.com"
-- name: "migrationcenter"
-  service_agent: "service-%s@gcp-sa-migcenter.iam.gserviceaccount.com"
-- name: "ml"
-  service_agent: "service-%s@cloud-ml.google.com.iam.gserviceaccount.com"
-- name: "monitoring-deprecated"
-  service_agent: "service-%s@gcp-sa-monitoring.iam.gserviceaccount.com"
-- name: "monitoring"
-  alias: "monitoring-notifications"
-  service_agent: "service-%s@gcp-sa-monitoring-notification.iam.gserviceaccount.com"
-- name: "multiclusteringress"
-  alias: "multicluster-ingress"
-  service_agent: "service-%s@gcp-sa-multiclusteringress.iam.gserviceaccount.com"
-  jit: true # roles/multiclusteringress.serviceAgent
-- name: "multiclustermetering"
-  service_agent: "service-%s@gcp-sa-mcmetering.iam.gserviceaccount.com"
-- name: "multiclusterservicediscovery"
-  alias: "gke-mcs"
-  service_agent: "service-%s@gcp-sa-mcsd.iam.gserviceaccount.com"
-- name: "networkconnectivity"
-  service_agent: "service-%s@gcp-sa-networkconnectivity.iam.gserviceaccount.com"
-- name: "networkmanagement"
-  service_agent: "service-%s@gcp-sa-networkmanagement.iam.gserviceaccount.com"
-- name: "networksecurity"
-  service_agent: "service-%s@gcp-sa-networksecurity.iam.gserviceaccount.com"
-  jit: true
-- name: "networkservices"
-  service_agent: "service-%s@gcp-sa-networkactions.iam.gserviceaccount.com"
-- name: "notebooks"
-  service_agent: "service-%s@gcp-sa-notebooks.iam.gserviceaccount.com"
-  jit: true
-- name: "ondemandscanning"
-  service_agent: "service-%s@gcp-sa-ondemandscanning.iam.gserviceaccount.com"
-- name: "osconfig"
-  service_agent: "service-%s@gcp-sa-osconfig.iam.gserviceaccount.com"
-- name: "privateca"
-  service_agent: "service-%s@gcp-sa-privateca.iam.gserviceaccount.com"
-- name: "pubsub"
-  service_agent: "service-%s@gcp-sa-pubsub.iam.gserviceaccount.com"
-  jit: true # roles/pubsub.serviceAgent
-- name: "pubsublite"
-  service_agent: "service-%s@gcp-sa-pubsublite.iam.gserviceaccount.com"
-- name: "rapidmigrationassessment"
-  service_agent: "service-%s@gcp-sa-rma.iam.gserviceaccount.com"
-- name: "recommendationengine"
-  service_agent: "service-%s@gcp-sa-recommendationengine.iam.gserviceaccount.com"
-- name: "redis"
-  service_agent: "service-%s@cloud-redis.iam.gserviceaccount.com"
-  #remotebuildexecution         ="service-%s@gcp-sa-rbe"
-  #remotebuildexecution         ="service-%s@remotebuildexecution"
-- name: "retail"
-  service_agent: "service-%s@gcp-sa-retail.iam.gserviceaccount.com"
-- name: "run"
-  alias: "cloudrun"
-  service_agent: "service-%s@serverless-robot-prod.iam.gserviceaccount.com"
-- name: "runapps"
-  service_agent: "service-%s@gcp-sa-runapps.iam.gserviceaccount.com"
-- name: "sasportal"
-  service_agent: "service-%s@gcp-sa-spectrumsas.iam.gserviceaccount.com"
-- name: "secretmanager"
-  service_agent: "service-%s@gcp-sa-secretmanager.iam.gserviceaccount.com"
-  jit: true # none
-- name: "securedlandingzone"
-  service_agent: "service-%s@gcp-sa-slz.iam.gserviceaccount.com"
-- name: "securitycenter-notification"
-  service_agent: "service-%s@gcp-sa-scc-notification.iam.gserviceaccount.com"
-- name: "securitycenter-vmtd"
-  service_agent: "service-%s@gcp-sa-scc-vmtd.iam.gserviceaccount.com"
-  # securitycenter               ="service-org-ORGANIZATION_NUMBER@security-center-api"
-- name: "serviceconsumermanagement"
-  service_agent: "service-%s@service-consumer-management.iam.gserviceaccount.com"
-- name: "servicedirectory"
-  service_agent: "service-%s@gcp-sa-servicedirectory.iam.gserviceaccount.com"
-- name: "servicenetworking"
-  service_agent: "service-%s@service-networking.iam.gserviceaccount.com"
-- name: "sourcerepo"
-  service_agent: "service-%s@sourcerepo-service-accounts.iam.gserviceaccount.com"
-- name: "spanner"
-  service_agent: "service-%s@gcp-sa-spanner.iam.gserviceaccount.com"
-- name: "speech"
-  service_agent: "service-%s@gcp-sa-speech.iam.gserviceaccount.com"
-- name: "sqladmin"
-  alias: "sql"
-  service_agent: "service-%s@gcp-sa-cloud-sql.iam.gserviceaccount.com"
-  jit: true # roles/cloudsql.serviceAgent
-- name: "storage"
-  service_agent: "service-%s@gs-project-accounts.iam.gserviceaccount.com"
-- name: "storagetransfer"
-  service_agent: "project-%s@storage-transfer-service.iam.gserviceaccount.com"
-  jit: true
-- name: "stream"
-  service_agent: "service-%s@gcp-sa-stream.iam.gserviceaccount.com"
-- name: "tpu"
-  service_agent: "service-%s@cloud-tpu.iam.gserviceaccount.com"
-- name: "tpu-v2"
-  service_agent: "service-%s@gcp-sa-tpu.iam.gserviceaccount.com"
-- name: "transcoder"
-  service_agent: "service-%s@gcp-sa-transcoder.iam.gserviceaccount.com"
-- name: "transferappliance"
-  service_agent: "service-%s@gcp-sa-transferappliance.iam.gserviceaccount.com"
-- name: "translate"
-  service_agent: "service-%s@gcp-sa-translation.iam.gserviceaccount.com"
-- name: "visionai"
-  service_agent: "service-%s@gcp-sa-visionai.iam.gserviceaccount.com"
-- name: "vmmigration"
-  service_agent: "service-%s@gcp-sa-vmmigration.iam.gserviceaccount.com"
-- name: "vmwareengine"
-  service_agent: "service-%s@gcp-sa-vmwareengine.iam.gserviceaccount.com"
-- name: "vpcaccess"
-  service_agent: "service-%s@gcp-sa-vpcaccess.iam.gserviceaccount.com"
-- name: "websecurityscanner"
-  service_agent: "service-%s@gcp-sa-websecurityscanner.iam.gserviceaccount.com"
-- name: "workflows"
-  service_agent: "service-%s@gcp-sa-workflows.iam.gserviceaccount.com"
-- name: "workloadcertificate"
-  service_agent: "service-%s@gcp-sa-workloadcert.iam.gserviceaccount.com"
-- name: "workloadmanager"
-  service_agent: "service-%s@gcp-sa-workloadmanager.iam.gserviceaccount.com"
-- name: "workstations"
-  service_agent: "service-%s@gcp-sa-workstations.iam.gserviceaccount.com"
-
-  # "accessapproval.googleapis.com.
-  #   For the project: service-p%s@gcp-sa-accessapproval
-  #   For the folder: service-fFOLDER_NUMBER@gcp-sa-accessapproval
-  #   For the organization: service-oORGANIZATION_NUMBER@gcp-sa-accessapproval"
-
-  # "bigqueryconnection.googleapis.com.
-  #   bqcx-PROJECT_NUMBER-IDENTIFIER@gcp-sa-bigquery-condel
-  #   connection-PROJECT_NUMBER-IDENTIFIER@gcp-sa-bigquery-condel"
-
-  # sqladmin.googleapis.com.
-  #   For the project:pPROJECT_NUMBER-IDENTIFIER@gcp-sa-cloud-sql
-  #   For the folder:fFOLDER_NUMBER-IDENTIFIER@gcp-sa-cloud-sql
-  #   For the organization:oORGANIZATION_NUMBER-IDENTIFIER@gcp-sa-cloud-sql
-
-  # logging.googleapis.com.
-  #   For the project:pPROJECT_NUMBER-IDENTIFIER@gcp-sa-logging
-  #   For the folder:fFOLDER_NUMBER-IDENTIFIER@gcp-sa-logging
-  #   For the organization:oORGANIZATION_NUMBER-IDENTIFIER@gcp-sa-logging
-
-  # integrations.googleapis.com.
-  #   For the project:pPROJECT_NUMBER-IDENTIFIER@gcp-sa-playbooks
-  #   For the folder:fFOLDER_NUMBER-IDENTIFIER@gcp-sa-playbooks
-  #   For the organization:oORGANIZATION_NUMBER-IDENTIFIER@gcp-sa-playbooks
