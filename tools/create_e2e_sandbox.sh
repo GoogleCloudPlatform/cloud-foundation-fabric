@@ -28,7 +28,7 @@
 #
 set -e
 
-DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd )
+DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && cd .. && pwd)
 DEST=$1
 INFRA="${DEST}/infra"
 TIMESTAMP=$(date +%s)
@@ -42,18 +42,18 @@ cp "${SETUP_MODULE}/main.tf" "${SETUP_MODULE}/variables.tf" "${SETUP_MODULE}/e2e
 
 cp "${DIR}/tests/examples/variables.tf" "${DEST}"
 
-if [ ! -f "${INFRA}/randomizer.auto.tfvars" ] ; then
-  echo "suffix=0" > "${INFRA}/randomizer.auto.tfvars"
-  echo "timestamp=${TIMESTAMP}" >> "${INFRA}/randomizer.auto.tfvars"
+if [ ! -f "${INFRA}/randomizer.auto.tfvars" ]; then
+	echo "suffix=0" >"${INFRA}/randomizer.auto.tfvars"
+	echo "timestamp=${TIMESTAMP}" >>"${INFRA}/randomizer.auto.tfvars"
 fi
 
 # TODO correct environment variable prefix
-export | sed -e 's/^declare -x //' | grep '^TFTEST_E2E_' | sed -e 's/^TFTEST_E2E_//' > "${INFRA}/terraform.tfvars"
+export | sed -e 's/^declare -x //' | grep '^TFTEST_E2E_' | sed -e 's/^TFTEST_E2E_//' >"${INFRA}/terraform.tfvars"
 (
-  cd "${INFRA}"
-  terraform init
-  terraform apply -auto-approve
-  ln -sfT "${INFRA}/e2e_tests.tfvars" "${DEST}/e2e_tests.auto.tfvars"
+	cd "${INFRA}"
+	terraform init
+	terraform apply -auto-approve
+	ln -sfT "${INFRA}/e2e_tests.tfvars" "${DEST}/e2e_tests.auto.tfvars"
 )
 
-tocuh "${DEST}/main.tf"
+touch "${DEST}/main.tf"

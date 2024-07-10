@@ -43,7 +43,7 @@ module "dataplex-datascan" {
 
 To create an Data Quality scan, provide the `data_quality_spec` input arguments as documented in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec>.
 
-Documentation for the supported rule types and rule specifications can be found in <https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule>.
+Documentation for the supported rule types and rule specifications can be found in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule>.
 
 This example shows how to create a Data Quality scan.
 
@@ -137,6 +137,19 @@ module "dataplex-datascan" {
         table_condition_expectation = {
           sql_expression = "COUNT(*) > 0"
         }
+      },
+      {
+        dimension = "VALIDITY"
+        sql_assertion = {
+          sql_statement = <<-EOT
+            SELECT
+              city_asset_number, council_district
+            FROM $${data()}
+            WHERE city_asset_number IS NOT NULL
+            GROUP BY 1,2
+            HAVING COUNT(*) > 1
+          EOT
+        }
       }
     ]
   }
@@ -225,6 +238,15 @@ rules:
   - dimension: VALIDITY
     table_condition_expectation:
       sql_expression: COUNT(*) > 0
+  - dimension: VALIDITY
+    sql_assertion:
+      sql_statement: |
+        SELECT
+          city_asset_number, council_district
+        FROM ${data()}
+        WHERE city_asset_number IS NOT NULL
+        GROUP BY 1,2
+        HAVING COUNT(*) > 1
 ```
 
 While the module only accepts input in snake_case, the YAML file provided to the `data_quality_spec_file` variable can use either camelCase or snake_case. This example below should also produce the same DataScan configuration as the previous examples.
@@ -308,6 +330,15 @@ rules:
   - dimension: VALIDITY
     tableConditionExpectation:
       sqlExpression: COUNT(*) > 0
+  - dimension: VALIDITY
+    sqlAssertion:
+      sqlStatement: |
+        SELECT
+          city_asset_number, council_district
+        FROM ${data()}
+        WHERE city_asset_number IS NOT NULL
+        GROUP BY 1,2
+        HAVING COUNT(*) > 1
 ```
 
 ## Data Source
@@ -431,21 +462,21 @@ module "dataplex-datascan" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [data](variables.tf#L17) | The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. | <code title="object&#40;&#123;&#10;  entity   &#61; optional&#40;string&#41;&#10;  resource &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L119) | Name of Dataplex Scan. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L130) | The ID of the project where the Dataplex DataScan will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L135) | Region for the Dataplex DataScan. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L122) | Name of Dataplex Scan. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L133) | The ID of the project where the Dataplex DataScan will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L138) | Region for the Dataplex DataScan. | <code>string</code> | ✓ |  |
 | [data_profile_spec](variables.tf#L29) | DataProfileScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  post_scan_actions &#61; optional&#40;object&#40;&#123;&#10;    bigquery_export &#61; optional&#40;object&#40;&#123;&#10;      results_table &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [description](variables.tf#L85) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
-| [execution_schedule](variables.tf#L91) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
-| [factories_config](variables.tf#L97) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  data_quality_spec &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  post_scan_actions &#61; optional&#40;object&#40;&#123;&#10;    bigquery_export &#61; optional&#40;object&#40;&#123;&#10;      results_table &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    sql_assertion &#61; optional&#40;object&#40;&#123;&#10;      sql_statement &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L88) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
+| [execution_schedule](variables.tf#L94) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
+| [factories_config](variables.tf#L100) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  data_quality_spec &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L24) | Dataplex DataScan IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L31) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L46) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L17) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [incremental_field](variables.tf#L106) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L112) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L124) | Optional prefix used to generate Dataplex DataScan ID. | <code>string</code> |  | <code>null</code> |
+| [incremental_field](variables.tf#L109) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L115) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L127) | Optional prefix used to generate Dataplex DataScan ID. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

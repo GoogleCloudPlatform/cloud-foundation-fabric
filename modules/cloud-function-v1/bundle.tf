@@ -54,6 +54,7 @@ resource "google_storage_bucket" "bucket" {
       enabled = true
     }
   }
+  force_destroy = var.bucket_config.force_destroy
 }
 
 # compress bundle in a zip archive if it's a folder

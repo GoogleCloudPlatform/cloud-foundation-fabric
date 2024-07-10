@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ locals {
       target_resources        = lookup(v, "target_resources", null)
       target_service_accounts = lookup(v, "target_service_accounts", null)
       target_tags             = lookup(v, "target_tags", null)
+      tls_inspect             = lookup(v, "tls_inspect", null)
       match = {
         address_groups       = lookup(v.match, "address_groups", null)
         fqdns                = lookup(v.match, "fqdns", null)
@@ -85,6 +86,7 @@ locals {
       target_resources        = lookup(v, "target_resources", null)
       target_service_accounts = lookup(v, "target_service_accounts", null)
       target_tags             = lookup(v, "target_tags", null)
+      tls_inspect             = lookup(v, "tls_inspect", null)
       match = {
         address_groups       = lookup(v.match, "address_groups", null)
         fqdns                = lookup(v.match, "fqdns", null)

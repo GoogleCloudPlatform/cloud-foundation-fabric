@@ -142,7 +142,7 @@ jobs:
       - id: pr-comment
         name: Post comment to Pull Request
         continue-on-error: true
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         env:
           PLAN: $${{steps.tf-plan.outputs.stdout}}\n$${{steps.tf-plan.outputs.stderr}}
@@ -183,7 +183,7 @@ jobs:
 
       - id: pr-short-comment
         name: Post comment to Pull Request (abbreviated)
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
         with:
           script: |

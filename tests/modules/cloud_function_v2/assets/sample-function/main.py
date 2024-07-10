@@ -12,14 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cf-http-one.google_storage_bucket_object.bundle[0]:
-    source: /tmp/bundle-project-id-test-cf-http-one.zip
-  module.cf-http-two.google_storage_bucket_object.bundle[0]:
-    source: /tmp/bundle-project-id-test-cf-http-two.zip
+import functions_framework
 
-counts:
-  google_cloudfunctions2_function: 2
-  google_storage_bucket_object: 2
-  modules: 2
-  resources: 7
+
+@functions_framework.http
+def main(request):
+  return "Hello World!"

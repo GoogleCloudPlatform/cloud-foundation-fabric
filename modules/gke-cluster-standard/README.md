@@ -320,7 +320,10 @@ module "cluster-1" {
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    secondary_range_blocks = {}
+    secondary_range_blocks = {
+      pods     = ""
+      services = "/20"
+    }
   }
   cluster_autoscaling = {
     cpu_limits = {
@@ -330,13 +333,14 @@ module "cluster-1" {
       max = 182
     }
     # Can be GPUs or TPUs
-    accelerator_resources = [{
+    accelerator_resources = [
+      {
         resource_type = "nvidia-l4"
-        max = 2
+        max           = 2
       },
       {
         resource_type = "tpu-v5-lite-podslice"
-        max = 2
+        max           = 2
       }
     ]
   }
