@@ -25,4 +25,4 @@ counts:
   google_service_account: 1
   google_storage_bucket_object: 1
   modules: 6
-  resources: 40
+  resources: 43
