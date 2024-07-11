@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from itertools import chain
 
 import requests
@@ -23,18 +23,6 @@ from bs4 import BeautifulSoup
 
 # BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 SERVICE_AGENTS_URL = "https://cloud.google.com/iam/docs/service-agents"
-
-
-@dataclass
-class Agent:
-  name: str
-  display_name: str
-  api: str
-  identity: str
-  role: str
-  is_primary: bool
-  aliases: list[str] = field(default_factory=list)
-
 
 # old names used by Fabric
 ALIASES = {
@@ -52,6 +40,17 @@ ALIASES = {
     'monitoring-notification': ['monitoring'],
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
+
+
+@dataclass
+class Agent:
+  name: str
+  display_name: str
+  api: str
+  identity: str
+  role: str
+  is_primary: bool
+  aliases: list[str]
 
 
 def main():
