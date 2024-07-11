@@ -46,7 +46,7 @@ module "project-svc-gce" {
   }
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = ["cloudservices"]
     }
   }
@@ -68,7 +68,7 @@ module "project-svc-gke" {
   services        = var.project_services
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/container.hostServiceAgentUser" = ["container"]
       "roles/compute.networkUser"            = ["container"]
     }

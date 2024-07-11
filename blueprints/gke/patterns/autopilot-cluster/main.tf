@@ -71,7 +71,7 @@ module "project" {
     attach       = true
     host_project = var.project_create.shared_vpc_host
     # grant required roles on the host project to service identities
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]

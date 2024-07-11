@@ -208,7 +208,15 @@ variable "project_create" {
   default     = true
 }
 
+variable "service_agent_encryption_key_ids" {
+  description = "Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "service_agents_config" {
+  description = "Automatic service agent configuration options."
   type = object({
     create_primary_agents = optional(bool, true)
     grant_default_roles   = optional(bool, true)
@@ -227,13 +235,6 @@ variable "service_config" {
     disable_on_destroy         = false
     disable_dependent_services = false
   }
-}
-
-variable "service_agent_encryption_key_ids" {
-  description = "Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "services" {

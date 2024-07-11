@@ -65,7 +65,7 @@ module "gke-project-0" {
   shared_vpc_service_config = {
     attach       = true
     host_project = var.vpc_config.host_project_id
-    service_identity_iam = merge({
+    service_agent_iam = merge({
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]

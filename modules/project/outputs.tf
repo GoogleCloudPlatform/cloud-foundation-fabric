@@ -29,6 +29,15 @@ output "custom_roles" {
   value       = google_project_iam_custom_role.roles
 }
 
+
+output "default_service_accounts" {
+  description = "Emails of the default service accounts for this project."
+  value = {
+    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
+  }
+}
+
 output "id" {
   description = "Project id."
   value       = "${local.prefix}${var.name}"
@@ -129,36 +138,13 @@ output "quotas" {
 }
 
 output "service_agents" {
-  value = local.aliased_service_agents
+  description = "List of all (active) service agents for this project."
+  value       = local.aliased_service_agents
   depends_on = [
     google_project_service_identity.default,
     google_project_iam_member.service_agents
   ]
 }
-
-output "default_service_accounts" {
-  description = "Emails of the default service accounts for this project."
-  value = {
-    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
-    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
-  }
-}
-
-# output "service_accounts" {
-#   description = "Product robot service accounts in project."
-#   value = {
-#     cloud_services = local.service_account_cloud_services
-#     default        = local.service_accounts_default
-#     robots         = local.service_accounts_robots
-#   }
-#   depends_on = [
-#     google_project_service.project_services,
-#     google_kms_crypto_key_iam_member.service_identity_cmek,
-#     google_project_service_identity.jit_si,
-#     data.google_bigquery_default_service_account.bq_sa,
-#     data.google_storage_project_service_account.gcs_sa
-#   ]
-# }
 
 output "services" {
   description = "Service APIs to enabled in the project."

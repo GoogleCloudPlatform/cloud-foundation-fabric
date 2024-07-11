@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ module "project" {
   shared_vpc_service_config = var.network_config.host_project == null ? null : {
     attach       = true
     host_project = var.network_config.host_project
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = ["dataflow"]
     }
   }

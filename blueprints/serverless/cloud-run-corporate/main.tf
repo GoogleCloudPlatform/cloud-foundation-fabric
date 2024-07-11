@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ module "project_svc1" {
   parent          = try(var.prj_svc1_create.parent, null)
   shared_vpc_service_config = {
     host_project = module.project_main.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "vpcaccess"
       ],

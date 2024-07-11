@@ -59,7 +59,7 @@ module "fleet_project" {
   shared_vpc_service_config = {
     attach       = true
     host_project = module.host_project.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
