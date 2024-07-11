@@ -69,7 +69,7 @@ locals {
     local._project_service_agents,
     flatten([
       for agent_name, agent in local._project_service_agents : [
-        for alias in lookup(agent, "aliases", []) :
+        for alias in agent.aliases :
         { (alias) = agent }
       ]
     ])...

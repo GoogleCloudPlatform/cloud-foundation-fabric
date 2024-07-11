@@ -14,17 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import itertools
-import collections
-import pathlib
+from dataclasses import asdict, dataclass, field
+from itertools import chain
+
 import requests
 import yaml
-
-import click
 from bs4 import BeautifulSoup
 
 # BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 SERVICE_AGENTS_URL = "https://cloud.google.com/iam/docs/service-agents"
+
+
+@dataclass
+class Agent:
+  name: str
+  display_name: str
+  api: str
+  identity: str
+  role: str
+  is_primary: bool
+  aliases: list[str] = field(default_factory=list)
+
 
 # old names used by Fabric
 ALIASES = {
@@ -79,36 +89,33 @@ def main():
       # Switch names to preserve old Fabric convention
       name = 'monitoring-deprecated'
 
-    agent = {
-        'name': name,
-        'display_name': col1.h4.get_text(),
-        'api': col1.span.code.get_text() if name != 'cloudservices' else None,
-        'identity': identity,
-        'role': col2.code.get_text() if 'roles/' in agent_text else None,
-        'is_primary': 'Primary service agent' in agent_text,
-    }
-    if agent['name'] == 'cloudservices':
+    agent = Agent(
+        name=name,
+        display_name=col1.h4.get_text(),
+        api=col1.span.code.get_text() if name != 'cloudservices' else None,
+        identity=identity,
+        role=col2.code.get_text() if 'roles/' in agent_text else None,
+        is_primary='Primary service agent' in agent_text,
+        aliases=ALIASES.get(name, []),
+    )
+
+    if agent.name == 'cloudservices':
       # cloudservices role is granted automatically, we don't want to manage it
-      agent['role'] = None
+      agent.role = None
 
-    if aliases := ALIASES.get(name):
-      agent['aliases'] = aliases
-
-    # agent['identity'] = identity
     agents.append(agent)
 
   # make sure all names and aliases are different:
-  names = set(agent['name'] for agent in agents)
+  names = set(agent.name for agent in agents)
   assert len(names) == len(agents)
-  aliases = [agent['aliases'] for agent in agents if 'aliases' in agent]
-  aliases = set(itertools.chain.from_iterable(aliases))
+  aliases = set(chain.from_iterable(agent.aliases for agent in agents))
   assert aliases.isdisjoint(names)
 
   # take the header from the first lines of this file
   header = open(__file__).readlines()[2:15]
   print("".join(header))
   # and print all the agents
-  print(yaml.safe_dump(agents, sort_keys=False))
+  print(yaml.safe_dump([asdict(a) for a in agents], sort_keys=False))
 
 
 if __name__ == '__main__':
