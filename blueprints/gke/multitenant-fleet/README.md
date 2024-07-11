@@ -115,7 +115,7 @@ module "gke-fleet" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=8 resources=33
+# tftest modules=8 resources=43
 ```
 
 ## GKE Fleet
@@ -218,7 +218,7 @@ module "gke" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=9 resources=44
+# tftest modules=9 resources=52
 ```
 
 <!-- TFDOC OPTS files:1 -->

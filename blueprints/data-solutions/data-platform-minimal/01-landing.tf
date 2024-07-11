@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ module "land-project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  service_encryption_key_ids = {
-    bq      = [var.service_encryption_keys.bq]
-    storage = [var.service_encryption_keys.storage]
+  service_agent_encryption_key_ids = {
+    bq      = compact([var.service_encryption_keys.bq])
+    storage = compact([var.service_encryption_keys.storage])
   }
 }
 

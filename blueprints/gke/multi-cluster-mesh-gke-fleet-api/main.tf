@@ -82,7 +82,7 @@ module "fleet_project" {
   iam = {
     "roles/container.admin"                     = [module.mgmt_server.service_account_iam_email]
     "roles/gkehub.admin"                        = [module.mgmt_server.service_account_iam_email]
-    "roles/gkehub.serviceAgent"                 = ["serviceAccount:${module.fleet_project.service_accounts.robots.fleet}"]
+    "roles/gkehub.serviceAgent"                 = [module.fleet_project.service_agents.fleet.iam_email]
     "roles/monitoring.viewer"                   = local.np_service_account_iam_email
     "roles/monitoring.metricWriter"             = local.np_service_account_iam_email
     "roles/logging.logWriter"                   = local.np_service_account_iam_email

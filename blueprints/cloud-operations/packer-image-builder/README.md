@@ -115,5 +115,5 @@ module "test" {
   packer_account_users = ["user:john@example.com"]
   create_packer_vars   = true
 }
-# tftest modules=7 resources=19 files=pkrvars
+# tftest modules=7 resources=20 files=pkrvars
 ```

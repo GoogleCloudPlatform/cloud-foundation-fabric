@@ -18,9 +18,9 @@ values:
     cluster_id: db
     cluster_type: PRIMARY
     continuous_backup_config:
-      - enabled: true
-        encryption_config: []
-        recovery_window_days: 14
+    - enabled: true
+      encryption_config: []
+      recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
     display_name: db
@@ -31,8 +31,10 @@ values:
     location: europe-west8
     maintenance_update_policy: []
     network_config:
-      - allocated_ip_range: null
+    - allocated_ip_range: null
     project: test-alloydb
+    psc_config:
+    - psc_enabled: null
     restore_backup_source: []
     restore_continuous_backup_source: []
     secondary_config: []
@@ -46,15 +48,16 @@ values:
     instance_type: PRIMARY
     labels: null
     machine_config:
-      - cpu_count: 2
+    - cpu_count: 2
     network_config:
-      - authorized_external_networks: []
-        enable_public_ip: false
+    - authorized_external_networks: []
+      enable_public_ip: false
+    psc_instance_config: []
     query_insights_config:
-      - query_plans_per_minute: 5
-        query_string_length: 1024
-        record_application_tags: true
-        record_client_address: true
+    - query_plans_per_minute: 5
+      query_string_length: 1024
+      record_application_tags: true
+      record_client_address: true
     read_pool_config: []
     timeouts: null
   module.project.google_project.project[0]:
@@ -67,7 +70,11 @@ values:
     project_id: test-alloydb
     skip_delete: false
     timeouts: null
-  module.project.google_project_iam_member.servicenetworking[0]:
+  module.project.google_project_iam_member.service_agents["alloydb"]:
+    condition: []
+    project: test-alloydb
+    role: roles/alloydb.serviceAgent
+  module.project.google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: test-alloydb
     role: roles/servicenetworking.serviceAgent
@@ -83,7 +90,11 @@ values:
     project: test-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.project.google_project_service_identity.servicenetworking[0]:
+  module.project.google_project_service_identity.default["alloydb.googleapis.com"]:
+    project: test-alloydb
+    service: alloydb.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["servicenetworking.googleapis.com"]:
     project: test-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
@@ -152,8 +163,9 @@ values:
     role: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    deletion_policy: null
     reserved_peering_ranges:
-      - servicenetworking-googleapis-com-alloydb
+    - servicenetworking-googleapis-com-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
 
@@ -166,11 +178,11 @@ counts:
   google_compute_route: 2
   google_compute_subnetwork: 1
   google_project: 1
-  google_project_iam_member: 1
+  google_project_iam_member: 2
   google_project_service: 2
-  google_project_service_identity: 1
+  google_project_service_identity: 2
   google_service_networking_connection: 1
   modules: 3
-  resources: 14
+  resources: 16
 
 outputs: {}

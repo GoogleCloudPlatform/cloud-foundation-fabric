@@ -109,7 +109,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=7 resources=42
+# tftest modules=7 resources=50
 ```
 
 ### Apigee X in service project with local VPC peered and exposed using Global LB and Internal Cross-region Application LB
@@ -211,7 +211,7 @@ module "apigee-x-foundations" {
     ]
   }
 }
-# tftest modules=7 resources=50
+# tftest modules=7 resources=58
 ```
 
 ### Apigee X in service project with peering disabled and exposed using Global LB
@@ -287,7 +287,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=4 resources=28
+# tftest modules=4 resources=36
 ```
 
 ### Apigee X in standalone project with peering enabled and exposed with Regional Internal LB
@@ -369,7 +369,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=6 resources=40
+# tftest modules=6 resources=48
 ```
 
 ### Apigee X in standalone project with peering disabled and exposed using Global External Application LB
@@ -446,7 +446,7 @@ module "apigee-x-foundations" {
   }
   enable_monitoring = true
 }
-# tftest modules=6 resources=47
+# tftest modules=6 resources=63
 ```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->

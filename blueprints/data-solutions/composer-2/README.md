@@ -143,5 +143,5 @@ module "test" {
   prefix = var.prefix
   region = var.region
 }
-# tftest modules=5 resources=29 e2e
+# tftest modules=5 resources=44 e2e
 ```

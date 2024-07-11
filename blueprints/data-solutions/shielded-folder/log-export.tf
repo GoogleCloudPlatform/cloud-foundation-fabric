@@ -84,7 +84,7 @@ module "log-export-project" {
     "storage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  service_encryption_key_ids = var.enable_features.encryption ? local.log_keys : {}
+  service_agent_encryption_key_ids = var.enable_features.encryption ? local.log_keys : null
 
   depends_on = [
     module.log-kms

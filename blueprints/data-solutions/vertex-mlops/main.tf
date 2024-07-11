@@ -85,8 +85,8 @@ locals {
   }
 
   shared_vpc_role_members = {
-    robot-df  = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
-    notebooks = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+    robot-df  = module.project.service_agents.dataflow.iam_email
+    notebooks = module.project.service_agents.notebooks.iam_email
   }
 
   # reassemble in a format suitable for for_each
@@ -224,7 +224,7 @@ module "project" {
       module.service-account-mlops.iam_email,
       module.service-account-notebook.iam_email,
       module.service-account-github.iam_email,
-      "serviceAccount:${module.project.service_accounts.robots.cloudbuild}"
+      module.project.service_agents.cloudbuild.iam_email
     ]
     "roles/monitoring.metricWriter" = [module.service-account-mlops.iam_email]
     "roles/run.invoker"             = [module.service-account-mlops.iam_email]
@@ -240,14 +240,14 @@ module "project" {
   }
   labels = var.labels
 
-  service_encryption_key_ids = {
-    aiplatform    = [var.service_encryption_keys.aiplatform]
-    bq            = [var.service_encryption_keys.bq]
-    compute       = [var.service_encryption_keys.notebooks]
-    cloudbuild    = [var.service_encryption_keys.storage]
-    notebooks     = [var.service_encryption_keys.notebooks]
-    secretmanager = [var.service_encryption_keys.secretmanager]
-    storage       = [var.service_encryption_keys.storage]
+  service_agent_encryption_key_ids = {
+    aiplatform    = compact([var.service_encryption_keys.aiplatform])
+    bq            = compact([var.service_encryption_keys.bq])
+    compute       = compact([var.service_encryption_keys.notebooks])
+    cloudbuild    = compact([var.service_encryption_keys.storage])
+    notebooks     = compact([var.service_encryption_keys.notebooks])
+    secretmanager = compact([var.service_encryption_keys.secretmanager])
+    storage       = compact([var.service_encryption_keys.storage])
   }
 
   services = [
@@ -287,7 +287,7 @@ resource "google_project_iam_member" "shared_vpc" {
   count   = local.use_shared_vpc ? 1 : 0
   project = var.network_config.host_project
   role    = "roles/compute.networkUser"
-  member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+  member  = module.project.service_agents.notebooks.iam_email
 }
 
 resource "google_sourcerepo_repository" "code-repo" {

@@ -39,10 +39,10 @@ locals {
     data_analysts        = "group:${local.groups.data-analysts}"
     data_engineers       = "group:${local.groups.data-engineers}"
     data_security        = "group:${local.groups.data-security}"
-    robots_cloudbuild    = "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}"
-    robots_composer      = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
-    robots_dataflow_load = "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
-    robots_dataflow_trf  = "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    robots_cloudbuild    = module.orch-project.service_agents.cloudbuild.iam_email
+    robots_composer      = module.orch-project.service_agents.composer.iam_email
+    robots_dataflow_load = module.load-project.service_agents.dataflow.iam_email
+    robots_dataflow_trf  = module.transf-project.service_agents.dataflow.iam_email
     sa_df_build          = module.orch-sa-df-build.iam_email
     sa_drop_bq           = module.drop-sa-bq-0.iam_email
     sa_drop_cs           = module.drop-sa-cs-0.iam_email
@@ -52,18 +52,17 @@ locals {
     sa_transf_bq         = module.transf-sa-bq-0.iam_email,
     sa_transf_df         = module.transf-sa-df-0.iam_email,
   }
-  project_suffix          = var.project_suffix == null ? "" : "-${var.project_suffix}"
-  service_encryption_keys = var.service_encryption_keys
-  shared_vpc_project      = try(var.network_config.host_project, null)
+  project_suffix     = var.project_suffix == null ? "" : "-${var.project_suffix}"
+  shared_vpc_project = try(var.network_config.host_project, null)
   # this is needed so that for_each only uses static values
   shared_vpc_role_members = {
-    load-robot-df       = "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
+    load-robot-df       = module.load-project.service_agents.dataflow.iam_email
     load-sa-df-worker   = module.load-sa-df-0.iam_email
-    orch-cloudservices  = "serviceAccount:${module.orch-project.service_accounts.cloud_services}"
-    orch-robot-cs       = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
-    orch-robot-df       = "serviceAccount:${module.orch-project.service_accounts.robots.dataflow}"
-    orch-robot-gke      = "serviceAccount:${module.orch-project.service_accounts.robots.container-engine}"
-    transf-robot-df     = "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    orch-cloudservices  = module.orch-project.service_agents.cloudservices.iam_email
+    orch-robot-cs       = module.orch-project.service_agents.composer.iam_email
+    orch-robot-df       = module.orch-project.service_agents.dataflow.iam_email
+    orch-robot-gke      = module.orch-project.service_agents.container-engine.iam_email
+    transf-robot-df     = module.transf-project.service_agents.dataflow.iam_email
     transf-sa-df-worker = module.transf-sa-df-0.iam_email
   }
   # reassemble in a format suitable for for_each

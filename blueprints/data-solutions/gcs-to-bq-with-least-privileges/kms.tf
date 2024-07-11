@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,22 +24,22 @@ module "kms" {
     key-df = {
       iam = {
         "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-          "serviceAccount:${module.project.service_accounts.robots.dataflow}",
-          "serviceAccount:${module.project.service_accounts.robots.compute}",
+          module.project.service_agents.dataflow.iam_email,
+          module.project.service_agents.compute.iam_email,
         ]
       }
     }
     key-gcs = {
       iam = {
         "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-          "serviceAccount:${module.project.service_accounts.robots.storage}"
+          module.project.service_agents.storage.iam_email
         ]
       }
     }
     key-bq = {
       iam = {
         "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-          "serviceAccount:${module.project.service_accounts.robots.bq}"
+          module.project.service_agents.bq.iam_email
         ]
       }
     }

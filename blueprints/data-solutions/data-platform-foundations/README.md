@@ -229,7 +229,7 @@ module "data-platform" {
   # test 12-chars long prefix for FAST mt compatibility
   prefix = "test-0123456"
 }
-# tftest modules=43 resources=293
+# tftest modules=43 resources=344
 ```
 
 ## Customizations

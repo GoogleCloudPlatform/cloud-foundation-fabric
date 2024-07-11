@@ -77,10 +77,10 @@ locals {
         try(v.prefix, null),
         var.data_defaults.prefix
       )
-      service_encryption_key_ids = coalesce(
-        var.data_overrides.service_encryption_key_ids,
-        try(v.service_encryption_key_ids, null),
-        var.data_defaults.service_encryption_key_ids
+      service_agent_encryption_key_ids = coalesce(
+        var.data_overrides.service_agent_encryption_key_ids,
+        try(v.service_agent_encryption_key_ids, null),
+        var.data_defaults.service_agent_encryption_key_ids
       )
       services = coalesce(
         var.data_overrides.services,
@@ -99,11 +99,11 @@ locals {
         try(v.shared_vpc_service_config, null) != null
         ? merge(
           {
-            network_users               = []
-            service_identity_iam        = {}
-            service_identity_subnet_iam = {}
-            service_iam_grants          = []
-            network_subnet_users        = {}
+            network_users            = []
+            service_agent_iam        = {}
+            service_agent_subnet_iam = {}
+            service_iam_grants       = []
+            network_subnet_users     = {}
           },
           v.shared_vpc_service_config
         )

@@ -47,7 +47,7 @@ module "project" {
     "stackdriver.googleapis.com"
   ]
 }
-# tftest modules=1 resources=3 inventory=basic.yaml e2e
+# tftest modules=1 resources=6 inventory=basic.yaml e2e
 ```
 
 ## IAM
@@ -87,7 +87,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=4 inventory=iam-authoritative.yaml
+# tftest modules=1 resources=7 inventory=iam-authoritative.yaml
 ```
 
 The `iam_by_principals` variable uses [principals](https://cloud.google.com/iam/docs/principal-identifiers) as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
@@ -121,7 +121,6 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   services = [
-    "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   iam_bindings = {
@@ -143,7 +142,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam-bindings.yaml e2e
+# tftest modules=1 resources=3 inventory=iam-bindings.yaml e2e
 ```
 
 ### Additive IAM
@@ -169,34 +168,19 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=3 inventory=iam-bindings-additive.yaml e2e
+# tftest modules=1 resources=4 inventory=iam-bindings-additive.yaml e2e
 ```
 
-### Service Identities and Authoritative IAM
+### Service Agents 
 
-As mentioned above, there are cases where authoritative management of specific IAM roles results in removal of default bindings from service identities. One example is outlined below, with a simple workaround leveraging the `service_accounts` output to identify the service identity. A full list of service identities and their roles can be found [here](https://cloud.google.com/iam/docs/service-agents).
+After service activation, this module will attempt to:
 
-```hcl
-module "project" {
-  source          = "./fabric/modules/project"
-  billing_account = var.billing_account_id
-  name            = "project"
-  parent          = var.folder_id
-  prefix          = var.prefix
-  iam = {
-    "roles/editor" = [
-      "serviceAccount:${module.project.service_accounts.cloud_services}"
-    ]
-  }
-}
-# tftest modules=1 resources=2 e2e
-```
+- Create the primary service agent belonging any of the services in listed `var.services`.
+- Grant the agent-specific role (if any) to all of the service agents belonging to the services listed in `var.services`.
 
-### Service Identities Requiring Manual IAM Grants
+You can modify both of these behaviors through `var.service_agents_config`.
 
-The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.
-
-You can grant roles to service identities using the following construct:
+A full list of service identities and their roles can be found [here](https://cloud.google.com/iam/docs/service-agents).
 
 ```hcl
 module "project" {
@@ -207,37 +191,16 @@ module "project" {
   prefix          = var.prefix
   services = [
     "apigee.googleapis.com",
+    "container.googleapis.com",
   ]
-  iam = {
-    "roles/apigee.serviceAgent" = [
-      "serviceAccount:${module.project.service_accounts.robots.apigee}"
-    ]
-  }
 }
-# tftest modules=1 resources=4 e2e
+
+# tftest modules=1 resources=8 e2e
 ```
-
-This table lists all affected services and roles that you need to grant to service identities
-
-| service                            | service identity     | role                                   |
-|------------------------------------|----------------------|----------------------------------------|
-| apigee.googleapis.com              | apigee               | roles/apigee.serviceAgent              |
-| artifactregistry.googleapis.com    | artifactregistry     | roles/artifactregistry.serviceAgent    |
-| cloudasset.googleapis.com          | cloudasset           | roles/cloudasset.serviceAgent          |
-| cloudbuild.googleapis.com          | cloudbuild           | roles/cloudbuild.builds.builder        |
-| connectors.googleapis.com          | connectors           | roles/connectors.serviceAgent |
-| dataform.googleapis.com            | dataform             | roles/dataform.serviceAgent            |
-| dataplex.googleapis.com            | dataplex             | roles/dataplex.serviceAgent            |
-| dlp.googleapis.com                 | dlp                  | roles/dlp.serviceAgent                 |
-| gkehub.googleapis.com              | fleet                | roles/gkehub.serviceAgent              |
-| meshconfig.googleapis.com          | servicemesh          | roles/anthosservicemesh.serviceAgent   |
-| multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
-| pubsub.googleapis.com              | pubsub               | roles/pubsub.serviceAgent              |
-| sqladmin.googleapis.com            | sqladmin             | roles/cloudsql.serviceAgent            |
 
 ## Shared VPC
 
-The module allows managing Shared VPC status for both hosts and service projects, and control of IAM bindings for API service identities.
+The module allows managing Shared VPC status for both hosts and service projects, and control of IAM bindings for service agents.
 
 Project service association for VPC host projects can be
 
@@ -246,13 +209,13 @@ Project service association for VPC host projects can be
 
 IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
 
-- via the `service_identity_iam` attribute, by specifying the set of roles and service agents
+- via the `service_agent_iam` attribute, by specifying the set of roles and service agents
 - via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
-- via the `service_identity_subnet_iam` attribute, by providing a map of `"<region>/<subnet_name>"` -> `[ "<service_identity>", (...)]`, to grant `compute.networkUser` role on subnet level to service identity
+- via the `service_agent_subnet_iam` attribute, by providing a map of `"<region>/<subnet_name>"` -> `[ "<service_identity>", (...)]`, to grant `compute.networkUser` role on subnet level to service identity
 
-While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (eg compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
+While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (e.g. compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
 
-This example shows a simple configuration with a host project, and a service project independently attached with granular IAM bindings for service identities.
+This example shows a simple configuration with a host project, and a service project independently attached with granular IAM bindings for service identities. The full list of service agent names can be found in [service-agents.yaml](./service-agents.yaml)
 
 ```hcl
 module "host-project" {
@@ -278,7 +241,7 @@ module "service-project" {
   ]
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
@@ -291,10 +254,10 @@ module "service-project" {
     }
   }
 }
-# tftest modules=2 resources=10 inventory=shared-vpc.yaml e2e
+# tftest modules=2 resources=15 inventory=shared-vpc.yaml e2e
 ```
 
-This example shows a similar configuration, with the simpler way of defining IAM bindings for service identities. The list of services passed to `service_iam_grants` uses the same module's outputs to establish a dependency, as service identities are only typically available after service (API) activation.
+This example shows a similar configuration, with the simpler way of defining IAM bindings for service identities. The list of services passed to `service_iam_grants` uses the same module's outputs to establish a dependency, as service agents are typically only available after service (API) activation.
 
 ```hcl
 module "host-project" {
@@ -323,7 +286,7 @@ module "service-project" {
     service_iam_grants = module.service-project.services
   }
 }
-# tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml e2e
+# tftest modules=2 resources=12 inventory=shared-vpc-auto-grants.yaml e2e
 ```
 
 The `compute.networkUser` role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `network_users` attribute, by specifying the list of identities. Avoid using dynamically generated lists, as this attribute is involved in a `for_each` loop and may result in Terraform errors.
@@ -367,10 +330,10 @@ module "service-project" {
     service_iam_grants = module.service-project.services
   }
 }
-# tftest modules=2 resources=11 inventory=shared-vpc-host-project-iam.yaml e2e
+# tftest modules=2 resources=14 inventory=shared-vpc-host-project-iam.yaml e2e
 ```
 
-In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region in the `host` project (not included in the example) via the `service_identity_subnet_iam` and `network_subnet_users` attributes.
+In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region in the `host` project (not included in the example) via the `service_agent_subnet_iam` and `network_subnet_users` attributes.
 
 ```hcl
 module "host-project" {
@@ -395,7 +358,7 @@ module "service-project" {
   ]
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
-    service_identity_subnet_iam = {
+    service_agent_subnet_iam = {
       "europe-west1/gce" = ["compute"]
     }
     network_subnet_users = {
@@ -403,7 +366,7 @@ module "service-project" {
     }
   }
 }
-# tftest modules=2 resources=7 inventory=shared-vpc-subnet-grants.yaml
+# tftest modules=2 resources=8 inventory=shared-vpc-subnet-grants.yaml
 ```
 
 ## Organization Policies
@@ -656,7 +619,7 @@ module "project" {
 
 ## Cloud KMS Encryption Keys
 
-The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
+The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service agents.
 
 ```hcl
 module "project" {
@@ -669,16 +632,12 @@ module "project" {
     "compute.googleapis.com",
     "storage.googleapis.com"
   ]
-  service_encryption_key_ids = {
-    compute = [
-      var.kms_key.id
-    ]
-    storage = [
-      var.kms_key.id
-    ]
+  service_agent_encryption_key_ids = {
+    compute = [var.kms_key.id]
+    storage = [var.kms_key.id]
   }
 }
-# tftest modules=1 resources=6 e2e
+# tftest modules=1 resources=7 e2e
 ```
 
 ## Tags
@@ -748,7 +707,7 @@ module "project" {
     env-prod = module.project.tag_values["environment/prod"].id
   }
 }
-# tftest modules=1 resources=12 inventory=tags.yaml
+# tftest modules=1 resources=13 inventory=tags.yaml
 ```
 
 You can also define network tags through the dedicated `network_tags` variable:
@@ -782,7 +741,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=7 inventory=tags-network.yaml
+# tftest modules=1 resources=8 inventory=tags-network.yaml
 ```
 
 ## Tag Bindings
@@ -942,7 +901,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=4 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 inventory=quotas.yaml e2e
 ```
 
 ## Quotas factory
@@ -964,7 +923,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=4 files=quota-cpus-ew8 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml e2e
 ```
 
 ```yaml
@@ -995,14 +954,13 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   services = [
-    "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   vpc_sc = {
     perimeter_name = "accessPolicies/1234567890/servicePerimeters/default"
   }
 }
-# tftest modules=1 resources=4 inventory=vpc-sc.yaml
+# tftest modules=1 resources=3 inventory=vpc-sc.yaml
 ```
 
 Perimeter bridges and dry run configuration are also supported.
@@ -1015,7 +973,6 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   services = [
-    "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   vpc_sc = {
@@ -1027,14 +984,16 @@ module "project" {
     is_dry_run = true
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=5
 ```
 
-## Outputs
+## Project Related Outputs
 
 Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
 
-One non-obvious output is `service_accounts`, which offers a simple way to discover service identities and default service accounts, and guarantees that service identities that require an API call to trigger creation (like GCS or BigQuery) exist before use.
+One non-obvious output is `service_agents`, which offers a simple way to discover service agents. This output guarantees that the service agent exist before use.
+
+Similarly, the `default_service_accounts` contains the emails of the default service accounts the project.
 
 ```hcl
 module "project" {
@@ -1048,10 +1007,14 @@ module "project" {
   ]
 }
 
-output "compute_robot" {
-  value = module.project.service_accounts.robots.compute
+output "compute_service_agent" {
+  value = module.project.service_agents.compute.email
 }
-# tftest modules=1 resources=2 inventory=outputs.yaml e2e
+
+output "default_service_accounts" {
+  value = module.project.default_service_accounts
+}
+# tftest modules=1 resources=3 inventory=outputs.yaml e2e
 ```
 
 ### Managing project related configuration without creating it
@@ -1110,10 +1073,10 @@ module "project" {
   }
   iam = {
     "roles/editor" = [
-      "serviceAccount:${module.project.service_accounts.cloud_services}"
+      module.project.service_agents.cloudservices.iam_email
     ]
     "roles/apigee.serviceAgent" = [
-      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+      module.project.service_agents.apigee.iam_email
     ]
   }
   logging_data_access = {
@@ -1201,7 +1164,7 @@ module "project" {
   shared_vpc_service_config = {
     host_project       = module.host-project.project_id
     service_iam_grants = module.project.services
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/cloudasset.owner" = [
         "cloudservices", "container-engine"
       ]
@@ -1211,17 +1174,14 @@ module "project" {
     "apigee.googleapis.com",
     "bigquery.googleapis.com",
     "container.googleapis.com",
+    "compute.googleapis.com",
     "logging.googleapis.com",
     "run.googleapis.com",
     "storage.googleapis.com",
   ]
-  service_encryption_key_ids = {
-    compute = [
-      var.kms_key.id
-    ]
-    storage = [
-      var.kms_key.id
-    ]
+  service_agent_encryption_key_ids = {
+    compute = [var.kms_key.id]
+    storage = [var.kms_key.id]
   }
 }
 
@@ -1264,7 +1224,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "${var.prefix}-bucket"
 }
-# tftest modules=7 resources=53 inventory=data.yaml e2e
+# tftest modules=7 resources=61 inventory=data.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -1327,6 +1287,7 @@ module "bucket" {
 | [tag_bindings](variables-tags.tf#L81) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L88) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  id &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_sc](variables.tf#L278) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name    &#61; string&#10;  perimeter_bridges &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  is_dry_run        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+
 
 ## Outputs
 

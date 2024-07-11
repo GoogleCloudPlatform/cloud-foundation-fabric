@@ -87,8 +87,8 @@ module "project" {
         role = "roles/gkehub.serviceAgent"
         member = (
           var.fleet_project_id == null
-          ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-          : "serviceAccount:${module.fleet-project[0].service_accounts.robots.gkehub}"
+          ? module.project.service_agents.gkehub.iam_email
+          : module.fleet-project[0].service_agents.gkehub.iam_email
         )
       }
     },

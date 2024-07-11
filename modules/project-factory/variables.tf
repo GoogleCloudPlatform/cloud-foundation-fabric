@@ -17,21 +17,21 @@
 variable "data_defaults" {
   description = "Optional default values used when corresponding project data from files are missing."
   type = object({
-    billing_account            = optional(string)
-    contacts                   = optional(map(list(string)), {})
-    labels                     = optional(map(string), {})
-    metric_scopes              = optional(list(string), [])
-    parent                     = optional(string)
-    prefix                     = optional(string)
-    service_encryption_key_ids = optional(map(list(string)), {})
-    services                   = optional(list(string), [])
+    billing_account                  = optional(string)
+    contacts                         = optional(map(list(string)), {})
+    labels                           = optional(map(string), {})
+    metric_scopes                    = optional(list(string), [])
+    parent                           = optional(string)
+    prefix                           = optional(string)
+    service_agent_encryption_key_ids = optional(map(list(string)), {})
+    services                         = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project                = string
-      network_users               = optional(list(string), [])
-      service_identity_iam        = optional(map(list(string)), {})
-      service_identity_subnet_iam = optional(map(list(string)), {})
-      service_iam_grants          = optional(list(string), [])
-      network_subnet_users        = optional(map(list(string)), {})
+      host_project             = string
+      network_users            = optional(list(string), [])
+      service_agent_iam        = optional(map(list(string)), {})
+      service_agent_subnet_iam = optional(map(list(string)), {})
+      service_iam_grants       = optional(list(string), [])
+      network_subnet_users     = optional(map(list(string)), {})
     }), { host_project = null })
     tag_bindings = optional(map(string), {})
     # non-project resources
@@ -52,12 +52,12 @@ variable "data_defaults" {
 variable "data_merges" {
   description = "Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`."
   type = object({
-    contacts                   = optional(map(list(string)), {})
-    labels                     = optional(map(string), {})
-    metric_scopes              = optional(list(string), [])
-    service_encryption_key_ids = optional(map(list(string)), {})
-    services                   = optional(list(string), [])
-    tag_bindings               = optional(map(string), {})
+    contacts                         = optional(map(list(string)), {})
+    labels                           = optional(map(string), {})
+    metric_scopes                    = optional(list(string), [])
+    service_agent_encryption_key_ids = optional(map(list(string)), {})
+    services                         = optional(list(string), [])
+    tag_bindings                     = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
       display_name   = optional(string, "Terraform-managed.")
@@ -71,13 +71,13 @@ variable "data_merges" {
 variable "data_overrides" {
   description = "Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`."
   type = object({
-    billing_account            = optional(string)
-    contacts                   = optional(map(list(string)))
-    parent                     = optional(string)
-    prefix                     = optional(string)
-    service_encryption_key_ids = optional(map(list(string)))
-    tag_bindings               = optional(map(string))
-    services                   = optional(list(string))
+    billing_account                  = optional(string)
+    contacts                         = optional(map(list(string)))
+    parent                           = optional(string)
+    prefix                           = optional(string)
+    service_agent_encryption_key_ids = optional(map(list(string)))
+    tag_bindings                     = optional(map(string))
+    services                         = optional(list(string))
     # non-project resources
     service_accounts = optional(map(object({
       display_name   = optional(string, "Terraform-managed.")

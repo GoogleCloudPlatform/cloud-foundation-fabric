@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,9 +62,10 @@ module "transf-project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
-  service_encryption_key_ids = {
-    dataflow = [try(local.service_encryption_keys.dataflow, null)]
-    storage  = [try(local.service_encryption_keys.storage, null)]
+  service_agent_encryption_key_ids = {
+    dataflow = compact([var.service_encryption_keys.dataflow])
+    compute  = compact([var.service_encryption_keys.dataflow])
+    storage  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
@@ -96,7 +97,7 @@ module "transf-cs-df-0" {
   name           = "trf-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 

@@ -106,7 +106,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=18 inventory=full.yaml
+# tftest modules=4 resources=27 inventory=full.yaml
 ```
 
 ## Multi-cluster mesh on GKE
@@ -127,13 +127,6 @@ module "project" {
     "meshca.googleapis.com"
   ]
 }
-
-resource "google_project_iam_member" "gkehub_fix" {
-  member  = "serviceAccount:${module.project.service_accounts.robots.fleet}"
-  project = module.project.project_id
-  role    = "roles/gkehub.serviceAgent"
-}
-
 
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
@@ -282,7 +275,6 @@ module "cluster_2_nodepool" {
 module "hub" {
   source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
-  depends_on = [google_project_iam_member.gkehub_fix]
   clusters = {
     cluster-1 = module.cluster_1.id
     cluster-2 = module.cluster_2.id
@@ -301,7 +293,7 @@ module "hub" {
   ]
 }
 
-# tftest modules=8 resources=34
+# tftest modules=8 resources=43
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

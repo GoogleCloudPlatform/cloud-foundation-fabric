@@ -36,7 +36,7 @@ module "gke-project-0" {
   labels            = var.labels
   iam = merge(var.iam, {
     "roles/gkehub.serviceAgent" = [
-      "serviceAccount:${module.gke-project-0.service_accounts.robots.fleet}"
+      module.gke-project-0.service_agents.fleet.iam_email
     ] }
   )
   iam_bindings_additive = {

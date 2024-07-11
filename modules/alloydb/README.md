@@ -66,7 +66,7 @@ module "alloydb" {
   name     = "db"
   location = var.region
 }
-# tftest modules=3 resources=14 inventory=simple.yaml e2e
+# tftest modules=3 resources=16 inventory=simple.yaml e2e
 ```
 
 ### Cross region replication

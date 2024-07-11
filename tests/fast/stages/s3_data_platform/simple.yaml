@@ -22,9 +22,9 @@ counts:
   google_data_catalog_taxonomy: 1
   google_project: 9
   google_project_iam_binding: 61
-  google_project_iam_member: 16
+  google_project_iam_member: 52
   google_project_service: 114
-  google_project_service_identity: 18
+  google_project_service_identity: 33
   google_pubsub_topic: 1
   google_service_account: 8
   google_service_account_iam_binding: 13
@@ -32,4 +32,4 @@ counts:
   google_storage_bucket_object: 1
   google_storage_project_service_account: 7
   modules: 34
-  resources: 277
+  resources: 328

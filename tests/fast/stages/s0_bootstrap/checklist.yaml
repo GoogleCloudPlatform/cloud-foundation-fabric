@@ -7,7 +7,7 @@
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
+# distributed under the License is distributed on an "AS ISCopyright 2024 BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -382,7 +382,7 @@ counts:
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
-  google_project_iam_member: 7
+  google_project_iam_member: 16
   google_project_service: 30
   google_project_service_identity: 4
   google_service_account: 6

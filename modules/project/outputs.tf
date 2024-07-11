@@ -137,6 +137,7 @@ output "service_agents" {
 }
 
 output "default_service_accounts" {
+  description = "Emails of the default service accounts for this project."
   value = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
     gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
