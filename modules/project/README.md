@@ -11,6 +11,7 @@ This module implements the creation and management of one GCP project including 
   - [Authoritative IAM](#authoritative-iam)
   - [Additive IAM](#additive-iam)
   - [Service Agents](#service-agents)
+    - [Service Agent Aliases](#service-agent-aliases)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
@@ -170,17 +171,26 @@ module "project" {
 # tftest modules=1 resources=4 inventory=iam-bindings-additive.yaml e2e
 ```
 
-### Service Agents 
+### Service Agents
 
-After service activation, this module will attempt to:
+By default, upon service activation, this module will perform the following actions:
 
-- Create the primary service agent belonging any of the services in listed `var.services`.
-- Grant the agent-specific role (if any) to all of the service agents belonging to the services listed in `var.services`.
+- **Create primary service agents:** For each service listed in the `var.services` variable, the module will trigger the creation of the corresponding primary service agent (if any).
+- **Grant agent-specific roles:** If a service agent has a predefined role associated with it, that role will be granted on project if its API matches any of the services in `var.services`.
 
-You can modify both of these behaviors through `var.service_agents_config`.
+You can control these actions by adjusting the settings in the `var.service_agents_config` variable. To prevent the creation of specific service agents or the assignment of their default roles, modify the relevant fields within this variable.
 
-A full list of service identities and their roles can be found [here](https://cloud.google.com/iam/docs/service-agents).
+The `service_agents` output provides a convenient way to access information about all active service agents in the project. Note that this output only includes details for service agents that are currently active (i.e. their API is listed in `var.services`) within your project.
 
+> [!IMPORTANT]
+> You can only access a service agent's details through the `service_agents` output if it's corresponding API is enabled throught the `services` variable.
+
+The complete list of Google Cloud service agents, including their names, default roles, and associated APIs, is maintained in the  [service-agents.yaml](./service-agents.yaml) file.  This file is regularly updated to reflect the [official list of Google Cloud service agents](https://cloud.google.com/iam/docs/service-agents) using the [`build_service_agents`](../../tools/build_service_agents.py) script.
+
+
+#### Service Agent Aliases
+
+Consider the code below:
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
@@ -189,13 +199,93 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   services = [
-    "apigee.googleapis.com",
+    "artifactregistry.googleapis.com",
     "container.googleapis.com",
   ]
 }
 
 # tftest modules=1 resources=8 e2e
 ```
+
+The `service_agents` output for this snippet would look similar to this:
+```tfvars
+service_agents = {
+  "artifactregistry" = {
+    "api" = "artifactregistry.googleapis.com"
+    "display_name" = "Artifact Registry Service Agent"
+    "email" = "service-0123456789@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/artifactregistry.serviceAgent"
+  }
+  "cloudservices" = {
+    "api" = null
+    "display_name" = "Google APIs Service Agent"
+    "email" = "0123456789@cloudservices.gserviceaccount.com"
+    "iam_email" = "serviceAccount:0123456789@cloudservices.gserviceaccount.com"
+    "is_primary" = false
+    "role" = null
+  }
+  "cloudsvc" = {
+    "api" = null
+    "display_name" = "Google APIs Service Agent"
+    "email" = "0123456789@cloudservices.gserviceaccount.com"
+    "iam_email" = "serviceAccount:0123456789@cloudservices.gserviceaccount.com"
+    "is_primary" = false
+    "role" = null
+  }
+  "container" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "container-engine" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "container-engine-robot" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Service Agent"
+    "email" = "service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@container-engine-robot.iam.gserviceaccount.com"
+    "is_primary" = true
+    "role" = "roles/container.serviceAgent"
+  }
+  "gkenode" = {
+    "api" = "container.googleapis.com"
+    "display_name" = "Kubernetes Engine Node Service Agent"
+    "email" = "service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
+    "iam_email" = "serviceAccount:service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
+    "is_primary" = false
+    "role" = "roles/container.nodeServiceAgent"
+  }
+}
+```
+
+Notice that some service agents appear under multiple names. For example, the Kubernetes Engine Service Agent shows up as `container-engine-robot` but also has the `container` and `container-engine` aliases. These aliases exist only in Fabric for convenience and backwards compatibility. Refer to the table below for the list of aliases.
+
+| Canonical Name                 Aliases                    |
+|--------------------------------|----------------------------|
+| bigquery-encryption            | bq                         |
+| cloudservices                  | cloudsvc                   |
+| compute-system                 | compute                    |
+| cloudcomposer-accounts         | composer                   |
+| container-engine-robot         | container container-engine |
+| dataflow-service-producer-prod | dataflow                   |
+| dataproc-accounts              | dataproc                   |
+| gae-api-prod                   | gae-flex                   |
+| gcf-admin-robot                | cloudfunctions gcf         |
+| gkehub                         | fleet                      |
+| gs-project-accounts            | storage                    |
+| monitoring-notification        | monitoring                 |
+| serverless-robot-prod          | cloudrun run               |
 
 ## Shared VPC
 
@@ -990,9 +1080,7 @@ module "project" {
 
 Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
 
-One non-obvious output is `service_agents`, which offers a simple way to discover service agents. This output guarantees that the service agent exist before use.
-
-Similarly, the `default_service_accounts` contains the emails of the default service accounts the project.
+The `default_service_accounts` contains the emails of the default service accounts the project.
 
 ```hcl
 module "project" {
@@ -1004,10 +1092,6 @@ module "project" {
   services = [
     "compute.googleapis.com"
   ]
-}
-
-output "compute_service_agent" {
-  value = module.project.service_agents.compute.email
 }
 
 output "default_service_accounts" {
