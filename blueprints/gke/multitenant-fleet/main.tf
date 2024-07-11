@@ -74,8 +74,10 @@ module "gke-project-0" {
       ]
       },
       !local.fleet_mcs_enabled ? {} : {
-        "roles/multiclusterservicediscovery.serviceAgent" = ["gke-mcs"]
-        "roles/compute.networkViewer"                     = ["gke-mcs-importer"]
+        "roles/multiclusterservicediscovery.serviceAgent" = ["mcsd"]
+        "roles/compute.networkViewer" = [
+          "serviceAccount:${var.prefix}-${var.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
+        ]
     })
   }
   # specify project-level org policies here if you need them

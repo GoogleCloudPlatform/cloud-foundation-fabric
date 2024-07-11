@@ -42,5 +42,4 @@ counts:
   resources: 3
 
 outputs:
-  compute_service_agent: __missing__
   default_service_accounts: __missing__

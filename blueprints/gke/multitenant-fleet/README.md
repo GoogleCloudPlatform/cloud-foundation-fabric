@@ -218,7 +218,7 @@ module "gke" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=9 resources=52
+# tftest modules=9 resources=57
 ```
 
 <!-- TFDOC OPTS files:1 -->
