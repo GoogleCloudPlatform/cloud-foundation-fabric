@@ -1,0 +1,98 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_address.test:
+    address: 10.0.0.10
+    address_type: INTERNAL
+    description: null
+    name: neg-test
+    project: project-id
+    region: europe-west1
+    subnetwork: subnet_self_link
+  module.int-tcp-proxy.google_compute_forwarding_rule.default:
+    description: Terraform managed.
+    ip_protocol: TCP
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy
+    network: projects/xxx/global/networks/aaa
+    port_range: '80'
+    project: project-id
+    region: europe-west1
+    subnetwork: subnet_self_link
+  module.int-tcp-proxy.google_compute_network_endpoint.default["my-neg-e-0"]:
+    instance: test-1
+    ip_address: 10.0.0.10
+    network_endpoint_group: int-tcp-proxy-my-neg
+    port: 80
+    project: project-id
+    zone: europe-west1-b
+  module.int-tcp-proxy.google_compute_network_endpoint_group.default["my-neg"]:
+    description: Terraform managed.
+    name: int-tcp-proxy-my-neg
+    network: projects/xxx/global/networks/aaa
+    network_endpoint_type: GCE_VM_IP_PORT
+    project: project-id
+    subnetwork: subnet_self_link
+    zone: europe-west1-b
+  module.int-tcp-proxy.google_compute_region_backend_service.default:
+    backend:
+    - balancing_mode: CONNECTION
+      capacity_scaler: 1
+      description: Terraform managed.
+      failover: false
+      max_connections_per_endpoint: 10
+    circuit_breakers: []
+    connection_draining_timeout_sec: 0
+    connection_tracking_policy: []
+    consistent_hash: []
+    description: Terraform managed.
+    failover_policy: []
+    iap: []
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy
+    network: null # TODO: ???
+    outlier_detection: []
+    project: project-id
+    protocol: TCP
+    region: europe-west1
+    session_affinity: NONE
+    subsetting: []
+  module.int-tcp-proxy.google_compute_region_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: int-tcp-proxy
+    project: project-id
+    region: europe-west1
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    unhealthy_threshold: 2
+  module.int-tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    description: Terraform managed.
+    name: int-tcp-proxy
+    project: project-id
+    proxy_header: NONE
+    region: europe-west1

@@ -242,9 +242,10 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    network                = string
-    subnetwork             = string
-    master_ipv4_cidr_block = optional(string)
+    network                    = string
+    subnetwork                 = string
+    master_ipv4_cidr_block     = optional(string)
+    master_endpoint_subnetwork = optional(string)
     secondary_range_blocks = optional(object({
       pods     = string
       services = string
@@ -253,6 +254,7 @@ variable "vpc_config" {
       pods     = optional(string, "pods")
       services = optional(string, "services")
     }))
+    additional_ranges        = optional(list(string))
     master_authorized_ranges = optional(map(string))
     stack_type               = optional(string)
   })

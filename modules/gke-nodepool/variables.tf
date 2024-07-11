@@ -152,7 +152,12 @@ variable "nodepool_config" {
       auto_repair  = optional(bool)
       auto_upgrade = optional(bool)
     }))
-    # placement_policy = optional(bool)
+    placement_policy = optional(object({
+      type         = string
+      policy_name  = optional(string)
+      tpu_topology = optional(string)
+    }))
+    queued_provisioning = optional(bool, false)
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number

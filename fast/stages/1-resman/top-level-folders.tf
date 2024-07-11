@@ -44,6 +44,7 @@ locals {
         firewall_policy       = try(v.firewall_policy, null)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
+        logging_settings      = try(v.logging_settings, null)
         logging_sinks         = try(v.logging_sinks, {})
         iam                   = try(v.iam, {})
         iam_bindings          = try(v.iam_bindings, {})
@@ -66,6 +67,7 @@ module "top-level-folder" {
   firewall_policy       = each.value.firewall_policy
   logging_data_access   = each.value.logging_data_access
   logging_exclusions    = each.value.logging_exclusions
+  logging_settings      = each.value.logging_settings
   logging_sinks         = each.value.logging_sinks
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings

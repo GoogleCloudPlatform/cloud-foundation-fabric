@@ -1,0 +1,79 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.certificate-manager.google_certificate_manager_certificate.certificates["my-certificate-1"]:
+    description: null
+    labels: null
+    location: global
+    managed: []
+    name: my-certificate-1
+    project: project-id
+    scope: null
+    self_managed:
+    - certificate_pem: null
+      private_key_pem: null
+    timeouts: null
+  module.certificate-manager.google_certificate_manager_certificate_map.map[0]:
+    description: My certificate map
+    labels: null
+    name: my-certificate-map
+    project: project-id
+    timeouts: null
+  module.certificate-manager.google_certificate_manager_certificate_map_entry.entries["mydomain-mycompany-org"]:
+    description: null
+    hostname: mydomain.mycompany.org
+    labels: null
+    map: my-certificate-map
+    matcher: null
+    name: mydomain-mycompany-org
+    project: project-id
+    timeouts: null
+  tls_private_key.private_key:
+    algorithm: RSA
+    ecdsa_curve: P224
+    rsa_bits: 2048
+  tls_self_signed_cert.cert:
+    allowed_uses:
+    - key_encipherment
+    - digital_signature
+    - server_auth
+    dns_names: null
+    early_renewal_hours: 0
+    ip_addresses: null
+    is_ca_certificate: false
+    ready_for_renewal: false
+    set_authority_key_id: false
+    set_subject_key_id: false
+    subject:
+    - common_name: example.com
+      country: null
+      locality: null
+      organization: ACME Examples, Inc
+      organizational_unit: null
+      postal_code: null
+      province: null
+      serial_number: null
+      street_address: null
+    uris: null
+    validity_period_hours: 720
+
+counts:
+  google_certificate_manager_certificate: 1
+  google_certificate_manager_certificate_map: 1
+  google_certificate_manager_certificate_map_entry: 1
+  modules: 1
+  resources: 5
+  tls_private_key: 1
+  tls_self_signed_cert: 1

@@ -36,6 +36,16 @@ locals {
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
     kms_keys = local.output_kms_keys
+    vpc_sc = {
+      perimeters = {
+        for k, v in try(module.vpc-sc[0].service_perimeters_regular, {}) :
+        k => v.id
+      }
+      perimeters_bridge = {
+        for k, v in try(module.vpc-sc[0].service_perimeters_bridge, {}) :
+        k => v.id
+      }
+    }
   }
 }
 

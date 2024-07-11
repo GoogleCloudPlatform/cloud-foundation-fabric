@@ -73,16 +73,16 @@ variable "cluster_autoscaling" {
       # add validation rule to ensure only one is present if upgrade settings is defined
     }))
     cpu_limits = optional(object({
-      min = number
+      min = optional(number, 0)
       max = number
     }))
     mem_limits = optional(object({
-      min = number
+      min = optional(number, 0)
       max = number
     }))
-    gpu_resources = optional(list(object({
+    accelerator_resources = optional(list(object({
       resource_type = string
-      min           = number
+      min           = optional(number, 0)
       max           = number
     })))
   })
@@ -162,6 +162,7 @@ variable "enable_addons" {
     }))
     kalm           = optional(bool, false)
     network_policy = optional(bool, false)
+    stateful_ha    = optional(bool, false)
   })
   default = {
     horizontal_pod_autoscaling = true
@@ -314,7 +315,6 @@ variable "monitoring_config" {
     advanced_datapath_observability = optional(object({
       enable_metrics = bool
       enable_relay   = optional(bool)
-      relay_mode     = optional(string)
     }))
   })
   default  = {}
@@ -421,9 +421,10 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    network                = string
-    subnetwork             = string
-    master_ipv4_cidr_block = optional(string)
+    network                    = string
+    subnetwork                 = string
+    master_ipv4_cidr_block     = optional(string)
+    master_endpoint_subnetwork = optional(string)
     secondary_range_blocks = optional(object({
       pods     = string
       services = string
@@ -432,6 +433,7 @@ variable "vpc_config" {
       pods     = optional(string, "pods")
       services = optional(string, "services")
     }))
+    additional_ranges        = optional(list(string))
     master_authorized_ranges = optional(map(string))
     stack_type               = optional(string)
   })

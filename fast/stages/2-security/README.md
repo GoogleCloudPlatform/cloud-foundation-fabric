@@ -242,7 +242,7 @@ Some references that might be useful in setting up this stage:
 | [folder_ids](variables-fast.tf#L45) | Folder name => id mappings, the 'security' folder name must exist. | <code title="object&#40;&#123;&#10;  security &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
 | [organization](variables-fast.tf#L63) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables-fast.tf#L73) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [service_accounts](variables-fast.tf#L97) | Automation service accounts that can assign the encrypt/decrypt roles on keys. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [service_accounts](variables-fast.tf#L97) | Automation service accounts that can assign the encrypt/decrypt roles on keys. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  project-factory      &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
 | [access_policy](variables-fast.tf#L17) | Access policy id for tenant-level VPC-SC configurations. | <code>number</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 | [essential_contacts](variables.tf#L17) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
 | [factories_config](variables.tf#L23) | Paths to folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    access_levels       &#61; optional&#40;string, &#34;data&#47;vpc-sc&#47;access-levels&#34;&#41;&#10;    egress_policies     &#61; optional&#40;string, &#34;data&#47;vpc-sc&#47;egress-policies&#34;&#41;&#10;    ingress_policies    &#61; optional&#40;string, &#34;data&#47;vpc-sc&#47;ingress-policies&#34;&#41;&#10;    restricted_services &#61; optional&#40;string, &#34;data&#47;vpc-sc&#47;restricted-services.yaml&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -256,7 +256,7 @@ Some references that might be useful in setting up this stage:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [kms_keys](outputs.tf#L55) | KMS key ids. |  |  |
-| [tfvars](outputs.tf#L60) | Terraform variable files for the following stages. | ✓ |  |
-| [vpc_sc_perimeter_default](outputs.tf#L66) | Raw default perimeter resource. | ✓ |  |
+| [kms_keys](outputs.tf#L65) | KMS key ids. |  |  |
+| [tfvars](outputs.tf#L70) | Terraform variable files for the following stages. | ✓ |  |
+| [vpc_sc_perimeter_default](outputs.tf#L76) | Raw default perimeter resource. | ✓ |  |
 <!-- END TFDOC -->

@@ -22,7 +22,10 @@ module "secret-manager" {
   }
   iam = {
     credentials = {
-      "roles/secretmanager.secretAccessor" = ["serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"]
+      "roles/secretmanager.secretAccessor" = [
+        "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
+        "serviceAccount:${var.project_id}@appspot.gserviceaccount.com",
+      ]
     }
   }
   versions = {

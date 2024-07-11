@@ -62,6 +62,12 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    project_factory = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
     project_factory_dev = optional(object({
       name              = string
       type              = string
@@ -92,22 +98,18 @@ variable "cicd_repositories" {
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || (
-        try(v.identity_provider, null) != null
-        ||
-        try(v.type, null) == "sourcerepo"
-      )
+      v == null || try(v.identity_provider, null) != null
     ])
-    error_message = "Non-null repositories need a non-null provider unless type is 'sourcerepo'."
+    error_message = "Non-null repositories need a non-null provider."
   }
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["github", "gitlab", "sourcerepo"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab"], coalesce(try(v.type, null), "null"))
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github' 'gitlab' or 'sourcerepo'."
+    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
   }
 }
 
@@ -198,17 +200,70 @@ variable "top_level_folders" {
       enable                      = optional(bool, true)
       sa_impersonation_principals = optional(list(string), [])
     }), {})
-    contacts              = optional(map(any), {})
-    firewall_policy       = optional(map(any))
-    logging_data_access   = optional(map(any), {})
-    logging_exclusions    = optional(map(any), {})
-    logging_sinks         = optional(map(any), {})
-    iam                   = optional(map(any), {})
-    iam_bindings          = optional(map(any), {})
-    iam_bindings_additive = optional(map(any), {})
-    iam_by_principals     = optional(map(any), {})
-    org_policies          = optional(map(any), {})
-    tag_bindings          = optional(map(any), {})
+    contacts = optional(map(list(string)), {})
+    firewall_policy = optional(object({
+      name   = string
+      policy = string
+    }))
+    logging_data_access = optional(map(map(list(string))), {})
+    logging_exclusions  = optional(map(string), {})
+    logging_settings = optional(object({
+      disable_default_sink = optional(bool)
+      storage_location     = optional(string)
+    }))
+    logging_sinks = optional(map(object({
+      bq_partitioned_table = optional(bool, false)
+      description          = optional(string)
+      destination          = string
+      disabled             = optional(bool, false)
+      exclusions           = optional(map(string), {})
+      filter               = optional(string)
+      iam                  = optional(bool, true)
+      include_children     = optional(bool, true)
+      type                 = string
+    })), {})
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_by_principals = optional(map(list(string)), {})
+    org_policies = optional(map(object({
+      inherit_from_parent = optional(bool) # for list policies only.
+      reset               = optional(bool)
+      rules = optional(list(object({
+        allow = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        deny = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        enforce = optional(bool) # for boolean policies only.
+        condition = optional(object({
+          description = optional(string)
+          expression  = optional(string)
+          location    = optional(string)
+          title       = optional(string)
+        }), {})
+      })), [])
+    })), {})
+    tag_bindings = optional(map(string), {})
   }))
   nullable = false
   default  = {}

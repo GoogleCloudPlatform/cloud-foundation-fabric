@@ -46,6 +46,7 @@ module "dev-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-dev, null),
+      try(local.service_accounts.project-factory, null),
       try(local.service_accounts.project-factory-dev, null),
       try(local.service_accounts.project-factory-prod, null),
     ])
@@ -56,6 +57,7 @@ module "dev-spoke-project" {
       role = "roles/resourcemanager.projectIamAdmin"
       members = compact([
         try(local.service_accounts.data-platform-dev, null),
+        try(local.service_accounts.project-factory, null),
         try(local.service_accounts.project-factory-dev, null),
         try(local.service_accounts.project-factory-prod, null),
         try(local.service_accounts.gke-dev, null),

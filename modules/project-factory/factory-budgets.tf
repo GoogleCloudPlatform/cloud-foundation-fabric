@@ -51,7 +51,7 @@ locals {
           try(v.projects, []),
           [
             for p in lookup(local.project_budgets, k, []) :
-            "projects/${module.projects[p].project_id}"
+            "projects/${module.projects[p].number}"
           ]
         )
         resource_ancestors = try(v.filter.resource_ancestors, null)

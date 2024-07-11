@@ -15,15 +15,12 @@
  */
 
 locals {
-  # convenience flags that express where billing account resides
-  automation_resman_sa = try(
-    data.google_client_openid_userinfo.provider_identity[0].email, null
-  )
-  automation_resman_sa_iam = (
-    local.automation_resman_sa == null
-    ? []
-    : ["serviceAccount:${local.automation_resman_sa}"]
-  )
+  # leaving this here to document how to get self identity in a stage
+
+  # automation_resman_sa = try(
+  #   data.google_client_openid_userinfo.provider_identity[0].email, null
+  # )
+
   # service accounts that receive additional grants on networking/security
   branch_optional_sa_lists = {
     dp-dev    = compact([try(module.branch-dp-dev-sa[0].iam_email, "")])
@@ -32,6 +29,7 @@ locals {
     gcve-prod = compact([try(module.branch-gcve-prod-sa[0].iam_email, "")])
     gke-dev   = compact([try(module.branch-gke-dev-sa[0].iam_email, "")])
     gke-prod  = compact([try(module.branch-gke-prod-sa[0].iam_email, "")])
+    pf        = compact([try(module.branch-pf-sa[0].iam_email, "")])
     pf-dev    = compact([try(module.branch-pf-dev-sa[0].iam_email, "")])
     pf-prod   = compact([try(module.branch-pf-prod-sa[0].iam_email, "")])
   }
@@ -42,6 +40,7 @@ locals {
     gcve-prod = compact([try(module.branch-gcve-prod-r-sa[0].iam_email, "")])
     gke-dev   = compact([try(module.branch-gke-dev-r-sa[0].iam_email, "")])
     gke-prod  = compact([try(module.branch-gke-prod-r-sa[0].iam_email, "")])
+    pf        = compact([try(module.branch-pf-r-sa[0].iam_email, "")])
     pf-dev    = compact([try(module.branch-pf-dev-r-sa[0].iam_email, "")])
     pf-prod   = compact([try(module.branch-pf-prod-r-sa[0].iam_email, "")])
   }
@@ -50,13 +49,9 @@ locals {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
       v != null &&
-      (
-        try(v.type, null) == "sourcerepo"
-        ||
-        contains(
-          keys(local.identity_providers),
-          coalesce(try(v.identity_provider, null), ":")
-        )
+      contains(
+        keys(local.identity_providers),
+        coalesce(try(v.identity_provider, null), ":")
       ) &&
       fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
     )
@@ -113,6 +108,6 @@ locals {
   )
 }
 
-data "google_client_openid_userinfo" "provider_identity" {
-  count = length(local.cicd_repositories) > 0 ? 1 : 0
-}
+# data "google_client_openid_userinfo" "provider_identity" {
+#   count = length(local.cicd_repositories) > 0 ? 1 : 0
+# }

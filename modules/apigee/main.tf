@@ -54,12 +54,13 @@ resource "google_apigee_envgroup" "envgroups" {
 }
 
 resource "google_apigee_environment" "environments" {
-  for_each        = var.environments
-  api_proxy_type  = each.value.api_proxy_type
-  deployment_type = each.value.deployment_type
-  description     = each.value.description
-  display_name    = each.value.display_name
-  name            = each.key
+  for_each          = var.environments
+  api_proxy_type    = each.value.api_proxy_type
+  deployment_type   = each.value.deployment_type
+  description       = each.value.description
+  display_name      = each.value.display_name
+  forward_proxy_uri = each.value.forward_proxy_uri
+  name              = each.key
   dynamic "node_config" {
     for_each = try(each.value.node_config, null) != null ? [""] : []
     content {

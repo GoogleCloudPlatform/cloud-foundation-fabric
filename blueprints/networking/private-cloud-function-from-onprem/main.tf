@@ -184,8 +184,7 @@ module "function-hello" {
   bucket_name      = "${var.name}-tf-cf-deploy"
   ingress_settings = "ALLOW_INTERNAL_ONLY"
   bundle_config = {
-    source_dir  = "${path.module}/assets"
-    output_path = "bundle.zip"
+    path = "${path.module}/assets"
   }
   bucket_config = {
     location = var.region

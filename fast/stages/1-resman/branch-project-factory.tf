@@ -18,6 +18,26 @@
 
 # automation service accounts
 
+module "branch-pf-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "resman-pf-0"
+  display_name = "Terraform project factory main service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-sa-cicd[0].iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+  }
+}
+
 module "branch-pf-dev-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.project_factory ? 1 : 0
@@ -60,6 +80,26 @@ module "branch-pf-prod-sa" {
 
 # automation read-only service accounts
 
+module "branch-pf-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "resman-pf-0r"
+  display_name = "Terraform project factory main service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-r-sa-cicd[0].iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
 module "branch-pf-dev-r-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.project_factory ? 1 : 0
@@ -101,6 +141,21 @@ module "branch-pf-prod-r-sa" {
 }
 
 # automation buckets
+
+module "branch-pf-gcs" {
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.project_factory ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "resman-pf-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin"  = [module.branch-pf-sa[0].iam_email]
+    "roles/storage.objectViewer" = [module.branch-pf-r-sa[0].iam_email]
+  }
+}
 
 module "branch-pf-dev-gcs" {
   source        = "../../../modules/gcs"

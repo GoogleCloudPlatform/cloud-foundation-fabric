@@ -73,8 +73,10 @@ module "cloud-function" {
   }
   build_worker_pool = var.cloud_function_config.build_worker_pool_id
   bundle_config = {
-    source_dir  = var.cloud_function_config.source_dir
-    output_path = var.cloud_function_config.bundle_path
+    path = var.cloud_function_config.source_dir
+    folder_options = {
+      archive_path = var.cloud_function_config.bundle_path
+    }
   }
   environment_variables = (
     var.cloud_function_config.debug != true ? {} : { DEBUG = "1" }
@@ -145,8 +147,10 @@ module "cloud-function-v2" {
   }
   build_worker_pool = var.cloud_function_config.build_worker_pool_id
   bundle_config = {
-    source_dir  = var.cloud_function_config.source_dir
-    output_path = var.cloud_function_config.bundle_path
+    path = var.cloud_function_config.source_dir
+    folder_options = {
+      archive_path = var.cloud_function_config.bundle_path
+    }
   }
   environment_variables = (
     var.cloud_function_config.debug != true ? {} : { DEBUG = "1" }

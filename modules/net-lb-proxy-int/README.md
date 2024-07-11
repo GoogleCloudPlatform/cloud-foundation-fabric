@@ -16,6 +16,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Internet NEG creation](#internet-neg-creation)
+- [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -198,7 +199,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=zonal-neg.yaml
 ```
 
 #### Hybrid NEG creation
@@ -312,6 +313,8 @@ module "ilb-l7" {
 # tftest modules=1 resources=6 inventory=internet-neg.yaml e2e
 ```
 
+## Deploying changes to load balancer configurations
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

@@ -23,8 +23,7 @@ module "instance_monitor_function" {
   bucket_config = {
   }
   bundle_config = {
-    source_dir  = "${path.module}/functions/instance-monitor"
-    output_path = "bundle.zip"
+    path = "${path.module}/functions/instance-monitor"
   }
   function_config = {
     entry_point = "writeMetric"

@@ -1,6 +1,6 @@
 # Deploy a batch system using Kueue
 
-This tutorial shows you how to deploy a batch system using Kueue to perform Job queueing on Google Kubernetes Engine (GKE) using Terraform. 
+This tutorial shows you how to deploy a batch system using Kueue to perform Job queueing on Google Kubernetes Engine (GKE) using Terraform.
 
 Jobs are applications that run to completion, such as machine learning, rendering, simulation, analytics, CI/CD, and similar workloads.
 
@@ -15,7 +15,7 @@ Kueue has the following characteristics:
 * It can integrate with other job APIs.
 * Kueue refers to jobs defined with any API as Workloads, to avoid the confusion with the specific Kubernetes Job API.
 
-When working with Kueue there are a few concepts that ome needs to be familiar with:
+When working with Kueue there are a few concepts that one needs to be familiar with:
 
 * ResourceFlavour
 
@@ -30,7 +30,7 @@ When working with Kueue there are a few concepts that ome needs to be familiar w
     A namespaced resource that groups closely related workloads belonging to a single tenant.
 
 * Workload
-    
+
     An application that will run to completion. It is the unit of admission in Kueue. Sometimes referred to as job
 
 Kueue refers to jobs defined with any API as Workloads, to avoid the confusion with the specific Kubernetes Job API.
@@ -59,12 +59,21 @@ To get started, click Start.
 
 <walkthrough-project-setup billing="true"></walkthrough-project-setup>
 
+## Install Terraform 1.7.4+ version
+Install recent version of Terraform by executing following commands:
+
+```sh
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+```
+
 ## Create the Autopilot GKE cluster
 
 1. Change to the ```autopilot-cluster``` directory.
 
     ```bash
-    cd autopilot-cluster 
+    cd autopilot-cluster
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
@@ -83,7 +92,7 @@ cluster_name   = "gke-patterns-cluster"
 cluster_create = {
   deletion_protection = false
   labels = {
-    pattern = "kafka"
+    pattern = "batch"
   }
 }
 region         = "europe-west1"
@@ -121,7 +130,7 @@ vpc_create = {
 1. Change to the ```patterns/batch``` directory.
 
     ```bash
-    cd ../batch 
+    cd ../batch
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.

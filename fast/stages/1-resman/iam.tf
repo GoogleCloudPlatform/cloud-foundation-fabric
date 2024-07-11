@@ -72,6 +72,14 @@ locals {
     },
     # optional billing roles for project factory
     local.billing_mode != "org" || !var.fast_features.project_factory ? {} : {
+      sa_pf_billing = {
+        member = module.branch-pf-sa[0].iam_email
+        role   = "roles/billing.user"
+      }
+      sa_pf_costs_manager = {
+        member = module.branch-pf-sa[0].iam_email
+        role   = "roles/billing.costsManager"
+      }
       sa_pf_dev_billing = {
         member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/billing.user"
@@ -90,8 +98,19 @@ locals {
       }
     },
     # scoped org policy admin grants for project factory
-    # TODO: exclude security and networking
+    # TODO: change to use context and environment tags, and tag bindings in stage 2s
     !var.fast_features.project_factory || var.root_node != null ? {} : {
+      sa_pf_conditional_org_policy = {
+        member = module.branch-pf-sa[0].iam_email
+        role   = "roles/orgpolicy.policyAdmin"
+        condition = {
+          title       = "org_policy_tag_pf_scoped"
+          description = "Org policy tag scoped grant for project factory main."
+          expression  = <<-END
+            resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
+          END
+        }
+      }
       sa_pf_dev_conditional_org_policy = {
         member = module.branch-pf-dev-sa[0].iam_email
         role   = "roles/orgpolicy.policyAdmin"

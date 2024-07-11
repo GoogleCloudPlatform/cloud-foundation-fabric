@@ -17,8 +17,9 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location                  = optional(string)
+    force_destroy             = optional(bool)
     lifecycle_delete_age_days = optional(number)
+    location                  = optional(string)
   })
   default = null
 }
@@ -42,12 +43,36 @@ variable "build_worker_pool" {
 }
 
 variable "bundle_config" {
-  description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
+  description = "Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified."
   type = object({
-    source_dir  = string
-    output_path = optional(string)
-    excludes    = optional(list(string))
+    path = string
+    folder_options = optional(object({
+      archive_path = optional(string)
+      excludes     = optional(list(string))
+    }), {})
   })
+  nullable = false
+  validation {
+    condition = (
+      var.bundle_config.path != null && (
+        # GCS object
+        (
+          startswith(var.bundle_config.path, "gs://") &&
+          endswith(var.bundle_config.path, ".zip")
+        )
+        ||
+        # local folder
+        length(fileset(pathexpand(var.bundle_config.path), "**/*")) > 0
+        ||
+        # local ZIP archive
+        (
+          try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+          endswith(var.bundle_config.path, ".zip")
+        )
+      )
+    )
+    error_message = "Bundle path must be set to a GCS object URI, a local folder or a local zip file."
+  }
 }
 
 variable "description" {
@@ -152,7 +177,7 @@ variable "secrets" {
   description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
   type = map(object({
     is_volume  = bool
-    project_id = number
+    project_id = string
     secret     = string
     versions   = list(string)
   }))

@@ -44,15 +44,26 @@ variable "config_source_subnetworks" {
     subnetworks = optional(list(object({
       self_link        = string
       all_ranges       = optional(bool, true)
+      primary_range    = optional(bool, false)
       secondary_ranges = optional(list(string))
     })), [])
   })
   nullable = false
   default  = {}
-}
-
-output "foo" {
-  value = var.config_source_subnetworks.subnetworks
+  validation {
+    condition = alltrue([
+      for s in var.config_source_subnetworks.subnetworks :
+      (s.all_ranges == true) != ((s.primary_range == true) || try(length(s.secondary_ranges), 0) > 0)
+    ])
+    error_message = "Either config_source_subnetworks.subnetworks.all_ranges is true or one of primary_range or secondary_ranges must be defined."
+  }
+  validation {
+    condition = (
+      (var.config_source_subnetworks.all == true ||
+      var.config_source_subnetworks.primary_ranges_only == true) != (length(try(var.config_source_subnetworks.subnetworks, [])) > 0)
+    )
+    error_message = "Cannot use config_source_subnetworks.all and config_source_subnetworks.primary_ranges_only together with config_source_subnetworks.subnetworks."
+  }
 }
 
 variable "config_timeouts" {
@@ -66,6 +77,25 @@ variable "config_timeouts" {
   })
   default  = {}
   nullable = false
+}
+
+variable "endpoint_types" {
+  description = "Specifies the endpoint Types supported by the NAT Gateway. Supported values include: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG, ENDPOINT_TYPE_MANAGED_PROXY_LB."
+  type        = list(string)
+  default     = null
+  validation {
+    condition = (var.endpoint_types == null ? true : setunion([
+      "ENDPOINT_TYPE_VM",
+      "ENDPOINT_TYPE_SWG",
+      "ENDPOINT_TYPE_MANAGED_PROXY_LB",
+      ], var.endpoint_types) == toset([
+      "ENDPOINT_TYPE_VM",
+      "ENDPOINT_TYPE_SWG",
+      "ENDPOINT_TYPE_MANAGED_PROXY_LB",
+      ])
+    )
+    error_message = "Provide one of: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG or ENDPOINT_TYPE_MANAGED_PROXY_LB as endpoint_types"
+  }
 }
 
 variable "logging_filter" {

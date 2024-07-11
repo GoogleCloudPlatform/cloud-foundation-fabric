@@ -108,13 +108,15 @@ resource "google_compute_region_target_http_proxy" "default" {
 }
 
 resource "google_compute_region_target_https_proxy" "default" {
-  count            = var.protocol == "HTTPS" ? 1 : 0
-  project          = var.project_id
-  region           = var.region
-  name             = var.name
-  description      = var.description
-  ssl_certificates = local.proxy_ssl_certificates
-  url_map          = google_compute_region_url_map.default.id
+  count                            = var.protocol == "HTTPS" ? 1 : 0
+  project                          = var.project_id
+  region                           = var.region
+  name                             = var.name
+  description                      = var.description
+  ssl_certificates                 = local.proxy_ssl_certificates
+  ssl_policy                       = var.https_proxy_config.ssl_policy
+  url_map                          = google_compute_region_url_map.default.id
+  certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
 }
 
 resource "google_compute_service_attachment" "default" {
@@ -167,7 +169,7 @@ resource "google_compute_network_endpoint_group" "default" {
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : try(each.value.subnetwork, var.vpc_config.subnetwork)
+    : coalesce(each.value.subnetwork, var.vpc_config.subnetwork)
   )
 }
 

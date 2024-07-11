@@ -3,7 +3,7 @@
 This blueprint presents an opinionated architecture to handle different Google VMware Engine deployment scenarios: from a simple single region private cloud to multi-region private clouds spread across different locations. The general idea behind this blueprint is to deploy a single project hosting one or more GCVE private clouds connected to a shared VMware Engine Network (VEN).
 Optionally this blueprint can deploy the VMWare Engine Network peerings to pre-existing VPCs.
 
-Multiple deployments of this blueprint allow the user to achieve more complex design solutions as for example GCVE private clouds deployed on different projects or connected to indipendent VMWare Engine Networks.
+Multiple deployments of this blueprint allow the user to achieve more complex design solutions as for example GCVE private clouds deployed on different projects or connected to independent VMWare Engine Networks.
 
 This blueprint is used as part of the [FAST GCVE stage](../../../fast/stages/3-gcve/) but it can also be used independently if desired.
 
@@ -30,7 +30,7 @@ Based on our GCP best practices, a GCVE private cloud relies on user groups to a
 
 ### Network
 
-This blueprints expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [Networking with separated single environment](../../../fast/stages/2-networking-d-separate-envs)) or from an external source.
+This blueprints expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [Networking with separated single environment](../../../fast/stages/2-networking-c-separate-envs)) or from an external source.
 The blueprint can optionally configure the [VMware Engine Network peering](https://cloud.google.com/vmware-engine/docs/networking/peer-vpc-network) on the peer VPC by granting the following permissions on the project that hosts the VPC:
 - vmwareengine.networkPeerings.create
 - vmwareengine.networkPeerings.get

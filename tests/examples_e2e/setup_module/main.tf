@@ -15,13 +15,17 @@
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   jit_services = [
+    "alloydb.googleapis.com",  # no permissions granted by default
     "storage.googleapis.com",  # no permissions granted by default
     "sqladmin.googleapis.com", # roles/cloudsql.serviceAgent
   ]
   services = [
     # trimmed down list of services, to be extended as needed
     "alloydb.googleapis.com",
+    "analyticshub.googleapis.com",
     "apigee.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "assuredworkloads.googleapis.com",
     "bigquery.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
@@ -29,10 +33,16 @@ locals {
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
+    "dataform.googleapis.com",
+    "dataplex.googleapis.com",
     "dataproc.googleapis.com",
     "dns.googleapis.com",
     "eventarc.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "networkconnectivity.googleapis.com",
+    "pubsub.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "servicenetworking.googleapis.com",

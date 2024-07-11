@@ -1,0 +1,104 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+repos:
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.86.0
+  hooks:
+  - id: terraform_fmt
+  - id: terraform_tflint
+    args:
+    - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+    files: ^modules/
+    exclude: (tests/fixtures/|tools/lockfile/)
+  # - id: terraform_validate
+  #   args:
+  #   - --hook-config=--retry-once-with-cleanup=true
+- repo: local
+  hooks:
+  - id: cff-readme
+    name: Regenerate README.md with tfdoc.py
+    entry: tools/pre-commit-tfdoc.sh
+    language: script
+    #types: [terraform]
+    files: ^(modules|fast).*(tf|README.md)$
+    pass_filenames: true
+    require_serial: true
+  - id: licenese
+    name: Check license presence and other boilerplate checks
+    language: system
+    entry: tools/check_boilerplate.py
+    pass_filenames: true
+    args:
+    -  --scan-files
+  - id: tflint-fast
+    name: Checking FAST code with tflint
+    entry: tools/tflint-fast.py
+    language: system
+    pass_filenames: false
+    require_serial: true
+    files: ^fast/.*tf
+  - id: versions
+    name: Align Terraform provider versions
+    language: script
+    files: (versions.tf|^default-versions.tf)$
+    pass_filenames: false
+    entry: /usr/bin/find . -type f -name 'versions.tf' -exec cp default-versions.tf {} \;
+  - id: validate_metadata
+    name: Validate blueprints metadata
+    language: system
+    pass_filenames: false
+    files: ^blueprints
+    entry: tools/validate_metadata.py -v --failed-only blueprints
+  - id: check-names
+    name: Check name lengths for FAST
+    language: system
+    pass_filenames: false
+    files: ^fast
+    entry: tools/check_names.py --prefix-length=10 --failed-only fast/stages
+  - id: check-links
+    name: Check links in markdown files
+    language: system
+    entry: tools/check_links.py --no-show-summary --scan-files
+
+# - repo: https://github.com/adrienverge/yamllint
+#   rev: v1.34.0
+#   hooks:
+#   - id: yamllint
+#     args: [-c=.yamllint, --no-warnings]
+#     exclude: (/templates/|modules/cloud-config-container/)
+
+- repo: https://github.com/jumanjihouse/pre-commit-hooks
+  rev: "3.0.0"
+  hooks:
+  - id: script-must-have-extension
+  - id: shellcheck
+  - id: shfmt
+    exclude: ".*tpl"
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: check-yaml
+    args:
+    - --allow-multiple-documents
+    exclude: (/templates/|modules/cloud-config-container/)
+
+- repo: https://github.com/google/yapf/
+  rev: v0.40.2
+  hooks:
+  - id: yapf

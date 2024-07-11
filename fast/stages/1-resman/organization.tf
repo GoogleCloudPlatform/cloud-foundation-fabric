@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,22 +47,50 @@ module "organization" {
   tags = merge(local.tags, {
     (var.tag_names.context) = {
       description = "Resource management context."
-      iam         = {}
+      iam         = try(local.tags.context.iam, {})
       values = {
-        data       = {}
-        gke        = {}
-        gcve       = {}
-        networking = {}
-        sandbox    = {}
-        security   = {}
+        data = {
+          iam         = try(local.tags.context.values.data.iam, {})
+          description = try(local.tags.context.values.data.description, null)
+        }
+        gke = {
+          iam         = try(local.tags.context.values.gke.iam, {})
+          description = try(local.tags.context.values.gke.description, null)
+        }
+        gcve = {
+          iam         = try(local.tags.context.values.gcve.iam, {})
+          description = try(local.tags.context.values.gcve.description, null)
+        }
+        networking = {
+          iam         = try(local.tags.context.values.networking.iam, {})
+          description = try(local.tags.context.values.networking.description, null)
+        }
+        project-factory = {
+          iam         = try(local.tags.context.values.project-factory.iam, {})
+          description = try(local.tags.context.values.project-factory.description, null)
+        }
+        sandbox = {
+          iam         = try(local.tags.context.values.sandbox.iam, {})
+          description = try(local.tags.context.values.sandbox.description, null)
+        }
+        security = {
+          iam         = try(local.tags.context.values.security.iam, {})
+          description = try(local.tags.context.values.security.description, null)
+        }
       }
     }
     (var.tag_names.environment) = {
       description = "Environment definition."
-      iam         = {}
+      iam         = try(local.tags.environment.iam, {})
       values = {
-        development = {}
-        production  = {}
+        development = {
+          iam         = try(local.tags.environment.values.development.iam, {})
+          description = try(local.tags.environment.values.development.description, null)
+        }
+        production = {
+          iam         = try(local.tags.environment.values.production.iam, {})
+          description = try(local.tags.environment.values.production.description, null)
+        }
       }
     }
   })

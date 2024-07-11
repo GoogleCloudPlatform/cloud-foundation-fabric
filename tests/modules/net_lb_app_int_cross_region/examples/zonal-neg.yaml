@@ -1,0 +1,136 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_address.address_ew1:
+    address: 10.0.0.10
+    address_type: INTERNAL
+    name: neg-test-ew1
+    project: project-id
+    region: europe-west1
+    subnetwork: subnet_self_link
+  google_compute_address.address_ew4:
+    address: 10.0.0.11
+    address_type: INTERNAL
+    name: neg-test-ew4
+    project: project-id
+    region: europe-west4
+    subnetwork: subnet_self_link
+  module.ilb-l7.google_compute_backend_service.default["default"]:
+    backend:
+    - balancing_mode: RATE
+      capacity_scaler: 1
+      description: Terraform managed.
+      max_rate_per_endpoint: 1
+    - balancing_mode: RATE
+      capacity_scaler: 1
+      description: Terraform managed.
+      max_rate_per_endpoint: 1
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    consistent_hash: []
+    description: Terraform managed.
+    iap: []
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policies: []
+    name: ilb-test-default
+    outlier_detection: []
+    project: project-id
+    protocol: HTTP
+    security_settings: []
+  module.ilb-l7.google_compute_global_forwarding_rule.forwarding_rules["europe-west1"]:
+    description: Terraform managed.
+    ip_protocol: TCP
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: ilb-test-europe-west1
+    network: projects/xxx/global/networks/aaa
+    port_range: '80'
+    project: project-id
+    subnetwork: subnet_self_link
+  module.ilb-l7.google_compute_global_forwarding_rule.forwarding_rules["europe-west4"]:
+    description: Terraform managed.
+    ip_protocol: TCP
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: ilb-test-europe-west4
+    network: projects/xxx/global/networks/aaa
+    port_range: '80'
+    project: project-id
+    subnetwork: subnet_self_link
+  module.ilb-l7.google_compute_health_check.default["default"]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: ilb-test-default
+    project: project-id
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    unhealthy_threshold: 2
+  module.ilb-l7.google_compute_network_endpoint.default["my-neg-ew1-e-0"]:
+    instance: test-ew1
+    ip_address: 10.0.0.10
+    network_endpoint_group: ilb-test-my-neg-ew1
+    port: 80
+    project: project-id
+    zone: europe-west1-b
+  module.ilb-l7.google_compute_network_endpoint.default["my-neg-ew4-e-0"]:
+    instance: test-ew4
+    ip_address: 10.0.0.11
+    network_endpoint_group: ilb-test-my-neg-ew4
+    port: 80
+    project: project-id
+    zone: europe-west4-b
+  module.ilb-l7.google_compute_network_endpoint_group.default["my-neg-ew1"]:
+    description: Terraform managed.
+    name: ilb-test-my-neg-ew1
+    network: projects/xxx/global/networks/aaa
+    network_endpoint_type: GCE_VM_IP_PORT
+    project: project-id
+    subnetwork: subnet_self_link
+    zone: europe-west1-b
+  module.ilb-l7.google_compute_network_endpoint_group.default["my-neg-ew4"]:
+    description: Terraform managed.
+    name: ilb-test-my-neg-ew4
+    network: projects/xxx/global/networks/aaa
+    network_endpoint_type: GCE_VM_IP_PORT
+    project: project-id
+    subnetwork: subnet_self_link
+    zone: europe-west4-b
+  module.ilb-l7.google_compute_target_http_proxy.default[0]:
+    description: Terraform managed.
+    name: ilb-test
+    project: project-id
+  module.ilb-l7.google_compute_url_map.default:
+    default_route_action: []
+    default_url_redirect: []
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: ilb-test
+    path_matcher: []
+    project: project-id
+    test: []

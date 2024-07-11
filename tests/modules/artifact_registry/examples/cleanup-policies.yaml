@@ -13,7 +13,6 @@
 # limitations under the License.
 
 values:
-values:
   module.registry-docker.google_artifact_registry_repository.registry:
     cleanup_policies:
     - id: keep-tagged-release
@@ -38,7 +37,7 @@ values:
     mode: STANDARD_REPOSITORY
     project: project-id
     repository_id: docker-cleanup-policies
-    
+
 
 counts:
   google_artifact_registry_repository: 1

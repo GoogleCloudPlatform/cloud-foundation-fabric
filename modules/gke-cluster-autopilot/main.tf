@@ -121,6 +121,12 @@ resource "google_container_cluster" "cluster" {
       cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
       stack_type               = var.vpc_config.stack_type
+      dynamic "additional_pod_ranges_config" {
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
+        content {
+          pod_range_names = var.vpc_config.additional_ranges
+        }
+      }
     }
   }
 
@@ -130,6 +136,12 @@ resource "google_container_cluster" "cluster" {
       cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
       stack_type                    = var.vpc_config.stack_type
+      dynamic "additional_pod_ranges_config" {
+        for_each = var.vpc_config.additional_ranges != null ? [""] : []
+        content {
+          pod_range_names = var.vpc_config.additional_ranges
+        }
+      }
     }
   }
 
@@ -263,9 +275,10 @@ resource "google_container_cluster" "cluster" {
       var.private_cluster_config != null ? [""] : []
     )
     content {
-      enable_private_nodes    = true
-      enable_private_endpoint = var.private_cluster_config.enable_private_endpoint
-      master_ipv4_cidr_block  = try(var.vpc_config.master_ipv4_cidr_block, null)
+      enable_private_nodes        = true
+      enable_private_endpoint     = var.private_cluster_config.enable_private_endpoint
+      private_endpoint_subnetwork = try(var.vpc_config.master_endpoint_subnetwork, null)
+      master_ipv4_cidr_block      = try(var.vpc_config.master_ipv4_cidr_block, null)
       master_global_access_config {
         enabled = var.private_cluster_config.master_global_access
       }

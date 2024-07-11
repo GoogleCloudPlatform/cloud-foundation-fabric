@@ -18,22 +18,20 @@ values:
     location: europe-west8
     members:
     - allUsers
-    project: my-project
+    project: project-id
     role: roles/run.invoker
     service: test-cf-http
   module.cf-http.google_cloudfunctions2_function.function: {}
-  module.cf-http.google_storage_bucket_object.bundle:
-    bucket: test-cf-bundles
+  module.cf-http.google_storage_bucket_object.bundle[0]:
+    bucket: bucket
     customer_encryption: []
     detect_md5hash: different hash
-    name: bundle-6f1ece136848fee658e335b05fe2d79d.zip
-    source: bundle.zip
+    name: bundle-95c1b0e5b92dae8333539b1e0ad5173b.zip
+    source: /tmp/bundle-project-id-test-cf-http.zip
 
 counts:
   google_cloud_run_service_iam_binding: 1
   google_cloudfunctions2_function: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 3
-
-
+  resources: 6

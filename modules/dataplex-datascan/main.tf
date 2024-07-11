@@ -203,6 +203,15 @@ resource "google_dataplex_datascan" "datascan" {
             }
           }
 
+          dynamic "sql_assertion" {
+            for_each = (
+              try(rules.value.sql_assertion, null) != null ? [""] : []
+            )
+            content {
+              sql_statement = rules.value.sql_assertion.sql_statement
+            }
+          }
+
         }
       }
     }
@@ -240,10 +249,11 @@ resource "google_dataplex_datascan" "datascan" {
             "uniqueness_expectation",
             "statistic_range_expectation",
             "row_condition_expectation",
-            "table_condition_expectation"
+            "table_condition_expectation",
+            "sql_assertion"
           ], k) && v != null
       ]) == 1])
-      error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
+      error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation', 'sql_assertion']."
     }
   }
 }
