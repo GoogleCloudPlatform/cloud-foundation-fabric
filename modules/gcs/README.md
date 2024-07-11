@@ -37,6 +37,7 @@ module "project" {
   source         = "./fabric/modules/project"
   name           = var.project_id
   project_create = false
+  services       = ["storage.googleapis.com"]
 }
 
 module "kms" {
@@ -123,6 +124,7 @@ module "project" {
   source         = "./fabric/modules/project"
   name           = var.project_id
   project_create = false
+  services       = ["storage.googleapis.com"]
 }
 
 module "bucket-gcs-notification" {
