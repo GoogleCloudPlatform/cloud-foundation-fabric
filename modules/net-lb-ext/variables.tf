@@ -119,6 +119,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    override_name       = optional(string, null)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({
@@ -198,6 +199,12 @@ variable "labels" {
 variable "name" {
   description = "Name used for all resources."
   type        = string
+}
+
+variable "override_name" {
+  description = "Optional override name to specify exact name without changes."
+  type        = string
+  default     = null
 }
 
 variable "project_id" {
