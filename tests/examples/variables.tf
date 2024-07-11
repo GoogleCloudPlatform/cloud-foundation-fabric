@@ -86,6 +86,23 @@ variable "subnet" {
   }
 }
 
+variable "subnets" {
+  default = {
+    primary = {
+      name      = "primary"
+      region    = "europe-west8"
+      cidr      = "10.0.16.0/24"
+      self_link = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary"
+    }
+    secondary = {
+      name      = "secondary"
+      region    = "europe-west89"
+      cidr      = "10.0.16.0/24"
+      self_link = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west9/subnetworks/secondary"
+    }
+  }
+}
+
 variable "subnet_psc_1" {
   default = {
     name      = "subnet_name"

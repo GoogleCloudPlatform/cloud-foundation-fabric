@@ -41,7 +41,22 @@ subnet = {
     region    = "${subnet.region}"
     cidr      = "${subnet.ip_cidr_range}"
     self_link = "${subnet.self_link}"
-  }
+}
+subnets = {
+    primary = {
+      name      = "${subnet.name}"
+      region    = "${subnet.region}"
+      cidr      = "${subnet.ip_cidr_range}"
+      self_link = "${subnet.self_link}"
+    }
+    secondary = {
+      name      = "${subnet_secondary.name}"
+      region    = "${subnet_secondary.region}"
+      cidr      = "${subnet_secondary.ip_cidr_range}"
+      self_link = "${subnet_secondary.self_link}"
+    }
+
+}
 subnet_psc_1 = {
     name      = "${subnet_psc_1.name}"
     region    = "${subnet_psc_1.region}"
