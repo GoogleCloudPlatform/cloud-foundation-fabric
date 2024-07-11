@@ -86,6 +86,7 @@ variable "forwarding_rules_config" {
     address     = optional(string)
     description = optional(string)
     ip_version  = optional(string)
+    override_name = optional(string, null)
     ports       = optional(list(string), null)
     protocol    = optional(string, "TCP")
     subnetwork  = optional(string) # Required for IPv6
@@ -199,12 +200,6 @@ variable "labels" {
 variable "name" {
   description = "Name used for all resources."
   type        = string
-}
-
-variable "override_name" {
-  description = "Optional override name to specify exact name without changes."
-  type        = string
-  default     = null
 }
 
 variable "project_id" {

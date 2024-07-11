@@ -34,7 +34,7 @@ resource "google_compute_forwarding_rule" "default" {
   provider = google-beta
   project  = var.project_id
   region   = var.region
-  name = var.override_name != null ? var.override_name : (
+  name = each.value.override_name != null ? each.value.override_name : (
     each.key == "" ? var.name : "${var.name}-${each.key}"
   )
   description = each.value.description
