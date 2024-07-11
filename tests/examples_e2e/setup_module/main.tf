@@ -91,9 +91,11 @@ resource "google_compute_network" "network" {
   depends_on              = [google_project_service.project_service]
 }
 
-resource "google_compute_subnetwork" "subnetwork" {
+# Primary region networking
+
+resource "google_compute_subnetwork" "primary" {
   ip_cidr_range            = "10.0.16.0/24"
-  name                     = "e2e-test-1"
+  name                     = "e2e-test-primary"
   network                  = google_compute_network.network.name
   project                  = google_project.project.project_id
   private_ip_google_access = true
@@ -108,7 +110,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   }
 }
 
-resource "google_compute_subnetwork" "proxy_only_global" {
+resource "google_compute_subnetwork" "primary_proxy_only_global" {
   project       = google_project.project.project_id
   network       = google_compute_network.network.name
   name          = "proxy-global"
@@ -118,7 +120,7 @@ resource "google_compute_subnetwork" "proxy_only_global" {
   role          = "ACTIVE"
 }
 
-resource "google_compute_subnetwork" "proxy_only_regional" {
+resource "google_compute_subnetwork" "primary_proxy_only_regional" {
   project       = google_project.project.project_id
   network       = google_compute_network.network.name
   name          = "proxy-regional"
@@ -128,7 +130,7 @@ resource "google_compute_subnetwork" "proxy_only_regional" {
   role          = "ACTIVE"
 }
 
-resource "google_compute_subnetwork" "psc" {
+resource "google_compute_subnetwork" "primary_psc" {
   project       = google_project.project.project_id
   network       = google_compute_network.network.name
   name          = "psc-regional"
@@ -136,6 +138,57 @@ resource "google_compute_subnetwork" "psc" {
   ip_cidr_range = "10.0.19.0/24"
   purpose       = "PRIVATE_SERVICE_CONNECT"
 }
+
+
+
+# Secondary region networking
+
+resource "google_compute_subnetwork" "secondary" {
+  ip_cidr_range            = "10.1.16.0/24"
+  name                     = "e2e-test-secondary"
+  network                  = google_compute_network.network.name
+  project                  = google_project.project.project_id
+  private_ip_google_access = true
+  region                   = var.region_secondary
+  secondary_ip_range {
+    range_name    = "pods"
+    ip_cidr_range = "100.69.0.0/16"
+  }
+  secondary_ip_range {
+    range_name    = "services"
+    ip_cidr_range = "100.72.1.0/24"
+  }
+}
+
+resource "google_compute_subnetwork" "secondary_proxy_only_global" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-global"
+  region        = var.region_secondary
+  ip_cidr_range = "10.1.17.0/24"
+  purpose       = "GLOBAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+}
+
+resource "google_compute_subnetwork" "secondary_proxy_only_regional" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-regional"
+  region        = var.region_secondary
+  ip_cidr_range = "10.1.18.0/24"
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+}
+
+resource "google_compute_subnetwork" "secondary_psc" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "psc-regional"
+  region        = var.region_secondary
+  ip_cidr_range = "10.1.19.0/24"
+  purpose       = "PRIVATE_SERVICE_CONNECT"
+}
+
 
 ### PSA ###
 
@@ -224,16 +277,22 @@ resource "local_file" "terraform_tfvars" {
       iam_email = "serviceAccount:${google_service_account.service_account.email}"
     }
     subnet = {
-      name          = google_compute_subnetwork.subnetwork.name
-      region        = google_compute_subnetwork.subnetwork.region
-      ip_cidr_range = google_compute_subnetwork.subnetwork.ip_cidr_range
-      self_link     = google_compute_subnetwork.subnetwork.self_link
+      name          = google_compute_subnetwork.primary.name
+      region        = google_compute_subnetwork.primary.region
+      ip_cidr_range = google_compute_subnetwork.primary.ip_cidr_range
+      self_link     = google_compute_subnetwork.primary.self_link
+    }
+    subnet_secondary = {
+      name          = google_compute_subnetwork.secondary.name
+      region        = google_compute_subnetwork.secondary.region
+      ip_cidr_range = google_compute_subnetwork.secondary.ip_cidr_range
+      self_link     = google_compute_subnetwork.secondary.self_link
     }
     subnet_psc_1 = {
-      name          = google_compute_subnetwork.psc.name
-      region        = google_compute_subnetwork.psc.region
-      ip_cidr_range = google_compute_subnetwork.psc.ip_cidr_range
-      self_link     = google_compute_subnetwork.psc.self_link
+      name          = google_compute_subnetwork.primary_psc.name
+      region        = google_compute_subnetwork.primary_psc.region
+      ip_cidr_range = google_compute_subnetwork.primary_psc.ip_cidr_range
+      self_link     = google_compute_subnetwork.primary_psc.self_link
     }
     vpc = {
       name      = google_compute_network.network.name
