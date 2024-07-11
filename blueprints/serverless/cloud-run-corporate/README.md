@@ -296,5 +296,5 @@ module "test" {
   custom_domain = "cloud-run-corporate.example.org"
 }
 
-# tftest modules=14 resources=55
+# tftest modules=14 resources=57
 ```
