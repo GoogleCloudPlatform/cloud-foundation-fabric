@@ -196,7 +196,7 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 module "cf-http" {
   source            = "./fabric/modules/cloud-function-v2"
   project_id        = var.project_id
-  region            = var.region
+  region            = var.regions.secondary
   name              = "test-cf-http"
   bucket_name       = var.bucket
   build_worker_pool = google_cloudbuild_worker_pool.pool.id
