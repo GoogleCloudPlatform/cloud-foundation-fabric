@@ -15,9 +15,10 @@
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   jit_services = [
-    "alloydb.googleapis.com",  # no permissions granted by default
-    "storage.googleapis.com",  # no permissions granted by default
-    "sqladmin.googleapis.com", # roles/cloudsql.serviceAgent
+    "alloydb.googleapis.com",          # no permissions granted by default
+    "artifactregistry.googleapis.com", # roles/artifactregistry.serviceAgent
+    "storage.googleapis.com",          # no permissions granted by default
+    "sqladmin.googleapis.com",         # roles/cloudsql.serviceAgent
   ]
   services = [
     # trimmed down list of services, to be extended as needed
@@ -241,6 +242,13 @@ resource "google_project_iam_binding" "cloudsql_agent" {
   members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-cloud-sql.iam.gserviceaccount.com"]
   project    = google_project.project.project_id
   role       = "roles/cloudsql.serviceAgent"
+  depends_on = [google_project_service_identity.jit_si]
+}
+
+resource "google_project_iam_binding" "artifactregistry_agent" {
+  members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-artifactregistry.iam.gserviceaccount.com"]
+  project    = google_project.project.project_id
+  role       = "roles/artifactregistry.serviceAgent"
   depends_on = [google_project_service_identity.jit_si]
 }
 
