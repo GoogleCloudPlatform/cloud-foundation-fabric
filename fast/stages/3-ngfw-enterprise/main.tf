@@ -17,34 +17,24 @@
 # tfdoc:file:description Next-Generation Firewall Enterprise configuration.
 
 locals {
-  # Renders to
-  # {
-  #   euw1a = {
-  #     region = europe-west1
-  #     zone   = europe-west1-a
-  #   },
-  #   ...
-  # }
-  ngfw_endpoint_locations = merge(
-    {
-      for zone in var.ngfw_enterprise_config.endpoint_primary_region_zones
-      : "${local.region_shortnames[var.regions.primary]}${zone}"
-      => { region = var.regions.primary, zone = "${var.regions.primary}-${zone}" }
-    },
-    {
-      for zone in var.ngfw_enterprise_config.endpoint_secondary_region_zones
-      : "${local.region_shortnames[var.regions.secondary]}${zone}"
-      => { region = var.regions.secondary, zone = "${var.regions.secondary}-${zone}" }
-    }
-  )
+  enabled_vpcs = {
+    dev-spoke-0  = try(var.vpc_self_links.dev-spoke0, null) != null
+    prod-spoke-0 = try(var.vpc_self_links.prod-spoke0, null) != null
+  }
+}
+
+module "landing-project" {
+  source          = "../../../modules/project"
+  billing_account = var.billing_account.id
+  name            = "prod-net-landing-0"
+  parent          = var.folder_ids.networking-prod
+  prefix          = var.prefix
+  project_create  = false
+  services        = ["networksecurity.googleapis.com"]
 }
 
 resource "google_network_security_firewall_endpoint" "firewall_endpoint" {
-  for_each = (
-    var.ngfw_enterprise_config.enabled
-    ? toset(local.ngfw_endpoint_locations)
-    : toset([])
-  )
+  for_each           = toset(var.ngfw_enterprise_config.endpoint_zones)
   name               = "${var.prefix}-ngfw-endpoint-${each.key}"
   parent             = "organizations/${var.organization.id}"
   location           = each.value.zone

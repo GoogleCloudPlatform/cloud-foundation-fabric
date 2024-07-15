@@ -87,17 +87,6 @@ variable "factories_config" {
   }
 }
 
-variable "ngfw_enterprise_config" {
-  description = "NGFW Enterprise configuration."
-  type = object({
-    enabled                         = optional(bool, false)
-    endpoint_primary_region_zones   = optional(set(string), ["a", "b", "c"])
-    endpoint_secondary_region_zones = optional(set(string), ["a", "b", "c"])
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "outputs_location" {
   description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
   type        = string

@@ -34,11 +34,6 @@ module "dev-spoke-project" {
       "vpcaccess.googleapis.com"
     ],
     (
-      var.ngfw_enterprise_config.enabled
-      ? ["networksecurity.googleapis.com"]
-      : []
-    ),
-    (
       var.fast_features.gcve
       ? ["vmwareengine.googleapis.com"]
       : []
@@ -104,67 +99,6 @@ module "dev-spoke-vpc" {
       next_hop_type = "gateway"
       priority      = 1000
     }
-  }
-}
-
-resource "google_network_security_security_profile" "dev_sec_profile" {
-  count    = var.ngfw_enterprise_config.enabled ? 1 : 0
-  name     = "${var.prefix}-dev-sp-0"
-  type     = "THREAT_PREVENTION"
-  parent   = "organizations/${var.organization.id}"
-  location = "global"
-}
-
-resource "google_network_security_security_profile_group" "dev_sec_profile_group" {
-  count                     = var.ngfw_enterprise_config.enabled ? 1 : 0
-  name                      = "${var.prefix}-dev-spg-0"
-  parent                    = "organizations/${var.organization.id}"
-  location                  = "global"
-  description               = "Dev security profile group."
-  threat_prevention_profile = try(google_network_security_security_profile.dev_sec_profile[0].id)
-}
-
-resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_association" {
-  for_each = (
-    var.ngfw_enterprise_config.enabled
-    ? toset(local.ngfw_endpoint_locations)
-    : toset([])
-  )
-  name              = "${var.prefix}-dev-endpoint-association-${each.key}"
-  parent            = module.dev-spoke-project.project_id
-  location          = each.value.zone
-  firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
-  network           = module.dev-spoke-vpc.self_link
-}
-
-module "dev-firewall-policy" {
-  source    = "../../../modules/net-firewall-policy"
-  name      = "${var.prefix}-dev-fw-policy"
-  parent_id = module.dev-spoke-project.project_id
-  security_profile_group_ids = {
-    dev = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.dev_sec_profile_group[0].id, "")}"
-  }
-  attachments = {
-    dev-spoke = module.dev-spoke-vpc.self_link
-  }
-  factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policy-rules/dev/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policy-rules/dev/ingress.yaml"
-  }
-}
-
-module "dev-spoke-firewall" {
-  count      = var.ngfw_enterprise_config.enabled ? 0 : 1
-  source     = "../../../modules/net-vpc-firewall"
-  project_id = module.dev-spoke-project.project_id
-  network    = module.dev-spoke-vpc.name
-  default_rules_config = {
-    disabled = true
-  }
-  factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
   }
 }
 
