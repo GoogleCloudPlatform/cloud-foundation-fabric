@@ -51,4 +51,19 @@ module "folder" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  firewall_policy = {
+    name   = "default"
+    policy = module.firewall-policy-default.id
+  }
 }
+
+module "firewall-policy-default" {
+  source    = "../../../modules/net-firewall-policy"
+  name      = var.factories_config.firewall_policy_name
+  parent_id = module.folder.id
+  factories_config = {
+    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
+    ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
+  }
+}
+

@@ -75,7 +75,9 @@ variable "factories_config" {
     dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
     firewall_policy_name  = optional(string, "net-default")
   })
-  default  = {}
+  default = {
+    data_dir = "data"
+  }
   nullable = false
   validation {
     condition     = var.factories_config.data_dir != null

@@ -102,6 +102,19 @@ module "dev-spoke-vpc" {
   }
 }
 
+module "dev-spoke-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.dev-spoke-project.project_id
+  network    = module.dev-spoke-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
+  }
+}
+
 module "dev-spoke-cloudnat" {
   source         = "../../../modules/net-cloudnat"
   for_each       = toset(var.enable_cloud_nat ? values(module.dev-spoke-vpc.subnet_regions) : [])

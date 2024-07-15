@@ -22,15 +22,13 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = concat(
-    [
-      "compute.googleapis.com",
-      "dns.googleapis.com",
-      "iap.googleapis.com",
-      "networkmanagement.googleapis.com",
-      "stackdriver.googleapis.com"
-    ]
-  )
+  services = [
+    "compute.googleapis.com",
+    "dns.googleapis.com",
+    "iap.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
   shared_vpc_host_config = {
     enabled = true
   }
@@ -66,6 +64,19 @@ module "landing-vpc" {
       next_hop_type = "gateway"
       priority      = 1000
     }
+  }
+}
+
+module "landing-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
 }
 
