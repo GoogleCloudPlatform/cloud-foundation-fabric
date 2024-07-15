@@ -41,8 +41,7 @@ locals {
     (local.principals.gcp-network-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
-        "roles/cloudsupport.techSupportEditor",
-        "roles/ngfwEnterpriseAdmin"
+        "roles/cloudsupport.techSupportEditor"
       ]
       additive = [
         "roles/compute.orgFirewallPolicyAdmin",
@@ -64,6 +63,7 @@ locals {
       ]
       additive = concat(
         [
+          "roles/ngfwEnterpriseAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
@@ -82,7 +82,6 @@ locals {
       additive = [
         "roles/accesscontextmanager.policyAdmin",
         "roles/iam.organizationRoleAdmin",
-        "roles/ngfwEnterpriseAdmin",
         "roles/orgpolicy.policyAdmin"
       ]
     }

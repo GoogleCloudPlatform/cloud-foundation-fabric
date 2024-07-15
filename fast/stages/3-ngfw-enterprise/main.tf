@@ -23,13 +23,13 @@ locals {
   }
 }
 
-module "landing-project" {
+# Dedicated quota project for ngfw endpoints
+module "ngfw-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-landing-0"
+  name            = "prod-net-ngfw-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  project_create  = false
   services        = ["networksecurity.googleapis.com"]
 }
 
@@ -38,5 +38,5 @@ resource "google_network_security_firewall_endpoint" "firewall_endpoint" {
   name               = "${var.prefix}-ngfw-endpoint-${each.key}"
   parent             = "organizations/${var.organization.id}"
   location           = each.value.zone
-  billing_project_id = module.landing-project.project_id
+  billing_project_id = module.ngfw-project.project_id
 }

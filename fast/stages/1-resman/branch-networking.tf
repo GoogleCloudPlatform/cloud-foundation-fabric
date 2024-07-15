@@ -178,3 +178,64 @@ module "branch-network-gcs" {
     "roles/storage.objectViewer" = [module.branch-network-r-sa.iam_email]
   }
 }
+
+# network security
+
+# automation service account
+
+module "branch-network-netsec-sa" {
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-netsec-0"
+  display_name           = "Terraform resman network security service account."
+  prefix                 = var.prefix
+  service_account_create = var.root_node == null
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-network-sa-cicd[0].iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+  }
+}
+
+# automation read-only service account
+
+module "branch-network-netsec-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.automation.project_id
+  name         = "prod-resman-netsec-0r"
+  display_name = "Terraform resman network security service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-network-r-sa-cicd[0].iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+# automation bucket
+
+module "branch-netsec-gcs" {
+  source        = "../../../modules/gcs"
+  project_id    = var.automation.project_id
+  name          = "prod-resman-netsec-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin"  = [module.branch-network-netsec-sa.iam_email]
+    "roles/storage.objectViewer" = [module.branch-network-netsec-r-sa.iam_email]
+  }
+}
