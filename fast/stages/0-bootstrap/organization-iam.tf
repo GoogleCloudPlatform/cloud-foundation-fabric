@@ -41,7 +41,7 @@ locals {
     (local.principals.gcp-network-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
-        "roles/cloudsupport.techSupportEditor"
+        "roles/cloudsupport.techSupportEditor",
       ]
       additive = [
         "roles/compute.orgFirewallPolicyAdmin",

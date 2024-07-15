@@ -16,7 +16,8 @@
 
 # tfdoc:file:description CI/CD resources for the networking branch.
 
-# read-write (apply) SA used by CI/CD workflows to impersonate automation SA
+# read-write (apply) SA used by CI/CD workflows
+# to impersonate netsec automation SA
 
 module "branch-network-netsec-sa-cicd" {
   source = "../../../modules/iam-service-account"
@@ -53,7 +54,7 @@ module "branch-network-netsec-sa-cicd" {
   }
 }
 
-# read-only (plan) SA used by CI/CD workflows to impersonate automation SA
+# read-only (plan) SA used by CI/CD workflows to impersonate netsec automation SA
 
 module "branch-network-netsec-r-sa-cicd" {
   source = "../../../modules/iam-service-account"

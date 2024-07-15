@@ -1,6 +1,12 @@
 # Network Security
 
-This stage sets up the network firewall, including hierarchical firewall policies, network firewall policies and -optionally- NGFW Enterprise.
+This stage sets up NGFW Enterprise for the dev `dev` and `prod` environments, including
+
+- security profiles
+- security profile groups
+- NGFW endpoints
+- NGFW endpoint associations
+- global network firewall policies and some recommended firewall policy rules
 
 ...
 <!-- TFDOC OPTS files:1 show_extra:1 -->

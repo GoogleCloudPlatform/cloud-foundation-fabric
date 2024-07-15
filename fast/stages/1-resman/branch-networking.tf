@@ -192,7 +192,7 @@ module "branch-network-netsec-sa" {
   service_account_create = var.root_node == null
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-sa-cicd[0].iam_email, null)
+      try(module.branch-network-netsec-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -213,7 +213,7 @@ module "branch-network-netsec-r-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-network-r-sa-cicd[0].iam_email, null)
+      try(module.branch-network-netsec-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
