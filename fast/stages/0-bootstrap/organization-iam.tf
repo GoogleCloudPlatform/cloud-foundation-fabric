@@ -77,12 +77,12 @@ locals {
         "roles/cloudsupport.techSupportEditor",
         "roles/iam.securityReviewer",
         "roles/logging.admin",
-        "roles/ngfwEnterpriseAdmin",
         "roles/securitycenter.admin",
       ]
       additive = [
         "roles/accesscontextmanager.policyAdmin",
         "roles/iam.organizationRoleAdmin",
+        "roles/ngfwEnterpriseAdmin",
         "roles/orgpolicy.policyAdmin"
       ]
     }

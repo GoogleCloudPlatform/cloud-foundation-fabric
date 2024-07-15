@@ -24,6 +24,10 @@ locals {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.orgFirewallPolicyAdmin"
       }
+      sa_net_ngfw_enterprise_admin = {
+        member = module.branch-network-sa.iam_email
+        role   = "roles/ngfwEnterpriseAdmin",
+      }
       sa_net_xpn_admin = {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.xpnAdmin"
