@@ -29,12 +29,7 @@ module "landing-project" {
       "iap.googleapis.com",
       "networkmanagement.googleapis.com",
       "stackdriver.googleapis.com"
-    ],
-    (
-      var.ngfw_enterprise_config.enabled
-      ? ["networksecurity.googleapis.com"]
-      : []
-    )
+    ]
   )
   shared_vpc_host_config = {
     enabled = true
