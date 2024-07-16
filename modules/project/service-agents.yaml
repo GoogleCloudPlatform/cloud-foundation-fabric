@@ -93,7 +93,7 @@
   service_agent: "service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com"
   jit: true # roles/cloudbuild.builds.builder
 - name: "cloudbuild-builder"
-  service_agent: "%s@cloudbuild.gserviceaccount.com.iam.gserviceaccount.com"
+  service_agent: "%s@cloudbuild.gserviceaccount.com"
 - name: "cloudbuild-logging"
   service_agent: "service-%s@gcp-sa-log-cloudbuild.iam.gserviceaccount.com"
 - name: "clouddeploy"
