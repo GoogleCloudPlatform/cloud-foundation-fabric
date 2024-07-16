@@ -45,7 +45,7 @@ resource "google_compute_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   provider    = google-beta
   project     = var.project_id
-  name        = var.override_name != null ? var.override_name : local.forwarding_rule_names[each.key]
+  name        = each.value.override_name != null ? each.value.override_name : local.forwarding_rule_names[each.key]
   region      = var.region
   description = each.value.description
   ip_address  = each.value.address

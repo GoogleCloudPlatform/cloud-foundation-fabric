@@ -72,6 +72,7 @@ variable "forwarding_rules_config" {
     description   = optional(string)
     global_access = optional(bool, true)
     ip_version    = optional(string)
+    override_name = optional(string, null)
     ports         = optional(list(string), null)
     protocol      = optional(string, "TCP")
   }))
