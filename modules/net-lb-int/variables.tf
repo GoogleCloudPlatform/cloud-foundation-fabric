@@ -188,12 +188,6 @@ variable "name" {
   type        = string
 }
 
-variable "override_name" {
-  description = "Optional override name to specify exact name without changes."
-  type        = string
-  default     = null
-}
-
 variable "project_id" {
   description = "Project id where resources will be created."
   type        = string
