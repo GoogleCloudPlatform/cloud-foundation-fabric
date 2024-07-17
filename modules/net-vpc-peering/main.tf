@@ -21,7 +21,7 @@ locals {
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
-  name         = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
+  name         = var.override_name != null ? var.override_name : "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
   network      = var.local_network
   peer_network = var.peer_network
   export_custom_routes = try(

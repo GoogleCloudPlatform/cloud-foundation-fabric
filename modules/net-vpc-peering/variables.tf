@@ -19,6 +19,12 @@ variable "local_network" {
   type        = string
 }
 
+variable "override_name" {
+  description = "Optional name for the peering. If not set, the peering name will be generated based on the network names."
+  type        = string
+  default     = null
+}
+
 variable "peer_create_peering" {
   description = "Create the peering on the remote side. If false, only the peering from this network to the remote network is created."
   type        = bool
