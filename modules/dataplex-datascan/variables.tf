@@ -78,6 +78,9 @@ variable "data_quality_spec" {
       table_condition_expectation = optional(object({
         sql_expression = string
       }))
+      sql_assertion = optional(object({
+        sql_statement = string
+      }))
     }))
   })
 }

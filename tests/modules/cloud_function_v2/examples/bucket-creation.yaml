@@ -17,17 +17,17 @@ values:
     build_config:
       - source:
           - storage_source:
-              - bucket: my-prefix-test-cf-bundles
-    name: my-prefix-test-cf-http
-    project: my-project
+              - bucket: test-bucket
+    name: test-test-cf-http
+    project: project-id
   module.cf-http.google_storage_bucket.bucket[0]:
     lifecycle_rule:
       - action:
           - type: Delete
         condition:
           - age: 1
-    name: my-prefix-test-cf-bundles
-    project: my-project
+    name: test-bucket
+    project: project-id
     versioning:
       - enabled: true
 
@@ -36,6 +36,6 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 3
+  resources: 6
 
 outputs: {}

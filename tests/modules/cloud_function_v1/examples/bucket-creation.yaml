@@ -14,9 +14,9 @@
 
 values:
   module.cf-http.google_cloudfunctions_function.function:
-    name: my-prefix-test-cf-http
-    project: my-project
-    source_archive_bucket: my-prefix-test-cf-bundles
+    name: test-test-cf-http
+    project: project-id
+    source_archive_bucket: test-bucket
 
   module.cf-http.google_storage_bucket.bucket[0]:
     lifecycle_rule:
@@ -24,13 +24,13 @@ values:
           - type: Delete
         condition:
           - age: 1
-    name: my-prefix-test-cf-bundles
+    name: test-bucket
 
 counts:
   google_cloudfunctions_function: 1
   google_storage_bucket: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 3
+  resources: 6
 
 outputs: {}

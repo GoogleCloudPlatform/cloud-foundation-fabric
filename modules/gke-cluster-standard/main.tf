@@ -222,15 +222,15 @@ resource "google_container_cluster" "cluster" {
       }
       dynamic "resource_limits" {
         for_each = (
-          try(local.cas.gpu_resources, null) == null
+          try(local.cas.accelerator_resources, null) == null
           ? []
-          : local.cas.gpu_resources
+          : local.cas.accelerator_resources
         )
-        iterator = gpu_resources
+        iterator = accelerator_resources
         content {
-          resource_type = gpu_resources.value.resource_type
-          minimum       = gpu_resources.value.min
-          maximum       = gpu_resources.value.max
+          resource_type = accelerator_resources.value.resource_type
+          minimum       = accelerator_resources.value.min
+          maximum       = accelerator_resources.value.max
         }
       }
     }

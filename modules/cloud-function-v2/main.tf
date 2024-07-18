@@ -70,7 +70,7 @@ resource "google_cloudfunctions2_function" "function" {
     worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
     entry_point           = var.function_config.entry_point
-    environment_variables = var.environment_variables
+    environment_variables = var.build_environment_variables
     docker_repository     = var.docker_repository_id
     source {
       storage_source {

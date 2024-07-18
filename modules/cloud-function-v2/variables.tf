@@ -17,8 +17,9 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location                  = optional(string)
+    force_destroy             = optional(bool)
     lifecycle_delete_age_days = optional(number)
+    location                  = optional(string)
   })
   default = null
 }
@@ -27,6 +28,12 @@ variable "bucket_name" {
   description = "Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null."
   type        = string
   nullable    = false
+}
+
+variable "build_environment_variables" {
+  description = "A set of key/value environment variable pairs available during build time."
+  type        = map(string)
+  default     = {}
 }
 
 variable "build_service_account" {
@@ -89,7 +96,9 @@ variable "docker_repository_id" {
 variable "environment_variables" {
   description = "Cloud function environment variables."
   type        = map(string)
-  default     = {}
+  default = {
+    LOG_EXECUTION_ID = "true"
+  }
 }
 
 variable "function_config" {
@@ -165,7 +174,7 @@ variable "secrets" {
   description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
   type = map(object({
     is_volume  = bool
-    project_id = number
+    project_id = string
     secret     = string
     versions   = list(string)
   }))
@@ -198,7 +207,7 @@ variable "trigger_config" {
     })), [])
     service_account_email  = optional(string)
     service_account_create = optional(bool, false)
-    retry_policy           = optional(string)
+    retry_policy           = optional(string, "RETRY_POLICY_DO_NOT_RETRY") # default to avoid permadiff
   })
   default = null
 }
