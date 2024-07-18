@@ -53,6 +53,7 @@ resource "google_bigquery_dataset" "default" {
   default_partition_expiration_ms = var.options.default_partition_expiration_ms
   is_case_insensitive             = var.options.is_case_insensitive
   max_time_travel_hours           = var.options.max_time_travel_hours
+  storage_billing_model           = var.options.storage_billing_model
   dynamic "access" {
     for_each = var.dataset_access ? local.access_domain : {}
     content {
