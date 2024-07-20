@@ -25,7 +25,7 @@ output "created_resources" {
       vpc_id    = module.vpc[0].id
     },
     !var.registry_create ? {} : {
-      registry = module.registry[0].image_path
+      registry = module.registry[0].docker_image_path
     },
     !local.cluster_create ? {} : {
       cluster              = module.cluster[0].id
