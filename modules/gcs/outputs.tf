@@ -62,7 +62,7 @@ output "objects" {
 
 output "topic" {
   description = "Topic ID used by GCS."
-  value       = local.notification ? google_pubsub_topic.topic[0].id : null
+  value       = try(google_pubsub_topic.topic[0].id, null)
 }
 
 output "url" {

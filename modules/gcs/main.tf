@@ -154,10 +154,12 @@ resource "google_storage_bucket_object" "objects" {
 }
 
 resource "google_storage_notification" "notification" {
-  count              = local.notification ? 1 : 0
-  bucket             = google_storage_bucket.bucket.name
-  payload_format     = var.notification_config.payload_format
-  topic              = google_pubsub_topic.topic[0].id
+  count          = local.notification ? 1 : 0
+  bucket         = google_storage_bucket.bucket.name
+  payload_format = var.notification_config.payload_format
+  topic = try(
+    google_pubsub_topic.topic[0].id, var.notification_config.topic_name
+  )
   custom_attributes  = var.notification_config.custom_attributes
   event_types        = var.notification_config.event_types
   object_name_prefix = var.notification_config.object_name_prefix
