@@ -15,16 +15,20 @@
  */
 
 locals {
-  _factory_egress_rules = try(
-    yamldecode(file(pathexpand(var.factories_config.egress_rules_file_path))),
-    {}
+  _factory_egress_rules = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.egress_rules_file_path))),
+    {}), {}
   )
-  _factory_ingress_rules = try(
-    yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
-    {}
+  _factory_ingress_rules = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
+    {}), {}
   )
-  factory_cidrs = try(
-    yamldecode(file(pathexpand(var.factories_config.cidr_file_path))), {}
+  factory_cidrs = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.cidr_file_path))),
+    {}), {}
   )
   factory_egress_rules = {
     for k, v in local._factory_egress_rules : "egress/${k}" => {
