@@ -352,6 +352,7 @@
   service_agent: "service-%s@gs-project-accounts.iam.gserviceaccount.com"
 - name: "storagetransfer"
   service_agent: "project-%s@storage-transfer-service.iam.gserviceaccount.com"
+  jit: true
 - name: "stream"
   service_agent: "service-%s@gcp-sa-stream.iam.gserviceaccount.com"
 - name: "tpu"
