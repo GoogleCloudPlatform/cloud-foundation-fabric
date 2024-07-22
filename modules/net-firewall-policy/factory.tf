@@ -18,12 +18,12 @@ locals {
   _factory_egress_rules = coalesce(
     try(
       yamldecode(file(pathexpand(var.factories_config.egress_rules_file_path))),
-    {}), {}
+    {}), tomap({})
   )
   _factory_ingress_rules = coalesce(
     try(
       yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
-    {}), {}
+    {}), tomap({})
   )
   factory_cidrs = coalesce(
     try(
