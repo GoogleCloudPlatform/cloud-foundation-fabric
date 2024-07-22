@@ -164,13 +164,13 @@ resource "google_storage_notification" "notification" {
   depends_on         = [google_pubsub_topic_iam_binding.binding]
 }
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = local.notification ? 1 : 0
+  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
 resource "google_pubsub_topic" "topic" {
-  count   = local.notification ? 1 : 0
+  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   project = var.project_id
   name    = var.notification_config.topic_name
 }
