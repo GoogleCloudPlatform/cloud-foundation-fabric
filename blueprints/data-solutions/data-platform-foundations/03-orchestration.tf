@@ -93,7 +93,7 @@ module "orch-project" {
   ])
   service_encryption_key_ids = {
     "composer.googleapis.com" = compact([var.service_encryption_keys.composer])
-    "storage.googleapis.com"  = compact([var.service_encryption_keys.composer, var.service_encryption_keys.storage])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
