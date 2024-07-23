@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ module "project" {
     },
     {
       for r in local.iam_roles.sql_robot : "sql_robot-${r}" => {
-        member = "serviceAccount:${module.project.service_accounts.robots.sql}"
+        member = module.project.service_agents.cloud-sql.iam_email
         role   = r
       }
     },
@@ -87,9 +87,9 @@ module "project" {
     host_project = local.shared_vpc_project
   }
   service_encryption_key_ids = {
-    compute = try(values(var.service_encryption_keys), [])
-    sql     = try(values(var.service_encryption_keys), [])
-    storage = try(values(var.service_encryption_keys), [])
+    "compute.googleapis.com"  = values(var.service_encryption_keys)
+    "sqladmin.googleapis.com" = values(var.service_encryption_keys)
+    "storage.googleapis.com"  = values(var.service_encryption_keys)
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false
@@ -140,6 +140,6 @@ module "gcs" {
   name           = "data"
   location       = var.regions.primary
   storage_class  = "REGIONAL"
-  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
+  encryption_key = try(var.service_encryption_keys[var.regions.primary], null)
   force_destroy  = !var.deletion_protection
 }

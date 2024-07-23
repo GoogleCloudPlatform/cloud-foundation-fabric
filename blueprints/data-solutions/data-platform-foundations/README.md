@@ -229,7 +229,7 @@ module "data-platform" {
   # test 12-chars long prefix for FAST mt compatibility
   prefix = "test-0123456"
 }
-# tftest modules=43 resources=293
+# tftest modules=43 resources=344
 ```
 
 ## Customizations
@@ -292,7 +292,7 @@ terraform destroy
 | [project_services](variables.tf#L215) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
 | [project_suffix](variables.tf#L226) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
 | [region](variables.tf#L232) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L238) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; string&#10;  composer &#61; string&#10;  dataflow &#61; string&#10;  storage  &#61; string&#10;  pubsub   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_encryption_keys](variables.tf#L238) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; optional&#40;string&#41;&#10;  composer &#61; optional&#40;string&#41;&#10;  dataflow &#61; optional&#40;string&#41;&#10;  storage  &#61; optional&#40;string&#41;&#10;  pubsub   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -302,10 +302,9 @@ terraform destroy
 | [demo_commands](outputs.tf#L26) | Demo commands. Relevant only if Composer is deployed. |  |
 | [df_template](outputs.tf#L49) | Dataflow template image and template details. |  |
 | [gcs-buckets](outputs.tf#L58) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L71) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L76) | GCP Projects information. |  |
-| [vpc_network](outputs.tf#L102) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L111) | VPC subnetworks. |  |
+| [projects](outputs.tf#L71) | GCP Projects information. |  |
+| [vpc_network](outputs.tf#L97) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L106) | VPC subnetworks. |  |
 <!-- END TFDOC -->
 ## TODOs
 

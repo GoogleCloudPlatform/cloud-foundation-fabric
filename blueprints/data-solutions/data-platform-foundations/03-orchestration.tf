@@ -92,8 +92,8 @@ module "orch-project" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    composer = [try(local.service_encryption_keys.composer, null)]
-    storage  = [try(local.service_encryption_keys.storage, null)]
+    "composer.googleapis.com" = compact([var.service_encryption_keys.composer])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
@@ -108,7 +108,7 @@ module "orch-cs-0" {
   name           = "orc-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 
@@ -165,7 +165,7 @@ module "orch-cs-df-template" {
   name           = "orc-cs-df-template"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 
@@ -176,7 +176,7 @@ module "orch-cs-build-staging" {
   name           = "orc-cs-build-staging"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 

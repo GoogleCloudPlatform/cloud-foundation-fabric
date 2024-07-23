@@ -68,7 +68,7 @@ module "secret-manager" {
   iam = {
     github-key = {
       "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${module.project.service_accounts.robots.cloudbuild}",
+        module.project.service_agents.cloudbuild.iam_email,
         module.service-account-mlops.iam_email
       ]
     }

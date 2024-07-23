@@ -17,4 +17,4 @@ counts:
   google_project_service: 3
   google_storage_project_service_account: 1
   modules: 2
-  resources: 5
+  resources: 6

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ module "mgmt_project" {
   parent          = var.parent
   name            = var.mgmt_project_id
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.host_project.project_id
-    service_identity_iam = null
+    attach       = true
+    host_project = module.host_project.project_id
   }
   services = [
     "cloudresourcemanager.googleapis.com",
@@ -60,7 +59,7 @@ module "fleet_project" {
   shared_vpc_service_config = {
     attach       = true
     host_project = module.host_project.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
@@ -83,7 +82,7 @@ module "fleet_project" {
   iam = {
     "roles/container.admin"                     = [module.mgmt_server.service_account_iam_email]
     "roles/gkehub.admin"                        = [module.mgmt_server.service_account_iam_email]
-    "roles/gkehub.serviceAgent"                 = ["serviceAccount:${module.fleet_project.service_accounts.robots.fleet}"]
+    "roles/gkehub.serviceAgent"                 = [module.fleet_project.service_agents.fleet.iam_email]
     "roles/monitoring.viewer"                   = local.np_service_account_iam_email
     "roles/monitoring.metricWriter"             = local.np_service_account_iam_email
     "roles/logging.logWriter"                   = local.np_service_account_iam_email

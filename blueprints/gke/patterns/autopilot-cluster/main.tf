@@ -71,7 +71,7 @@ module "project" {
     attach       = true
     host_project = var.project_create.shared_vpc_host
     # grant required roles on the host project to service identities
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
@@ -87,8 +87,8 @@ module "project" {
         role = "roles/gkehub.serviceAgent"
         member = (
           var.fleet_project_id == null
-          ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-          : "serviceAccount:${module.fleet-project[0].service_accounts.robots.gkehub}"
+          ? module.project.service_agents.gkehub.iam_email
+          : module.fleet-project[0].service_agents.gkehub.iam_email
         )
       }
     },

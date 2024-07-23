@@ -49,7 +49,9 @@ module "database_kms" {
       rotation_period = "2592000s"
       labels          = null
       iam = {
-        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = ["serviceAccount:${module.project.service_accounts.robots.apigee}"]
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          module.project.service_agents.apigee.iam_email
+        ]
       }
     }
   }
@@ -69,7 +71,9 @@ module "api_consumer_data_kms" {
       rotation_period = "2592000s"
       labels          = null
       iam = {
-        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = ["serviceAccount:${module.project.service_accounts.robots.apigee}"]
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          module.project.service_agents.apigee.iam_email
+        ]
       }
     }
   }
@@ -90,7 +94,9 @@ module "control_plane_kms" {
       rotation_period = "2592000s"
       labels          = null
       iam = {
-        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = ["serviceAccount:${module.project.service_accounts.robots.apigee}"]
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          module.project.service_agents.apigee.iam_email
+        ]
       }
     }
   }
@@ -110,7 +116,9 @@ module "disks_kms" {
       rotation_period = "2592000s"
       labels          = null
       iam = {
-        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = ["serviceAccount:${module.project.service_accounts.robots.apigee}"]
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          module.project.service_agents.apigee.iam_email
+        ]
       }
     }
   }
