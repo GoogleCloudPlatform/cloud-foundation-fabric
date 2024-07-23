@@ -45,8 +45,6 @@ module "prod-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-prod, null),
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null)
     ])
   }
   # allow specific service accounts to assign a set of roles

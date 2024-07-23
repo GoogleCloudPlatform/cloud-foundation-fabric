@@ -430,8 +430,8 @@ variable "vpc_config" {
       services = string
     }))
     secondary_range_names = optional(object({
-      pods     = optional(string, "pods")
-      services = optional(string, "services")
+      pods     = optional(string)
+      services = optional(string)
     }))
     additional_ranges        = optional(list(string))
     master_authorized_ranges = optional(map(string))

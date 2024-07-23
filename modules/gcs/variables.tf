@@ -173,6 +173,7 @@ variable "notification_config" {
     payload_format     = string
     topic_name         = string
     sa_email           = string
+    create_topic       = optional(bool, true)
     event_types        = optional(list(string))
     custom_attributes  = optional(map(string))
     object_name_prefix = optional(string)
