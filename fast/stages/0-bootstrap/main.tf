@@ -15,6 +15,7 @@
  */
 
 locals {
+  env_default = [for k, v in var.environments : k if v.is_default][0]
   gcs_storage_class = (
     length(split("-", local.locations.gcs)) < 2
     ? "MULTI_REGIONAL"
@@ -34,5 +35,5 @@ locals {
     pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names
-  prefix = join("-", compact([var.prefix, "prod"]))
+  prefix = join("-", compact([var.prefix, local.env_default]))
 }
