@@ -177,7 +177,8 @@ module "organization" {
               "roles/orgpolicy.policyAdmin",
               "roles/orgpolicy.policyViewer",
               "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id["tenant_network_admin"]
+              module.organization.custom_role_id["service_project_network_admin"],
+              module.organization.custom_role_id["tenant_network_admin"],
             ]))
           )
           title       = "automation_sa_delegated_grants"

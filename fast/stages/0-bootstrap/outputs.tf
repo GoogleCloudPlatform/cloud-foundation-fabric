@@ -79,6 +79,18 @@ locals {
       name          = "tenant-factory"
       sa            = module.automation-tf-resman-r-sa.email
     })
+    "1-vpcsc" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"vpcsc\""
+      bucket        = module.automation-tf-vpcsc-gcs.name
+      name          = "vpcsc"
+      sa            = module.automation-tf-vpcsc-sa.email
+    })
+    "1-vpcsc-r" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"vpcsc\""
+      bucket        = module.automation-tf-vpcsc-gcs.name
+      name          = "vpcsc"
+      sa            = module.automation-tf-vpcsc-r-sa.email
+    })
   }
   tfvars = {
     automation = {
@@ -94,6 +106,8 @@ locals {
         bootstrap-r = module.automation-tf-bootstrap-r-sa.email
         resman      = module.automation-tf-resman-sa.email
         resman-r    = module.automation-tf-resman-r-sa.email
+        vpcsc       = module.automation-tf-vpcsc-sa.email
+        vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
       }
     }
     custom_roles = module.organization.custom_role_id
@@ -116,6 +130,7 @@ locals {
   tfvars_globals = {
     billing_account = var.billing_account
     groups          = local.principals
+    environments    = var.environments
     locations       = local.locations
     organization    = var.organization
     prefix          = var.prefix
