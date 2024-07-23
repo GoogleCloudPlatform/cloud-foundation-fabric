@@ -384,7 +384,7 @@ counts:
   google_project_iam_binding: 19
   google_project_iam_member: 16
   google_project_service: 30
-  google_project_service_identity: 4
+  google_project_service_identity: 6
   google_service_account: 6
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 1
@@ -396,4 +396,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 21
-  resources: 219
+  resources: 230

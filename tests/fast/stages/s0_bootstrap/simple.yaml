@@ -28,7 +28,7 @@ counts:
   google_project_iam_binding: 19
   google_project_iam_member: 16
   google_project_service: 30
-  google_project_service_identity: 4
+  google_project_service_identity: 6
   google_service_account: 6
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 1
@@ -41,8 +41,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 10
   modules: 20
-  resources: 213
-
+  resources: 224
 outputs:
   cicd_repositories: {}
   custom_roles:

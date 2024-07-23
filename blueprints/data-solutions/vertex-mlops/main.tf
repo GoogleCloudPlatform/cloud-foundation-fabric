@@ -196,11 +196,19 @@ module "project" {
   project_create    = var.project_config.billing_account_id != null
   prefix            = var.prefix
   iam_by_principals = local.iam_principals
+  iam_bindings_additive = {
+    # we manage aiplatform.user additively since it is also granted to
+    # the vertex-shtune service agent by the project module
+    aiplatform-user-mlops = {
+      member = module.service-account-mlops.iam_email
+      role   = "roles/aiplatform.user"
+    }
+    aiplatform-user-notebook = {
+      member = module.service-account-notebook.iam_email
+      role   = "roles/aiplatform.user"
+    }
+  }
   iam = {
-    "roles/aiplatform.user" = [
-      module.service-account-mlops.iam_email,
-      module.service-account-notebook.iam_email
-    ]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.writer" = [module.service-account-github.iam_email]
     "roles/bigquery.dataEditor" = [
