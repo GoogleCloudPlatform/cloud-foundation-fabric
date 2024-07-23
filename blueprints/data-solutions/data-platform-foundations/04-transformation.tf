@@ -62,10 +62,10 @@ module "transf-project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
-  service_agent_encryption_key_ids = {
-    dataflow = compact([var.service_encryption_keys.dataflow])
-    compute  = compact([var.service_encryption_keys.dataflow])
-    storage  = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "dataflow.googleapis.com" = compact([var.service_encryption_keys.dataflow])
+    "compute.googleapis.com"  = compact([var.service_encryption_keys.dataflow])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true

@@ -37,9 +37,9 @@ module "project-service" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  service_agent_encryption_key_ids = {
-    compute = [local.kms_keys.gce]
-    storage = [local.kms_keys.gcs]
+  service_encryption_key_ids = {
+    "compute.googleapis.com" = [local.kms_keys.gce]
+    "storage.googleapis.com" = [local.kms_keys.gcs]
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false

@@ -96,11 +96,11 @@ values:
     host_project: test-host
     service_project: test-project
     timeouts: null
-  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["compute.kms_key_self_link"]:
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.compute-system"]:
     condition: []
     crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["storage.kms_key_self_link"]:
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.gs-project-accounts"]:
     condition: []
     crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter

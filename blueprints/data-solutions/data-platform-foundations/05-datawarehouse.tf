@@ -78,9 +78,9 @@ module "dwh-lnd-project" {
   iam                   = local.use_projects ? {} : local.lnd_iam_auth
   iam_bindings_additive = !local.use_projects ? {} : local.lnd_iam_additive
   services              = local.dwh_services
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -98,9 +98,9 @@ module "dwh-cur-project" {
   iam                   = local.use_projects ? {} : local.dwh_iam_auth
   iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -118,9 +118,9 @@ module "dwh-conf-project" {
   iam                   = local.use_projects ? {} : local.dwh_iam_auth
   iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 

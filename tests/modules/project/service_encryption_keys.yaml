@@ -16,15 +16,15 @@ values:
   data.google_storage_project_service_account.gcs_sa[0]:
     project: my-project
     user_project: null
-  google_kms_crypto_key_iam_member.service_agent_cmek["compute.key1"]:
+  google_kms_crypto_key_iam_member.service_agent_cmek["key1.compute-system"]:
     condition: []
     crypto_key_id: key1
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  google_kms_crypto_key_iam_member.service_agent_cmek["storage.key1"]:
+  google_kms_crypto_key_iam_member.service_agent_cmek["key1.gs-project-accounts"]:
     condition: []
     crypto_key_id: key1
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  google_kms_crypto_key_iam_member.service_agent_cmek["storage.key2"]:
+  google_kms_crypto_key_iam_member.service_agent_cmek["key2.gs-project-accounts"]:
     condition: []
     crypto_key_id: key2
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter

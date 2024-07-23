@@ -87,10 +87,10 @@ module "project" {
     # }
     # Example of applying a project wide policy, mainly useful for Composer 1
   }
-  service_agent_encryption_key_ids = {
-    compute = compact([var.service_encryption_keys.compute])
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "compute.googleapis.com"  = compact([var.service_encryption_keys.compute])
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false

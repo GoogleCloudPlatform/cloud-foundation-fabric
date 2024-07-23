@@ -110,13 +110,8 @@ module "project" {
     attach       = true
     host_project = local.shared_vpc_project
   }
-  service_agent_encryption_key_ids = {
-    composer         = compact([lookup(var.service_encryption_keys, var.region, null)])
-    artifactregistry = compact([lookup(var.service_encryption_keys, var.region, null)])
-    container-engine = compact([lookup(var.service_encryption_keys, var.region, null)])
-    compute          = compact([lookup(var.service_encryption_keys, var.region, null)])
-    pubsub           = compact([lookup(var.service_encryption_keys, var.region, null)])
-    storage          = compact([lookup(var.service_encryption_keys, var.region, null)])
+  service_encryption_key_ids = {
+    "composer.googleapis.com" = compact([lookup(var.service_encryption_keys, var.region, null)])
   }
 }
 

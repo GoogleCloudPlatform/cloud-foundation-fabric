@@ -77,10 +77,10 @@ locals {
         try(v.prefix, null),
         var.data_defaults.prefix
       )
-      service_agent_encryption_key_ids = coalesce(
-        var.data_overrides.service_agent_encryption_key_ids,
-        try(v.service_agent_encryption_key_ids, null),
-        var.data_defaults.service_agent_encryption_key_ids
+      service_encryption_key_ids = coalesce(
+        var.data_overrides.service_encryption_key_ids,
+        try(v.service_encryption_key_ids, null),
+        var.data_defaults.service_encryption_key_ids
       )
       services = coalesce(
         var.data_overrides.services,

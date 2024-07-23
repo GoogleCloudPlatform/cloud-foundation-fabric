@@ -63,10 +63,10 @@ module "drop-project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ])
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    pubsub  = compact([var.service_encryption_keys.pubsub])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "pubsub.googleapis.com"   = compact([var.service_encryption_keys.pubsub])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 

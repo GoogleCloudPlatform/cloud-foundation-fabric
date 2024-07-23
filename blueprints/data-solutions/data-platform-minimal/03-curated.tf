@@ -100,9 +100,9 @@ module "cur-project" {
     var.project_config.billing_account_id == null ? {} : local.iam_cur_additive
   )
   services = local.cur_services
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 

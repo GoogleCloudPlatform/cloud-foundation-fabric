@@ -72,9 +72,9 @@ module "land-project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  service_agent_encryption_key_ids = {
-    bq      = compact([var.service_encryption_keys.bq])
-    storage = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 

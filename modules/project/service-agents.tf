@@ -107,6 +107,7 @@ resource "google_project_service_identity" "default" {
   service    = each.key
   depends_on = [google_project_service.project_services]
 }
+
 resource "google_project_iam_member" "service_agents" {
   for_each = local.service_agent_roles
   project  = local.project.project_id
@@ -124,28 +125,4 @@ resource "google_project_default_service_accounts" "default_service_accounts" {
   project        = local.project.project_id
   restore_policy = "REVERT_AND_IGNORE_FAILURE"
   depends_on     = [google_project_service.project_services]
-}
-
-resource "google_kms_crypto_key_iam_member" "service_agent_cmek" {
-  for_each = merge([
-    for service_agent, keys in var.service_agent_encryption_key_ids : {
-      for key in keys :
-      "${service_agent}.${key}" => {
-        agent = local.aliased_service_agents[service_agent].iam_email
-        key   = key
-      }
-    }
-  ]...)
-  crypto_key_id = each.value.key
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = each.value.agent
-  depends_on = [
-    google_project.project,
-    google_project_service.project_services,
-    google_project_service_identity.default,
-    google_project_iam_member.service_agents,
-    data.google_project.project,
-    data.google_bigquery_default_service_account.bq_sa,
-    data.google_storage_project_service_account.gcs_sa,
-  ]
 }

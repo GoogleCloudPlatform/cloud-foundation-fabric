@@ -3,7 +3,7 @@ services = [
   "storage.googleapis.com"
 ]
 
-service_agent_encryption_key_ids = {
-  compute = ["key1"],
-  storage = ["key1", "key2"]
+service_encryption_key_ids = {
+  "compute.googleapis.com" = ["key1"],
+  "storage.googleapis.com" = ["key1", "key2"]
 }

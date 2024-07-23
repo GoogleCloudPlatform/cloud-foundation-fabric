@@ -248,14 +248,14 @@ module "project" {
   }
   labels = var.labels
 
-  service_agent_encryption_key_ids = {
-    aiplatform    = compact([var.service_encryption_keys.aiplatform])
-    bq            = compact([var.service_encryption_keys.bq])
-    compute       = compact([var.service_encryption_keys.notebooks])
-    cloudbuild    = compact([var.service_encryption_keys.storage])
-    notebooks     = compact([var.service_encryption_keys.notebooks])
-    secretmanager = compact([var.service_encryption_keys.secretmanager])
-    storage       = compact([var.service_encryption_keys.storage])
+  service_encryption_key_ids = {
+    "aiplatform.googleapis.com" = compact([var.service_encryption_keys.aiplatform])
+    "bigquery.googleapis.com"   = compact([var.service_encryption_keys.bq])
+    "compute.googleapis.com"    = compact([var.service_encryption_keys.notebooks])
+    #"cloudbuild.googleapis.com"    = compact([var.service_encryption_keys.storage])
+    "notebooks.googleapis.com"     = compact([var.service_encryption_keys.notebooks])
+    "secretmanager.googleapis.com" = compact([var.service_encryption_keys.secretmanager])
+    "storage.googleapis.com"       = compact([var.service_encryption_keys.storage])
   }
 
   services = [

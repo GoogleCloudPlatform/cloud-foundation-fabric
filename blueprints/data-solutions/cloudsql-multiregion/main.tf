@@ -86,10 +86,10 @@ module "project" {
     attach       = true
     host_project = local.shared_vpc_project
   }
-  service_agent_encryption_key_ids = {
-    compute = values(var.service_encryption_keys)
-    sql     = values(var.service_encryption_keys)
-    storage = values(var.service_encryption_keys)
+  service_encryption_key_ids = {
+    "compute.googleapis.com"  = values(var.service_encryption_keys)
+    "sqladmin.googleapis.com" = values(var.service_encryption_keys)
+    "storage.googleapis.com"  = values(var.service_encryption_keys)
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false

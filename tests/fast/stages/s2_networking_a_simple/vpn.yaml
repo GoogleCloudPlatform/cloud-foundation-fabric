@@ -38,11 +38,12 @@ counts:
   google_monitoring_dashboard: 3
   google_monitoring_monitored_project: 2
   google_project: 3
-  google_project_iam_binding: 6
+  google_project_iam_binding: 4
   google_project_iam_member: 17
   google_project_service: 21
   google_project_service_identity: 15
   google_storage_bucket_object: 2
   google_vpc_access_connector: 2
   modules: 31
-  resources: 193
+  random_id: 5
+  resources: 218
