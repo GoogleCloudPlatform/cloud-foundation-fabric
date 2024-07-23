@@ -286,15 +286,15 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L377) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L391) | Data for the Data Platform stage. |  |  |
-| [folder_ids](outputs.tf#L407) | Folder ids. |  |  |
-| [gcve](outputs.tf#L412) | Data for the GCVE stage. |  | <code>03-gcve</code> |
-| [gke_multitenant](outputs.tf#L433) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L454) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L463) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L482) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> |
-| [sandbox](outputs.tf#L489) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L503) | Data for the networking stage. |  | <code>02-security</code> |
-| [tfvars](outputs.tf#L514) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L402) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L416) | Data for the Data Platform stage. |  |  |
+| [folder_ids](outputs.tf#L432) | Folder ids. |  |  |
+| [gcve](outputs.tf#L437) | Data for the GCVE stage. |  | <code>03-gcve</code> |
+| [gke_multitenant](outputs.tf#L458) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L479) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L488) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L507) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-netsec</code> |
+| [sandbox](outputs.tf#L514) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L528) | Data for the networking stage. |  | <code>02-security</code> |
+| [tfvars](outputs.tf#L539) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
