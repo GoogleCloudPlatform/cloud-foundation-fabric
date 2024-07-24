@@ -1,6 +1,6 @@
 # skip boilerplate check
 
 name: dev-default
-region: europe-west1
+region: primary
 ip_cidr_range: 10.68.0.0/24
-description: Default europe-west1 subnet for dev
+description: Default primary-region subnet for dev
