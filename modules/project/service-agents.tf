@@ -17,6 +17,9 @@
 # tfdoc:file:description Service agents supporting resources.
 
 locals {
+  services = distinct(concat(
+    var.services, var.service_agents_config.services_enabled
+  ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
   _service_agents_by_api = {
@@ -25,7 +28,7 @@ locals {
   }
   # map of service agent name => agent details for this project
   _project_service_agents = merge([
-    for api in concat(var.services, ["cloudservices"]) : {
+    for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
         email     = format(agent.identity, local.project.number)
@@ -33,7 +36,6 @@ locals {
       })
     }
   ]...)
-
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it
   primary_service_agents = [
@@ -63,7 +65,6 @@ locals {
       ], agent.name)
     ])
   }
-
   # map of name->agent including all known aliases
   _aliased_service_agents = merge(
     local._project_service_agents,
@@ -89,15 +90,20 @@ locals {
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
-  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
+  count      = contains(local.services, "storage.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
+  count      = contains(local.services, "bigquery.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
+}
+
+moved {
+  from = google_project_service_identity.jit_si
+  to   = google_project_service_identity.default
 }
 
 resource "google_project_service_identity" "default" {

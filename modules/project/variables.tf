@@ -213,6 +213,7 @@ variable "service_agents_config" {
   type = object({
     create_primary_agents = optional(bool, true)
     grant_default_roles   = optional(bool, true)
+    services_enabled      = optional(list(string), [])
   })
   default  = {}
   nullable = false
