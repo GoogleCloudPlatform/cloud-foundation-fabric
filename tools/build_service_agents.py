@@ -41,6 +41,10 @@ ALIASES = {
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
 
+PRIMARY_OVERRIDE = {
+    'storage-transfer-service': True,
+}
+
 
 @dataclass
 class Agent:
@@ -88,13 +92,14 @@ def main():
       # Switch names to preserve old Fabric convention
       name = 'monitoring-deprecated'
 
+    is_primary = 'Primary service agent' in agent_text
     agent = Agent(
         name=name,
         display_name=col1.h4.get_text(),
         api=col1.span.code.get_text() if name != 'cloudservices' else None,
         identity=identity,
         role=col2.code.get_text() if 'roles/' in agent_text else None,
-        is_primary='Primary service agent' in agent_text,
+        is_primary=PRIMARY_OVERRIDE.get(name, is_primary),
         aliases=ALIASES.get(name, []),
     )
 
