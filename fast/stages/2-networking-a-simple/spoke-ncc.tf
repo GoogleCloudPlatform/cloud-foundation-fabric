@@ -61,8 +61,3 @@ resource "google_network_connectivity_spoke" "onprem-primary-vpn" {
     uris                       = [for _, v in module.landing-to-onprem-primary-vpn[0].tunnel_self_links : v]
   }
 }
-
-output "name" {
-  value     = module.landing-to-onprem-primary-vpn
-  sensitive = true
-}
