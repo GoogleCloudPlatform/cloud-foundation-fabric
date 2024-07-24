@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,9 +70,9 @@ gcp-setup:
         --output-file=$GOOGLE_CREDENTIALS \
         --credential-source-file=token.txt
     - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
-    - gcloud alpha storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
+    - gcloud storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
     %{~ for f in tf_var_files ~}
-    - gcloud alpha storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
+    - gcloud storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
     %{~ endfor ~}
 
 
