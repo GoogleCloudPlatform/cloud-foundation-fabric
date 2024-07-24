@@ -3,4 +3,4 @@
 name: prod-default
 region: primary
 ip_cidr_range: 10.72.0.0/24
-description: Default europe-west1 subnet for prod
+description: Default subnet for prod

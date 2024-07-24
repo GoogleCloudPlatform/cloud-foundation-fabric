@@ -59,9 +59,12 @@ variable "dns_policy" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    subnets_folder = string
+    context = optional(object({
+      regions = optional(map(string), {})
+    }), {})
+    subnets_folder = optional(string)
   })
-  default = null
+  default = {}
 }
 
 variable "firewall_policy_enforcement_order" {
