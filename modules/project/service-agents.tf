@@ -100,6 +100,11 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_services]
 }
 
+moved {
+  from = google_project_service_identity.jit_si
+  to   = google_project_service_identity.default
+}
+
 resource "google_project_service_identity" "default" {
   provider   = google-beta
   for_each   = toset(local.primary_service_agents)
