@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ locals {
       local.groups_iam.data-engineers
     ]
     "roles/composer.ServiceAgentV2Ext" = [
-      "serviceAccount:${module.processing-project.service_accounts.robots.composer}"
+      module.processing-project.service_agents.composer.iam_email
     ]
     "roles/composer.worker" = [
       module.processing-sa-cmp-0.iam_email
@@ -56,7 +56,7 @@ locals {
     ]
     "roles/storage.admin" = [
       module.processing-sa-cmp-0.iam_email,
-      "serviceAccount:${module.processing-project.service_accounts.robots.composer}",
+      module.processing-project.service_agents.composer.iam_email,
       local.groups_iam.data-engineers
     ]
   }
@@ -126,14 +126,14 @@ module "processing-project" {
     "storage-component.googleapis.com"
   ]
   service_encryption_key_ids = {
-    composer = [var.service_encryption_keys.composer]
-    compute  = [var.service_encryption_keys.compute]
-    storage  = [var.service_encryption_keys.storage]
+    "composer.googleapis.com" = compact([var.service_encryption_keys.composer])
+    "compute.googleapis.com"  = compact([var.service_encryption_keys.compute])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = var.network_config.host_project == null ? null : {
     attach       = true
     host_project = var.network_config.host_project
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "compute", "container-engine", "dataflow", "dataproc"
       ]

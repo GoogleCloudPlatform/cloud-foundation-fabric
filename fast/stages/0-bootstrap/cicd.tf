@@ -53,6 +53,8 @@ locals {
     resman_r    = "1-resman-r-providers.tf"
     tenants     = "1-tenant-factory-providers.tf"
     tenants_r   = "1-tenant-factory-r-providers.tf"
+    vpcsc       = "1-vpcsc-providers.tf"
+    vpcsc_r     = "1-vpcsc-r-providers.tf"
   }
   cicd_workflow_var_files = {
     bootstrap = []
@@ -61,6 +63,10 @@ locals {
       "0-globals.auto.tfvars.json"
     ]
     tenants = [
+      "0-bootstrap.auto.tfvars.json",
+      "0-globals.auto.tfvars.json"
+    ]
+    vpcsc = [
       "0-bootstrap.auto.tfvars.json",
       "0-globals.auto.tfvars.json"
     ]

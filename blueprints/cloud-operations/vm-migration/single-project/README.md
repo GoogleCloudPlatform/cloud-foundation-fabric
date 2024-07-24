@@ -49,5 +49,5 @@ module "test" {
   migration_admin  = "user:admin@example.com"
   migration_viewer = "user:viewer@example.com"
 }
-# tftest modules=5 resources=22
+# tftest modules=5 resources=27
 ```

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ locals {
   ]))
   # normalize the service identity IAM bindings directly defined by the user
   _svpc_service_iam = flatten([
-    for role, services in local._svpc.service_identity_iam : [
+    for role, services in local._svpc.service_agent_iam : [
       for service in services : { role = role, service = service }
     ]
   ])
@@ -56,7 +56,7 @@ locals {
   }
   # normalize the service identity subnet IAM bindings
   _svpc_service_subnet_iam = flatten([
-    for subnet, services in local._svpc.service_identity_subnet_iam : [
+    for subnet, services in local._svpc.service_agent_subnet_iam : [
       for service in services : [{
         region  = split("/", subnet)[0]
         subnet  = split("/", subnet)[1]
@@ -114,15 +114,10 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
   for_each = local.svpc_service_iam
   project  = var.shared_vpc_service_config.host_project
   role     = each.value.role
-  member = (
-    each.value.service == "cloudservices"
-    ? "serviceAccount:${local.service_account_cloud_services}"
-    : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
-  )
+  member   = try(local.aliased_service_agents[each.value.service].iam_email, each.value.service)
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.servicenetworking,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
     google_project_default_service_accounts.default_service_accounts,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,
@@ -143,15 +138,10 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
   region     = each.value.region
   subnetwork = each.value.subnet
   role       = "roles/compute.networkUser"
-  member = (
-    each.value.service == "cloudservices"
-    ? "serviceAccount:${local.service_account_cloud_services}"
-    : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
-  )
+  member     = try(local.aliased_service_agents[each.value.service].iam_email, each.value.service)
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.servicenetworking,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
     google_project_default_service_accounts.default_service_accounts,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,

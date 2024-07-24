@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -108,11 +108,7 @@ resource "google_composer_environment" "processing-cmp-0" {
       cloud_composer_connection_subnetwork = var.network_config.composer_ip_ranges.connection_subnetwork
     }
     dynamic "encryption_config" {
-      for_each = (
-        var.service_encryption_keys.composer != null
-        ? { 1 = 1 }
-        : {}
-      )
+      for_each = var.service_encryption_keys.composer != null ? [""] : []
       content {
         kms_key_name = var.service_encryption_keys.composer
       }

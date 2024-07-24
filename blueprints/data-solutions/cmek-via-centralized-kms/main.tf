@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,12 +38,8 @@ module "project-service" {
     "storage-component.googleapis.com",
   ]
   service_encryption_key_ids = {
-    compute = [
-      local.kms_keys.gce
-    ]
-    storage = [
-      local.kms_keys.gcs
-    ]
+    "compute.googleapis.com" = [local.kms_keys.gce]
+    "storage.googleapis.com" = [local.kms_keys.gcs]
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false

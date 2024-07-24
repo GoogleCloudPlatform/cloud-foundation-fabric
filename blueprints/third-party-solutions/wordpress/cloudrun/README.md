@@ -160,5 +160,5 @@ module "test" {
   project_id      = "test-prj"
   wordpress_image = "gcr.io/myprj/wordpress"
 }
-# tftest modules=5 resources=33
+# tftest modules=5 resources=40
 ```

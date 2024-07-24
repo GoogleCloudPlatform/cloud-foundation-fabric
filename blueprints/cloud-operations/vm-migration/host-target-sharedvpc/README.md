@@ -75,5 +75,5 @@ module "test-sharedvpc-host-project" {
   project_create  = true
 }
 
-# tftest modules=7 resources=25
+# tftest modules=7 resources=29
 ```

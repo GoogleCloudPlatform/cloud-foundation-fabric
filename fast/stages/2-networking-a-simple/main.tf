@@ -17,7 +17,6 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  custom_roles = coalesce(var.custom_roles, {})
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null

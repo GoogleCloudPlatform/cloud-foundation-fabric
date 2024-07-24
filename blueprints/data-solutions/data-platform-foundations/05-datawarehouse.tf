@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,8 +79,8 @@ module "dwh-lnd-project" {
   iam_bindings_additive = !local.use_projects ? {} : local.lnd_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -99,8 +99,8 @@ module "dwh-cur-project" {
   iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -119,8 +119,8 @@ module "dwh-conf-project" {
   iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -129,7 +129,7 @@ module "dwh-lnd-bq-0" {
   project_id     = module.dwh-lnd-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dwh_lnd_bq_0"
   location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }
 
 module "dwh-cur-bq-0" {
@@ -137,7 +137,7 @@ module "dwh-cur-bq-0" {
   project_id     = module.dwh-cur-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dwh_cur_bq_0"
   location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }
 
 module "dwh-conf-bq-0" {
@@ -145,7 +145,7 @@ module "dwh-conf-bq-0" {
   project_id     = module.dwh-conf-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dwh_conf_bq_0"
   location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }
 
 module "dwh-lnd-cs-0" {
@@ -155,7 +155,7 @@ module "dwh-lnd-cs-0" {
   name           = "dwh-lnd-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 
@@ -166,7 +166,7 @@ module "dwh-cur-cs-0" {
   name           = "dwh-cur-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 
@@ -177,6 +177,6 @@ module "dwh-conf-cs-0" {
   name           = "dwh-conf-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }

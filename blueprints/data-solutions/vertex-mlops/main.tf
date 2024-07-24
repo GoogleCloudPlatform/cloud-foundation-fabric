@@ -85,8 +85,8 @@ locals {
   }
 
   shared_vpc_role_members = {
-    robot-df  = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
-    notebooks = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+    robot-df  = module.project.service_agents.dataflow.iam_email
+    notebooks = module.project.service_agents.notebooks.iam_email
   }
 
   # reassemble in a format suitable for for_each
@@ -196,11 +196,19 @@ module "project" {
   project_create    = var.project_config.billing_account_id != null
   prefix            = var.prefix
   iam_by_principals = local.iam_principals
+  iam_bindings_additive = {
+    # we manage aiplatform.user additively since it is also granted to
+    # the vertex-shtune service agent by the project module
+    aiplatform-user-mlops = {
+      member = module.service-account-mlops.iam_email
+      role   = "roles/aiplatform.user"
+    }
+    aiplatform-user-notebook = {
+      member = module.service-account-notebook.iam_email
+      role   = "roles/aiplatform.user"
+    }
+  }
   iam = {
-    "roles/aiplatform.user" = [
-      module.service-account-mlops.iam_email,
-      module.service-account-notebook.iam_email
-    ]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.writer" = [module.service-account-github.iam_email]
     "roles/bigquery.dataEditor" = [
@@ -224,7 +232,7 @@ module "project" {
       module.service-account-mlops.iam_email,
       module.service-account-notebook.iam_email,
       module.service-account-github.iam_email,
-      "serviceAccount:${module.project.service_accounts.robots.cloudbuild}"
+      module.project.service_agents.cloudbuild.iam_email
     ]
     "roles/monitoring.metricWriter" = [module.service-account-mlops.iam_email]
     "roles/run.invoker"             = [module.service-account-mlops.iam_email]
@@ -241,13 +249,13 @@ module "project" {
   labels = var.labels
 
   service_encryption_key_ids = {
-    aiplatform    = [var.service_encryption_keys.aiplatform]
-    bq            = [var.service_encryption_keys.bq]
-    compute       = [var.service_encryption_keys.notebooks]
-    cloudbuild    = [var.service_encryption_keys.storage]
-    notebooks     = [var.service_encryption_keys.notebooks]
-    secretmanager = [var.service_encryption_keys.secretmanager]
-    storage       = [var.service_encryption_keys.storage]
+    "aiplatform.googleapis.com" = compact([var.service_encryption_keys.aiplatform])
+    "bigquery.googleapis.com"   = compact([var.service_encryption_keys.bq])
+    "compute.googleapis.com"    = compact([var.service_encryption_keys.notebooks])
+    #"cloudbuild.googleapis.com"    = compact([var.service_encryption_keys.storage])
+    "notebooks.googleapis.com"     = compact([var.service_encryption_keys.notebooks])
+    "secretmanager.googleapis.com" = compact([var.service_encryption_keys.secretmanager])
+    "storage.googleapis.com"       = compact([var.service_encryption_keys.storage])
   }
 
   services = [
@@ -287,7 +295,7 @@ resource "google_project_iam_member" "shared_vpc" {
   count   = local.use_shared_vpc ? 1 : 0
   project = var.network_config.host_project
   role    = "roles/compute.networkUser"
-  member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+  member  = module.project.service_agents.notebooks.iam_email
 }
 
 resource "google_sourcerepo_repository" "code-repo" {

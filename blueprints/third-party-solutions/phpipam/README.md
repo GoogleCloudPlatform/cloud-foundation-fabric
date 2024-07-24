@@ -236,7 +236,7 @@ module "test" {
   }
   project_id = "test-prj"
 }
-# tftest modules=8 resources=47
+# tftest modules=8 resources=54
 ```
 
 ## Bugs and errors

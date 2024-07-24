@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,13 +49,13 @@ locals {
   shared_vpc_project = try(var.network_config.host_project, null)
   shared_vpc_role_members = {
     prj-cloudservices = (
-      "serviceAccount:${module.project.service_accounts.cloud_services}"
+      module.project.service_agents.cloudservices.iam_email
     )
     prj-robot-gke = (
-      "serviceAccount:${module.project.service_accounts.robots.container-engine}"
+      module.project.service_agents.container-engine.iam_email
     )
     prj-robot-cs = (
-      "serviceAccount:${module.project.service_accounts.robots.composer}"
+      module.project.service_agents.composer.iam_email
     )
   }
   use_shared_vpc = var.network_config != null
@@ -80,7 +80,7 @@ module "project" {
         role   = "roles/composer.worker"
       },
       composer_service_agent = {
-        member = "serviceAccount:${module.project.service_accounts.robots.composer}"
+        member = module.project.service_agents.composer.iam_email
         role   = "roles/composer.ServiceAgentV2Ext"
       }
     },
@@ -111,7 +111,7 @@ module "project" {
     host_project = local.shared_vpc_project
   }
   service_encryption_key_ids = {
-    composer = [try(lookup(var.service_encryption_keys, var.region, null), null)]
+    "composer.googleapis.com" = compact([lookup(var.service_encryption_keys, var.region, null)])
   }
 }
 

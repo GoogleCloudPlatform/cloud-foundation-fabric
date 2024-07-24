@@ -8,8 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2433](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2433)] **incompatible change:** Reintroduce docker image path output in AR module ([ludoo](https://github.com/ludoo)) <!-- 2024-07-20 06:49:59+00:00 -->
+- [[#2416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2416)] Add support for sqlAssertion AutoDQ rule type in dataplex-datascan ([jayBana](https://github.com/jayBana)) <!-- 2024-07-09 21:29:45+00:00 -->
 - [[#2395](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2395)] Fix tutorial error. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-29 06:55:33+00:00 -->
-- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] **incompatible change:** Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
 - [[#2392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2392)] Added forward_proxy_uri to apigee environments in apigee-x-foundation… ([apichick](https://github.com/apichick)) <!-- 2024-06-27 17:48:24+00:00 -->
 - [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
 - [[#2382](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2382)] Fixes related to Apigee KMS keys ([apichick](https://github.com/apichick)) <!-- 2024-06-26 06:12:26+00:00 -->
@@ -17,6 +20,11 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2440)] FAST ng: stage 0 environments and VPC-SC IaC resources ([ludoo](https://github.com/ludoo)) <!-- 2024-07-23 09:52:39+00:00 -->
+- [[#2430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2430)] FAST: IAM cleanups to reflect PF changes ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-18 12:59:30+00:00 -->
+- [[#2417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2417)] Allow description to be set for FAST-managed tags ([juliocc](https://github.com/juliocc)) <!-- 2024-07-09 16:55:21+00:00 -->
+- [[#2412](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2412)] [FAST] Housekeeping in CICD workflow templates and extra stage ([jayBana](https://github.com/jayBana)) <!-- 2024-07-08 12:40:33+00:00 -->
 - [[#2411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2411)] [FAST] Fix IAM bindings to impersonate resman CICD SAs at bootstrap stage ([jayBana](https://github.com/jayBana)) <!-- 2024-07-08 10:58:41+00:00 -->
 - [[#2404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2404)] Documented new GCVE design options ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-07-02 14:46:55+00:00 -->
 - [[#2402](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2402)] gitlab workflow template fixes #2401 ([sudhirrs](https://github.com/sudhirrs)) <!-- 2024-07-01 09:42:55+00:00 -->
@@ -25,11 +33,24 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2439)] **incompatible change:** Remove default values to secondary range names in GKE cluster modules ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-07-22 20:20:58+00:00 -->
+- [[#2437](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2437)] Add coalesce to factory fw policies to support empty yaml files ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-22 15:40:22+00:00 -->
+- [[#2436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2436)] Allow disabling topic creation in GCS module notification ([ludoo](https://github.com/ludoo)) <!-- 2024-07-22 10:51:26+00:00 -->
+- [[#2433](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2433)] **incompatible change:** Reintroduce docker image path output in AR module ([ludoo](https://github.com/ludoo)) <!-- 2024-07-20 06:49:59+00:00 -->
+- [[#2424](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2424)] E2E tests for ncc-spoke-ra ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-13 11:54:34+00:00 -->
+- [[#2427](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2427)] Fix Cloud Function v1/v2 E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-13 11:43:05+00:00 -->
+- [[#2421](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2421)] fix cloudbuild service account email ([nathou](https://github.com/nathou)) <!-- 2024-07-11 13:31:04+00:00 -->
+- [[#2418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2418)] Adding support for DWS for GKE nodepools ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-10 13:18:12+00:00 -->
+- [[#2416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2416)] Add support for sqlAssertion AutoDQ rule type in dataplex-datascan ([jayBana](https://github.com/jayBana)) <!-- 2024-07-09 21:29:45+00:00 -->
+- [[#2406](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2406)] **incompatible change:** Adding TPU limits for GKE cluster node auto-provisioning (NAP) ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-09 09:26:30+00:00 -->
+- [[#2415](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2415)] Added certificate_manager_certificates to app load balancers ([apichick](https://github.com/apichick)) <!-- 2024-07-09 05:36:06+00:00 -->
+- [[#2413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2413)] **incompatible change:** Add E2E tests for Cloud Functions and fix perma-diff ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-08 14:14:21+00:00 -->
 - [[#2409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2409)] Adds support for external SPGs to net-firewall-policy ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-06 10:33:09+00:00 -->
 - [[#2407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2407)] Allow project factory projects to override name ([juliocc](https://github.com/juliocc)) <!-- 2024-07-04 18:14:04+00:00 -->
 - [[#2405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2405)] Adding placement_policy for GKE nodepools (ex: GPU compact placement or TPU topology) ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-03 10:21:31+00:00 -->
 - [[#2400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2400)] Add info about roles for connectors service agent ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-30 18:17:51+00:00 -->
-- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] **incompatible change:** Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
 - [[#2393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2393)] Add support for SSL policy to net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-28 07:03:10+00:00 -->
 - [[#2387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2387)] Added certificate-manager module ([apichick](https://github.com/apichick)) <!-- 2024-06-27 13:05:35+00:00 -->
 - [[#2390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2390)] Add AssuredWorkload support to the folder module ([averbuks](https://github.com/averbuks)) <!-- 2024-06-27 12:28:17+00:00 -->
@@ -50,6 +71,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2441](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2441)] Add commit id at the end of README ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 10:04:18+00:00 -->
+- [[#2413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2413)] **incompatible change:** Add E2E tests for Cloud Functions and fix perma-diff ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-08 14:14:21+00:00 -->
 - [[#2399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2399)] Test different versions of Terraform ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-05 11:21:41+00:00 -->
 
 ## [32.0.0] - 2024-06-16

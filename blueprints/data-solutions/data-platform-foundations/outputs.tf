@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,11 +66,6 @@ output "gcs-buckets" {
     orch-cs-0             = module.orch-cs-0.name,
     transf-cs-df          = module.transf-cs-df-0.name,
   }
-}
-
-output "kms_keys" {
-  description = "Cloud MKS keys."
-  value       = local.service_encryption_keys
 }
 
 output "projects" {

@@ -231,7 +231,7 @@ module "vpc-host" {
     module.service-project.project_id
   ]
 }
-# tftest modules=2 resources=13 inventory=shared-vpc.yaml e2e
+# tftest modules=2 resources=14 inventory=shared-vpc.yaml e2e
 ```
 
 ### Private Service Networking

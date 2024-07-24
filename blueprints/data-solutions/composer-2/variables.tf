@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,5 +109,6 @@ variable "region" {
 variable "service_encryption_keys" {
   description = "Cloud KMS keys to use to encrypt resources. Provide a key for each region in use."
   type        = map(string)
-  default     = null
+  default     = {}
+  nullable    = false
 }

@@ -201,7 +201,7 @@ module "test" {
   }
 }
 
-# tftest modules=7 resources=22
+# tftest modules=7 resources=29
 ```
 
 ```hcl
@@ -225,5 +225,5 @@ module "test" {
   }
 }
 
-# tftest modules=10 resources=32
+# tftest modules=10 resources=42
 ```

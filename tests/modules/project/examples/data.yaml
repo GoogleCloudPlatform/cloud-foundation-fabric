@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,52 +12,108 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 values:
   module.bucket.google_logging_project_bucket_config.bucket[0]:
     bucket_id: test-bucket
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
     project: project-id
+    retention_days: 30
   module.create-project.google_project.project[0]:
+    auto_create_network: false
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
+    labels: null
     name: test-project
+    org_id: null
     project_id: test-project
+    skip_delete: false
+    timeouts: null
   module.dataset.google_bigquery_dataset.default:
     dataset_id: bq_sink
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
     delete_contents_on_destroy: true
+    description: Terraform managed.
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
     project: project-id
+    timeouts: null
   module.gcs.google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: true
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
     name: test-gcs_sink
     project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: test-host
+    timeouts: null
   module.host-project.google_project.project[0]:
+    auto_create_network: false
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
+    labels: null
     name: test-host
+    org_id: null
     project_id: test-host
+    skip_delete: false
+    timeouts: null
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project
   module.project.data.google_project.project[0]:
     project_id: test-project
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
     project: test-project
+    user_project: null
   module.project.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+    condition: []
     role: roles/bigquery.dataEditor
   module.project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
     host_project: test-host
     service_project: test-project
-  module.project.google_kms_crypto_key_iam_member.service_identity_cmek["compute.kms_key_self_link"]:
+    timeouts: null
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.compute-system"]:
+    condition: []
     crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.google_kms_crypto_key_iam_member.service_identity_cmek["storage.kms_key_self_link"]:
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.gs-project-accounts"]:
+    condition: []
     crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.google_logging_project_exclusion.logging-exclusion["no-gce-instances"]:
+    description: no-gce-instances (Terraform-managed).
+    disabled: null
     filter: resource.type=gce_instance
     name: no-gce-instances
     project: test-project
   module.project.google_logging_project_sink.sink["debug"]:
+    custom_writer_identity: null
+    description: debug (Terraform-managed).
+    disabled: false
     exclusions:
     - description: null
       disabled: false
@@ -66,52 +122,73 @@ values:
     filter: severity=DEBUG
     name: debug
     project: test-project
+    unique_writer_identity: true
   module.project.google_logging_project_sink.sink["info"]:
+    bigquery_options:
+    - use_partitioned_tables: false
+    custom_writer_identity: null
+    description: info (Terraform-managed).
+    disabled: false
     exclusions: []
     filter: severity=INFO
     name: info
     project: test-project
+    unique_writer_identity: true
   module.project.google_logging_project_sink.sink["notice"]:
+    custom_writer_identity: null
+    description: notice (Terraform-managed).
     destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
     exclusions: []
     filter: severity=NOTICE
     name: notice
     project: test-project
+    unique_writer_identity: true
   module.project.google_logging_project_sink.sink["warnings"]:
+    custom_writer_identity: null
+    description: warnings (Terraform-managed).
     destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING
     name: warnings
     project: test-project
+    unique_writer_identity: true
   module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.disableGuestAttributesAccess
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'TRUE'
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.skipDefaultNetworkCreation
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'TRUE'
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.trustedImageProjects
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
@@ -121,22 +198,28 @@ values:
         - allowed_values:
           - projects/my-project
           denied_values: null
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.vmExternalIpAccess
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
         deny_all: 'TRUE'
         enforce: null
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.allowedPolicyMemberDomains
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
@@ -147,22 +230,28 @@ values:
           - C0xxxxxxx
           - C0yyyyyyy
           denied_values: null
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.disableServiceAccountKeyCreation
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'TRUE'
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.disableServiceAccountKeyUpload
     parent: projects/test-project
     spec:
     - inherit_from_parent: null
+      reset: null
       rules:
       - allow_all: null
         condition:
@@ -178,6 +267,7 @@ values:
         deny_all: null
         enforce: 'FALSE'
         values: []
+    timeouts: null
   module.project.google_project_iam_audit_config.default["allServices"]:
     audit_log_config:
     - exempted_members:
@@ -199,10 +289,14 @@ values:
     role: roles/apigee.serviceAgent
   module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
+    members:
+    - group:organization-admins@example.org
     project: test-project
     role: roles/cloudasset.owner
   module.project.google_project_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
     condition: []
+    members:
+    - group:organization-admins@example.org
     project: test-project
     role: roles/cloudsupport.techSupportEditor
   module.project.google_project_iam_binding.authoritative["roles/editor"]:
@@ -211,10 +305,14 @@ values:
     role: roles/editor
   module.project.google_project_iam_binding.authoritative["roles/iam.securityReviewer"]:
     condition: []
+    members:
+    - group:organization-admins@example.org
     project: test-project
     role: roles/iam.securityReviewer
   module.project.google_project_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
+    members:
+    - group:organization-admins@example.org
     project: test-project
     role: roles/logging.admin
   module.project.google_project_iam_binding.bindings["iam_admin_conditional"]:
@@ -236,6 +334,26 @@ values:
     condition:
     - title: debug bucket writer
     role: roles/logging.bucketWriter
+  module.project.google_project_iam_member.service_agents["apigee"]:
+    condition: []
+    project: test-project
+    role: roles/apigee.serviceAgent
+  module.project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-project
+    role: roles/compute.serviceAgent
+  module.project.google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-project
+    role: roles/container.serviceAgent
+  module.project.google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-project
+    role: roles/container.nodeServiceAgent
+  module.project.google_project_iam_member.service_agents["serverless-robot-prod"]:
+    condition: []
+    project: test-project
+    role: roles/run.serviceAgent
   module.project.google_project_iam_member.shared_vpc_host_robots["roles/cloudasset.owner:cloudservices"]:
     condition: []
     project: test-host
@@ -260,7 +378,7 @@ values:
     condition: []
     project: test-host
     role: roles/container.hostServiceAgentUser
-  module.project.google_project_iam_member.shared_vpc_host_robots["roles/vpcaccess.user:run"]:
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/vpcaccess.user:cloudrun"]:
     condition: []
     project: test-host
     role: roles/vpcaccess.user
@@ -269,34 +387,55 @@ values:
     disable_on_destroy: false
     project: test-project
     service: apigee.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: bigquery.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: compute.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: container.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: logging.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["run.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: run.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["storage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
     service: storage.googleapis.com
-  module.project.google_project_service_identity.jit_si["apigee.googleapis.com"]:
+    timeouts: null
+  module.project.google_project_service_identity.default["apigee.googleapis.com"]:
     project: test-project
     service: apigee.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["container.googleapis.com"]:
+    project: test-project
+    service: container.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["run.googleapis.com"]:
+    project: test-project
+    service: run.googleapis.com
+    timeouts: null
   module.project.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
     condition: []
     project: project-id
@@ -307,8 +446,13 @@ values:
     condition: []
     role: roles/storage.objectCreator
   module.pubsub.google_pubsub_topic.default:
+    ingestion_data_source_settings: []
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: pubsub_sink
     project: project-id
+    timeouts: null
 
 counts:
   google_bigquery_dataset: 1
@@ -324,15 +468,15 @@ counts:
   google_project: 3
   google_project_iam_audit_config: 2
   google_project_iam_binding: 7
-  google_project_iam_member: 9
-  google_project_service: 6
-  google_project_service_identity: 1
+  google_project_iam_member: 14
+  google_project_service: 7
+  google_project_service_identity: 3
   google_pubsub_topic: 1
   google_pubsub_topic_iam_member: 1
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 7
-  resources: 53
+  resources: 61
 
 outputs: {}

@@ -37,15 +37,6 @@ variable "billing_account" {
   }
 }
 
-variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type = object({
-    service_project_network_admin = string
-  })
-  default = null
-}
-
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
