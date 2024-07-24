@@ -58,7 +58,8 @@ module "landing-vpc" {
     inbound = true
     logging = var.dns.enable_logging
   }
-  factories_config = {
+  factories_config = local.spoke_connection == "ncc" ? null : {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
   delete_default_routes_on_create = true
@@ -73,6 +74,7 @@ module "landing-vpc" {
 }
 
 module "landing-firewall" {
+  count      = local.spoke_connection != "ncc" ? 1 : 0
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.name
@@ -87,7 +89,7 @@ module "landing-firewall" {
 
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
-  count          = var.enable_cloud_nat ? 1 : 0
+  count          = var.enable_cloud_nat && local.spoke_connection != "ncc" ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.primary
   name           = local.region_shortnames[var.regions.primary]

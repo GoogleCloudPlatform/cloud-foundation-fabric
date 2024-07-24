@@ -81,6 +81,7 @@ module "prod-spoke-vpc" {
     logging = var.dns.enable_logging
   }
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
   psa_configs                     = var.psa_ranges.prod

@@ -10,7 +10,8 @@ This stage sets up the shared network infrastructure for the whole organization.
 Connectivity between hub and spokes is configurable, and can be established via one of either
 
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (enabled by default),  which offers a complete isolation between environments, and no choke-points in the data plane. Different ways of implementing connectivity, and their respective pros and cons, are discussed below.
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels, which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels, which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing.
+- [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center), which allows for transitive connections between spokes, PSC endpoints transitivity, and a much higher limit in terms of VPCs that can participate to the peering group.
 
 The following diagrams illustrate the high-level designs for the VPN and for the Peering configuration, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
@@ -23,48 +24,55 @@ The following diagrams illustrate the high-level designs for the VPN and for the
   <img src="diagram-peering.svg" alt="Peering diagram">
   </br>Peering diagram
 </p>
+<hr/>
+<p align="center">
+  <img src="diagram-ncc.svg" alt="NCC diagram">
+  </br>NCC diagram
+</p>
 
 ## Table of contents
 
 <!-- BEGIN TOC -->
-- [Table of contents](#table-of-contents)
-- [Design overview and choices](#design-overview-and-choices)
-  - [VPC design](#vpc-design)
-  - [External connectivity](#external-connectivity)
-  - [Internal connectivity](#internal-connectivity)
-  - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
-    - [Peering specific routing setup](#peering-specific-routing-setup)
-    - [HA VPN specific routing setup](#ha-vpn-specific-routing-setup)
-  - [Internet egress](#internet-egress)
-  - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
-  - [DNS](#dns)
-- [Stage structure and files layout](#stage-structure-and-files-layout)
-  - [VPCs](#vpcs)
-  - [VPNs](#vpns)
-    - [External](#external)
-    - [Internal](#internal)
-  - [Routing and BGP](#routing-and-bgp)
-  - [Firewall](#firewall)
-  - [DNS architecture](#dns-architecture)
-    - [Cloud environment](#cloud-environment)
-    - [Cloud to on-prem](#cloud-to-on-prem)
-    - [On-prem to cloud](#on-prem-to-cloud)
-- [How to run this stage](#how-to-run-this-stage)
-  - [Provider and Terraform variables](#provider-and-terraform-variables)
-  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
-  - [Variable configuration](#variable-configuration)
-  - [Choosing between peering and VPN](#choosing-between-peering-and-vpn)
-  - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
-  - [Running the stage](#running-the-stage)
-  - [Post-deployment activities](#post-deployment-activities)
-    - [Private Google Access](#private-google-access)
-- [Customizations](#customizations)
-  - [Changing default regions](#changing-default-regions)
-  - [Configuring the VPN to on prem](#configuring-the-vpn-to-on-prem)
-  - [Adding an environment](#adding-an-environment)
-- [Files](#files)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [Networking with "simple" hub and spoke](#networking-with-simple-hub-and-spoke)
+  - [Table of contents](#table-of-contents)
+  - [Design overview and choices](#design-overview-and-choices)
+    - [VPC design](#vpc-design)
+    - [External connectivity](#external-connectivity)
+    - [Internal connectivity](#internal-connectivity)
+    - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
+      - [Peering specific routing setup](#peering-specific-routing-setup)
+      - [HA VPN specific routing setup](#ha-vpn-specific-routing-setup)
+      - [NCC specific routing setup](#ncc-specific-routing-setup)
+    - [Internet egress](#internet-egress)
+    - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
+    - [DNS](#dns)
+  - [Stage structure and files layout](#stage-structure-and-files-layout)
+    - [VPCs](#vpcs)
+    - [VPNs](#vpns)
+      - [External](#external)
+      - [Internal](#internal)
+    - [Routing and BGP](#routing-and-bgp)
+    - [Firewall](#firewall)
+    - [DNS architecture](#dns-architecture)
+      - [Cloud environment](#cloud-environment)
+      - [Cloud to on-prem](#cloud-to-on-prem)
+      - [On-prem to cloud](#on-prem-to-cloud)
+  - [How to run this stage](#how-to-run-this-stage)
+    - [Provider and Terraform variables](#provider-and-terraform-variables)
+    - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+    - [Variable configuration](#variable-configuration)
+    - [Choosing between peering and VPN](#choosing-between-peering-and-vpn)
+    - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
+    - [Running the stage](#running-the-stage)
+    - [Post-deployment activities](#post-deployment-activities)
+      - [Private Google Access](#private-google-access)
+  - [Customizations](#customizations)
+    - [Changing default regions](#changing-default-regions)
+    - [Configuring the VPN to on prem](#configuring-the-vpn-to-on-prem)
+    - [Adding an environment](#adding-an-environment)
+  - [Files](#files)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Design overview and choices
@@ -90,7 +98,7 @@ Connectivity to additional on-prem sites or other cloud providers should be impl
 
 ### Internal connectivity
 
-As mentioned initially, there are of course other ways to implement internal connectivity other than HA VPN. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
+As mentioned initially, there are multiple ways to implement internal connectivity. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
 
 This is a summary of the main options:
 
@@ -100,7 +108,9 @@ This is a summary of the main options:
 - [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented here)
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-b-nva](../2-networking-b-nva/)
+- [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center)
+  - Pros: full bandwidth with no configurations, no extra latency, transitivity between spokes, feature (PSC transitivity, Private NAT, rich roadmap)
+  - Cons: traffic between spokes incour charges, PSA transitivity currently not supported, architectures involving NVAs can't currently easily be implemented - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-b-nva](../2-networking-b-nva/)
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 
@@ -139,6 +149,14 @@ The high-level routing plan implemented in this architecture is as follows:
 | onprem      | VC landing  | onprem aggregates              |
 
 As is evident from the table above, the hub/landing VPC acts as the route concentrator for the whole GCP network, implementing a full line of sight between environments, and between GCP and on-prem. While advertisements can be adjusted to selectively exchange routes (e.g. to isolate the production and the development environment), we recommend using [Firewall](#firewall) policies or rules to achieve the desired isolation.
+
+#### NCC specific routing setup
+
+When the NCC configuration is enabled:
+
+- routes between multiple subnets within the same VPC are automatically programmed by GCP
+- each spoke exchanges routes with the NCC hub, and gets NCC routes belonging to other spoks from the hub
+- on-premises is connected to the landing VPC and dynamically exchanges BGP routes with GCP using HA VPN. The HA VPN tunnels are configured as Hybrid spokes on the NCC hub, and as such all spokes receive those dynamic routes.
 
 ### Internet egress
 
@@ -204,7 +222,11 @@ Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules
 
 Internal connectivity is controlled by `var.spoke_configs`, where you can either configure `peering-configs` or `vpn-configs` based on which spoke connectivity method you want to deploy. By default, an empty configuration will deploy a VPC Peering based hub-and-spoke.
 
-Peerings are managed by `spoke-peerings.tf`, and VPNs ([`net-vpn`](../../../modules/net-vpn-ha)) are managed by the `spoke-vpns.tf` file. In case of VPNs, per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `var.spoke_configs.vpn_configs`. VPN gateways and IKE secrets are automatically generated and configured.
+Peerings are managed by `spoke-peerings.tf`, VPNs are managed by the `spoke-vpns.tf` file and NCC connectivity is managed by `spoke-ncc.tf`.
+
+In case of VPNs, per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `var.spoke_configs.vpn_configs`. VPN gateways and IKE secrets are automatically generated and configured.
+
+In case of NCC, `var.spoke_configs.ncc_configs` allows for the definition of [range export exclusions](https://cloud.google.com/network-connectivity/docs/network-connectivity-center/concepts/vpc-spokes-overview#exclude-export-ranges).
 
 ### Routing and BGP
 
