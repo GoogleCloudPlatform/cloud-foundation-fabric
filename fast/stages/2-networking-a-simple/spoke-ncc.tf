@@ -58,8 +58,11 @@ resource "google_network_connectivity_spoke" "onprem-primary-vpn" {
   hub         = google_network_connectivity_hub.default[0].id
   linked_vpn_tunnels {
     site_to_site_data_transfer = false
-    uris = [
-      for k in var.vpn_onprem_primary_config.tunnels : module.landing-to-onprem-primary-vpn.tunnel_self_links[k]
-    ]
+    uris                       = [for _, v in module.landing-to-onprem-primary-vpn[0].tunnel_self_links : v]
   }
+}
+
+output "name" {
+  value     = module.landing-to-onprem-primary-vpn
+  sensitive = true
 }

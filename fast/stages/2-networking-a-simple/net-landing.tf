@@ -48,7 +48,7 @@ module "landing-vpc" {
     inbound = true
     logging = var.dns.enable_logging
   }
-  factories_config = local.spoke_connection == "ncc" ? null : {
+  factories_config = {
     context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
