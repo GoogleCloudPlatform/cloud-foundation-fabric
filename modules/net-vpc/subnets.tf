@@ -17,14 +17,17 @@
 # tfdoc:file:description Subnet resources.
 
 locals {
-  _factory_data = {
+  _factory_data_raw = {
     for f in try(fileset(local._factory_path, "**/*.yaml"), []) :
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
+  }
+  _factory_data = {
+    for k, v in local._factory_data_raw : k => merge(v, { region_computed = lookup(var.factories_config.context.regions, v.region, v.region) })
   }
   _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
   _factory_subnets = {
     for k, v in local._factory_data :
-    "${v.region}/${try(v.name, k)}" => {
+    "${v.region_computed}/${try(v.name, k)}" => {
       active                = try(v.active, true)
       description           = try(v.description, null)
       enable_private_access = try(v.enable_private_access, true)
@@ -41,7 +44,7 @@ locals {
         access_type = try(v.ipv6.access_type, "INTERNAL")
       }
       name                = try(v.name, k)
-      region              = v.region
+      region              = v.region_computed
       secondary_ip_ranges = try(v.secondary_ip_ranges, null)
       iam                 = try(v.iam, {})
       iam_bindings = !can(v.iam_bindings) ? {} : {
