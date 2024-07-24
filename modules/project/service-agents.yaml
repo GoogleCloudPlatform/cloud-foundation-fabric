@@ -952,7 +952,7 @@
   display_name: Firebase App Hosting Service Account
   api: firebaseapphosting.googleapis.com
   identity: service-%s@gcp-sa-firebaseapphosting.iam.gserviceaccount.com
-  role: null
+  role: roles/firebaseapphosting.serviceAgent
   is_primary: true
   aliases: []
 - name: firebasemods
@@ -1412,7 +1412,7 @@
   api: storagetransfer.googleapis.com
   identity: project-%s@storage-transfer-service.iam.gserviceaccount.com
   role: null
-  is_primary: false
+  is_primary: true
   aliases: []
 - name: stream
   display_name: Stream Service Account
