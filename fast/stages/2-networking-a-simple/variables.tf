@@ -130,6 +130,18 @@ variable "regions" {
 variable "spoke_configs" {
   description = "Spoke connectivity configurations."
   type = object({
+    ncc_configs = optional(object({
+      dev = optional(object({
+        exclude_export_ranges = list(string)
+        }), {
+        exclude_export_ranges = []
+      })
+      prod = optional(object({
+        exclude_export_ranges = list(string)
+        }), {
+        exclude_export_ranges = []
+      })
+    }))
     peering_configs = optional(object({
       dev = optional(object({
         export        = optional(bool, true)
@@ -172,8 +184,14 @@ variable "spoke_configs" {
     peering_configs = {}
   }
   validation {
-    condition     = (var.spoke_configs.peering_configs == null) != (var.spoke_configs.vpn_configs == null)
-    error_message = "Only one of `var.spoke_configs.peering_configs` or `var.spoke_configs.vpn_configs` must be configured."
+    condition = length(
+      compact([
+        var.spoke_configs.peering_configs != null ? "peering" : null,
+        var.spoke_configs.vpn_configs != null ? "vpn" : null,
+        var.spoke_configs.ncc_configs != null ? "ncc" : null,
+      ])
+    ) == 1
+    error_message = "Only one of `var.spoke_configs.ncc_configs`, `var.spoke_configs.peering_configs` or `var.spoke_configs.vpn_configs` must be configured."
   }
 }
 

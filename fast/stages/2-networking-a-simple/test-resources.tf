@@ -17,29 +17,33 @@
 # tfdoc:file:description Temporary instances for testing
 
 locals {
-  test-vms = var.create_test_instances != true ? {} : {
-    dev-spoke-primary = {
-      region     = var.regions.primary
-      project_id = module.dev-spoke-project.project_id
-      zone       = "b"
-      network    = module.dev-spoke-vpc.self_link
-      subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
-    }
-    landing-primary = {
-      region     = var.regions.primary
-      project_id = module.landing-project.project_id
-      zone       = "b"
-      network    = module.landing-vpc.self_link
-      subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
-    }
-    prod-spoke-primary = {
-      region     = var.regions.primary
-      project_id = module.prod-spoke-project.project_id
-      zone       = "b"
-      network    = module.prod-spoke-vpc.self_link
-      subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
-    }
-  }
+  test-vms = var.create_test_instances != true ? {} : merge(
+    {
+      dev-spoke-primary = {
+        region     = var.regions.primary
+        project_id = module.dev-spoke-project.project_id
+        zone       = "b"
+        network    = module.dev-spoke-vpc.self_link
+        subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
+      }
+      prod-spoke-primary = {
+        region     = var.regions.primary
+        project_id = module.prod-spoke-project.project_id
+        zone       = "b"
+        network    = module.prod-spoke-vpc.self_link
+        subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
+      }
+    },
+    local.spoke_connection == "ncc" ? {} :
+    {
+      landing-primary = {
+        region     = var.regions.primary
+        project_id = module.landing-project.project_id
+        zone       = "b"
+        network    = module.landing-vpc.self_link
+        subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
+      }
+  })
 }
 
 module "test-vms" {

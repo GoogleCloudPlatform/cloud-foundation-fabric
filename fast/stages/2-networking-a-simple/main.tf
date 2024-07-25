@@ -21,7 +21,11 @@ locals {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null
   }
-  spoke_connection = var.spoke_configs.peering_configs != null ? "peering" : "vpn"
+  spoke_connection = coalesce(
+    var.spoke_configs.peering_configs != null ? "peering" : null,
+    var.spoke_configs.vpn_configs != null ? "vpn" : null,
+    var.spoke_configs.ncc_configs != null ? "ncc" : null,
+  )
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",

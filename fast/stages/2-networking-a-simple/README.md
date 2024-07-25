@@ -10,7 +10,8 @@ This stage sets up the shared network infrastructure for the whole organization.
 Connectivity between hub and spokes is configurable, and can be established via one of either
 
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (enabled by default),  which offers a complete isolation between environments, and no choke-points in the data plane. Different ways of implementing connectivity, and their respective pros and cons, are discussed below.
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels, which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels, which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing.
+- [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center), which allows for transitive connections between spokes, PSC endpoints transitivity, and a much higher limit in terms of VPCs that can participate to the peering group.
 
 The following diagrams illustrate the high-level designs for the VPN and for the Peering configuration, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
@@ -22,6 +23,11 @@ The following diagrams illustrate the high-level designs for the VPN and for the
 <p align="center">
   <img src="diagram-peering.svg" alt="Peering diagram">
   </br>Peering diagram
+</p>
+<hr/>
+<p align="center">
+  <img src="diagram-ncc.svg" alt="NCC diagram">
+  </br>NCC diagram
 </p>
 
 ## Table of contents
@@ -35,6 +41,7 @@ The following diagrams illustrate the high-level designs for the VPN and for the
   - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
     - [Peering specific routing setup](#peering-specific-routing-setup)
     - [HA VPN specific routing setup](#ha-vpn-specific-routing-setup)
+    - [NCC specific routing setup](#ncc-specific-routing-setup)
   - [Internet egress](#internet-egress)
   - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
   - [DNS](#dns)
@@ -90,7 +97,7 @@ Connectivity to additional on-prem sites or other cloud providers should be impl
 
 ### Internal connectivity
 
-As mentioned initially, there are of course other ways to implement internal connectivity other than HA VPN. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
+As mentioned initially, there are multiple ways to implement internal connectivity. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
 
 This is a summary of the main options:
 
@@ -100,6 +107,9 @@ This is a summary of the main options:
 - [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented here)
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
+- [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center)
+  - Pros: full bandwidth with no configurations, no extra latency, transitivity between spokes, feature (PSC transitivity, Private NAT, rich roadmap)
+  - Cons: traffic between spokes incour charges, PSA transitivity currently not supported, architectures involving NVAs can't currently easily be implemented 
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-b-nva](../2-networking-b-nva/)
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
@@ -140,9 +150,19 @@ The high-level routing plan implemented in this architecture is as follows:
 
 As is evident from the table above, the hub/landing VPC acts as the route concentrator for the whole GCP network, implementing a full line of sight between environments, and between GCP and on-prem. While advertisements can be adjusted to selectively exchange routes (e.g. to isolate the production and the development environment), we recommend using [Firewall](#firewall) policies or rules to achieve the desired isolation.
 
+#### NCC specific routing setup
+
+When the NCC configuration is enabled:
+
+- routes between multiple subnets within the same VPC are automatically programmed by GCP
+- each spoke exchanges routes with the NCC hub, and gets NCC routes belonging to other spoks from the hub
+- on-premises is connected to the landing VPC and dynamically exchanges BGP routes with GCP using HA VPN. The HA VPN tunnels are configured as Hybrid spokes on the NCC hub, and as such all spokes receive those dynamic routes.
+
 ### Internet egress
 
 Cloud NAT provides the simplest path for internet egress. This setup uses Cloud NAT, with optional per-VPC NAT gateways. Cloud NAT is disabled by default; enable it by setting the `enable_cloud_nat` variable.
+
+Cloud NAT is always disabled in the `landing` VPC when using NCC, as it's solely used for hybrid connectivity.
 
 Several other scenarios are possible of course, with varying degrees of complexity:
 
@@ -204,7 +224,11 @@ Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules
 
 Internal connectivity is controlled by `var.spoke_configs`, where you can either configure `peering-configs` or `vpn-configs` based on which spoke connectivity method you want to deploy. By default, an empty configuration will deploy a VPC Peering based hub-and-spoke.
 
-Peerings are managed by `spoke-peerings.tf`, and VPNs ([`net-vpn`](../../../modules/net-vpn-ha)) are managed by the `spoke-vpns.tf` file. In case of VPNs, per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `var.spoke_configs.vpn_configs`. VPN gateways and IKE secrets are automatically generated and configured.
+Peerings are managed by `spoke-peerings.tf`, VPNs are managed by the `spoke-vpns.tf` file and NCC connectivity is managed by `spoke-ncc.tf`.
+
+In case of VPNs, per-gateway configurations (e.g. BGP advertisements and session ranges) are controlled by variable `var.spoke_configs.vpn_configs`. VPN gateways and IKE secrets are automatically generated and configured.
+
+In case of NCC, `var.spoke_configs.ncc_configs` allows for the definition of [range export exclusions](https://cloud.google.com/network-connectivity/docs/network-connectivity-center/concepts/vpc-spokes-overview#exclude-export-ranges).
 
 ### Routing and BGP
 
@@ -218,6 +242,8 @@ BGP sessions for landing-spoke are configured through variable `spoke_configs.vp
 
 **VPC firewall rules** ([`net-vpc-firewall`](../../../modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
 To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](../../../modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customised.
+
+When using NCC, no firewall rule is created for the `landing` VPC, as they don't apply to traffic in transit, and no workload should be deployed in such VPC.
 
 **Hierarchical firewall policies** ([`folder`](../../../modules/folder)) are defined in `main.tf` and managed through a policy factory implemented by the `net-firewall-policy` module, which is then applied to the `Networking` folder containing all the core networking infrastructure. Policies are defined in the `rules_file` file, to define a new one simply use the [firewall policy module documentation](../../../modules/net-firewall-policy/README.md#factory)". Sample hierarchical firewall rules are shipped in [data/hierarchical-ingress-rules.yaml](./data/hierarchical-ingress-rules.yaml) and can be easily customised.
 
@@ -443,6 +469,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [net-prod.tf](./net-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
+| [spoke-ncc.tf](./spoke-ncc.tf) | Peerings between landing and spokes. |  | <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
 | [spoke-peerings.tf](./spoke-peerings.tf) | Peerings between landing and spokes. | <code>net-vpc-peering</code> |  |
 | [spoke-vpns.tf](./spoke-vpns.tf) | VPN between landing and spokes. | <code>net-vpn-ha</code> |  |
 | [test-resources.tf](./test-resources.tf) | Temporary instances for testing |  |  |
@@ -470,8 +497,8 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [psa_ranges](variables.tf#L98) | IP ranges used for Private Service Access (CloudSQL, etc.). | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  prod &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [regions](variables.tf#L118) | Region definitions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [service_accounts](variables-fast.tf#L80) | Automation service accounts in name => email format. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  gke-dev              &#61; string&#10;  gke-prod             &#61; string&#10;  project-factory      &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>1-resman</code> |
-| [spoke_configs](variables.tf#L130) | Spoke connectivity configurations. | <code title="object&#40;&#123;&#10;  peering_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65501&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    landing &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65500&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65502&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  peering_configs &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [vpn_onprem_primary_config](variables.tf#L180) | VPN gateway configuration for onprem interconnection in the primary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [spoke_configs](variables.tf#L130) | Spoke connectivity configurations. | <code title="object&#40;&#123;&#10;  ncc_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      exclude_export_ranges &#61; list&#40;string&#41;&#10;      &#125;&#41;, &#123;&#10;      exclude_export_ranges &#61; &#91;&#93;&#10;    &#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      exclude_export_ranges &#61; list&#40;string&#41;&#10;      &#125;&#41;, &#123;&#10;      exclude_export_ranges &#61; &#91;&#93;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  peering_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65501&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    landing &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65500&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65502&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  peering_configs &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [vpn_onprem_primary_config](variables.tf#L198) | VPN gateway configuration for onprem interconnection in the primary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
