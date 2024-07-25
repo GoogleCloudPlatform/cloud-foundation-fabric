@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-output "docker_image_path" {
-  description = "Repository path for Docker images."
-  value = join("/", [
-    "${var.location}-${local.format_string}.pkg.dev",
-    var.project_id,
-    var.name
-  ])
-  depends_on = [google_artifact_registry_repository.registry]
-}
-
 output "id" {
   description = "Fully qualified repository id."
   value       = google_artifact_registry_repository.registry.id
@@ -37,4 +27,14 @@ output "name" {
 output "repository" {
   description = "Repository object."
   value       = google_artifact_registry_repository.registry
+}
+
+output "url" {
+  description = "Repository URL."
+  value = join("/", [
+    "${var.location}-${local.format_string}.pkg.dev",
+    var.project_id,
+    var.name
+  ])
+  depends_on = [google_artifact_registry_repository.registry]
 }
