@@ -106,12 +106,23 @@ moved {
   to   = google_project_service_identity.default
 }
 
+moved {
+  from = google_project_service_identity.servicenetworking[0]
+  to   = google_project_service_identity.default["servicenetworking.googleapis.com"]
+}
+
 resource "google_project_service_identity" "default" {
   provider   = google-beta
   for_each   = toset(local.primary_service_agents)
   project    = local.project.project_id
   service    = each.key
   depends_on = [google_project_service.project_services]
+}
+
+
+moved {
+  from = google_project_iam_member.servicenetworking[0]
+  to   = google_project_iam_member.service_agents["service-networking"]
 }
 
 resource "google_project_iam_member" "service_agents" {
