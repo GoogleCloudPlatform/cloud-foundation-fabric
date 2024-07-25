@@ -44,6 +44,7 @@ locals {
         "roles/cloudsupport.techSupportEditor",
       ]
       additive = [
+        module.organization.custom_roles["ngfw_enterprise_admin"].id,
         "roles/compute.orgFirewallPolicyAdmin",
         "roles/compute.xpnAdmin"
       ]
@@ -63,7 +64,6 @@ locals {
       ]
       additive = concat(
         [
-          "roles/ngfwEnterpriseAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [

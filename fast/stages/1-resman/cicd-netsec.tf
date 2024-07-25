@@ -19,7 +19,7 @@
 # read-write (apply) SA used by CI/CD workflows
 # to impersonate netsec automation SA
 
-module "branch-network-netsec-sa-cicd" {
+module "branch-netsec-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
     try(local.cicd_repositories.netsec.name, null) != null
@@ -56,7 +56,7 @@ module "branch-network-netsec-sa-cicd" {
 
 # read-only (plan) SA used by CI/CD workflows to impersonate netsec automation SA
 
-module "branch-network-netsec-r-sa-cicd" {
+module "branch-netsec-r-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
     try(local.cicd_repositories.netsec.name, null) != null

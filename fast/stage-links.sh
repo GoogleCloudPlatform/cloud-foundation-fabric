@@ -83,13 +83,30 @@ case $STAGE_NAME in
     tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
   fi
   ;;
+"3-network-security"*)
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/3-netsec-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json
+    tfvars/2-networking.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/3-netsec-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json
+    tenants/$TENANT/tfvars/2-networking.auto.tfvars.json"
+  fi
+  ;;
 *)
   # check for a "dev" stage 3
   echo "no stage found, trying for parent stage 3..."
-  STAGE_NAME=$(basename $(dirname "$(pwd)"))
+  PARENT_NAME=$(basename $(dirname "$(pwd)"))
   if [[ "$STAGE_NAME" == "3-"* ]]; then
     if [[ "$STAGE_NAME" == "3-gke-multitenant"* ]]; then
       STAGE_NAME="3-gke"
+    elif [[ "$STAGE_NAME" == "3-ngfw-enterprise"* ]]; then
+      STAGE_NAME="3-ngfw-enterprise"
     fi
     SUFFIX=$(basename "$(pwd)")
     STAGE_NAME="${STAGE_NAME}-$SUFFIX"

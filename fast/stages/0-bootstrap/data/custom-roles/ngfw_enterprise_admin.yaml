@@ -14,8 +14,27 @@
 
 name: ngfwEnterpriseAdmin
 includedPermissions:
-  - networksecurity.firewallEndpoints.*
-  - networksecurity.firewallEndpointAssociations.*
+  - networksecurity.firewallEndpoints.create
+  - networksecurity.firewallEndpoints.delete
+  - networksecurity.firewallEndpoints.get
+  - networksecurity.firewallEndpoints.list
+  - networksecurity.firewallEndpoints.update
+  - networksecurity.firewallEndpoints.use
+  - networksecurity.locations.get
+  - networksecurity.locations.list
+  - networksecurity.operations.cancel
+  - networksecurity.operations.delete
   - networksecurity.operations.get
-  - networksecurity.securityProfiles.*
-  - networksecurity.securityProfileGroups.*
+  - networksecurity.operations.list
+  - networksecurity.securityProfileGroups.create
+  - networksecurity.securityProfileGroups.delete
+  - networksecurity.securityProfileGroups.get
+  - networksecurity.securityProfileGroups.list
+  - networksecurity.securityProfileGroups.update
+  - networksecurity.securityProfileGroups.use
+  - networksecurity.securityProfiles.create
+  - networksecurity.securityProfiles.delete
+  - networksecurity.securityProfiles.get
+  - networksecurity.securityProfiles.list
+  - networksecurity.securityProfiles.update
+  - networksecurity.securityProfiles.use

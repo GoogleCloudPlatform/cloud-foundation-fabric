@@ -85,8 +85,8 @@ locals {
     }
     netsec = {
       service_accounts = {
-        apply = try(module.branch-network-netsec-sa-cicd[0].email, null)
-        plan  = try(module.branch-network-netsec-r-sa-cicd[0].email, null)
+        apply = try(module.branch-netsec-sa-cicd[0].email, null)
+        plan  = try(module.branch-netsec-r-sa-cicd[0].email, null)
       }
       tf_providers_files = {
         apply = "3-netsec-providers.tf"
@@ -211,15 +211,15 @@ locals {
       })
       "3-netsec" = templatefile(local._tpl_providers, {
         backend_extra = null
-        bucket        = module.branch-network-netsec-gcs.name
+        bucket        = module.branch-netsec-gcs.name
         name          = "netsec"
-        sa            = module.branch-network-netsec-sa.email
+        sa            = module.branch-netsec-sa.email
       })
       "3-netsec-r" = templatefile(local._tpl_providers, {
         backend_extra = null
-        bucket        = module.branch-network-netsec-gcs.name
+        bucket        = module.branch-network-gcs.name
         name          = "netsec"
-        sa            = module.branch-network-netsec-r-sa.email
+        sa            = module.branch-netsec-r-sa.email
       })
     },
     {
@@ -370,8 +370,8 @@ locals {
       gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
       gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
       gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-      netsec                 = module.branch-network-netsec-sa.email
-      netsec-r               = module.branch-network-netsec-r-sa.email
+      netsec                 = module.branch-netsec-sa.email
+      netsec-r               = module.branch-netsec-r-sa.email
       networking             = module.branch-network-sa.email
       networking-r           = module.branch-network-r-sa.email
       project-factory        = try(module.branch-pf-sa[0].email, null)

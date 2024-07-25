@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,9 @@ locals {
     for _, v in google_network_security_firewall_endpoint.firewall_endpoint
     : v.location => v.id
   }
-  ngfw_enterprise_endpoint_self_links = {
-    for _, v in google_network_security_firewall_endpoint.firewall_endpoint
-    : v.location => v.self_link
-  }
 }
 
 output "ngfw_enterprise_endpoint_ids" {
   description = "The NGFW Enterprise endpoint ids."
   value       = local.ngfw_enterprise_endpoint_ids
-}
-
-output "ngfw_enterprise_endpoint_self_links" {
-  description = "The NGFW Enterprise endpoint self_links."
-  value       = local.ngfw_enterprise_endpoint_self_links
 }

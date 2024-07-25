@@ -47,10 +47,10 @@ resource "google_network_security_security_profile_group" "dev_sec_profile_group
 resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_association" {
   for_each          = toset(var.ngfw_enterprise_config.endpoint_zones)
   name              = "${var.prefix}-dev-epa-${each.key}"
-  parent            = try(module.dev-spoke-project[0].project_id, null)
-  location          = each.value.zone
+  parent            = "projects/${try(module.dev-spoke-project[0].project_id, null)}"
+  location          = each.value
   firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
-  network           = try(var.vpc_self_links.dev-spoke-0, null)
+  network           = try(local.vpc_ids.dev-spoke-0, null)
 }
 
 module "dev-spoke-firewall-policy" {
@@ -58,6 +58,7 @@ module "dev-spoke-firewall-policy" {
   source    = "../../../modules/net-firewall-policy"
   name      = "${var.prefix}-dev-fw-policy"
   parent_id = try(module.dev-spoke-project[0].project_id, null)
+  region    = "global"
   security_profile_group_ids = {
     dev = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.dev_sec_profile_group[0].id, "")}"
   }
