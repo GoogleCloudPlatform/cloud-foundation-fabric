@@ -32,8 +32,8 @@ module "ngfw-quota-project" {
   count           = var.ngfw_enterprise_config.quota_project_id == null ? 1 : 0
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-ngfw-0"
-  parent          = var.folder_ids.networking-prod
+  name            = "net-ngfw-0"
+  parent          = var.folder_ids.networking
   prefix          = var.prefix
   services        = ["networksecurity.googleapis.com"]
 }

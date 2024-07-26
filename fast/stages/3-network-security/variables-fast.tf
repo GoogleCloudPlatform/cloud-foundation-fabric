@@ -36,6 +36,17 @@ variable "folder_ids" {
   })
 }
 
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Host project for the shared VPC."
+  type = object({
+    dev-spoke-0  = optional(string)
+    prod-spoke-0 = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 00-globals
   description = "Organization details."

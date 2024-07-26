@@ -101,13 +101,10 @@ case $STAGE_NAME in
 *)
   # check for a "dev" stage 3
   echo "no stage found, trying for parent stage 3..."
-  PARENT_NAME=$(basename $(dirname "$(pwd)"))
+  STAGE_NAME=$(basename $(dirname "$(pwd)"))
   if [[ "$STAGE_NAME" == "3-"* ]]; then
     if [[ "$STAGE_NAME" == "3-gke-multitenant"* ]]; then
       STAGE_NAME="3-gke"
-    elif [[ "$STAGE_NAME" == "3-ngfw-enterprise"* ]]; then
-      STAGE_NAME="3-ngfw-enterprise"
-    fi
     SUFFIX=$(basename "$(pwd)")
     STAGE_NAME="${STAGE_NAME}-$SUFFIX"
     PROVIDER="providers/${STAGE_NAME}-providers.tf"

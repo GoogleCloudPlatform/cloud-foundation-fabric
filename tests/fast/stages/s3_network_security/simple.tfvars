@@ -5,6 +5,10 @@ folder_ids = {
   networking-dev  = "folders/12345678901"
   networking-prod = "folders/12345678902"
 }
+host_project_ids = {
+  dev-spoke-0  = "dev-project"
+  prod-spoke-0 = "prod-project"
+}
 organization = {
   domain      = "fast.example.com"
   id          = 123456789012
