@@ -105,6 +105,7 @@ case $STAGE_NAME in
   if [[ "$STAGE_NAME" == "3-"* ]]; then
     if [[ "$STAGE_NAME" == "3-gke-multitenant"* ]]; then
       STAGE_NAME="3-gke"
+    fi
     SUFFIX=$(basename "$(pwd)")
     STAGE_NAME="${STAGE_NAME}-$SUFFIX"
     PROVIDER="providers/${STAGE_NAME}-providers.tf"

@@ -44,7 +44,9 @@ locals {
         "roles/cloudsupport.techSupportEditor",
       ]
       additive = [
-        module.organization.custom_roles["ngfw_enterprise_admin"].id,
+        # Can't use module.organization.custom_roles here,
+        # as dynamic values can't be used for dictionary keys
+        "organizations/${var.organization.id}/roles/ngfwEnterpriseAdmin",
         "roles/compute.orgFirewallPolicyAdmin",
         "roles/compute.xpnAdmin"
       ]
