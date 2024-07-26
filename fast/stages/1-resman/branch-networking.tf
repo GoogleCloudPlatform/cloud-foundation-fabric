@@ -29,7 +29,6 @@ locals {
     "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
     "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
     # netsec service account
-    "roles/serviceusage.serviceUsageAdmin"                = [module.branch-netsec-sa.iam_email]
     (var.custom_roles["network_firewall_policies_admin"]) = [module.branch-netsec-sa.iam_email]
   }
   # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
