@@ -32,7 +32,7 @@ END
 fi
 
 if [[ "$1" == "gs://"* ]]; then
-  CMD="gcloud alpha storage cp $1"
+  CMD="gcloud storage cp $1"
   CP_CMD=$CMD
 elif [ ! -d "$1" ]; then
   echo "folder $1 not found"

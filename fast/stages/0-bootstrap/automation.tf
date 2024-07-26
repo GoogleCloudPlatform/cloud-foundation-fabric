@@ -21,6 +21,8 @@ locals {
   cicd_resman_r_sa  = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
   cicd_tenants_sa   = try(module.automation-tf-cicd-sa["tenants"].iam_email, "")
   cicd_tenants_r_sa = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, "")
+  cicd_vpcsc_sa     = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, "")
+  cicd_vpcsc_r_sa   = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, "")
 }
 
 module "automation-project" {
@@ -158,7 +160,6 @@ module "automation-project" {
       "container.googleapis.com",
     ]
   )
-
   # Enable IAM data access logs to capture impersonation and service
   # account token generation events. This is implemented within the
   # automation project to limit log volume. For heightened security,
@@ -319,6 +320,69 @@ module "automation-tf-resman-r-sa" {
       module.organization.custom_role_id["organization_admin_viewer"],
       module.organization.custom_role_id["tag_viewer"]
     ]
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = [module.organization.custom_role_id["storage_viewer"]]
+  }
+}
+
+# VPC SC stage's bucket and service account
+
+module "automation-tf-vpcsc-gcs" {
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-vpcsc-0"
+  prefix        = local.prefix
+  location      = local.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin"  = [module.automation-tf-vpcsc-sa.iam_email]
+    "roles/storage.objectViewer" = [module.automation-tf-vpcsc-r-sa.iam_email]
+  }
+  depends_on = [module.organization]
+}
+
+module "automation-tf-vpcsc-sa" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.automation-project.project_id
+  name         = "vpcsc-0"
+  display_name = "Terraform stage 1 vpcsc service account."
+  prefix       = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  # we use additive IAM to allow tenant CI/CD SAs to impersonate it
+  iam_bindings_additive = merge(
+    {
+      security_admins = {
+        member = local.principals["gcp-security-admins"]
+        role   = "roles/iam.serviceAccountTokenCreator"
+      }
+    },
+    local.cicd_vpcsc_sa == "" ? {} : {
+      cicd_token_creator_vpcsc = {
+        member = local.cicd_vpcsc_sa
+        role   = "roles/iam.serviceAccountTokenCreator"
+      }
+    }
+  )
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
+  }
+}
+
+module "automation-tf-vpcsc-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.automation-project.project_id
+  name         = "vpcsc-0r"
+  display_name = "Terraform stage 1 vpcsc service account (read-only)."
+  prefix       = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  # we use additive IAM to allow tenant CI/CD SAs to impersonate it
+  iam_bindings_additive = local.cicd_vpcsc_r_sa == "" ? {} : {
+    cicd_token_creator_vpcsc = {
+      member = local.cicd_vpcsc_r_sa
+      role   = "roles/iam.serviceAccountTokenCreator"
+    }
   }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = [module.organization.custom_role_id["storage_viewer"]]

@@ -51,5 +51,5 @@ module "test" {
   shared_vpc_link    = "https://www.googleapis.com/compute/v1/projects/test-dns/global/networks/default"
   teams              = ["team1", "team2"]
 }
-# tftest modules=9 resources=16
+# tftest modules=9 resources=22
 ```

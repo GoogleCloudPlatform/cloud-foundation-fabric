@@ -37,6 +37,7 @@ module "project" {
   source         = "./fabric/modules/project"
   name           = var.project_id
   project_create = false
+  services       = ["storage.googleapis.com"]
 }
 
 module "kms" {
@@ -50,7 +51,7 @@ module "kms" {
     bucket_key = {
       iam_bindings = {
         bucket_key_iam = {
-          members = ["serviceAccount:${module.project.service_accounts.robots.storage}"]
+          members = [module.project.service_agents.storage.iam_email]
           role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
         }
       }
@@ -123,6 +124,7 @@ module "project" {
   source         = "./fabric/modules/project"
   name           = var.project_id
   project_create = false
+  services       = ["storage.googleapis.com"]
 }
 
 module "bucket-gcs-notification" {
@@ -134,7 +136,7 @@ module "bucket-gcs-notification" {
   notification_config = {
     enabled           = true
     payload_format    = "JSON_API_V1"
-    sa_email          = module.project.service_accounts.robots.storage
+    sa_email          = module.project.service_agents.storage.email
     topic_name        = "gcs-notification-topic"
     event_types       = ["OBJECT_FINALIZE"]
     custom_attributes = {}

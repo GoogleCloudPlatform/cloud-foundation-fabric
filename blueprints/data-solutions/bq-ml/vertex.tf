@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ resource "google_vertex_ai_metadata_store" "store" {
   description = "Vertex Ai Metadata Store"
   region      = var.region
   dynamic "encryption_spec" {
-    for_each = try(var.service_encryption_keys.aiplatform, null) == null ? [] : [""]
-
+    for_each = var.service_encryption_keys.aiplatform == null ? [] : [""]
     content {
-      kms_key_name = try(var.service_encryption_keys.aiplatform, null)
+      kms_key_name = var.service_encryption_keys.aiplatform
     }
   }
   # `state` value will be decided automatically based on the result of the configuration
@@ -82,8 +81,8 @@ resource "google_notebooks_instance" "playground" {
   install_gpu_driver = true
   boot_disk_type     = "PD_SSD"
   boot_disk_size_gb  = 110
-  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : null
-  kms_key            = try(local.service_encryption_keys.compute, null)
+  disk_encryption    = var.service_encryption_keys.compute != null ? "CMEK" : null
+  kms_key            = var.service_encryption_keys.compute
 
   no_public_ip    = true
   no_proxy_access = false

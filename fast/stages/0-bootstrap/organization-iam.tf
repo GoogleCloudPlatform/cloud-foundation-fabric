@@ -174,6 +174,20 @@ locals {
         ]
       )
     }
+    (module.automation-tf-vpcsc-sa.iam_email) = {
+      authoritative = []
+      additive = [
+        "roles/accesscontextmanager.policyAdmin",
+        "roles/cloudasset.viewer"
+      ]
+    }
+    (module.automation-tf-vpcsc-r-sa.iam_email) = {
+      authoritative = []
+      additive = [
+        "roles/accesscontextmanager.policyReader",
+        "roles/cloudasset.viewer"
+      ]
+    }
   }
   # bootstrap user bindings
   iam_user_bootstrap_bindings = var.bootstrap_user == null ? {} : {

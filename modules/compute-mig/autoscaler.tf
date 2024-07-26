@@ -219,7 +219,7 @@ resource "google_compute_region_autoscaler" "default" {
         duration_sec          = schedule.value.duration_sec
         min_required_replicas = schedule.value.min_required_replicas
         name                  = schedule.value.name
-        schedule              = schedule.cron_schedule
+        schedule              = schedule.value.cron_schedule
         description           = schedule.value.description
         disabled              = schedule.value.disabled
         time_zone             = schedule.value.timezone

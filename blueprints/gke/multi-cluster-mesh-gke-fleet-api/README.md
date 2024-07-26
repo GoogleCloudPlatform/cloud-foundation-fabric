@@ -102,5 +102,5 @@ module "test" {
   mgmt_subnet_cidr_block = "10.0.0.0/24"
   istio_version          = "1.14.1-asm.3"
 }
-# tftest modules=13 resources=59
+# tftest modules=13 resources=73
 ```

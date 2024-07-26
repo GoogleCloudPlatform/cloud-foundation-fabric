@@ -96,5 +96,5 @@ module "test" {
   project_create = true
   project_id     = "project-1"
 }
-# tftest modules=18 resources=46
+# tftest modules=18 resources=49
 ```
