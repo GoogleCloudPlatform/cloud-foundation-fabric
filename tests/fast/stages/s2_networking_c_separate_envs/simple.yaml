@@ -13,5 +13,37 @@
 # limitations under the License.
 
 counts:
+  google_compute_external_vpn_gateway: 2
+  google_compute_firewall: 4
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 4
+  google_compute_ha_vpn_gateway: 2
+  google_compute_network: 2
+  google_compute_route: 4
+  google_compute_router: 4
+  google_compute_router_interface: 4
+  google_compute_router_nat: 2
+  google_compute_router_peer: 4
+  google_compute_shared_vpc_host_project: 2
+  google_compute_subnetwork: 6
+  google_compute_vpn_tunnel: 4
+  google_dns_managed_zone: 6
+  google_dns_policy: 2
+  google_dns_record_set: 2
+  google_dns_response_policy: 2
+  google_dns_response_policy_rule: 76
+  google_essential_contacts_contact: 1
+  google_folder: 1
+  google_monitoring_alert_policy: 4
+  google_monitoring_dashboard: 6
+  google_project: 2
+  google_project_iam_binding: 4
+  google_project_iam_member: 14
+  google_project_service: 16
+  google_project_service_identity: 12
+  google_storage_bucket_object: 2
+  google_vpc_access_connector: 2
   modules: 22
-  resources: 180
+  random_id: 2
+  resources: 200

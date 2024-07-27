@@ -19,10 +19,10 @@ counts:
   google_container_node_pool: 1
   google_project: 1
   google_project_iam_binding: 1
-  google_project_iam_member: 8
+  google_project_iam_member: 16
   google_project_service: 12
-  google_project_service_identity: 2
+  google_project_service_identity: 7
   google_service_account: 1
   google_storage_bucket_object: 1
   modules: 6
-  resources: 30
+  resources: 43

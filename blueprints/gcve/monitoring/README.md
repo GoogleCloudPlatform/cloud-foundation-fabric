@@ -88,7 +88,7 @@ module "gcve-monitoring" {
   create_dashboards    = true
   create_firewall_rule = true
 }
-# tftest modules=7 resources=22
+# tftest modules=7 resources=25
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

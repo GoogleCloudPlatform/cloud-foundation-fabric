@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,11 +52,6 @@ output "demo_commands" {
 output "gcs_buckets" {
   description = "GCS buckets."
   value       = module.data-platform.gcs-buckets
-}
-
-output "kms_keys" {
-  description = "Cloud MKS keys."
-  value       = module.data-platform.kms_keys
 }
 
 output "projects" {

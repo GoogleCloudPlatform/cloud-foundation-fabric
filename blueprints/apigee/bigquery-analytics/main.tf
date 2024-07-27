@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ module "project" {
       module.function_export.service_account_iam_email
     ]
     "roles/storage.admin" = [
-      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+      module.project.service_agents.apigee.iam_email
     ]
   }
 }
@@ -145,7 +145,7 @@ module "bucket_export" {
   notification_config = {
     enabled           = true
     payload_format    = "JSON_API_V1"
-    sa_email          = module.project.service_accounts.robots.storage
+    sa_email          = module.project.service_agents.storage.email
     topic_name        = "topic-gcs2bq"
     event_types       = ["OBJECT_FINALIZE"]
     custom_attributes = {}

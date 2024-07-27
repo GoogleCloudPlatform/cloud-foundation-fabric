@@ -46,8 +46,6 @@ module "prod-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-prod, null),
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null),
     ])
   }
   # allow specific service accounts to assign a set of roles
@@ -81,6 +79,7 @@ module "prod-spoke-vpc" {
     logging = var.dns.enable_logging
   }
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
   psa_configs                     = var.psa_ranges.prod

@@ -16,12 +16,28 @@ values:
   ? module.project.google_access_context_manager_service_perimeter_resource.default["accessPolicies/1234567890/servicePerimeters/default"]
   : perimeter_name: accessPolicies/1234567890/servicePerimeters/default
     timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
+    labels: null
+    name: test-project
+    org_id: null
+    project_id: test-project
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: stackdriver.googleapis.com
+    timeouts: null
 
 counts:
   google_access_context_manager_service_perimeter_resource: 1
   google_project: 1
-  google_project_service: 2
+  google_project_service: 1
   modules: 1
-  resources: 4
+  resources: 3
 
 outputs: {}

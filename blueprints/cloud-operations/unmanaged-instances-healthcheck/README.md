@@ -128,5 +128,5 @@ module "test" {
   billing_account = "123456-123456-123456"
   project_create  = true
 }
-# tftest modules=11 resources=37
+# tftest modules=11 resources=46
 ```

@@ -69,8 +69,8 @@ To run the demo:
 | [location](variables.tf#L24) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
 | [project_create](variables.tf#L39) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L53) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
-| [service_encryption_keys](variables.tf#L59) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  aiplatform &#61; optional&#40;string, null&#41;&#10;  bq         &#61; optional&#40;string, null&#41;&#10;  compute    &#61; optional&#40;string, null&#41;&#10;  storage    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_config](variables.tf#L70) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_encryption_keys](variables.tf#L59) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  aiplatform &#61; optional&#40;string&#41;&#10;  bq         &#61; optional&#40;string&#41;&#10;  compute    &#61; optional&#40;string&#41;&#10;  storage    &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_config](variables.tf#L71) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -97,5 +97,5 @@ module "test" {
   prefix     = "prefix"
 }
 
-# tftest modules=9 resources=50
+# tftest modules=9 resources=67
 ```

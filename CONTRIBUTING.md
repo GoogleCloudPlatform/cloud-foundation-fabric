@@ -165,8 +165,8 @@ module "project" {
     "constraints/compute.skipDefaultNetworkCreation" = true
   }
   service_encryption_key_ids = {
-    compute = [local.kms.europe-west1.compute]
-    storage = [local.kms.europe.gcs]
+    "compute.googleapis.com" = [local.kms.europe-west1.compute]
+    "storage.googleapis.com" = [local.kms.europe.gcs]
   }
   shared_vpc_service_config = {
     attach       = true

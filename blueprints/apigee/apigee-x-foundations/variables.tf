@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -378,9 +378,9 @@ variable "project_config" {
       service_projects = optional(list(string), [])
     }))
     shared_vpc_service_config = optional(object({
-      host_project         = string
-      service_identity_iam = optional(map(list(string)), {})
-      service_iam_grants   = optional(list(string), [])
+      host_project       = string
+      service_agent_iam  = optional(map(list(string)), {})
+      service_iam_grants = optional(list(string), [])
     }))
     skip_delete  = optional(bool, false)
     tag_bindings = optional(map(string))

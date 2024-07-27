@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -97,10 +97,10 @@ jobs:
       - id: tf-config-provider
         name: Copy Terraform provider file
         run: |
-          gcloud alpha storage cp -r \
+          gcloud storage cp -r \
             "gs://${outputs_bucket}/providers/$${{env.provider_file}}" ./
           %{~ for f in tf_var_files ~}
-          gcloud alpha storage cp -r \
+          gcloud storage cp -r \
             "gs://${outputs_bucket}/tfvars/${f}" ./
           %{~ endfor ~}
 

@@ -82,5 +82,5 @@ module "test" {
   project_id     = "project-1"
 }
 
-# tftest modules=7 resources=23
+# tftest modules=7 resources=28
 ```
