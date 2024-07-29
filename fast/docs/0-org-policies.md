@@ -13,9 +13,9 @@ Three different requirements drive this proposal.
 
 ### Organization policies deployed at bootstrap time
 
-Many organizations take security seriously, and would like to have organization policies (for example `constraints/iam.automaticIamGrantsForDefaultServiceAccounts`) deployed right from the beginning at bootstrap time. This is currently extremely cumbersome, as organization policies are managed in stage 1.
+Many organizations take security seriously, and would like to have organization policies (for example `iam.automaticIamGrantsForDefaultServiceAccounts`) deployed right from the beginning at bootstrap time. This is currently extremely cumbersome, as organization policies are managed in stage 1.
 
-As an additional benefit, managing some or all organization policies in stage 0 will enable to turn off undesired resource configuration for the initial projects (for example `constraints/compute.skipDefaultNetworkCreation`).
+As an additional benefit, managing some or all organization policies in stage 0 will enable to turn off undesired resource configuration for the initial projects (for example `compute.skipDefaultNetworkCreation`).
 
 ### Simplify and limit delegation of Organization Policy Administrator role
 

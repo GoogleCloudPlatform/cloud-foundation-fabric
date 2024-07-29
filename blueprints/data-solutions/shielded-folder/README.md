@@ -62,8 +62,8 @@ You can configure the Organization policies enforced on the folder editing yaml 
 
 Some additional Organization policy constraints you may want to evaluate adding:
 
-- `constraints/gcp.resourceLocations`: to define the locations where location-based GCP resources can be created.
-- `constraints/gcp.restrictCmekCryptoKeyProjects`: to define which projects may be used to supply Customer-Managed Encryption Keys (CMEK) when creating resources.
+- `gcp.resourceLocations`: to define the locations where location-based GCP resources can be created.
+- `gcp.restrictCmekCryptoKeyProjects`: to define which projects may be used to supply Customer-Managed Encryption Keys (CMEK) when creating resources.
 
 ### VPC Service Control
 
