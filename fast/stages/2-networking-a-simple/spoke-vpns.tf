@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,6 @@ locals {
       1 = cidrsubnet(local.bgp_sessions_range_1, 5, 2)
     }
   }
-}
-
-moved {
-  from = module.landing-to-spokes-primary-vpn
-  to   = module.landing-to-spokes-primary-vpn[0]
 }
 
 module "landing-to-spokes-primary-vpn" {
@@ -96,11 +91,6 @@ module "landing-to-spokes-primary-vpn" {
   }
 }
 
-moved {
-  from = module.landing-to-spokes-secondary-vpn
-  to   = module.landing-to-spokes-secondary-vpn[1]
-}
-
 module "landing-to-spokes-secondary-vpn" {
   count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
@@ -135,11 +125,6 @@ module "landing-to-spokes-secondary-vpn" {
       vpn_gateway_interface = 1
     }
   }
-}
-
-moved {
-  from = module.dev-to-landing-primary-vpn
-  to   = module.dev-to-landing-primary-vpn[1]
 }
 
 module "dev-to-landing-primary-vpn" {
@@ -178,11 +163,6 @@ module "dev-to-landing-primary-vpn" {
   }
 }
 
-moved {
-  from = module.prod-to-landing-primary-vpn
-  to   = module.prod-to-landing-primary-vpn[1]
-}
-
 module "prod-to-landing-primary-vpn" {
   count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"
@@ -219,10 +199,6 @@ module "prod-to-landing-primary-vpn" {
   }
 }
 
-moved {
-  from = module.prod-to-landing-secondary-vpn
-  to   = module.prod-to-landing-secondary-vpn[1]
-}
 module "prod-to-landing-secondary-vpn" {
   count      = local.spoke_connection == "vpn" ? 1 : 0
   source     = "../../../modules/net-vpn-ha"

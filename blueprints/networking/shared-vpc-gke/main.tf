@@ -46,7 +46,7 @@ module "project-svc-gce" {
   }
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = ["cloudservices"]
     }
   }
@@ -68,9 +68,9 @@ module "project-svc-gke" {
   services        = var.project_services
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
-    service_identity_iam = {
-      "roles/container.hostServiceAgentUser" = ["container-engine"]
-      "roles/compute.networkUser"            = ["container-engine"]
+    service_agent_iam = {
+      "roles/container.hostServiceAgentUser" = ["container"]
+      "roles/compute.networkUser"            = ["container"]
     }
   }
   iam = merge(
@@ -104,7 +104,7 @@ module "vpc-shared" {
       region        = var.region
       iam = {
         "roles/compute.networkUser" = concat(var.owners_gce, [
-          "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
+          module.project-svc-gce.service_agents.cloudservices.iam_email,
         ])
       }
     },
@@ -118,11 +118,11 @@ module "vpc-shared" {
       }
       iam = {
         "roles/compute.networkUser" = concat(var.owners_gke, [
-          "serviceAccount:${module.project-svc-gke.service_accounts.cloud_services}",
-          "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
+          module.project-svc-gke.service_agents.cloudservices.iam_email,
+          module.project-svc-gke.service_agents.container-engine.iam_email,
         ])
         "roles/compute.securityAdmin" = [
-          "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
+          module.project-svc-gke.service_agents.container-engine.iam_email,
         ]
       }
     }

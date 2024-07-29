@@ -154,23 +154,25 @@ resource "google_storage_bucket_object" "objects" {
 }
 
 resource "google_storage_notification" "notification" {
-  count              = local.notification ? 1 : 0
-  bucket             = google_storage_bucket.bucket.name
-  payload_format     = var.notification_config.payload_format
-  topic              = google_pubsub_topic.topic[0].id
+  count          = local.notification ? 1 : 0
+  bucket         = google_storage_bucket.bucket.name
+  payload_format = var.notification_config.payload_format
+  topic = try(
+    google_pubsub_topic.topic[0].id, var.notification_config.topic_name
+  )
   custom_attributes  = var.notification_config.custom_attributes
   event_types        = var.notification_config.event_types
   object_name_prefix = var.notification_config.object_name_prefix
   depends_on         = [google_pubsub_topic_iam_binding.binding]
 }
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = local.notification ? 1 : 0
+  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
 resource "google_pubsub_topic" "topic" {
-  count   = local.notification ? 1 : 0
+  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   project = var.project_id
   name    = var.notification_config.topic_name
 }

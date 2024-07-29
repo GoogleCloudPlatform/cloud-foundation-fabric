@@ -120,7 +120,7 @@ service_encryption_keys = {
 | [iam_bindings_additive](variables.tf#L56) | Map of Role => principal in IAM format (`group:foo@example.org`) to be added on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_config](variables.tf#L63) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_create](variables.tf#L90) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [service_encryption_keys](variables.tf#L109) | Cloud KMS keys to use to encrypt resources. Provide a key for each region in use. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_encryption_keys](variables.tf#L109) | Cloud KMS keys to use to encrypt resources. Provide a key for each region in use. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -143,5 +143,5 @@ module "test" {
   prefix = var.prefix
   region = var.region
 }
-# tftest modules=5 resources=29 e2e
+# tftest modules=5 resources=44 e2e
 ```

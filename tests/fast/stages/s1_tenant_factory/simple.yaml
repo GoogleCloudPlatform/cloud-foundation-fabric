@@ -28,9 +28,9 @@ counts:
   google_project: 6
   google_project_iam_audit_config: 2
   google_project_iam_binding: 32
-  google_project_iam_member: 18
+  google_project_iam_member: 34
   google_project_service: 54
-  google_project_service_identity: 8
+  google_project_service_identity: 10
   google_service_account: 16
   google_service_account_iam_binding: 6
   google_service_account_iam_member: 2
@@ -43,4 +43,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 4
   modules: 50
-  resources: 272
+  resources: 290

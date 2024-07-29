@@ -22,9 +22,9 @@ counts:
   google_kms_key_ring: 8
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 2
+  google_project_iam_member: 4
   google_project_service: 6
-  google_project_service_identity: 2
+  google_project_service_identity: 4
   google_storage_bucket_object: 1
   modules: 12
-  resources: 43
+  resources: 47

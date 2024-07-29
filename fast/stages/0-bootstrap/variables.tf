@@ -51,6 +51,12 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    vpcsc = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
   })
   default = null
   validation {
@@ -83,6 +89,30 @@ variable "custom_roles" {
   type        = map(list(string))
   nullable    = false
   default     = {}
+}
+
+variable "environments" {
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    is_default = optional(bool, false)
+  }))
+  nullable = false
+  default = {
+    dev = {
+      name = "Development"
+    }
+    prod = {
+      name       = "Production"
+      is_default = true
+    }
+  }
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
 }
 
 variable "essential_contacts" {

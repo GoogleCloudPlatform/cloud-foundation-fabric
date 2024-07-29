@@ -385,5 +385,5 @@ module "test" {
   project_id = "my-project"
   region     = "europe-west8"
 }
-# tftest modules=14 resources=50
+# tftest modules=14 resources=58
 ```

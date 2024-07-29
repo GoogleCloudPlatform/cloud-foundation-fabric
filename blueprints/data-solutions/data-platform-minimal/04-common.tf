@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,7 +39,9 @@ locals {
     "roles/datacatalog.categoryFineGrainedReader" = [
       module.processing-sa-0.iam_email
     ]
-    "roles/dlp.serviceAgent" = ["serviceAccount:${module.common-project.service_accounts.robots.dlp}"]
+    "roles/dlp.serviceAgent" = [
+      module.common-project.service_agents.dlp-api.iam_email
+    ]
   }
   # this only works because the service account module uses a static output
   iam_cmn_additive = {

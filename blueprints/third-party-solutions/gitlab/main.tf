@@ -34,7 +34,7 @@ module "project" {
   shared_vpc_service_config = {
     attach       = true
     host_project = var.network_config.host_project
-    service_identity_iam = {
+    service_agent_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "compute"
       ]

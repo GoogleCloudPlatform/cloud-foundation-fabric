@@ -18,29 +18,48 @@ values:
     dimensions:
       region: europe-west8
     ignore_safety_checks: QUOTA_SAFETY_CHECK_UNSPECIFIED
+    justification: null
     name: cpus-ew8
     parent: projects/test-project
     quota_config:
-    - preferred_value: '321'
+    - annotations: null
+      preferred_value: '321'
     quota_id: CPUS-per-project-region
     service: compute.googleapis.com
+    timeouts: null
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
+    labels: null
     name: test-project
+    org_id: null
     project_id: test-project
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-project
+    role: roles/compute.serviceAgent
   module.project.google_project_service.project_services["cloudquotas.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
     project: test-project
     service: cloudquotas.googleapis.com
+    timeouts: null
   module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
     project: test-project
     service: compute.googleapis.com
+    timeouts: null
 
 counts:
+  google_cloud_quotas_quota_preference: 1
   google_project: 1
+  google_project_iam_member: 1
   google_project_service: 2
   modules: 1
-  resources: 4
+  resources: 5
 
 outputs: {}

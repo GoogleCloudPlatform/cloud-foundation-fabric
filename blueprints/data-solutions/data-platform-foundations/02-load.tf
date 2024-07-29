@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,9 +63,9 @@ module "load-project" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    pubsub   = [try(local.service_encryption_keys.pubsub, null)]
-    dataflow = [try(local.service_encryption_keys.dataflow, null)]
-    storage  = [try(local.service_encryption_keys.storage, null)]
+    "pubsub.googleapis.com"   = compact([var.service_encryption_keys.pubsub])
+    "dataflow.googleapis.com" = compact([var.service_encryption_keys.dataflow])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
@@ -97,7 +97,7 @@ module "load-cs-df-0" {
   name           = "load-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 

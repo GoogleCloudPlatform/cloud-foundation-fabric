@@ -102,7 +102,7 @@ By default, the design assumes the following:
 - cross-environment traffic and traffic from any dmz network to any landing network (and vice versa) pass through the NVAs. For demo purposes, the current NVA performs simple routing/natting only
 - any traffic from a landing network to an dmz network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions
 
-The landing landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
+The landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
 
 - one spoke VPC hosts the development environment resources
 - one spoke VPC hosts the production environment resources
@@ -201,7 +201,7 @@ The Cloud Routers (connected to the VPN gateways in the landing VPC) are configu
 
 - routes between multiple subnets within the same VPC are automatically exchanged by GCP
 - the spokes and the trusted landing VPC exchange routes through VPC peerings
-- on-premises is connected to the landing landing VPC and it dynamically exchanges BGP routes with GCP (with the landing VPC) using HA VPN
+- on-premises is connected to the landing VPC and it dynamically exchanges BGP routes with GCP (with the landing VPC) using HA VPN
 - for cross-environment (spokes) communications, and for connections to on-premises and to the Internet, the spokes leverage some default tagged routes that send the traffic of each region (whose machines are identified by a dedicated network tag, e.g. *ew1*) to a corresponding regional NVA in the landing VPC, through an ILB (whose VIP is set as the route next-hop)
 - the spokes are configured with backup default routes, so if the NVAs in the same region become unavailable, more routes to the NVAs in the other region are already available. Current routes are not able to understand if the next-hop ILBs become unhealthy. As such, in case of a regional failure, users will need to manually withdraw the primary default routes, so the secondaries will take over
 - the NVAs are configured with static routes that allow the communication with on-premises and between the GCP resources (including the cross-environment communication)
@@ -270,11 +270,11 @@ These files contain different resources:
 
 ### VPNs
 
-The connectivity between on-premises and GCP (in the landing VPC) is implemented with Cloud HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file implements a single logical connection between on-premises and the landing landing VPC, both in `europe-west1` and `europe-west4`. The relevant parameters for its configuration are found in the variables `vpn_onprem_primary_config` and `vpn_onprem_secondary_config`.
+The connectivity between on-premises and GCP (in the landing VPC) is implemented with Cloud HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file implements a single logical connection between on-premises and the landing VPC, both in `europe-west1` and `europe-west4`. The relevant parameters for its configuration are found in the variables `vpn_onprem_primary_config` and `vpn_onprem_secondary_config`.
 
 ### Routing and BGP
 
-Each VPC network ([`net-vpc`](../../../modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes through VPC peering and BGP sessions established with the neighbor networks (e.g. the landing landing VPC receives routes from on-premises, and the spokes receive RFC1918 from the landing landing VPC).
+Each VPC network ([`net-vpc`](../../../modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes through VPC peering and BGP sessions established with the neighbor networks (e.g. the landing VPC receives routes from on-premises, and the spokes receive RFC1918 from the landing VPC).
 BGP sessions for landing to on-premises are configured through the variable `vpn_onprem_configs`.
 
 #### Simple NVA
@@ -347,10 +347,10 @@ ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 
 # copy and paste the following commands for '2-networking-*'
 
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
 ```
 
 ### Impersonating the automation service account

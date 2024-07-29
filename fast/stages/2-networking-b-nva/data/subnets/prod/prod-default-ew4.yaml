@@ -1,6 +1,6 @@
 # skip boilerplate check
 
 name: prod-default
-region: europe-west4
+region: secondary
 ip_cidr_range: 10.88.0.0/24
-description: Default europe-west4 subnet for prod
+description: Default secondary-region subnet for prod
