@@ -76,7 +76,7 @@ module "db" {
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=3 resources=14 inventory=simple.yaml e2e
+# tftest modules=3 resources=15 inventory=simple.yaml e2e
 ```
 
 ### Cross-regional read replica

@@ -16,6 +16,9 @@ module: fast/stages/2-networking-a-simple
 
 tests:
   # peering (default) is implemented in simple.tfvars
+  ncc:
+    extra_files:
+      - ../../plugins/2-networking-serverless-connector/*.tf
   simple:
     extra_files:
       - ../../plugins/2-networking-serverless-connector/*.tf

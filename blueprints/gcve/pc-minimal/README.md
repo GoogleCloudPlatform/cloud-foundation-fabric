@@ -74,7 +74,7 @@ module "gcve-pc" {
     }
   }
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=9
 ```
 
 <!-- TFDOC OPTS files:1 -->

@@ -84,5 +84,5 @@ module "test" {
   ad_domain_fqdn     = "ad.example.com"
   ad_domain_netbios  = "ad"
 }
-# tftest modules=12 resources=40
+# tftest modules=12 resources=41
 ```

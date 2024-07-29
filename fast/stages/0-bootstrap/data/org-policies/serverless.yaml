@@ -34,7 +34,7 @@ run.allowedIngress:
 #   rules:
 #   - enforce: true
 
-# constraints/cloudfunctions.restrictAllowedGenerations:
+# cloudfunctions.restrictAllowedGenerations:
 #   rules:
 #   - allow:
 #       values:

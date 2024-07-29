@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,13 +15,44 @@
 values:
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: test-host
+    timeouts: null
   module.host-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
+    labels: null
+    name: test-host
+    org_id: null
     project_id: test-host
+    skip_delete: false
+    timeouts: null
   module.service-project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
     host_project: test-host
     service_project: test-service
+    timeouts: null
   module.service-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
+    labels: null
+    name: test-service
+    org_id: null
     project_id: test-service
+    skip_delete: false
+    timeouts: null
+  module.service-project.google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-service
+    role: roles/container.serviceAgent
+  module.service-project.google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-service
+    role: roles/container.nodeServiceAgent
+  module.service-project.google_project_iam_member.service_agents["serverless-robot-prod"]:
+    condition: []
+    project: test-service
+    role: roles/run.serviceAgent
   module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]:
     condition: []
     project: test-host
@@ -30,17 +61,43 @@ values:
     condition: []
     project: test-host
     role: roles/compute.networkUser
-  module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]:
-    condition: []
+  ? module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
+  : condition: []
     project: test-host
     role: roles/container.hostServiceAgentUser
   module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/vpcaccess.user:cloudrun"]:
     condition: []
     project: test-host
     role: roles/vpcaccess.user
+  module.service-project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-service
+    service: container.googleapis.com
+    timeouts: null
+  module.service-project.google_project_service.project_services["run.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-service
+    service: run.googleapis.com
+    timeouts: null
+  module.service-project.google_project_service_identity.default["container.googleapis.com"]:
+    project: test-service
+    service: container.googleapis.com
+    timeouts: null
+  module.service-project.google_project_service_identity.default["run.googleapis.com"]:
+    project: test-service
+    service: run.googleapis.com
+    timeouts: null
 
 counts:
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_project: 2
-  google_project_iam_member: 4
+  google_project_iam_member: 7
+  google_project_service: 2
+  google_project_service_identity: 2
+  modules: 2
+  resources: 15
+
+outputs: {}

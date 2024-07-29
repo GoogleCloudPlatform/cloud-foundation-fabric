@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
 # tfdoc:file:description Core resources.
 
 locals {
-  service_encryption_keys = var.service_encryption_keys
-  shared_vpc_project      = try(var.vpc_config.host_project, null)
+  shared_vpc_project = try(var.vpc_config.host_project, null)
   subnet = (
     local.use_shared_vpc
     ? var.vpc_config.subnet_self_link
@@ -55,10 +54,10 @@ module "project" {
     host_project = local.shared_vpc_project
   }
   service_encryption_key_ids = {
-    aiplatform = [try(local.service_encryption_keys.compute, null)]
-    compute    = [try(local.service_encryption_keys.compute, null)]
-    bq         = [try(local.service_encryption_keys.bq, null)]
-    storage    = [try(local.service_encryption_keys.storage, null)]
+    "aiplatform.googleapis.com" = compact([var.service_encryption_keys.compute])
+    "compute.googleapis.com"    = compact([var.service_encryption_keys.compute])
+    "bigquery.googleapis.com"   = compact([var.service_encryption_keys.bq])
+    "storage.googleapis.com"    = compact([var.service_encryption_keys.storage])
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false

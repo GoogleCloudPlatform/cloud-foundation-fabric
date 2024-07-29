@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,6 +37,13 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: gce
+  ? module.service-project.google_compute_subnetwork_iam_member.shared_vpc_host_subnets_iam["europe-west1:gce:group:team-1@example.com"]
+  : condition: []
+    member: group:team-1@example.com
+    project: test-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: gce
   module.service-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
@@ -47,6 +54,10 @@ values:
     project_id: test-service
     skip_delete: false
     timeouts: null
+  module.service-project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-service
+    role: roles/compute.serviceAgent
   module.service-project.google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -59,8 +70,9 @@ counts:
   google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork_iam_member: 2
   google_project: 2
+  google_project_iam_member: 1
   google_project_service: 1
   modules: 2
-  resources: 7
+  resources: 8
 
 outputs: {}

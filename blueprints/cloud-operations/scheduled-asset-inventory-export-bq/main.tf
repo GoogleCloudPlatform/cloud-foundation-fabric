@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ module "project" {
     "pubsub.googleapis.com"
   ]
   iam = {
-    "roles/resourcemanager.projectIamAdmin" = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
-    "roles/bigquery.dataEditor"             = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
-    "roles/bigquery.user"                   = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+    "roles/resourcemanager.projectIamAdmin" = [module.project.service_agents.cloudasset.iam_email]
+    "roles/bigquery.dataEditor"             = [module.project.service_agents.cloudasset.iam_email]
+    "roles/bigquery.user"                   = [module.project.service_agents.cloudasset.iam_email]
   }
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,5 +60,5 @@ resource "google_project_iam_member" "shared_vpc" {
   count   = local.use_shared_vpc ? 1 : 0
   project = var.vpc_config.host_project
   role    = "roles/compute.networkUser"
-  member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+  member  = module.project.service_agents.notebooks.iam_email
 }
