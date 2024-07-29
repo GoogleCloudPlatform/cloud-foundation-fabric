@@ -201,7 +201,7 @@ values:
   module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
     condition:
     - description: Automation service account delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/cloudasset.viewer','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer']) || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['organizations/123456789012/roles/networkFirewallPoliciesAdmin','organizations/123456789012/roles/ngfwEnterpriseAdmin','organizations/123456789012/roles/serviceProjectNetworkAdmin','organizations/123456789012/roles/tenantNetworkAdmin'])
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/cloudasset.viewer','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer'])\n|| api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['organizations/123456789012/roles/networkFirewallPoliciesAdmin','organizations/123456789012/roles/ngfwEnterpriseAdmin','organizations/123456789012/roles/serviceProjectNetworkAdmin','organizations/123456789012/roles/tenantNetworkAdmin'])\n
       title: automation_sa_delegated_grants
     members:
     - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
