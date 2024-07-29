@@ -622,7 +622,6 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [0-bootstrap-providers.tf](./0-bootstrap-providers.tf) | None |  |  |
 | [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>project</code> | <code>google_billing_account_iam_member</code> |
 | [checklist.tf](./checklist.tf) | None | <code>gcs</code> | <code>google_storage_bucket_object</code> |

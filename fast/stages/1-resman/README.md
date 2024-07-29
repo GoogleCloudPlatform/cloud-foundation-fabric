@@ -232,7 +232,6 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [1-resman-providers.tf](./1-resman-providers.tf) | None |  |  |
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-gcve.tf](./branch-gcve.tf) | GCVE stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
