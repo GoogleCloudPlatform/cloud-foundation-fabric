@@ -163,6 +163,10 @@ module "organization" {
   # delegated role grant for resource manager service account
   iam_bindings = merge(
     {
+      organization_ngfw_enterprise_admin = {
+        members = [local.principals.gcp-network-admins]
+        role    = module.organization.custom_role_id["ngfw_enterprise_admin"]
+      }
       organization_iam_admin_conditional = {
         members = [module.automation-tf-resman-sa.iam_email]
         role    = module.organization.custom_role_id["organization_iam_admin"]
