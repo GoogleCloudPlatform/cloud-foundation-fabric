@@ -77,6 +77,9 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
   - tf_var_files: set of terraform variable files (tfvars) to pass
     in to terraform
 
+  - extra_files: set of extra terraform files needed during the plan.
+    The path must be relative to the tfvars file path.
+
   Returns a PlanSummary object containing 3 attributes:
   - values: dictionary where the keys are terraform plan addresses
     and values are the JSON representation (converted to python
