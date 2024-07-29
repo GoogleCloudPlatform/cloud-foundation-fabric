@@ -634,8 +634,6 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
-  region     = var.region
 
   backend_service_configs = {
     my_backend = {
