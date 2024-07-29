@@ -22,7 +22,7 @@ counts:
   google_org_policy_policy: 22
   google_organization_iam_binding: 29
   google_organization_iam_custom_role: 9
-  google_organization_iam_member: 29
+  google_organization_iam_member: 28
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
@@ -41,7 +41,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 10
   modules: 20
-  resources: 230
+  resources: 229
 
 outputs:
   automation: __missing__
@@ -67,5 +67,7 @@ outputs:
     resman: fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
   tfvars: __missing__
   workforce_identity_pool:
+    pool: null
   workload_identity_pool:
+    pool: null
     providers: {}
