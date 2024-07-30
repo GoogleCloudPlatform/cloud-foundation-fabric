@@ -15,6 +15,7 @@ This module implements the creation and management of one GCP project including 
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
+  - [Dry-Run Mode](#dry-run-mode)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
@@ -588,6 +589,27 @@ iam.allowedPolicyMemberDomains:
       values:
       - C0xxxxxxx
       - C0yyyyyyy
+```
+
+### Dry-Run Mode
+
+To enable dry-run mode, add the `dry_run:` prefix to the constraint name in your Terraform configuration:
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  parent = var.folder_id
+  org_policies = {
+    "gcp.restrictTLSVersion" = {
+      rules = [{ deny = { values = ["TLS_VERSION_1"] } }]
+    }
+    "dry_run:gcp.restrictTLSVersion" = {
+      rules = [{ deny = { values = ["TLS_VERSION_1", "TLS_VERSION_1_1"] } }]
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=org-policies-dry-run.yaml
 ```
 
 ## Log Sinks
