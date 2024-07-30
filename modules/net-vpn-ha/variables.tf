@@ -31,7 +31,7 @@ variable "peer_gateways" {
       redundancy_type = string
       interfaces      = list(string)
       description     = optional(string, "Terraform managed external VPN gateway")
-      override_name = optional(string, null)
+      override_name   = optional(string, null)
     }))
     gcp = optional(string)
   }))
@@ -64,8 +64,8 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
-    keepalive = optional(number)
-    name      = optional(string)
+    keepalive     = optional(number)
+    name          = optional(string)
     override_name = optional(string, null)
   })
   nullable = false
