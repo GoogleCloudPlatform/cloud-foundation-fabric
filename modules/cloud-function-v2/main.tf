@@ -161,6 +161,9 @@ resource "google_cloudfunctions2_function_iam_binding" "binding" {
   cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
   members        = each.value
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
+  }
 }
 
 resource "google_cloud_run_service_iam_binding" "invoker" {
@@ -180,6 +183,9 @@ resource "google_cloud_run_service_iam_binding" "invoker" {
       : ["serviceAccount:${local.trigger_sa_email}"]
     )
   )))
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
+  }
 }
 
 resource "google_cloud_run_service_iam_member" "invoker" {
@@ -194,6 +200,9 @@ resource "google_cloud_run_service_iam_member" "invoker" {
   service  = google_cloudfunctions2_function.function.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
+  }
 }
 
 resource "google_service_account" "service_account" {
