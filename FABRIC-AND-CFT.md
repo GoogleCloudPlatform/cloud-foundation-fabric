@@ -4,11 +4,11 @@ This page highlights the main differences (both technical and philosophical) bet
 
 ## Cloud Foundation Fabric (a.k.a Fabric, this repo)
 
-Fabric is a collection of Terraform modules and end to end examples meant to be cloned as a single unit and used as is for fast prototyping or decomposed and modified for usage in organizations.
+Fabric is a collection of Terraform modules and end-to-end examples meant to be cloned as a single unit and used as is for fast prototyping or decomposed and modified for usage in organizations. Fabric also provides a robust implementation of foundation [stages](./fast/stages), offering a more complete blueprint for organizations to build upon.
 
 ## Cloud Foundation Toolkit (a.k.a CFT)
 
-CFT is a collection of Terraform modules and examples with opinionated GCP best practices implemented as individual modules for gradual adoption and off the shelf usage in organizations.
+CFT is a collection of Terraform modules and examples with opinionated GCP best practices implemented as individual modules for gradual adoption and off the shelf usage in organizations. CFT also includes an IaC [foundation repository](https://github.com/terraform-google-modules/terraform-example-foundation), though it's less developed compared to Fabric's.
 
 ## Key Differences
 
@@ -16,47 +16,47 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
   <tr>
    <td>
    </td>
-   <td><strong>Fabric</strong>
+   <td><strong>Fabric (FAST)</strong>
    </td>
-   <td><strong>CFT</strong>
+   <td><strong>CFT (Cloud Foundation Toolkit)</strong>
    </td>
   </tr>
   <tr>
    <td><strong>Target User</strong>
    </td>
-   <td>Organizations interested in forking, maintaining and customizing Terraform modules.
+   <td>Organizations interested in forking, maintaining, and customizing Terraform modules to have fine-grained control over their infrastructure.
    </td>
-   <td>Organizations interested in using opinionated, prebuilt Terraform modules.
+   <td>Organizations interested in using opinionated, prebuilt Terraform modules with a focus on Google Cloud best practices.
    </td>
   </tr>
   <tr>
    <td><strong>Configuration</strong>
    </td>
-   <td>Less opinionated allowing end users higher flexibility.
+   <td>Less opinionated, allowing end users higher flexibility and often offering more configuration options within a single module.
    </td>
-   <td>Opinionated by default, end users may need to fork if it does not meet their use case.
+   <td>Opinionated by default, end users may need to fork if it doesn't fully meet their use case.  Often requires composing multiple modules for complex configurations.
    </td>
   </tr>
   <tr>
    <td><strong>Extensibility</strong>
    </td>
-   <td>Built with extensibility in mind catering to fork and use patterns. Modules are often lightweight and easy to adopt / tailor to specific use cases.
+   <td>Built with extensibility in mind, catering to fork and use patterns. Modules are often lightweight and easy to adopt / tailor to specific use cases.
    </td>
-   <td>Not built with fork and use extensibility catering primarily to off the shelf consumption. Modules are tailored towards common usecases and extensible via composition.
+   <td>Not primarily built for fork-and-use extensibility, catering primarily to off-the-shelf consumption. Modules are tailored towards common use cases and extensible via composition.
    </td>
   </tr>
   <tr>
-   <td><strong>Config customization</strong>
+   <td><strong>Config Customization</strong>
    </td>
-   <td>Prefer customization using variables via objects, tight variable space.
+   <td>Prefer customization using variables via objects, providing a tight but comprehensive variable space within modules.
    </td>
-   <td>Prefer customization using variables via primitives.
+   <td>Prefer customization using variables via primitives, which can lead to more modularity but may require using multiple modules for customization.
    </td>
   </tr>
   <tr>
    <td><strong>Examples</strong>
    </td>
-   <td>Thorough examples for individual modules, and end to end examples composing multiple modules covering a wide variety of use cases from foundations to solutions.
+   <td>Thorough examples for individual modules and end-to-end examples composing multiple modules, covering a wide variety of use cases from foundations to solutions. 
    </td>
    <td>Examples for a module mostly focus on that individual module. Composition is often not shown in examples but in larger modules built using smaller modules.
    </td>
@@ -64,25 +64,25 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
   <tr>
    <td><strong>Resources</strong>
    </td>
-   <td>Leaner modules wrapping resources.
+   <td>Modules often encapsulate a broader set of resources, providing more functionality within a single unit.
    </td>
-   <td>Heavier root modules that often compose leaner sub modules wrapping resources.
+   <td>Heavier root modules often compose leaner sub-modules wrapping resources, which can lead to more granular control but potentially increased complexity.
    </td>
   </tr>
   <tr>
-   <td><strong>Resource grouping</strong>
+   <td><strong>Resource Grouping</strong>
    </td>
-   <td>Generally grouped by logical entities.
+   <td>Generally grouped by logical entities, aiming for a more holistic approach to resource management.
    </td>
-   <td>Generally grouped by products/product areas.
+   <td>Generally grouped by products/product areas, aligning with Google Cloud's service organization. 
    </td>
   </tr>
   <tr>
    <td><strong>Release Cadence</strong>
    </td>
-   <td>Modules versioned and released together.
+   <td>Modules versioned and released together, ensuring consistency across the framework.
    </td>
-   <td>Modules versioned and released individually.
+   <td>Modules versioned and released individually, allowing for more frequent updates to specific modules.
    </td>
   </tr>
   <tr>
@@ -100,13 +100,21 @@ For production/airgapped usage, customers may also mirror modules to a private r
   <tr>
    <td><strong>Factories</strong>
    </td>
-   <td>Fabric implements several "factories" in modules, where users can drive or automate Terraform via YAML files (projects, subnetworks, firewalls, etc.).
+   <td>Fabric implements several "factories" in modules, where users can drive or automate Terraform via YAML files (projects, subnetworks, firewalls, etc.). This simplifies common tasks and provides an alternative to pure Terraform configuration.
    </td>
-   <td>CFT does not implement factories and generally show examples usable with variable definitions files (.tfvars).
+   <td>CFT does not implement factories and generally shows examples usable with variable definitions files (.tfvars).
+   </td>
+  </tr>
+   <tr>
+   <td><strong>Variable Granularity</strong>
+   </td>
+   <td>Offers a wider range of variables within a single module for greater flexibility. For example, a single FAST module might handle project creation with extensive customization options.
+   </td>
+   <td>Typically requires combining multiple modules to achieve similar configuration options. Achieving the same level of project customization in CFT might involve multiple modules.
    </td>
   </tr>
   <tr>
-   <td><strong>Organizational adoption</strong>
+   <td><strong>Organizational Adoption</strong>
    </td>
    <td>Mono repo cloned into an organizational VCS (or catalog) and separated into individual modules for internal consumption.
    </td>
