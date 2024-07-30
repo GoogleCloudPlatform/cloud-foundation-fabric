@@ -1,0 +1,6 @@
+# this is just an example that reflects the FAST core team members' locations
+# and needs to be edited, or not referenced in the perimeter variable
+conditions:
+  - regions:
+      - ES
+      - IT
