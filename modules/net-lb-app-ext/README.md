@@ -637,7 +637,7 @@ module "ralb-0" {
 
   backend_service_configs = {
     my_backend = {
-      project_id = "backend_project_id" // Specify the project ID where the backend resides
+      project_id = "backend_project_id" #Specify the project ID where the backend resides
 
       backends = [
         {
@@ -651,7 +651,7 @@ module "ralb-0" {
     default_service = "ralb-test-0-my_backend"
   }
 }
-# tftest modules=1 resources=5 e2e
+# tftest modules=1 resources=5
 ```
 
 ### URL Map
