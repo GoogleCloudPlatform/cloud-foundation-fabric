@@ -23,7 +23,7 @@ The variable space of this module closely mirrors that of  [net-lb-app-ext](../n
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
-    - [Cross Project Backend](#cross-project-backend) 
+    - [Cross Project Backend](#cross-project-backend)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
