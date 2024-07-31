@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,16 @@
 variable "local_network" {
   description = "Resource link of the network to add a peering to."
   type        = string
+}
+
+variable "name" {
+  description = "Optional names for the the peering resources. If not set, peering names will be generated based on the network names."
+  type = object({
+    local = optional(string)
+    peer  = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "peer_create_peering" {
