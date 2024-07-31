@@ -1072,6 +1072,18 @@ outputs:
 
 You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
 
+You can optionally pass to the command additional files that your plan might need to properly execute.
+
+In this example we pass in two extra files from the organization folder.
+
+```bash
+$ python tools/plan_summary.py modules/organization \
+   tests/modules/organization/common.tfvars \
+   tests/modules/organization/audit_config.tfvars \
+   --extra-files ../my-file-1.tf \
+   --extra-files ../my-file-2.yaml
+```
+
 ### Running end-to-end tests
 
 You can use end-to-end tests to verify your code against GCP API. These tests verify that `terraform apply` succeeds, `terraform plan` is empty afterwards and that `terraform destroy` raises no error.

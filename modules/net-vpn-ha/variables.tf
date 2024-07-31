@@ -94,14 +94,15 @@ variable "tunnels" {
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
-    bgp_session_range               = string
-    ike_version                     = optional(number, 2)
-    override_name                   = optional(string, null)
-    peer_external_gateway_interface = optional(number)
-    peer_gateway                    = optional(string, "default")
-    router                          = optional(string)
-    shared_secret                   = optional(string)
-    vpn_gateway_interface           = number
+    bgp_session_range                   = string
+    ike_version                         = optional(number, 2)
+    override_name                       = optional(string, null)
+    peer_external_gateway_interface     = optional(number)
+    peer_router_interface_override_name = optional(string, null)
+    peer_gateway                        = optional(string, "default")
+    router                              = optional(string)
+    shared_secret                       = optional(string)
+    vpn_gateway_interface               = number
   }))
   default  = {}
   nullable = false
