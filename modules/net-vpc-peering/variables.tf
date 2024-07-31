@@ -19,8 +19,8 @@ variable "local_network" {
   type        = string
 }
 
-variable "override_name" {
-  description = "Optional name for the peering. If not set, the peering name will be generated based on the network names."
+variable "local_override_name" {
+  description = "Optional name for the local peering. If not set, the peering name will be generated based on the network names."
   type        = string
   default     = null
 }
@@ -34,6 +34,12 @@ variable "peer_create_peering" {
 variable "peer_network" {
   description = "Resource link of the peer network."
   type        = string
+}
+
+variable "peer_override_name" {
+  description = "Optional name for the peer. If not set, the peering name will be generated based on the network names."
+  type        = string
+  default     = null
 }
 
 variable "prefix" {

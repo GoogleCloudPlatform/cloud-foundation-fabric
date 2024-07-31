@@ -21,7 +21,7 @@ locals {
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
-  name         = var.override_name != null ? var.override_name : "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
+  name         = var.local_override_name != null ? var.local_override_name : "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
   network      = var.local_network
   peer_network = var.peer_network
   export_custom_routes = try(
@@ -37,11 +37,18 @@ resource "google_compute_network_peering" "local_network_peering" {
     var.routes_config.local.public_import, null
   )
   stack_type = var.stack_type
+
+  lifecycle {
+    precondition {
+      condition = (length("${local.prefix}${local.local_network_name}-${local.peer_network_name}") > 63 && var.local_override_name == null)
+      error_message = "If the combined name is greater than 63 characters you must set an override name or the resource will not be created successfully."
+    }
+  }
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
   count        = var.peer_create_peering ? 1 : 0
-  name         = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
+  name         = var.peer_override_name != null ? var.peer_override_name : "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
   network      = var.peer_network
   peer_network = var.local_network
   export_custom_routes = try(
@@ -58,4 +65,11 @@ resource "google_compute_network_peering" "peer_network_peering" {
   )
   stack_type = var.stack_type
   depends_on = [google_compute_network_peering.local_network_peering]
+
+  lifecycle {
+    precondition {
+      condition = (length("${local.prefix}${local.peer_network_name}-${local.peer_network_name}") > 63 && var.peer_override_name == null)
+      error_message = "If the combined name is greater than 63 characters you must set an override name or the resource will not be created successfully."
+    }
+  }
 }
