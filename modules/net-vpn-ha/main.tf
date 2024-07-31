@@ -130,7 +130,7 @@ resource "google_compute_router_interface" "router_interface" {
   for_each = var.tunnels
   project  = var.project_id
   region   = var.region
-  name     = each.value.override_name != null ? each.value.override_name : "${var.name}-${each.key}"
+  name     = each.value.peer_router_interface_override_name != null ? each.value.peer_router_interface_override_name : "${var.name}-${each.key}"
   router   = local.router
   # FIXME: can bgp_session_range be null?
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
