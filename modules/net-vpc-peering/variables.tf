@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,14 @@ variable "local_network" {
   type        = string
 }
 
-variable "local_override_name" {
-  description = "Optional name for the local peering. If not set, the peering name will be generated based on the network names."
-  type        = string
-  default     = null
+variable "name" {
+  description = "Optional names for the the peering resources. If not set, peering names will be generated based on the network names."
+  type = object({
+    local = optional(string)
+    peer  = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "peer_create_peering" {
@@ -34,12 +38,6 @@ variable "peer_create_peering" {
 variable "peer_network" {
   description = "Resource link of the peer network."
   type        = string
-}
-
-variable "peer_override_name" {
-  description = "Optional name for the peer. If not set, the peering name will be generated based on the network names."
-  type        = string
-  default     = null
 }
 
 variable "prefix" {
