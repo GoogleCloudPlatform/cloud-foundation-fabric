@@ -40,7 +40,7 @@ resource "google_compute_network_peering" "local_network_peering" {
 
   lifecycle {
     precondition {
-      condition = (length("${local.prefix}${local.local_network_name}-${local.peer_network_name}") > 63 && var.local_override_name == null)
+      condition = (!(length("${local.prefix}${local.local_network_name}-${local.peer_network_name}") > 63 && var.local_override_name == null))
       error_message = "If the combined name is greater than 63 characters you must set an override name or the resource will not be created successfully."
     }
   }
@@ -68,7 +68,7 @@ resource "google_compute_network_peering" "peer_network_peering" {
 
   lifecycle {
     precondition {
-      condition = (length("${local.prefix}${local.peer_network_name}-${local.peer_network_name}") > 63 && var.peer_override_name == null)
+      condition = (!(length("${local.prefix}${local.peer_network_name}-${local.peer_network_name}") > 63 && var.peer_override_name == null))
       error_message = "If the combined name is greater than 63 characters you must set an override name or the resource will not be created successfully."
     }
   }
