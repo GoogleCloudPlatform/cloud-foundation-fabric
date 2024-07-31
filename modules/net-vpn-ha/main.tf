@@ -94,7 +94,7 @@ resource "google_compute_router_peer" "bgp_peer" {
   for_each                  = var.tunnels
   region                    = var.region
   project                   = var.project_id
-  name                      = each.value.override_name != null ? each.value.override_name : "${var.name}-${each.key}"
+  name                      = each.value.bgp_peer.override_name != null ? each.value.bgp_peer.override_name : "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
