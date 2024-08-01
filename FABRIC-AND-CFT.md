@@ -108,7 +108,7 @@ For production/airgapped usage, customers may also mirror modules to a private r
    <tr>
    <td><strong>Variable Granularity</strong>
    </td>
-   <td>Offers a wider range of variables within a single module for greater flexibility. For example, a single FAST module might handle project creation with extensive customization options.
+   <td>Offers a wider range of variables within a single module for greater flexibility. For example, a single Fabric module might handle project creation with extensive customization options.
    </td>
    <td>Typically requires combining multiple modules to achieve similar configuration options. Achieving the same level of project customization in CFT might involve multiple modules.
    </td>
