@@ -11,20 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-counts:
-  google_folder: 4
-  google_folder_iam_binding: 25
-  google_organization_iam_member: 8
-  google_project_iam_member: 6
-  google_service_account: 6
-  google_service_account_iam_binding: 6
-  google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 6
-  google_storage_bucket_iam_member: 6
-  google_storage_bucket_object: 7
-  google_tags_tag_binding: 4
-  google_tags_tag_key: 2
-  google_tags_tag_value: 9
-  modules: 14
-  resources: 92

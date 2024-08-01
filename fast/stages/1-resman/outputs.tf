@@ -83,6 +83,17 @@ locals {
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
+    netsec = {
+      service_accounts = {
+        apply = try(module.branch-netsec-sa-cicd[0].email, null)
+        plan  = try(module.branch-netsec-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-netsec-providers.tf"
+        plan  = "3-netsec-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
     networking = {
       service_accounts = {
         apply = try(module.branch-network-sa-cicd[0].email, null)
@@ -197,6 +208,18 @@ locals {
         bucket        = module.branch-security-gcs.name
         name          = "security"
         sa            = module.branch-security-r-sa.email
+      })
+      "3-netsec" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-netsec-gcs.name
+        name          = "netsec"
+        sa            = module.branch-netsec-sa.email
+      })
+      "3-netsec-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-network-gcs.name
+        name          = "netsec"
+        sa            = module.branch-netsec-r-sa.email
       })
     },
     {
@@ -347,6 +370,8 @@ locals {
       gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
       gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
       gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
+      netsec                 = module.branch-netsec-sa.email
+      netsec-r               = module.branch-netsec-r-sa.email
       networking             = module.branch-network-sa.email
       networking-r           = module.branch-network-r-sa.email
       project-factory        = try(module.branch-pf-sa[0].email, null)
@@ -480,7 +505,7 @@ output "project_factories" {
 
 # ready to use provider configurations for subsequent stages
 output "providers" {
-  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform
+  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform 03-netsec
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers

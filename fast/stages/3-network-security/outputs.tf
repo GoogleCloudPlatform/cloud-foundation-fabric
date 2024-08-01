@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-terraform {
-  backend "gcs" {
-    bucket                      = "${bucket}"
-    impersonate_service_account = "${sa}"
-    %{~ if backend_extra != null ~}
-    ${indent(4, backend_extra)}
-    %{~ endif ~}
+output "ngfw_enterprise_endpoint_ids" {
+  description = "The NGFW Enterprise endpoint ids."
+  value = {
+    for _, v in google_network_security_firewall_endpoint.firewall_endpoint
+    : v.location => v.id
   }
 }
-provider "google" {
-  impersonate_service_account = "${sa}"
-}
-provider "google-beta" {
-  impersonate_service_account = "${sa}"
-}
 
-# end provider.tf for ${name}
+output "ngfw_enterprise_endpoints_quota_project" {
+  description = "The NGFW Enterprise endpoints quota project."
+  value       = module.ngfw-quota-project.id
+}
