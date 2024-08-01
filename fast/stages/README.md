@@ -36,8 +36,6 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 
 ## Shared resources (2)
 
-- [Project Factory](2-project-factory/)  
-  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if dedicated per-environment factories are needed.
 - [Security](2-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids
@@ -48,6 +46,8 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 ## Environment-level resources (3)
 
 - [Networking Security](./3-network-security/) Manages NGFW Enterprise deployment for the production and development environments.
+- [Project Factory](./3-project-factory/)  
+  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
 - [Google Cloud VMware Engine](3-gcve/)
