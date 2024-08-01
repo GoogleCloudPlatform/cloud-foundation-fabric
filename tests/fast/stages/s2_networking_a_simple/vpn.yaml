@@ -40,10 +40,10 @@ counts:
   google_project: 3
   google_project_iam_binding: 4
   google_project_iam_member: 17
-  google_project_service: 21
-  google_project_service_identity: 15
+  google_project_service: 23
+  google_project_service_identity: 17
   google_storage_bucket_object: 2
   google_vpc_access_connector: 2
   modules: 31
   random_id: 5
-  resources: 218
+  resources: 222

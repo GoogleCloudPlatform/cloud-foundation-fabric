@@ -28,6 +28,7 @@ module "dev-spoke-project" {
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
+    "networksecurity.googleapis.com",
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
