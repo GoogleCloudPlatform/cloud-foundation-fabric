@@ -74,7 +74,7 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
    </td>
    <td>Generally grouped by logical entities, aiming for a more holistic approach to resource management.
    </td>
-   <td>Generally grouped by products/product areas, aligning with Google Cloud's service organization. 
+   <td>Generally grouped by products/product areas.
    </td>
   </tr>
   <tr>
