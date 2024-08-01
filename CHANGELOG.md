@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+<!-- None < 2024-08-01 11:45:37+00:00 -->
 
 ## [33.0.0] - 2024-08-01
 
@@ -46,7 +47,7 @@ All notable changes to this project will be documented in this file.
 - [[#2454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2454)] Add support for dry-run org policies ([juliocc](https://github.com/juliocc)) <!-- 2024-07-30 13:12:57+00:00 -->
 - [[#2456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2456)] Manage lifecycle of cloud functions v2 IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-07-30 12:08:05+00:00 -->
 - [[#2449](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2449)] Add moved blocks for the service networking service agent and IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 12:01:21+00:00 -->
-- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] Add generic URL output to modules/artifiact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
+- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] **incompatible change:** Add generic URL output to modules/artifact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
 - [[#2447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2447)] Fix wrong expression in compute-mig module ([bz-canva](https://github.com/bz-canva)) <!-- 2024-07-25 05:26:26+00:00 -->
 - [[#2445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2445)] Override primary flag for the storage transfer service agent ([juliocc](https://github.com/juliocc)) <!-- 2024-07-24 14:12:56+00:00 -->
 - [[#2444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2444)] Add context to net-vpc factory ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-24 13:54:20+00:00 -->
@@ -2353,7 +2354,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...HEAD
-[33.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v33.0.0
+[33.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.1...v33.0.0
 [32.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v32.0.1
 [32.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...v32.0.0
 [31.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...v31.1.0
