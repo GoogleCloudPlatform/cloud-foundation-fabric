@@ -27,6 +27,8 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Resource Management](1-resman/README.md)  
   Creates the base resource hierarchy (folders) and the automation resources that will be required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures resource management tags used in scoping specific IAM roles on the resource hierarchy.\
   Exports: folder ids, automation service account emails, tags
+- [VPC Service Controls](./1-vpc-sc/README.md)
+  Optionally configures VPC Service Controls protection for the organization.
 
 ## Multitenancy
 
@@ -34,6 +36,8 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 
 ## Shared resources (2)
 
+- [Project Factory](2-project-factory/)  
+  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if dedicated per-environment factories are needed.
 - [Security](2-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids
@@ -43,8 +47,7 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 
 ## Environment-level resources (3)
 
-- [Project Factory](3-project-factory/dev/)  
-  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
+- [Networking Security](./3-network-security/) Manages NGFW Enterprise deployment for the production and development environments.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
 - [Google Cloud VMware Engine](3-gcve/)
