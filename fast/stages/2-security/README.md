@@ -1,24 +1,22 @@
 # Shared security resources and VPC Service Controls
 
-This stage sets up security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
+This stage sets up an area dedicated to hosting security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
 
-The design of this stage is fairly general, providing
+The design of this stage is fairly general, and out of the box it only provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management).
 
-- a reference example for [Cloud KMS](https://cloud.google.com/security-key-management)
-- a simplified implementation of [VPC Service Controls](https://cloud.google.com/vpc-service-controls) that should work for most users
+Expanding it to include other security-related services like Secret Manager is fairly simple by adapting the provided implementation for Cloud KMS, and leveraging the broad permissions granted on the top-level Security folder to the automation service account used here.
 
-Expanding this stage to include other security-related services like Secret Manager is fairly simple by adapting the provided implementation for Cloud KMS, and leveraging the broad permissions granted on the top-level Security folder to the automation service account used here.
-
-The following diagram illustrates the high-level design of created resources and a schema of the VPC SC design:
+<!-->
+The following diagram illustrates the high-level design of resources managed here:
 
 <p align="center">
   <img src="diagram.png" alt="Security diagram">
 </p>
+-->
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
   - [Cloud KMS](#cloud-kms)
-  - [VPC Service Controls](#vpc-service-controls)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
@@ -27,8 +25,6 @@ The following diagram illustrates the high-level design of created resources and
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [KMS keys](#kms-keys)
-  - [VPC Service Controls configuration](#vpc-service-controls-configuration)
-- [Notes](#notes)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -49,12 +45,6 @@ A reference Cloud KMS implementation is part of this stage, to provide a simple 
 The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
 
 IAM roles on keys can be configured at the logical level for all locations where a logical key is created. Their management can also be delegated via [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) exposed through a simple variable, to allow other identities to set IAM policies on keys. This is particularly useful in setups like project factories, making it possible to configure IAM bindings during project creation for team groups or service agent accounts (compute, storage, etc.).
-
-### VPC Service Controls
-
-This stage also provisions the VPC Service Controls configuration that protects the whole organization, implementing a simplified design that leverages a single perimeter and optionally provides automatic enrollment of projects in the perimeter.
-
-The VPC SC configuration is controlled via the top-level `vpc_sc` variable, and is disabled by default unless `vpc_sc.perimeter_default` is populated. Access levels and ingress/egress policies can be defined in code via the respective `vpc_sc` variable attributes, or via YAML-based factories configured via the usual `factories_config` variable.
 
 ## How to run this stage
 
@@ -171,53 +161,6 @@ kms_keys = {
 ```
 
 The script will create one keyring for each specified location and keys on each keyring.
-
-### VPC Service Controls configuration
-
-The `vpc_sc` variable controls VPC-SC configuration and project auto-discovery via Cloud Asset Inventory. VPC-SC configuration can also leverage YAML factories via the `factories_config` variable. Both variables mostly pass through to the underlying [`vpc-sc` module](../../../modules/vpc-sc/), which serves as a reference for their individual types.
-
-The `vpc_sc` variable has the following attributes:
-
-- `access_levels`, `egress_policies`, `ingress_policies` define the corresponding objects, internally merged with any data coming from the YAML factories
-- `perimeter_default` configures the single organization-wide perimeter by referencing access levels and policies by key, setting included projects, and allowing to turn on dry run mode
-- `resource_discovery` controls automatic discovery of projects via Asset Inventory, and allows defining inclusion and exclusions lists
-
-A few things to note on the default perimeter
-
-- writer identities for sinks defined in the bootstrap stage are passed through via output files, and automatically included in an ingress policy
-- the perimeter is brought up in enforced mode by default
-- project discovery is turned on by default and includes all projects in the organization
-
-The following example configures the default perimeter, with a single broad geo-based access level. Refer to the [vpc-sc module](../../../modules/vpc-sc/) for details on how to configure ingress/egress policies, and how to leverage the YAML factories. The perimeter is set to enforced mode and leverages auto discovery of projects.
-
-The following YAML file leverages factories to configure the broad geo-based access level (the factory path can be changed via the `factories_config` variable):
-
-```yaml
-# data/vpc-sc/access-levels/geo-default.yaml
-conditions:
-  - regions:
-      - IT
-      - ES
-```
-
-```tfvars
-# terraform.tfvars
-
-vpc_sc = {
-  perimeter_default = {
-    access_levels = ["geo-default"]
-    # dry run is disabled by default
-    dry_run = true
-    # resource discovery is enabled by default
-  }
-}
-```
-
-## Notes
-
-Some references that might be useful in setting up this stage:
-
-- [VPC SC CSCC requirements](https://cloud.google.com/security-command-center/docs/troubleshooting).
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
