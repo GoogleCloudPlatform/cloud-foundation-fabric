@@ -35,9 +35,15 @@ variable "factories_config" {
 variable "ngfw_enterprise_config" {
   description = "NGFW Enterprise configuration."
   type = object({
-    endpoint_zones   = optional(list(string), ["europe-west1-b", "europe-west1-c", "europe-west1-d"])
+    endpoint_zones   = list(string)
     quota_project_id = optional(string, null)
   })
   nullable = false
-  default  = {}
+  default = {
+    endpoint_zones = [
+      "europe-west1-b",
+      "europe-west1-c",
+      "europe-west1-d"
+    ]
+  }
 }
