@@ -31,9 +31,11 @@ variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
+    networking      = string
     networking-dev  = string
     networking-prod = string
   })
+  nullable = false
 }
 
 variable "host_project_ids" {
@@ -74,4 +76,5 @@ variable "vpc_self_links" {
     dev-spoke-0  = string
     prod-spoke-0 = string
   })
+  nullable = false
 }

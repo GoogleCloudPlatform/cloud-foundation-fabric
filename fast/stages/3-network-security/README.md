@@ -143,6 +143,7 @@ ngfw_enterprise_config = {
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [3-netsec-providers.tf](./3-netsec-providers.tf) | None |  |  |
 | [main.tf](./main.tf) | Next-Generation Firewall Enterprise configuration. | <code>project</code> | <code>google_network_security_firewall_endpoint</code> |
 | [net-dev.tf](./net-dev.tf) | Security components for dev spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
 | [net-prod.tf](./net-prod.tf) | Security components for prod spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
@@ -155,17 +156,18 @@ ngfw_enterprise_config = {
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [folder_ids](variables-fast.tf#L30) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [organization](variables-fast.tf#L50) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
-| [prefix](variables-fast.tf#L60) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [vpc_self_links](variables-fast.tf#L70) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
-| [factories_config](variables.tf#L17) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir &#61; optional&#40;string, &#34;data&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [host_project_ids](variables-fast.tf#L39) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; optional&#40;string&#41;&#10;  prod-spoke-0 &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [ngfw_enterprise_config](variables.tf#L30) | NGFW Enterprise configuration. | <code title="object&#40;&#123;&#10;  endpoint_zones   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;europe-west1-b&#34;, &#34;europe-west1-c&#34;, &#34;europe-west1-d&#34;&#93;&#41;&#10;  quota_project_id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [folder_ids](variables-fast.tf#L30) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [organization](variables-fast.tf#L52) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
+| [prefix](variables-fast.tf#L62) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [vpc_self_links](variables-fast.tf#L72) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
+| [factories_config](variables.tf#L17) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  cidrs &#61; optional&#40;string, &#34;data&#47;cidrs.yaml&#34;&#41;&#10;  firewall_policy_rules &#61; optional&#40;object&#40;&#123;&#10;    dev  &#61; string&#10;    prod &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  firewall_policy_rules &#61; &#123;&#10;    dev  &#61; &#34;data&#47;firewall-policy-rules&#47;dev&#34;&#10;    prod &#61; &#34;data&#47;firewall-policy-rules&#47;prod&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [host_project_ids](variables-fast.tf#L41) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; optional&#40;string&#41;&#10;  prod-spoke-0 &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [ngfw_enterprise_config](variables.tf#L35) | NGFW Enterprise configuration. | <code title="object&#40;&#123;&#10;  endpoint_zones   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;europe-west1-b&#34;, &#34;europe-west1-c&#34;, &#34;europe-west1-d&#34;&#93;&#41;&#10;  quota_project_id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [ngfw_enterprise_endpoint_ids](outputs.tf#L24) | The NGFW Enterprise endpoint ids. |  |  |
+| [ngfw_enterprise_endpoint_ids](outputs.tf#L17) | The NGFW Enterprise endpoint ids. |  |  |
+| [ngfw_enterprise_endpoints_quota_project](outputs.tf#L25) | The NGFW Enterprise endpoints quota project. |  |  |
 <!-- END TFDOC -->

@@ -17,13 +17,18 @@
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    data_dir = optional(string, "data")
+    cidrs = optional(string, "data/cidrs.yaml")
+    firewall_policy_rules = optional(object({
+      dev  = string
+      prod = string
+    }))
   })
-  default  = {}
   nullable = false
-  validation {
-    condition     = var.factories_config.data_dir != null
-    error_message = "Data folder needs to be non-null."
+  default = {
+    firewall_policy_rules = {
+      dev  = "data/firewall-policy-rules/dev"
+      prod = "data/firewall-policy-rules/prod"
+    }
   }
 }
 

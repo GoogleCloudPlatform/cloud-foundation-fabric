@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-locals {
-  ngfw_enterprise_endpoint_ids = {
+output "ngfw_enterprise_endpoint_ids" {
+  description = "The NGFW Enterprise endpoint ids."
+  value = {
     for _, v in google_network_security_firewall_endpoint.firewall_endpoint
     : v.location => v.id
   }
 }
 
-output "ngfw_enterprise_endpoint_ids" {
-  description = "The NGFW Enterprise endpoint ids."
-  value       = local.ngfw_enterprise_endpoint_ids
+output "ngfw_enterprise_endpoints_quota_project" {
+  description = "The NGFW Enterprise endpoints quota project."
+  value       = module.ngfw-quota-project.id
 }

@@ -17,7 +17,6 @@
 # tfdoc:file:description Security components for prod spoke VPC.
 
 resource "google_network_security_security_profile" "prod_sec_profile" {
-  count    = local.enabled_vpcs.prod-spoke-0 ? 1 : 0
   name     = "${var.prefix}-prod-sp-0"
   type     = "THREAT_PREVENTION"
   parent   = "organizations/${var.organization.id}"
@@ -25,12 +24,11 @@ resource "google_network_security_security_profile" "prod_sec_profile" {
 }
 
 resource "google_network_security_security_profile_group" "prod_sec_profile_group" {
-  count                     = local.enabled_vpcs.prod-spoke-0 ? 1 : 0
   name                      = "${var.prefix}-prod-spg-0"
   parent                    = "organizations/${var.organization.id}"
   location                  = "global"
   description               = "prod security profile group."
-  threat_prevention_profile = try(google_network_security_security_profile.prod_sec_profile[0].id, null)
+  threat_prevention_profile = try(google_network_security_security_profile.prod_sec_profile.id, null)
 }
 
 resource "google_network_security_firewall_endpoint_association" "prod_fw_ep_association" {
@@ -43,20 +41,19 @@ resource "google_network_security_firewall_endpoint_association" "prod_fw_ep_ass
 }
 
 module "prod-spoke-firewall-policy" {
-  count     = local.enabled_vpcs.prod-spoke-0 ? 1 : 0
   source    = "../../../modules/net-firewall-policy"
   name      = "${var.prefix}-prod-fw-policy"
   parent_id = try(var.host_project_ids.prod-spoke-0, null)
   region    = "global"
   security_profile_group_ids = {
-    prod = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.prod_sec_profile_group[0].id, "")}"
+    prod = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.prod_sec_profile_group.id, "")}"
   }
   attachments = {
     prod-spoke = try(var.vpc_self_links.prod-spoke-0, null)
   }
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policy-rules/prod/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policy-rules/prod/ingress.yaml"
+    cidr_file_path          = var.factories_config.cidrs
+    egress_rules_file_path  = "${var.factories_config.firewall_policy_rules.prod}/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall_policy_rules.prod}/ingress.yaml"
   }
 }

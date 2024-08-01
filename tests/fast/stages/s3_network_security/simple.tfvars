@@ -2,6 +2,7 @@ billing_account = {
   id = "000000-111111-222222"
 }
 folder_ids = {
+  networking      = "folders/12345678900"
   networking-dev  = "folders/12345678901"
   networking-prod = "folders/12345678902"
 }
