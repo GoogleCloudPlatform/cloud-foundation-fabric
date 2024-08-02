@@ -29,6 +29,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
   for_each                  = var.service_perimeters_regular
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
+  description               = each.value.description
   title                     = each.key
   perimeter_type            = "PERIMETER_TYPE_REGULAR"
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec

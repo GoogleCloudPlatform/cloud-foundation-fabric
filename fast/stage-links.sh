@@ -57,6 +57,10 @@ case $STAGE_NAME in
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
   ;;
+"1-vpc-sc")
+  PROVIDER="providers/1-vpcsc-providers.tf"
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
+  ;;
 "2-networking"*)
   if [[ -z "$TENANT" ]]; then
     echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"

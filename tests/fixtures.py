@@ -304,7 +304,8 @@ def get_tfvars_for_e2e():
     )
   tf_vars = {k: os.environ.get(f'TFTEST_E2E_{k}') for k in _variables}
   if tf_vars['region'] == tf_vars['region_secondary']:
-        raise ValueError("E2E tests require distinct primary and secondary regions.")
+    raise ValueError(
+        "E2E tests require distinct primary and secondary regions.")
   return tf_vars
 
 

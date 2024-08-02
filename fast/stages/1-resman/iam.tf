@@ -40,10 +40,11 @@ locals {
         member = module.branch-security-sa.iam_email
         role   = "roles/cloudasset.viewer"
       }
-      sa_sec_vpcsc_admin = {
-        member = module.branch-security-sa.iam_email
-        role   = "roles/accesscontextmanager.policyAdmin"
-      }
+      # re-enable if VPC-SC management is needed in the 2-security stage
+      # sa_sec_vpcsc_admin = {
+      #   member = module.branch-security-sa.iam_email
+      #   role   = "roles/accesscontextmanager.policyAdmin"
+      # }
     },
     # optional billing roles for network and security
     local.billing_mode != "org" ? {} : {

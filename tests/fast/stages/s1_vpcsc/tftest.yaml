@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  google_essential_contacts_contact: 1
-  google_folder: 1
-  google_kms_crypto_key: 8
-  google_kms_crypto_key_iam_binding: 8
-  google_kms_key_ring: 8
-  google_project: 2
-  google_project_iam_binding: 2
-  google_project_iam_member: 4
-  google_project_service: 6
-  google_project_service_identity: 4
-  google_storage_bucket_object: 1
-  modules: 11
-  resources: 45
+module: fast/stages/1-vpc-sc
+
+tests:
+  simple:

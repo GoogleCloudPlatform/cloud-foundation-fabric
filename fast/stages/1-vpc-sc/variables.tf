@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,18 +54,9 @@ variable "access_levels" {
 }
 
 variable "access_policy" {
-  description = "Access Policy name, set to null if creating one."
-  type        = string
-}
-
-variable "access_policy_create" {
-  description = "Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format, scopes are in 'folders/456789' or 'projects/project_id' format."
-  type = object({
-    parent = string
-    title  = string
-    scopes = optional(list(string), null)
-  })
-  default = null
+  description = "Access policy id (used for tenant-level VPC-SC configurations)."
+  type        = number
+  default     = null
 }
 
 variable "egress_policies" {
@@ -102,47 +93,10 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels       = optional(string)
-    egress_policies     = optional(string)
-    ingress_policies    = optional(string)
-    restricted_services = optional(string, "data/restricted-services.yaml")
+    access_levels    = optional(string, "data/access-levels")
+    egress_policies  = optional(string, "data/egress-policies")
+    ingress_policies = optional(string, "data/ingress-policies")
   })
-  nullable = false
-  default  = {}
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
   nullable = false
   default  = {}
 }
@@ -179,44 +133,43 @@ variable "ingress_policies" {
   }
 }
 
-variable "service_perimeters_bridge" {
-  description = "Bridge service perimeters."
-  type = map(object({
-    spec_resources            = optional(list(string))
-    status_resources          = optional(list(string))
-    use_explicit_dry_run_spec = optional(bool, false)
-  }))
-  default = {}
+variable "outputs_location" {
+  description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
 }
 
-variable "service_perimeters_regular" {
-  description = "Regular service perimeters."
+variable "perimeters" {
+  description = "Perimeter definitions."
   type = map(object({
-    description = optional(string)
-    spec = optional(object({
-      access_levels       = optional(list(string))
-      resources           = optional(list(string))
-      restricted_services = optional(list(string))
-      egress_policies     = optional(list(string))
-      ingress_policies    = optional(list(string))
-      vpc_accessible_services = optional(object({
-        allowed_services   = list(string)
-        enable_restriction = optional(bool, true)
-      }))
+    access_levels       = optional(list(string), [])
+    dry_run             = optional(bool, true)
+    egress_policies     = optional(list(string), [])
+    ingress_policies    = optional(list(string), [])
+    resources           = optional(list(string), [])
+    restricted_services = optional(list(string))
+    vpc_accessible_services = optional(object({
+      allowed_services   = list(string)
+      enable_restriction = optional(bool, true)
     }))
-    status = optional(object({
-      access_levels       = optional(list(string))
-      resources           = optional(list(string))
-      restricted_services = optional(list(string))
-      egress_policies     = optional(list(string))
-      ingress_policies    = optional(list(string))
-      vpc_accessible_services = optional(object({
-        allowed_services   = list(string)
-        enable_restriction = bool
-      }))
-    }))
-    use_explicit_dry_run_spec = optional(bool, false)
   }))
-  default  = {}
   nullable = false
+  default = {
+    default = {
+      access_levels    = ["geo"]
+      ingress_policies = ["fast-org-log-sinks"]
+    }
+  }
+}
+
+variable "resource_discovery" {
+  description = "Automatic discovery of perimeter projects."
+  type = object({
+    enabled          = optional(bool, true)
+    ignore_folders   = optional(list(string), [])
+    ignore_projects  = optional(list(string), [])
+    include_projects = optional(list(string), [])
+  })
+  nullable = false
+  default  = {}
 }
