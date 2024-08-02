@@ -2,10 +2,6 @@
 
 This stage sets up VPC Service Controls (VPC-SC) for the whole organization and is a thing FAST-compliant wrapper on the [VPC-SC module](../../../modules/vpc-sc/), with some minimal defaults.
 
-<p align="center">
-  <img src="diagram.png" alt="Security diagram">
-</p>
-
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
   - [Single perimeter with built-in extensibility](#single-perimeter-with-built-in-extensibility)
