@@ -26,7 +26,6 @@ perimeters = {
     access_levels    = ["geo_it", "identity_me"]
     egress_policies  = ["test"]
     ingress_policies = ["fast-org-log-sinks", "test"]
-    dry_run          = true
     resources = [
       "projects/1234567890"
     ]

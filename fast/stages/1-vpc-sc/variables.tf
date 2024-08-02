@@ -143,7 +143,7 @@ variable "perimeters" {
   description = "Perimeter definitions."
   type = map(object({
     access_levels       = optional(list(string), [])
-    dry_run             = optional(bool, false)
+    dry_run             = optional(bool, true)
     egress_policies     = optional(list(string), [])
     ingress_policies    = optional(list(string), [])
     resources           = optional(list(string), [])
@@ -157,7 +157,6 @@ variable "perimeters" {
   default = {
     default = {
       access_levels    = ["geo"]
-      dry_run          = true
       ingress_policies = ["fast-org-log-sinks"]
     }
   }
