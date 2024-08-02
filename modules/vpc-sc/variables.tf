@@ -192,6 +192,7 @@ variable "service_perimeters_bridge" {
 variable "service_perimeters_regular" {
   description = "Regular service perimeters."
   type = map(object({
+    description = optional(string)
     spec = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))

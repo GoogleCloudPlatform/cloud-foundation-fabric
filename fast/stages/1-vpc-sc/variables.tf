@@ -93,10 +93,9 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels       = optional(string, "data/access-levels")
-    egress_policies     = optional(string, "data/egress-policies")
-    ingress_policies    = optional(string, "data/ingress-policies")
-    restricted_services = optional(string, "data/restricted-services.yaml")
+    access_levels    = optional(string, "data/access-levels")
+    egress_policies  = optional(string, "data/egress-policies")
+    ingress_policies = optional(string, "data/ingress-policies")
   })
   nullable = false
   default  = {}
@@ -142,22 +141,23 @@ variable "outputs_location" {
 
 variable "perimeters" {
   description = "Perimeter definitions."
-  type = object({
-    default = optional(object({
-      access_levels    = optional(list(string), [])
-      dry_run          = optional(bool, false)
-      egress_policies  = optional(list(string), [])
-      ingress_policies = optional(list(string), [])
-      resources        = optional(list(string), [])
-      vpc_accessible_services = optional(object({
-        allowed_services   = list(string)
-        enable_restriction = optional(bool, true)
-      }))
+  type = map(object({
+    access_levels       = optional(list(string), [])
+    dry_run             = optional(bool, false)
+    egress_policies     = optional(list(string), [])
+    ingress_policies    = optional(list(string), [])
+    resources           = optional(list(string), [])
+    restricted_services = optional(list(string))
+    vpc_accessible_services = optional(object({
+      allowed_services   = list(string)
+      enable_restriction = optional(bool, true)
     }))
-  })
+  }))
   nullable = false
   default = {
-    access_levels = ["geo"]
+    default = {
+      access_levels = ["geo"]
+    }
   }
 }
 

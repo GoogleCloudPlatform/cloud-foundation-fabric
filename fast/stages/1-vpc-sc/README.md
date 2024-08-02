@@ -8,7 +8,7 @@ This stage sets up VPC Service Controls (VPC-SC) for the whole organization and 
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [Single perimeter](#single-perimeter)
+  - [Single perimeter with built-in extensibility](#single-perimeter-with-built-in-extensibility)
   - [Factories for VPC-SC configuration](#factories-for-vpc-sc-configuration)
   - [Default geo-based access level](#default-geo-based-access-level)
   - [Ingress policy for organization-level log sinks](#ingress-policy-for-organization-level-log-sinks)
@@ -33,11 +33,17 @@ This stage sets up VPC Service Controls (VPC-SC) for the whole organization and 
 
 The approach to VPC-SC design implemented in this stage aims at providing the simplest possible configuration that can be set to enforced mode, so as to provide immediate protection while minimizing operational complexity (which can be very high for VPC-SC).
 
-### Single perimeter
+### Single perimeter with built-in extensibility
 
-This stage uses a single VPC-SC perimeter, which provides protection against data exfiltration and use of credentials from outside of established boundaries, but minimizes operational toil by eliminating the need of setting up bridges between different perimeters, and by reducing the amount of ingress/egress policies needed.
+This stage uses a single VPC-SC perimeter by default, which is enough to provide protection against data exfiltration and use of credentials from outside of established boundaries, while minimizing operational toil.
 
-The perimeter is set to enforced mode by default, to prevent the common situation where a complex design is deployed in dry-run mode, and then never enforced as the burden of addressing all violations is too high. A simpler design with very coarse access levels can be enforced quickly, and then refined iteratively as operations are streamlined and familiarity with VPC-SC quirks increases.
+The perimeter is set to dry-run mode by default, but the suggestion is to switch to enforced mode immediately after definining the initial set of access level and ingress/egress policies. This prevents the common situation where a complex design is deployed in dry-run mode, and then never enforced as the burden of addressing all violations is too high. A simpler design like the one presented here that employs very coarse access levels can be enforced quickly, and then refined iteratively as operations are streamlined and familiarity with VPC-SC quirks increases.
+
+The stage is designed to allow definining additional perimeters via the `perimeters` variable, with a few caveats:
+
+- there's no support for perimeter bridges, if those are needed they need to be integrated via code (which is easy enough to do anyway)
+- resource discovery is only supported for the default perimeter, using the `default` key in the `perimeters` variable (again, that is reasonably easy to change via code if needed)
+- the factory files for access levels and ingress/egress policies use the same folder regardless of perimeter, but their inclusion in a perimeter is controlled by the individual perimeters `access_levels`, `ingress_policies`, and `egress_policies` attributes.
 
 ### Factories for VPC-SC configuration
 
@@ -53,7 +59,7 @@ Examples on how to write access level and policy YAML files are provided further
 
 The way we set up the perimeter for broad access is via a single geo-based access level, which is configured to allow access from one or more countries and deny all other traffic coming from outside the perimeter.
 
-The [`data/access-levels/geo.yaml`](data/access-levels/geo.yaml) file serves as an example and should be edited to contain the countries you need (or replaced/removed for more granular configuration).
+The [`data/access-levels/geo.yaml`](data/access-levels/geo.yaml) file serves as an example and **should be edited to contain the countries you need** (or replaced/removed for more granular configuration).
 
 ```yaml
 conditions:
@@ -63,11 +69,11 @@ conditions:
       - IT
 ```
 
-More access levels can be of course added to better tailor the configuration to specific needs. Some use cases are address further down in this document.
+More access levels can be of course added to better tailor the configuration to specific needs. Some use cases are addressed further down in this document.
 
 ### Ingress policy for organization-level log sinks
 
-An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is automatically injected in the perimeter.
+An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is automatically created, but needs to be explicitly referenced in the perimeter via the `fast-org-log-sinks` key.
 
 This only supports sinks defined in the bootstrap stage, but it can easily be used as a reference for different, specific needs (or replaced with a policy leveraging Asset Inventory for automatic inclusion of folder-level sinks).
 
@@ -75,7 +81,7 @@ This only supports sinks defined in the bootstrap stage, but it can easily be us
 
 One more feature this setup provides out of the box to reduce toil, is semi-automatic resource discovery and management of perimeter membership via Cloud Asset Inventory.
 
-The feature requires this stage to be run every time new projects are created, so it is mainly meant for simple installation where project churn is low and the organization is fairly stable. For large installations direct perimeter inclusion at creation via the project factory is probably a better choice.
+This is only supported for the `default` perimeters, and requires this stage to be run every time new projects are created. It is mainly meant for simple installations where project churn is low and the organization is fairly stable. For large installations, direct perimeter inclusion of projects at creation time via the project factory is probably a better choice.
 
 Resource discovery can be configured (or turned off if needed) via the `resource_discovery` variable.
 
@@ -153,7 +159,7 @@ The stage creates the org-level access policy by default. A pre-existing policy 
 
 The default perimeter is exposed via the `perimeters.default` variable which allows customizing most of its features.
 
-The only exception is the list of restricted services, which is configured via a YAML file with a list of services. To configure restricted services edit the list in `data/restricted-services.yaml`, or point the stage to your own file via the `factories_config.
+The only exception is the list of restricted services, which is configured via a YAML file with a list of services. To configure restricted services edit the list in `data/restricted-services.yaml`, or set the list of services in the `restricted_services` perimeter attribute.
 
 Note that it's not enough to define access levels and ingress/egress policies via their variables or via factory files: in order for them to be deployed they also need to be referenced by name in the perimeter via the attributes shown in this example.
 
@@ -167,7 +173,8 @@ perimeters = {
     # enable egress policies defined in YAML and/or variables
     egress_policies  = []
     # enable ingress policies defined in YAML and/or variables
-    ingress_policies = []
+    # and/or the built-in ingress policy for org-level log sinks
+    ingress_policies = ["fast-org-log-sinks"]
     # list resources part of this perimeter
     resources        = []
     # turn on VPC accessible services
@@ -228,7 +235,7 @@ Remember that in order for them to deployed, access levels need to be referenced
 
 Like access levels, ingress and egress policies can be defined via tfvars or factory files using the same mechanism in the underlying [vpc-sc module](../../../modules/vpc-sc/).
 
-This is an example ingress policy defines in yaml:
+This is an example ingress policy defined in yaml:
 
 ```yaml
 # data/ingress-policies/sa-tf-test.yaml
@@ -291,11 +298,11 @@ Some references that might be useful in setting up this stage:
 | [access_levels](variables.tf#L17) | Access level definitions. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; optional&#40;string&#41;&#10;  conditions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    device_policy &#61; optional&#40;object&#40;&#123;&#10;      allowed_device_management_levels &#61; optional&#40;list&#40;string&#41;&#41;&#10;      allowed_encryption_statuses      &#61; optional&#40;list&#40;string&#41;&#41;&#10;      require_admin_approval           &#61; bool&#10;      require_corp_owned               &#61; bool&#10;      require_screen_lock              &#61; optional&#40;bool&#41;&#10;      os_constraints &#61; optional&#40;list&#40;object&#40;&#123;&#10;        os_type                    &#61; string&#10;        minimum_version            &#61; optional&#40;string&#41;&#10;        require_verified_chrome_os &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    ip_subnetworks         &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    members                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    negate                 &#61; optional&#40;bool&#41;&#10;    regions                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    required_access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [access_policy](variables.tf#L56) | Access policy id (used for tenant-level VPC-SC configurations). | <code>number</code> |  | <code>null</code> |  |
 | [egress_policies](variables.tf#L62) | Egress policy definitions that can be referenced in perimeters. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      permission_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name         &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resource_type_external &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [factories_config](variables.tf#L93) | Paths to folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  access_levels       &#61; optional&#40;string, &#34;data&#47;access-levels&#34;&#41;&#10;  egress_policies     &#61; optional&#40;string, &#34;data&#47;egress-policies&#34;&#41;&#10;  ingress_policies    &#61; optional&#40;string, &#34;data&#47;ingress-policies&#34;&#41;&#10;  restricted_services &#61; optional&#40;string, &#34;data&#47;restricted-services.yaml&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [ingress_policies](variables.tf#L105) | Ingress policy definitions that can be referenced in perimeters. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      permission_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name         &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L93) | Paths to folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  access_levels    &#61; optional&#40;string, &#34;data&#47;access-levels&#34;&#41;&#10;  egress_policies  &#61; optional&#40;string, &#34;data&#47;egress-policies&#34;&#41;&#10;  ingress_policies &#61; optional&#40;string, &#34;data&#47;ingress-policies&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [ingress_policies](variables.tf#L104) | Ingress policy definitions that can be referenced in perimeters. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      permission_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name         &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [logging](variables-fast.tf#L25) | Log writer identities for organization / folders. | <code title="object&#40;&#123;&#10;  project_number    &#61; string&#10;  writer_identities &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
-| [outputs_location](variables.tf#L137) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [perimeters](variables.tf#L143) | Perimeter definitions. | <code title="object&#40;&#123;&#10;  default &#61; optional&#40;object&#40;&#123;&#10;    access_levels    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    dry_run          &#61; optional&#40;bool, false&#41;&#10;    egress_policies  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    ingress_policies &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    resources        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    vpc_accessible_services &#61; optional&#40;object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  access_levels &#61; &#91;&#34;geo&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [outputs_location](variables.tf#L136) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [perimeters](variables.tf#L142) | Perimeter definitions. | <code title="map&#40;object&#40;&#123;&#10;  access_levels       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  dry_run             &#61; optional&#40;bool, false&#41;&#10;  egress_policies     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  ingress_policies    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  resources           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  restricted_services &#61; optional&#40;list&#40;string&#41;&#41;&#10;  vpc_accessible_services &#61; optional&#40;object&#40;&#123;&#10;    allowed_services   &#61; list&#40;string&#41;&#10;    enable_restriction &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  default &#61; &#123;&#10;    access_levels &#61; &#91;&#34;geo&#34;&#93;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [resource_discovery](variables.tf#L164) | Automatic discovery of perimeter projects. | <code title="object&#40;&#123;&#10;  enabled          &#61; optional&#40;bool, true&#41;&#10;  ignore_folders   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  ignore_projects  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  include_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [root_node](variables-fast.tf#L45) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 

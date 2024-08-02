@@ -15,7 +15,7 @@
  */
 
 locals {
-  vpc_sc_ingress_policies = var.logging == null ? {} : {
+  fast_ingress_policies = var.logging == null ? {} : {
     fast-org-log-sinks = {
       from = {
         access_levels = ["*"]
@@ -27,26 +27,23 @@ locals {
       }
     }
   }
-  vpc_sc_perimeter = (
-    var.perimeters.default == null
-    ? null
-    : merge(var.perimeters.default, {
-      ingress_policies = concat(
-        var.perimeters.default.ingress_policies,
-        ["fast-org-log-sinks"]
+  perimeters = {
+    for k, v in var.perimeters : k => merge(v, {
+      restricted_services = (
+        v.restricted_services == null
+        ? local.restricted_services
+        : v.restricted_services
       )
-      restricted_services = yamldecode(file(
-        var.factories_config.restricted_services
-      ))
       resources = distinct(concat(
-        var.perimeters.default.resources,
-        var.resource_discovery.enabled != true ? [] : [
+        v.resources,
+        k != "default" || var.resource_discovery.enabled != true ? [] : [
           for v in module.vpc-sc-discovery[0].project_numbers :
           "projects/${v}"
         ]
       ))
     })
-  )
+  }
+  restricted_services = yamldecode(file("data/restricted-services.yaml"))
 }
 
 module "vpc-sc-discovery" {
@@ -71,18 +68,14 @@ module "vpc-sc" {
   egress_policies  = var.egress_policies
   factories_config = var.factories_config
   ingress_policies = merge(
-    var.ingress_policies,
-    local.vpc_sc_ingress_policies
+    local.fast_ingress_policies,
+    var.ingress_policies
   )
   service_perimeters_regular = {
-    default = {
-      spec = (
-        var.perimeters.default.dry_run ? local.vpc_sc_perimeter : null
-      )
-      status = (
-        !var.perimeters.default.dry_run ? local.vpc_sc_perimeter : null
-      )
-      use_explicit_dry_run_spec = var.perimeters.default.dry_run
+    for k, v in local.perimeters : k => {
+      spec                      = v.dry_run ? v : null
+      status                    = !v.dry_run ? v : null
+      use_explicit_dry_run_spec = v.dry_run
     }
   }
 }
