@@ -156,7 +156,9 @@ variable "perimeters" {
   nullable = false
   default = {
     default = {
-      access_levels = ["geo"]
+      access_levels    = ["geo"]
+      dry_run          = true
+      ingress_policies = ["fast-org-log-sinks"]
     }
   }
 }
