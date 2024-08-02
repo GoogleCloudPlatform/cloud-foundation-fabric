@@ -26,7 +26,7 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
    </td>
    <td>Organizations interested in forking, maintaining, and customizing Terraform modules to have fine-grained control over their infrastructure.
    </td>
-   <td>Organizations interested in using opinionated, prebuilt Terraform modules with a focus on Google Cloud best practices.
+   <td>Organizations interested in using opinionated, prebuilt Terraform modules.
    </td>
   </tr>
   <tr>
