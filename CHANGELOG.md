@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2024-08-01 11:45:37+00:00 -->
 
+### BLUEPRINTS
+
+- [[#2463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2463)] Typo in README: well know -> well-known ([derailed-dash](https://github.com/derailed-dash)) <!-- 2024-08-03 07:54:55+00:00 -->
+
+### FAST
+
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### MODULES
+
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
 ## [33.0.0] - 2024-08-01
 
 ### BLUEPRINTS
