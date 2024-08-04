@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2464)] Fix peering routes config in fast a network stage ([ludoo](https://github.com/ludoo)) <!-- 2024-08-03 20:18:45+00:00 -->
 - [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
 
 ### MODULES
