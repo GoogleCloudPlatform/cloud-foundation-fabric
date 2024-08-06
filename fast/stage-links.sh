@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ case $STAGE_NAME in
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
   ;;
-"1-vpc-sc")
+"1-vpcsc")
   PROVIDER="providers/1-vpcsc-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
   ;;
