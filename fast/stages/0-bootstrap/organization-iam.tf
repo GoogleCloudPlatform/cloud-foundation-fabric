@@ -156,7 +156,6 @@ locals {
     }
     (module.automation-tf-resman-r-sa.iam_email) = {
       authoritative = [
-        "roles/accesscontextmanager.policyReader",
         "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
@@ -165,6 +164,7 @@ locals {
       ]
       additive = concat(
         [
+          "roles/accesscontextmanager.policyReader",
           # the organizationAdminViewer custom role is granted via the SA module
           "roles/orgpolicy.policyViewer"
         ],

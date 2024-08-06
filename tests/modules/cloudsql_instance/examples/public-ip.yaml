@@ -24,7 +24,6 @@ values:
       deletion_protection_enabled: false
       disk_autoresize: true
       disk_type: PD_SSD
-      insights_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []

@@ -23,7 +23,7 @@ values:
     parent: projects/test-project
     quota_config:
     - annotations: null
-      preferred_value: '321'
+      preferred_value: '751'
     quota_id: CPUS-per-project-region
     service: compute.googleapis.com
     timeouts: null
