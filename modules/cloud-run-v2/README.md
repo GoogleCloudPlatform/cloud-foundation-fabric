@@ -465,7 +465,8 @@ module "cloud_run" {
 | [service_account_email](outputs.tf#L37) | Service account email. |  |
 | [service_account_iam_email](outputs.tf#L42) | Service account email. |  |
 | [service_name](outputs.tf#L50) | Cloud Run service name. |  |
-| [vpc_connector](outputs.tf#L55) | VPC connector resource if created. |  |
+| [service_uri](outputs.tf#L55) | Main URI in which the service is serving traffic. |  |
+| [vpc_connector](outputs.tf#L60) | VPC connector resource if created. |  |
 
 ## Fixtures
 
