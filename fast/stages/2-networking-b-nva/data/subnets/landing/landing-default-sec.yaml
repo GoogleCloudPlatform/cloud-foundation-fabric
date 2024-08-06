@@ -1,0 +1,6 @@
+# skip boilerplate check
+
+name: landing-default
+region: secondary
+ip_cidr_range: 10.80.0.0/24
+description: Default secondary-region subnet for landing

@@ -38,16 +38,6 @@ module "landing-project" {
   shared_vpc_host_config = {
     enabled = true
   }
-  iam = {
-    "roles/dns.admin" = compact([
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null)
-    ])
-    (local.custom_roles.service_project_network_admin) = compact([
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null)
-    ])
-  }
 }
 
 # DMZ (untrusted) VPC
@@ -63,6 +53,7 @@ module "dmz-vpc" {
   }
   create_googleapis_routes = null
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
   delete_default_routes_on_create = true
@@ -122,6 +113,7 @@ module "landing-vpc" {
   delete_default_routes_on_create = true
   mtu                             = 1500
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
   dns_policy = {

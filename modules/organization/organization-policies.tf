@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,6 @@ locals {
   org_policies = {
     for k, v in local._org_policies :
     k => merge(v, {
-      name   = "${var.organization_id}/policies/${k}"
-      parent = var.organization_id
       is_boolean_policy = (
         alltrue([for r in v.rules : r.allow == null && r.deny == null])
       )
@@ -75,37 +73,81 @@ locals {
 }
 
 resource "google_org_policy_policy" "default" {
-  for_each = local.org_policies
-  name     = each.value.name
-  parent   = each.value.parent
-  spec {
-    inherit_from_parent = each.value.inherit_from_parent
-    reset               = each.value.reset
-    dynamic "rules" {
-      for_each = each.value.rules
-      iterator = rule
-      content {
-        allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-        deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
-        enforce = (
-          each.value.is_boolean_policy && rule.value.enforce != null
-          ? upper(tostring(rule.value.enforce))
-          : null
-        )
-        dynamic "condition" {
-          for_each = rule.value.condition.expression != null ? [1] : []
-          content {
-            description = rule.value.condition.description
-            expression  = rule.value.condition.expression
-            location    = rule.value.condition.location
-            title       = rule.value.condition.title
+  for_each = toset([
+    for k, v in local._org_policies : trimprefix(k, "dry_run:")
+  ])
+  name   = "${var.organization_id}/policies/${each.value}"
+  parent = var.organization_id
+  dynamic "spec" {
+    for_each = lookup(local.org_policies, each.value, null) != null ? [local.org_policies[each.value]] : []
+    iterator = spec
+    content {
+      inherit_from_parent = spec.value.inherit_from_parent
+      reset               = spec.value.reset
+      dynamic "rules" {
+        for_each = spec.value.rules
+        iterator = rule
+        content {
+          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          enforce = (
+            spec.value.is_boolean_policy && rule.value.enforce != null
+            ? upper(tostring(rule.value.enforce))
+            : null
+          )
+          dynamic "condition" {
+            for_each = rule.value.condition.expression != null ? [1] : []
+            content {
+              description = rule.value.condition.description
+              expression  = rule.value.condition.expression
+              location    = rule.value.condition.location
+              title       = rule.value.condition.title
+            }
+          }
+          dynamic "values" {
+            for_each = rule.value.has_values ? [1] : []
+            content {
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
+            }
           }
         }
-        dynamic "values" {
-          for_each = rule.value.has_values ? [1] : []
-          content {
-            allowed_values = try(rule.value.allow.values, null)
-            denied_values  = try(rule.value.deny.values, null)
+      }
+    }
+  }
+
+  dynamic "dry_run_spec" {
+    for_each = lookup(local.org_policies, "dry_run:${each.value}", null) != null ? [local.org_policies["dry_run:${each.value}"]] : []
+    iterator = spec
+    content {
+      inherit_from_parent = spec.value.inherit_from_parent
+      reset               = spec.value.reset
+      dynamic "rules" {
+        for_each = spec.value.rules
+        iterator = rule
+        content {
+          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          enforce = (
+            spec.value.is_boolean_policy && rule.value.enforce != null
+            ? upper(tostring(rule.value.enforce))
+            : null
+          )
+          dynamic "condition" {
+            for_each = rule.value.condition.expression != null ? [1] : []
+            content {
+              description = rule.value.condition.description
+              expression  = rule.value.condition.expression
+              location    = rule.value.condition.location
+              title       = rule.value.condition.title
+            }
+          }
+          dynamic "values" {
+            for_each = rule.value.has_values ? [1] : []
+            content {
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
+            }
           }
         }
       }

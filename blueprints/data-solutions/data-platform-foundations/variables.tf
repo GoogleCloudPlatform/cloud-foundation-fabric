@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -238,11 +238,12 @@ variable "region" {
 variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
-    bq       = string
-    composer = string
-    dataflow = string
-    storage  = string
-    pubsub   = string
+    bq       = optional(string)
+    composer = optional(string)
+    dataflow = optional(string)
+    storage  = optional(string)
+    pubsub   = optional(string)
   })
-  default = null
+  default  = {}
+  nullable = false
 }

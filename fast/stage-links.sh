@@ -32,7 +32,7 @@ END
 fi
 
 if [[ "$1" == "gs://"* ]]; then
-  CMD="gcloud alpha storage cp $1"
+  CMD="gcloud storage cp $1"
   CP_CMD=$CMD
 elif [ ! -d "$1" ]; then
   echo "folder $1 not found"
@@ -55,6 +55,10 @@ case $STAGE_NAME in
   ;;
 "1-resman" | "1-tenant-factory")
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
+  ;;
+"1-vpc-sc")
+  PROVIDER="providers/1-vpcsc-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-networking"*)
@@ -81,6 +85,21 @@ case $STAGE_NAME in
     PROVIDER="tenants/$TENANT/providers/2-security-providers.tf"
     TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
     tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+  fi
+  ;;
+"3-network-security"*)
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/3-netsec-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json
+    tfvars/2-networking.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/3-netsec-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json
+    tenants/$TENANT/tfvars/2-networking.auto.tfvars.json"
   fi
   ;;
 *)

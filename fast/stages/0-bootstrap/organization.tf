@@ -163,22 +163,36 @@ module "organization" {
   # delegated role grant for resource manager service account
   iam_bindings = merge(
     {
+      organization_ngfw_enterprise_admin = {
+        members = [local.principals.gcp-network-admins]
+        role    = module.organization.custom_role_id["ngfw_enterprise_admin"]
+      }
       organization_iam_admin_conditional = {
         members = [module.automation-tf-resman-sa.iam_email]
         role    = module.organization.custom_role_id["organization_iam_admin"]
         condition = {
-          expression = format(
-            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-            join(",", formatlist("'%s'", [
-              "roles/accesscontextmanager.policyAdmin",
-              "roles/cloudasset.viewer",
-              "roles/compute.orgFirewallPolicyAdmin",
-              "roles/compute.xpnAdmin",
-              "roles/orgpolicy.policyAdmin",
-              "roles/orgpolicy.policyViewer",
-              "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id["tenant_network_admin"]
-            ]))
+          expression = (
+            format(
+              <<-EOT
+              api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
+              || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
+              EOT
+              , join(",", formatlist("'%s'", [
+                "roles/accesscontextmanager.policyAdmin",
+                "roles/cloudasset.viewer",
+                "roles/compute.orgFirewallPolicyAdmin",
+                "roles/compute.xpnAdmin",
+                "roles/orgpolicy.policyAdmin",
+                "roles/orgpolicy.policyViewer",
+                "roles/resourcemanager.organizationViewer"
+              ]))
+              , join(",", formatlist("'%s'", [
+                module.organization.custom_role_id["network_firewall_policies_admin"],
+                module.organization.custom_role_id["ngfw_enterprise_admin"],
+                module.organization.custom_role_id["service_project_network_admin"],
+                module.organization.custom_role_id["tenant_network_admin"]
+              ]))
+            )
           )
           title       = "automation_sa_delegated_grants"
           description = "Automation service account delegated grants."

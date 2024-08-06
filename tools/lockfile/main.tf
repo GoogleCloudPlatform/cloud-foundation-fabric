@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 data "archive_file" "bundle" {}
 resource "azuread_user" "default" {}
 resource "azurerm_resource_group" "default" {}
-resource "github_branch" "default" { provider = github }
+#resource "github_branch" "default" { provider = github }
 resource "google_service_account" "sa1" {}
 resource "google_service_account" "sa2" { provider = google-beta }
 resource "local_file" "default" {}

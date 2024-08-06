@@ -201,7 +201,10 @@ values:
   module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
     condition:
     - description: Automation service account delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/cloudasset.viewer','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer','organizations/123456789012/roles/tenantNetworkAdmin'])
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/cloudasset.viewer','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer'])
+        || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['organizations/123456789012/roles/networkFirewallPoliciesAdmin','organizations/123456789012/roles/ngfwEnterpriseAdmin','organizations/123456789012/roles/serviceProjectNetworkAdmin','organizations/123456789012/roles/tenantNetworkAdmin'])
+
       title: automation_sa_delegated_grants
     members:
     - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
@@ -376,23 +379,24 @@ counts:
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
   google_org_policy_policy: 22
-  google_organization_iam_binding: 28
-  google_organization_iam_custom_role: 7
-  google_organization_iam_member: 37
+  google_organization_iam_binding: 29
+  google_organization_iam_custom_role: 9
+  google_organization_iam_member: 41
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
-  google_project_iam_member: 7
-  google_project_service: 30
-  google_project_service_identity: 4
-  google_service_account: 4
+  google_project_iam_member: 16
+  google_project_service: 31
+  google_project_service_identity: 7
+  google_service_account: 6
   google_service_account_iam_binding: 2
-  google_storage_bucket: 4
-  google_storage_bucket_iam_binding: 2
-  google_storage_bucket_iam_member: 4
-  google_storage_bucket_object: 10
+  google_service_account_iam_member: 1
+  google_storage_bucket: 5
+  google_storage_bucket_iam_binding: 4
+  google_storage_bucket_iam_member: 6
+  google_storage_bucket_object: 12
   google_storage_project_service_account: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 1
-  modules: 18
-  resources: 205
+  modules: 21
+  resources: 235

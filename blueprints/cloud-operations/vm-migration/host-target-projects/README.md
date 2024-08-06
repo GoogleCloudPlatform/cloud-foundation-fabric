@@ -60,5 +60,5 @@ module "test-target-project" {
   project_create  = true
 }
 
-# tftest modules=5 resources=24
+# tftest modules=5 resources=28
 ```

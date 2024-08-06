@@ -22,25 +22,20 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  services = [
+  services = concat([
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
-  ]
+    ], (
+    local.spoke_connection == "ncc"
+    ? ["networkconnectivity.googleapis.com"]
+    : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
-  }
-  iam = {
-    "roles/dns.admin" = compact([
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null)
-    ])
-    (local.custom_roles.service_project_network_admin) = compact([
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-prod, null)
-    ])
   }
 }
 
@@ -54,6 +49,7 @@ module "landing-vpc" {
     logging = var.dns.enable_logging
   }
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
   delete_default_routes_on_create = true
@@ -68,6 +64,7 @@ module "landing-vpc" {
 }
 
 module "landing-firewall" {
+  count      = local.spoke_connection != "ncc" ? 1 : 0
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.name
@@ -82,7 +79,7 @@ module "landing-firewall" {
 
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
-  count          = var.enable_cloud_nat ? 1 : 0
+  count          = var.enable_cloud_nat && local.spoke_connection != "ncc" ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.primary
   name           = local.region_shortnames[var.regions.primary]

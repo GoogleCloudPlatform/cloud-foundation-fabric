@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,26 @@
 
 # tfdoc:file:description Peerings between landing and spokes.
 
-moved {
-  from = module.peering-dev
-  to   = module.peering-dev[0]
-}
-
 module "peering-dev" {
   count         = local.spoke_connection == "peering" ? 1 : 0
   source        = "../../../modules/net-vpc-peering"
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
   peer_network  = module.landing-vpc.self_link
-  routes_config = var.spoke_configs.peering_configs.dev
-}
-
-moved {
-  from = module.peering-prod
-  to   = module.peering-prod[0]
+  routes_config = {
+    local = {
+      export        = var.spoke_configs.peering_configs.dev.export
+      import        = var.spoke_configs.peering_configs.dev.import
+      public_export = var.spoke_configs.peering_configs.dev.public_export
+      public_import = var.spoke_configs.peering_configs.dev.public_import
+    }
+    peer = {
+      export        = var.spoke_configs.peering_configs.dev.import
+      import        = var.spoke_configs.peering_configs.dev.export
+      public_export = var.spoke_configs.peering_configs.dev.public_import
+      public_import = var.spoke_configs.peering_configs.dev.public_export
+    }
+  }
 }
 
 module "peering-prod" {
@@ -41,7 +44,20 @@ module "peering-prod" {
   prefix        = "prod-peering-0"
   local_network = module.prod-spoke-vpc.self_link
   peer_network  = module.landing-vpc.self_link
-  routes_config = var.spoke_configs.peering_configs.prod
-  depends_on    = [module.peering-dev]
+  routes_config = {
+    local = {
+      export        = var.spoke_configs.peering_configs.prod.export
+      import        = var.spoke_configs.peering_configs.prod.import
+      public_export = var.spoke_configs.peering_configs.prod.public_export
+      public_import = var.spoke_configs.peering_configs.prod.public_import
+    }
+    peer = {
+      export        = var.spoke_configs.peering_configs.prod.import
+      import        = var.spoke_configs.peering_configs.prod.export
+      public_export = var.spoke_configs.peering_configs.prod.public_import
+      public_import = var.spoke_configs.peering_configs.prod.public_export
+    }
+  }
+  depends_on = [module.peering-dev]
 }
 

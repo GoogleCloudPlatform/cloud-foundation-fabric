@@ -13,8 +13,6 @@
 # limitations under the License.
 
 counts:
-  google_access_context_manager_access_policy: 1
-  google_access_context_manager_service_perimeter: 1
   google_essential_contacts_contact: 1
   google_folder: 1
   google_kms_crypto_key: 8
@@ -22,9 +20,9 @@ counts:
   google_kms_key_ring: 8
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 2
+  google_project_iam_member: 4
   google_project_service: 6
-  google_project_service_identity: 2
+  google_project_service_identity: 4
   google_storage_bucket_object: 1
-  modules: 12
-  resources: 43
+  modules: 11
+  resources: 45

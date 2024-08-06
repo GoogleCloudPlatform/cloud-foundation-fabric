@@ -23,6 +23,7 @@ The variable space of this module closely mirrors that of  [net-lb-app-ext](../n
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
+    - [Cross Project Backend](#cross-project-backend)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
@@ -516,6 +517,37 @@ module "ralb-0" {
   }
 }
 # tftest modules=1 resources=5 e2e
+```
+
+#### Cross Project Backend
+
+The module supports Cross Project Backends. This is an example of a referencing to a Backend in another project:
+
+```hcl
+module "ralb-0" {
+  source     = "./fabric/modules/net-lb-app-ext-regional"
+  project_id = var.project_id
+  name       = "ralb-test-0"
+  vpc        = var.vpc.self_link
+  region     = var.region
+
+  backend_service_configs = {
+    my_backend = {
+      project_id = "backend_project_id" #Specify the project ID where the backend resides
+
+      backends = [
+        {
+          backend = "neg-0"
+        }
+      ]
+      health_checks = []
+    }
+  }
+  urlmap_config = {
+    default_service = "ralb-test-0-my_backend"
+  }
+}
+# tftest modules=1 resources=5 
 ```
 
 ### URL Map

@@ -165,8 +165,8 @@ module "project" {
     "constraints/compute.skipDefaultNetworkCreation" = true
   }
   service_encryption_key_ids = {
-    compute = [local.kms.europe-west1.compute]
-    storage = [local.kms.europe.gcs]
+    "compute.googleapis.com" = [local.kms.europe-west1.compute]
+    "storage.googleapis.com" = [local.kms.europe.gcs]
   }
   shared_vpc_service_config = {
     attach       = true
@@ -1071,6 +1071,18 @@ outputs:
 ```
 
 You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
+
+You can optionally pass to the command additional files that your plan might need to properly execute.
+
+In this example we pass in two extra files from the organization folder.
+
+```bash
+$ python tools/plan_summary.py modules/organization \
+   tests/modules/organization/common.tfvars \
+   tests/modules/organization/audit_config.tfvars \
+   --extra-files ../my-file-1.tf \
+   --extra-files ../my-file-2.yaml
+```
 
 ### Running end-to-end tests
 

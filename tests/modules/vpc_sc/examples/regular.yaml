@@ -66,7 +66,8 @@ values:
       ingress_policies:
       - ingress_from:
         - identities:
-          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
           identity_type: null
           sources:
           - resource: null

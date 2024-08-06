@@ -137,6 +137,13 @@ resource "google_container_node_pool" "nodepool" {
     }
   }
 
+  dynamic "queued_provisioning" {
+    for_each = try(var.nodepool_config.queued_provisioning, false) ? [""] : []
+    content {
+      enabled = var.nodepool_config.queued_provisioning
+    }
+  }
+
   node_config {
     boot_disk_kms_key = var.node_config.boot_disk_kms_key
     disk_size_gb      = var.node_config.disk_size_gb

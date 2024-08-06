@@ -29,6 +29,7 @@ module "dev-spoke-project" {
       "dns.googleapis.com",
       "iap.googleapis.com",
       "networkmanagement.googleapis.com",
+      "networksecurity.googleapis.com",
       "servicenetworking.googleapis.com",
       "stackdriver.googleapis.com",
       "vpcaccess.googleapis.com"
@@ -46,9 +47,6 @@ module "dev-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-dev, null),
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-dev, null),
-      try(local.service_accounts.project-factory-prod, null),
     ])
   }
   # allow specific service accounts to assign a set of roles
@@ -83,6 +81,7 @@ module "dev-spoke-vpc" {
     logging = var.dns.enable_logging
   }
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
   psa_configs = var.psa_ranges.dev

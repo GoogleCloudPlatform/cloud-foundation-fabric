@@ -89,5 +89,5 @@ module "test" {
   ad_dns_domain_name   = "example.com"
   adfs_dns_domain_name = "adfs.example.com"
 }
-# tftest modules=5 resources=20
+# tftest modules=5 resources=25
 ```

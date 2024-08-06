@@ -1,0 +1,21 @@
+# skip boilerplate check
+---
+# Following are some NGFW Enterprise ingress rules examples
+
+# ingress-allow-inspect-cross:
+#   description: "Allow and inspect cross-env traffic from prod."
+#   priority: 1
+#   match:
+#     source_ranges:
+#       - prod (to be defined)
+#   action: "apply_security_profile_group"
+#   security_profile_group: "dev"
+
+# ingress-allow-inspect-intra:
+#   description: "Allow and inspect same-env (intra-vpc) traffic."
+#   priority: 2
+#   match:
+#     source_ranges:
+#       - dev (to be defined)
+#   action: "apply_security_profile_group"
+#   security_profile_group: "dev"

@@ -43,11 +43,12 @@ counts:
   google_network_connectivity_hub: 2
   google_network_connectivity_spoke: 4
   google_project: 3
-  google_project_iam_binding: 6
-  google_project_iam_member: 2
-  google_project_service: 22
-  google_project_service_identity: 5
+  google_project_iam_binding: 4
+  google_project_iam_member: 18
+  google_project_service: 24
+  google_project_service_identity: 18
   google_storage_bucket_object: 2
+  google_vpc_access_connector: 2
   modules: 39
   random_id: 2
-  resources: 224
+  resources: 253

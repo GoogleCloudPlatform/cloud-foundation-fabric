@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ module "bucket" {
   prefix         = var.prefix
   location       = var.location
   name           = "data"
-  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
 }
 
@@ -28,6 +28,6 @@ module "dataset" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.project.project_id
   id             = "${replace(var.prefix, "-", "_")}_data"
-  encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
+  encryption_key = var.service_encryption_keys.bq
   location       = var.location
 }

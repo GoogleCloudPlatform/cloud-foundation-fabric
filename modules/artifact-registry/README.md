@@ -233,4 +233,5 @@ module "registry-docker" {
 | [id](outputs.tf#L17) | Fully qualified repository id. |  |
 | [name](outputs.tf#L22) | Repository name. |  |
 | [repository](outputs.tf#L27) | Repository object. |  |
+| [url](outputs.tf#L32) | Repository URL. |  |
 <!-- END TFDOC -->

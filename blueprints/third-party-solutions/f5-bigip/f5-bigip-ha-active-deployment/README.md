@@ -118,5 +118,5 @@ module "f5-deployment" {
   project_id     = "test-project"
   region         = "europe-west1"
 }
-# tftest modules=21 resources=45
+# tftest modules=21 resources=46
 ```

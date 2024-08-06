@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,9 +64,9 @@ module "drop-project" {
     "storage-component.googleapis.com",
   ])
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    pubsub  = [try(local.service_encryption_keys.pubsub, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])
+    "pubsub.googleapis.com"   = compact([var.service_encryption_keys.pubsub])
+    "storage.googleapis.com"  = compact([var.service_encryption_keys.storage])
   }
 }
 
@@ -90,7 +90,7 @@ module "drop-cs-0" {
   name           = "drp-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = !var.deletion_protection
   # retention_policy = {
   #   retention_period = 7776000 # 90 * 24 * 60 * 60
@@ -115,7 +115,7 @@ module "drop-ps-0" {
   source     = "../../../modules/pubsub"
   project_id = module.drop-project.project_id
   name       = "${var.prefix}-drp-ps-0"
-  kms_key    = try(local.service_encryption_keys.pubsub, null)
+  kms_key    = var.service_encryption_keys.pubsub
 }
 
 module "drop-sa-bq-0" {
@@ -134,5 +134,5 @@ module "drop-bq-0" {
   project_id     = module.drop-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_drp_bq_0"
   location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }

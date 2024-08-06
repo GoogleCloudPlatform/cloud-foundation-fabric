@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ module "dev-spoke-project" {
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
+    "networksecurity.googleapis.com",
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
@@ -45,9 +46,6 @@ module "dev-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-dev, null),
-      try(local.service_accounts.project-factory, null),
-      try(local.service_accounts.project-factory-dev, null),
-      try(local.service_accounts.project-factory-prod, null),
     ])
   }
   # allow specific service accounts to assign a set of roles
@@ -82,6 +80,7 @@ module "dev-spoke-vpc" {
     logging = var.dns.enable_logging
   }
   factories_config = {
+    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
   delete_default_routes_on_create = true

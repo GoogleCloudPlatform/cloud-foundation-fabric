@@ -102,9 +102,10 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels    = optional(string)
-    egress_policies  = optional(string)
-    ingress_policies = optional(string)
+    access_levels       = optional(string)
+    egress_policies     = optional(string)
+    ingress_policies    = optional(string)
+    restricted_services = optional(string, "data/restricted-services.yaml")
   })
   nullable = false
   default  = {}
@@ -191,6 +192,7 @@ variable "service_perimeters_bridge" {
 variable "service_perimeters_regular" {
   description = "Regular service perimeters."
   type = map(object({
+    description = optional(string)
     spec = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
@@ -199,7 +201,7 @@ variable "service_perimeters_regular" {
       ingress_policies    = optional(list(string))
       vpc_accessible_services = optional(object({
         allowed_services   = list(string)
-        enable_restriction = bool
+        enable_restriction = optional(bool, true)
       }))
     }))
     status = optional(object({
