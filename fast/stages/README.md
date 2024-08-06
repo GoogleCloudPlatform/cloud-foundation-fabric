@@ -27,7 +27,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Resource Management](1-resman/README.md)  
   Creates the base resource hierarchy (folders) and the automation resources that will be required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures resource management tags used in scoping specific IAM roles on the resource hierarchy.\
   Exports: folder ids, automation service account emails, tags
-- [VPC Service Controls](./1-vpc-sc/README.md)
+- [VPC Service Controls](./1-vpcsc/README.md)
   Optionally configures VPC Service Controls protection for the organization.
 
 ## Multitenancy

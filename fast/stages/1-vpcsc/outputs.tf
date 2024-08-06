@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ locals {
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/2-vpc-sc.auto.tfvars.json"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/1-vpcsc.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
-  name    = "tfvars/2-vpc-sc.auto.tfvars.json"
+  name    = "tfvars/1-vpcsc.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
 
