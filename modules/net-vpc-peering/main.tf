@@ -37,7 +37,7 @@ resource "google_compute_network_peering" "local_network_peering" {
   lifecycle {
     precondition {
       condition     = (length(local.auto_local_name) <= 63 || var.name.local != null)
-      error_message = "The default peering name is greater than 63 characters. Use var.name.local to override the name."
+      error_message = "The default peering name exceeds 63 characters. Use var.name.local to provide a custom the name."
     }
   }
 }
@@ -57,7 +57,7 @@ resource "google_compute_network_peering" "peer_network_peering" {
   lifecycle {
     precondition {
       condition     = (length(local.auto_peer_name) <= 63 || var.name.peer != null)
-      error_message = "The default peering name is greater than 63 characters. Use var.name.peer to override the name."
+      error_message = "The default peering name exceeds 63 characters. Use var.name.peer to provide a custom name."
     }
   }
 }
