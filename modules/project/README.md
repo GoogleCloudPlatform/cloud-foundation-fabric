@@ -1001,7 +1001,7 @@ module "project" {
       service         = "compute.googleapis.com"
       quota_id        = "CPUS-per-project-region"
       contact_email   = "user@example.com"
-      preferred_value = 321
+      preferred_value = 751
       dimensions = {
         region = "europe-west8"
       }
@@ -1048,7 +1048,7 @@ cpus-ew8:
   service: compute.googleapis.com
   quota_id: CPUS-per-project-region
   contact_email: user@example.com
-  preferred_value: 321
+  preferred_value: 751
   dimensions:
     region: europe-west8
 ```
