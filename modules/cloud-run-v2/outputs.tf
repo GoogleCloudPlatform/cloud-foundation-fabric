@@ -52,6 +52,11 @@ output "service_name" {
   value       = var.create_job ? null : google_cloud_run_v2_service.service[0].name
 }
 
+output "service_uri" {
+  description = "Main URI in which the service is serving traffic."
+  value       = var.create_job ? null : google_cloud_run_v2_service.service[0].uri
+}
+
 output "vpc_connector" {
   description = "VPC connector resource if created."
   value       = try(google_vpc_access_connector.connector[0].id, null)
