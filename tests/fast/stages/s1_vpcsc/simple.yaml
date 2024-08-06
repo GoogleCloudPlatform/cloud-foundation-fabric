@@ -23,7 +23,7 @@ values:
     detect_md5hash: different hash
     event_based_hold: null
     metadata: null
-    name: tfvars/2-vpc-sc.auto.tfvars.json
+    name: tfvars/1-vpcsc.auto.tfvars.json
     retention: []
     source: null
     temporary_hold: null

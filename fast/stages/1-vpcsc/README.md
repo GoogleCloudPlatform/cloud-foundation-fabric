@@ -96,7 +96,7 @@ The commands to link or copy the provider and terraform variable files can be ge
 ```bash
 ../../stage-links.sh ~/fast-config
 
-# copy and paste the following commands for '1-vpc-sc'
+# copy and paste the following commands for '1-vpcsc'
 
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
