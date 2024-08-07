@@ -32,7 +32,7 @@ values:
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
-    - serviceAccount:service_account_email
+    - serviceAccount:sa1@sa.example
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser
@@ -40,7 +40,7 @@ values:
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.securityAdmin"]:
     condition: []
     members:
-    - serviceAccount:service_account_email
+    - serviceAccount:sa1@sa.example
     project: project-id
     region: europe-west1
     role: roles/compute.securityAdmin
