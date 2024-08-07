@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VPC-SC ingress policy",
+  "type": "object",
+  "required": [
+    "from",
+    "to"
+  ],
+  "properties": {
+    "from": {
+      "type": "object",
+      "items": {
+        "access_levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identity_type": {
+          "enum": [
+            "IDENTITY_TYPE_UNSPECIFIED",
+            "ANY_IDENTITY",
+            "ANY_USER_ACCOUNT",
+            "ANY_SERVICE_ACCOUNT",
+            ""
+          ]
+        },
+        "identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "to": {
+      "type": "object",
+      "items": {
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "service_name"
+            ],
+            "properties": {
+              "method_selectors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "permission_selectors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "service_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
