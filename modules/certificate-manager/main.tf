@@ -39,6 +39,7 @@ resource "google_certificate_manager_certificate" "certificates" {
   project     = var.project_id
   name        = each.key
   description = each.value.description
+  location    = each.value.location
   scope       = each.value.scope
   labels      = each.value.labels
   dynamic "managed" {
