@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../../../modules/vpc-sc/schemas/access-level.schema.json
+
 # this is just an example that reflects the FAST core team members' locations
 # and needs to be edited, or not referenced in the perimeter variable
 conditions:

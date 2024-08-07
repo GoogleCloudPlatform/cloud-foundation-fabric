@@ -216,6 +216,8 @@ module "test" {
 
 This module implements support for three distinct factories, used to create and manage access levels, egress policies and ingress policies via YAML files. The YAML files syntax is a 1:1 match for the corresponding variables, and the factory data is merged at runtime with any data set in variables, which take precedence in case of key overlaps.
 
+JSON Schema files for each factory object are available in the [`schemas`](./schemas/) folder, and can be used to validate input YAML data with [`validate-yaml`](https://github.com/gerald1248/validate-yaml) or any of the available tools and libraries.
+
 This is an example that uses all three factories. Note that the factory configuration points to folders, where each file represents one resource.
 
 ```hcl
