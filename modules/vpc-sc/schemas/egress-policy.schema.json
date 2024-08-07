@@ -9,7 +9,8 @@
   "properties": {
     "from": {
       "type": "object",
-      "items": {
+      "additionalProperties": false,
+      "properties": {
         "identity_type": {
           "enum": [
             "IDENTITY_TYPE_UNSPECIFIED",
@@ -29,7 +30,8 @@
     },
     "to": {
       "type": "object",
-      "items": {
+      "additionalProperties": false,
+      "properties": {
         "operations": {
           "type": "array",
           "items": {
@@ -37,6 +39,7 @@
             "required": [
               "service_name"
             ],
+            "additionalProperties": false,
             "properties": {
               "method_selectors": {
                 "type": "array",
@@ -48,10 +51,10 @@
                 "type": "array",
                 "items": {
                   "type": "string"
-                },
-                "service_name": {
-                  "type": "string"
                 }
+              },
+              "service_name": {
+                "type": "string"
               }
             }
           }

@@ -9,7 +9,8 @@
   "properties": {
     "from": {
       "type": "object",
-      "items": {
+      "additionalProperties": false,
+      "properties": {
         "access_levels": {
           "type": "array",
           "items": {
@@ -41,7 +42,8 @@
     },
     "to": {
       "type": "object",
-      "items": {
+      "additionalProperties": false,
+      "properties": {
         "operations": {
           "type": "array",
           "items": {

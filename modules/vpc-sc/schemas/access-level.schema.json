@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "VPC-SC access level",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "combining_function": {
       "type": "string"
@@ -10,6 +11,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "device_policy": {
             "type": "object",
@@ -17,6 +19,7 @@
               "require_admin_approval",
               "require_corp_owned"
             ],
+            "additionalProperties": false,
             "properties": {
               "allowed_device_management_levels": {
                 "type": "array",
@@ -46,6 +49,7 @@
                 ],
                 "items": {
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "os_type": {
                       "type": "string"
