@@ -64,6 +64,7 @@ resource "google_compute_global_address" "psc" {
 }
 
 resource "google_compute_global_forwarding_rule" "psc_consumer" {
+  provider              = google-beta
   for_each              = { for name, psc in local.global_psc : name => psc if psc.service_attachment != null }
   name                  = coalesce(each.value.name, each.key)
   project               = var.project_id
@@ -71,6 +72,10 @@ resource "google_compute_global_forwarding_rule" "psc_consumer" {
   ip_address            = google_compute_global_address.psc[each.key].self_link
   load_balancing_scheme = ""
   target                = each.value.service_attachment.psc_service_attachment_link
+  # allow_psc_global_access is not currently supported for global
+  # forwarding rules. This parameter is included for potential future
+  # compatibility.
+  allow_psc_global_access = each.value.service_attachment.global_access
 }
 
 # regional PSC services
@@ -90,13 +95,15 @@ resource "google_compute_address" "psc" {
 }
 
 resource "google_compute_forwarding_rule" "psc_consumer" {
-  for_each              = { for name, psc in local.regional_psc : name => psc if psc.service_attachment != null }
-  name                  = coalesce(each.value.name, each.key)
-  project               = var.project_id
-  region                = each.value.region
-  subnetwork            = each.value.subnet_self_link
-  ip_address            = google_compute_address.psc[each.key].self_link
-  load_balancing_scheme = ""
-  recreate_closed_psc   = true
-  target                = each.value.service_attachment.psc_service_attachment_link
+  provider                = google-beta
+  for_each                = { for name, psc in local.regional_psc : name => psc if psc.service_attachment != null }
+  name                    = coalesce(each.value.name, each.key)
+  project                 = var.project_id
+  region                  = each.value.region
+  subnetwork              = each.value.subnet_self_link
+  ip_address              = google_compute_address.psc[each.key].self_link
+  load_balancing_scheme   = ""
+  recreate_closed_psc     = true
+  target                  = each.value.service_attachment.psc_service_attachment_link
+  allow_psc_global_access = each.value.service_attachment.global_access
 }
