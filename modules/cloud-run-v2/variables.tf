@@ -80,6 +80,12 @@ variable "create_job" {
   default     = false
 }
 
+variable "custom_audiences" {
+  description = "Custom audiences for service."
+  type        = list(string)
+  default     = null
+}
+
 variable "encryption_key" {
   description = "The full resource name of the Cloud KMS CryptoKey."
   type        = string
