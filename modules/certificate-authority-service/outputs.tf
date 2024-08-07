@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-output "ca_pool_id" {
-  description = "The CA pool id."
-  value       = google_privateca_ca_pool.ca_pool.id
-}
-
 output "ca_ids" {
   description = "The CA ids."
   value = {
     for k, v in google_privateca_certificate_authority.cas
     : k => v.id
   }
+}
+
+output "ca_pool_id" {
+  description = "The CA pool id."
+  value       = local.ca_pool_id
 }
 
 output "cas" {
