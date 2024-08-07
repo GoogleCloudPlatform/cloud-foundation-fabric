@@ -167,7 +167,7 @@ module "addresses" {
   project_id = var.project_id
   psc_addresses = {
     cloudsql-one = {
-      address = "10.0.16.32"
+      address          = "10.0.16.32"
       subnet_self_link = var.subnet.self_link
       region           = var.region
       service_attachment = {
