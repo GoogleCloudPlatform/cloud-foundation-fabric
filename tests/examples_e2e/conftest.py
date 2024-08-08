@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,8 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
-from ..examples.conftest import pytest_generate_tests as _examples_generate_test
+from ..examples.conftest import \
+    pytest_generate_tests as _examples_generate_test
 
 
 def pytest_generate_tests(metafunc):

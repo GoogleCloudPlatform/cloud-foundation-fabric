@@ -13,12 +13,13 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
+import collections
 from pathlib import Path
-
-from .utils import get_tftest_directive, Example, File
 
 import marko
 import pytest
+
+from .utils import Example, File, get_tftest_directive
 
 FABRIC_ROOT = Path(__file__).parents[2]
 

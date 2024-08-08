@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import re
-import subprocess
-import yaml
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
+
+import yaml
 
 BASE_PATH = Path(__file__).parent
 
