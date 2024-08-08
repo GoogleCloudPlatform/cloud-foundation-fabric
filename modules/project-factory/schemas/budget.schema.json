@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "amount"
+  ],
+  "properties": {
+    "amount": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "currency_code": {
+          "type": "string"
+        },
+        "nanos": {
+          "type": "number"
+        },
+        "units": {
+          "type": "number"
+        },
+        "use_last_period": {
+          "type": "boolean"
+        }
+      }
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "credit_types_treatment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "exclude_all": {
+              "type": "boolean"
+            },
+            "include_specified": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "label": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "period": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "calendar": {
+              "type": "string"
+            },
+            "custom": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "start_date": {
+                  "$ref": "#/$defs/date"
+                },
+                "end_date": {
+                  "$ref": "#/$defs/date"
+                }
+              }
+            }
+          }
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resource_ancestors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subaccounts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "threshold_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "percent"
+        ],
+        "properties": {
+          "percent": {
+            "type": "number"
+          },
+          "forecasted_spend": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "update_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "disable_default_iam_recipients": {
+              "type": "boolean"
+            },
+            "monitoring_notification_channels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "pubsub_topic": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "day": {
+          "type": "number"
+        },
+        "month": {
+          "type": "number"
+        },
+        "year": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
