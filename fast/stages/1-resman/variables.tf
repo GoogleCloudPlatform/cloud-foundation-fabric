@@ -56,7 +56,7 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
-    netsec = optional(object({
+    nsec = optional(object({
       name              = string
       type              = string
       branch            = optional(string)

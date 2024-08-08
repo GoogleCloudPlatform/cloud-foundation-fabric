@@ -18,16 +18,16 @@
 
 # automation service account
 
-module "branch-netsec-sa" {
+module "branch-nsec-sa" {
   source                 = "../../../modules/iam-service-account"
   project_id             = var.automation.project_id
-  name                   = "prod-resman-netsec-0"
+  name                   = "prod-resman-nsec-0"
   display_name           = "Terraform resman network security service account."
   prefix                 = var.prefix
   service_account_create = var.root_node == null
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-netsec-sa-cicd[0].iam_email, null)
+      try(module.branch-nsec-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -40,15 +40,15 @@ module "branch-netsec-sa" {
 
 # automation read-only service account
 
-module "branch-netsec-r-sa" {
+module "branch-nsec-r-sa" {
   source       = "../../../modules/iam-service-account"
   project_id   = var.automation.project_id
-  name         = "prod-resman-netsec-0r"
+  name         = "prod-resman-nsec-0r"
   display_name = "Terraform resman network security service account (read-only)."
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-netsec-r-sa-cicd[0].iam_email, null)
+      try(module.branch-nsec-r-sa-cicd[0].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -61,16 +61,16 @@ module "branch-netsec-r-sa" {
 
 # automation bucket
 
-module "branch-netsec-gcs" {
+module "branch-nsec-gcs" {
   source        = "../../../modules/gcs"
   project_id    = var.automation.project_id
-  name          = "prod-resman-netsec-0"
+  name          = "prod-resman-nsec-0"
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.branch-netsec-sa.iam_email]
-    "roles/storage.objectViewer" = [module.branch-netsec-r-sa.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-nsec-sa.iam_email]
+    "roles/storage.objectViewer" = [module.branch-nsec-r-sa.iam_email]
   }
 }
