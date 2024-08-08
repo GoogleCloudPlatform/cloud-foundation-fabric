@@ -13,36 +13,14 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
-import collections
-import re
 from pathlib import Path
+
+from .utils import get_tftest_directive, Example, File
 
 import marko
 import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
-Directive = collections.namedtuple('Directive', 'name args kwargs')
-Example = collections.namedtuple(
-    'Example', 'name code module files fixtures type directive')
-File = collections.namedtuple('File', 'path content')
-
-
-def get_tftest_directive(s):
-  """Scan a code block and return a Directive object if there are any
-  tftest directives"""
-  regexp = rf"^ *# *(tftest\S*)(.*)$"
-  if match := re.search(regexp, s, re.M):
-    name, body = match.groups()
-    args = []
-    kwargs = {}
-    for arg in body.split():
-      if '=' in arg:
-        l, r = arg.split('=', 1)
-        kwargs[l] = r
-      else:
-        args.append(arg)
-    return Directive(name, args, kwargs)
-  return None
 
 
 def pytest_generate_tests(metafunc, test_group='example',

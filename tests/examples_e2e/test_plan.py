@@ -14,7 +14,7 @@
 
 from pathlib import Path
 from ..examples.test_plan import prepare_files
-from ..examples.conftest import get_tftest_directive
+from ..examples.utils import get_tftest_directive
 
 BASE_PATH = Path(__file__).parent
 
