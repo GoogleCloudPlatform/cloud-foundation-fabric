@@ -14,6 +14,37 @@
  * limitations under the License.
  */
 
+variable "cas" {
+  description = "The CAS CAs to add to each environment"
+  type = object({
+    dev = map(object({
+      auth_ngfw_sa          = optional(bool, false)
+      ca_configs            = map(any)
+      ca_pool_config        = map(any)
+      location              = string
+      iam                   = optional(map(list(string)), {})
+      iam_bindings          = optional(map(any), {})
+      iam_bindings_additive = optional(map(any), {})
+      iam_by_principals     = optional(map(list(string)), {})
+    }))
+    prod = map(object({
+      auth_ngfw_sa          = optional(bool, false)
+      ca_configs            = map(any)
+      ca_pool_config        = map(any)
+      location              = string
+      iam                   = optional(map(list(string)), {})
+      iam_bindings          = optional(map(any), {})
+      iam_bindings_additive = optional(map(any), {})
+      iam_by_principals     = optional(map(list(string)), {})
+    }))
+  })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
+  }
+}
+
 variable "essential_contacts" {
   description = "Email used for essential contacts, unset if null."
   type        = string
@@ -63,4 +94,18 @@ variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
+}
+
+variable "trust_configs" {
+  description = "The trust configs grouped by environment."
+  type = object({
+    dev = map(object({
+      description              = optional(string)
+      allowlisted_certificates = optional(map(string), {})
+      trust_stores = optional(map(object({
+        intermediate_cas = optional(map(string), {})
+        trust_anchors    = optional(map(string), {})
+      })), {})
+    }))
+  })
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,11 @@ locals {
     }
   }
   project_services = [
+    "certificatemanager.googleapis.com",
     "cloudkms.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "networksecurity.googleapis.com",
+    "privateca.googleapis.com",
     "secretmanager.googleapis.com",
     "stackdriver.googleapis.com"
   ]
