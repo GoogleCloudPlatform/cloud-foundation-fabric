@@ -23,7 +23,7 @@ values:
   module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.subscriber"]:
     condition: []
     members:
-    - serviceAccount:service_account_email
+    - serviceAccount:sa1@sa.example
     project: project-id
     role: roles/pubsub.subscriber
     topic: my-topic

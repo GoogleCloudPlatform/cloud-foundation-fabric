@@ -115,6 +115,12 @@ locals {
       project_id        = module.log-export-project.project_id
       project_number    = module.log-export-project.number
       writer_identities = module.organization.sink_writer_identities
+      destinations = {
+        bigquery = try(module.log-export-dataset[0].id, null)
+        logging  = { for k, v in module.log-export-logbucket : k => v.id }
+        pubsub   = { for k, v in module.log-export-pubsub : k => v.id }
+        storage  = try(module.log-export-gcs[0].id, null)
+      }
     }
     org_policy_tags = {
       key_id = (

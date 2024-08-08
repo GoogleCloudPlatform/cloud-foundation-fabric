@@ -22,11 +22,11 @@ values:
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - serviceAccount:service_account_email
+    - serviceAccount:sa1@sa.example
     role: roles/owner
   module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
-    member: serviceAccount:service_account_email
+    member: serviceAccount:sa1@sa.example
     role: roles/storage.admin
 counts:
   google_assured_workloads_workload: 1
