@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,18 @@ See FabricTestFile for details on the file structure.
 
 """
 
+import json
+from pathlib import Path
+import fnmatch
+
+import jsonschema
 import pytest
 import yaml
 
+from .examples.utils import get_tftest_directive
 from .fixtures import plan_summary, plan_validator
+
+_REPO_ROOT = Path(__file__).parents[1]
 
 
 class FabricTestFile(pytest.File):
@@ -88,14 +96,58 @@ class FabricTestItem(pytest.Item):
 
   def runtest(self):
     try:
-      summary = plan_validator(self.module, self.inventory, self.parent.path.parent,
-                             self.tf_var_files, self.extra_files)
+      summary = plan_validator(self.module, self.inventory,
+                               self.parent.path.parent, self.tf_var_files,
+                               self.extra_files)
     except AssertionError:
+
       def full_paths(x):
-        return [str(self.parent.path.parent / x ) for x in x]
+        return [str(self.parent.path.parent / x) for x in x]
+
       print(f'Error in inventory file: {" ".join(full_paths(self.inventory))}')
-      print(f'To regenerate inventory run: python tools/plan_summary.py {self.module} {" ".join(full_paths(self.tf_var_files))}')
+      print(
+          f'To regenerate inventory run: python tools/plan_summary.py {self.module} {" ".join(full_paths(self.tf_var_files))}'
+      )
       raise
+
+  def reportinfo(self):
+    return self.path, None, self.name
+
+
+class FabricSchemaTestFile(pytest.File):
+
+  def collect(self):
+    try:
+      raw = self.path.read_text()
+      content = yaml.safe_load(raw)
+    except (IOError, OSError, yaml.YAMLError) as e:
+      raise Exception(f'Cannot read test spec {self.path}: {e}')
+    directive = get_tftest_directive(raw)
+    if not directive or directive.name != 'tftest':
+      raise Exception(f'Schema test file without tftest directive: {self.path}')
+    name = str(self.path)
+    yield FabricSchemaTestItem.from_parent(self, name=name, directive=directive,
+                                           content=content)
+
+
+class FabricSchemaTestItem(pytest.Item):
+
+  def __init__(self, name, parent, directive, content):
+    super().__init__(name, parent)
+    self.directive = directive
+    self.content = content
+
+  def runtest(self):
+    if 'schema' not in self.directive.kwargs:
+      raise Exception(
+          f'Schema test file does not declare schema: {self.parent.path}')
+    schema_path = _REPO_ROOT / self.directive.kwargs['schema']
+    schema = json.load(schema_path.open())
+    if 'fail' in self.directive.args:
+      with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(instance=self.content, schema=schema)
+    else:
+      jsonschema.validate(instance=self.content, schema=schema)
 
   def reportinfo(self):
     return self.path, None, self.name
@@ -105,3 +157,8 @@ def pytest_collect_file(parent, file_path):
   'Collect tftest*.yaml files and run plan_validator from them.'
   if file_path.suffix == '.yaml' and file_path.name.startswith('tftest'):
     return FabricTestFile.from_parent(parent, path=file_path)
+
+  # use fnmatch because Path.match doesn't support **
+  file_path_relative = str(file_path.relative_to(_REPO_ROOT))
+  if fnmatch.fnmatch(file_path_relative, "tests/schemas/**.yaml"):
+    return FabricSchemaTestFile.from_parent(parent, path=file_path)
