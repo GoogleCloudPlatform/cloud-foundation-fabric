@@ -87,9 +87,11 @@ def test_example(plan_validator, example):
     counts = summary.counts
     num_modules, num_resources = counts['modules'], counts['resources']
 
-    if expected_modules := int(directive.kwargs['modules']):
+    if expected_modules := directive.kwargs.get('modules'):
+      expected_modules = int(expected_modules)
       assert expected_modules == num_modules, 'wrong number of modules'
-    if expected_resources := int(directive.kwargs['resources']):
+    if expected_resources := directive.kwargs.get('resources'):
+      expected_resources = int(expected_resources)
       assert expected_resources == num_resources, 'wrong number of resources'
 
     # TODO(jccb): this should probably be done in check_documentation
