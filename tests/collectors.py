@@ -125,8 +125,7 @@ class FabricSchemaTestFile(pytest.File):
     directive = get_tftest_directive(raw)
     if not directive or directive.name != 'tftest':
       raise Exception(f'Schema test file without tftest directive: {self.path}')
-    name = str(self.path)
-    yield FabricSchemaTestItem.from_parent(self, name=name, directive=directive,
+    yield FabricSchemaTestItem.from_parent(self, name='', directive=directive,
                                            content=content)
 
 
