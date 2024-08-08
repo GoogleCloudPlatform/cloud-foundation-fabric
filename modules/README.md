@@ -109,6 +109,7 @@ These modules are used in the examples included in this repository. If you are u
 ## Security
 
 - [Binauthz](./binauthz/)
+- [Certificate Authority Service (CAS)](./certificate-authority-service)
 - [KMS](./kms)
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)

@@ -22,6 +22,10 @@ variable "billing_account_id" {
   default = "123456-123456-123456"
 }
 
+variable "ca_pool_id" {
+  default = "ca-pool-id"
+}
+
 variable "group_email" {
   default = "organization-admins@example.org"
 }
@@ -72,8 +76,8 @@ variable "regions" {
 variable "service_account" {
   default = {
     id        = "service_account_id"
-    email     = "service_account_email"
-    iam_email = "service_account_iam_email"
+    email     = "sa1@sa.example"
+    iam_email = "serviceAccount:sa1@sa.example"
   }
 }
 

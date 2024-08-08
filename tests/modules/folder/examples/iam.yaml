@@ -21,7 +21,7 @@ values:
     condition: []
     members:
     - group:organization-admins@example.org
-    - serviceAccount:service_account_email
+    - serviceAccount:sa1@sa.example
     role: roles/owner
   module.folder.google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
     condition: []
@@ -35,7 +35,7 @@ values:
     role: roles/resourcemanager.projectCreator
   module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
-    member: serviceAccount:service_account_email
+    member: serviceAccount:sa1@sa.example
     role: roles/storage.admin
 
 counts:
