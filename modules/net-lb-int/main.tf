@@ -45,7 +45,7 @@ resource "google_compute_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   provider    = google-beta
   project     = var.project_id
-  name        = each.value.override_name != null ? each.value.override_name : local.forwarding_rule_names[each.key]
+  name        = coalesce(each.value.name, local.forwarding_rule_names[each.key])
   region      = var.region
   description = each.value.description
   ip_address  = each.value.address
@@ -69,7 +69,7 @@ resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = var.project_id
   region                          = var.region
-  name                            = var.name
+  name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.description
   load_balancing_scheme           = "INTERNAL"
   protocol                        = var.backend_service_config.protocol

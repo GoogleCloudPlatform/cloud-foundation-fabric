@@ -30,6 +30,7 @@ variable "backend_service_config" {
     }))
     locality_lb_policy = optional(string)
     log_sample_rate    = optional(number)
+    name               = optional(string, null)
     port_name          = optional(string)
     protocol           = optional(string, "UNSPECIFIED")
     session_affinity   = optional(string)
@@ -83,13 +84,13 @@ variable "description" {
 variable "forwarding_rules_config" {
   description = "The optional forwarding rules configuration."
   type = map(object({
-    address       = optional(string)
-    description   = optional(string)
-    ip_version    = optional(string)
-    override_name = optional(string, null)
-    ports         = optional(list(string), null)
-    protocol      = optional(string, "TCP")
-    subnetwork    = optional(string) # Required for IPv6
+    address     = optional(string)
+    description = optional(string)
+    ip_version  = optional(string)
+    name        = optional(string, null)
+    ports       = optional(list(string), null)
+    protocol    = optional(string, "TCP")
+    subnetwork  = optional(string) # Required for IPv6
   }))
   default = {
     "" = {}
@@ -120,7 +121,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
-    override_name       = optional(string, null)
+    name                = optional(string, null)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({
