@@ -17,17 +17,17 @@
 # tfdoc:file:description CI/CD resources for the networking branch.
 
 # read-write (apply) SA used by CI/CD workflows
-# to impersonate netsec automation SA
+# to impersonate nsec automation SA
 
-module "branch-netsec-sa-cicd" {
+module "branch-nsec-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
-    try(local.cicd_repositories.netsec.name, null) != null
-    ? { 0 = local.cicd_repositories.netsec }
+    try(local.cicd_repositories.nsec.name, null) != null
+    ? { 0 = local.cicd_repositories.nsec }
     : {}
   )
   project_id   = var.automation.project_id
-  name         = "prod-resman-netsec-1"
+  name         = "prod-resman-nsec-1"
   display_name = "Terraform CI/CD stage 2 network security service account."
   prefix       = var.prefix
   iam = {
@@ -54,17 +54,17 @@ module "branch-netsec-sa-cicd" {
   }
 }
 
-# read-only (plan) SA used by CI/CD workflows to impersonate netsec automation SA
+# read-only (plan) SA used by CI/CD workflows to impersonate nsec automation SA
 
-module "branch-netsec-r-sa-cicd" {
+module "branch-nsec-r-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
-    try(local.cicd_repositories.netsec.name, null) != null
-    ? { 0 = local.cicd_repositories.netsec }
+    try(local.cicd_repositories.nsec.name, null) != null
+    ? { 0 = local.cicd_repositories.nsec }
     : {}
   )
   project_id   = var.automation.project_id
-  name         = "prod-resman-netsec-1r"
+  name         = "prod-resman-nsec-1r"
   display_name = "Terraform CI/CD stage 2 network security service account (read-only)."
   prefix       = var.prefix
   iam = {

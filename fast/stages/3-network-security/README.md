@@ -57,7 +57,7 @@ The commands to link or copy the provider and terraform variable files can be ea
 
 # copy and paste the following commands for '3-network-security'
 
-ln -s ~/fast-config/providers/3-netsec-providers.tf ./
+ln -s ~/fast-config/providers/3-network-security-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
@@ -69,7 +69,7 @@ ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # copy and paste the following commands for '3-network-security'
 
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-netsec-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-network-security-providers.tf ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
