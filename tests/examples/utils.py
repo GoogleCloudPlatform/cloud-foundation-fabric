@@ -16,8 +16,9 @@ import collections
 import re
 
 Directive = collections.namedtuple('Directive', 'name args kwargs')
-Example = collections.namedtuple(
-    'Example', 'name code module files fixtures type directive')
+TerraformExample = collections.namedtuple(
+    'TerraformExample', 'name code module files fixtures type directive')
+YamlExample = collections.namedtuple('YamlExample', 'body module schema')
 File = collections.namedtuple('File', 'path content')
 
 

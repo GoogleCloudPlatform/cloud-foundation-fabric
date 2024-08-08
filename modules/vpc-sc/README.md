@@ -252,14 +252,14 @@ module "test" {
 conditions:
   - members:
     - user:user1@example.com
-# tftest-file id=a1 path=data/access-levels/identity-user1.yaml
+# tftest-file id=a1 path=data/access-levels/identity-user1.yaml schema=access-level.schema.json
 ```
 
 ```yaml
 conditions:
   - regions:
       - IT
-# tftest-file id=a2 path=data/access-levels/geo-it.yaml
+# tftest-file id=a2 path=data/access-levels/geo-it.yaml schema=access-level.schema.json
 ```
 
 ```yaml
@@ -275,7 +275,7 @@ to:
   resources:
     - projects/123456789
 
-# tftest-file id=e1 path=data/egress-policies/gcs-sa-foo.yaml
+# tftest-file id=e1 path=data/egress-policies/gcs-sa-foo.yaml schema=egress-policy.schema.json
 ```
 
 ```yaml
@@ -293,7 +293,7 @@ to:
         - RegionsService.Get
   resources:
     - "*"
-# tftest-file id=i1 path=data/ingress-policies/sa-tf-test.yaml
+# tftest-file id=i1 path=data/ingress-policies/sa-tf-test.yaml schema=ingress-policy.schema.json
 ```
 
 ```yaml
@@ -307,7 +307,7 @@ to:
     - service_name: "*"
   resources:
     - projects/1234567890
-# tftest-file id=i2 path=data/ingress-policies/sa-tf-test-geo.yaml
+# tftest-file id=i2 path=data/ingress-policies/sa-tf-test-geo.yaml schema=ingress-policy.schema.json
 ```
 
 ## Notes
