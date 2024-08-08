@@ -35,7 +35,7 @@ values:
     role: roles/resourcemanager.projectCreator
   module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
-    member:1 serviceAccount:sa1@sa.example
+    member: serviceAccount:sa1@sa.example
     role: roles/storage.admin
 
 counts:
