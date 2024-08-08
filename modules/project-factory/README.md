@@ -215,23 +215,23 @@ name: Foo (level 1)
 iam:
   roles/viewer:
     - group:a@example.com
-# tftest-file id=h-0-0 path=data/hierarchy/foo/_config.yaml
+# tftest-file id=h-0-0 path=data/hierarchy/foo/_config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Bar (level 1)
 parent: folders/4567890
-# tftest-file id=h-1-0 path=data/hierarchy/bar/_config.yaml
+# tftest-file id=h-1-0 path=data/hierarchy/bar/_config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Foo Baz (level 2)
-# tftest-file id=h-0-1 path=data/hierarchy/foo/baz/_config.yaml
+# tftest-file id=h-0-1 path=data/hierarchy/foo/baz/_config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Bar Baz (level 2)
-# tftest-file id=h-1-1 path=data/hierarchy/bar/baz/_config.yaml
+# tftest-file id=h-1-1 path=data/hierarchy/bar/baz/_config.yaml schema=folder.schema.json
 ```
 
 One project defined within the folder hierarchy:
@@ -241,7 +241,7 @@ billing_account: 012345-67890A-BCDEF0
 services:
   - container.googleapis.com
   - storage.googleapis.com
-# tftest-file id=h-1-1-p0 path=data/hierarchy/bar/baz/bar-baz-iac-0.yaml
+# tftest-file id=h-1-1-p0 path=data/hierarchy/bar/baz/bar-baz-iac-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -274,7 +274,7 @@ service_accounts:
         - roles/compute.networkUser
 billing_budgets:
   - test-100
-# tftest-file id=prj-app-1 path=data/projects/prj-app-1.yaml
+# tftest-file id=prj-app-1 path=data/projects/prj-app-1.yaml schema=project.schema.json
 ```
 
 ```yaml
@@ -311,7 +311,7 @@ shared_vpc_service_config:
     europe-west1/prod-default-ew1:
     - group:team-1@example.com
 
-# tftest-file id=prj-app-2 path=data/projects/prj-app-2.yaml
+# tftest-file id=prj-app-2 path=data/projects/prj-app-2.yaml schema=project.schema.json
 ```
 
 This project uses a reference to a hierarchy folder, and defines a controlling project via the `automation` attributes:
@@ -347,7 +347,7 @@ automation:
           - group:devops@example.org
 
 
-# tftest-file id=prj-app-3 path=data/projects/prj-app-3.yaml
+# tftest-file id=prj-app-3 path=data/projects/prj-app-3.yaml schema=project.schema.json
 ```
 
 And a billing budget:
@@ -370,7 +370,7 @@ update_rules:
     disable_default_iam_recipients: true
     monitoring_notification_channels:
     - billing-default
-# tftest-file id=budget-test-100 path=data/budgets/test-100.yaml
+# tftest-file id=budget-test-100 path=data/budgets/test-100.yaml schema=budget.schema.json
 ```
 
 <!-- TFDOC OPTS files:1 -->

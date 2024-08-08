@@ -256,7 +256,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9_-]+$": {
+        "^[a-z-]+\\.googleapis\\.com$": {
           "type": "array",
           "items": {
             "type": "string"

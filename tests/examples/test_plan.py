@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
+import jsonschema
 import yaml
+
+from .utils import TerraformExample, YamlExample
 
 BASE_PATH = Path(__file__).parent
 
@@ -45,7 +49,7 @@ def prepare_files(example, test_path, files, fixtures):
         destination.write_text(example.fixtures[f])
 
 
-def test_example(plan_validator, example):
+def _test_terraform_example(plan_validator, example):
   directive = example.directive
 
   # for tfvars-based tests, create the temporary directory with the
@@ -101,3 +105,17 @@ def test_example(plan_validator, example):
         'terraform fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
         stdout=subprocess.PIPE, encoding='utf-8')
     assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
+
+
+def _test_yaml_example(example):
+  yaml_object = yaml.safe_load(example.body)
+  schema = json.load(example.schema.open())
+  jsonschema.validate(instance=yaml_object, schema=schema)
+
+
+def test_example(plan_validator, example):
+  match example:
+    case TerraformExample():
+      _test_terraform_example(plan_validator, example)
+    case YamlExample():
+      _test_yaml_example(example)
