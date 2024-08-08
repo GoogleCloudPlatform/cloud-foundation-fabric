@@ -32,10 +32,10 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
   # add files the same way as it is done for examples
-  directive, _, kwargs = get_tftest_directive(examples_e2e.code)
-  if directive == 'tftest':
-    prepare_files(examples_e2e, tmp_path, kwargs.get('files'),
-                  kwargs.get('fixtures'))
+  directive = get_tftest_directive(examples_e2e.code)
+  if directive and directive.name == 'tftest':
+    prepare_files(examples_e2e, tmp_path, directive.kwargs.get('files'),
+                  directive.kwargs.get('fixtures'))
 
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])
