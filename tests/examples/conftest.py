@@ -13,6 +13,7 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
+from dataclasses import dataclass
 import collections
 import re
 from pathlib import Path
@@ -21,20 +22,33 @@ import marko
 import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
-
-FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
-FIXTURE_TEST_RE = re.compile(r'# tftest-fixture +id=([\w_.-]+)')
-
 Example = collections.namedtuple('Example',
                                  'name code module files fixtures type')
 File = collections.namedtuple('File', 'path content')
 
 
+@dataclass(frozen=True)
+class Directive:
+  name: str
+  args: list
+  kwargs: dict
+
+
 def get_tftest_directive(s):
-  """Returns tftest directive from code block or None when directive is not found"""
-  for x in s.splitlines():
-    if x.strip().startswith("#") and 'tftest' in x:
-      return x
+  """Scan a code block and return a Directive object if there are any
+  tftest directives"""
+  regexp = rf"^ *# *(tftest\S*)(.*)$"
+  if match := re.search(regexp, s, re.M):
+    name, body = match.groups()
+    args = []
+    kwargs = {}
+    for arg in body.split():
+      if '=' in arg:
+        l, r = arg.split('=', 1)
+        kwargs[l] = r
+      else:
+        args.append(arg)
+    return Directive(name, args, kwargs)
   return None
 
 
@@ -58,11 +72,14 @@ def pytest_generate_tests(metafunc, test_group='example',
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
-          if match := FILE_TEST_RE.search(code):
-            name, path = match.groups()
+          directive = get_tftest_directive(code)
+          if directive is None:
+            continue
+          if directive.name == 'tftest-file':
+            name, path = directive.kwargs['id'], directive.kwargs['path']
             files[last_header][name] = File(path, code)
-          if match := FIXTURE_TEST_RE.search(code):
-            name = match.groups()[0]
+          if directive.name == 'tftest-fixture':
+            name = directive.kwargs['id']
             fixtures[name] = code
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
@@ -74,10 +91,10 @@ def pytest_generate_tests(metafunc, test_group='example',
         if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
-          tftest_tag = get_tftest_directive(code)
-          if tftest_tag is None:
+          directive = get_tftest_directive(code)
+          if directive is None:
             continue
-          if tftest_tag and not filter_tests(tftest_tag):
+          if directive and not filter_tests(directive.args):
             continue
           if child.lang in ('hcl', 'tfvars'):
             path = module.relative_to(FABRIC_ROOT)
@@ -89,8 +106,8 @@ def pytest_generate_tests(metafunc, test_group='example',
             # this, together with `--dist loadgroup` will ensure that those tests will be run one after another
             # even if multiple workers are used
             # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
-            marks = [pytest.mark.xdist_group("serial")
-                    ] if 'serial' in tftest_tag else []
+            marks = [pytest.mark.xdist_group('serial')
+                    ] if 'serial' in directive.args else []
             example = Example(name, code, path, files[last_header], fixtures,
                               child.lang)
             examples.append(pytest.param(example, marks=marks))
