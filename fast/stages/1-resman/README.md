@@ -294,7 +294,7 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 | [gke_multitenant](outputs.tf#L458) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
 | [networking](outputs.tf#L479) | Data for the networking stage. |  |  |
 | [project_factories](outputs.tf#L488) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L507) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-nsec</code> |
+| [providers](outputs.tf#L507) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
 | [sandbox](outputs.tf#L514) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
 | [security](outputs.tf#L528) | Data for the networking stage. |  | <code>02-security</code> |
 | [tfvars](outputs.tf#L539) | Terraform variable files for the following stages. | ✓ |  |

@@ -57,7 +57,7 @@ The commands to link or copy the provider and terraform variable files can be ea
 
 # copy and paste the following commands for '3-network-security'
 
-ln -s ~/fast-config/providers/3-nsec-providers.tf ./
+ln -s ~/fast-config/providers/3-network-security-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
@@ -69,7 +69,7 @@ ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # copy and paste the following commands for '3-network-security'
 
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-nsec-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-network-security-providers.tf ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
@@ -143,7 +143,6 @@ ngfw_enterprise_config = {
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [3-nsec-providers.tf](./3-nsec-providers.tf) | None |  |  |
 | [main.tf](./main.tf) | Next-Generation Firewall Enterprise configuration. | <code>project</code> | <code>google_network_security_firewall_endpoint</code> |
 | [net-dev.tf](./net-dev.tf) | Security components for dev spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
 | [net-prod.tf](./net-prod.tf) | Security components for prod spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
