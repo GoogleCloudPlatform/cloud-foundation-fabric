@@ -1,3 +1,4 @@
+# skip boilerplate check
 # tftest schema=modules/vpc-sc/schemas/access-level.schema.json
 conditions:
   - members:
