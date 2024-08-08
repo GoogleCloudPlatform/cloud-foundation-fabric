@@ -8,16 +8,37 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
 - [[#2463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2463)] Typo in README: well know -> well-known ([derailed-dash](https://github.com/derailed-dash)) <!-- 2024-08-03 07:54:55+00:00 -->
 
 ### FAST
 
+- [[#2483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2483)] Add boostrap output with log destination ids ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 14:23:38+00:00 -->
+- [[#2482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2482)] [FAST] Rename netsec stage to nsec ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 12:30:09+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2471](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2471)] Rename 1-vpc-sc stage to 1-vpcsc ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 11:21:55+00:00 -->
+- [[#2470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2470)] Make policyReader binding additive in bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 09:35:38+00:00 -->
+- [[#2466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2466)] [FAST] Sets projects_data_path optional, as in the project factory module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-06 06:27:34+00:00 -->
 - [[#2464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2464)] Fix peering routes config in fast a network stage ([ludoo](https://github.com/ludoo)) <!-- 2024-08-03 20:18:45+00:00 -->
 - [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
 
 ### MODULES
 
+- [[#2486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2486)] Fix failing tests for CloudSQL ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-08 18:16:53+00:00 -->
+- [[#2485](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2485)] Project factory module JSON schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-08 16:43:11+00:00 -->
+- [[#2481](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2481)] Adds a new certification authority service (CAS) module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 07:55:49+00:00 -->
+- [[#2480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2480)] Add support for PSC global access to net-address ([juliocc](https://github.com/juliocc)) <!-- 2024-08-07 17:27:03+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2474)] [fix] Pass optional location variable at certificates creation ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-07 07:05:57+00:00 -->
+- [[#2476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2476)] Cloud run v2 custom audiences ([apichick](https://github.com/apichick)) <!-- 2024-08-07 06:54:36+00:00 -->
+- [[#2475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2475)] Cloud run v2 output uri ([apichick](https://github.com/apichick)) <!-- 2024-08-06 20:09:19+00:00 -->
+- [[#2472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2472)] Fix grammar in net-vpc-peering preconditions ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 12:27:31+00:00 -->
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
 - [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### TOOLS
+
+- [[#2487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2487)] Example testing improvements ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 19:22:27+00:00 -->
 
 ## [33.0.0] - 2024-08-01
 
