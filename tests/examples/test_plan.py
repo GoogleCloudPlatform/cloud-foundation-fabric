@@ -19,8 +19,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from .conftest import get_tftest_directive
-
 BASE_PATH = Path(__file__).parent
 
 
@@ -47,8 +45,7 @@ def prepare_files(example, test_path, files, fixtures):
 
 
 def test_example(plan_validator, example):
-  directive = get_tftest_directive(example.code)
-  assert directive is not None, "can't find tftest directive"
+  directive = example.directive
 
   # for tfvars-based tests, create the temporary directory with the
   # same parent as the original module

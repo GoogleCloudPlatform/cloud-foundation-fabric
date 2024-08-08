@@ -13,7 +13,6 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
-from dataclasses import dataclass
 import collections
 import re
 from pathlib import Path
@@ -22,16 +21,10 @@ import marko
 import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
-Example = collections.namedtuple('Example',
-                                 'name code module files fixtures type')
+Directive = collections.namedtuple('Directive', 'name args kwargs')
+Example = collections.namedtuple(
+    'Example', 'name code module files fixtures type directive')
 File = collections.namedtuple('File', 'path content')
-
-
-@dataclass(frozen=True)
-class Directive:
-  name: str
-  args: list
-  kwargs: dict
 
 
 def get_tftest_directive(s):
@@ -109,7 +102,7 @@ def pytest_generate_tests(metafunc, test_group='example',
             marks = [pytest.mark.xdist_group('serial')
                     ] if 'serial' in directive.args else []
             example = Example(name, code, path, files[last_header], fixtures,
-                              child.lang)
+                              child.lang, directive)
             examples.append(pytest.param(example, marks=marks))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
