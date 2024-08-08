@@ -236,8 +236,8 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-gcve.tf](./branch-gcve.tf) | GCVE stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-gke.tf](./branch-gke.tf) | GKE multitenant stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-nsec.tf](./branch-nsec.tf) | Network security stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [branch-nsec.tf](./branch-nsec.tf) | Network security stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-project-factory.tf](./branch-project-factory.tf) | Project factory stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
@@ -245,7 +245,7 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 | [cicd-data-platform.tf](./cicd-data-platform.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> |  |
 | [cicd-gcve.tf](./cicd-gcve.tf) | CI/CD resources for the GCVE branch. | <code>iam-service-account</code> |  |
 | [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the GKE multitenant branch. | <code>iam-service-account</code> |  |
-| [cicd-nsec.tf](./cicd-nsec.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> |  |
+| [cicd-netsec.tf](./cicd-netsec.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> |  |
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> |  |
 | [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the project factories. | <code>iam-service-account</code> |  |
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> |  |
