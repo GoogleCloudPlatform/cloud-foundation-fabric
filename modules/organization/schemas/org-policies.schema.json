@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Organization Policies",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z-]+\\.[a-zA-Z]+$": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inherit_from_parent": {
+          "type": "boolean"
+        },
+        "reset": {
+          "type": "boolean"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "allow": {
+                "$ref": "#/$defs/allow-deny"
+              },
+              "deny": {
+                "$ref": "#/$defs/allow-deny"
+              },
+              "enforce": {
+                "type": "boolean"
+              },
+              "condition": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "expression": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "allow-deny": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

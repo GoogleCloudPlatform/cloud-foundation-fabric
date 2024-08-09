@@ -188,10 +188,10 @@ The `service_agents` output provides a convenient way to access information abou
 
 The complete list of Google Cloud service agents, including their names, default roles, and associated APIs, is maintained in the  [service-agents.yaml](./service-agents.yaml) file.  This file is regularly updated to reflect the [official list of Google Cloud service agents](https://cloud.google.com/iam/docs/service-agents) using the [`build_service_agents`](../../tools/build_service_agents.py) script.
 
-
 #### Service Agent Aliases
 
 Consider the code below:
+
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
@@ -209,6 +209,7 @@ module "project" {
 ```
 
 The `service_agents` output for this snippet would look similar to this:
+
 ```tfvars
 service_agents = {
   "artifactregistry" = {

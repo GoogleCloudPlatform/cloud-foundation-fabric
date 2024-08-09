@@ -8,6 +8,15 @@
     }
   ],
   "yaml.schemas": {
+    "modules/organization/schemas/custom-role.schema.json": [
+      "data/**/custom-roles/**/*yaml"
+    ],
+    "modules/organization/schemas/org-policies.schema.json": [
+      "data/**/org-policies/**/*yaml"
+    ],
+    "modules/organization/schemas/org-policy-custom-constraints.schema.json": [
+      "data/**/org-policy-custom-constraints/**/*yaml"
+    ],
     "modules/project-factory/schemas/budget.schema.json": [
       "data/**/budgets/**/*yaml"
     ],
