@@ -153,7 +153,7 @@ class FastDataFile(pytest.File):
       raise Exception(f'Cannot read test spec {self.path}: {e}')
 
     schema_path = self._get_yaml_schema(raw)
-    if schema_path is None:
+    if schema_path is None or content is None:
       return
 
     print(f"---- {schema_path}")
