@@ -33,8 +33,25 @@ locals {
       ]
     ])
   )
+  cas_ids = {
+    dev = {
+      for k, v in module.dev-sec-cas
+      : k => {
+        ca_pool_id = v.ca_pool_id
+        ca_ids     = v.ca_ids
+      }
+    }
+    prod = {
+      for k, v in module.prod-sec-cas
+      : k => {
+        ca_pool_id = v.ca_pool_id
+        ca_ids     = v.ca_ids
+      }
+    }
+  }
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
+    cas_ids  = local.cas_ids
     kms_keys = local.output_kms_keys
   }
 }
