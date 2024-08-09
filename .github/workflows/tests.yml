@@ -253,7 +253,7 @@ jobs:
           TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
 
       - name: Run schema tests
-        run: pytest -vv --tb=line --junit-xml=test-results-raw.xml "(tests and schemas) or (fast and schema) or (examples and yaml)"
+        run: pytest -vv --tb=line --junit-xml=test-results-raw.xml -k "(tests and schemas) or (fast and schema) or (examples and yaml)"
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
