@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,21 @@
  */
 
 locals {
+  _dev_nsec_authz_iam = {
+    iam_bindings_additive = {
+      member = module.dev-sec-project.service_agents["networksecurity"]
+      role   = "roles/privateca.certificateManager"
+    }
+  }
   dev_ca_pool_config = {
     for k, v in var.cas.dev
     : k => merge(
-      v,
-      {
-        iam_bindings_additive = {
-          member = module.dev-sec-project.service_agents["networksecurity"]
-          role   = "roles/privateca.certificateManager"
-        }
-      }
+      v.ca_pool_config,
+      (
+        try(v.authz_nsec_sa, false) == true
+        ? local._dev_nsec_authz_iam
+        : {}
+      )
     )
   }
   dev_kms_restricted_admins = [
@@ -72,7 +77,7 @@ module "dev-sec-cas" {
   source                = "../../../modules/certificate-authority-service"
   project_id            = module.dev-sec-project.project_id
   ca_configs            = each.value.ca_configs
-  ca_pool_config        = each.value.ca_pool_configs
+  ca_pool_config        = local.dev_ca_pool_config[each.key]
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
@@ -87,7 +92,7 @@ resource "google_certificate_manager_trust_config" "dev_trust_config" {
   description = each.value.description
   location    = each.value.location
 
-  dyamic "allowlisted_certificates" {
+  dynamic "allowlisted_certificates" {
     for_each = each.value.allowlisted_certificates
     content {
       pem_certificate = file(allowlisted_certificates.value)
@@ -97,14 +102,14 @@ resource "google_certificate_manager_trust_config" "dev_trust_config" {
   dynamic "trust_stores" {
     for_each = each.value.trust_stores
     content {
-      dyamic "intermediate_cas" {
+      dynamic "intermediate_cas" {
         for_each = trust_stores.value.intermediate_cas
         content {
           pem_certificate = file(intermediate_cas.value)
         }
       }
-      dyamic "trust_anchors" {
-        for_each = intermediate_cas.value.trust_anchors
+      dynamic "trust_anchors" {
+        for_each = trust_stores.value.trust_anchors
         content {
           pem_certificate = file(trust_anchors.value)
         }

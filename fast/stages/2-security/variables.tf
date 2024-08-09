@@ -18,7 +18,6 @@ variable "cas" {
   description = "The CAS CAs to add to each environment"
   type = object({
     dev = map(object({
-      auth_ngfw_sa          = optional(bool, false)
       ca_configs            = map(any)
       ca_pool_config        = map(any)
       location              = string
@@ -28,7 +27,6 @@ variable "cas" {
       iam_by_principals     = optional(map(list(string)), {})
     }))
     prod = map(object({
-      auth_ngfw_sa          = optional(bool, false)
       ca_configs            = map(any)
       ca_pool_config        = map(any)
       location              = string
@@ -107,5 +105,18 @@ variable "trust_configs" {
         trust_anchors    = optional(map(string), {})
       })), {})
     }))
+    prod = map(object({
+      description              = optional(string)
+      allowlisted_certificates = optional(map(string), {})
+      trust_stores = optional(map(object({
+        intermediate_cas = optional(map(string), {})
+        trust_anchors    = optional(map(string), {})
+      })), {})
+    }))
   })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
+  }
 }
