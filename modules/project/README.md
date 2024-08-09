@@ -542,12 +542,6 @@ module "project" {
 ```
 
 ```yaml
-# tftest-file id=boolean path=configs/org-policies/boolean.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 compute.disableGuestAttributesAccess:
   rules:
   - enforce: true
@@ -566,15 +560,11 @@ iam.disableServiceAccountKeyUpload:
       title: condition
     enforce: true
   - enforce: false
+
+# tftest-file id=boolean path=configs/org-policies/boolean.yaml schema=org-policies.schema.json
 ```
 
 ```yaml
-# tftest-file id=list path=configs/org-policies/list.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 compute.trustedImageProjects:
   rules:
   - allow:
@@ -590,6 +580,8 @@ iam.allowedPolicyMemberDomains:
       values:
       - C0xxxxxxx
       - C0yyyyyyy
+
+# tftest-file id=list path=configs/org-policies/list.yaml schema=org-policies.schema.json
 ```
 
 ### Dry-Run Mode
@@ -962,20 +954,20 @@ module "project" {
 ```
 
 ```yaml
-# tftest-file id=custom-role-1 path=data/custom_roles/test_1.yaml
-
 includedPermissions:
  - compute.globalOperations.get
+
+# tftest-file id=custom-role-1 path=data/custom_roles/test_1.yaml schema=custom-role.schema.json
 ```
 
 ```yaml
-# tftest-file id=custom-role-2 path=data/custom_roles/test_2.yaml
-
 name: projectViewer
 includedPermissions:
   - resourcemanager.projects.get
   - resourcemanager.projects.getIamPolicy
   - resourcemanager.projects.list
+
+# tftest-file id=custom-role-2 path=data/custom_roles/test_2.yaml schema=custom-role.schema.json
 ```
 
 ## Quotas
@@ -1039,12 +1031,6 @@ module "project" {
 ```
 
 ```yaml
-# tftest-file id=quota-cpus-ew8 path=data/quotas/cpus-ew8.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 cpus-ew8:
   service: compute.googleapis.com
   quota_id: CPUS-per-project-region
@@ -1052,6 +1038,8 @@ cpus-ew8:
   preferred_value: 751
   dimensions:
     region: europe-west8
+
+# tftest-file id=quota-cpus-ew8 path=data/quotas/cpus-ew8.yaml schema=quotas.schema.json
 ```
 
 ## VPC Service Controls
