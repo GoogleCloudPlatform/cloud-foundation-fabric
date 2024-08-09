@@ -19,9 +19,10 @@ See FabricTestFile for details on the file structure.
 
 """
 
-import json
-from pathlib import Path
 import fnmatch
+import json
+import re
+from pathlib import Path
 
 import jsonschema
 import pytest
@@ -125,28 +126,59 @@ class FabricSchemaTestFile(pytest.File):
     directive = get_tftest_directive(raw)
     if not directive or directive.name != 'tftest':
       raise Exception(f'Schema test file without tftest directive: {self.path}')
-    yield FabricSchemaTestItem.from_parent(self, name='', directive=directive,
-                                           content=content)
 
-
-class FabricSchemaTestItem(pytest.Item):
-
-  def __init__(self, name, parent, directive, content):
-    super().__init__(name, parent)
-    self.directive = directive
-    self.content = content
-
-  def runtest(self):
-    if 'schema' not in self.directive.kwargs:
+    if 'schema' not in directive.kwargs:
       raise Exception(
           f'Schema test file does not declare schema: {self.parent.path}')
-    schema_path = _REPO_ROOT / self.directive.kwargs['schema']
+    schema_path = _REPO_ROOT / directive.kwargs['schema']
     schema = json.load(schema_path.open())
-    if 'fail' in self.directive.args:
+
+    yield SchemaTestItem.from_parent(self, name='schema', schema=schema,
+                                     content=content, directive=directive)
+
+
+class FastDataFile(pytest.File):
+
+  @staticmethod
+  def _get_yaml_schema(code):
+    regexp = rf"^ *# *yaml-language-server: *\$schema=([\S]*) *$"
+    if match := re.search(regexp, code, re.M):
+      return match.group(1)
+
+  def collect(self):
+    try:
+      raw = self.path.read_text()
+      content = yaml.safe_load(raw)
+    except (IOError, OSError, yaml.YAMLError) as e:
+      raise Exception(f'Cannot read test spec {self.path}: {e}')
+
+    schema_path = self._get_yaml_schema(raw)
+    if schema_path is None:
+      return
+
+    print(f"---- {schema_path}")
+    schema_path = (self.path.parent / schema_path).resolve()
+    print(f"---- {schema_path}")
+    schema = json.load(schema_path.open())
+
+    yield SchemaTestItem.from_parent(self, name='schema', schema=schema,
+                                     content=content)
+
+
+class SchemaTestItem(pytest.Item):
+
+  def __init__(self, name, parent, schema, content, directive=None):
+    super().__init__(name, parent)
+    self.schema = schema
+    self.content = content
+    self.directive = directive
+
+  def runtest(self):
+    if self.directive and 'fail' in self.directive.args:
       with pytest.raises(jsonschema.exceptions.ValidationError):
-        jsonschema.validate(instance=self.content, schema=schema)
+        jsonschema.validate(instance=self.content, schema=self.schema)
     else:
-      jsonschema.validate(instance=self.content, schema=schema)
+      jsonschema.validate(instance=self.content, schema=self.schema)
 
   def reportinfo(self):
     return self.path, None, self.name
@@ -161,3 +193,6 @@ def pytest_collect_file(parent, file_path):
   file_path_relative = str(file_path.relative_to(_REPO_ROOT))
   if fnmatch.fnmatch(file_path_relative, "tests/schemas/**.yaml"):
     return FabricSchemaTestFile.from_parent(parent, path=file_path)
+
+  if fnmatch.fnmatch(file_path_relative, "fast/stages/*/data/**.yaml"):
+    return FastDataFile.from_parent(parent, path=file_path)
