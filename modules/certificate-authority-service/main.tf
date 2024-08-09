@@ -55,11 +55,14 @@ resource "google_privateca_certificate_authority" "cas" {
         street_address      = each.value.subject.street_address
         postal_code         = each.value.subject.postal_code
       }
-      subject_alt_name {
-        dns_names       = each.value.subject_alt_name.dns_names
-        email_addresses = each.value.subject_alt_name.email_addresses
-        ip_addresses    = each.value.subject_alt_name.ip_addresses
-        uris            = each.value.subject_alt_name.uris
+      dynamic "subject_alt_name" {
+        for_each = each.value.subject_alt_name != null ? [1] : []
+        content {
+          dns_names       = each.value.subject_alt_name.dns_names
+          email_addresses = each.value.subject_alt_name.email_addresses
+          ip_addresses    = each.value.subject_alt_name.ip_addresses
+          uris            = each.value.subject_alt_name.uris
+        }
       }
     }
     x509_config {
@@ -95,10 +98,19 @@ resource "google_privateca_certificate_authority" "cas" {
     cloud_kms_key_version = each.value.key_spec.kms_key_id
   }
 
-  subordinate_config {
-    certificate_authority = each.value.subordinate_config.root_ca_id
-    pem_issuer_chain {
-      pem_certificates = each.value.subordinate_config.pem_issuer_certificates
+  dynamic "subordinate_config" {
+    for_each = each.value.subordinate_config != null ? [1] : []
+    content {
+      certificate_authority = each.value.subordinate_config.root_ca_id
+      dynamic "pem_issuer_chain" {
+        for_each = (
+          each.value.subordinate_config.pem_issuer_certificates != null
+          ? [1] : []
+        )
+        content {
+          pem_certificates = each.value.subordinate_config.pem_issuer_certificates
+        }
+      }
     }
   }
 }

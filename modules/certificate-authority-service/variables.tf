@@ -24,7 +24,7 @@ variable "ca_configs" {
     pem_ca_certificate                     = optional(string, null)
     ignore_active_certificates_on_deletion = optional(bool, false)
     skip_grace_period                      = optional(bool, true)
-    labels                                 = optional(map(string), {})
+    labels                                 = optional(map(string), null)
     gcs_bucket                             = optional(string, null)
     key_spec = optional(object({
       algorithm  = optional(string, "RSA_PKCS1_2048_SHA256")
@@ -61,15 +61,15 @@ variable "ca_configs" {
       organization = "Test Example"
     })
     subject_alt_name = optional(object({
-      dns_names       = optional(list(string), [])
-      email_addresses = optional(list(string), [])
-      ip_addresses    = optional(list(string), [])
-      uris            = optional(list(string), [])
-    }), {})
+      dns_names       = optional(list(string), null)
+      email_addresses = optional(list(string), null)
+      ip_addresses    = optional(list(string), null)
+      uris            = optional(list(string), null)
+    }), null)
     subordinate_config = optional(object({
       root_ca_id              = optional(string)
       pem_issuer_certificates = optional(list(string))
-    }), {})
+    }), null)
   }))
   nullable = false
   default = {
