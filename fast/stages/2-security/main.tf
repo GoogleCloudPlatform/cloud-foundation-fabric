@@ -33,7 +33,6 @@ locals {
       )
     }
   }
-
   # list of locations with keys
   kms_locations = distinct(flatten([
     for k, v in var.kms_keys : v.locations
@@ -46,6 +45,72 @@ locals {
       k => v
       if contains(v.locations, loc)
     }
+  }
+  _ngfw_cas_configs = {
+    dev = {
+      dev-ca-0 = {
+        ca_configs = {
+          dev-root-ngfw-ca-0 = {
+            deletion_protection = false #delete
+            subject = {
+              common_name  = var.ngfw_tls_config.dev.common_name
+              organization = var.ngfw_tls_config.dev.organization
+            }
+          }
+        }
+        ca_pool_config = {
+          authz_nsec_sa = true
+          name          = "dev-ngfw-ca-pool-2" #fix
+        }
+        iam          = {}
+        iam_bindings = {}
+        iam_bindings_additive = {
+          nsec_dev_sa_binding = {
+            member = module.dev-sec-project.service_agents["networksecurity"].iam_email
+            role   = "roles/privateca.certificateManager"
+          }
+        }
+        iam_by_principals = {}
+        location          = var.ngfw_tls_config.dev.location
+      }
+    }
+    prod = {
+      prod-ca-0 = {
+        ca_configs = {
+          root-prod-ngfw-ca-0 = {
+            deletion_protection = false
+            subject = {
+              common_name  = var.ngfw_tls_config.prod.common_name
+              organization = var.ngfw_tls_config.prod.organization
+            }
+          }
+        }
+        ca_pool_config = {
+          authz_nsec_sa = true
+          name          = "prod-ngfw-ca-pool-2" #fix
+        }
+        iam          = {}
+        iam_bindings = {}
+        iam_bindings_additive = {
+          nsec_prod_sa_binding = {
+            member = module.prod-sec-project.service_agents["networksecurity"].iam_email
+            role   = "roles/privateca.certificateManager"
+          }
+        }
+        iam_by_principals = {}
+        location          = var.ngfw_tls_config.prod.location
+      }
+    }
+  }
+  cas_configs = {
+    dev = merge(
+      var.cas_configs.dev,
+      var.ngfw_tls_config.dev.cas_enabled ? local._ngfw_cas_configs.dev : {}
+    )
+    prod = merge(
+      var.cas_configs.prod,
+      var.ngfw_tls_config.prod.cas_enabled ? local._ngfw_cas_configs.prod : {}
+    )
   }
   project_services = [
     "certificatemanager.googleapis.com",

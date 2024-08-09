@@ -17,7 +17,7 @@
 variable "cas_configs" {
   description = "The CAS CAs to add to each environment"
   type = object({
-    dev = map(object({
+    dev = optional(map(object({
       ca_configs            = map(any)
       ca_pool_config        = map(any)
       location              = string
@@ -25,8 +25,8 @@ variable "cas_configs" {
       iam_bindings          = optional(map(any), {})
       iam_bindings_additive = optional(map(any), {})
       iam_by_principals     = optional(map(list(string)), {})
-    }))
-    prod = map(object({
+    })), {})
+    prod = optional(map(object({
       ca_configs            = map(any)
       ca_pool_config        = map(any)
       location              = string
@@ -34,7 +34,7 @@ variable "cas_configs" {
       iam_bindings          = optional(map(any), {})
       iam_bindings_additive = optional(map(any), {})
       iam_by_principals     = optional(map(list(string)), {})
-    }))
+    })), {})
   })
   nullable = false
   default = {
@@ -88,6 +88,32 @@ variable "kms_keys" {
   nullable = false
 }
 
+variable "ngfw_tls_config" {
+  description = "The CAS NGFW Enterprise configuration, used for TLS Inspection."
+  type = object({
+    dev = optional(object({
+      cas_enabled          = optional(bool, false)
+      common_name          = optional(string, "dev.example.com")
+      location             = optional(string, "europe-west1")
+      organization         = optional(string, "Example")
+      trust_config_enabled = optional(bool, false)
+    }), {})
+    prod = optional(object({
+      cas_enabled          = optional(bool, false)
+      common_name          = optional(string, "prod.example.com")
+      enabled              = optional(bool, false)
+      location             = optional(string, "europe-west1")
+      organization         = optional(string, "Example")
+      trust_config_enabled = optional(bool, false)
+    }), {})
+  })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
+  }
+}
+
 variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
@@ -103,7 +129,7 @@ variable "trust_configs" {
       trust_stores = optional(map(object({
         intermediate_cas = optional(map(string), {})
         trust_anchors    = optional(map(string), {})
-      })), {})
+      })), null)
     }))
     prod = map(object({
       description              = optional(string)
@@ -111,7 +137,7 @@ variable "trust_configs" {
       trust_stores = optional(map(object({
         intermediate_cas = optional(map(string), {})
         trust_anchors    = optional(map(string), {})
-      })), {})
+      })), null)
     }))
   })
   nullable = false
