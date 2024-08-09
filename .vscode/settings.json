@@ -9,22 +9,23 @@
   ],
   "yaml.schemas": {
     "modules/project-factory/schemas/budget.schema.json": [
-      "budgets/**/*yaml"
+      "data/**/budgets/**/*yaml"
     ],
     "modules/project-factory/schemas/folder.schema.json": [
-      "folders/**/*yaml"
+      "data/**/folders/**/*yaml",
+      "data/**/hierarchy/**/*yaml"
     ],
     "modules/project-factory/schemas/project.schema.json": [
-      "projects/**/*yaml"
+      "data/**/projects/**/*yaml"
     ],
     "modules/vpc-sc/schemas/access-level.schema.json": [
-      "access-levels/**/*yaml"
+      "data/**/access-levels/**/*yaml"
     ],
     "modules/vpc-sc/schemas/egress-policy.schema.json": [
-      "egress-policies/**/*yaml"
+      "data/**/egress-policies/**/*yaml"
     ],
     "modules/vpc-sc/schemas/ingress-policy.schema.json": [
-      "ingress-policies/**/*yaml"
+      "data/**/ingress-policies/**/*yaml"
     ],
   }
 }

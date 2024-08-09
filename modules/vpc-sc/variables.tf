@@ -51,6 +51,16 @@ variable "access_levels" {
     ])
     error_message = "Invalid `combining_function` value (null, \"AND\", \"OR\" accepted)."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : alltrue([
+          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+        ])
+      ])
+    ])
+    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
+  }
 }
 
 variable "access_policy" {
@@ -96,6 +106,14 @@ variable "egress_policies" {
       ], v.from.identity_type)
     ])
     error_message = "Invalid `from.identity_type` value in egress policy."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.egress_policies : v.from.identities == null ? true : alltrue([
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+      ])
+    ])
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
   }
 }
 
@@ -176,6 +194,14 @@ variable "ingress_policies" {
       ], v.from.identity_type)
     ])
     error_message = "Invalid `from.identity_type` value in ingress policy."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.ingress_policies : v.from.identities == null ? true : alltrue([
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+      ])
+    ])
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
   }
 }
 
