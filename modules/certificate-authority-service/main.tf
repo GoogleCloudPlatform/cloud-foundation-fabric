@@ -16,7 +16,7 @@
 
 locals {
   ca_pool_id = coalesce(
-    var.ca_pool_config.ca_pool_id == null,
+    var.ca_pool_config.ca_pool_id,
     try(google_privateca_ca_pool.ca_pool[0].name, null)
   )
 }
@@ -24,8 +24,8 @@ resource "google_privateca_ca_pool" "ca_pool" {
   count    = var.ca_pool_config.ca_pool_id == null ? 1 : 0
   name     = var.ca_pool_config.name
   project  = var.project_id
-  location = "europe-west8"
-  tier     = "DEVOPS"
+  location = var.location
+  tier     = var.ca_pool_config.tier
 }
 
 resource "google_privateca_certificate_authority" "cas" {
