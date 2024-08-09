@@ -30,13 +30,11 @@ moved {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  for_each = var.forwarding_rules_config
-  provider = google-beta
-  project  = var.project_id
-  region   = var.region
-  name = (
-    each.key == "" ? var.name : "${var.name}-${each.key}"
-  )
+  for_each    = var.forwarding_rules_config
+  provider    = google-beta
+  project     = var.project_id
+  region      = var.region
+  name        = coalesce(each.value.name, each.key == "" ? var.name : "${var.name}-${each.key}")
   description = each.value.description
   ip_address  = each.value.address
   ip_protocol = each.value.protocol
@@ -56,7 +54,7 @@ resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = var.project_id
   region                          = var.region
-  name                            = var.name
+  name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.description
   load_balancing_scheme           = "EXTERNAL"
   protocol                        = var.backend_service_config.protocol

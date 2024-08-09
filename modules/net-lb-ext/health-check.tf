@@ -33,7 +33,7 @@ resource "google_compute_region_health_check" "default" {
   count               = local.hc != null ? 1 : 0
   project             = var.project_id
   region              = var.region
-  name                = var.name
+  name                = local.hc.name != null ? local.hc.name : var.name
   description         = local.hc.description
   check_interval_sec  = local.hc.check_interval_sec
   healthy_threshold   = local.hc.healthy_threshold

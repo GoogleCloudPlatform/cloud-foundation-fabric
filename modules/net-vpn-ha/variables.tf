@@ -31,6 +31,7 @@ variable "peer_gateways" {
       redundancy_type = string
       interfaces      = list(string)
       description     = optional(string, "Terraform managed external VPN gateway")
+      override_name   = optional(string, null)
     }))
     gcp = optional(string)
   }))
@@ -63,8 +64,9 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
-    keepalive = optional(number)
-    name      = optional(string)
+    keepalive     = optional(number)
+    name          = optional(string)
+    override_name = optional(string, null)
   })
   nullable = false
 }
@@ -88,16 +90,19 @@ variable "tunnels" {
         nexthop_address      = optional(string)
         peer_nexthop_address = optional(string)
       }))
+      override_name = optional(string, null)
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
-    bgp_session_range               = string
-    ike_version                     = optional(number, 2)
-    peer_external_gateway_interface = optional(number)
-    peer_gateway                    = optional(string, "default")
-    router                          = optional(string)
-    shared_secret                   = optional(string)
-    vpn_gateway_interface           = number
+    bgp_session_range                   = string
+    ike_version                         = optional(number, 2)
+    override_name                       = optional(string, null)
+    peer_external_gateway_interface     = optional(number)
+    peer_router_interface_override_name = optional(string, null)
+    peer_gateway                        = optional(string, "default")
+    router                              = optional(string)
+    shared_secret                       = optional(string)
+    vpn_gateway_interface               = number
   }))
   default  = {}
   nullable = false
