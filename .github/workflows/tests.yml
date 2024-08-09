@@ -151,7 +151,7 @@ jobs:
       - name: Run tests on documentation examples
         env:
           TERRAFORM: ${{ matrix.flavour }}
-        run: pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line --junit-xml=test-results-raw.xml -k \"terraform: and modules/\" tests/examples
+        run: pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line --junit-xml=test-results-raw.xml -k "terraform and modules/" tests/examples
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
