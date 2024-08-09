@@ -1,5 +1,7 @@
 # skip boilerplate check
 
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
 name: dev-gke-nodes
 region: primary
 description: Default subnet for prod gke nodes
