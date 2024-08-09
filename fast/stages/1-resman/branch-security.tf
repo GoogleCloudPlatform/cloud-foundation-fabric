@@ -50,6 +50,24 @@ module "branch-security-folder" {
     ]
   }
   iam = local._security_folder_iam
+  iam_bindings = {
+    tenant_iam_admin_conditional = {
+      members = [
+        module.branch-security-sa.iam_email,
+      ]
+      role = "roles/resourcemanager.folderIamAdmin"
+      condition = {
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", [
+            "roles/privateca.certificateManager"
+          ]))
+        )
+        title       = "security_sa_delegated_grants"
+        description = "Certificate Authority Service delegated grants."
+      }
+    }
+  }
   tag_bindings = {
     context = try(
       local.tag_values["${var.tag_names.context}/security"].id, null
