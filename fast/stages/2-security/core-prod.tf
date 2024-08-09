@@ -22,7 +22,7 @@ locals {
     }
   }
   prod_ca_pool_config = {
-    for k, v in var.cas.prod
+    for k, v in var.cas_configs.prod
     : k => merge(
       v.ca_pool_config,
       (
@@ -72,7 +72,7 @@ module "prod-sec-kms" {
 }
 
 module "prod-sec-cas" {
-  for_each              = var.cas.prod
+  for_each              = var.cas_configs.prod
   source                = "../../../modules/certificate-authority-service"
   project_id            = module.prod-sec-project.project_id
   ca_configs            = each.value.ca_configs

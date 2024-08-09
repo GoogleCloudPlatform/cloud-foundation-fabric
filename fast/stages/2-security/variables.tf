@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "cas" {
+variable "cas_configs" {
   description = "The CAS CAs to add to each environment"
   type = object({
     dev = map(object({
