@@ -15,11 +15,17 @@
  */
 
 locals {
+  _ca_pool_id_list = try(split("/", var.ca_pool_config.ca_pool_id), [])
   ca_pool_id = coalesce(
     var.ca_pool_config.ca_pool_id,
+    try(google_privateca_ca_pool.ca_pool[0].id, null)
+  )
+  ca_pool_name = coalesce(
+    try(element(local._ca_pool_id_list, length(local._ca_pool_id_list) - 1), null),
     try(google_privateca_ca_pool.ca_pool[0].name, null)
   )
 }
+
 resource "google_privateca_ca_pool" "ca_pool" {
   count    = var.ca_pool_config.ca_pool_id == null ? 1 : 0
   name     = var.ca_pool_config.name
@@ -30,7 +36,7 @@ resource "google_privateca_ca_pool" "ca_pool" {
 
 resource "google_privateca_certificate_authority" "cas" {
   for_each                               = var.ca_configs
-  pool                                   = local.ca_pool_id
+  pool                                   = local.ca_pool_name
   certificate_authority_id               = each.key
   project                                = var.project_id
   location                               = var.location
