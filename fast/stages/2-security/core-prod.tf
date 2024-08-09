@@ -15,23 +15,6 @@
  */
 
 locals {
-  _prod_nsec_authz_iam = {
-    iam_bindings_additive = {
-      member = module.prod-sec-project.service_agents["networksecurity"]
-      role   = "roles/privateca.certificateManager"
-    }
-  }
-  prod_ca_pool_config = {
-    for k, v in var.cas_configs.prod
-    : k => merge(
-      v.ca_pool_config,
-      (
-        try(v.authz_nsec_sa, false) == true
-        ? local._prod_nsec_authz_iam
-        : {}
-      )
-    )
-  }
   prod_kms_restricted_admins = [
     for sa in distinct(compact([
       var.service_accounts.data-platform-prod,
@@ -72,11 +55,11 @@ module "prod-sec-kms" {
 }
 
 module "prod-sec-cas" {
-  for_each              = var.cas_configs.prod
+  for_each              = local.cas_configs.prod
   source                = "../../../modules/certificate-authority-service"
   project_id            = module.prod-sec-project.project_id
   ca_configs            = each.value.ca_configs
-  ca_pool_config        = local.prod_ca_pool_config[each.key]
+  ca_pool_config        = each.value.ca_pool_config
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
@@ -84,7 +67,7 @@ module "prod-sec-cas" {
   location              = each.value.location
 }
 
-resource "google_certificate_manager_trust_config" "prod_trust_config" {
+resource "google_certificate_manager_trust_config" "prod_trust_configs" {
   for_each    = var.trust_configs.prod
   name        = "prod-${each.key}"
   project     = module.prod-sec-project.project_id
