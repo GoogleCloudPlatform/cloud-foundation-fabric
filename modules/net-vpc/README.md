@@ -435,21 +435,22 @@ module "vpc" {
 ```
 
 ```yaml
-# tftest-file id=subnet-simple path=config/subnets/subnet-simple.yaml
 name: simple
 region: primary 
 ip_cidr_range: 10.0.1.0/24
+
+# tftest-file id=subnet-simple path=config/subnets/subnet-simple.yaml schema=subnet.schema.json
 ```
 
 ```yaml
-# tftest-file id=subnet-simple-2 path=config/subnets/subnet-simple-2.yaml
 name: simple
 region: europe-west8
 ip_cidr_range: 10.0.2.0/24
+
+# tftest-file id=subnet-simple-2 path=config/subnets/subnet-simple-2.yaml schema=subnet.schema.json
 ```
 
 ```yaml
-# tftest-file id=subnet-detailed path=config/subnets/subnet-detailed.yaml
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
@@ -466,28 +467,33 @@ flow_logs_config:             # enable, set to empty map to use defaults
   aggregation_interval: "INTERVAL_5_SEC"
   flow_sampling: 0.5
   metadata: "INCLUDE_ALL_METADATA"
+
+# tftest-file id=subnet-detailed path=config/subnets/subnet-detailed.yaml schema=subnet.schema.json
 ```
 
 ```yaml
-# tftest-file id=subnet-proxy path=config/subnets/subnet-proxy.yaml
 region: europe-west4
 ip_cidr_range: 10.1.0.0/24
 proxy_only: true
+
+# tftest-file id=subnet-proxy path=config/subnets/subnet-proxy.yaml schema=subnet.schema.json
 ```
 
 ```yaml
-# tftest-file id=subnet-proxy-global path=config/subnets/subnet-proxy-global.yaml
 region: australia-southeast2
 ip_cidr_range: 10.4.0.0/24
 proxy_only: true
 global: true
+
+# tftest-file id=subnet-proxy-global path=config/subnets/subnet-proxy-global.yaml schema=subnet.schema.json
 ```
 
 ```yaml
-# tftest-file id=subnet-psc path=config/subnets/subnet-psc.yaml
 region: europe-west4
 ip_cidr_range: 10.2.0.0/24
 psc: true
+
+# tftest-file id=subnet-psc path=config/subnets/subnet-psc.yaml schema=subnet.schema.json
 ```
 
 ### Custom Routes
