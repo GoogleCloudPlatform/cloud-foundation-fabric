@@ -14,6 +14,7 @@ The predefined rules are enabled by default and set to the ranges of the GCP hea
   - [Controlling or turning off default rules](#controlling-or-turning-off-default-rules)
     - [Overriding default tags and ranges](#overriding-default-tags-and-ranges)
     - [Disabling predefined rules](#disabling-predefined-rules)
+  - [Including source & destination ranges](#including-source-destination-ranges)
   - [Rules Factory](#rules-factory)
 - [Variables](#variables)
 - [Outputs](#outputs)
