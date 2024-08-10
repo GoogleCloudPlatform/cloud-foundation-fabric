@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
 - [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
 - [[#2483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2483)] Add boostrap output with log destination ids ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 14:23:38+00:00 -->
 - [[#2482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2482)] [FAST] Rename netsec stage to nsec ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 12:30:09+00:00 -->
@@ -25,6 +28,12 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2496)] [fix] certificate authority service returning bad pool id ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 16:20:53+00:00 -->
+- [[#2493](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2493)] [fix] Fixes errors in certificate-authority-service module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 14:58:53+00:00 -->
+- [[#2495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2495)] ensure dns_keys output freshness ([nathou](https://github.com/nathou)) <!-- 2024-08-09 14:33:55+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
 - [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
 - [[#2490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2490)] Bind schemas to factory files, add support for groups in VPC-SC schema ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-09 10:08:22+00:00 -->
 - [[#2489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2489)] Extend test collector to include yaml files under tests/schemas/ and fast data files ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 08:59:00+00:00 -->
@@ -42,6 +51,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2492](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2492)] Add schema testing to PR workflow ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 13:43:11+00:00 -->
 - [[#2488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2488)] Introduce YAML schema validation for YAML examples ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 21:09:22+00:00 -->
 - [[#2487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2487)] Example testing improvements ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 19:22:27+00:00 -->
 
