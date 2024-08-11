@@ -4,6 +4,15 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "egress": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "$ref": "#/$defs/rule"
+        }
+      }
+    },
     "ingress": {
       "type": "object",
       "additionalProperties": false,

@@ -14,7 +14,7 @@ The predefined rules are enabled by default and set to the ranges of the GCP hea
   - [Controlling or turning off default rules](#controlling-or-turning-off-default-rules)
     - [Overriding default tags and ranges](#overriding-default-tags-and-ranges)
     - [Disabling predefined rules](#disabling-predefined-rules)
-  - [Including source & destination ranges](#including-source-destination-ranges)
+  - [Including source and destination ranges](#including-source-and-destination-ranges)
   - [Rules Factory](#rules-factory)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -149,7 +149,7 @@ module "firewall" {
 # tftest modules=0 resources=0 inventory=no-default-rules.yaml e2e
 ```
 
-### Including source & destination ranges
+### Including source and destination ranges
 
 Custom rules now support including both source & destination ranges in ingress and egress rules:
 
@@ -229,7 +229,7 @@ egress:
         ports:
           - 23
 
-# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml
+# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml schema=firewall-rules.schema.json
 ```
 
 ```yaml

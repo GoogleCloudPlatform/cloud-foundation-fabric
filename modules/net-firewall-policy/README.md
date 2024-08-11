@@ -204,17 +204,16 @@ module "firewall-policy" {
 ```
 
 ```yaml
-# tftest-file id=cidrs path=configs/cidrs.yaml
 rfc1918:
   - 10.0.0.0/8
   - 172.16.0.0/12
   - 192.168.0.0/24
 gke-nodes-range:
   - 10.0.1.0/24
+# tftest-file id=cidrs path=configs/cidrs.yaml
 ```
 
 ```yaml
-# tftest-file id=egress path=configs/egress.yaml
 smtp:
   priority: 900
   match:
@@ -224,10 +223,10 @@ smtp:
    - protocol: tcp
      ports:
      - 25
+# tftest-file id=egress path=configs/egress.yaml schema=firewall-policy-rules.schema.json
 ```
 
 ```yaml
-# tftest-file id=ingress path=configs/ingress.yaml
 icmp:
   priority: 1000
   match:
@@ -252,6 +251,7 @@ issue-1995:
       ports:
       - 1-65535
     - protocol: icmp
+# tftest-file id=ingress path=configs/ingress.yaml schema=firewall-policy-rules.schema.json
 ```
 
 You might need to reference external security profile groups in your firewall rules, using their Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
