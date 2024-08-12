@@ -40,7 +40,7 @@ output "default_service_accounts" {
 
 output "id" {
   description = "Project id."
-  value       = coalesce(
+  value = coalesce(
     try(google_project.project.0.project_id, null),
     try(data.google_project.project.0.project_id, null)
   )
@@ -108,7 +108,7 @@ output "number" {
 
 output "project_id" {
   description = "Project id."
-  value       = coalesce(
+  value = coalesce(
     try(google_project.project.0.project_id, null),
     try(data.google_project.project.0.project_id, null)
   )
