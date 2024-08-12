@@ -40,7 +40,10 @@ output "default_service_accounts" {
 
 output "id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = coalesce(
+    try(google_project.project.0.project_id, null),
+    try(data.google_project.project.0.project_id, null)
+  )
   depends_on = [
     google_project.project,
     data.google_project.project,
@@ -105,10 +108,11 @@ output "number" {
 
 output "project_id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = coalesce(
+    try(google_project.project.0.project_id, null),
+    try(data.google_project.project.0.project_id, null)
+  )
   depends_on = [
-    google_project.project,
-    data.google_project.project,
     google_org_policy_policy.default,
     google_project_service.project_services,
     google_compute_shared_vpc_host_project.shared_vpc_host,
