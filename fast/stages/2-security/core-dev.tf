@@ -15,6 +15,44 @@
  */
 
 locals {
+  _ngfw_cas_config_dev = {
+    dev-ca-0 = {
+      ca_configs = {
+        dev-root-ngfw-ca-0 = {
+          deletion_protection = false #delete
+          subject = {
+            common_name  = try(var.ngfw_tls_configs.dev.cas_config.common_name, null)
+            organization = try(var.ngfw_tls_configs.dev.cas_config.organization, null)
+          }
+        }
+      }
+      ca_pool_config = {
+        authz_nsec_sa = true
+        name          = "dev-ngfw-ca-pool-3" #fix
+      }
+      iam          = {}
+      iam_bindings = {}
+      iam_bindings_additive = {
+        nsec_dev_sa_binding = {
+          member = module.dev-sec-project.service_agents["networksecurity"].iam_email
+          role   = "roles/privateca.certificateManager"
+        }
+      }
+      iam_by_principals = {}
+      location          = var.ngfw_tls_configs.dev.location
+    }
+  }
+  _ngfw_trust_config_dev = {
+    dev-trust-0 = merge(
+      { location = var.ngfw_tls_configs.dev.location },
+      var.ngfw_tls_configs.dev.trust_config
+    )
+  }
+  cas_config_dev = merge(
+    var.cas_configs.dev,
+    try(var.ngfw_tls_configs.dev.cas_config, null) != null
+    ? local._ngfw_cas_config_dev : null
+  )
   dev_kms_restricted_admins = [
     for sa in distinct(compact([
       var.service_accounts.data-platform-dev,
@@ -23,6 +61,11 @@ locals {
       var.service_accounts.project-factory-prod
     ])) : "serviceAccount:${sa}"
   ]
+  trust_config_dev = merge(
+    var.trust_configs.dev,
+    try(var.ngfw_tls_configs.dev.trust_config, null) != null
+    ? local._ngfw_trust_config_dev : null
+  )
 }
 
 module "dev-sec-project" {
@@ -56,7 +99,7 @@ module "dev-sec-kms" {
 }
 
 module "dev-sec-cas" {
-  for_each              = local.cas_configs.dev
+  for_each              = local.cas_config_dev
   source                = "../../../modules/certificate-authority-service"
   project_id            = module.dev-sec-project.project_id
   ca_configs            = each.value.ca_configs
@@ -69,8 +112,8 @@ module "dev-sec-cas" {
 }
 
 resource "google_certificate_manager_trust_config" "dev_trust_configs" {
-  for_each    = var.trust_configs.dev
-  name        = "dev-${each.key}"
+  for_each    = local.trust_config_dev
+  name        = each.key
   project     = module.dev-sec-project.project_id
   description = each.value.description
   location    = each.value.location

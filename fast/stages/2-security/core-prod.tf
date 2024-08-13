@@ -15,6 +15,44 @@
  */
 
 locals {
+  _ngfw_cas_config_prod = {
+    prod-ca-0 = {
+      ca_configs = {
+        prod-root-ngfw-ca-0 = {
+          deletion_protection = false #delete
+          subject = {
+            common_name  = try(var.ngfw_tls_configs.prod.cas_config.common_name, null)
+            organization = try(var.ngfw_tls_configs.prod.cas_config.organization, null)
+          }
+        }
+      }
+      ca_pool_config = {
+        authz_nsec_sa = true
+        name          = "prod-ngfw-ca-pool-3" #fix
+      }
+      iam          = {}
+      iam_bindings = {}
+      iam_bindings_additive = {
+        nsec_prod_sa_binding = {
+          member = module.prod-sec-project.service_agents["networksecurity"].iam_email
+          role   = "roles/privateca.certificateManager"
+        }
+      }
+      iam_by_principals = {}
+      location          = var.ngfw_tls_configs.prod.location
+    }
+  }
+  _ngfw_trust_config_prod = {
+    prod-trust-0 = merge(
+      { location = var.ngfw_tls_configs.prod.location },
+      var.ngfw_tls_configs.prod.trust_config
+    )
+  }
+  cas_config_prod = merge(
+    var.cas_configs.prod,
+    try(var.ngfw_tls_configs.prod.cas_config, null) != null
+    ? local._ngfw_cas_config_prod : null
+  )
   prod_kms_restricted_admins = [
     for sa in distinct(compact([
       var.service_accounts.data-platform-prod,
@@ -22,6 +60,11 @@ locals {
       var.service_accounts.project-factory-prod
     ])) : "serviceAccount:${sa}"
   ]
+  trust_config_prod = merge(
+    var.trust_configs.prod,
+    try(var.ngfw_tls_configs.prod.trust_config, null) != null
+    ? local._ngfw_trust_config_prod : null
+  )
 }
 
 module "prod-sec-project" {
@@ -55,7 +98,7 @@ module "prod-sec-kms" {
 }
 
 module "prod-sec-cas" {
-  for_each              = local.cas_configs.prod
+  for_each              = local.cas_config_prod
   source                = "../../../modules/certificate-authority-service"
   project_id            = module.prod-sec-project.project_id
   ca_configs            = each.value.ca_configs
@@ -68,8 +111,8 @@ module "prod-sec-cas" {
 }
 
 resource "google_certificate_manager_trust_config" "prod_trust_configs" {
-  for_each    = var.trust_configs.prod
-  name        = "prod-${each.key}"
+  for_each    = local.trust_config_prod
+  name        = each.key
   project     = module.prod-sec-project.project_id
   description = each.value.description
   location    = each.value.location

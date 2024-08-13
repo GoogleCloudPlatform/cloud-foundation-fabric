@@ -31,6 +31,20 @@ resource "google_network_security_security_profile_group" "dev_sec_profile_group
   threat_prevention_profile = try(google_network_security_security_profile.dev_sec_profile.id, null)
 }
 
+resource "google_network_security_tls_inspection_policy" "dev_tls_ips" {
+  for_each = (
+    var.ngfw_enterprise_config.tls_inspection.enabled
+    ? local.tls_inspection_locations : toset([])
+  )
+  name                  = "${var.prefix}-dev-tls-ip-0"
+  project               = try(var.host_project_ids.dev-spoke-0, null)
+  location              = each.key
+  ca_pool               = try(var.cas_ids.dev.dev-ca-0.ca_pool_id, null)
+  exclude_public_ca_set = var.ngfw_enterprise_config.tls_inspection.exclude_public_ca_set
+  min_tls_version       = var.ngfw_enterprise_config.tls_inspection.min_tls_version
+  trust_config          = try(var.trust_config_ids.dev.dev-trust-0, null)
+}
+
 resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_association" {
   for_each          = toset(var.ngfw_enterprise_config.endpoint_zones)
   name              = "${var.prefix}-dev-epa-${each.key}"
@@ -38,6 +52,13 @@ resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_asso
   location          = each.value
   firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
   network           = try(local.vpc_ids.dev-spoke-0, null)
+  # If TLS inspection is enabled, link the related
+  # regional TLS inspection policy
+  tls_inspection_policy = (
+    var.ngfw_enterprise_config.tls_inspection.enabled
+    ? google_network_security_tls_inspection_policy.dev_tls_ips[substr(each.value, 0, length(each.value) - 2)].id
+    : null
+  )
 }
 
 module "dev-spoke-firewall-policy" {

@@ -22,6 +22,10 @@ locals {
     ? true
     : false
   )
+  tls_inspection_locations = toset([
+    for epz in var.ngfw_enterprise_config.endpoint_zones
+    : substr(epz, 0, length(epz) - 2)
+  ])
   vpc_ids = {
     for k, v in var.vpc_self_links
     : k => replace(v, "https://www.googleapis.com/compute/v1/", "")

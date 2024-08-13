@@ -15,7 +15,7 @@
  */
 
 variable "cas_configs" {
-  description = "The CAS CAs to add to each environment"
+  description = "The CAS CAs to add to each environment."
   type = object({
     dev = optional(map(object({
       ca_configs            = map(any)
@@ -88,23 +88,38 @@ variable "kms_keys" {
   nullable = false
 }
 
-variable "ngfw_tls_config" {
+variable "ngfw_tls_configs" {
   description = "The CAS NGFW Enterprise configuration, used for TLS Inspection."
   type = object({
     dev = optional(object({
-      cas_enabled          = optional(bool, false)
-      common_name          = optional(string, "dev.example.com")
-      location             = optional(string, "europe-west1")
-      organization         = optional(string, "Example")
-      trust_config_enabled = optional(bool, false)
+      cas_config = optional(object({
+        common_name  = optional(string, "dev.example.com")
+        organization = optional(string, "Example")
+      }))
+      location = optional(string, "europe-west1")
+      trust_config = optional(object({
+        description              = optional(string)
+        allowlisted_certificates = optional(map(string), {})
+        trust_stores = optional(map(object({
+          intermediate_cas = optional(map(string), {})
+          trust_anchors    = optional(map(string), {})
+        })), {})
+      }))
     }), {})
     prod = optional(object({
-      cas_enabled          = optional(bool, false)
-      common_name          = optional(string, "prod.example.com")
-      enabled              = optional(bool, false)
-      location             = optional(string, "europe-west1")
-      organization         = optional(string, "Example")
-      trust_config_enabled = optional(bool, false)
+      cas_config = optional(object({
+        common_name  = optional(string, "dev.example.com")
+        organization = optional(string, "Example")
+      }))
+      location = optional(string, "europe-west1")
+      trust_config = optional(object({
+        description              = optional(string)
+        allowlisted_certificates = optional(map(string), {})
+        trust_stores = optional(map(object({
+          intermediate_cas = optional(map(string), {})
+          trust_anchors    = optional(map(string), {})
+        })), {})
+      }))
     }), {})
   })
   nullable = false
@@ -123,22 +138,24 @@ variable "outputs_location" {
 variable "trust_configs" {
   description = "The trust configs grouped by environment."
   type = object({
-    dev = map(object({
+    dev = optional(map(object({
       description              = optional(string)
+      location                 = string
       allowlisted_certificates = optional(map(string), {})
       trust_stores = optional(map(object({
         intermediate_cas = optional(map(string), {})
         trust_anchors    = optional(map(string), {})
-      })), null)
-    }))
-    prod = map(object({
+      })), {})
+    })))
+    prod = optional(map(object({
       description              = optional(string)
+      location                 = string
       allowlisted_certificates = optional(map(string), {})
       trust_stores = optional(map(object({
         intermediate_cas = optional(map(string), {})
         trust_anchors    = optional(map(string), {})
-      })), null)
-    }))
+      })), {})
+    })))
   })
   nullable = false
   default = {

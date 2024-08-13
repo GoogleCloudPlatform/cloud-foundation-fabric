@@ -6,17 +6,18 @@ The design of this stage is fairly general, and out of the box it only provides 
 
 Expanding it to include other security-related services like Secret Manager is fairly simple by adapting the provided implementation for Cloud KMS, and leveraging the broad permissions granted on the top-level Security folder to the automation service account used here.
 
-<!-->
 The following diagram illustrates the high-level design of resources managed here:
 
 <p align="center">
   <img src="diagram.png" alt="Security diagram">
 </p>
--->
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
   - [Cloud KMS](#cloud-kms)
+  - [Certificate Authority Service (CAS)](#certificate-authority-service-cas)
+  - [Trust Configs](#trust-configs)
+  - [NGFW Enterprise and TLS inspection support](#ngfw-enterprise-and-tls-inspection-support)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
@@ -25,6 +26,7 @@ The following diagram illustrates the high-level design of resources managed her
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [KMS keys](#kms-keys)
+  - [NGFW Enterprise - sample TLS configurations](#ngfw-enterprise-sample-tls-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -45,6 +47,18 @@ A reference Cloud KMS implementation is part of this stage, to provide a simple 
 The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
 
 IAM roles on keys can be configured at the logical level for all locations where a logical key is created. Their management can also be delegated via [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) exposed through a simple variable, to allow other identities to set IAM policies on keys. This is particularly useful in setups like project factories, making it possible to configure IAM bindings during project creation for team groups or service agent accounts (compute, storage, etc.).
+
+### Certificate Authority Service (CAS)
+
+You can use this stage to optionally leverage Certificate Authority Services (CAS) and create as many CAs you need for each environment. To create custom CAS, you can use the `cas_configs`. The variables comes with some defaults. In each environment, specifying a map with `location` only is enough for most demos. You can instead customize every detail you need for production use cases.
+
+### Trust Configs
+
+This stage also lets you optionally create Certificate Manager Trust Configs. With trust configs you can trust whole CAs or specific server certificates, when you use them with third-party services in GCP. You can create additional trust configs for each environment with the `trust_configs` variable. At a very minimum, for each trust config you'll need to specify the `location` (the region) and either a `trust_stores` block or an `allowed_certificates` block.
+
+### NGFW Enterprise and TLS inspection support
+
+We deploy NGFW Enterprise in the [network-security](../3-network-security/README.md). If you want to enable TLS inspection, NGFW Enterprise requires CAS and -optionally- a Certificate Manager trust config. You can enable both leveraging the dedicated variable `ngfw_tls_configs`. This variable eases the configuration of these services and creates components with standard names, so that we can reference them by the [network-security stage](../3-network-security/README.md).
 
 ## How to run this stage
 
@@ -162,6 +176,34 @@ kms_keys = {
 
 The script will create one keyring for each specified location and keys on each keyring.
 
+### NGFW Enterprise - sample TLS configurations
+
+This is a sample configuration that creates a CA and a trust config, both for dev and prod, for NGFW Enterprise.
+
+```tfvars
+ngfw_tls_configs = {
+  dev = {
+    cas_config = {
+      organization = "My organization"
+      common_name  = "dev.myorg.com"
+    }
+    trust_config = {
+      allowlisted_certificates = {
+        test = "~/my-certs/server.pem"
+      }
+    }
+  }
+  prod = {
+    cas_config = {
+      organization = "My organization"
+      common_name  = "prod.myorg.com"
+    }
+  }
+}
+```
+
+You can choose what components to activate in each environment. For example, you may create them just in dev and not in prod. As we do in this example, you can also avoid to create a trust config, if you feel you don't need it. Please, refer to the variable `ngfw_tls_configs` spec for more configuration options.
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -185,16 +227,19 @@ The script will create one keyring for each specified location and keys on each 
 | [organization](variables-fast.tf#L46) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables-fast.tf#L56) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [service_accounts](variables-fast.tf#L66) | Automation service accounts that can assign the encrypt/decrypt roles on keys. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  project-factory      &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [trust_configs](variables.tf#L99) | The trust configs grouped by environment. | <code title="object&#40;&#123;&#10;  dev &#61; map&#40;object&#40;&#123;&#10;    description              &#61; optional&#40;string&#41;&#10;    allowlisted_certificates &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    trust_stores &#61; optional&#40;map&#40;object&#40;&#123;&#10;      intermediate_cas &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      trust_anchors    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [cas](variables.tf#L17) | The CAS CAs to add to each environment | <code title="object&#40;&#123;&#10;  dev &#61; map&#40;object&#40;&#123;&#10;    auth_ngfw_sa          &#61; optional&#40;bool, false&#41;&#10;    ca_configs            &#61; map&#40;any&#41;&#10;    ca_pool_config        &#61; map&#40;any&#41;&#10;    location              &#61; string&#10;    iam                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings          &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_by_principals     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  prod &#61; map&#40;object&#40;&#123;&#10;    auth_ngfw_sa          &#61; optional&#40;bool, false&#41;&#10;    ca_configs            &#61; map&#40;any&#41;&#10;    ca_pool_config        &#61; map&#40;any&#41;&#10;    location              &#61; string&#10;    iam                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings          &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_by_principals     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [essential_contacts](variables.tf#L48) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
-| [kms_keys](variables.tf#L54) | KMS keys to create, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  rotation_period &#61; optional&#40;string, &#34;7776000s&#34;&#41;&#10;  labels          &#61; optional&#40;map&#40;string&#41;&#41;&#10;  locations &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;europe&#34;, &#34;europe-west1&#34;, &#34;europe-west3&#34;, &#34;global&#34;&#10;  &#93;&#41;&#10;  purpose                       &#61; optional&#40;string, &#34;ENCRYPT_DECRYPT&#34;&#41;&#10;  skip_initial_version_creation &#61; optional&#40;bool, false&#41;&#10;  version_template &#61; optional&#40;object&#40;&#123;&#10;    algorithm        &#61; string&#10;    protection_level &#61; optional&#40;string, &#34;SOFTWARE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [outputs_location](variables.tf#L93) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [cas_configs](variables.tf#L17) | The CAS CAs to add to each environment. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ca_configs            &#61; map&#40;any&#41;&#10;    ca_pool_config        &#61; map&#40;any&#41;&#10;    location              &#61; string&#10;    iam                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings          &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_by_principals     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  prod &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ca_configs            &#61; map&#40;any&#41;&#10;    ca_pool_config        &#61; map&#40;any&#41;&#10;    location              &#61; string&#10;    iam                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings          &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;    iam_by_principals     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [essential_contacts](variables.tf#L46) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
+| [kms_keys](variables.tf#L52) | KMS keys to create, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  rotation_period &#61; optional&#40;string, &#34;7776000s&#34;&#41;&#10;  labels          &#61; optional&#40;map&#40;string&#41;&#41;&#10;  locations &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;europe&#34;, &#34;europe-west1&#34;, &#34;europe-west3&#34;, &#34;global&#34;&#10;  &#93;&#41;&#10;  purpose                       &#61; optional&#40;string, &#34;ENCRYPT_DECRYPT&#34;&#41;&#10;  skip_initial_version_creation &#61; optional&#40;bool, false&#41;&#10;  version_template &#61; optional&#40;object&#40;&#123;&#10;    algorithm        &#61; string&#10;    protection_level &#61; optional&#40;string, &#34;SOFTWARE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [ngfw_tls_configs](variables.tf#L91) | The CAS NGFW Enterprise configuration, used for TLS Inspection. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;object&#40;&#123;&#10;    cas_config &#61; optional&#40;object&#40;&#123;&#10;      common_name  &#61; optional&#40;string, &#34;dev.example.com&#34;&#41;&#10;      organization &#61; optional&#40;string, &#34;Example&#34;&#41;&#10;    &#125;&#41;&#41;&#10;    location &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;    trust_config &#61; optional&#40;object&#40;&#123;&#10;      description              &#61; optional&#40;string&#41;&#10;      allowlisted_certificates &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      trust_stores &#61; optional&#40;map&#40;object&#40;&#123;&#10;        intermediate_cas &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;        trust_anchors    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  prod &#61; optional&#40;object&#40;&#123;&#10;    cas_config &#61; optional&#40;object&#40;&#123;&#10;      common_name  &#61; optional&#40;string, &#34;dev.example.com&#34;&#41;&#10;      organization &#61; optional&#40;string, &#34;Example&#34;&#41;&#10;    &#125;&#41;&#41;&#10;    location &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;    trust_config &#61; optional&#40;object&#40;&#123;&#10;      description              &#61; optional&#40;string&#41;&#10;      allowlisted_certificates &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      trust_stores &#61; optional&#40;map&#40;object&#40;&#123;&#10;        intermediate_cas &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;        trust_anchors    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [outputs_location](variables.tf#L132) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [trust_configs](variables.tf#L138) | The trust configs grouped by environment. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description              &#61; optional&#40;string&#41;&#10;    location                 &#61; string&#10;    allowlisted_certificates &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    trust_stores &#61; optional&#40;map&#40;object&#40;&#123;&#10;      intermediate_cas &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      trust_anchors    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  prod &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description              &#61; optional&#40;string&#41;&#10;    location                 &#61; string&#10;    allowlisted_certificates &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    trust_stores &#61; optional&#40;map&#40;object&#40;&#123;&#10;      intermediate_cas &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      trust_anchors    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [kms_keys](outputs.tf#L55) | KMS key ids. |  |  |
-| [tfvars](outputs.tf#L60) | Terraform variable files for the following stages. | ✓ |  |
+| [cas_ids](outputs.tf#L83) | Certificate Authority Service CA pool and CA ids. |  |  |
+| [kms_keys](outputs.tf#L88) | KMS key ids. |  |  |
+| [tfvars](outputs.tf#L93) | Terraform variable files for the following stages. | ✓ |  |
+| [trust_config_ids](outputs.tf#L99) | Certificate Manager trust config ids. |  |  |
 <!-- END TFDOC -->

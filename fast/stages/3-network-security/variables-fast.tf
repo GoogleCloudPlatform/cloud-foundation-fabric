@@ -27,6 +27,26 @@ variable "billing_account" {
   }
 }
 
+variable "cas_ids" {
+  # tfdoc:variable:source 2-security
+  description = "The CAS pools and CA ids, by environment."
+  type = object({
+    dev = map(object({
+      ca_pool_id = string
+      ca_ids     = map(string)
+    }))
+    prod = map(object({
+      ca_pool_id = string
+      ca_ids     = map(string)
+    }))
+  })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
+  }
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -66,6 +86,20 @@ variable "prefix" {
   validation {
     condition     = try(length(var.prefix), 0) < 12
     error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
+  }
+}
+
+variable "trust_config_ids" {
+  # tfdoc:variable:source 2-security
+  description = "The certificate manager trust config ids, by environment."
+  type = object({
+    dev  = map(string)
+    prod = map(string)
+  })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
   }
 }
 
