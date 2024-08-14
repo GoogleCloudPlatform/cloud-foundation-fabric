@@ -30,7 +30,7 @@ variable "backend_service_config" {
     }))
     locality_lb_policy = optional(string)
     log_sample_rate    = optional(number)
-    name               = optional(string, null)
+    name               = optional(string)
     port_name          = optional(string)
     protocol           = optional(string, "UNSPECIFIED")
     session_affinity   = optional(string)
