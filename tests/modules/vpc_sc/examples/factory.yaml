@@ -59,6 +59,7 @@ values:
     - egress_policies:
       - egress_from:
         - identities:
+          - serviceAccount:bar@myproject.iam.gserviceaccount.com
           - serviceAccount:foo@myproject.iam.gserviceaccount.com
           identity_type: null
           source_restriction: null
@@ -75,7 +76,8 @@ values:
       ingress_policies:
       - ingress_from:
         - identities:
-          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
           identity_type: null
           sources:
           - access_level: '*'

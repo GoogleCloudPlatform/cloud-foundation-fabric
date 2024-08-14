@@ -19,7 +19,7 @@ Factories are a way to simplify all above use cases, by moving repetitive resour
 Using factories, repetitive resource creation and management becomes easier
 
 - for humans who have no direct experience with Terraform, by exposing filesystem hierarchies and YAML-based configuration data
-- for connected systems, by accepting well know data exchange formats like JSON or CSV
+- for connected systems, by accepting well-known data exchange formats like JSON or CSV
 - for external code that needs to enforce checks or policies, by eliminating the need to parse HCL code or Terraform outputs
 - to implement authorization processes or workwflows in CI/CD, by removing the dependency on Terraform and HCL knowledge for the teams involved
 

@@ -171,6 +171,9 @@ module "db" {
   tier                          = "db-g1-small"
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
+  depends_on = [
+    google_kms_crypto_key_iam_binding.encrypt_decrypt
+  ]
 }
 
 # tftest modules=1 resources=2 fixtures=fixtures/cloudsql-kms-iam-grant.tf e2e

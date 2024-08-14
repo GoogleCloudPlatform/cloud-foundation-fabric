@@ -1,5 +1,7 @@
 # skip boilerplate check
 
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
 name: dev-dataplatform
 region: primary
 description: Default subnet for dev Data Platform

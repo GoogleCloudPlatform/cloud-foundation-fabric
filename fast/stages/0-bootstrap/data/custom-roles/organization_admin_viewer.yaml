@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../schemas/custom-role.schema.json
 # this is used by the plan-only admin SA
+
 name: organizationAdminViewer
 includedPermissions:
   - essentialcontacts.contacts.get

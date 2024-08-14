@@ -13,8 +13,10 @@
 # limitations under the License.
 
 ---
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
 # gcp.resourceLocations:
 #   rules:

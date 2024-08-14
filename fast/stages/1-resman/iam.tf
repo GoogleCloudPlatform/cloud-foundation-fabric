@@ -24,6 +24,14 @@ locals {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.orgFirewallPolicyAdmin"
       }
+      sa_net_nsec_fw_policy_admin = {
+        member = module.branch-nsec-sa.iam_email
+        role   = "roles/compute.orgFirewallPolicyAdmin"
+      }
+      sa_net_nsec_ngfw_enterprise_admin = {
+        member = module.branch-nsec-sa.iam_email
+        role   = local.custom_roles["ngfw_enterprise_admin"],
+      }
       sa_net_xpn_admin = {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.xpnAdmin"
@@ -32,10 +40,11 @@ locals {
         member = module.branch-security-sa.iam_email
         role   = "roles/cloudasset.viewer"
       }
-      sa_sec_vpcsc_admin = {
-        member = module.branch-security-sa.iam_email
-        role   = "roles/accesscontextmanager.policyAdmin"
-      }
+      # re-enable if VPC-SC management is needed in the 2-security stage
+      # sa_sec_vpcsc_admin = {
+      #   member = module.branch-security-sa.iam_email
+      #   role   = "roles/accesscontextmanager.policyAdmin"
+      # }
     },
     # optional billing roles for network and security
     local.billing_mode != "org" ? {} : {

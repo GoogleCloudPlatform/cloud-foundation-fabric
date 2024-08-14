@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,7 @@ variable "psc_addresses" {
     subnet_self_link = optional(string)
     service_attachment = optional(object({ # so we can safely check if service_attachemnt != null in for_each
       psc_service_attachment_link = string
+      global_access               = optional(bool)
     }))
   }))
   default = {}

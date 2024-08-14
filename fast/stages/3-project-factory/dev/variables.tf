@@ -21,7 +21,7 @@ variable "factories_config" {
       folders_data_path = string
       parent_ids        = optional(map(string), {})
     }))
-    projects_data_path = string
+    projects_data_path = optional(string)
     budgets = optional(object({
       billing_account       = string
       budgets_data_path     = string

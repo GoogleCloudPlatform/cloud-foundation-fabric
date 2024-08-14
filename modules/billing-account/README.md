@@ -238,7 +238,6 @@ module "billing-account" {
 ```
 
 ```yaml
-# tftest-file id=test-1 path=data/billing-budgets/folder-net-month-current-100.yaml
 display_name: 100 dollars in current spend
 amount:
   units: 100
@@ -255,6 +254,8 @@ update_rules:
     disable_default_iam_recipients: true
     monitoring_notification_channels:
     - billing-default
+
+# tftest-file id=test-1 path=data/billing-budgets/folder-net-month-current-100.yaml schema=budget.schema.json
 ```
 
 <!-- markdownlint-enable -->

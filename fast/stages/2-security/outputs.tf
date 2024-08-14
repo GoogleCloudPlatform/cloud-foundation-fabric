@@ -36,16 +36,6 @@ locals {
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
     kms_keys = local.output_kms_keys
-    vpc_sc = {
-      perimeters = {
-        for k, v in try(module.vpc-sc[0].service_perimeters_regular, {}) :
-        k => v.id
-      }
-      perimeters_bridge = {
-        for k, v in try(module.vpc-sc[0].service_perimeters_bridge, {}) :
-        k => v.id
-      }
-    }
   }
 }
 
@@ -71,10 +61,4 @@ output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
-}
-
-output "vpc_sc_perimeter_default" {
-  description = "Raw default perimeter resource."
-  sensitive   = true
-  value       = try(module.vpc-sc[0].service_perimeters_regular["default"], null)
 }

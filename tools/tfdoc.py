@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,18 +45,20 @@ import re
 import string
 import sys
 import urllib.parse
+from pathlib import Path
 
 import click
 import marko
 
+try:
+  from examples.utils import get_tftest_directive
+except ImportError:
+  BASEDIR = Path(__file__).parents[1]
+  sys.path.append(str(BASEDIR / 'tests'))
+  from examples.utils import get_tftest_directive
+
 __version__ = '2.1.0'
 
-# COUNT_TEST_RE copied from tests/examples/test_plan.py
-COUNT_TEST_RE = re.compile(
-    r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
-    r'(?: +files=(?P<files>[\w@,_-]+))?' +
-    r'(?: +fixtures=(?P<fixtures>[\w@,_/.-]+))?' +
-    r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
 # TODO(ludomagno): decide if we want to support variables*.tf and outputs*.tf
 FILE_DESC_DEFAULTS = {
     'main.tf': 'Module-level locals and resources.',
@@ -390,8 +392,8 @@ def parse_fixtures(basepath, readme):
     if isinstance(child, marko.block.FencedCode):
       if child.lang == 'hcl':
         code = child.children[0].children
-        if match := COUNT_TEST_RE.search(code):
-          if fixtures := match.group('fixtures'):
+        if directive := get_tftest_directive(code):
+          if fixtures := directive.kwargs.get('fixtures'):
             for fixture in fixtures.split(','):
               fixture_full = os.path.join(REPO_ROOT, 'tests', fixture)
               if not os.path.exists(fixture_full):
