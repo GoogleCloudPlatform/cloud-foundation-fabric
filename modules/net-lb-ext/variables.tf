@@ -87,7 +87,7 @@ variable "forwarding_rules_config" {
     address     = optional(string)
     description = optional(string)
     ip_version  = optional(string)
-    name        = optional(string, null)
+    name        = optional(string)
     ports       = optional(list(string), null)
     protocol    = optional(string, "TCP")
     subnetwork  = optional(string) # Required for IPv6
@@ -121,7 +121,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
-    name                = optional(string, null)
+    name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({

@@ -66,7 +66,7 @@ variable "router_config" {
     }))
     keepalive     = optional(number)
     name          = optional(string)
-    override_name = optional(string, null)
+    override_name = optional(string)
   })
   nullable = false
 }
