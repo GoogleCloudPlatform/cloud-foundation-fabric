@@ -233,6 +233,6 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 ## Fixtures
 
-- [compute-mig.tf](..\..\tests\fixtures\compute-mig.tf)
-- [compute-vm-group-bc.tf](..\..\tests\fixtures\compute-vm-group-bc.tf)
+- [compute-mig.tf](../../tests/fixtures/compute-mig.tf)
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->
