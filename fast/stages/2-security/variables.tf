@@ -108,7 +108,7 @@ variable "ngfw_tls_configs" {
     }), {})
     prod = optional(object({
       cas_config = optional(object({
-        common_name  = optional(string, "dev.example.com")
+        common_name  = optional(string, "prod.example.com")
         organization = optional(string, "Example")
       }))
       location = optional(string, "europe-west1")
