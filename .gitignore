@@ -12,7 +12,6 @@ venv/*
 **/.pytest_cache
 **/.test.lock
 .idea
-.vscode
 .idx/dev.nix
 backend.tf
 backend-config.hcl

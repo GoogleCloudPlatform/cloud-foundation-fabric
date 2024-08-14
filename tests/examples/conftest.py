@@ -14,28 +14,14 @@
 """Pytest configuration for testing code examples."""
 
 import collections
-import re
 from pathlib import Path
 
 import marko
 import pytest
 
+from .utils import File, TerraformExample, YamlExample, get_tftest_directive
+
 FABRIC_ROOT = Path(__file__).parents[2]
-
-FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
-FIXTURE_TEST_RE = re.compile(r'# tftest-fixture +id=([\w_.-]+)')
-
-Example = collections.namedtuple('Example',
-                                 'name code module files fixtures type')
-File = collections.namedtuple('File', 'path content')
-
-
-def get_tftest_directive(s):
-  """Returns tftest directive from code block or None when directive is not found"""
-  for x in s.splitlines():
-    if x.strip().startswith("#") and 'tftest' in x:
-      return x
-  return None
 
 
 def pytest_generate_tests(metafunc, test_group='example',
@@ -58,11 +44,14 @@ def pytest_generate_tests(metafunc, test_group='example',
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
-          if match := FILE_TEST_RE.search(code):
-            name, path = match.groups()
+          directive = get_tftest_directive(code)
+          if directive is None:
+            continue
+          if directive.name == 'tftest-file':
+            name, path = directive.kwargs['id'], directive.kwargs['path']
             files[last_header][name] = File(path, code)
-          if match := FIXTURE_TEST_RE.search(code):
-            name = match.groups()[0]
+          if directive.name == 'tftest-fixture':
+            name = directive.kwargs['id']
             fixtures[name] = code
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
@@ -74,26 +63,35 @@ def pytest_generate_tests(metafunc, test_group='example',
         if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
-          tftest_tag = get_tftest_directive(code)
-          if tftest_tag is None:
+          directive = get_tftest_directive(code)
+          if directive is None:
             continue
-          if tftest_tag and not filter_tests(tftest_tag):
+          if directive and not filter_tests(directive.args):
             continue
           if child.lang in ('hcl', 'tfvars'):
             path = module.relative_to(FABRIC_ROOT)
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'
-            ids.append(f'{path}:{last_header}:{index}')
+            ids.append(f'terraform:{path}:{last_header}:{index}')
             # if test is marked with 'serial' in tftest line then add them to this xdist group
             # this, together with `--dist loadgroup` will ensure that those tests will be run one after another
             # even if multiple workers are used
             # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
-            marks = [pytest.mark.xdist_group("serial")
-                    ] if 'serial' in tftest_tag else []
-            example = Example(name, code, path, files[last_header], fixtures,
-                              child.lang)
+            marks = [pytest.mark.xdist_group('serial')
+                    ] if 'serial' in directive.args else []
+            example = TerraformExample(name, code, path, files[last_header],
+                                       fixtures, child.lang, directive)
             examples.append(pytest.param(example, marks=marks))
+          elif child.lang == "yaml":
+            schema = directive.kwargs.get('schema')
+            name = directive.kwargs.get('id')
+            if directive.name == "tftest-file" and schema:
+              schema = module / 'schemas' / schema
+              example = YamlExample(code, module, schema)
+              yaml_path = directive.kwargs['path']
+              ids.append(f'yaml:{path}:{last_header}:{yaml_path}:{index}')
+              examples.append(pytest.param(example))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0

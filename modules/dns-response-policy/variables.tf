@@ -72,4 +72,16 @@ variable "rules" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.rules : [
+        for dk, dv in v.local_data : contains([
+          "A", "AAAA", "CAA", "CNAME", "DNSKEY", "DS", "HTTPS", "IPSECVPNKEY",
+          "MX", "NAPTR", "NS", "PTR", "SOA", "SPF", "SRV", "SSHFP", "SVCB",
+          "TLSA", "TXT"
+        ], dk)
+      ]
+    ]))
+    error_message = "Invalid local data key."
+  }
 }

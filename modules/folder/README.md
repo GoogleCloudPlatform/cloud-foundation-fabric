@@ -165,7 +165,6 @@ module "folder" {
 ```
 
 ```yaml
-# tftest-file id=boolean path=configs/org-policies/boolean.yaml
 compute.disableGuestAttributesAccess:
   rules:
   - enforce: true
@@ -184,10 +183,11 @@ iam.disableServiceAccountKeyUpload:
       title: condition
     enforce: true
   - enforce: false
+
+# tftest-file id=boolean path=configs/org-policies/boolean.yaml schema=org-policies.schema.json
 ```
 
 ```yaml
-# tftest-file id=list path=configs/org-policies/list.yaml
 compute.trustedImageProjects:
   rules:
   - allow:
@@ -203,6 +203,8 @@ iam.allowedPolicyMemberDomains:
       values:
       - C0xxxxxxx
       - C0yyyyyyy
+
+# tftest-file id=list path=configs/org-policies/list.yaml schema=org-policies.schema.json
 ```
 
 ## Hierarchical Firewall Policy Attachments

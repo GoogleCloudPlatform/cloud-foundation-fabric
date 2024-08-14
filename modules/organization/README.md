@@ -190,12 +190,6 @@ module "org" {
 ```
 
 ```yaml
-# tftest-file id=gke path=configs/custom-constraints/gke.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 custom.gkeEnableLogging:
   resource_types:
   - container.googleapis.com/Cluster
@@ -214,15 +208,11 @@ custom.gkeEnableAutoUpgrade:
   action_type: ALLOW
   display_name: Enable node auto-upgrade
   description: All node pools must have node auto-upgrade enabled.
+
+# tftest-file id=gke path=configs/custom-constraints/gke.yaml
 ```
 
 ```yaml
-# tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 custom.dataprocNoMoreThan10Workers:
   resource_types:
   - dataproc.googleapis.com/Cluster
@@ -233,6 +223,8 @@ custom.dataprocNoMoreThan10Workers:
   action_type: DENY
   display_name: Total number of worker instances cannot be larger than 10
   description: Cluster cannot have more than 10 workers, including primary and secondary workers.
+
+# tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
 ```
 
 ## Hierarchical Firewall Policy Attachments

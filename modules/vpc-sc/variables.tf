@@ -51,6 +51,16 @@ variable "access_levels" {
     ])
     error_message = "Invalid `combining_function` value (null, \"AND\", \"OR\" accepted)."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : alltrue([
+          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+        ])
+      ])
+    ])
+    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
+  }
 }
 
 variable "access_policy" {
@@ -97,14 +107,23 @@ variable "egress_policies" {
     ])
     error_message = "Invalid `from.identity_type` value in egress policy."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.egress_policies : v.from.identities == null ? true : alltrue([
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+      ])
+    ])
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+  }
 }
 
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels    = optional(string)
-    egress_policies  = optional(string)
-    ingress_policies = optional(string)
+    access_levels       = optional(string)
+    egress_policies     = optional(string)
+    ingress_policies    = optional(string)
+    restricted_services = optional(string, "data/restricted-services.yaml")
   })
   nullable = false
   default  = {}
@@ -176,6 +195,14 @@ variable "ingress_policies" {
     ])
     error_message = "Invalid `from.identity_type` value in ingress policy."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.ingress_policies : v.from.identities == null ? true : alltrue([
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+      ])
+    ])
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+  }
 }
 
 variable "service_perimeters_bridge" {
@@ -191,6 +218,7 @@ variable "service_perimeters_bridge" {
 variable "service_perimeters_regular" {
   description = "Regular service perimeters."
   type = map(object({
+    description = optional(string)
     spec = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
@@ -199,7 +227,7 @@ variable "service_perimeters_regular" {
       ingress_policies    = optional(list(string))
       vpc_accessible_services = optional(object({
         allowed_services   = list(string)
-        enable_restriction = bool
+        enable_restriction = optional(bool, true)
       }))
     }))
     status = optional(object({

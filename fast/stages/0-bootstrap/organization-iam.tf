@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,7 +156,6 @@ locals {
     }
     (module.automation-tf-resman-r-sa.iam_email) = {
       authoritative = [
-        "roles/accesscontextmanager.policyReader",
         "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
@@ -165,6 +164,7 @@ locals {
       ]
       additive = concat(
         [
+          "roles/accesscontextmanager.policyReader",
           # the organizationAdminViewer custom role is granted via the SA module
           "roles/orgpolicy.policyViewer"
         ],

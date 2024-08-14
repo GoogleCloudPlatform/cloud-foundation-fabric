@@ -32,24 +32,3 @@ service_accounts = {
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"
 }
-factories_config = {
-  vpc-sc = {
-    access_levels    = "../../../../tests/fast/stages/s2_security/data/vpc-sc/access-levels"
-    egress_policies  = "../../../../tests/fast/stages/s2_security/data/vpc-sc/egress-policies"
-    ingress_policies = "../../../../tests/fast/stages/s2_security/data/vpc-sc/ingress-policies"
-  }
-}
-vpc_sc = {
-  perimeter_default = {
-    access_levels    = ["geo_it", "identity_me"]
-    egress_policies  = ["test"]
-    ingress_policies = ["test"]
-    dry_run          = true
-    resources = [
-      "projects/1234567890"
-    ]
-  }
-  resource_discovery = {
-    enabled = false
-  }
-}

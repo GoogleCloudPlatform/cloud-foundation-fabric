@@ -4,10 +4,62 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-06-16 07:51:14+00:00 -->
+<!-- None < 2024-08-01 11:45:37+00:00 -->
 
 ### BLUEPRINTS
 
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
+- [[#2463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2463)] Typo in README: well know -> well-known ([derailed-dash](https://github.com/derailed-dash)) <!-- 2024-08-03 07:54:55+00:00 -->
+
+### FAST
+
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
+- [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
+- [[#2483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2483)] Add boostrap output with log destination ids ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 14:23:38+00:00 -->
+- [[#2482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2482)] [FAST] Rename netsec stage to nsec ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 12:30:09+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2471](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2471)] Rename 1-vpc-sc stage to 1-vpcsc ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 11:21:55+00:00 -->
+- [[#2470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2470)] Make policyReader binding additive in bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 09:35:38+00:00 -->
+- [[#2466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2466)] [FAST] Sets projects_data_path optional, as in the project factory module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-06 06:27:34+00:00 -->
+- [[#2464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2464)] Fix peering routes config in fast a network stage ([ludoo](https://github.com/ludoo)) <!-- 2024-08-03 20:18:45+00:00 -->
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### MODULES
+
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2496)] [fix] certificate authority service returning bad pool id ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 16:20:53+00:00 -->
+- [[#2493](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2493)] [fix] Fixes errors in certificate-authority-service module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 14:58:53+00:00 -->
+- [[#2495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2495)] ensure dns_keys output freshness ([nathou](https://github.com/nathou)) <!-- 2024-08-09 14:33:55+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
+- [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
+- [[#2490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2490)] Bind schemas to factory files, add support for groups in VPC-SC schema ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-09 10:08:22+00:00 -->
+- [[#2489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2489)] Extend test collector to include yaml files under tests/schemas/ and fast data files ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 08:59:00+00:00 -->
+- [[#2486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2486)] Fix failing tests for CloudSQL ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-08 18:16:53+00:00 -->
+- [[#2485](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2485)] Project factory module JSON schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-08 16:43:11+00:00 -->
+- [[#2481](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2481)] Adds a new certification authority service (CAS) module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 07:55:49+00:00 -->
+- [[#2480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2480)] Add support for PSC global access to net-address ([juliocc](https://github.com/juliocc)) <!-- 2024-08-07 17:27:03+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2474)] [fix] Pass optional location variable at certificates creation ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-07 07:05:57+00:00 -->
+- [[#2476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2476)] Cloud run v2 custom audiences ([apichick](https://github.com/apichick)) <!-- 2024-08-07 06:54:36+00:00 -->
+- [[#2475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2475)] Cloud run v2 output uri ([apichick](https://github.com/apichick)) <!-- 2024-08-06 20:09:19+00:00 -->
+- [[#2472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2472)] Fix grammar in net-vpc-peering preconditions ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 12:27:31+00:00 -->
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### TOOLS
+
+- [[#2492](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2492)] Add schema testing to PR workflow ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 13:43:11+00:00 -->
+- [[#2488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2488)] Introduce YAML schema validation for YAML examples ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 21:09:22+00:00 -->
+- [[#2487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2487)] Example testing improvements ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 19:22:27+00:00 -->
+
+## [33.0.0] - 2024-08-01
+
+### BLUEPRINTS
+
+- [[#2450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2450)] Remove "constraints/" from org policy names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-29 13:15:04+00:00 -->
 - [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] Add generic URL output to modules/artifiact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
 - [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
 - [[#2433](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2433)] **incompatible change:** Reintroduce docker image path output in AR module ([ludoo](https://github.com/ludoo)) <!-- 2024-07-20 06:49:59+00:00 -->
@@ -21,6 +73,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2410)] [FAST] Add basic NGFW enterprise stage ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-01 09:41:31+00:00 -->
+- [[#2450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2450)] Remove "constraints/" from org policy names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-29 13:15:04+00:00 -->
 - [[#2397](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2397)] NCC in 2-net-a-simple ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-25 16:03:09+00:00 -->
 - [[#2446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2446)] Remove alpha from gcloud storage cp as it moved to GA ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-24 20:46:43+00:00 -->
 - [[#2444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2444)] Add context to net-vpc factory ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-24 13:54:20+00:00 -->
@@ -37,8 +91,12 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2459)] Allow user to override peerings names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-31 15:13:22+00:00 -->
+- [[#2457](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2457)] update readme with cross project backend external regional/global LB - review ([vivianvarela](https://github.com/vivianvarela)) <!-- 2024-07-30 15:28:14+00:00 -->
+- [[#2454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2454)] Add support for dry-run org policies ([juliocc](https://github.com/juliocc)) <!-- 2024-07-30 13:12:57+00:00 -->
+- [[#2456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2456)] Manage lifecycle of cloud functions v2 IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-07-30 12:08:05+00:00 -->
 - [[#2449](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2449)] Add moved blocks for the service networking service agent and IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 12:01:21+00:00 -->
-- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] Add generic URL output to modules/artifiact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
+- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] **incompatible change:** Add generic URL output to modules/artifact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
 - [[#2447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2447)] Fix wrong expression in compute-mig module ([bz-canva](https://github.com/bz-canva)) <!-- 2024-07-25 05:26:26+00:00 -->
 - [[#2445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2445)] Override primary flag for the storage transfer service agent ([juliocc](https://github.com/juliocc)) <!-- 2024-07-24 14:12:56+00:00 -->
 - [[#2444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2444)] Add context to net-vpc factory ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-24 13:54:20+00:00 -->
@@ -81,11 +139,19 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2452](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2452)] Add `--extra-files` option to plan_summary.py cmd ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-30 09:29:19+00:00 -->
 - [[#2445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2445)] Override primary flag for the storage transfer service agent ([juliocc](https://github.com/juliocc)) <!-- 2024-07-24 14:12:56+00:00 -->
 - [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
 - [[#2441](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2441)] Add commit id at the end of README ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 10:04:18+00:00 -->
 - [[#2413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2413)] **incompatible change:** Add E2E tests for Cloud Functions and fix perma-diff ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-08 14:14:21+00:00 -->
 - [[#2399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2399)] Test different versions of Terraform ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-05 11:21:41+00:00 -->
+
+## [32.0.1] - 2024-07-26
+<!-- 2024-07-26 05:52:59+00:00 < 2024-06-16 07:51:14+00:00 -->
+
+### MODULES
+
+- [[#2447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2447)] Fix wrong expression in compute-mig module ([bz-canva](https://github.com/bz-canva)) <!-- 2024-07-25 05:26:26+00:00 -->
 
 ## [32.0.0] - 2024-06-16
 
@@ -2336,7 +2402,9 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...HEAD
+[33.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.1...v33.0.0
+[32.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v32.0.1
 [32.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...v32.0.0
 [31.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...v31.1.0
 [31.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...v31.0.0

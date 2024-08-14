@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import re
-import subprocess
-import yaml
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 
+import jsonschema
+import yaml
+
+from .utils import TerraformExample, YamlExample
+
 BASE_PATH = Path(__file__).parent
-COUNT_TEST_RE = re.compile(
-    r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
-    r'(?: +files=(?P<files>[\w@,_-]+))?' +
-    r'(?: +fixtures=(?P<fixtures>[\w@,_/.-]+))?' +
-    r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
 
 
 def prepare_files(example, test_path, files, fixtures):
@@ -49,59 +49,73 @@ def prepare_files(example, test_path, files, fixtures):
         destination.write_text(example.fixtures[f])
 
 
-def test_example(plan_validator, example):
-  if match := COUNT_TEST_RE.search(example.code):
-    # for tfvars-based tests, create the temporary directory with the
-    # same parent as the original module
-    directory = example.module.parent if example.type == 'tfvars' else None
-    prefix = f'pytest-{example.module.name}'
-    with tempfile.TemporaryDirectory(prefix=prefix, dir=directory) as tmp_path:
-      tmp_path = Path(tmp_path)
-      tf_var_files = []
-      if example.type == 'hcl':
-        (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
-        (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
-        (tmp_path / 'main.tf').write_text(example.code)
-        assets_path = (BASE_PATH.parent /
-                       str(example.module).replace('-', '_') / 'assets')
-        if assets_path.exists():
-          (tmp_path / 'assets').symlink_to(assets_path)
+def _test_terraform_example(plan_validator, example):
+  directive = example.directive
 
-        prepare_files(example, tmp_path, match.group('files'),
-                      match.group('fixtures'))
-      elif example.type == 'tfvars':
-        (tmp_path / 'terraform.auto.tfvars').write_text(example.code)
-        shutil.copytree(example.module, tmp_path, dirs_exist_ok=True)
-        tf_var_files = [(tmp_path / 'terraform.auto.tfvars').resolve()]
+  # for tfvars-based tests, create the temporary directory with the
+  # same parent as the original module
+  directory = example.module.parent if example.type == 'tfvars' else None
+  prefix = f'pytest-{example.module.name}'
+  with tempfile.TemporaryDirectory(prefix=prefix, dir=directory) as tmp_path:
+    tmp_path = Path(tmp_path)
+    tf_var_files = []
+    if example.type == 'hcl':
+      (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
+      (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
+      (tmp_path / 'main.tf').write_text(example.code)
+      assets_path = (BASE_PATH.parent / str(example.module).replace('-', '_') /
+                     'assets')
+      if assets_path.exists():
+        (tmp_path / 'assets').symlink_to(assets_path)
 
-      expected_modules = int(match.group('modules'))
-      expected_resources = int(match.group('resources'))
+      prepare_files(example, tmp_path, directive.kwargs.get('files'),
+                    directive.kwargs.get('fixtures'))
+    elif example.type == 'tfvars':
+      (tmp_path / 'terraform.auto.tfvars').write_text(example.code)
+      shutil.copytree(example.module, tmp_path, dirs_exist_ok=True)
+      tf_var_files = [(tmp_path / 'terraform.auto.tfvars').resolve()]
 
-      inventory = []
-      if match.group('inventory') is not None:
-        python_test_path = str(example.module).replace('-', '_')
-        inventory = BASE_PATH.parent / python_test_path / 'examples'
-        inventory = inventory / match.group('inventory')
+    inventory = []
+    if directive.kwargs.get('inventory') is not None:
+      python_test_path = str(example.module).replace('-', '_')
+      inventory = BASE_PATH.parent / python_test_path / 'examples'
+      inventory = inventory / directive.kwargs['inventory']
 
-      summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
-                               tf_var_files=tf_var_files)
+    summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
+                             tf_var_files=tf_var_files)
 
-      print('\n')
-      print(yaml.dump({'values': summary.values}))
-      print(yaml.dump({'counts': summary.counts}))
-      print(yaml.dump({'outputs': summary.outputs}))
+    print('\n')
+    print(yaml.dump({'values': summary.values}))
+    print(yaml.dump({'counts': summary.counts}))
+    print(yaml.dump({'outputs': summary.outputs}))
 
-      counts = summary.counts
-      num_modules, num_resources = counts['modules'], counts['resources']
+    counts = summary.counts
+    num_modules, num_resources = counts['modules'], counts['resources']
+
+    if expected_modules := directive.kwargs.get('modules'):
+      expected_modules = int(expected_modules)
       assert expected_modules == num_modules, 'wrong number of modules'
+    if expected_resources := directive.kwargs.get('resources'):
+      expected_resources = int(expected_resources)
       assert expected_resources == num_resources, 'wrong number of resources'
 
-      # TODO(jccb): this should probably be done in check_documentation
-      # but we already have all the data here.
-      result = subprocess.run(
-          'terraform fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
-          stdout=subprocess.PIPE, encoding='utf-8')
-      assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
+    # TODO(jccb): this should probably be done in check_documentation
+    # but we already have all the data here.
+    result = subprocess.run(
+        'terraform fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
+        stdout=subprocess.PIPE, encoding='utf-8')
+    assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
 
-  else:
-    assert False, "can't find tftest directive"
+
+def _test_yaml_example(example):
+  yaml_object = yaml.safe_load(example.body)
+  schema = json.load(example.schema.open())
+  jsonschema.validate(instance=yaml_object, schema=schema)
+
+
+def test_example(plan_validator, example):
+  match example:
+    case TerraformExample():
+      _test_terraform_example(plan_validator, example)
+    case YamlExample():
+      _test_yaml_example(example)

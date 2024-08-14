@@ -1,0 +1,22 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/firewall-policy-rules.schema.json
+
+egress-allow-rfc1918:
+  description: "Allow all hosts to RFC-1918"
+  priority: 2147483546
+  match:
+   destination_ranges:
+   - rfc1918
+  action: allow
+
+egress-inspect-internet:
+  description: "Inspect egress traffic from all dev hosts to Internet"
+  priority: 2147483547
+  match:
+    destination_ranges:
+      - "0.0.0.0/0"
+  action: "apply_security_profile_group"
+  security_profile_group: "dev"

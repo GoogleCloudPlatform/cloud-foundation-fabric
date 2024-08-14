@@ -14,7 +14,7 @@ The predefined rules are enabled by default and set to the ranges of the GCP hea
   - [Controlling or turning off default rules](#controlling-or-turning-off-default-rules)
     - [Overriding default tags and ranges](#overriding-default-tags-and-ranges)
     - [Disabling predefined rules](#disabling-predefined-rules)
-  - [Including source & destination ranges](#including-source-destination-ranges)
+  - [Including source and destination ranges](#including-source-and-destination-ranges)
   - [Rules Factory](#rules-factory)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -149,7 +149,7 @@ module "firewall" {
 # tftest modules=0 resources=0 inventory=no-default-rules.yaml e2e
 ```
 
-### Including source & destination ranges
+### Including source and destination ranges
 
 Custom rules now support including both source & destination ranges in ingress and egress rules:
 
@@ -198,12 +198,6 @@ module "firewall" {
 ```
 
 ```yaml
-# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 ingress:
   allow-healthchecks:
     description: Allow ingress from healthchecks.
@@ -234,20 +228,18 @@ egress:
       - protocol: tcp
         ports:
           - 23
+
+# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml schema=firewall-rules.schema.json
 ```
 
 ```yaml
-# tftest-file id=cidrs path=configs/firewall/cidrs.yaml
-
----
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
-
 healthchecks:
   - 35.191.0.0/16
   - 130.211.0.0/22
   - 209.85.152.0/22
   - 209.85.204.0/22
+
+# tftest-file id=cidrs path=configs/firewall/cidrs.yaml
 ```
 
 Instead of using `factories_config.cidr_tpl_file` file, you can pass CIDR blocks directly in the `named_ranges` variable. This approach could be useful for dynamically generated CIDR blocks from outputs of other resources.

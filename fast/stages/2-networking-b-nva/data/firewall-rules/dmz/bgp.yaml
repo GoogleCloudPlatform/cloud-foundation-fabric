@@ -1,4 +1,9 @@
 # skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/firewall-rules.schema.json
+
 # This is only relevant when using NCC-RA, and can be safely removed otherwise
 ingress:
   allow-ncc-nva-bgp-dmz:

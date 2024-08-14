@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import re
 
 from pathlib import Path
-from ..examples.test_plan import COUNT_TEST_RE, prepare_files
+
+from ..examples.test_plan import prepare_files
+from ..examples.utils import get_tftest_directive
 
 BASE_PATH = Path(__file__).parent
 
@@ -31,9 +32,10 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
   # add files the same way as it is done for examples
-  if match := COUNT_TEST_RE.search(examples_e2e.code):
-    prepare_files(examples_e2e, tmp_path, match.group("files"),
-                  match.group('fixtures'))
+  directive = get_tftest_directive(examples_e2e.code)
+  if directive and directive.name == 'tftest':
+    prepare_files(examples_e2e, tmp_path, directive.kwargs.get('files'),
+                  directive.kwargs.get('fixtures'))
 
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])
