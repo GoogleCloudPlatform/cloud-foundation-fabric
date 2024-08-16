@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,15 +94,15 @@ variable "tunnels" {
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
-    bgp_session_range                   = string
-    ike_version                         = optional(number, 2)
-    name                                = optional(string)
-    peer_external_gateway_interface     = optional(number)
-    peer_router_interface_name          = optional(string)
-    peer_gateway                        = optional(string, "default")
-    router                              = optional(string)
-    shared_secret                       = optional(string)
-    vpn_gateway_interface               = number
+    bgp_session_range               = string
+    ike_version                     = optional(number, 2)
+    name                            = optional(string)
+    peer_external_gateway_interface = optional(number)
+    peer_router_interface_name      = optional(string)
+    peer_gateway                    = optional(string, "default")
+    router                          = optional(string)
+    shared_secret                   = optional(string)
+    vpn_gateway_interface           = number
   }))
   default  = {}
   nullable = false
