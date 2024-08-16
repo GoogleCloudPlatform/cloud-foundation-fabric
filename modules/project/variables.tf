@@ -60,6 +60,18 @@ variable "default_service_account" {
   }
 }
 
+
+variable "deletion_policy" {
+  description = "Deletion policy setting for this project."
+  default     = "DELETE"
+  type        = string
+  nullable    = false
+  validation {
+    condition     = contains(["ABANDON", "DELETE", "PREVENT"], var.deletion_policy)
+    error_message = "deletion_policy must be one of 'ABANDON', 'DELETE', 'PREVENT'."
+  }
+}
+
 variable "descriptive_name" {
   description = "Name of the project name. Used for project name instead of `name` variable."
   type        = string
@@ -282,9 +294,15 @@ variable "shared_vpc_service_config" {
 }
 
 variable "skip_delete" {
-  description = "Allows the underlying resources to be destroyed without destroying the project itself."
+  description = "Deprecated. Use deletion_policy."
   type        = bool
-  default     = false
+  default     = null
+  # Validation fails on existing infrastructure. Implemented as a
+  # precondition in main.tf
+  # validation {
+  #   condition     = var.skip_delete != null
+  #   error_message = "skip_delete is deprecated. Use deletion_policy."
+  # }
 }
 
 variable "vpc_sc" {
