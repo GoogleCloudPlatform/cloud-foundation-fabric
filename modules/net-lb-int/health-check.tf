@@ -32,7 +32,7 @@ resource "google_compute_health_check" "default" {
   provider            = google-beta
   count               = local.hc != null ? 1 : 0
   project             = var.project_id
-  name                = var.name
+  name                = coalesce(local.hc.name, var.name)
   description         = local.hc.description
   check_interval_sec  = local.hc.check_interval_sec
   healthy_threshold   = local.hc.healthy_threshold

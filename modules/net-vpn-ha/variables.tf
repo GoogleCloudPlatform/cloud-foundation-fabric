@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ variable "peer_gateways" {
       redundancy_type = string
       interfaces      = list(string)
       description     = optional(string, "Terraform managed external VPN gateway")
+      name            = optional(string)
     }))
     gcp = optional(string)
   }))
@@ -63,8 +64,9 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
-    keepalive = optional(number)
-    name      = optional(string)
+    keepalive     = optional(number)
+    name          = optional(string)
+    override_name = optional(string)
   })
   nullable = false
 }
@@ -88,12 +90,15 @@ variable "tunnels" {
         nexthop_address      = optional(string)
         peer_nexthop_address = optional(string)
       }))
+      name = optional(string)
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
     bgp_session_range               = string
     ike_version                     = optional(number, 2)
+    name                            = optional(string)
     peer_external_gateway_interface = optional(number)
+    peer_router_interface_name      = optional(string)
     peer_gateway                    = optional(string, "default")
     router                          = optional(string)
     shared_secret                   = optional(string)
