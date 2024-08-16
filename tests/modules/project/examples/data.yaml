@@ -25,12 +25,12 @@ values:
   module.create-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-project
     org_id: null
     project_id: test-project
-    skip_delete: false
     timeouts: null
   module.dataset.google_bigquery_dataset.default:
     dataset_id: bq_sink
@@ -74,12 +74,12 @@ values:
   module.host-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-host
     org_id: null
     project_id: test-host
-    skip_delete: false
     timeouts: null
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project

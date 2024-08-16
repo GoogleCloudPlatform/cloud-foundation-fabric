@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,14 @@ resource "google_project" "project" {
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
   labels              = var.labels
-  skip_delete         = var.skip_delete
+  deletion_policy     = var.deletion_policy
+
+  lifecycle {
+    precondition {
+      condition     = var.skip_delete == null
+      error_message = "skip_delete is deprecated. Use deletion_policy."
+    }
+  }
 }
 
 resource "google_project_service" "project_services" {

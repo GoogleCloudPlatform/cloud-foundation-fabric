@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-project
     org_id: null
     project_id: test-project
-    skip_delete: false
     timeouts: null
   module.project.google_project_iam_audit_config.default["allServices"]:
     audit_log_config:

@@ -305,6 +305,7 @@ variable "project_config" {
     contacts                = optional(map(list(string)), {})
     custom_roles            = optional(map(list(string)), {})
     default_service_account = optional(string, "keep")
+    deletion_policy         = optional(string)
     descriptive_name        = optional(string)
     iam                     = optional(map(list(string)), {})
     group_iam               = optional(map(list(string)), {})
@@ -382,7 +383,6 @@ variable "project_config" {
       service_agent_iam  = optional(map(list(string)), {})
       service_iam_grants = optional(list(string), [])
     }))
-    skip_delete  = optional(bool, false)
     tag_bindings = optional(map(string))
   })
 }

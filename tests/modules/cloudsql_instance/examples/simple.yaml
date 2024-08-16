@@ -55,11 +55,11 @@ values:
     auto_create_network: false
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
+    deletion_policy: 'DELETE'
     labels: null
     name: test-db-prj
     org_id: null
     project_id: test-db-prj
-    skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.service_agents["cloud-sql"]:
     condition: []

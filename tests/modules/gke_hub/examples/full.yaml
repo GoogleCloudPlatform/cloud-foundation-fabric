@@ -190,13 +190,13 @@ values:
     timeouts: null
   module.project.google_project.project[0]:
     auto_create_network: false
+    deletion_policy: 'DELETE'
     billing_account: 123456-123456-123456
     folder_id: '12345'
     labels: null
     name: gkehub-test
     org_id: null
     project_id: gkehub-test
-    skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.service_agents["anthosconfigmanagement"]:
     condition: []

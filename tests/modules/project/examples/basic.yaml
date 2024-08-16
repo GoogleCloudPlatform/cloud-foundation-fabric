@@ -16,12 +16,12 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-project
     org_id: null
     project_id: test-project
-    skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
