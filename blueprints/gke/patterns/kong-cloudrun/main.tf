@@ -28,5 +28,4 @@ module "service-project" {
   shared_vpc_service_config = {
     host_project = var.project_id
   }
-  skip_delete = true
 }
