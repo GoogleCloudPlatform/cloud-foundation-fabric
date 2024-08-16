@@ -45,12 +45,12 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: null
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: project
     org_id: null
     project_id: project
-    skip_delete: false
     timeouts: null
 
 counts:

@@ -31,12 +31,12 @@ values:
   google_project.project[0]:
     auto_create_network: false
     billing_account: null
+    deletion_policy: 'DELETE'
     folder_id: null
     labels: null
     name: my-project
     org_id: null
     project_id: my-project
-    skip_delete: false
     timeouts: null
   google_project_iam_member.service_agents["compute-system"]:
     condition: []

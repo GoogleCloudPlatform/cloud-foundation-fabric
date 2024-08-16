@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ values:
   module.destination-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-dest-prj
     org_id: null
     project_id: test-dest-prj
-    skip_delete: false
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false

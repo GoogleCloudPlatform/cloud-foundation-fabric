@@ -135,13 +135,13 @@ values:
   module.project-factory.module.projects["bar-baz-iac-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-BCDEF0
+    deletion_policy: 'DELETE'
     effective_labels:
       environment: test
     labels:
       environment: test
     name: test-pf-bar-baz-iac-0
     project_id: test-pf-bar-baz-iac-0
-    skip_delete: false
     terraform_labels:
       environment: test
     timeouts: null
@@ -192,6 +192,7 @@ values:
   module.project-factory.module.projects["prj-app-1"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-BCDEF0
+    deletion_policy: 'DELETE'
     effective_labels:
       app: app-1
       environment: test
@@ -204,7 +205,6 @@ values:
     name: test-pf-prj-app-1
     org_id: null
     project_id: test-pf-prj-app-1
-    skip_delete: false
     terraform_labels:
       app: app-1
       environment: test
@@ -294,6 +294,7 @@ values:
   module.project-factory.module.projects["prj-app-2"].google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     effective_labels:
       app: app-2
       environment: test
@@ -306,7 +307,6 @@ values:
     name: test-pf-prj-app-2
     org_id: null
     project_id: test-pf-prj-app-2
-    skip_delete: false
     terraform_labels:
       app: app-2
       environment: test
@@ -390,13 +390,13 @@ values:
   module.project-factory.module.projects["prj-app-3"].google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     effective_labels:
       environment: test
     labels:
       environment: test
     name: test-pf-prj-app-3
     project_id: test-pf-prj-app-3
-    skip_delete: false
     terraform_labels:
       environment: test
     timeouts: null
