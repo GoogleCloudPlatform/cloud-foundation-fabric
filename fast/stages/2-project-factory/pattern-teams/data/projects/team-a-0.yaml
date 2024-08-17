@@ -1,6 +1,6 @@
 parent: team-a/dev
 org_policies:
-  "constraints/compute.restrictSharedVpcSubnetworks":
+  compute.restrictSharedVpcSubnetworks:
     rules:
       - allow:
           values:

@@ -9,6 +9,11 @@ This sample pattern shows how to leverage the project factory to manage a team o
 The project factory controls one or more top-level folders created in the resource management stage, and where its service account has high level permissions via IAM and tag bindings.
 
 <!-- BEGIN TOC -->
+- [Resource Management Stage Configuration](#resource-management-stage-configuration)
+- [Project Factory Hierarchy Management](#project-factory-hierarchy-management)
+  - [Folder Parent-Child Relationships and Variable Substitutions](#folder-parent-child-relationships-and-variable-substitutions)
+- [Project Creation](#project-creation)
+  - [Automation Resources for Projects](#automation-resources-for-projects)
 <!-- END TOC -->
 
 ## Resource Management Stage Configuration
@@ -38,7 +43,13 @@ You can of course extend the above snippet to grant additional roles to groups o
 
 The project factory tag binding on the folder allows management of organization policies in the Teams hierarchy. If this functionality is not needed, the tag binding can be safely omitted.
 
-## Project Factory Hierarchy Management
+## Factory Configuration
+
+The `data` folder in this pattern contains factory files that can be used as exaples to implement the design shown above. To use them, configure the project factory `factories_config` variable so paths for the hierarchy and project data point to this folder.
+
+Before running `terraform apply` check the YAML files, as project names and other attributes are dependent on your global variables, and need basic editing to match your organization.
+
+### Project Factory Hierarchy Management
 
 The project factory manages the folder hierarchy below the top-level Teams folder, via a filesystem hierarchy rooted in the path defined via the `factories_config.hierarchy_data` variable.
 
@@ -75,7 +86,7 @@ iam_by_principals:
     - roles/editor
 ```
 
-### Folder Parent-Child Relationships and Variable Substitutions
+#### Folder Parent-Child Relationships and Variable Substitutions
 
 You might have noted that there's no parent specified for the folder in the example above: the parent is derived from the filesystem hierarchy, and in this case it's set to the "Team A" folder.
 
@@ -113,6 +124,65 @@ factories_config = {
 # tftest skip
 ```
 
-## Project Creation
+### Project Creation
 
-## Automation Resources for Projects
+Project YAML files can be created in two paths:
+
+- in the folder defined in the `factories_config.project_data` variable
+- in the folder hierarchy discussed above
+
+The two approaches can be mixed and matched, but the first approach is safer as is avoids situations which are complex to troubleshoot and fix, where a folder is deleted with projects still contained in it and the delete operation gets stuck.
+
+When specifying projects outside of the folder hierarchy, the parent folder needs to be manually specified in the YAML files. Substitutions can of course be used to avoid manually specifying the folder id.
+
+```yaml
+parent: team-a/dev
+```
+
+YAML files support the full interface of the [project module](../../../../modules/project/).
+
+#### Automation Resources for Projects
+
+If created projects are meant to be managed via IaC, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create the controlling project for the (Teams) hierarchy, and then leverage it for service account and GCS bucket creation.
+
+```yaml
+parent: teams
+name: xxx-prod-iac-teams-0
+services:
+  - compute.googleapis.com
+  - storage.googleapis.com
+  # ...
+  # enable all services used by service accounts in this project
+```
+
+Once the automation project is in place, it can be used in any other project declaration to create controlling service accounts and buckets for IaC. Service accounts can then be used in IAM bindings in the same file by referring to their name, as shown here.
+
+```yaml
+parent: team-a/dev
+name: xxx-dev-ta-app-0
+iam:
+  roles/owner:
+    - rw
+  roles/viewer:
+    - ro
+automation:
+  project: xxx-prod-iac-teams-0
+  service_accounts:
+    # sa name: foo-prod-app-example-0-rw
+    rw:
+      description: Read/write automation sa for team a app 0.
+    # sa name: foo-prod-app-example-0-ro
+    ro:
+      description: Read-only automation sa for team a app 0.
+  buckets:
+    # bucket name: foo-prod-app-example-0-state
+    state:
+      description: Terraform state bucket for team a app 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - group:devops@example.org
+```
