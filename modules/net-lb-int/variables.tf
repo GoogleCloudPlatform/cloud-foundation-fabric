@@ -30,6 +30,7 @@ variable "backend_service_config" {
       ratio                     = optional(number)
     }))
     log_sample_rate  = optional(number)
+    name             = optional(string)
     protocol         = optional(string, "UNSPECIFIED")
     session_affinity = optional(string)
     timeout_sec      = optional(number)
@@ -72,6 +73,7 @@ variable "forwarding_rules_config" {
     description   = optional(string)
     global_access = optional(bool, true)
     ip_version    = optional(string)
+    name          = optional(string)
     ports         = optional(list(string), null)
     protocol      = optional(string, "TCP")
   }))
@@ -105,6 +107,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({

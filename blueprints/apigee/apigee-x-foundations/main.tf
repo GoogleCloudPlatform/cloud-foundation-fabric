@@ -20,6 +20,7 @@ module "project" {
   compute_metadata        = var.project_config.compute_metadata
   custom_roles            = var.project_config.custom_roles
   default_service_account = var.project_config.default_service_account
+  deletion_policy         = var.project_config.deletion_policy
   iam                     = var.project_config.iam
   iam_bindings            = var.project_config.iam_bindings
   iam_bindings_additive   = var.project_config.iam_bindings_additive
@@ -51,7 +52,6 @@ module "project" {
   ] : []))
 
   shared_vpc_service_config = var.project_config.shared_vpc_service_config
-  skip_delete               = var.project_config.skip_delete
   tag_bindings              = var.project_config.tag_bindings
 }
 

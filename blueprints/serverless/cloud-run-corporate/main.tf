@@ -60,7 +60,6 @@ module "project_main" {
     "cloudresourcemanager.googleapis.com",
     "accesscontextmanager.googleapis.com"
   ]
-  skip_delete = true
 }
 
 # Simulated onprem environment
@@ -75,7 +74,6 @@ module "project_onprem" {
     "compute.googleapis.com",
     "dns.googleapis.com"
   ]
-  skip_delete = true
 }
 
 # Project 1
@@ -90,7 +88,6 @@ module "project_prj1" {
     "compute.googleapis.com",
     "dns.googleapis.com"
   ]
-  skip_delete = true
 }
 
 # Service Project 1
@@ -118,7 +115,6 @@ module "project_svc1" {
     "run.googleapis.com",
     "vpcaccess.googleapis.com"
   ]
-  skip_delete = true
 }
 
 ###############################################################################

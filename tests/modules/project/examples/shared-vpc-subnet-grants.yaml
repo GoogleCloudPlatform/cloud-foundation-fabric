@@ -19,12 +19,12 @@ values:
   module.host-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-host
     org_id: null
     project_id: test-host
-    skip_delete: false
     timeouts: null
   module.service-project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     deletion_policy: null
@@ -47,12 +47,12 @@ values:
   module.service-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
     folder_id: '1122334455'
     labels: null
     name: test-service
     org_id: null
     project_id: test-service
-    skip_delete: false
     timeouts: null
   module.service-project.google_project_iam_member.service_agents["compute-system"]:
     condition: []
