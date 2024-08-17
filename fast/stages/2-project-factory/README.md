@@ -1,27 +1,78 @@
 # Project factory
 
-The Project Factory (or PF) builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads.
-It is organized in folders representing environments (e.g., "dev", "prod"), each implemented by a stand-alone terraform [process factory](../../../../blueprints/factories/README.md).
+<!-- BEGIN TOC -->
+- [Design overview and choices](#design-overview-and-choices)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Resource Management stage configuration](#resource-management-stage-configuration)
+  - [Factory configuration](#factory-configuration)
+  - [Stage provider and Terraform variables](#stage-provider-and-terraform-variables)
+- [Managing folders and projects](#managing-folders-and-projects)
+  - [Folder and hierarchy management](#folder-and-hierarchy-management)
+  - [Folder parent-child relationships and variable substitutions](#folder-parent-child-relationships-and-variable-substitutions)
+  - [Project Creation](#project-creation)
+  - [Automation Resources for Projects](#automation-resources-for-projects)
+- [Alternative patterns](#alternative-patterns)
+  - [Per-environment Factories](#per-environment-factories)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+The Project Factory stage allows simplified management of folder hierarchies and projects via YAML-based configuration files. Multiple project factories can coexist in the same landing zone, and different patterns can be implemented by pointing it to different configuration files.
+
+The pattern implemented by default in this stage allows management of a teams (or business units, applications, etc.) hierarchy. Different patterns are possible, and this document also tries to provide some guidance on how to do it.
+
+<p align="center">
+  <img src="diagram.png" alt="Project factory teams pattern">
+</p>
 
 ## Design overview and choices
 
-<p align="center">
-  <img src="diagram.svg" alt="Project factory diagram">
-</p>
+The project factory is "primed" by the resource management stage via
 
-A single factory creates projects in a well-defined context, according to your resource management structure. For example, in the diagram above, each Team is structured to have specific folders projects for a given environment, such as Production and Development, per the resource management structure configured in stage `01-resman`.
+- a set of service account with different scopes
+- one or more user-defined top-level folders where those service accounts operate
 
-Projects for each environment across different teams are created by dedicated service accounts, as exemplified in the diagram above. While there's no intrinsic limitation regarding where the project factory can create a projects, the IAM bindings for the service account effectively enforce boundaries (e.g., the production service account shouldn't be able to create or have any access to the development projects, and vice versa).
+It does not directly depend from other stage 2s like networking and security, but can optionally leverage resources created there. For example Shared VPC host projects, which can be used to define service projects in the project factory.
 
-The project factory stage lightly wraps the underlying [project-factory module](../../../modules/project-factory/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
-  
+The project factory stage lightly wraps the underlying [project-factory module](../../../modules/project-factory/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
+
 ## How to run this stage
 
 This stage is meant to be executed after the [bootstrap](../0-bootstrap/) and [resource management](../1-resman/) "foundational stages". It runs in parallel with other stage 2 like networking and security, as it can leverage resources they create but does not depend on them.
 
-It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the appropriate roles.
+### Resource Management stage configuration
 
-### Provider and Terraform variables
+This is an example configuration for the resource management `top_folders` variable, using implicit substitutions to refer to the project factory service account, tag, and the custom role that allows the project factory to manage Shared VPC service projects.
+
+```tfvars
+top_level_folders = {
+  # more top-level folders might be present here
+  teams = {
+    name = "Teams"
+    iam = {
+      "roles/owner"                          = ["project-factory"]
+      "roles/resourcemanager.folderAdmin"    = ["project-factory"]
+      "roles/resourcemanager.projectCreator" = ["project-factory"]
+      "service_project_network_admin"        = ["project-factory"]
+    }
+    tag_bindings = {
+      context = "context/project-factory"
+    }
+  }
+}
+# tftest skip
+```
+
+You can of course extend the above snippet to grant additional roles to groups or different service accounts via the `iam`, `iam_by_principals`, and `iam_bindings` folder-level variables.
+
+The project factory tag binding on the folder allows management of organization policies in the Teams hierarchy. If this functionality is not needed, the tag binding can be safely omitted.
+
+### Factory configuration
+
+The `data` folder in this stage contains factory files that can be used as examples to implement the team-based design shown above. Before running `terraform apply` check the YAML files, as project names and other attributes are dependent on your global variables, and need basic editing to match your organization.
+
+### Stage provider and Terraform variables
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
@@ -66,6 +117,172 @@ terraform init
 terraform apply
 ```
 
+## Managing folders and projects
+
+The YAML data files are self-explanatory and the included [schema files](./schemas/) should provided a reliable framework to allow editing the sample data, or starting from scratch to implement a different pattern. There are some considerations though which might be non-obvious, those are detailed in the following sub-sections.
+
+### Folder and hierarchy management
+
+The project factory manages the folder hierarchy below its top-level folders via a filesystem hierarchy, rooted in the path defined via the `factories_config.hierarchy_data` variable.
+
+Filesystem folders which contain a `_config.yaml` file are mapped to folders in the resource management hierarchy. The YAML configuration file allows definining folder attributes like descriptive name, IAM bindings, organization policies, tag bindings.
+
+This is the simple filesystem hierarchy provided here as an example.
+
+```bash
+hierarchy
+├── team-a
+│   ├── _config.yaml
+│   ├── dev
+│   │   └── _config.yaml
+│   └── prod
+│       └── _config.yaml
+└── team-b
+    ├── _config.yaml
+    ├── dev
+    │   └── _config.yaml
+    └── prod
+        └── _config.yaml
+```
+
+The approach is intentionally explicit and repetitive in order to simplify operations: copy/pasting an existing set of folders (or an ad hoc template) and changing a few YAML variables allows to quickly define new sub-hierarchy branches.
+
+As an example, this is the config file for the dev Team A folder where you can see some of the [folder module](../../../../modules/folder/) attributes in use. The [folder schema](./schemas/folder.schema.json) shows all available attributes.
+
+```yaml
+name: Development
+tag_bindings:
+  environment: environment/development
+iam_by_principals:
+  "group:team-a-admins@example.com":
+    - roles/editor
+```
+
+### Folder parent-child relationships and variable substitutions
+
+You might have noted that there's no parent specified for the folder in the example above: the parent is derived from the filesystem hierarchy, and in this case it's set to the "Team A" folder.
+
+But what about the "Team A" folder itself? From the point of view of the project factory it's a top-level folder, so how can you instruct it to create it below "Teams"?
+
+There are three different ways this can be done:
+
+- setting the folder's `parent` attribute to the explicit numeric id of the "Teams" folder
+- setting the folder's `parent` attribute to the short name of the "Teams" folder in the resource management stage's outputs
+- setting the `default` folder for the project factory to the numeric id of the "Teams" folder
+
+This flexibility is what allows the project factory to manage folders under multiple roots. Imagine a scenario where there's no single "Teams" folder, but multiple ones for different subsidiaries, or for internal and external teams, etc.
+
+The snippets below show how to set the `parent` attribute explicitly or via substitution.
+
+```yaml
+name: Team A
+# use the explicit id of the Teams folder
+parent: folders/1234567890
+```
+
+```yaml
+name: Team A
+# use variable substitutions from stage 1 tfvars (preferred approach)
+parent: teams
+```
+
+Setting a default folder allows you to skip defining a parent in YAML files for folders attached to the root, but is slightly more complex. In the stage terraform variables, populate the `factories_config.substitutions.folder_ids` so that the `default` key points to the folder id of the root.
+
+```tfvars
+factories_config = {
+  substitutions = {
+    folder_ids = {
+      # id of the top-level Teams folder
+      default = "folders/12345678"
+    }
+  }
+}
+# tftest skip
+```
+
+### Project Creation
+
+Project YAML files can be created in two paths:
+
+- in the folder defined in the `factories_config.project_data` variable
+- in the folder hierarchy discussed above
+
+The two approaches can be mixed and matched, but the first approach is safer as is avoids situations which are complex to troubleshoot and fix, where a folder is deleted with projects still contained in it and the delete operation gets stuck.
+
+When specifying projects outside of the folder hierarchy, the parent folder needs to be manually specified in the YAML files. Substitutions can of course be used to avoid manually specifying the folder id.
+
+```yaml
+parent: team-a/dev
+```
+
+YAML files support the full interface of the [project module](../../../../modules/project/).
+
+### Automation Resources for Projects
+
+If created projects are meant to be managed via IaC, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create the controlling project for the (Teams) hierarchy, and then leverage it for service account and GCS bucket creation.
+
+```yaml
+parent: teams
+name: xxx-prod-iac-teams-0
+services:
+  - compute.googleapis.com
+  - storage.googleapis.com
+  # ...
+  # enable all services used by service accounts in this project
+```
+
+Once the automation project is in place, it can be used in any other project declaration to create controlling service accounts and buckets for IaC. Service accounts can then be used in IAM bindings in the same file by referring to their name, as shown here.
+
+```yaml
+parent: team-a/dev
+name: xxx-dev-ta-app-0
+iam:
+  roles/owner:
+    - rw
+  roles/viewer:
+    - ro
+automation:
+  project: xxx-prod-iac-teams-0
+  service_accounts:
+    # sa name: foo-prod-app-example-0-rw
+    rw:
+      description: Read/write automation sa for team a app 0.
+    # sa name: foo-prod-app-example-0-ro
+    ro:
+      description: Read-only automation sa for team a app 0.
+  buckets:
+    # bucket name: foo-prod-app-example-0-state
+    state:
+      description: Terraform state bucket for team a app 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - group:devops@example.org
+```
+
+## Alternative patterns
+
+Some alternative patterns are captured here, the list will grow as we generalize approaches seen in the field.
+
+### Per-environment Factories
+
+A variation of this pattern uses separate project factories for each environment, as in the following diagram.
+
+<p align="center">
+  <img src="diagram-env.png" alt="Project factory team-level per environment.">
+</p>
+
+This approach leverages the per-environment project factory service accounts and tags create by the resource management stage, so that
+
+- the Teams folder hierarchy and IaC project are managed by a cross-environment factory using the "main" project factory service account
+- IAM permissions are set on the environment folders to grant control to the prod and dev project factory service accounts
+- one additional factory per environment manages project creation leveraging the folders created above
+
+The approach is not shown here but reasonably easy to implement. The main project factory output file can also be used to set up folder id susbtitution in the per-environment factories.
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -82,8 +299,10 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [factories_config](variables.tf#L17) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  hierarchy &#61; optional&#40;object&#40;&#123;&#10;    folders_data_path &#61; string&#10;    parent_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  projects_data_path &#61; optional&#40;string&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; string&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [prefix](variables-fast.tf#L30) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L38) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [factories_config](variables.tf#L17) | Configuration for YAML-based factories. | <code title="object&#40;&#123;&#10;  hierarchy_data &#61; optional&#40;string, &#34;data&#47;hierarchy&#34;&#41;&#10;  project_data   &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    data                  &#61; optional&#40;string, &#34;data&#47;budgets&#34;&#41;&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  substitutions &#61; optional&#40;object&#40;&#123;&#10;    folder_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    tag_values &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [folder_ids](variables-fast.tf#L30) | Folders created in the resource management stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [tag_values](variables-fast.tf#L48) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 
 ## Outputs
 

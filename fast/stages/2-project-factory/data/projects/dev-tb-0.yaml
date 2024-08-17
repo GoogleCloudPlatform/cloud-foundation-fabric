@@ -1,0 +1,5 @@
+parent: team-b/dev
+shared_vpc_service_config:
+  host_project: dev-net-spoke-0
+  network_users:
+    - gcp-devops
