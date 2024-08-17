@@ -1,0 +1,5 @@
+name: Team B
+parent: teams
+# iam_by_principals:
+#   "group:team-b-admins@example.com":
+#     - roles/viewer

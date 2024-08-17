@@ -60,13 +60,13 @@ For a discussion on naming, please refer to the [Bootstrap stage documentation](
 
 Top-level folders for teams or departments can be easily created via the `top_level_folders` variable or the associated factory, which expose the full power of the underlying [folder module](../../../modules/folder/).
 
-The suggestion is to use this feature sparingly so at to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../3-project-factory/) stage.
+The suggestion is to use this feature sparingly so at to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../2-project-factory/) stage.
 
 Top-level folders also support defining associated resources for automation, and auto-created provider files to bootstrap Infrastructure and Code. An example is provided below.
 
 ### Multitenancy
 
-Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../3-project-factory/) support for folder and project management.
+Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../2-project-factory/) support for folder and project management.
 
 ### Workload Identity Federation and CI/CD
 
@@ -148,7 +148,7 @@ The `fast_features` variable consists of 5 toggles:
 - **`data_platform`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-data-platform](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-data-platform) stage
 - **`gcve`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gcve](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gcve) stage
 - **`gke`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gke-multitenant](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gke-multitenant) stage
-- **`project_factory`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-project-factory](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-project-factory) stage
+- **`project_factory`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [2-project-factory](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/2-project-factory) stage
 - **`sandbox`** controls the creation of a "Sandbox" top level folder with relaxed policies, intended for sandbox environments where users can experiment
 - **`teams`** controls the creation of the top level "Teams" folder used by the [teams feature in resman](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/1-resman#team-folders).
 

@@ -13,29 +13,30 @@ A single factory creates projects in a well-defined context, according to your r
 
 Projects for each environment across different teams are created by dedicated service accounts, as exemplified in the diagram above. While there's no intrinsic limitation regarding where the project factory can create a projects, the IAM bindings for the service account effectively enforce boundaries (e.g., the production service account shouldn't be able to create or have any access to the development projects, and vice versa).
 
-The project factory stage lightly wraps the underlying [project-factory module](../../../../modules/project-factory/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
+The project factory stage lightly wraps the underlying [project-factory module](../../../modules/project-factory/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
   
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), 02-networking (either [Peering/VPN](../../2-networking-a-simple), [NVA (w/ optional BGP support)](../../2-networking-b-nva) and [`02-security`](../../2-security)) have been run.
+This stage is meant to be executed after the [bootstrap](../0-bootstrap/) and [resource management](../1-resman/) "foundational stages". It runs in parallel with other stage 2 like networking and security, as it can leverage resources they create but does not depend on them.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the appropriate roles.
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
 ../../../stage-links.sh ~/fast-config
 
-# copy and paste the following commands for '3-project-factory'
+# copy and paste the following commands for '2-project-factory'
 
-ln -s ~/fast-config/providers/3-project-factory-providers.tf ./
+ln -s ~/fast-config/providers/2-project-factory-providers.tf ./
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+# optional but recommended
 ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
 ```
@@ -43,19 +44,20 @@ ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
 ```bash
 ../../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '3-project-factory'
+# copy and paste the following commands for '2-project-factory'
 
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-project-factory-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-project-factory-providers.tf ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+# optional but recommended
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
 ```
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, the project factory is driven by YAML data files, with one file per project. Please refer to the underlying [project factory module](../../../../modules/project-factory/) documentation for details on the format.
+Besides the values above, the project factory is driven by YAML data files, with one file per project. Please refer to the underlying [project factory module](../../../modules/project-factory/) documentation for details on the format.
 
 Once the configuration is complete, run the project factory with:
 

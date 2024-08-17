@@ -15,18 +15,20 @@
  */
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Configuration for YAML-based factories."
   type = object({
-    hierarchy = optional(object({
-      folders_data_path = string
-      parent_ids        = optional(map(string), {})
-    }))
-    projects_data_path = optional(string)
+    hierarchy_data = optional(string, "data/hierarchy")
+    project_data   = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
-      budgets_data_path     = string
+      data                  = optional(string, "data/budgets")
       notification_channels = optional(map(any), {})
     }))
+    substitutions = optional(object({
+      folder_ids = optional(map(string), {})
+      tag_values = optional(map(string), {})
+    }), {})
   })
   nullable = false
+  default  = {}
 }

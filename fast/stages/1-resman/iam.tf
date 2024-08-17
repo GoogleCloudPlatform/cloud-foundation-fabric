@@ -127,6 +127,8 @@ locals {
           title       = "org_policy_tag_pf_scoped_dev"
           description = "Org policy tag scoped grant for project factory dev."
           expression  = <<-END
+            resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
+            &&
             resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'development')
           END
         }
@@ -138,6 +140,8 @@ locals {
           title       = "org_policy_tag_pf_scoped_prod"
           description = "Org policy tag scoped grant for project factory prod."
           expression  = <<-END
+            resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
+            &&
             resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'production')
           END
         }

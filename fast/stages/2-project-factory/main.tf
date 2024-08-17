@@ -17,23 +17,29 @@
 # tfdoc:file:description Project factory.
 
 module "projects" {
-  source = "../../../../modules/project-factory"
+  source = "../../../modules/project-factory"
   data_defaults = {
-    billing_account = var.billing_account.id
     # more defaults are available, check the project factory variables
+    billing_account = var.billing_account.id
   }
   data_merges = {
-    labels = {
-      environment = "dev"
-    }
     services = [
       "stackdriver.googleapis.com"
     ]
   }
   data_overrides = {
-    prefix = "${var.prefix}-dev"
+    prefix = var.prefix
   }
-  factories_config = var.factories_config
+  factories_config = merge(var.factories_config, {
+    substitutions = {
+      folder_ids = merge(
+        var.folder_ids,
+        var.factories_config.substitutions.folder_ids
+      )
+      tag_values = merge(
+        var.tag_values,
+        var.factories_config.substitutions.tag_values
+      )
+    }
+  })
 }
-
-

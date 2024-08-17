@@ -1,0 +1,3 @@
+name: Production
+tag_bindings:
+  environment: environment/production

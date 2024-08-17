@@ -1,0 +1,13 @@
+parent: team-a/dev
+org_policies:
+  "constraints/compute.restrictSharedVpcSubnetworks":
+    rules:
+      - allow:
+          values:
+            - "projects/ldj-dev-net-spoke-0/regions/europe-west1/subnetworks/gce"
+# vpc_sc:
+#   perimeter_name: accessPolicies/1067898861694/servicePerimeters/default
+shared_vpc_service_config:
+  host_project: ldj-dev-net-spoke-0
+  network_users:
+    - group:gcp-organization-admins@ludo.joonix.net

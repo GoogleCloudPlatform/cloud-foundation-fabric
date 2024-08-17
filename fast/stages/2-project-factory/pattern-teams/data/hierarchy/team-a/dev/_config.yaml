@@ -1,0 +1,6 @@
+name: Development
+tag_bindings:
+  environment: environment/development
+# iam_by_principals:
+#   "group:team-a-admins@example.com":
+#     - roles/editor

@@ -27,6 +27,14 @@ variable "billing_account" {
   }
 }
 
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Folders created in the resource management stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
@@ -35,4 +43,12 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 12
     error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   }
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "FAST-managed resource manager tag values."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

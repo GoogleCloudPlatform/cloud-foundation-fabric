@@ -74,6 +74,19 @@ case $STAGE_NAME in
     tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
   fi
   ;;
+"2-project-factory"*)
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/2-project-factory-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/2-project-factory-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+  fi
+  ;;
 "2-security"*)
   if [[ -z "$TENANT" ]]; then
     echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"

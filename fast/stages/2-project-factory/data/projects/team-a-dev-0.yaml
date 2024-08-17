@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-labels:
- team: team-0
-parent: folders/1234567890
+# yaml-language-server: $schema=../../schemas/project.schema.json
+
+parent: team-a/dev
 services:
 - compute.googleapis.com
 - storage.googleapis.com
+labels:
+ team: team-a
