@@ -124,7 +124,7 @@ variable "factories_config" {
   type = object({
     checklist_data    = optional(string)
     org_policies      = optional(string, "data/org-policies")
-    top_level_folders = optional(string)
+    top_level_folders = optional(string, "data/top-level-folders")
   })
   nullable = false
   default  = {}
@@ -133,11 +133,10 @@ variable "factories_config" {
 variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
-    data_platform   = optional(bool, false)
-    gke             = optional(bool, false)
-    gcve            = optional(bool, false)
-    project_factory = optional(bool, false)
-    sandbox         = optional(bool, false)
+    data_platform = optional(bool, false)
+    gke           = optional(bool, false)
+    gcve          = optional(bool, false)
+    sandbox       = optional(bool, false)
   })
   default  = {}
   nullable = false

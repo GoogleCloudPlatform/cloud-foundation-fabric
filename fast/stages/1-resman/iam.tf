@@ -80,37 +80,37 @@ locals {
       }
     },
     # optional billing roles for project factory
-    local.billing_mode != "org" || !var.fast_features.project_factory ? {} : {
+    local.billing_mode != "org" ? {} : {
       sa_pf_billing = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_costs_manager = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/billing.costsManager"
       }
       sa_pf_dev_billing = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_dev_costs_manager = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/billing.costsManager"
       }
       sa_pf_prod_billing = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_prod_costs_manager = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/billing.costsManager"
       }
     },
     # scoped org policy admin grants for project factory
     # TODO: change to use context and environment tags, and tag bindings in stage 2s
-    !var.fast_features.project_factory || var.root_node != null ? {} : {
+    var.root_node != null ? {} : {
       sa_pf_conditional_org_policy = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped"
@@ -121,7 +121,7 @@ locals {
         }
       }
       sa_pf_dev_conditional_org_policy = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_dev"
@@ -134,7 +134,7 @@ locals {
         }
       }
       sa_pf_prod_conditional_org_policy = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_prod"

@@ -12,19 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.top-level-folder["teams"].google_folder.folder[0]:
+    display_name: Teams
+    parent: organizations/123456789012
+    timeouts: null
+  ? module.top-level-folder["teams"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/xpnServiceAdmin
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.top-level-folder["teams"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+
 counts:
-  google_folder: 4
-  google_folder_iam_binding: 25
-  google_organization_iam_member: 7
-  google_project_iam_member: 6
-  google_service_account: 6
-  google_service_account_iam_binding: 6
-  google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 6
-  google_storage_bucket_iam_member: 6
-  google_storage_bucket_object: 7
-  google_tags_tag_binding: 4
+  google_folder: 5
+  google_folder_iam_binding: 29
+  google_organization_iam_member: 16
+  google_project_iam_member: 12
+  google_service_account: 12
+  google_service_account_iam_binding: 12
+  google_storage_bucket: 6
+  google_storage_bucket_iam_binding: 12
+  google_storage_bucket_iam_member: 12
+  google_storage_bucket_object: 13
+  google_tags_tag_binding: 5
   google_tags_tag_key: 2
   google_tags_tag_value: 9
-  modules: 14
-  resources: 91
+  modules: 24
+  resources: 145

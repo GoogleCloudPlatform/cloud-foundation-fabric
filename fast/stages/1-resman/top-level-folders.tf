@@ -65,6 +65,19 @@ locals {
   }
 }
 
+output "tmp2" {
+  value = local.top_level_sa
+}
+
+output "tmp" {
+  value = {
+    for role, members in local.top_level_folders["teams"].iam :
+    lookup(var.custom_roles, role, role) => [
+      for member in members : lookup(local.top_level_sa, member, member)
+    ]
+  }
+}
+
 module "top-level-folder" {
   source              = "../../../modules/folder"
   for_each            = local.top_level_folders
