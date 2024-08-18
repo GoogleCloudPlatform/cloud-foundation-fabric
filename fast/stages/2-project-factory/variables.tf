@@ -21,7 +21,7 @@ variable "factories_config" {
     project_data   = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
-      data                  = optional(string, "data/budgets")
+      budgets_data_path     = optional(string, "data/budgets")
       notification_channels = optional(map(any), {})
     }))
     substitutions = optional(object({
