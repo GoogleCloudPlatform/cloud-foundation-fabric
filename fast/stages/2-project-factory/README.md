@@ -158,7 +158,7 @@ iam_by_principals:
     - roles/editor
 ```
 
-All of the [folder module](../../../../modules/folder/) attributes can of course be leveraged in the configuration files. Refer to the [folder schema](./schemas/folder.schema.json) for the complete set of available attributes.
+All of the [folder module](../../../modules/folder/) attributes can of course be leveraged in the configuration files. Refer to the [folder schema](./schemas/folder.schema.json) for the complete set of available attributes.
 
 ### Folder parent-child relationship and variable substitution
 
@@ -223,7 +223,7 @@ parent: folders/1234509876
 parent: team-a/dev
 ```
 
-All of the [project module](../../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/folder.schema.json) for the complete set of available attributes.
+All of the [project module](../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/folder.schema.json) for the complete set of available attributes.
 
 ### Automation Resources for Projects
 
