@@ -8,7 +8,7 @@
   - [Stage provider and Terraform variables](#stage-provider-and-terraform-variables)
 - [Managing folders and projects](#managing-folders-and-projects)
   - [Folder and hierarchy management](#folder-and-hierarchy-management)
-  - [Folder parent-child relationships and variable substitutions](#folder-parent-child-relationships-and-variable-substitutions)
+  - [Folder parent-child relationship and variable substitution](#folder-parent-child-relationship-and-variable-substitution)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
 - [Alternative patterns](#alternative-patterns)
@@ -119,11 +119,11 @@ terraform apply
 
 ## Managing folders and projects
 
-The YAML data files are self-explanatory and the included [schema files](./schemas/) should provided a reliable framework to allow editing the sample data, or starting from scratch to implement a different pattern. There are some considerations though which might be non-obvious, those are detailed in the following sub-sections.
+The YAML data files are self-explanatory and the included [schema files](./schemas/) provide a reliable framework to allow editing the sample data, or starting from scratch to implement a different pattern. This section list some general considerations on how folder and project files work to help getting up to speed with operations.
 
 ### Folder and hierarchy management
 
-The project factory manages the folder hierarchy below its top-level folders via a filesystem hierarchy, rooted in the path defined via the `factories_config.hierarchy_data` variable.
+The project factory manages its folder hierarchy via a filesystem tree, rooted in the path defined via the `factories_config.hierarchy_data` variable.
 
 Filesystem folders which contain a `_config.yaml` file are mapped to folders in the resource management hierarchy. The YAML configuration file allows definining folder attributes like descriptive name, IAM bindings, organization policies, tag bindings.
 
@@ -145,9 +145,9 @@ hierarchy
         └── _config.yaml
 ```
 
-The approach is intentionally explicit and repetitive in order to simplify operations: copy/pasting an existing set of folders (or an ad hoc template) and changing a few YAML variables allows to quickly define new sub-hierarchy branches.
+The approach is intentionally explicit and repetitive in order to simplify operations: copy/pasting an existing set of folders (or an ad hoc template) and changing a few YAML variables allows to quickly define new sub-hierarchy branches. Mass editing via search and replace functionality allows sweeping changes across the whole hierarchy.
 
-As an example, this is the config file for the dev Team A folder where you can see some of the [folder module](../../../../modules/folder/) attributes in use. The [folder schema](./schemas/folder.schema.json) shows all available attributes.
+Where inheritance is leveraged in the overall design config files can be deceptively simple: the following is the config file for the dev Team A folder in the provided example.
 
 ```yaml
 name: Development
@@ -158,21 +158,23 @@ iam_by_principals:
     - roles/editor
 ```
 
-### Folder parent-child relationships and variable substitutions
+All of the [folder module](../../../../modules/folder/) attributes can of course be leveraged in the configuration files. Refer to the [folder schema](./schemas/folder.schema.json) for the complete set of available attributes.
 
-You might have noted that there's no parent specified for the folder in the example above: the parent is derived from the filesystem hierarchy, and in this case it's set to the "Team A" folder.
+### Folder parent-child relationship and variable substitution
 
-But what about the "Team A" folder itself? From the point of view of the project factory it's a top-level folder, so how can you instruct it to create it below "Teams"?
+In the example YAML configuration above there's no explicitly specified folder parent: it is derived from the filesystem hierarchy, and set to the "Team A" folder.
 
-There are three different ways this can be done:
+But what about the "Team A" folder itself? From the point of view of the project factory it's a top-level folder, so how should it know where to create it in the GCP hierarchy?
 
-- setting the folder's `parent` attribute to the explicit numeric id of the "Teams" folder
-- setting the folder's `parent` attribute to the short name of the "Teams" folder in the resource management stage's outputs
-- setting the `default` folder for the project factory to the numeric id of the "Teams" folder
+There are three different ways to pass this information to the project factory:
 
-This flexibility is what allows the project factory to manage folders under multiple roots. Imagine a scenario where there's no single "Teams" folder, but multiple ones for different subsidiaries, or for internal and external teams, etc.
+- in the YAML file, by setting the folder's `parent` attribute to the explicit numeric id of the "Teams" folder
+- in the YAML file, by setting the folder's `parent` attribute to the short name of the "Teams" folder in the resource management stage's outputs
+- in the stage Terraform variables, by setting the `default` folder for the project factory to the numeric id of the "Teams" folder
 
-The snippets below show how to set the `parent` attribute explicitly or via substitution.
+This flexibility is what allows the project factory to manage folders under multiple roots, and to also be used for folders created outside of FAST. Imagine a scenario where there's no single "Teams" folder, but multiple ones for different subsidiaries, or for internal and external teams, etc.
+
+The snippets below show how to set the `parent` attribute explicitly or via substitution in the YAML file.
 
 ```yaml
 name: Team A
@@ -182,11 +184,11 @@ parent: folders/1234567890
 
 ```yaml
 name: Team A
-# use variable substitutions from stage 1 tfvars (preferred approach)
+# use variable substitution from stage 1 tfvars (preferred approach)
 parent: teams
 ```
 
-Setting a default folder allows you to skip defining a parent in YAML files for folders attached to the root, but is slightly more complex. In the stage terraform variables, populate the `factories_config.substitutions.folder_ids` so that the `default` key points to the folder id of the root.
+To avoid explicitly defining a root folder in YAML files, a default folder can instead be set in the Terraform variables for the stage by setting the `factories_config.substitutions.folder_ids` so that its `default` key points to the folder id of the root.
 
 ```tfvars
 factories_config = {
@@ -204,24 +206,31 @@ factories_config = {
 
 Project YAML files can be created in two paths:
 
-- in the folder defined in the `factories_config.project_data` variable
-- in the folder hierarchy discussed above
+- in the filesystem path defined via the `factories_config.project_data` variable, explicitly setting their `parent` attribute, or
+- in the folder hierarchy discussed above, so that their `parent` attribute is automatically derived from the containing folder
 
-The two approaches can be mixed and matched, but the first approach is safer as is avoids situations which are complex to troubleshoot and fix, where a folder is deleted with projects still contained in it and the delete operation gets stuck.
+The two approaches can be mixed and matched, but the first approach is safer as is avoids potentially dangerous situations when folders are deleted with project configuration files still inside.
 
-When specifying projects outside of the folder hierarchy, the parent folder needs to be manually specified in the YAML files. Substitutions can of course be used to avoid manually specifying the folder id.
+When specifying projects outside of the folder hierarchy, setting the parent folder works in pretty much the same way as discussed above, with substitutions available for any folder defined in the filesystem.
 
 ```yaml
+# use the explicit id of the parent folder
+parent: folders/1234509876
+```
+
+```yaml
+# use variable substitution from managed folders (preferred approach)
 parent: team-a/dev
 ```
 
-YAML files support the full interface of the [project module](../../../../modules/project/).
+All of the [project module](../../../../modules/project/) attributes (and some service account attributes) can of course be leveraged in the configuration files. Refer to the [project schema](./schemas/folder.schema.json) for the complete set of available attributes.
 
 ### Automation Resources for Projects
 
-If created projects are meant to be managed via IaC, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create the controlling project for the (Teams) hierarchy, and then leverage it for service account and GCS bucket creation.
+When created projects are meant to be managed via IaC, an initial set of automation resources can be created in a "controlling project". The preferred pattern is to first create one or more controlling projects for the project factory, and then leverage them for service account and GCS bucket creation.
 
 ```yaml
+# controlling project shown in the diagram above
 parent: teams
 name: xxx-prod-iac-teams-0
 services:
@@ -231,27 +240,30 @@ services:
   # enable all services used by service accounts in this project
 ```
 
-Once the automation project is in place, it can be used in any other project declaration to create controlling service accounts and buckets for IaC. Service accounts can then be used in IAM bindings in the same file by referring to their name, as shown here.
+Once a controlling project is in place, it can be used in any other project declaration to create service accounts and buckets for automation. The service accounts can be used in IAM bindings in the same file by referring to their name, as shown here.
 
 ```yaml
+# team or application-level project with automation resources
 parent: team-a/dev
 name: xxx-dev-ta-app-0
 iam:
   roles/owner:
+    # refer to the rw service account defined below
     - rw
   roles/viewer:
+    # refer to the ro service account defined below
     - ro
 automation:
   project: xxx-prod-iac-teams-0
   service_accounts:
-    # sa name: foo-prod-app-example-0-rw
+    # resulting sa name: xxx-dev-ta-app-0-rw
     rw:
       description: Read/write automation sa for team a app 0.
-    # sa name: foo-prod-app-example-0-ro
+    # resulting sa name: xxx-dev-ta-app-0-ro
     ro:
       description: Read-only automation sa for team a app 0.
   buckets:
-    # bucket name: foo-prod-app-example-0-state
+    # resulting bucket name: xxx-dev-ta-app-0-state
     state:
       description: Terraform state bucket for team a app 0.
       iam:
