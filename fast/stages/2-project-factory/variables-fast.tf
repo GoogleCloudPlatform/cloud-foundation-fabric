@@ -54,6 +54,14 @@ variable "prefix" {
   }
 }
 
+variable "service_accounts" {
+  # tfdoc:variable:source 1-resman
+  description = "Automation service accounts in name => email format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "tag_values" {
   # tfdoc:variable:source 1-resman
   description = "FAST-managed resource manager tag values."
