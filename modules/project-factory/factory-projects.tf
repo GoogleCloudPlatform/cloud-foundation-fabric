@@ -21,7 +21,7 @@ locals {
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
       basename(trimsuffix(f, ".yaml")) => merge(
-        { parent = dirname(f) },
+        { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
       )
       if !endswith(f, "/_config.yaml")

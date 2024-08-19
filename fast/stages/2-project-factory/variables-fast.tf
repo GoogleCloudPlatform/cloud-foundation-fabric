@@ -35,6 +35,15 @@ variable "folder_ids" {
   default     = {}
 }
 
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  # https://cloud.google.com/docs/enterprise/setup-checklist
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

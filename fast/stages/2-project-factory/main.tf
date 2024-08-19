@@ -36,10 +36,15 @@ module "projects" {
         var.folder_ids,
         var.factories_config.substitutions.folder_ids
       )
+      iam_principals = merge(
+        { for k, v in var.service_accounts : k => "serviceAccount:${v}" },
+        var.groups
+      )
       tag_values = merge(
         var.tag_values,
         var.factories_config.substitutions.tag_values
       )
+      vpc_host_projects = {}
     }
   })
 }

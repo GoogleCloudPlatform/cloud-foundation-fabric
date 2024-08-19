@@ -13,8 +13,5 @@
 # limitations under the License.
 
 counts:
-  google_project: 1
-  google_project_service: 3
-  google_storage_project_service_account: 1
   modules: 2
   resources: 6

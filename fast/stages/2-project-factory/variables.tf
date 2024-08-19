@@ -17,8 +17,11 @@
 variable "factories_config" {
   description = "Configuration for YAML-based factories."
   type = object({
-    hierarchy_data = optional(string, "data/hierarchy")
-    project_data   = optional(string, "data/projects")
+    hierarchy = optional(object({
+      folders_data_path = optional(string, "data/hierarchy")
+      parent_ids        = optional(map(string), {})
+    }))
+    projects_data_path = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
       budgets_data_path     = optional(string, "data/budgets")

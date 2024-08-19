@@ -18,11 +18,11 @@
 
 locals {
   _folders_path = try(
-    pathexpand(var.factories_config.hierarchy.folders_data_path), null
+    pathexpand(var.factories_config.folders_data_path), null
   )
   _folders = {
     for f in local._hierarchy_files : dirname(f) => yamldecode(file(
-      "${coalesce(var.factories_config.hierarchy.folders_data_path, "-")}/${f}"
+      "${coalesce(var.factories_config.folders_data_path, "-")}/${f}"
     ))
   }
   _hierarchy_files = try(
@@ -37,19 +37,8 @@ locals {
     })
   }
   hierarchy = merge(
-    try(var.factories_config.hierarchy.parent_ids, {}),
     { for k, v in module.hierarchy-folder-lvl-1 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-2 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-3 : k => v.id },
   )
-}
-
-check "hierarchy-data" {
-  assert {
-    condition = (
-      var.factories_config.hierarchy == null ||
-      try(var.factories_config.hierarchy.parent_ids.default, null) != null
-    )
-    error_message = "No default set for hierarchy parent ids."
-  }
 }
