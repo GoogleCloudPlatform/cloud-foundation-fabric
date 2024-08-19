@@ -128,6 +128,9 @@ values:
   module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_folder.folder[0]:
     display_name: App 0
     timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
+    tag_value: tagValues/123456
+    timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
@@ -387,5 +390,6 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 3
+  google_tags_tag_binding: 1
   modules: 15
-  resources: 55
+  resources: 56

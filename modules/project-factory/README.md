@@ -257,7 +257,7 @@ module "project-factory" {
         gcp-devops = "group:gcp-devops@example.org"
       }
       tag_values = {
-        "environment/development" = "tagValues/123456"
+        "org-policies/drs-allow-all" = "tagValues/123456"
       }
       vpc_host_projects = {
         dev-spoke-0 = "test-pf-dev-net-spoke-0"
@@ -265,7 +265,7 @@ module "project-factory" {
     }
   }
 }
-# tftest modules=15 resources=55 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
+# tftest modules=15 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -301,6 +301,8 @@ name: App 0
 
 ```yaml
 name: App 0
+tag_bindings:
+  drs-allow-all: org-policies/drs-allow-all
 # tftest-file id=4 path=data/hierarchy/team-b/app-0/_config.yaml schema=folder.schema.json
 ```
 

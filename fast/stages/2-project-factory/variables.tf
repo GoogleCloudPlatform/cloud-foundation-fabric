@@ -17,10 +17,7 @@
 variable "factories_config" {
   description = "Configuration for YAML-based factories."
   type = object({
-    hierarchy = optional(object({
-      folders_data_path = optional(string, "data/hierarchy")
-      parent_ids        = optional(map(string), {})
-    }))
+    folders_data_path  = optional(string, "data/hierarchy")
     projects_data_path = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
@@ -28,8 +25,11 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     substitutions = optional(object({
-      folder_ids = optional(map(string), {})
-      tag_values = optional(map(string), {})
+      # TODO: add KMS keys
+      folder_ids        = optional(map(string), {})
+      iam_principals    = optional(map(string), {})
+      tag_values        = optional(map(string), {})
+      vpc_host_projects = optional(map(string), {})
     }), {})
   })
   nullable = false

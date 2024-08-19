@@ -43,7 +43,28 @@ This stage is meant to be executed after the [bootstrap](../0-bootstrap/) and [r
 
 ### Resource Management stage configuration
 
-This is an example configuration for the resource management `top_folders` variable, using implicit substitutions to refer to the project factory service account, tag, and the custom role that allows the project factory to manage Shared VPC service projects.
+The resource management stage already contains a sample "Teams" folder defined via YAML, which can be used or modified to provide a top-level folder for the project factory. More folders can of course be added, and Terraform variables used instead or in addition to YAML files in the resource management stage.
+
+This is the provided sample YAML, which leverages substitutions for the project factory service account and tag value.
+
+```yaml
+name: Teams
+automation:
+  enable: false
+iam:
+  "roles/owner":
+    - project-factory
+  "roles/resourcemanager.folderAdmin":
+    - project-factory
+  "roles/resourcemanager.projectCreator":
+    - project-factory
+  "service_project_network_admin":
+    - project-factory
+tag_bindings:
+  context: context/project-factory
+```
+
+This is the alternative version that can used instead of the YAML file above.
 
 ```tfvars
 top_level_folders = {
@@ -64,7 +85,7 @@ top_level_folders = {
 # tftest skip
 ```
 
-You can of course extend the above snippet to grant additional roles to groups or different service accounts via the `iam`, `iam_by_principals`, and `iam_bindings` folder-level variables.
+You can of course extend the above snippets to grant additional roles to groups or different service accounts via the `iam`, `iam_by_principals`, and `iam_bindings` folder-level variables.
 
 The project factory tag binding on the folder allows management of organization policies in the Teams hierarchy. If this functionality is not needed, the tag binding can be safely omitted.
 

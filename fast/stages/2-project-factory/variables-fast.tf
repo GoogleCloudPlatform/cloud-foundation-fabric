@@ -44,6 +44,14 @@ variable "groups" {
   default     = {}
 }
 
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Host project for the shared VPC."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

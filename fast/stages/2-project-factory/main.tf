@@ -38,13 +38,17 @@ module "projects" {
       )
       iam_principals = merge(
         { for k, v in var.service_accounts : k => "serviceAccount:${v}" },
-        var.groups
+        var.groups,
+        var.factories_config.substitutions.iam_principals
       )
       tag_values = merge(
         var.tag_values,
         var.factories_config.substitutions.tag_values
       )
-      vpc_host_projects = {}
+      vpc_host_projects = merge(
+        var.host_project_ids,
+        var.factories_config.substitutions.vpc_host_projects
+      )
     }
   })
 }
