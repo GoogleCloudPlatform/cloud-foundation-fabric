@@ -24,6 +24,8 @@ iam:
     - project-factory
   "roles/resourcemanager.projectCreator":
     - project-factory
+  "roles/resourcemanager.tagUser":
+    - project-factory
   "service_project_network_admin":
     - project-factory
 tag_bindings:
