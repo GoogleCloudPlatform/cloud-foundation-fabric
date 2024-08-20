@@ -33,11 +33,14 @@ module "projects" {
   factories_config = merge(var.factories_config, {
     context = {
       folder_ids = merge(
-        var.folder_ids,
+        { for k, v in var.folder_ids : k => v if v != null },
         var.factories_config.context.folder_ids
       )
       iam_principals = merge(
-        { for k, v in var.service_accounts : k => "serviceAccount:${v}" },
+        {
+          for k, v in var.service_accounts :
+          k => "serviceAccount:${v}" if v != null
+        },
         var.groups,
         var.factories_config.context.iam_principals
       )
