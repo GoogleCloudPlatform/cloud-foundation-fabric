@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../schemas/project.schema.json
+
 parent: team-a/dev
 shared_vpc_service_config:
-  host_project: dev-net-spoke-0
+  host_project: dev-spoke-0
   network_users:
     - gcp-devops
