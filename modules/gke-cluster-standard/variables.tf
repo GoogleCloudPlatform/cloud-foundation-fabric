@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+
+variable "disable_default_snat" {
+  type        = bool
+  description = "Whether to disable the default SNAT to support the private use of public IP addresses"
+  default     = false
+}
+
 variable "backup_configs" {
   description = "Configuration for Backup for GKE."
   type = object({
