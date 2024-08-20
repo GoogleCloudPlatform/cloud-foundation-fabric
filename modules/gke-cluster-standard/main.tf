@@ -48,6 +48,11 @@ resource "google_container_cluster" "cluster" {
     ? "ADVANCED_DATAPATH"
     : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
+
+  default_snat_status {
+    disabled = var.disable_default_snat
+  }
+
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # shielded nodes are controlled by the cluster-level enable_features variable
   node_config {
