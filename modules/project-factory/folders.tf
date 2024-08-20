@@ -18,7 +18,7 @@
 
 locals {
   folder_parent_default = try(
-    var.factories_config.substitutions.folder_ids.default, null
+    var.factories_config.context.folder_ids.default, null
   )
 }
 
@@ -28,7 +28,7 @@ module "hierarchy-folder-lvl-1" {
   parent = try(
     # allow the YAML data to set the parent for this level
     lookup(
-      var.factories_config.substitutions.folder_ids,
+      var.factories_config.context.folder_ids,
       each.value.parent,
       each.value.parent
     ),
@@ -41,7 +41,7 @@ module "hierarchy-folder-lvl-1" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       # don't interpolate automation service account to prevent cycles
       for vv in v : lookup(
-        var.factories_config.substitutions.iam_principals, vv, vv
+        var.factories_config.context.iam_principals, vv, vv
       )
     ]
   }
@@ -50,7 +50,7 @@ module "hierarchy-folder-lvl-1" {
       members = [
         # don't interpolate automation service account to prevent cycles
         for vv in v.members : lookup(
-          var.factories_config.substitutions.iam_principals, vv, vv
+          var.factories_config.context.iam_principals, vv, vv
         )
       ]
     })
@@ -59,7 +59,7 @@ module "hierarchy-folder-lvl-1" {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       # don't interpolate automation service account to prevent cycles
       member = lookup(
-        var.factories_config.substitutions.iam_principals, v.member, v.member
+        var.factories_config.context.iam_principals, v.member, v.member
       )
     })
   }
@@ -67,7 +67,7 @@ module "hierarchy-folder-lvl-1" {
   org_policies      = lookup(each.value, "org_policies", {})
   tag_bindings = {
     for k, v in lookup(each.value, "tag_bindings", {}) :
-    k => lookup(var.factories_config.substitutions.tag_values, v, v)
+    k => lookup(var.factories_config.context.tag_values, v, v)
   }
 }
 
@@ -80,7 +80,7 @@ module "hierarchy-folder-lvl-2" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       # don't interpolate automation service account to prevent cycles
       for vv in v : lookup(
-        var.factories_config.substitutions.iam_principals, vv, vv
+        var.factories_config.context.iam_principals, vv, vv
       )
     ]
   }
@@ -89,7 +89,7 @@ module "hierarchy-folder-lvl-2" {
       members = [
         # don't interpolate automation service account to prevent cycles
         for vv in v.members : lookup(
-          var.factories_config.substitutions.iam_principals, vv, vv
+          var.factories_config.context.iam_principals, vv, vv
         )
       ]
     })
@@ -98,7 +98,7 @@ module "hierarchy-folder-lvl-2" {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       # don't interpolate automation service account to prevent cycles
       member = lookup(
-        var.factories_config.substitutions.iam_principals, v.member, v.member
+        var.factories_config.context.iam_principals, v.member, v.member
       )
     })
   }
@@ -106,7 +106,7 @@ module "hierarchy-folder-lvl-2" {
   org_policies      = lookup(each.value, "org_policies", {})
   tag_bindings = {
     for k, v in lookup(each.value, "tag_bindings", {}) :
-    k => lookup(var.factories_config.substitutions.tag_values, v, v)
+    k => lookup(var.factories_config.context.tag_values, v, v)
   }
 }
 
@@ -119,7 +119,7 @@ module "hierarchy-folder-lvl-3" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       # don't interpolate automation service account to prevent cycles
       for vv in v : lookup(
-        var.factories_config.substitutions.iam_principals, vv, vv
+        var.factories_config.context.iam_principals, vv, vv
       )
     ]
   }
@@ -128,7 +128,7 @@ module "hierarchy-folder-lvl-3" {
       members = [
         # don't interpolate automation service account to prevent cycles
         for vv in v.members : lookup(
-          var.factories_config.substitutions.iam_principals, vv, vv
+          var.factories_config.context.iam_principals, vv, vv
         )
       ]
     })
@@ -137,7 +137,7 @@ module "hierarchy-folder-lvl-3" {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       # don't interpolate automation service account to prevent cycles
       member = lookup(
-        var.factories_config.substitutions.iam_principals, v.member, v.member
+        var.factories_config.context.iam_principals, v.member, v.member
       )
     })
   }
@@ -145,6 +145,6 @@ module "hierarchy-folder-lvl-3" {
   org_policies      = lookup(each.value, "org_policies", {})
   tag_bindings = {
     for k, v in lookup(each.value, "tag_bindings", {}) :
-    k => lookup(var.factories_config.substitutions.tag_values, v, v)
+    k => lookup(var.factories_config.context.tag_values, v, v)
   }
 }

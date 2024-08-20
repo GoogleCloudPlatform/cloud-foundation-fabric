@@ -52,7 +52,7 @@ module "automation-buckets" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
         module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
-        var.factories_config.substitutions.iam_principals[vv],
+        var.factories_config.context.iam_principals[vv],
         vv
       )
     ]
@@ -62,7 +62,7 @@ module "automation-buckets" {
       members = [
         for vv in v.members : try(
           module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
-          var.factories_config.substitutions.iam_principals[vv],
+          var.factories_config.context.iam_principals[vv],
           vv
         )
       ]
@@ -72,7 +72,7 @@ module "automation-buckets" {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       member = try(
         module.automation-service-accounts["${each.value.project}/${v.member}"].iam_email,
-        var.factories_config.substitutions.iam_principals[v.member],
+        var.factories_config.context.iam_principals[v.member],
         v.member
       )
     })
@@ -101,7 +101,7 @@ module "automation-service-accounts" {
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : lookup(
-        var.factories_config.substitutions.iam_principals, vv, vv
+        var.factories_config.context.iam_principals, vv, vv
       )
     ]
   }
@@ -109,7 +109,7 @@ module "automation-service-accounts" {
     for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
       members = [
         for vv in v.members : lookup(
-          var.factories_config.substitutions.iam_principals, vv, vv
+          var.factories_config.context.iam_principals, vv, vv
         )
       ]
     })
@@ -117,7 +117,7 @@ module "automation-service-accounts" {
   iam_bindings_additive = {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       member = lookup(
-        var.factories_config.substitutions.iam_principals, v.member, v.member
+        var.factories_config.context.iam_principals, v.member, v.member
       )
     })
   }

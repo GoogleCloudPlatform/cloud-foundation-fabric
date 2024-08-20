@@ -104,16 +104,16 @@ module "branch-network-dev-folder" {
       try(module.branch-dp-dev-sa[0].iam_email, null),
       try(module.branch-gcve-dev-sa[0].iam_email, null),
       try(module.branch-gke-dev-sa[0].iam_email, null),
-      try(module.branch-pf-sa[0].iam_email, null),
-      try(module.branch-pf-dev-sa[0].iam_email, null)
+      try(module.branch-pf-sa.iam_email, null),
+      try(module.branch-pf-dev-sa.iam_email, null)
     ])
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = compact([
       try(module.branch-dp-dev-sa[0].iam_email, null),
       try(module.branch-gcve-dev-sa[0].iam_email, null),
       try(module.branch-gke-dev-sa[0].iam_email, null),
-      try(module.branch-pf-sa[0].iam_email, null),
-      try(module.branch-pf-dev-sa[0].iam_email, null)
+      try(module.branch-pf-sa.iam_email, null),
+      try(module.branch-pf-dev-sa.iam_email, null)
     ])
     (local.custom_roles.gcve_network_admin) = compact([
       try(module.branch-gcve-dev-sa[0].iam_email, null)

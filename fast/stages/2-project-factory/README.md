@@ -33,9 +33,9 @@ The project factory is "primed" by the resource management stage via
 - a set of service accounts with different scopes
 - one or more user-defined top-level folders where those service accounts operate
 
-This stage does not directly depend from other stage 2 like networking and security, but it can optionally leverage resources created there like Shared VPC host projects, which are used to define service projects.
+This stage does not directly depend on other stage 2 like networking and security, but it can optionally leverage resources created there like Shared VPC host projects, which are used to define service projects.
 
-The project factory stage lightly wraps the underlying [project-factory module](../../../modules/project-factory/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
+The project factory stage is a thin wrapper of the underlying [project-factory module](../../../modules/project-factory/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
 
 ## How to run this stage
 
@@ -45,7 +45,7 @@ This stage is meant to be executed after the [bootstrap](../0-bootstrap/) and [r
 
 The resource management stage already contains a sample "Teams" folder defined via YAML, which can be used as-is or modified to provide a top-level folder for the project factory. More folders can of course be added, and Terraform variables used instead of or in addition to YAML files in the resource management stage.
 
-This is the teams YAML in resource management, leveraging attribute substitutions for the project factory service account and tag value.
+This is the teams YAML in resource management, leveraging attribute substitutions from provided context for the project factory service account and tag value.
 
 ```yaml
 name: Teams
@@ -265,6 +265,7 @@ services:
 Once a controlling project is in place, it can be used in any other project declaration to host service accounts and buckets for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
 
 ```yaml
+foo: bar
 # team or application-level project with automation resources
 parent: team-a/dev
 # project prefix is forced via override in `main.tf`
@@ -277,7 +278,7 @@ iam:
     # refer to the ro service account defined below
     - ro
 automation:
-  # no substitution is available here
+  # no context is possible here
   # use the complete project id
   project: xxx-prod-iac-teams-0
   service_accounts:
@@ -292,7 +293,7 @@ automation:
     state:
       description: Terraform state bucket for team a app 0.
       iam:
-        # service accounts can use short name substitutions
+        # service accounts can use short name substitutions from context
         roles/storage.objectCreator:
           - rw
         roles/storage.objectViewer:
@@ -338,7 +339,7 @@ The approach is not shown here but reasonably easy to implement. The main projec
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables-fast.tf#L55) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [factories_config](variables.tf#L17) | Configuration for YAML-based factories. | <code title="object&#40;&#123;&#10;  folders_data_path  &#61; optional&#40;string, &#34;data&#47;hierarchy&#34;&#41;&#10;  projects_data_path &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; optional&#40;string, &#34;data&#47;budgets&#34;&#41;&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  substitutions &#61; optional&#40;object&#40;&#123;&#10;    folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    vpc_host_projects &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L17) | Configuration for YAML-based factories. | <code title="object&#40;&#123;&#10;  folders_data_path  &#61; optional&#40;string, &#34;data&#47;hierarchy&#34;&#41;&#10;  projects_data_path &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; optional&#40;string, &#34;data&#47;budgets&#34;&#41;&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    vpc_host_projects &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L30) | Folders created in the resource management stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 | [groups](variables-fast.tf#L38) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
 | [host_project_ids](variables-fast.tf#L47) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |

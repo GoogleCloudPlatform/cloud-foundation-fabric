@@ -60,7 +60,7 @@ For a discussion on naming, please refer to the [Bootstrap stage documentation](
 
 Top-level folders for teams or departments can be easily created via the `top_level_folders` variable or the associated factory, which expose the full power of the underlying [folder module](../../../modules/folder/).
 
-The suggestion is to use this feature sparingly so at to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../2-project-factory/) stage.
+The suggestion is to use this feature sparingly so as to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../2-project-factory/) stage.
 
 Top-level folders also support defining associated resources for automation, and auto-created provider files to bootstrap Infrastructure and Code. An example is provided below.
 

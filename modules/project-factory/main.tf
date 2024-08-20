@@ -17,13 +17,13 @@
 # tfdoc:file:description Projects and billing budgets factory resources.
 
 locals {
-  substitutions = {
+  context = {
     folder_ids = merge(
-      var.factories_config.substitutions.folder_ids,
+      var.factories_config.context.folder_ids,
       local.hierarchy
     )
     iam_principals = merge(
-      var.factories_config.substitutions.iam_principals,
+      var.factories_config.context.iam_principals,
       {
         for k, v in module.automation-service-accounts :
         k => v.iam_email
@@ -38,7 +38,7 @@ module "projects" {
   billing_account = each.value.billing_account
   name            = each.key
   parent = lookup(
-    local.substitutions.folder_ids, each.value.parent, each.value.parent
+    local.context.folder_ids, each.value.parent, each.value.parent
   )
   prefix              = each.value.prefix
   auto_create_network = try(each.value.auto_create_network, false)
@@ -53,9 +53,9 @@ module "projects" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
         # automation service account
-        local.substitutions.iam_principals["${each.key}/${vv}"],
-        # other substitutions
-        local.substitutions.iam_principals[vv],
+        local.context.iam_principals["${each.key}/${vv}"],
+        # other context
+        local.context.iam_principals[vv],
         # passthrough
         vv
       )
@@ -66,9 +66,9 @@ module "projects" {
       members = [
         for vv in v.members : try(
           # automation service account
-          local.substitutions.iam_principals["${each.key}/${vv}"],
-          # other substitutions
-          local.substitutions.iam_principals[vv],
+          local.context.iam_principals["${each.key}/${vv}"],
+          # other context
+          local.context.iam_principals[vv],
           # passthrough
           vv
         )
@@ -79,9 +79,9 @@ module "projects" {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       member = try(
         # automation service account
-        local.substitutions.iam_principals["${each.key}/${v.member}"],
-        # other substitutions
-        local.substitutions.iam_principals[v.member],
+        local.context.iam_principals["${each.key}/${v.member}"],
+        # other context
+        local.context.iam_principals[v.member],
         # passthrough
         v.member
       )
@@ -114,20 +114,20 @@ module "projects" {
     ? null
     : merge(each.value.shared_vpc_service_config, {
       host_project = lookup(
-        var.factories_config.substitutions.vpc_host_projects,
+        var.factories_config.context.vpc_host_projects,
         each.value.shared_vpc_service_config.host_project,
         each.value.shared_vpc_service_config.host_project
       )
       network_users = [
         for v in try(each.value.shared_vpc_service_config.network_users, []) :
-        lookup(local.substitutions.iam_principals, v, v)
+        lookup(local.context.iam_principals, v, v)
       ]
       # TODO: network subnet users
     })
   )
   tag_bindings = {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
-    k => lookup(var.factories_config.substitutions.tag_values, v, v)
+    k => lookup(var.factories_config.context.tag_values, v, v)
   }
   vpc_sc = each.value.vpc_sc
 }
@@ -143,7 +143,7 @@ module "service-accounts" {
   iam_project_roles = merge(
     {
       for k, v in each.value.iam_project_roles :
-      lookup(var.factories_config.substitutions.vpc_host_projects, k, k) => v
+      lookup(var.factories_config.context.vpc_host_projects, k, k) => v
     },
     each.value.iam_self_roles == null ? {} : {
       (module.projects[each.value.project].project_id) = each.value.iam_self_roles

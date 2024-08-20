@@ -31,23 +31,23 @@ module "projects" {
     prefix = var.prefix
   }
   factories_config = merge(var.factories_config, {
-    substitutions = {
+    context = {
       folder_ids = merge(
         var.folder_ids,
-        var.factories_config.substitutions.folder_ids
+        var.factories_config.context.folder_ids
       )
       iam_principals = merge(
         { for k, v in var.service_accounts : k => "serviceAccount:${v}" },
         var.groups,
-        var.factories_config.substitutions.iam_principals
+        var.factories_config.context.iam_principals
       )
       tag_values = merge(
         var.tag_values,
-        var.factories_config.substitutions.tag_values
+        var.factories_config.context.tag_values
       )
       vpc_host_projects = merge(
         var.host_project_ids,
-        var.factories_config.substitutions.vpc_host_projects
+        var.factories_config.context.vpc_host_projects
       )
     }
   })

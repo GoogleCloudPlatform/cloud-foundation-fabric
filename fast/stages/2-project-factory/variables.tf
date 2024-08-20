@@ -24,7 +24,7 @@ variable "factories_config" {
       budgets_data_path     = optional(string, "data/budgets")
       notification_channels = optional(map(any), {})
     }))
-    substitutions = optional(object({
+    context = optional(object({
       # TODO: add KMS keys
       folder_ids        = optional(map(string), {})
       iam_principals    = optional(map(string), {})

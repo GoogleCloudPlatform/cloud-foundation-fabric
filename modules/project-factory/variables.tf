@@ -104,7 +104,7 @@ variable "factories_config" {
       # TODO: allow defining notification channels via YAML files
       notification_channels = optional(map(any), {})
     }))
-    substitutions = optional(object({
+    context = optional(object({
       # TODO: add KMS keys
       folder_ids        = optional(map(string), {})
       iam_principals    = optional(map(string), {})
