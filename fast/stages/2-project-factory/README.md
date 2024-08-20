@@ -265,7 +265,6 @@ services:
 Once a controlling project is in place, it can be used in any other project declaration to host service accounts and buckets for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
 
 ```yaml
-foo: bar
 # team or application-level project with automation resources
 parent: team-a/dev
 # project prefix is forced via override in `main.tf`
