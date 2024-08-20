@@ -19,18 +19,17 @@
 locals {
   # used here for convenience, in organization.tf members are explicit
   billing_ext_users = compact([
-    try(module.branch-network-sa[0].iam_email, null),
-    try(module.branch-security-sa[0].iam_email, null),
-    try(module.branch-dp-prod-sa[0].iam_email, null),
-    try(module.branch-gcve-prod-sa[0].iam_email, null),
-    try(module.branch-gke-prod-sa[0].iam_email, null),
-    try(module.branch-pf-sa[0].iam_email, null),
-    try(module.branch-pf-prod-sa[0].iam_email, null),
+    try(module.branch-network-sa.iam_email, null),
+    try(module.branch-pf-dev-sa.iam_email, null),
+    try(module.branch-pf-prod-sa.iam_email, null),
+    try(module.branch-pf-sa.iam_email, null),
+    try(module.branch-security-sa.iam_email, null),
     try(module.branch-dp-dev-sa[0].iam_email, null),
+    try(module.branch-dp-prod-sa[0].iam_email, null),
     try(module.branch-gcve-dev-sa[0].iam_email, null),
+    try(module.branch-gcve-prod-sa[0].iam_email, null),
     try(module.branch-gke-dev-sa[0].iam_email, null),
-    try(module.branch-pf-sa[0].iam_email, null),
-    try(module.branch-pf-dev-sa[0].iam_email, null)
+    try(module.branch-gke-prod-sa[0].iam_email, null)
   ])
   billing_mode = (
     var.billing_account.no_iam
