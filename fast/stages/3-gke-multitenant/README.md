@@ -2,7 +2,7 @@
 
 This directory contains a stage that can be used to centralize management of GKE multinenant clusters.
 
-The Terraform code follows the same general approach used for the [project factory](../3-project-factory/) and [data platform](../3-data-platform/) stages, where a "fat module" contains the stage code and is used by thin code wrappers that localize it for each environment or specialized configuration:
+The Terraform code follows the same general approach used for the [project factory](../2-project-factory/) and [data platform](../3-data-platform/) stages, where a "fat module" contains the stage code and is used by thin code wrappers that localize it for each environment or specialized configuration:
 
 The [`dev` folder](./dev/) contains an example setup for a generic development environment, and can be used as-is or cloned to implement other environments, or more specialized setups
 

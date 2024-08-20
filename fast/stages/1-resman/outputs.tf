@@ -197,6 +197,42 @@ locals {
         name          = "networking"
         sa            = module.branch-network-r-sa.email
       })
+      "2-project-factory" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-gcs.name
+        name          = "project-factory"
+        sa            = module.branch-pf-sa.email
+      })
+      "2-project-factory-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-gcs.name
+        name          = "project-factory"
+        sa            = module.branch-pf-r-sa.email
+      })
+      "2-project-factory-dev" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-dev-gcs.name
+        name          = "project-factory-dev"
+        sa            = module.branch-pf-dev-sa.email
+      })
+      "2-project-factory-dev-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-dev-gcs.name
+        name          = "project-factory-dev"
+        sa            = module.branch-pf-dev-r-sa.email
+      })
+      "2-project-factory-prod" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-prod-gcs.name
+        name          = "project-factory-prod"
+        sa            = module.branch-pf-prod-sa.email
+      })
+      "2-project-factory-prod-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-pf-prod-gcs.name
+        name          = "project-factory-prod"
+        sa            = module.branch-pf-prod-r-sa.email
+      })
       "2-security" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-security-gcs.name
@@ -309,44 +345,6 @@ locals {
         sa            = module.branch-gcve-prod-r-sa[0].email
       })
     },
-    !var.fast_features.project_factory ? {} : {
-      "3-project-factory" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-gcs[0].name
-        name          = "project-factory"
-        sa            = module.branch-pf-sa[0].email
-      })
-      "3-project-factory-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-gcs[0].name
-        name          = "project-factory"
-        sa            = module.branch-pf-r-sa[0].email
-      })
-      "3-project-factory-dev" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-dev-gcs[0].name
-        name          = "project-factory-dev"
-        sa            = module.branch-pf-dev-sa[0].email
-      })
-      "3-project-factory-dev-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-dev-gcs[0].name
-        name          = "project-factory-dev"
-        sa            = module.branch-pf-dev-r-sa[0].email
-      })
-      "3-project-factory-prod" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-prod-gcs[0].name
-        name          = "project-factory-prod"
-        sa            = module.branch-pf-prod-sa[0].email
-      })
-      "3-project-factory-prod-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-pf-prod-gcs[0].name
-        name          = "project-factory-prod"
-        sa            = module.branch-pf-prod-r-sa[0].email
-      })
-    },
     !var.fast_features.sandbox ? {} : {
       "9-sandbox" = templatefile(local._tpl_providers, {
         backend_extra = null
@@ -357,33 +355,7 @@ locals {
     },
   )
   service_accounts = merge(
-    {
-      data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
-      data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
-      data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
-      data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
-      gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
-      gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
-      gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
-      gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
-      gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
-      gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
-      gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
-      gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-      nsec                   = module.branch-nsec-sa.email
-      nsec-r                 = module.branch-nsec-r-sa.email
-      networking             = module.branch-network-sa.email
-      networking-r           = module.branch-network-r-sa.email
-      project-factory        = try(module.branch-pf-sa[0].email, null)
-      project-factory-r      = try(module.branch-pf-r-sa[0].email, null)
-      project-factory-dev    = try(module.branch-pf-dev-sa[0].email, null)
-      project-factory-dev-r  = try(module.branch-pf-dev-r-sa[0].email, null)
-      project-factory-prod   = try(module.branch-pf-prod-sa[0].email, null)
-      project-factory-prod-r = try(module.branch-pf-prod-r-sa[0].email, null)
-      sandbox                = try(module.branch-sandbox-sa[0].email, null)
-      security               = module.branch-security-sa.email
-      security-r             = module.branch-security-r-sa.email
-    },
+    local.branch_service_accounts,
     {
       for k, v in module.top-level-sa : k => try(v.email)
     }
@@ -487,18 +459,18 @@ output "networking" {
 
 output "project_factories" {
   description = "Data for the project factories stage."
-  value = !var.fast_features.project_factory ? {} : {
+  value = {
     dev = {
-      bucket = module.branch-pf-dev-gcs[0].name
-      sa     = module.branch-pf-dev-sa[0].email
+      bucket = module.branch-pf-dev-gcs.name
+      sa     = module.branch-pf-dev-sa.email
     }
     main = {
-      bucket = module.branch-pf-gcs[0].name
-      sa     = module.branch-pf-sa[0].email
+      bucket = module.branch-pf-gcs.name
+      sa     = module.branch-pf-sa.email
     }
     prod = {
-      bucket = module.branch-pf-prod-gcs[0].name
-      sa     = module.branch-pf-prod-sa[0].email
+      bucket = module.branch-pf-prod-gcs.name
+      sa     = module.branch-pf-prod-sa.email
     }
   }
 }

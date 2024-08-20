@@ -67,22 +67,24 @@ module "branch-network-prod-folder" {
   name   = "Production"
   iam = {
     # read-write (apply) automation service accounts
-    (local.custom_roles.service_project_network_admin) = concat(
-      local.branch_optional_sa_lists.dp-prod,
-      local.branch_optional_sa_lists.gke-prod,
-      local.branch_optional_sa_lists.gcve-prod,
-      local.branch_optional_sa_lists.pf,
-      local.branch_optional_sa_lists.pf-prod,
-    )
+    (local.custom_roles.service_project_network_admin) = compact([
+      try(module.branch-dp-prod-sa[0].iam_email, null),
+      try(module.branch-gcve-prod-sa[0].iam_email, null),
+      try(module.branch-gke-prod-sa[0].iam_email, null),
+      try(module.branch-pf-sa.iam_email, null),
+      try(module.branch-pf-prod-sa.iam_email, null)
+    ])
     # read-only (plan) automation service accounts
-    "roles/compute.networkViewer" = concat(
-      local.branch_optional_r_sa_lists.dp-prod,
-      local.branch_optional_r_sa_lists.gke-prod,
-      local.branch_optional_r_sa_lists.gcve-prod,
-      local.branch_optional_r_sa_lists.pf,
-      local.branch_optional_r_sa_lists.pf-prod,
-    )
-    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-prod
+    "roles/compute.networkViewer" = compact([
+      try(module.branch-dp-prod-r-sa[0].iam_email, null),
+      try(module.branch-gcve-prod-r-sa[0].iam_email, null),
+      try(module.branch-gke-prod-r-sa[0].iam_email, null),
+      try(module.branch-pf-r-sa.iam_email, null),
+      try(module.branch-pf-prod-r-sa.iam_email, null)
+    ])
+    (local.custom_roles.gcve_network_admin) = compact([
+      try(module.branch-gcve-prod-sa[0].iam_email, null)
+    ])
   }
   tag_bindings = {
     environment = try(
@@ -98,22 +100,24 @@ module "branch-network-dev-folder" {
   name   = "Development"
   iam = {
     # read-write (apply) automation service accounts
-    (local.custom_roles.service_project_network_admin) = concat(
-      local.branch_optional_sa_lists.dp-dev,
-      local.branch_optional_sa_lists.gke-dev,
-      local.branch_optional_sa_lists.gcve-dev,
-      local.branch_optional_sa_lists.pf,
-      local.branch_optional_sa_lists.pf-dev,
-    )
+    (local.custom_roles.service_project_network_admin) = compact([
+      try(module.branch-dp-dev-sa[0].iam_email, null),
+      try(module.branch-gcve-dev-sa[0].iam_email, null),
+      try(module.branch-gke-dev-sa[0].iam_email, null),
+      try(module.branch-pf-sa.iam_email, null),
+      try(module.branch-pf-dev-sa.iam_email, null)
+    ])
     # read-only (plan) automation service accounts
-    "roles/compute.networkViewer" = concat(
-      local.branch_optional_r_sa_lists.dp-dev,
-      local.branch_optional_r_sa_lists.gke-dev,
-      local.branch_optional_r_sa_lists.gcve-dev,
-      local.branch_optional_r_sa_lists.pf,
-      local.branch_optional_r_sa_lists.pf-dev,
-    )
-    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
+    "roles/compute.networkViewer" = compact([
+      try(module.branch-dp-dev-r-sa[0].iam_email, null),
+      try(module.branch-gcve-dev-r-sa[0].iam_email, null),
+      try(module.branch-gke-dev-r-sa[0].iam_email, null),
+      try(module.branch-pf-r-sa.iam_email, null),
+      try(module.branch-pf-dev-r-sa.iam_email, null)
+    ])
+    (local.custom_roles.gcve_network_admin) = compact([
+      try(module.branch-gcve-dev-sa[0].iam_email, null)
+    ])
   }
   tag_bindings = {
     environment = try(

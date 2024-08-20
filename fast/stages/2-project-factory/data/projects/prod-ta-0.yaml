@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-project-factory/dev
+# yaml-language-server: $schema=../../schemas/project.schema.json
 
-tests:
-  simple:
+parent: team-a/prod
+shared_vpc_service_config:
+  host_project: prod-spoke-0
+  network_users:
+    - gcp-devops
