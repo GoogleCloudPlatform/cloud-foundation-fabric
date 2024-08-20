@@ -8,7 +8,7 @@
   - [Stage provider and Terraform variables](#stage-provider-and-terraform-variables)
 - [Managing folders and projects](#managing-folders-and-projects)
   - [Folder and hierarchy management](#folder-and-hierarchy-management)
-  - [Folder parent-child relationship and variable substitution](#folder-parent-child-relationship-and-variable-substitution)
+  - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
 - [Alternative patterns](#alternative-patterns)
