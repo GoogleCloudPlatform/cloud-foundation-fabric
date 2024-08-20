@@ -58,6 +58,8 @@ iam:
     - project-factory
   "roles/resourcemanager.projectCreator":
     - project-factory
+  "roles/resourcemanager.tagUser":
+    - project-factory
   "service_project_network_admin":
     - project-factory
 tag_bindings:
@@ -75,6 +77,7 @@ top_level_folders = {
       "roles/owner"                          = ["project-factory"]
       "roles/resourcemanager.folderAdmin"    = ["project-factory"]
       "roles/resourcemanager.projectCreator" = ["project-factory"]
+      "roles/resourcemanager.tagUser"        = ["project-factory"]
       "service_project_network_admin"        = ["project-factory"]
     }
     tag_bindings = {
