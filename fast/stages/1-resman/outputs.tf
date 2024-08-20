@@ -16,41 +16,140 @@
 
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
-  _cicd_workflow_names = {
-    for k, v in local.cicd_repositories : k => replace(k, "_", "-")
-  }
-  cicd_workflow_attrs = merge(
-    {
-      for k, v in local._cicd_workflow_names : k => {
-        service_accounts = {
-          apply = local.branch_service_accounts[v]
-          plan  = local.branch_service_accounts["${v}-r"]
-        }
-        tf_providers_files = {
-          apply = "2-${v}-providers.tf"
-          plan  = "2-${v}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_var_files.stage_2
-
+  cicd_workflow_attrs = {
+    data_platform_dev = {
+      service_accounts = {
+        apply = try(module.branch-dp-dev-sa-cicd[0].email, null)
+        plan  = try(module.branch-dp-dev-r-sa-cicd[0].email, null)
       }
-      if k == "networking" || k == "security" || startswith(k, "project_factory")
-    },
-    {
-      for k, v in local._cicd_workflow_names : k => {
-        service_accounts = {
-          apply = local.branch_service_accounts[v]
-          plan  = local.branch_service_accounts["${v}-r"]
-        }
-        tf_providers_files = {
-          apply = "3-${v}-providers.tf"
-          plan  = "3-${v}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_var_files.stage_3
-
+      tf_providers_files = {
+        apply = "3-data-platform-dev-providers.tf"
+        plan  = "3-data-platform-dev-r-providers.tf"
       }
-      if k != "networking" && k != "security" && !startswith(k, "project_factory")
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
-  )
+    data_platform_prod = {
+      service_accounts = {
+        apply = try(module.branch-dp-prod-sa-cicd[0].email, null)
+        plan  = try(module.branch-dp-prod-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-data-platform-prod-providers.tf"
+        plan  = "3-data-platform-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gcve_dev = {
+      service_accounts = {
+        apply = try(module.branch-gcve-dev-sa-cicd[0].email, null)
+        plan  = try(module.branch-gcve-dev-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gcve-dev-providers.tf"
+        plan  = "3-gcve-dev-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gcve_prod = {
+      service_accounts = {
+        apply = try(module.branch-gcve-prod-sa-cicd[0].email, null)
+        plan  = try(module.branch-gcve-prod-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gcve-prod-providers.tf"
+        plan  = "3-gcve-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gke_dev = {
+      service_accounts = {
+        apply = try(module.branch-gke-dev-sa-cicd[0].email, null)
+        plan  = try(module.branch-gke-dev-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gke-dev-providers.tf"
+        plan  = "3-gke-dev-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gke_prod = {
+      service_accounts = {
+        apply = try(module.branch-gke-prod-sa-cicd[0].email, null)
+        plan  = try(module.branch-gke-prod-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-gke-prod-providers.tf"
+        plan  = "3-gke-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    nsec = {
+      service_accounts = {
+        apply = try(module.branch-nsec-sa-cicd[0].email, null)
+        plan  = try(module.branch-nsec-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-network-security-providers.tf"
+        plan  = "3-network-security-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    networking = {
+      service_accounts = {
+        apply = try(module.branch-network-sa-cicd[0].email, null)
+        plan  = try(module.branch-network-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "2-networking-providers.tf"
+        plan  = "2-networking-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_2
+    }
+    project_factory = {
+      service_accounts = {
+        apply = try(module.branch-pf-sa-cicd[0].email, null)
+        plan  = try(module.branch-pf-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-project-factory-providers.tf"
+        plan  = "3-project-factory-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    project_factory_dev = {
+      service_accounts = {
+        apply = try(module.branch-pf-dev-sa-cicd[0].email, null)
+        plan  = try(module.branch-pf-dev-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-project-factory-dev-providers.tf"
+        plan  = "3-project-factory-dev-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    project_factory_prod = {
+      service_accounts = {
+        apply = try(module.branch-pf-prod-sa-cicd[0].email, null)
+        plan  = try(module.branch-pf-prod-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "3-project-factory-prod-providers.tf"
+        plan  = "3-project-factory-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    security = {
+      service_accounts = {
+        apply = try(module.branch-security-sa-cicd[0].email, null)
+        plan  = try(module.branch-security-r-sa-cicd[0].email, null)
+      }
+      tf_providers_files = {
+        apply = "2-security-providers.tf"
+        plan  = "2-security-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_2
+    }
+  }
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
