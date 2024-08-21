@@ -422,7 +422,7 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    disable_default_snat       = optional(bool, null)
+    disable_default_snat       = optional(bool)
     network                    = string
     subnetwork                 = string
     master_ipv4_cidr_block     = optional(string)
