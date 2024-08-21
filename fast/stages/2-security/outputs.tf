@@ -24,14 +24,14 @@ locals {
         }
       ]
     ]),
-    flatten([
-      for location, mod in module.prod-sec-kms : [
-        for name, id in mod.key_ids : {
-          key = "prod-${name}:${location}"
-          id  = id
-        }
-      ]
-    ])
+    # flatten([
+    #   for location, mod in module.prod-sec-kms : [
+    #     for name, id in mod.key_ids : {
+    #       key = "prod-${name}:${location}"
+    #       id  = id
+    #     }
+    #   ]
+    # ])
   )
   cas_ids = {
     dev = {
@@ -41,13 +41,13 @@ locals {
         ca_ids     = v.ca_ids
       }
     }
-    prod = {
-      for k, v in module.prod-sec-cas
-      : k => {
-        ca_pool_id = v.ca_pool_id
-        ca_ids     = v.ca_ids
-      }
-    }
+    # prod = {
+    #   for k, v in module.prod-sec-cas
+    #   : k => {
+    #     ca_pool_id = v.ca_pool_id
+    #     ca_ids     = v.ca_ids
+    #   }
+    # }
   }
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
@@ -60,10 +60,10 @@ locals {
       for k, v in google_certificate_manager_trust_config.dev_trust_configs
       : k => v.id
     }
-    prod = {
-      for k, v in google_certificate_manager_trust_config.prod_trust_configs
-      : k => v.id
-    }
+    # prod = {
+    #   for k, v in google_certificate_manager_trust_config.prod_trust_configs
+    #   : k => v.id
+    # }
   }
 }
 

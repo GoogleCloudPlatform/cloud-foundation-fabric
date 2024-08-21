@@ -15,38 +15,18 @@
  */
 
 locals {
-  _ngfw_cas_config_dev = {
-    dev-ca-0 = {
-      ca_configs = {
-        dev-root-ngfw-ca-0 = {
-          deletion_protection = false #delete
-          subject = {
-            common_name  = try(var.ngfw_tls_configs.dev.cas_config.common_name, null)
-            organization = try(var.ngfw_tls_configs.dev.cas_config.organization, null)
-          }
-        }
-      }
-      ca_pool_config = {
-        authz_nsec_sa = true
-        name          = "dev-ngfw-ca-pool-3" #fix
-      }
-      iam          = {}
-      iam_bindings = {}
-      iam_bindings_additive = {
-        nsec_dev_sa_binding = {
-          member = module.dev-sec-project.service_agents["networksecurity"].iam_email
-          role   = "roles/privateca.certificateManager"
-        }
-      }
-      iam_by_principals = {}
-      location          = var.ngfw_tls_configs.dev.location
+  _ngfw_dev_cas_iam_bindings_additive = {
+    nsec_dev_sa_binding = {
+      member = module.dev-sec-project.service_agents["networksecurity"].iam_email
+      role   = "roles/privateca.certificateManager"
     }
   }
-  _ngfw_trust_config_dev = {
-    dev-trust-0 = merge(
-      { location = var.ngfw_tls_configs.dev.location },
-      var.ngfw_tls_configs.dev.trust_config
-    )
+  _ngfw_cas_config_dev = {
+    for k, v in var.ngfw_tls_configs.dev.cas_configs
+    : k => merge(
+      v,
+      _ngfw_dev_cas_iam_bindings_additive
+    ) if 
   }
   cas_config_dev = merge(
     var.cas_configs.dev,

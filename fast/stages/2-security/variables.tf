@@ -89,43 +89,39 @@ variable "kms_keys" {
 }
 
 variable "ngfw_tls_configs" {
-  description = "The CAS NGFW Enterprise configuration, used for TLS Inspection."
+  description = "The CAS and trust configurations key names to be used for NGFW Enterprise."
   type = object({
     dev = optional(object({
-      cas_config = optional(object({
-        common_name  = optional(string, "dev.example.com")
-        organization = optional(string, "Example")
-      }))
-      location = optional(string, "europe-west1")
-      trust_config = optional(object({
-        description              = optional(string)
-        allowlisted_certificates = optional(map(string), {})
-        trust_stores = optional(map(object({
-          intermediate_cas = optional(map(string), {})
-          trust_anchors    = optional(map(string), {})
-        })), {})
-      }))
-    }), {})
+      cas_configs   = optional(map(string))
+      trust_configs = optional(map(string))
+    }))
     prod = optional(object({
-      cas_config = optional(object({
-        common_name  = optional(string, "prod.example.com")
-        organization = optional(string, "Example")
-      }))
-      location = optional(string, "europe-west1")
-      trust_config = optional(object({
-        description              = optional(string)
-        allowlisted_certificates = optional(map(string), {})
-        trust_stores = optional(map(object({
-          intermediate_cas = optional(map(string), {})
-          trust_anchors    = optional(map(string), {})
-        })), {})
-      }))
-    }), {})
+      cas_configs   = optional(map(string))
+      trust_configs = optional(map(string))
+    }))
   })
   nullable = false
   default = {
-    dev  = {}
-    prod = {}
+    dev = {
+      cas_configs = {
+        ngfw_dev_cas_primary   = "ngfw-dev-cas-primary"
+        ngfw_dev_cas_secondary = "ngfw-dev-cas-secondary"
+      }
+      trust_configs = {
+        ngfw_dev_tc_primary   = "ngfw-dev-tc-primary"
+        ngfw_dev_tc_secondary = "ngfw-dev-tc-secondary"
+      }
+    }
+    prod = {
+      cas_configs = {
+        ngfw_prod_cas_primary   = "ngfw-prod-cas-primary"
+        ngfw_prod_cas_secondary = "ngfw-prod-cas-secondary"
+      }
+      trust_configs = {
+        ngfw_prod_tc_primary   = "ngfw-prod-tc-primary"
+        ngfw_prod_tc_secondary = "ngfw-prod-tc-secondary"
+      }
+    }
   }
 }
 
