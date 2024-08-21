@@ -14,6 +14,25 @@
 # file: tests/modules/net_swp/examples/basic.yaml
 
 values:
+  module.secure-web-proxy.google_compute_service_attachment.default[0]:
+    connection_preference: ACCEPT_MANUAL
+    consumer_accept_lists:
+    - connection_limit: 1
+      network_url: ''
+      project_id_or_num: my-autoaccept-project-1
+    - connection_limit: 1
+      network_url: ''
+      project_id_or_num: my-autoaccept-project-2
+    consumer_reject_lists: null
+    description: Service attachment for SWP secure-web-proxy
+    domain_names: null
+    enable_proxy_protocol: false
+    name: secure-web-proxy
+    nat_subnets:
+    - projects/my-project/regions/europe-west4/subnetworks/my-psc-subnetwork
+    project: my-project
+    region: europe-west4
+    timeouts: null
   module.secure-web-proxy.google_network_security_gateway_security_policy.default:
     description: Managed by Terraform.
     location: europe-west4
@@ -47,7 +66,8 @@ values:
     type: SECURE_WEB_GATEWAY
 
 counts:
+  google_compute_service_attachment: 1
   google_network_security_gateway_security_policy: 1
   google_network_services_gateway: 1
   modules: 1
-  resources: 2
+  resources: 3
