@@ -4,6 +4,21 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "sa_impersonation_principals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
@@ -111,11 +126,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|[a-z_]+)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
           }
         }
       }
@@ -132,12 +147,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|[a-z_]+)"
             },
             "condition": {
               "type": "object",
@@ -172,11 +187,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|[a-z_]+)"
             },
             "condition": {
               "type": "object",
@@ -205,11 +220,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^roles/"
+            "pattern": "^(?:roles/|[a-z_]+)"
           }
         }
       }

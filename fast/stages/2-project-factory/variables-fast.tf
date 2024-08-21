@@ -27,6 +27,31 @@ variable "billing_account" {
   }
 }
 
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Folders created in the resource management stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  # https://cloud.google.com/docs/enterprise/setup-checklist
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Host project for the shared VPC."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
@@ -35,4 +60,20 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 12
     error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   }
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 1-resman
+  description = "Automation service accounts in name => email format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "FAST-managed resource manager tag values."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

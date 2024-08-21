@@ -16,52 +16,135 @@
 
 # tfdoc:file:description Folder hierarchy factory resources.
 
+locals {
+  folder_parent_default = try(
+    var.factories_config.context.folder_ids.default, null
+  )
+}
+
 module "hierarchy-folder-lvl-1" {
   source   = "../folder"
   for_each = { for k, v in local.folders : k => v if v.level == 1 }
   parent = try(
     # allow the YAML data to set the parent for this level
     lookup(
-      var.factories_config.hierarchy.parent_ids,
+      var.factories_config.context.folder_ids,
       each.value.parent,
-      # use the value as is if it's not in the parents map
       each.value.parent
     ),
     # use the default value in the initial parents map
-    var.factories_config.hierarchy.parent_ids.default
+    local.folder_parent_default
     # fail if we don't have an explicit parent
   )
-  name                  = each.value.name
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  org_policies          = lookup(each.value, "org_policies", {})
-  tag_bindings          = lookup(each.value, "tag_bindings", {})
+  name = each.value.name
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      # don't interpolate automation service account to prevent cycles
+      for vv in v : lookup(
+        var.factories_config.context.iam_principals, vv, vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
+      members = [
+        # don't interpolate automation service account to prevent cycles
+        for vv in v.members : lookup(
+          var.factories_config.context.iam_principals, vv, vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
+      # don't interpolate automation service account to prevent cycles
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_by_principals = lookup(each.value, "iam_by_principals", {})
+  org_policies      = lookup(each.value, "org_policies", {})
+  tag_bindings = {
+    for k, v in lookup(each.value, "tag_bindings", {}) :
+    k => lookup(var.factories_config.context.tag_values, v, v)
+  }
 }
 
 module "hierarchy-folder-lvl-2" {
-  source                = "../folder"
-  for_each              = { for k, v in local.folders : k => v if v.level == 2 }
-  parent                = module.hierarchy-folder-lvl-1[each.value.parent_key].id
-  name                  = each.value.name
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  org_policies          = lookup(each.value, "org_policies", {})
-  tag_bindings          = lookup(each.value, "tag_bindings", {})
+  source   = "../folder"
+  for_each = { for k, v in local.folders : k => v if v.level == 2 }
+  parent   = module.hierarchy-folder-lvl-1[each.value.parent_key].id
+  name     = each.value.name
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      # don't interpolate automation service account to prevent cycles
+      for vv in v : lookup(
+        var.factories_config.context.iam_principals, vv, vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
+      members = [
+        # don't interpolate automation service account to prevent cycles
+        for vv in v.members : lookup(
+          var.factories_config.context.iam_principals, vv, vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
+      # don't interpolate automation service account to prevent cycles
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_by_principals = lookup(each.value, "iam_by_principals", {})
+  org_policies      = lookup(each.value, "org_policies", {})
+  tag_bindings = {
+    for k, v in lookup(each.value, "tag_bindings", {}) :
+    k => lookup(var.factories_config.context.tag_values, v, v)
+  }
 }
 
 module "hierarchy-folder-lvl-3" {
-  source                = "../folder"
-  for_each              = { for k, v in local.folders : k => v if v.level == 3 }
-  parent                = module.hierarchy-folder-lvl-2[each.value.parent_key].id
-  name                  = each.value.name
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  org_policies          = lookup(each.value, "org_policies", {})
-  tag_bindings          = lookup(each.value, "tag_bindings", {})
+  source   = "../folder"
+  for_each = { for k, v in local.folders : k => v if v.level == 3 }
+  parent   = module.hierarchy-folder-lvl-2[each.value.parent_key].id
+  name     = each.value.name
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      # don't interpolate automation service account to prevent cycles
+      for vv in v : lookup(
+        var.factories_config.context.iam_principals, vv, vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
+      members = [
+        # don't interpolate automation service account to prevent cycles
+        for vv in v.members : lookup(
+          var.factories_config.context.iam_principals, vv, vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
+      # don't interpolate automation service account to prevent cycles
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_by_principals = lookup(each.value, "iam_by_principals", {})
+  org_policies      = lookup(each.value, "org_policies", {})
+  tag_bindings = {
+    for k, v in lookup(each.value, "tag_bindings", {}) :
+    k => lookup(var.factories_config.context.tag_values, v, v)
+  }
 }
