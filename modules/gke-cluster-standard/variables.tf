@@ -147,12 +147,6 @@ variable "description" {
   default     = null
 }
 
-variable "disable_default_snat" {
-  type        = bool
-  description = "Whether to disable the default SNAT to support the private use of public IP addresses"
-  default     = false
-}
-
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
@@ -428,6 +422,7 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
+    disable_default_snat       = optional(bool, null)
     network                    = string
     subnetwork                 = string
     master_ipv4_cidr_block     = optional(string)

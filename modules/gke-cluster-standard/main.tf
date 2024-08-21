@@ -49,8 +49,11 @@ resource "google_container_cluster" "cluster" {
     : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
 
-  default_snat_status {
-    disabled = var.disable_default_snat
+  dynamic "default_snat_status" {
+    for_each = var.vpc_config.disable_default_snat == null ? [""] : []
+    content {
+      disabled = var.vpc_config.disable_default_snat
+    }
   }
 
   # the default node pool is deleted here, use the gke-nodepool module instead.
