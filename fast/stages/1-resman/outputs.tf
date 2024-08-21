@@ -245,18 +245,6 @@ locals {
         name          = "security"
         sa            = module.branch-security-r-sa.email
       })
-      "3-network-security" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-nsec-gcs.name
-        name          = "network-security"
-        sa            = module.branch-nsec-sa.email
-      })
-      "3-network-security-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-network-gcs.name
-        name          = "network-security"
-        sa            = module.branch-nsec-r-sa.email
-      })
     },
     {
       for k, v in module.top-level-sa :
@@ -343,6 +331,20 @@ locals {
         bucket        = module.branch-gcve-prod-gcs[0].name
         name          = "gcve-prod"
         sa            = module.branch-gcve-prod-r-sa[0].email
+      })
+    },
+    !var.fast_features.nsec ? {} : {
+      "3-network-security" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-nsec-gcs[0].name
+        name          = "network-security"
+        sa            = module.branch-nsec-sa[0].email
+      })
+      "3-network-security-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-nsec-gcs[0].name
+        name          = "network-security"
+        sa            = module.branch-nsec-r-sa[0].email
       })
     },
     !var.fast_features.sandbox ? {} : {

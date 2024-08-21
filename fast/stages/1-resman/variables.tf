@@ -136,6 +136,7 @@ variable "fast_features" {
     data_platform = optional(bool, false)
     gke           = optional(bool, false)
     gcve          = optional(bool, false)
+    nsec          = optional(bool, false)
     sandbox       = optional(bool, false)
   })
   default  = {}
