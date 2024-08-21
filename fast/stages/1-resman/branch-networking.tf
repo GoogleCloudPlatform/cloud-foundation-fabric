@@ -31,12 +31,18 @@ locals {
       "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
     },
     var.fast_features.nsec != true ? {} : {
-      # nsec service account
+      # nsec service accounts
       "roles/serviceusage.serviceUsageAdmin" = [
         try(module.branch-nsec-sa[0].iam_email, null)
       ]
+      "roles/serviceusage.serviceUsageConsumer" = [
+        try(module.branch-nsec-r-sa[0].iam_email, null)
+      ]
       (var.custom_roles["network_firewall_policies_admin"]) = [
         try(module.branch-nsec-sa[0].iam_email, null)
+      ]
+      (var.custom_roles["network_firewall_policies_viewer"]) = [
+        try(module.branch-nsec-r-sa[0].iam_email, null)
       ]
     }
   )

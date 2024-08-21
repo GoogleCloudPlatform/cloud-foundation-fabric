@@ -13,8 +13,1011 @@
 # limitations under the License.
 
 values:
+  google_storage_bucket_object.checklist_data[0]:
+    bucket: fast-prod-iac-core-checklist-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: checklist/data.tfvars.json
+    retention: []
+    source: checklist-data.json
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.checklist_org_iam[0]:
+    bucket: fast-prod-iac-core-checklist-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: checklist/org-iam.tfvars.json
+    retention: []
+    source: checklist-org-iam.json
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["0-bootstrap"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for bootstrap\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/0-bootstrap-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["0-bootstrap-r"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for bootstrap\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/0-bootstrap-r-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-resman"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for resman\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-resman-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-resman-r"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
+      \ }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for resman\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-resman-r-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-tenant-factory"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
+      \  prefix = \"tenant-factory\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
+      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
+      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for tenant-factory\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-tenant-factory-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-tenant-factory-r"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
+      \   prefix = \"tenant-factory\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
+      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
+      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for tenant-factory\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-tenant-factory-r-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-vpcsc"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n   \
+      \ prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
+      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
+      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for vpcsc\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-vpcsc-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["1-vpcsc-r"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
+      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
+      \  prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
+      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
+      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for vpcsc\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/1-vpcsc-r-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.tfvars:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: tfvars/0-bootstrap.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.tfvars_globals:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content: '{"billing_account":{"id":"000000-111111-222222","is_org_level":true,"no_iam":false},"environments":{"dev":{"is_default":false,"name":"Development"},"prod":{"is_default":true,"name":"Production"}},"groups":{"gcp-billing-admins":"group:gcp-billing-admins@fast.example.com","gcp-devops":"group:gcp-devops@fast.example.com","gcp-network-admins":"group:gcp-vpc-network-admins@fast.example.com","gcp-organization-admins":"group:gcp-organization-admins@fast.example.com","gcp-security-admins":"group:gcp-security-admins@fast.example.com","gcp-support":"group:gcp-devops@fast.example.com"},"locations":{"bq":"EU","gcs":"EU","logging":"europe-west1","pubsub":[]},"organization":{"customer_id":"C00000000","domain":"fast.example.com","id":123456789012},"prefix":"fast"}'
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: tfvars/0-globals.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.automation-project.data.google_bigquery_default_service_account.bq_sa[0]:
+    project: fast-prod-iac-core-0
+  module.automation-project.data.google_storage_project_service_account.gcs_sa[0]:
+    project: fast-prod-iac-core-0
+    user_project: null
+  module.automation-project.google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
+    email: gcp-organization-admins@fast.example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/fast-prod-iac-core-0
+    timeouts: null
+  module.automation-project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
+    name: projects/fast-prod-iac-core-0/policies/compute.skipDefaultNetworkCreation
+    parent: projects/fast-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.automation-project.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
+    dry_run_spec: []
+    name: projects/fast-prod-iac-core-0/policies/iam.automaticIamGrantsForDefaultServiceAccounts
+    parent: projects/fast-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.automation-project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
+    name: projects/fast-prod-iac-core-0/policies/iam.disableServiceAccountKeyCreation
+    parent: projects/fast-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.automation-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    folder_id: null
+    labels: null
+    name: fast-prod-iac-core-0
+    org_id: '123456789012'
+    project_id: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-project.google_project_iam_audit_config.default["iam.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: ADMIN_READ
+    project: fast-prod-iac-core-0
+    service: iam.googleapis.com
+  module.automation-project.google_project_iam_binding.authoritative["organizations/123456789012/roles/storageViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-project.google_project_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/browser
+  module.automation-project.google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/cloudbuild.builds.editor
+  module.automation-project.google_project_iam_binding.authoritative["roles/cloudbuild.builds.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/cloudbuild.builds.viewer
+  module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/iam.serviceAccountAdmin
+  module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    - group:gcp-organization-admins@fast.example.com
+    project: fast-prod-iac-core-0
+    role: roles/iam.serviceAccountTokenCreator
+  module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/iam.serviceAccountViewer
+  module.automation-project.google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/iam.workloadIdentityPoolAdmin
+  module.automation-project.google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/iam.workloadIdentityPoolViewer
+  module.automation-project.google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/owner
+  module.automation-project.google_project_iam_binding.authoritative["roles/source.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/source.admin
+  module.automation-project.google_project_iam_binding.authoritative["roles/source.reader"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/source.reader
+  module.automation-project.google_project_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/storage.admin
+  module.automation-project.google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/viewer
+  module.automation-project.google_project_iam_binding.bindings["delegated_grants_resman"]:
+    condition:
+    - description: Resource manager service account delegated grant.
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/serviceusage.serviceUsageConsumer'])
+      title: resman_delegated_grant
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/resourcemanager.projectIamAdmin
+  module.automation-project.google_project_iam_member.bindings["serviceusage_resman"]:
+    condition: []
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/serviceusage.serviceUsageConsumer
+  module.automation-project.google_project_iam_member.bindings["serviceusage_resman_r"]:
+    condition: []
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    role: roles/serviceusage.serviceUsageViewer
+  module.automation-project.google_project_iam_member.service_agents["cloudasset"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/cloudasset.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["cloudbuild"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/cloudbuild.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["cloudbuild-sa"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/cloudbuild.builds.builder
+  module.automation-project.google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/cloudkms.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/compute.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/container.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/container.nodeServiceAgent
+  module.automation-project.google_project_iam_member.service_agents["pubsub"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/pubsub.serviceAgent
+  module.automation-project.google_project_iam_member.service_agents["service-networking"]:
+    condition: []
+    project: fast-prod-iac-core-0
+    role: roles/servicenetworking.serviceAgent
+  module.automation-project.google_project_service.project_services["accesscontextmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: accesscontextmanager.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["bigqueryreservation.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: bigqueryreservation.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["bigquerystorage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: bigquerystorage.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["billingbudgets.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: billingbudgets.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudasset.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudasset.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudbilling.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudbilling.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudbuild.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudbuild.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudquotas.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudquotas.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: cloudresourcemanager.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["essentialcontacts.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: essentialcontacts.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: iam.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["iamcredentials.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: iamcredentials.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["networksecurity.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["orgpolicy.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: orgpolicy.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["pubsub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["servicenetworking.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["serviceusage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: serviceusage.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["storage-component.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: storage-component.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service.project_services["sts.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-iac-core-0
+    service: sts.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["cloudasset.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: cloudasset.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["container.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["networksecurity.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["pubsub.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.automation-project.google_project_service_identity.default["servicenetworking.googleapis.com"]:
+    project: fast-prod-iac-core-0
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.automation-tf-bootstrap-gcs.google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast-prod-iac-core-bootstrap-0
+    project: fast-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  ? module.automation-tf-bootstrap-r-sa.google_organization_iam_member.organization-roles["123456789012-organizations/123456789012/roles/organizationAdminViewer"]
+  : condition: []
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/organizationAdminViewer
+  ? module.automation-tf-bootstrap-r-sa.google_organization_iam_member.organization-roles["123456789012-organizations/123456789012/roles/tagViewer"]
+  : condition: []
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/tagViewer
+  module.automation-tf-bootstrap-r-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform organization bootstrap service account (read-only).
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-bootstrap-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-bootstrap-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-tf-bootstrap-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform organization bootstrap service account.
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-bootstrap-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.admin
+  module.automation-tf-checklist-gcs[0].google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast-prod-iac-core-checklist-0
+    project: fast-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.automation-tf-output-gcs.google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast-prod-iac-core-outputs-0
+    project: fast-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.automation-tf-resman-gcs.google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast-prod-iac-core-resman-0
+    project: fast-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.automation-tf-resman-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast-prod-iac-core-resman-0
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.automation-tf-resman-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast-prod-iac-core-resman-0
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  ? module.automation-tf-resman-r-sa.google_organization_iam_member.organization-roles["123456789012-organizations/123456789012/roles/organizationAdminViewer"]
+  : condition: []
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/organizationAdminViewer
+  ? module.automation-tf-resman-r-sa.google_organization_iam_member.organization-roles["123456789012-organizations/123456789012/roles/tagViewer"]
+  : condition: []
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/tagViewer
+  module.automation-tf-resman-r-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-resman-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 resman service account (read-only).
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-resman-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-tf-resman-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-resman-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 resman service account.
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-resman-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.admin
+  module.automation-tf-vpcsc-gcs.google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast-prod-iac-core-vpcsc-0
+    project: fast-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.automation-tf-vpcsc-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast-prod-iac-core-vpcsc-0
+    condition: []
+    members:
+    - serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.automation-tf-vpcsc-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast-prod-iac-core-vpcsc-0
+    condition: []
+    members:
+    - serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.automation-tf-vpcsc-r-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-vpcsc-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 vpcsc service account (read-only).
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-vpcsc-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-tf-vpcsc-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-vpcsc-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 vpcsc service account.
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-vpcsc-sa.google_service_account_iam_member.bindings["security_admins"]:
+    condition: []
+    member: group:gcp-security-admins@fast.example.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-vpcsc-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.admin
+  module.billing-export-dataset[0].google_bigquery_dataset.default:
+    dataset_id: billing_export
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    external_dataset_reference: []
+    friendly_name: Billing export.
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
+    project: fast-prod-billing-exp-0
+    resource_tags: null
+    timeouts: null
+  module.billing-export-project[0].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: fast-prod-billing-exp-0
+  module.billing-export-project[0].data.google_storage_project_service_account.gcs_sa[0]:
+    project: fast-prod-billing-exp-0
+    user_project: null
+  module.billing-export-project[0].google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
+    email: gcp-organization-admins@fast.example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/fast-prod-billing-exp-0
+    timeouts: null
+  module.billing-export-project[0].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    folder_id: null
+    labels: null
+    name: fast-prod-billing-exp-0
+    org_id: '123456789012'
+    project_id: fast-prod-billing-exp-0
+    timeouts: null
+  module.billing-export-project[0].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-billing-exp-0
+    role: roles/owner
+  module.billing-export-project[0].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-billing-exp-0
+    role: roles/viewer
+  module.billing-export-project[0].google_project_iam_member.service_agents["bigquerydatatransfer"]:
+    condition: []
+    project: fast-prod-billing-exp-0
+    role: roles/bigquerydatatransfer.serviceAgent
+  module.billing-export-project[0].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-billing-exp-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.billing-export-project[0].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
+  module.billing-export-project[0].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-billing-exp-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.billing-export-project[0].google_project_service_identity.default["bigquerydatatransfer.googleapis.com"]:
+    project: fast-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
   module.log-export-logbucket["audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
+    cmek_settings: []
+    enable_analytics: true
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: fast-prod-audit-logs-0
+    retention_days: 30
+  module.log-export-logbucket["iam"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: iam
     cmek_settings: []
     enable_analytics: true
     index_configs: []
@@ -40,6 +1043,430 @@ values:
     locked: null
     project: fast-prod-audit-logs-0
     retention_days: 30
+  module.log-export-project.data.google_bigquery_default_service_account.bq_sa[0]:
+    project: fast-prod-audit-logs-0
+  module.log-export-project.data.google_storage_project_service_account.gcs_sa[0]:
+    project: fast-prod-audit-logs-0
+    user_project: null
+  module.log-export-project.google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
+    email: gcp-organization-admins@fast.example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/fast-prod-audit-logs-0
+    timeouts: null
+  module.log-export-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    folder_id: null
+    labels: null
+    name: fast-prod-audit-logs-0
+    org_id: '123456789012'
+    project_id: fast-prod-audit-logs-0
+    timeouts: null
+  module.log-export-project.google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-audit-logs-0
+    role: roles/owner
+  module.log-export-project.google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-audit-logs-0
+    role: roles/viewer
+  module.log-export-project.google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-audit-logs-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.log-export-project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-audit-logs-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.log-export-project.google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-audit-logs-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.organization-logging.google_logging_organization_settings.default[0]:
+    organization: '123456789012'
+    storage_location: global
+    timeouts: null
+  module.organization.google_logging_organization_sink.sink["audit-logs"]:
+    description: audit-logs (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: 'log_id("cloudaudit.googleapis.com/activity") OR
+
+      log_id("cloudaudit.googleapis.com/system_event") OR
+
+      log_id("cloudaudit.googleapis.com/policy") OR
+
+      log_id("cloudaudit.googleapis.com/access_transparency")
+
+      '
+    include_children: true
+    intercept_children: false
+    name: audit-logs
+    org_id: '123456789012'
+  module.organization.google_logging_organization_sink.sink["iam"]:
+    description: iam (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: 'protoPayload.serviceName="iamcredentials.googleapis.com" OR
+
+      protoPayload.serviceName="iam.googleapis.com" OR
+
+      protoPayload.serviceName="sts.googleapis.com"
+
+      '
+    include_children: true
+    intercept_children: false
+    name: iam
+    org_id: '123456789012'
+  module.organization.google_logging_organization_sink.sink["vpc-sc"]:
+    description: vpc-sc (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: 'protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+
+      '
+    include_children: true
+    intercept_children: false
+    name: vpc-sc
+    org_id: '123456789012'
+  module.organization.google_logging_organization_sink.sink["workspace-audit-logs"]:
+    description: workspace-audit-logs (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: 'log_id("cloudaudit.googleapis.com/data_access") AND
+
+      protoPayload.serviceName="login.googleapis.com"
+
+      '
+    include_children: true
+    intercept_children: false
+    name: workspace-audit-logs
+    org_id: '123456789012'
+  module.organization.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableGuestAttributesAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.disableNestedVirtualization"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableNestedVirtualization
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableSerialPortAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.requireOsLogin"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.requireOsLogin
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.restrictLoadBalancerCreationForTypes
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - in:INTERNAL
+          denied_values: null
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.skipDefaultNetworkCreation
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.trustedImageProjects
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - is:projects/centos-cloud
+          - is:projects/cos-cloud
+          - is:projects/debian-cloud
+          - is:projects/fedora-cloud
+          - is:projects/fedora-coreos-cloud
+          - is:projects/opensuse-cloud
+          - is:projects/rhel-cloud
+          - is:projects/rhel-sap-cloud
+          - is:projects/rocky-linux-cloud
+          - is:projects/suse-cloud
+          - is:projects/suse-sap-cloud
+          - is:projects/ubuntu-os-cloud
+          - is:projects/ubuntu-os-pro-cloud
+          - is:projects/windows-cloud
+          - is:projects/windows-sql-cloud
+          - is:projects/confidential-vm-images
+          - is:projects/backupdr-images
+          - is:projects/deeplearning-platform-release
+          - is:projects/serverless-vpc-access-images
+          denied_values: null
+    timeouts: null
+  module.organization.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.vmExternalIpAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.allowedPolicyMemberDomains
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: '!resource.matchTag(''123456789012/org-policies'', ''allowed-policy-member-domains-all'')'
+          location: null
+          title: null
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - C00000000
+          denied_values: null
+      - allow_all: 'TRUE'
+        condition:
+        - description: null
+          expression: resource.matchTag('123456789012/org-policies', 'allowed-policy-member-domains-all')
+          location: null
+          title: allow-all
+        deny_all: null
+        enforce: null
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.automaticIamGrantsForDefaultServiceAccounts
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.disableServiceAccountKeyCreation
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.serviceAccountKeyExposureResponse"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.serviceAccountKeyExposureResponse
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - DISABLE_KEY
+          denied_values: null
+    timeouts: null
+  module.organization.google_org_policy_policy.default["run.allowedIngress"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/run.allowedIngress
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - is:internal-and-cloud-load-balancing
+          denied_values: null
+    timeouts: null
+  module.organization.google_org_policy_policy.default["sql.restrictAuthorizedNetworks"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/sql.restrictAuthorizedNetworks
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["sql.restrictPublicIp"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/sql.restrictPublicIp
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["storage.publicAccessPrevention"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.publicAccessPrevention
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["storage.secureHttpTransport"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.secureHttpTransport
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["storage.uniformBucketLevelAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.uniformBucketLevelAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
   module.organization.google_organization_iam_binding.authoritative["roles/billing.creator"]:
     condition: []
     members:
@@ -86,6 +1513,20 @@ values:
     - group:gcp-organization-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.osLoginExternalUser
+  module.organization.google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/essentialcontacts.admin
+  module.organization.google_organization_iam_binding.authoritative["roles/essentialcontacts.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/essentialcontacts.viewer
   module.organization.google_organization_iam_binding.authoritative["roles/iam.securityReviewer"]:
     condition: []
     members:
@@ -93,10 +1534,10 @@ values:
     org_id: '123456789012'
     role: roles/iam.securityReviewer
   module.organization.google_organization_iam_binding.authoritative["roles/iam.workforcePoolAdmin"]:
-    condition: [ ]
+    condition: []
     members:
-      - group:gcp-organization-admins@fast.example.com
-      - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/iam.workforcePoolAdmin
   module.organization.google_organization_iam_binding.authoritative["roles/logging.admin"]:
@@ -198,23 +1639,236 @@ values:
     - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/serviceusage.serviceUsageViewer
-  module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
+  module.organization.google_organization_iam_binding.bindings["organization_billing_conditional"]:
     condition:
     - description: Automation service account delegated grants.
-      expression: |
-        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/cloudasset.viewer','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer'])
-        || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['organizations/123456789012/roles/networkFirewallPoliciesAdmin','organizations/123456789012/roles/ngfwEnterpriseAdmin','organizations/123456789012/roles/serviceProjectNetworkAdmin','organizations/123456789012/roles/tenantNetworkAdmin'])
-
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/billing.admin','roles/billing.costsManager','roles/billing.user'])
       title: automation_sa_delegated_grants
     members:
     - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: organizations/123456789012/roles/organizationIamAdmin
+  module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
+    condition:
+    - description: Automation service account delegated grants.
+      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/accesscontextmanager.policyAdmin'',''roles/cloudasset.viewer'',''roles/compute.orgFirewallPolicyAdmin'',''roles/compute.xpnAdmin'',''roles/orgpolicy.policyAdmin'',''roles/orgpolicy.policyViewer'',''roles/resourcemanager.organizationViewer''])
+
+        || api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''organizations/123456789012/roles/networkFirewallPoliciesAdmin'',''organizations/123456789012/roles/networkFirewallPoliciesViewer'',''organizations/123456789012/roles/ngfwEnterpriseAdmin'',''organizations/123456789012/roles/ngfwEnterpriseViewer'',''organizations/123456789012/roles/serviceProjectNetworkAdmin'',''organizations/123456789012/roles/tenantNetworkAdmin''])
+
+        '
+      title: automation_sa_delegated_grants
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/organizationIamAdmin
+  module.organization.google_organization_iam_binding.bindings["organization_ngfw_enterprise_admin"]:
+    condition: []
+    members:
+    - group:gcp-vpc-network-admins@fast.example.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseAdmin
+  module.organization.google_organization_iam_custom_role.roles["gcve_network_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - vmwareengine.networkPeerings.create
+    - vmwareengine.networkPeerings.delete
+    - vmwareengine.networkPeerings.get
+    - vmwareengine.networkPeerings.list
+    - vmwareengine.operations.get
+    role_id: gcveNetworkAdmin
+    stage: GA
+    title: Custom role gcveNetworkAdmin
+  module.organization.google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - compute.networks.setFirewallPolicy
+    - networksecurity.firewallEndpointAssociations.create
+    - networksecurity.firewallEndpointAssociations.delete
+    - networksecurity.firewallEndpointAssociations.get
+    - networksecurity.firewallEndpointAssociations.list
+    - networksecurity.firewallEndpointAssociations.update
+    role_id: networkFirewallPoliciesAdmin
+    stage: GA
+    title: Custom role networkFirewallPoliciesAdmin
+  module.organization.google_organization_iam_custom_role.roles["network_firewall_policies_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - networksecurity.firewallEndpointAssociations.get
+    - networksecurity.firewallEndpointAssociations.list
+    role_id: networkFirewallPoliciesViewer
+    stage: GA
+    title: Custom role networkFirewallPoliciesViewer
+  module.organization.google_organization_iam_custom_role.roles["ngfw_enterprise_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - networksecurity.firewallEndpoints.create
+    - networksecurity.firewallEndpoints.delete
+    - networksecurity.firewallEndpoints.get
+    - networksecurity.firewallEndpoints.list
+    - networksecurity.firewallEndpoints.update
+    - networksecurity.firewallEndpoints.use
+    - networksecurity.locations.get
+    - networksecurity.locations.list
+    - networksecurity.operations.cancel
+    - networksecurity.operations.delete
+    - networksecurity.operations.get
+    - networksecurity.operations.list
+    - networksecurity.securityProfileGroups.create
+    - networksecurity.securityProfileGroups.delete
+    - networksecurity.securityProfileGroups.get
+    - networksecurity.securityProfileGroups.list
+    - networksecurity.securityProfileGroups.update
+    - networksecurity.securityProfileGroups.use
+    - networksecurity.securityProfiles.create
+    - networksecurity.securityProfiles.delete
+    - networksecurity.securityProfiles.get
+    - networksecurity.securityProfiles.list
+    - networksecurity.securityProfiles.update
+    - networksecurity.securityProfiles.use
+    role_id: ngfwEnterpriseAdmin
+    stage: GA
+    title: Custom role ngfwEnterpriseAdmin
+  module.organization.google_organization_iam_custom_role.roles["ngfw_enterprise_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - networksecurity.firewallEndpoints.get
+    - networksecurity.firewallEndpoints.list
+    - networksecurity.firewallEndpoints.use
+    - networksecurity.locations.get
+    - networksecurity.locations.list
+    - networksecurity.operations.get
+    - networksecurity.operations.list
+    - networksecurity.securityProfileGroups.get
+    - networksecurity.securityProfileGroups.list
+    - networksecurity.securityProfileGroups.use
+    - networksecurity.securityProfiles.get
+    - networksecurity.securityProfiles.list
+    - networksecurity.securityProfiles.use
+    role_id: ngfwEnterpriseViewer
+    stage: GA
+    title: Custom role ngfwEnterpriseViewer
+  module.organization.google_organization_iam_custom_role.roles["organization_admin_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - essentialcontacts.contacts.get
+    - essentialcontacts.contacts.list
+    - logging.settings.get
+    - orgpolicy.constraints.list
+    - orgpolicy.policies.list
+    - orgpolicy.policy.get
+    - resourcemanager.folders.get
+    - resourcemanager.folders.getIamPolicy
+    - resourcemanager.folders.list
+    - resourcemanager.organizations.get
+    - resourcemanager.organizations.getIamPolicy
+    - resourcemanager.projects.get
+    - resourcemanager.projects.getIamPolicy
+    - resourcemanager.projects.list
+    role_id: organizationAdminViewer
+    stage: GA
+    title: Custom role organizationAdminViewer
+  module.organization.google_organization_iam_custom_role.roles["organization_iam_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - resourcemanager.organizations.get
+    - resourcemanager.organizations.getIamPolicy
+    - resourcemanager.organizations.setIamPolicy
+    role_id: organizationIamAdmin
+    stage: GA
+    title: Custom role organizationIamAdmin
+  module.organization.google_organization_iam_custom_role.roles["service_project_network_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - compute.globalOperations.get
+    - compute.networks.get
+    - compute.networks.updatePeering
+    - compute.organizations.disableXpnResource
+    - compute.organizations.enableXpnResource
+    - compute.projects.get
+    - compute.subnetworks.getIamPolicy
+    - compute.subnetworks.setIamPolicy
+    - dns.networks.bindPrivateDNSZone
+    - resourcemanager.projects.get
+    role_id: serviceProjectNetworkAdmin
+    stage: GA
+    title: Custom role serviceProjectNetworkAdmin
+  module.organization.google_organization_iam_custom_role.roles["storage_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - storage.buckets.get
+    - storage.buckets.getIamPolicy
+    - storage.buckets.getObjectInsights
+    - storage.buckets.list
+    - storage.buckets.listEffectiveTags
+    - storage.buckets.listTagBindings
+    - storage.managedFolders.get
+    - storage.managedFolders.getIamPolicy
+    - storage.managedFolders.list
+    - storage.multipartUploads.list
+    - storage.multipartUploads.listParts
+    - storage.objects.create
+    - storage.objects.get
+    - storage.objects.getIamPolicy
+    - storage.objects.list
+    role_id: storageViewer
+    stage: GA
+    title: Custom role storageViewer
+  module.organization.google_organization_iam_custom_role.roles["tag_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - resourcemanager.tagHolds.list
+    - resourcemanager.tagKeys.get
+    - resourcemanager.tagKeys.getIamPolicy
+    - resourcemanager.tagKeys.list
+    - resourcemanager.tagValues.get
+    - resourcemanager.tagValues.getIamPolicy
+    - resourcemanager.tagValues.list
+    role_id: tagViewer
+    stage: GA
+    title: Custom role tagViewer
+  module.organization.google_organization_iam_custom_role.roles["tenant_network_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - compute.globalOperations.get
+    role_id: tenantNetworkAdmin
+    stage: GA
+    title: Custom role tenantNetworkAdmin
   ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-group:gcp-security-admins@fast.example.com"]
   : condition: []
     member: group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
     role: roles/accesscontextmanager.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/accesscontextmanager.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/accesscontextmanager.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyReader-serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/accesscontextmanager.policyReader
+  ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyReader-serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/accesscontextmanager.policyReader
   ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-group:gcp-billing-admins@fast.example.com"]
   : condition: []
     member: group:gcp-billing-admins@fast.example.com
@@ -250,6 +1904,16 @@ values:
     member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/billing.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/cloudasset.viewer-serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/cloudasset.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/cloudasset.viewer-serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/cloudasset.viewer
   ? module.organization.google_organization_iam_member.bindings["roles/compute.networkAdmin-group:gcp-vpc-network-admins@fast.example.com"]
   : condition: []
     member: group:gcp-vpc-network-admins@fast.example.com
@@ -306,7 +1970,7 @@ values:
     org_id: '123456789012'
     role: roles/iam.organizationRoleViewer
   ? module.organization.google_organization_iam_member.bindings["roles/iam.workforcePoolViewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
-  : condition: [ ]
+  : condition: []
     member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/iam.workforcePoolViewer
@@ -370,6 +2034,33 @@ values:
     member: group:gcp-organization-admins@fast.example.com
     org_id: '123456789012'
     role: roles/storage.objectAdmin
+  module.organization.google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+    condition:
+    - title: audit-logs bucket writer
+    role: roles/logging.bucketWriter
+  module.organization.google_project_iam_member.bucket-sinks-binding["iam"]:
+    condition:
+    - title: iam bucket writer
+    role: roles/logging.bucketWriter
+  module.organization.google_project_iam_member.bucket-sinks-binding["vpc-sc"]:
+    condition:
+    - title: vpc-sc bucket writer
+    role: roles/logging.bucketWriter
+  module.organization.google_project_iam_member.bucket-sinks-binding["workspace-audit-logs"]:
+    condition:
+    - title: workspace-audit-logs bucket writer
+    role: roles/logging.bucketWriter
+  module.organization.google_tags_tag_key.default["org-policies"]:
+    description: Organization policy conditions.
+    parent: organizations/123456789012
+    purpose: null
+    purpose_data: null
+    short_name: org-policies
+    timeouts: null
+  module.organization.google_tags_tag_value.default["org-policies/allowed-policy-member-domains-all"]:
+    description: Managed by the Terraform organization module.
+    short_name: allowed-policy-member-domains-all
+    timeouts: null
 
 counts:
   google_bigquery_dataset: 1
@@ -380,7 +2071,7 @@ counts:
   google_logging_project_bucket_config: 4
   google_org_policy_policy: 22
   google_organization_iam_binding: 28
-  google_organization_iam_custom_role: 9
+  google_organization_iam_custom_role: 11
   google_organization_iam_member: 42
   google_project: 3
   google_project_iam_audit_config: 1
@@ -399,4 +2090,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 21
-  resources: 235
+  resources: 237
