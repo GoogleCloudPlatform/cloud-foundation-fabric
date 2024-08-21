@@ -52,8 +52,8 @@ module "secure-web-proxy" {
   service_attachment = {
     nat_subnets           = ["projects/my-project/regions/europe-west4/subnetworks/my-psc-subnetwork"]
     consumer_accept_lists = {
-      "my-autoaccept-project-1"  = 1,
-      "my-autoaccept-project-2"  = 1
+      "my-autoaccept-project-1" = 1,
+      "my-autoaccept-project-2" = 1
     }
   }  
 }
