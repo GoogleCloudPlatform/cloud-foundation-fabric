@@ -94,6 +94,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "default_snat_status" {
+    for_each = var.vpc_config.disable_default_snat == null ? [] : [""]
+    content {
+      disabled = var.vpc_config.disable_default_snat
+    }
+  }
+
   dynamic "dns_config" {
     for_each = var.enable_features.dns != null ? [""] : []
     content {
