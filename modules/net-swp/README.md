@@ -217,8 +217,9 @@ module "secure-web-proxy" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [gateway](outputs.tf#L17) | The gateway resource. |  |
-| [gateway_security_policy](outputs.tf#L22) | The gateway security policy resource. |  |
-| [id](outputs.tf#L27) | ID of the gateway resource. |  |
-| [service_attachment](outputs.tf#L32) | ID of the service attachment resource, if created. |  |
+| [addresses](outputs.tf#L17) | The address on which the gateway will receive the traffic. |  |
+| [gateway](outputs.tf#L22) | The gateway resource. |  |
+| [gateway_security_policy](outputs.tf#L27) | The gateway security policy resource. |  |
+| [id](outputs.tf#L32) | ID of the gateway resource. |  |
+| [service_attachment](outputs.tf#L37) | ID of the service attachment resource, if created. |  |
 <!-- END TFDOC -->
