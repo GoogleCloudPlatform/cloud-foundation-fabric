@@ -14,53 +14,128 @@
 #
 # file: tests/modules/net_swp/examples/tls.yaml
 values:
-  module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
-    name: "secure-web-proxy"
-    project: "my-project"
-    location: "europe-west4"
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_tls_inspection_policy.tls-policy[0]:
-    project: "my-project"
-    name: "secure-web-proxy"
-    location: "europe-west4"
-    exclude_public_ca_set: false
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_services_gateway.gateway:
-    project: "my-project"
-    name: "secure-web-proxy"
-    location: "europe-west4"
-    type: "SECURE_WEB_GATEWAY"
-    addresses: 
-      - "10.142.68.3"
-    ports: [443]
-    certificate_urls: ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
-    network: "projects/my-project/global/networks/my-network"
-    subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
-    delete_swg_autogen_router_on_destroy: true
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
-    project: "my-project"
-    name: "custom-rule-1"
-    location: "europe-west4"
-    enabled: true
-    priority: 1000
-    session_matcher: "host() == 'google.com'"
-    application_matcher: "request.path.contains('generate_204')"
-    tls_inspection_enabled: true
-    basic_profile: "ALLOW"
-    description: "Managed by Terraform."
   google_privateca_ca_pool.pool:
-    name: "secure-web-proxy-capool"
-    location: "europe-west4"
-    project: "my-project"
-    tier: "DEVOPS"
-  google_privateca_certificate_authority.ca:
-    certificate_authority_id: "secure-web-proxy-ca"
-    location: "europe-west4"
-    project: "my-project"
+    issuance_policy: []
+    labels: null
+    location: europe-west4
+    name: secure-web-proxy-capool
+    project: my-project
+    publishing_options: []
+    tier: DEVOPS
+    timeouts: null
   google_privateca_ca_pool_iam_member.member:
-    role: "roles/privateca.certificateManager"
-    member: "serviceAccount:service-123456789@gcp-sa-networksecurity.iam.gserviceaccount.com"
+    condition: []
+    member: serviceAccount:service-123456789@gcp-sa-networksecurity.iam.gserviceaccount.com
+    role: roles/privateca.certificateManager
+  google_privateca_certificate_authority.ca:
+    certificate_authority_id: secure-web-proxy-ca
+    config:
+    - subject_config:
+      - subject:
+        - common_name: fabric
+          country_code: null
+          locality: null
+          organization: Cloud Foundation Fabric
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: null
+            crl_sign: true
+            data_encipherment: null
+            decipher_only: null
+            digital_signature: null
+            encipher_only: null
+            key_agreement: null
+            key_encipherment: null
+          extended_key_usage:
+          - client_auth: null
+            code_signing: null
+            email_protection: null
+            ocsp_signing: null
+            server_auth: true
+            time_stamping: null
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_protection: false
+    desired_state: null
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: EC_P256_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 1209600s
+    location: europe-west4
+    pem_ca_certificate: null
+    pool: secure-web-proxy-capool
+    project: my-project
+    skip_grace_period: false
+    subordinate_config: []
+    timeouts: null
+    type: SELF_SIGNED
+  module.secure-web-proxy.google_network_security_gateway_security_policy.default:
+    description: Managed by Terraform.
+    location: europe-west4
+    name: secure-web-proxy
+    project: my-project
+    timeouts: null
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
+    application_matcher: request.path.contains('generate_204')
+    basic_profile: ALLOW
+    description: Managed by Terraform.
+    enabled: true
+    location: europe-west4
+    name: custom-rule-1
+    priority: 1000
+    project: my-project
+    session_matcher: host() == 'google.com'
+    timeouts: null
+    tls_inspection_enabled: true
+  module.secure-web-proxy.google_network_security_tls_inspection_policy.default[0]:
+    custom_tls_features: null
+    description: Managed by Terraform.
+    exclude_public_ca_set: false
+    location: europe-west4
+    min_tls_version: null
+    name: secure-web-proxy
+    project: my-project
+    timeouts: null
+    tls_feature_profile: null
+    trust_config: null
+  module.secure-web-proxy.google_network_services_gateway.default:
+    addresses:
+    - 10.142.68.3
+    certificate_urls:
+    - projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert
+    delete_swg_autogen_router_on_destroy: true
+    description: Managed by Terraform.
+    labels: null
+    location: europe-west4
+    name: secure-web-proxy
+    network: projects/my-project/global/networks/my-network
+    ports:
+    - 443
+    project: my-project
+    scope: ''
+    server_tls_policy: null
+    subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
+    timeouts: null
+    type: SECURE_WEB_GATEWAY
   
 counts:
   google_network_security_gateway_security_policy: 1
