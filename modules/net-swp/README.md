@@ -7,6 +7,13 @@ policies:
 - Url list rules via the `policy_rules.url_lists` variable
 - Custom rules via the `policy_rules.custom`
 
+It also allows to deploy SWP as a Private Service Connect service. 
+This means that a single SWP deployment can be used from across different VPCs, regardless of whether they are interconnected.
+
+A [Proxy-only subnet](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) must exist in the VPC where SWP is deployed.
+
+When deploying SWP, the required ad-hoc [Cloud Router](https://cloud.google.com/network-connectivity/docs/router) is also created.
+
 ## Examples
 
 ### Minimal Secure Web Proxy
@@ -217,9 +224,8 @@ module "secure-web-proxy" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [addresses](outputs.tf#L17) | The address on which the gateway will receive the traffic. |  |
-| [gateway](outputs.tf#L22) | The gateway resource. |  |
-| [gateway_security_policy](outputs.tf#L27) | The gateway security policy resource. |  |
-| [id](outputs.tf#L32) | ID of the gateway resource. |  |
-| [service_attachment](outputs.tf#L37) | ID of the service attachment resource, if created. |  |
+| [gateway](outputs.tf#L17) | The gateway resource. |  |
+| [gateway_security_policy](outputs.tf#L22) | The gateway security policy resource. |  |
+| [id](outputs.tf#L27) | ID of the gateway resource. |  |
+| [service_attachment](outputs.tf#L32) | ID of the service attachment resource, if created. |  |
 <!-- END TFDOC -->

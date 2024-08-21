@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "addresses" {
-  description = "The address on which the gateway will receive the traffic."
-  value       = google_network_services_gateway.default.addresses
-}
-
 output "gateway" {
   description = "The gateway resource."
   value       = google_network_services_gateway.default
