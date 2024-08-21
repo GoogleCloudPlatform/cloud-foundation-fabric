@@ -33,8 +33,8 @@ locals {
     gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
     gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
     gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-    nsec                   = module.branch-nsec-sa.email
-    nsec-r                 = module.branch-nsec-r-sa.email
+    nsec                   = try(module.branch-nsec-sa[0].email, null)
+    nsec-r                 = try(module.branch-nsec-r-sa[0].email, null)
     networking             = module.branch-network-sa.email
     networking-r           = module.branch-network-r-sa.email
     project-factory        = module.branch-pf-sa.email

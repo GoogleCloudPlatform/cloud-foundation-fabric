@@ -42,18 +42,18 @@ values:
 
 counts:
   google_folder: 5
-  google_folder_iam_binding: 30
-  google_organization_iam_member: 16
-  google_project_iam_member: 12
-  google_service_account: 12
-  google_service_account_iam_binding: 12
-  google_storage_bucket: 6
-  google_storage_bucket_iam_binding: 12
-  google_storage_bucket_iam_member: 12
-  google_storage_bucket_object: 13
+  google_folder_iam_binding: 28
+  google_organization_iam_member: 14
+  google_project_iam_member: 10
+  google_service_account: 10
+  google_service_account_iam_binding: 10
+  google_storage_bucket: 5
+  google_storage_bucket_iam_binding: 10
+  google_storage_bucket_iam_member: 10
+  google_storage_bucket_object: 11
   google_tags_tag_binding: 5
   google_tags_tag_key: 2
   google_tags_tag_value: 9
   google_tags_tag_value_iam_binding: 2
-  modules: 24
-  resources: 148
+  modules: 21
+  resources: 131

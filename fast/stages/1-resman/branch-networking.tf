@@ -18,20 +18,28 @@
 
 locals {
   # FAST-specific IAM
-  _network_folder_fast_iam = {
-    # read-write (apply) automation service account
-    "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
-    "roles/owner"                          = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
-    # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
-    # nsec service account
-    "roles/serviceusage.serviceUsageAdmin"                = [module.branch-nsec-sa.iam_email]
-    (var.custom_roles["network_firewall_policies_admin"]) = [module.branch-nsec-sa.iam_email]
-  }
+  _network_folder_fast_iam = merge(
+    {
+      # read-write (apply) automation service account
+      "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
+      "roles/owner"                          = [module.branch-network-sa.iam_email]
+      "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
+      "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
+      "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
+      # read-only (plan) automation service account
+      "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+      "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
+    },
+    var.fast_features.nsec != true ? {} : {
+      # nsec service account
+      "roles/serviceusage.serviceUsageAdmin" = [
+        try(module.branch-nsec-sa[0].iam_email, null)
+      ]
+      (var.custom_roles["network_firewall_policies_admin"]) = [
+        try(module.branch-nsec-sa[0].iam_email, null)
+      ]
+    }
+  )
   # deep-merge FAST-specific IAM with user-provided bindings in var.folder_iam
   _network_folder_iam = merge(
     var.folder_iam.network,
