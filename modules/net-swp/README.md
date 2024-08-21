@@ -57,12 +57,12 @@ module "secure-web-proxy" {
     example = "value"
   }
   service_attachment = {
-    nat_subnets           = ["projects/my-project/regions/europe-west4/subnetworks/my-psc-subnetwork"]
+    nat_subnets = ["projects/my-project/regions/europe-west4/subnetworks/my-psc-subnetwork"]
     consumer_accept_lists = {
       "my-autoaccept-project-1" = 1,
       "my-autoaccept-project-2" = 1
     }
-  }  
+  }
 }
 # tftest modules=1 resources=3 inventory=psc.yaml
 ```
