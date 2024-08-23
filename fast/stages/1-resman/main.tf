@@ -19,61 +19,6 @@ locals {
   # automation_resman_sa = try(
   #   data.google_client_openid_userinfo.provider_identity[0].email, null
   # )
-  # stage service accounts, used in top folders and outputs
-  branch_service_accounts = {
-    data-platform-dev      = try(module.branch-dp-dev-sa[0].email, null)
-    data-platform-dev-r    = try(module.branch-dp-dev-r-sa[0].email, null)
-    data-platform-prod     = try(module.branch-dp-prod-sa[0].email, null)
-    data-platform-prod-r   = try(module.branch-dp-prod-r-sa[0].email, null)
-    gcve-dev               = try(module.branch-gcve-dev-sa[0].email, null)
-    gcve-dev-r             = try(module.branch-gcve-dev-r-sa[0].email, null)
-    gcve-prod              = try(module.branch-gcve-prod-sa[0].email, null)
-    gcve-prod-r            = try(module.branch-gcve-prod-r-sa[0].email, null)
-    gke-dev                = try(module.branch-gke-dev-sa[0].email, null)
-    gke-dev-r              = try(module.branch-gke-dev-r-sa[0].email, null)
-    gke-prod               = try(module.branch-gke-prod-sa[0].email, null)
-    gke-prod-r             = try(module.branch-gke-prod-r-sa[0].email, null)
-    nsec                   = try(module.branch-nsec-sa[0].email, null)
-    nsec-r                 = try(module.branch-nsec-r-sa[0].email, null)
-    networking             = module.branch-network-sa.email
-    networking-r           = module.branch-network-r-sa.email
-    project-factory        = module.branch-pf-sa.email
-    project-factory-r      = module.branch-pf-r-sa.email
-    project-factory-dev    = module.branch-pf-dev-sa.email
-    project-factory-dev-r  = module.branch-pf-dev-r-sa.email
-    project-factory-prod   = module.branch-pf-prod-sa.email
-    project-factory-prod-r = module.branch-pf-prod-r-sa.email
-    sandbox                = try(module.branch-sandbox-sa[0].email, null)
-    security               = module.branch-security-sa.email
-    security-r             = module.branch-security-r-sa.email
-  }
-  # normalize CI/CD repositories
-  cicd_repositories = {
-    for k, v in coalesce(var.cicd_repositories, {}) : k => v
-    if(
-      v != null &&
-      contains(
-        keys(local.identity_providers),
-        coalesce(try(v.identity_provider, null), ":")
-      ) &&
-      fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
-    )
-  }
-  cicd_workflow_var_files = {
-    stage_2 = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    stage_3 = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json",
-      "2-networking.auto.tfvars.json",
-      "2-security.auto.tfvars.json"
-    ]
-  }
-  custom_roles = coalesce(var.custom_roles, {})
   gcs_storage_class = (
     length(split("-", var.locations.gcs)) < 2
     ? "MULTI_REGIONAL"
@@ -93,6 +38,38 @@ locals {
     var.root_node == null
     ? "organizations/${var.organization.id}"
     : var.root_node
+  )
+  stage_service_accounts = merge(
+    !var.fast_stage_2.networking.enabled ? {} : {
+      networking   = module.net-sa-rw.email
+      networking-r = module.net-sa-ro.email
+    },
+    !var.fast_stage_2.security.enabled ? {} : {
+      security   = module.sec-sa-rw.email
+      security-r = module.sec-sa-ro.email
+    },
+    !var.fast_stage_2.project-factory.enabled ? {} : {
+      project-factory   = module.pf-sa-rw.email
+      project-factory-r = module.pf-sa-ro.email
+    },
+    {
+      for k, v in var.fast_stage_3 :
+      k => module.stage3-sa-prod-rw.email
+    },
+    {
+      for k, v in var.fast_stage_3 :
+      "${k}-r" => module.stage3-sa-prod-ro.email
+    },
+    {
+      for k, v in var.fast_stage_3 :
+      "${k}-prod" => module.stage3-sa-prod-rw.email
+      if v.folder_config.create_env_folders == true
+    },
+    {
+      for k, v in var.fast_stage_3 :
+      "${k}-dev-r" => module.stage3-sa-dev-ro.email
+      if v.folder_config.create_env_folders == true
+    }
   )
   tag_keys = (
     var.root_node == null

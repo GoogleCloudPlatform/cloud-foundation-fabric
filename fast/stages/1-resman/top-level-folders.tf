@@ -57,7 +57,7 @@ locals {
     var.top_level_folders
   )
   top_level_sa = {
-    for k, v in local.branch_service_accounts :
+    for k, v in local.stage_service_accounts :
     k => "serviceAccount:${v}" if v != null
   }
   top_level_tags = {

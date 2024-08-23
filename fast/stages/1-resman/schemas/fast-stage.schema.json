@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FAST stage",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "short_name": {
+      "type": "string"
+    },
+    "tag_value_name": {
+      "type": "string"
+    },
+    "assign_billing_roles": {
+      "type": "boolean",
+      "default": true
+    },
+    "cicd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_provider",
+        "repository"
+      ],
+      "properties": {
+        "identity_provider": {
+          "type": "string"
+        },
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "main": {
+      "$ref": "#/$defs/environment"
+    },
+    "environments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dev",
+        "prod"
+      ],
+      "properties": {
+        "dev": {
+          "$ref": "#/$defs/environment"
+        },
+        "prod": {
+          "$ref": "#/$defs/environment"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "folder": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "service_account_iam": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ro": {
+                  "$ref": "#/$defs/folder_service_account_iam"
+                },
+                "rw": {
+                  "$ref": "#/$defs/folder_service_account_iam"
+                }
+              }
+            }
+          },
+          "iam": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^(?:roles/|[a-z_]+)": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|rw|ro)"
+                }
+              }
+            }
+          },
+          "iam_bindings": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z0-9_-]+$": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "members": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|rw|ro)"
+                    }
+                  },
+                  "role": {
+                    "type": "string",
+                    "pattern": "^(?:roles/[a-zA-Z0-9\\.]+)|(?:[a-z0-9_]+)$"
+                  },
+                  "condition": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "expression",
+                      "title"
+                    ],
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "iam_by_principals": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^(?:roles/[a-zA-Z0-9\\.]+)|(?:[a-z0-9_]+)$"
+                }
+              }
+            }
+          }
+        },
+        "root_node": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service_account_iam": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ro": {
+                  "$ref": "#/$defs/root_service_account_iam"
+                },
+                "rw": {
+                  "$ref": "#/$defs/root_service_account_iam"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "folder_service_account_iam": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(?:roles/[a-zA-Z0-9\\.]+)|(?:[a-z0-9_]+)$"
+      }
+    },
+    "root_service_account_iam": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "pattern": "^(?:roles/[a-zA-Z0-9\\.]+)|(?:[a-z0-9_]+)$"
+          },
+          "match_tag_values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
