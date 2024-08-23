@@ -47,7 +47,7 @@ Once you have the required information, head back to your cloned repository.
 Make sure you’re in the directory of this tutorial (where this README is in).
 
 Configure the Terraform variables in your `terraform.tfvars` file.
-See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just
+See the example test at the end of this README.md as starting point - just
 copy it to `terraform.tfvars` and edit the latter. See the variables
 documentation below.
 
