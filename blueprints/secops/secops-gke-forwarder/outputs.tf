@@ -15,5 +15,6 @@
  */
 
 output "fleet_host" {
-  value = local.fleet_host
+  description = "GKE Fleet host."
+  value       = local.fleet_host
 }

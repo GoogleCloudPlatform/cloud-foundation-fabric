@@ -25,6 +25,16 @@ variable "chronicle_forwarder" {
   default = {}
 }
 
+variable "network_config" {
+  description = "Shared VPC network configurations to use for Gitlab Runner VM."
+  type = object({
+    host_project        = optional(string)
+    network_self_link   = string
+    subnet_self_link    = string
+    ip_range_gke_master = string
+  })
+}
+
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -74,14 +84,4 @@ variable "tenants" {
     })
   }))
   default = {}
-}
-
-variable "network_config" {
-  description = "Shared VPC network configurations to use for Gitlab Runner VM."
-  type = object({
-    host_project        = optional(string)
-    network_self_link   = string
-    subnet_self_link    = string
-    ip_range_gke_master = string
-  })
 }
