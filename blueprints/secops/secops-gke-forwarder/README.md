@@ -120,7 +120,7 @@ module "test" {
     billing_account_id = "12345-ABCDEF-12345"
     parent             = "folders/2345678901"
   }
-  region     = "europe-west8"
+  region = "europe-west8"
   network_config = {
     host_project        = "prod-net-landing-0"
     network_self_link   = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/global/networks/prod-landing-0"
