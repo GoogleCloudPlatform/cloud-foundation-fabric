@@ -115,7 +115,7 @@ Then running the command `kubectl get pods` you should receive the following mes
 ```hcl
 module "test" {
   source     = "./fabric/blueprints/secops/secops-gke-forwarder"
-  project_id = "tmp-prod-net-landing-0"
+  project_id = "test"
   region     = "europe-west8"
   network_config = {
     host_project        = "prod-net-landing-0"
