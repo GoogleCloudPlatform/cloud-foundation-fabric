@@ -58,13 +58,13 @@ module "organization" {
         {
           for k, v in local.tag_values_stage2 : v => {
             iam         = try(local.tags.context.values.iam[v], {})
-            description = try(local.tags.context.values.description[v], {})
+            description = try(local.tags.context.values.description[v], null)
           } if var.fast_stage_2[k].enabled
         },
         {
           for k, v in local.tag_values_stage3 : v => {
             iam         = try(local.tags.context.values.iam[v], {})
-            description = try(local.tags.context.values.description[v], {})
+            description = try(local.tags.context.values.description[v], null)
           }
         }
       )
@@ -75,9 +75,9 @@ module "organization" {
       values = {
         development = {
           iam = try(local.tags.environment.values.development.iam, {})
-          iam_bindings = {
+          iam_bindings = !var.fast_stage_2.project_factory.enabled ? {} : {
             pf = {
-              members = compact([try(module.pf-sa-rw[0].iam_email, null)])
+              members = [module.pf-sa-rw[0].iam_email]
               role    = "roles/resourcemanager.tagUser"
             }
           }
@@ -87,9 +87,9 @@ module "organization" {
         }
         production = {
           iam = try(local.tags.environment.values.production.iam, {})
-          iam_bindings = {
+          iam_bindings = !var.fast_stage_2.project_factory.enabled ? {} : {
             pf = {
-              members = compact([try(module.pf-sa-rw[0].iam_email, null)])
+              members = [module.pf-sa-rw[0].iam_email]
               role    = "roles/resourcemanager.tagUser"
             }
           }

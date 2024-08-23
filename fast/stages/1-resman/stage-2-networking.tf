@@ -62,15 +62,19 @@ module "net-folder" {
       "roles/serviceusage.serviceUsageConsumer" = [
         try(module.sec-sa-ro[0].iam_email, null)
       ]
+    },
+    try(var.custom_roles["network_firewall_policies_admin"], null) == null ? {} : {
       (var.custom_roles["network_firewall_policies_admin"]) = [
         try(module.sec-sa-rw[0].iam_email, null)
       ]
+    },
+    try(var.custom_roles["network_firewall_policies_viewer"], null) == null ? {} : {
       (var.custom_roles["network_firewall_policies_viewer"]) = [
         try(module.sec-sa-ro[0].iam_email, null)
       ]
     },
     # stage 3s service accounts (if not using environment folders)
-    each.value.folder_config.create_env_folders == true ? {} : {
+    var.fast_stage_2.networking.folder_config.create_env_folders == true ? {} : {
       for role, attrs in local.net_stage3_iam.prod : role => [
         for v in attrs : (
           v.sa == "ro"
@@ -96,8 +100,8 @@ module "net-folder" {
 
 module "net-folder-prod" {
   source = "../../../modules/folder"
-  count  = net_use_env_folders ? 1 : 0
-  parent = module.net-folder.id
+  count  = local.net_use_env_folders ? 1 : 0
+  parent = module.net-folder[0].id
   name   = "Production"
   iam = {
     # stage 3s service accounts
@@ -119,8 +123,8 @@ module "net-folder-prod" {
 
 module "net-folder-dev" {
   source = "../../../modules/folder"
-  count  = net_use_env_folders ? 1 : 0
-  parent = module.net-folder.id
+  count  = local.net_use_env_folders ? 1 : 0
+  parent = module.net-folder[0].id
   name   = "Development"
   iam = {
     # stage 3s service accounts
@@ -195,7 +199,7 @@ module "net-bucket" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.net-sa-rw.iam_email]
-    "roles/storage.objectViewer" = [module.net-sa-ro.iam_email]
+    "roles/storage.objectAdmin"  = [module.net-sa-rw[0].iam_email]
+    "roles/storage.objectViewer" = [module.net-sa-ro[0].iam_email]
   }
 }

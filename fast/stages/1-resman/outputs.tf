@@ -38,33 +38,51 @@ locals {
   providers = merge(
     # stage 2
     !var.fast_stage_2.networking.enabled ? {} : {
-      "2-networking" = templatefile(_tpl_providers, {
+      "2-networking" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.net-bucket[0].name
         name          = "networking"
         sa            = module.net-sa-rw[0].email
       })
+      "2-networking-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.net-bucket[0].name
+        name          = "networking"
+        sa            = module.net-sa-ro[0].email
+      })
     },
     !var.fast_stage_2.security.enabled ? {} : {
-      "2-security" = templatefile(_tpl_providers, {
+      "2-security" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.sec-bucket[0].name
         name          = "security"
         sa            = module.sec-sa-rw[0].email
       })
+      "2-security-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.sec-bucket[0].name
+        name          = "security"
+        sa            = module.sec-sa-ro[0].email
+      })
     },
     !var.fast_stage_2.project_factory.enabled ? {} : {
-      "2-project-factory" = templatefile(_tpl_providers, {
+      "2-project-factory" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.pf-bucket[0].name
         name          = "project-factory"
         sa            = module.pf-sa-rw[0].email
       })
+      "2-project-factory-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.pf-bucket[0].name
+        name          = "project-factory"
+        sa            = module.pf-sa-ro[0].email
+      })
     },
     # stage 3
     {
       for k, v in var.fast_stage_3 :
-      "3-${k}-prod" => templatefile(_tpl_providers, {
+      "3-${k}-prod" => templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.stage3-bucket-prod[k].name
         name          = "${k}-prod"
@@ -73,7 +91,7 @@ locals {
     },
     {
       for k, v in var.fast_stage_3 :
-      "3-${k}-dev" => templatefile(_tpl_providers, {
+      "3-${k}-dev" => templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.stage3-bucket-dev[k].name
         name          = "${k}-dev"

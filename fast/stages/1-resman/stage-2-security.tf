@@ -54,7 +54,7 @@ module "sec-folder" {
       "roles/resourcemanager.folderViewer"   = [module.sec-sa-ro[0].iam_email]
     },
     # stage 3s service accounts (if not using environment folders)
-    each.value.folder_config.create_env_folders == true ? {} : {
+    var.fast_stage_2.security.folder_config.create_env_folders == true ? {} : {
       for role, attrs in local.sec_stage3_iam.prod : role => [
         for v in attrs : (
           v.sa == "ro"
@@ -67,7 +67,7 @@ module "sec-folder" {
   iam_bindings = var.fast_stage_2.project_factory.enabled != true ? {} : {
     pf_delegated_grant = {
       role    = "roles/resourcemanager.projectIamAdmin"
-      members = module.pf-sa-rw[0].iam_email
+      members = [module.pf-sa-rw[0].iam_email]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -94,8 +94,8 @@ module "sec-folder" {
 
 module "sec-folder-prod" {
   source = "../../../modules/folder"
-  count  = sec_use_env_folders ? 1 : 0
-  parent = module.sec-folder.id
+  count  = local.sec_use_env_folders ? 1 : 0
+  parent = module.sec-folder[0].id
   name   = "Production"
   iam = {
     # stage 3s service accounts
@@ -117,8 +117,8 @@ module "sec-folder-prod" {
 
 module "sec-folder-dev" {
   source = "../../../modules/folder"
-  count  = sec_use_env_folders ? 1 : 0
-  parent = module.sec-folder.id
+  count  = local.sec_use_env_folders ? 1 : 0
+  parent = module.sec-folder[0].id
   name   = "Development"
   iam = {
     # stage 3s service accounts
@@ -193,7 +193,7 @@ module "sec-bucket" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.sec-sa-rw.iam_email]
-    "roles/storage.objectViewer" = [module.sec-sa-ro.iam_email]
+    "roles/storage.objectAdmin"  = [module.sec-sa-rw[0].iam_email]
+    "roles/storage.objectViewer" = [module.sec-sa-ro[0].iam_email]
   }
 }

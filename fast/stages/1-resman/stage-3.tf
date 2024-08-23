@@ -32,7 +32,7 @@ locals {
     ]
   }
   stage3_sa_roles_in_org = flatten([
-    for k, v in var.stage_3 : [
+    for k, v in var.fast_stage_3 : [
       [
         for sa, roles in v.organization_iam_roles : [
           for r in roles : [
@@ -49,15 +49,15 @@ locals {
   ])
   # TODO: this would be better and more narrowly handled from stage 2 projects
   stage3_sa_roles_in_stage2 = flatten([
-    for k, v in var.stage_3 : [
+    for k, v in var.fast_stage_3 : [
       for s2, attrs in v.stage2_iam_roles : [
         for sa, roles in attrs : [
           for role in roles : [
             [
-              { env = "prod", role = r, sa = sa, s2 = s2, s3 = k }
+              { env = "prod", role = role, sa = sa, s2 = s2, s3 = k }
             ],
             v.folder_config.create_env_folders != true ? [] : [
-              { env = "dev", role = r, sa = sa, s2 = s2, s3 = k }
+              { env = "dev", role = role, sa = sa, s2 = s2, s3 = k }
             ]
           ]
         ]

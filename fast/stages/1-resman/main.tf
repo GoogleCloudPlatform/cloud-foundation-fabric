@@ -41,33 +41,33 @@ locals {
   )
   stage_service_accounts = merge(
     !var.fast_stage_2.networking.enabled ? {} : {
-      networking   = module.net-sa-rw.email
-      networking-r = module.net-sa-ro.email
+      networking   = module.net-sa-rw[0].email
+      networking-r = module.net-sa-ro[0].email
     },
     !var.fast_stage_2.security.enabled ? {} : {
-      security   = module.sec-sa-rw.email
-      security-r = module.sec-sa-ro.email
+      security   = module.sec-sa-rw[0].email
+      security-r = module.sec-sa-ro[0].email
     },
-    !var.fast_stage_2.project-factory.enabled ? {} : {
-      project-factory   = module.pf-sa-rw.email
-      project-factory-r = module.pf-sa-ro.email
-    },
-    {
-      for k, v in var.fast_stage_3 :
-      k => module.stage3-sa-prod-rw.email
+    !var.fast_stage_2.project_factory.enabled ? {} : {
+      project-factory   = module.pf-sa-rw[0].email
+      project-factory-r = module.pf-sa-ro[0].email
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-r" => module.stage3-sa-prod-ro.email
+      k => module.stage3-sa-prod-rw[k].email
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-prod" => module.stage3-sa-prod-rw.email
+      "${k}-r" => module.stage3-sa-prod-ro[k].email
+    },
+    {
+      for k, v in var.fast_stage_3 :
+      "${k}-dev" => module.stage3-sa-dev-rw[k].email
       if v.folder_config.create_env_folders == true
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-dev-r" => module.stage3-sa-dev-ro.email
+      "${k}-dev-r" => module.stage3-sa-dev-ro[k].email
       if v.folder_config.create_env_folders == true
     }
   )

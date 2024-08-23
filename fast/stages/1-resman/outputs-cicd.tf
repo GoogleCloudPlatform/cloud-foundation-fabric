@@ -22,7 +22,7 @@ locals {
   }
   _cicd_workflow_attrs = merge(
     # stage 2
-    lookup(local.cicd_repositories, "networking", null) == null ? {} : {
+    lookup(local.cicd_repositories, "networking", null) == null ? {} : tomap({
       service_accounts = {
         apply = module.net-sa-rw[0].email
         plan  = module.net-sa-ro[0].email
@@ -33,15 +33,15 @@ locals {
       }
       tf_var_files = local.cicd_workflow_files.stage_2
       audiences = try(
-        local.identity_providers[v.identity_provider].audiences, null
+        local.identity_providers[local.cicd_repositories.networking.identity_provider].audiences, null
       )
       identity_provider = try(
-        local.identity_providers[v.identity_provider].name, null
+        local.identity_providers[local.cicd_repositories.networking.identity_provider].name, null
       )
       outputs_bucket = var.automation.outputs_bucket
       stage_name     = "networking"
-    },
-    lookup(local.cicd_repositories, "security", null) == null ? {} : {
+    }),
+    lookup(local.cicd_repositories, "security", null) == null ? {} : tomap({
       service_accounts = {
         apply = module.sec-sa-rw[0].email
         plan  = module.sec-sa-ro[0].email
@@ -52,15 +52,15 @@ locals {
       }
       tf_var_files = local.cicd_workflow_files.stage_2
       audiences = try(
-        local.identity_providers[v.identity_provider].audiences, null
+        local.identity_providers[local.cicd_repositories.security.identity_provider].audiences, null
       )
       identity_provider = try(
-        local.identity_providers[v.identity_provider].name, null
+        local.identity_providers[local.cicd_repositories.security.identity_provider].name, null
       )
       outputs_bucket = var.automation.outputs_bucket
       stage_name     = "security"
-    },
-    lookup(local.cicd_repositories, "project_factory", null) == null ? {} : {
+    }),
+    lookup(local.cicd_repositories, "project_factory", null) == null ? {} : tomap({
       service_accounts = {
         apply = module.pf-sa-rw[0].email
         plan  = module.pf-sa-ro[0].email
@@ -71,14 +71,14 @@ locals {
       }
       tf_var_files = local.cicd_workflow_files.stage_2
       audiences = try(
-        local.identity_providers[v.identity_provider].audiences, null
+        local.identity_providers[local.cicd_repositories.project_factory.identity_provider].audiences, null
       )
       identity_provider = try(
-        local.identity_providers[v.identity_provider].name, null
+        local.identity_providers[local.cicd_repositories.project_factory.identity_provider].name, null
       )
       outputs_bucket = var.automation.outputs_bucket
       stage_name     = "project-factory"
-    },
+    }),
     # stage 3
     {
       for k, v in local.cicd_repositories : "${v.lvl}-${k}" => {

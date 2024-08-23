@@ -45,7 +45,10 @@ locals {
       "1-resman.auto.tfvars.json",
       "0-globals.auto.tfvars.json"
     ]
-    stage_3 = [for k, v in local._cicd_configs.stage_2 : "2-${k}.auto.tfvars"]
+    stage_3 = [
+      for k, v in local._cicd_configs :
+      "2-${k}.auto.tfvars" if v.lvl == 2
+    ]
   }
 }
 

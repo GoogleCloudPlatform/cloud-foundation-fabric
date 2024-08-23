@@ -21,13 +21,13 @@ locals {
     # stage 2
     var.fast_stage_2.networking.enabled != true ? {} : {
       sa_net_billing = {
-        member = module.net-sa-rw.iam_email
+        member = module.net-sa-rw[0].iam_email
         role   = "roles/billing.user"
       }
     },
     !var.fast_stage_2.security.enabled ? {} : {
       sa_sec_billing = {
-        member = module.sec-sa-rw.iam_email
+        member = module.sec-sa-rw[0].iam_email
         role   = "roles/billing.user"
       }
     },

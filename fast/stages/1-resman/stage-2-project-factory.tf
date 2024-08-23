@@ -40,7 +40,7 @@ module "pf-sa-ro" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_stage_2.project_factory.enabled ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "prod-resman-${var.fast_stage_2.project_factory.short_name}-0r"
+  name         = "resman-${var.fast_stage_2.project_factory.short_name}-0r"
   display_name = "Terraform resman project factory main service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -53,5 +53,22 @@ module "pf-sa-ro" {
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+# automation bucket
+
+module "pf-bucket" {
+  source        = "../../../modules/gcs"
+  count         = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-${var.fast_stage_2.project_factory.short_name}-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin"  = [module.pf-sa-rw[0].iam_email]
+    "roles/storage.objectViewer" = [module.pf-sa-ro[0].iam_email]
   }
 }

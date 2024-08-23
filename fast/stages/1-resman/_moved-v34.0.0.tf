@@ -18,71 +18,71 @@
 
 moved {
   from = module.branch-network-folder
-  to   = module.net-folder
+  to   = module.net-folder[0]
 }
 moved {
   from = module.branch-network-prod-folder
-  to   = module.net-folder-prod
+  to   = module.net-folder-prod[0]
 }
 moved {
   from = module.branch-network-dev-folder
-  to   = module.net-folder-dev
+  to   = module.net-folder-dev[0]
 }
 moved {
   from = module.branch-network-sa
-  to   = module.net-sa-rw
+  to   = module.net-sa-rw[0]
 }
 moved {
   from = module.branch-network-r-sa
-  to   = module.net-sa-ro
+  to   = module.net-sa-ro[0]
 }
 moved {
   from = module.branch-network-gcs
-  to   = module.net-bucket
+  to   = module.net-bucket[0]
 }
 
 # stage 2 security
 moved {
   from = module.branch-security-folder
-  to   = module.sec-folder
+  to   = module.sec-folder[0]
 }
 moved {
   from = module.branch-security-prod-folder
-  to   = module.sec-folder-prod
+  to   = module.sec-folder-prod[0]
 }
 moved {
   from = module.branch-security-dev-folder
-  to   = module.sec-folder-dev
+  to   = module.sec-folder-dev[0]
 }
 moved {
   from = module.branch-security-sa
-  to   = module.sec-sa-rw
+  to   = module.sec-sa-rw[0]
 }
 moved {
   from = module.branch-security-r-sa
-  to   = module.sec-sa-ro
+  to   = module.sec-sa-ro[0]
 }
 moved {
   from = module.branch-security-gcs
-  to   = module.sec-bucket
+  to   = module.sec-bucket[0]
 }
 
 # stage 2 project factory
-moved {
-  from = module.branch-pf-sa[0]
-  to   = module.branch-pf-sa
-}
+# moved {
+#   from = module.branch-pf-sa[0]
+#   to   = module.branch-pf-sa
+# }
 moved {
   from = module.branch-pf-sa
-  to   = module.pf-sa-rw
+  to   = module.pf-sa-rw[0]
 }
-moved {
-  from = module.branch-pf-dev-sa[0]
-  to   = module.sec-sa-ro
-}
+# moved {
+#   from = module.branch-pf-r-sa[0]
+#   to   = module.pf-sa-ro
+# }
 moved {
   from = module.branch-pf-r-sa
-  to   = module.sec-sa-ro
+  to   = module.pf-sa-ro[0]
 }
 
 # stage 3 gcve
@@ -204,26 +204,26 @@ moved {
 
 # stage 3 nsec
 
-moved {
-  from = module.branch-nsec-sa
-  to   = module.stage3-sa-prod-rw["nsec"]
-}
+# moved {
+#   from = module.branch-nsec-sa
+#   to   = module.stage3-sa-prod-rw["nsec"]
+# }
 moved {
   from = module.branch-nsec-sa[0]
   to   = module.stage3-sa-prod-rw["nsec"]
 }
-moved {
-  from = module.branch-nsec-r-sa
-  to   = module.stage3-sa-prod-ro["nsec"]
-}
+# moved {
+#   from = module.branch-nsec-r-sa
+#   to   = module.stage3-sa-prod-ro["nsec"]
+# }
 moved {
   from = module.branch-nsec-r-sa[0]
   to   = module.stage3-sa-prod-ro["nsec"]
 }
-moved {
-  from = module.branch-nsec-gcs
-  to   = module.stage3-bucket-prod["nsec"]
-}
+# moved {
+#   from = module.branch-nsec-gcs
+#   to   = module.stage3-bucket-prod["nsec"]
+# }
 moved {
   from = module.branch-nsec-gcs[0]
   to   = module.stage3-bucket-prod["nsec"]

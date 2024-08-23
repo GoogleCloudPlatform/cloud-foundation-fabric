@@ -33,6 +33,7 @@ variable "fast_stage_2" {
         create_env_folders = optional(bool, false)
         iam_by_principals  = optional(map(list(string)), {})
         name               = optional(string, "Networking")
+        parent_id          = optional(string)
       }), {})
     }), {})
     project_factory = optional(object({
@@ -105,6 +106,25 @@ variable "fast_stage_3" {
     }))
   }))
   nullable = false
-  default  = {}
+  default = {
+    data-platform = {
+      folder_config = {
+        name               = "Data Platform"
+        create_env_folders = true
+      }
+    }
+    gcve = {
+      folder_config = {
+        name               = "GCVE"
+        create_env_folders = true
+      }
+    }
+    data-platform = {
+      folder_config = {
+        name               = "GKE"
+        create_env_folders = true
+      }
+    }
+  }
   # TODO: CI/CD validation
 }
