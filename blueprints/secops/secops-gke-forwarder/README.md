@@ -92,7 +92,7 @@ Then running the command `kubectl get pods` you should receive the following mes
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network_config](variables.tf#L28) | Shared VPC network configurations to use for Gitlab Runner VM. | <code title="object&#40;&#123;&#10;  host_project        &#61; optional&#40;string&#41;&#10;  network_self_link   &#61; string&#10;  subnet_self_link    &#61; string&#10;  ip_range_gke_master &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [network_config](variables.tf#L28) | Shared VPC network configurations to use for GKE cluster. | <code title="object&#40;&#123;&#10;  host_project        &#61; optional&#40;string&#41;&#10;  network_self_link   &#61; string&#10;  subnet_self_link    &#61; string&#10;  ip_range_gke_master &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [prefix](variables.tf#L38) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L57) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L62) | GCP region. | <code>string</code> | ✓ |  |
