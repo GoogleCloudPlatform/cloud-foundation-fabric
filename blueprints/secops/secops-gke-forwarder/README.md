@@ -27,19 +27,15 @@ if required and when the prompt appears, click on “confirm”.
 Otherwise, in your console of choice:
 
 ```bash
-git clone REPO_URL
+git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 ```
 
 Before you deploy the architecture, you will need at least the following
-information (for more precise configuration see the Variables section):
+information/configurations in place (for more precise configuration see the Variables section):
 
 * The project ID
-
-The VPC host project, VPC and subnets should already exist and the following networking requirements are satisfied:
-- configured PSA for Cloud SQL on the VPC
-- subnets configured with PGA and Cloud NAT for internet access
-- Inbound firewall rule for IAP on port 22
-- Inbound firewall rule for TCP ports 80, 443, 2222 from proxy subnet CIDR (gitlab)
+* The VPC host project
+* VPC and subnets should already exist
 
 #### Step 2: Prepare the variables
 

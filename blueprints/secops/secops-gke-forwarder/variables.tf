@@ -26,7 +26,7 @@ variable "chronicle_forwarder" {
 }
 
 variable "network_config" {
-  description = "Shared VPC network configurations to use for Gitlab Runner VM."
+  description = "Shared VPC network configurations to use for GKE cluster."
   type = object({
     host_project        = optional(string)
     network_self_link   = string

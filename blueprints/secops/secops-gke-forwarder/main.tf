@@ -23,7 +23,7 @@ locals {
 }
 
 module "project" {
-  source = "./../../../modules/project"
+  source = "../../../modules/project"
   billing_account = (var.project_create != null
     ? var.project_create.billing_account_id
     : null
@@ -32,7 +32,7 @@ module "project" {
     ? var.project_create.parent
     : null
   )
-  prefix         = var.project_create == null ? null : var.prefix
+  prefix         = var.prefix
   project_create = var.project_create != null
   name           = var.project_id
   services = concat([
@@ -48,7 +48,7 @@ module "project" {
 }
 
 module "fleet" {
-  source     = "./../../../modules/gke-hub"
+  source     = "../../../modules/gke-hub"
   project_id = var.project_id
   clusters = {
     "chronicle-log-ingestion" = module.chronicle-forwarder.id
@@ -56,7 +56,7 @@ module "fleet" {
 }
 
 module "chronicle-forwarder" {
-  source              = "./../../../modules/gke-cluster-autopilot"
+  source              = "../../../modules/gke-cluster-autopilot"
   project_id          = var.project_id
   name                = var.chronicle_forwarder.cluster_name
   location            = var.region
