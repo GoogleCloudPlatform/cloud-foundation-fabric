@@ -120,6 +120,7 @@ module "cas" {
 | name | description | sensitive |
 |---|---|:---:|
 | [ca_ids](outputs.tf#L17) | The CA ids. |  |
-| [ca_pool_id](outputs.tf#L25) | The CA pool id. |  |
-| [cas](outputs.tf#L30) | The CAs. |  |
+| [ca_pool](outputs.tf#L25) | The CA pool. |  |
+| [ca_pool_id](outputs.tf#L30) | The CA pool id. |  |
+| [cas](outputs.tf#L35) | The CAs. |  |
 <!-- END TFDOC -->
