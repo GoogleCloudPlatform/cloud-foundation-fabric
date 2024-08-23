@@ -151,7 +151,7 @@ module "test" {
     }
   }
 }
-# tftest modules=5 resources=33 files=credentials,config
+# tftest modules=5 resources=34 files=credentials,config
 ```
 
 ```
