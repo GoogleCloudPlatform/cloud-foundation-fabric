@@ -1,0 +1,13 @@
+apiVersion: networking.gke.io/v1
+kind: ServiceAttachment
+metadata:
+  name: chronicle-sa-${tenant}
+  namespace: ${namespace}
+spec:
+  connectionPreference: ACCEPT_MANUAL
+  natSubnets:
+  - psc
+  proxyProtocol: false
+  resourceRef:
+    kind: Service
+    name: ${service_name}
