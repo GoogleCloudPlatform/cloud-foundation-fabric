@@ -43,7 +43,7 @@ locals {
     "datastream.googleapis.com" : ["datastream"]
     "dialogflow.googleapis.com" : ["dialogflow-cmek"]
     "file.googleapis.com" : ["cloud-filer"]
-    "pubsub.googleapis.com" : ["pubusb"]
+    "pubsub.googleapis.com" : ["pubsub"]
     "secretmanager.googleapis.com" : ["secretmanager"]
     "spanner.googleapis.com" : ["spanner"]
     "sqladmin.googleapis.com" : ["cloud-sql"]
