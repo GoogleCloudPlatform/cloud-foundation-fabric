@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+# billing resources
+
+moved {
+  from = google_billing_account_iam_member.billing_ext_admin
+  to   = google_billing_account_iam_member.default
+}
+
 # stage 2 networking
 
 moved {
@@ -50,6 +57,7 @@ moved {
 }
 
 # stage 2 security
+
 moved {
   from = module.branch-security-folder
   to   = module.sec-folder[0]
@@ -84,178 +92,164 @@ moved {
 }
 
 # stage 2 project factory
-# moved {
-#   from = module.branch-pf-sa[0]
-#   to   = module.branch-pf-sa
-# }
+
 moved {
   from = module.branch-pf-sa
   to   = module.pf-sa-rw[0]
 }
-# moved {
-#   from = module.branch-pf-r-sa[0]
-#   to   = module.pf-sa-ro
-# }
 moved {
   from = module.branch-pf-r-sa
   to   = module.pf-sa-ro[0]
+}
+moved {
+  from = module.branch-pf-gcs
+  to   = module.pf-bucket[0]
+}
+moved {
+  from = module.branch-pf-dev-sa
+  to   = module.stage3-sa-rw["project-factory-dev"]
+}
+moved {
+  from = module.branch-pf-dev-r-sa
+  to   = module.stage3-sa-ro["project-factory-dev"]
+}
+moved {
+  from = module.branch-pf-dev-gcs
+  to   = module.stage3-bucket["project-factory-dev"]
+}
+moved {
+  from = module.branch-pf-prod-sa
+  to   = module.stage3-sa-rw["project-factory-prod"]
+}
+moved {
+  from = module.branch-pf-prod-r-sa
+  to   = module.stage3-sa-ro["project-factory-prod"]
+}
+moved {
+  from = module.branch-pf-prod-gcs
+  to   = module.stage3-bucket["project-factory-prod"]
 }
 
 # stage 3 gcve
 
 moved {
-  from = module.branch-gcve-folder
-  to   = module.stage3-folder["gcve"]
+  from = module.branch-gcve-prod-folder[0]
+  to   = module.stage3-folder["gcve-prod"]
 }
 moved {
-  from = module.branch-gcve-prod-folder
-  to   = module.stage3-folder-prod["gcve"]
+  from = module.branch-gcve-prod-sa[0]
+  to   = module.stage3-sa-rw["gcve-prod"]
 }
 moved {
-  from = module.branch-gcve-dev-folder
-  to   = module.stage3-folder-dev["gcve"]
+  from = module.branch-gcve-prod-r-sa[0]
+  to   = module.stage3-sa-ro["gcve-prod"]
 }
 moved {
-  from = module.branch-gcve-prod-sa
-  to   = module.stage3-sa-prod-rw["gcve"]
+  from = module.branch-gcve-prod-gcs[0]
+  to   = module.stage3-bucket["gcve-prod"]
 }
 moved {
-  from = module.branch-gcve-prod-r-sa
-  to   = module.stage3-sa-prod-ro["gcve"]
+  from = module.branch-gcve-dev-folder[0]
+  to   = module.stage3-folder["gcve-dev"]
 }
 moved {
-  from = module.branch-gcve-dev-sa
-  to   = module.stage3-sa-dev-rw["gcve"]
+  from = module.branch-gcve-dev-sa[0]
+  to   = module.stage3-sa-rw["gcve-dev"]
 }
 moved {
-  from = module.branch-gcve-dev-r-sa
-  to   = module.stage3-sa-dev-ro["gcve"]
+  from = module.branch-gcve-dev-r-sa[0]
+  to   = module.stage3-sa-ro["gcve-dev"]
 }
 moved {
-  from = module.branch-gcve-prod-gcs
-  to   = module.stage3-bucket-prod["gcve"]
-}
-moved {
-  from = module.branch-gcve-dev-gcs
-  to   = module.stage3-bucket-dev["gcve"]
+  from = module.branch-gcve-dev-gcs[0]
+  to   = module.stage3-bucket["gcve-dev"]
 }
 
 # stage 3 gke
 
 moved {
-  from = module.branch-gke-folder
-  to   = module.stage3-folder["gke"]
+  from = module.branch-gke-prod-folder[0]
+  to   = module.stage3-folder["gke-prod"]
 }
 moved {
-  from = module.branch-gke-prod-folder
-  to   = module.stage3-folder-prod["gke"]
+  from = module.branch-gke-prod-sa[0]
+  to   = module.stage3-sa-rw["gke-prod"]
 }
 moved {
-  from = module.branch-gke-dev-folder
-  to   = module.stage3-folder-dev["gke"]
+  from = module.branch-gke-prod-r-sa[0]
+  to   = module.stage3-sa-ro["gke-prod"]
 }
 moved {
-  from = module.branch-gke-prod-sa
-  to   = module.stage3-sa-prod-rw["gke"]
+  from = module.branch-gke-prod-gcs[0]
+  to   = module.stage3-bucket["gke-prod"]
 }
 moved {
-  from = module.branch-gke-prod-r-sa
-  to   = module.stage3-sa-prod-ro["gke"]
+  from = module.branch-gke-dev-folder[0]
+  to   = module.stage3-folder["gke-dev"]
 }
 moved {
-  from = module.branch-gke-dev-sa
-  to   = module.stage3-sa-dev-rw["gke"]
+  from = module.branch-gke-dev-sa[0]
+  to   = module.stage3-sa-rw["gke-dev"]
 }
 moved {
-  from = module.branch-gke-dev-r-sa
-  to   = module.stage3-sa-dev-ro["gke"]
+  from = module.branch-gke-dev-r-sa[0]
+  to   = module.stage3-sa-ro["gke-dev"]
 }
 moved {
-  from = module.branch-gke-prod-gcs
-  to   = module.stage3-bucket-prod["gke"]
-}
-moved {
-  from = module.branch-gke-dev-gcs
-  to   = module.stage3-bucket-dev["gke"]
+  from = module.branch-gke-dev-gcs[0]
+  to   = module.stage3-bucket["gke-dev"]
 }
 
 # stage 3 data platform
 
 moved {
-  from = module.branch-dp-folder
-  to   = module.stage3-folder["dp"]
+  from = module.branch-dp-prod-folder[0]
+  to   = module.stage3-folder["data-platform-prod"]
 }
 moved {
-  from = module.branch-dp-prod-folder
-  to   = module.stage3-folder-prod["dp"]
+  from = module.branch-dp-prod-sa[0]
+  to   = module.stage3-sa-rw["data-platform-prod"]
 }
 moved {
-  from = module.branch-dp-dev-folder
-  to   = module.stage3-folder-dev["dp"]
+  from = module.branch-dp-prod-r-sa[0]
+  to   = module.stage3-sa-ro["data-platform-prod"]
 }
 moved {
-  from = module.branch-dp-prod-sa
-  to   = module.stage3-sa-prod-rw["dp"]
+  from = module.branch-dp-prod-gcs[0]
+  to   = module.stage3-bucket["data-platform-prod"]
 }
 moved {
-  from = module.branch-dp-prod-r-sa
-  to   = module.stage3-sa-prod-ro["dp"]
+  from = module.branch-dp-dev-folder[0]
+  to   = module.stage3-folder["data-platform-dev"]
 }
 moved {
-  from = module.branch-dp-dev-sa
-  to   = module.stage3-sa-dev-rw["dp"]
+  from = module.branch-dp-dev-sa[0]
+  to   = module.stage3-sa-rw["data-platform-dev"]
 }
 moved {
-  from = module.branch-dp-dev-r-sa
-  to   = module.stage3-sa-dev-ro["dp"]
+  from = module.branch-dp-dev-r-sa[0]
+  to   = module.stage3-sa-ro["data-platform-dev"]
 }
 moved {
-  from = module.branch-dp-prod-gcs
-  to   = module.stage3-bucket-prod["dp"]
-}
-moved {
-  from = module.branch-dp-dev-gcs
-  to   = module.stage3-bucket-dev["dp"]
-}
-
-# stage 3 nsec
-
-# moved {
-#   from = module.branch-nsec-sa
-#   to   = module.stage3-sa-prod-rw["nsec"]
-# }
-moved {
-  from = module.branch-nsec-sa[0]
-  to   = module.stage3-sa-prod-rw["nsec"]
-}
-# moved {
-#   from = module.branch-nsec-r-sa
-#   to   = module.stage3-sa-prod-ro["nsec"]
-# }
-moved {
-  from = module.branch-nsec-r-sa[0]
-  to   = module.stage3-sa-prod-ro["nsec"]
-}
-# moved {
-#   from = module.branch-nsec-gcs
-#   to   = module.stage3-bucket-prod["nsec"]
-# }
-moved {
-  from = module.branch-nsec-gcs[0]
-  to   = module.stage3-bucket-prod["nsec"]
+  from = module.branch-dp-dev-gcs[0]
+  to   = module.stage3-bucket["data-platform-dev"]
 }
 
 # stage 3 sandbox
 
 moved {
-  from = module.branch-sandbox-folder
-  to   = module.stage3-folder["sbx"]
+  from = module.branch-sandbox-folder[0]
+  to   = module.stage3-folder["sandbox"]
 }
 moved {
-  from = module.branch-sandbox-sa
-  to   = module.stage3-sa-prod-rw["sbx"]
+  from = module.branch-sandbox-sa[0]
+  to   = module.stage3-sa-rw["sandbox"]
 }
 moved {
-  from = module.branch-sandbox-gcs
-  to   = module.stage3-bucket-prod["sbx"]
+  from = module.branch-sandbox-r-sa[0]
+  to   = module.stage3-sa-ro["sandbox"]
+}
+moved {
+  from = module.branch-sandbox-gcs[0]
+  to   = module.stage3-bucket["sandbox"]
 }

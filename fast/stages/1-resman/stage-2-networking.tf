@@ -42,7 +42,10 @@ module "net-folder" {
   parent = (
     var.fast_stage_2.networking.folder_config.parent_id == null
     ? local.root_node
-    : var.fast_stage_2.networking.folder_config.parent_id
+    : try(
+      module.top-level-folder[var.fast_stage_2.networking.folder_config].parent_id,
+      var.fast_stage_2.networking.folder_config.parent_id
+    )
   )
   name = var.fast_stage_2.networking.folder_config.name
   iam = merge(

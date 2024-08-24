@@ -44,7 +44,10 @@ module "stage3-folder" {
   parent = (
     each.value.folder_config.parent_id == null
     ? local.root_node
-    : each.value.folder_config.parent_id
+    : try(
+      module.top-level-folder[each.value.folder_config.parent_id],
+      each.value.folder_config.parent_id
+    )
   )
   name = each.value.folder_config.name
   iam = {
@@ -58,7 +61,12 @@ module "stage3-folder" {
 
   }
   iam_by_principals = each.value.folder_config.iam_by_principals
-  tag_bindings      = each.value.folder_config.tag_bindings
+  tag_bindings = {
+    for k, v in each.value.folder_config.tag_bindings : k => lookup(
+      local.top_level_tags, v, v
+    )
+  }
+  depends_on = [module.top-level-folder]
 }
 
 # automation service accounts
@@ -67,7 +75,7 @@ module "stage3-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = var.fast_stage_3
   project_id = var.automation.project_id
-  name       = "resman-${coalesce(each.value.short_name, each.key)}-0"
+  name       = "resman-${each.value.short_name}-0"
   display_name = (
     "Terraform resman ${each.key} service account."
   )
@@ -89,7 +97,7 @@ module "stage3-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = var.fast_stage_3
   project_id = var.automation.project_id
-  name       = "resman-${coalesce(each.value.short_name, each.key)}-0r"
+  name       = "resman-${each.value.short_name}-0r"
   display_name = (
     "Terraform resman ${each.key} service account (read-only)."
   )
@@ -113,7 +121,7 @@ module "stage3-bucket" {
   source        = "../../../modules/gcs"
   for_each      = var.fast_stage_3
   project_id    = var.automation.project_id
-  name          = "resman-${coalesce(each.value.short_name, each.key)}-0"
+  name          = "resman-${each.value.short_name}-0"
   prefix        = "${var.prefix}-${each.value.environment}"
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class

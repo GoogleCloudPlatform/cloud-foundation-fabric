@@ -17,6 +17,7 @@
 # tfdoc:file:description Organization policies.
 
 locals {
+  # service accounts context for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
@@ -51,12 +52,15 @@ module "organization" {
     (var.tag_names.context) = {
       description = "Resource management context."
       iam         = try(local.tags.context.iam, {})
-      values = {
-        for k, v in local.tag_values_stage2 : v => {
-          iam         = try(local.tags.context.values.iam[v], {})
-          description = try(local.tags.context.values.description[v], null)
-        } if var.fast_stage_2[k].enabled
-      }
+      values = merge(
+        try(local.tags["context"]["values"], {}),
+        {
+          for k, v in local.tag_values_stage2 : v => {
+            iam         = try(local.tags.context.values.iam[v], {})
+            description = try(local.tags.context.values.description[v], null)
+          } if var.fast_stage_2[k].enabled
+        }
+      )
     },
     (var.tag_names.environment) = {
       description = "Environment definition."

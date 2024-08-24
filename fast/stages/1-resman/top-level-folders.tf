@@ -66,8 +66,9 @@ locals {
 }
 
 module "top-level-folder" {
-  source              = "../../../modules/folder"
-  for_each            = local.top_level_folders
+  source   = "../../../modules/folder"
+  for_each = local.top_level_folders
+  # TODO: add support for explicit parent id
   parent              = "organizations/${var.organization.id}"
   name                = each.value.name
   contacts            = each.value.contacts

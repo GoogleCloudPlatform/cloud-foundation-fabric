@@ -110,26 +110,6 @@ variable "fast_stage_3" {
     }), {})
   }))
   nullable = false
-  default = {
-    # data-platform = {
-    #   short_name = "dp"
-    #   folder_config = {
-    #     name               = "Data Platform"
-    #     create_env_folders = true
-    #   }
-    # }
-    # gcve = {
-    #   folder_config = {
-    #     name               = "GCVE"
-    #     create_env_folders = true
-    #   }
-    # }
-    # gke = {
-    #   folder_config = {
-    #     name               = "GKE"
-    #     create_env_folders = true
-    #   }
-    # }
-  }
+  default  = {}
   # TODO: CI/CD validation
 }
