@@ -15,7 +15,6 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   folder_ids = merge(
     # stage 2
     !var.fast_stage_2.networking.enabled ? {} : {
@@ -34,80 +33,6 @@ locals {
     { for k, v in module.stage3-folder-prod : k => v.id },
     # top-level folders
     { for k, v in module.top-level-folder : k => v.id }
-  )
-  providers = merge(
-    # stage 2
-    !var.fast_stage_2.networking.enabled ? {} : {
-      "2-networking" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.net-bucket[0].name
-        name          = "networking"
-        sa            = module.net-sa-rw[0].email
-      })
-      "2-networking-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.net-bucket[0].name
-        name          = "networking"
-        sa            = module.net-sa-ro[0].email
-      })
-    },
-    !var.fast_stage_2.security.enabled ? {} : {
-      "2-security" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.sec-bucket[0].name
-        name          = "security"
-        sa            = module.sec-sa-rw[0].email
-      })
-      "2-security-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.sec-bucket[0].name
-        name          = "security"
-        sa            = module.sec-sa-ro[0].email
-      })
-    },
-    !var.fast_stage_2.project_factory.enabled ? {} : {
-      "2-project-factory" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket[0].name
-        name          = "project-factory"
-        sa            = module.pf-sa-rw[0].email
-      })
-      "2-project-factory-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket[0].name
-        name          = "project-factory"
-        sa            = module.pf-sa-ro[0].email
-      })
-    },
-    # stage 3
-    {
-      for k, v in var.fast_stage_3 :
-      "3-${k}-prod" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.stage3-bucket-prod[k].name
-        name          = "${k}-prod"
-        sa            = module.stage3-sa-prod-rw[k].email
-      })
-    },
-    {
-      for k, v in var.fast_stage_3 :
-      "3-${k}-dev" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.stage3-bucket-dev[k].name
-        name          = "${k}-dev"
-        sa            = module.stage3-sa-dev-rw[k].email
-      }) if v.folder_config.create_env_folders
-    },
-    # top-level folders
-    {
-      for k, v in module.top-level-sa :
-      "1-resman-folder-${k}" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.top-level-bucket[k].name
-        name          = k
-        sa            = v.email
-      })
-    },
   )
   service_accounts = merge(local.stage_service_accounts, {
     for k, v in module.top-level-sa : k => try(v.email)
