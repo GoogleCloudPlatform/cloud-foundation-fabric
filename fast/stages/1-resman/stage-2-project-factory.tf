@@ -20,7 +20,7 @@ module "pf-sa-rw" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_stage_2.project_factory.enabled ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "prod-resman-${var.fast_stage_2.project_factory.short_name}-0"
+  name         = "resman-${var.fast_stage_2.project_factory.short_name}-0"
   display_name = "Terraform resman project factory main service account."
   prefix       = var.prefix
   iam = {
@@ -62,7 +62,7 @@ module "pf-bucket" {
   source        = "../../../modules/gcs"
   count         = var.fast_stage_2.project_factory.enabled ? 1 : 0
   project_id    = var.automation.project_id
-  name          = "prod-resman-${var.fast_stage_2.project_factory.short_name}-0"
+  name          = "resman-${var.fast_stage_2.project_factory.short_name}-0"
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class

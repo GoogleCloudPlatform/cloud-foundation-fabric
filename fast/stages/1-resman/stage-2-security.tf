@@ -34,6 +34,8 @@ locals {
   }
 }
 
+# top-level folder
+
 module "sec-folder" {
   source = "../../../modules/folder"
   count  = var.fast_stage_2.security.enabled ? 1 : 0

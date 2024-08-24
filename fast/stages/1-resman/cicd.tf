@@ -18,17 +18,23 @@ locals {
   _cicd_configs = merge(
     {
       for k, v in var.fast_stage_2 :
-      k => merge(v.cicd_config, { env = "prod", lvl = 2 })
+      k => merge(v.cicd_config, {
+        env = "prod", short_name = v.short_name, lvl = 2
+      })
       if v.cicd_config != null
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-prod" => merge(v.cicd_config, { env = "prod", short_name = k, lvl = 3 })
+      "${k}-prod" => merge(v.cicd_config, {
+        env = "prod", short_name = coalesce(v.short_name, k), lvl = 3
+      })
       if v.cicd_config != null
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-dev" => merge(v.cicd_config, { env = "dev", short_name = k, lvl = 3 })
+      "${k}-dev" => merge(v.cicd_config, {
+        env = "dev", short_name = coalesce(v.short_name, k), lvl = 3
+      })
       if v.cicd_config != null && v.folder_config.create_env_folders == true
     },
   )

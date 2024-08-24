@@ -30,7 +30,7 @@ variable "fast_stage_2" {
         })
       }))
       folder_config = optional(object({
-        create_env_folders = optional(bool, false)
+        create_env_folders = optional(bool, true)
         iam_by_principals  = optional(map(list(string)), {})
         name               = optional(string, "Networking")
         parent_id          = optional(string)
@@ -75,6 +75,7 @@ variable "fast_stage_2" {
 variable "fast_stage_3" {
   description = "FAST stages 3 configurations."
   type = map(object({
+    short_name = optional(string)
     cicd_config = optional(object({
       identity_provider = string
       repository = object({
@@ -103,28 +104,29 @@ variable "fast_stage_3" {
         ro = optional(list(string), [])
         rw = optional(list(string), [])
       }), {})
-    }))
+    }), {})
   }))
   nullable = false
   default = {
-    data-platform = {
-      folder_config = {
-        name               = "Data Platform"
-        create_env_folders = true
-      }
-    }
-    gcve = {
-      folder_config = {
-        name               = "GCVE"
-        create_env_folders = true
-      }
-    }
-    data-platform = {
-      folder_config = {
-        name               = "GKE"
-        create_env_folders = true
-      }
-    }
+    # data-platform = {
+    #   short_name = "dp"
+    #   folder_config = {
+    #     name               = "Data Platform"
+    #     create_env_folders = true
+    #   }
+    # }
+    # gcve = {
+    #   folder_config = {
+    #     name               = "GCVE"
+    #     create_env_folders = true
+    #   }
+    # }
+    # gke = {
+    #   folder_config = {
+    #     name               = "GKE"
+    #     create_env_folders = true
+    #   }
+    # }
   }
   # TODO: CI/CD validation
 }

@@ -34,6 +34,8 @@ locals {
   }
 }
 
+# top-level folder
+
 module "net-folder" {
   source = "../../../modules/folder"
   count  = var.fast_stage_2.networking.enabled ? 1 : 0

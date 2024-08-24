@@ -66,6 +66,8 @@ locals {
   ])
 }
 
+# top-level folder
+
 module "stage3-folder" {
   source   = "../../../modules/folder"
   for_each = local.stage3_folders_create
@@ -78,11 +80,11 @@ module "stage3-folder" {
   iam = each.value.folder_config.create_env_folders == true ? {} : merge(
     {
       for r in local.stage3_iam_roles.rw :
-      r => module.stage3-sa-prod-rw[each.key].iam_email
+      r => [module.stage3-sa-prod-rw[each.key].iam_email]
     },
     {
       for r in local.stage3_iam_roles.ro :
-      r => module.stage3-sa-prod-ro[each.key].iam_email
+      r => [module.stage3-sa-prod-ro[each.key].iam_email]
     }
   )
   iam_by_principals = each.value.folder_config.iam_by_principals
@@ -102,11 +104,11 @@ module "stage3-folder-prod" {
   iam = merge(
     {
       for r in local.stage3_iam_roles.rw :
-      r => module.stage3-sa-prod-rw[each.key].iam_email
+      r => [module.stage3-sa-prod-rw[each.key].iam_email]
     },
     {
       for r in local.stage3_iam_roles.ro :
-      r => module.stage3-sa-prod-ro[each.key].iam_email
+      r => [module.stage3-sa-prod-ro[each.key].iam_email]
     }
   )
   tag_bindings = {
@@ -128,11 +130,11 @@ module "stage3-folder-dev" {
   iam = merge(
     {
       for r in local.stage3_iam_roles.rw :
-      r => module.stage3-sa-dev-rw[each.key].iam_email
+      r => [module.stage3-sa-dev-rw[each.key].iam_email]
     },
     {
       for r in local.stage3_iam_roles.ro :
-      r => module.stage3-sa-dev-ro[each.key].iam_email
+      r => [module.stage3-sa-dev-ro[each.key].iam_email]
     }
   )
   tag_bindings = {
@@ -149,7 +151,7 @@ module "stage3-sa-prod-rw" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.stage3_folders_create
   project_id   = var.automation.project_id
-  name         = "prod-resman-${each.key}-0"
+  name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} service account."
   prefix       = var.prefix
   iam = {
@@ -169,7 +171,7 @@ module "stage3-sa-prod-ro" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.stage3_folders_create
   project_id   = var.automation.project_id
-  name         = "prod-resman-${each.key}-0r"
+  name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0r"
   display_name = "Terraform resman ${each.key} service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -191,7 +193,7 @@ module "stage3-bucket-prod" {
   source        = "../../../modules/gcs"
   for_each      = local.stage3_folders_create
   project_id    = var.automation.project_id
-  name          = "prod-resman-${each.key}-0"
+  name          = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class
@@ -211,7 +213,7 @@ module "stage3-sa-dev-rw" {
     k => v if v.folder_config.create_env_folders == true
   }
   project_id   = var.automation.project_id
-  name         = "dev-resman-${each.key}-0"
+  name         = "dev-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} service account."
   prefix       = var.prefix
   iam = {
@@ -234,7 +236,7 @@ module "stage3-sa-dev-ro" {
     k => v if v.folder_config.create_env_folders == true
   }
   project_id   = var.automation.project_id
-  name         = "dev-resman-${each.key}-0r"
+  name         = "dev-resman-${coalesce(each.value.short_name, each.key)}-0r"
   display_name = "Terraform resman ${each.key} service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -259,7 +261,7 @@ module "stage3-bucket-dev" {
     k => v if v.folder_config.create_env_folders == true
   }
   project_id    = var.automation.project_id
-  name          = "dev-resman-${each.key}-0"
+  name          = "dev-resman-${coalesce(each.value.short_name, each.key)}-0"
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class

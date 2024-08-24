@@ -40,6 +40,14 @@ moved {
   from = module.branch-network-gcs
   to   = module.net-bucket[0]
 }
+moved {
+  from = module.branch-network-sa-cicd["0"]
+  to   = module.cicd-sa-rw["networking"]
+}
+moved {
+  from = module.branch-network-r-sa-cicd["0"]
+  to   = module.cicd-sa-ro["networking"]
+}
 
 # stage 2 security
 moved {
@@ -65,6 +73,14 @@ moved {
 moved {
   from = module.branch-security-gcs
   to   = module.sec-bucket[0]
+}
+moved {
+  from = module.branch-security-sa-cicd["0"]
+  to   = module.cicd-sa-rw["security"]
+}
+moved {
+  from = module.branch-security-r-sa-cicd["0"]
+  to   = module.cicd-sa-ro["security"]
 }
 
 # stage 2 project factory
