@@ -99,8 +99,8 @@ locals {
         outputs_bucket = var.automation.outputs_bucket
         repository     = v.repository
         service_accounts = {
-          apply = module.stage3-sa-prod-rw[0].email
-          plan  = module.stage3-sa-prod-ro[0].email
+          apply = module.stage3-sa-rw[0].email
+          plan  = module.stage3-sa-ro[0].email
         }
         stage_name = v.short_name
         tf_providers_files = {
@@ -108,29 +108,7 @@ locals {
           plan  = "${v.lvl}-${k}-providers-r.tf"
         }
         tf_var_files = local.cicd_workflow_files.stage_3
-      } if v.lvl == 3 && v.env == "prod"
-    },
-    {
-      for k, v in local.cicd_repositories : "${v.lvl}-${k}" => {
-        audiences = try(
-          local.identity_providers[v.identity_provider].audiences, null
-        )
-        identity_provider = try(
-          local.identity_providers[v.identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        repository     = v.repository
-        service_accounts = {
-          apply = module.stage3-sa-dev-rw[0].email
-          plan  = module.stage3-sa-dev-ro[0].email
-        }
-        stage_name = v.short_name
-        tf_providers_files = {
-          apply = "${v.lvl}-${k}-providers.tf"
-          plan  = "${v.lvl}-${k}-providers-r.tf"
-        }
-        tf_var_files = local.cicd_workflow_files.stage_3
-      } if v.lvl == 3 && v.env == "dev"
+      } if v.lvl == 3
     }
   )
 }

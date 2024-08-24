@@ -29,8 +29,6 @@ locals {
     },
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
-    { for k, v in module.stage3-folder-dev : k => v.id },
-    { for k, v in module.stage3-folder-prod : k => v.id },
     # top-level folders
     { for k, v in module.top-level-folder : k => v.id }
   )

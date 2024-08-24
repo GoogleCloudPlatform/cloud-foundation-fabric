@@ -74,8 +74,12 @@ variable "fast_stage_2" {
 
 variable "fast_stage_3" {
   description = "FAST stages 3 configurations."
+  # key is used for file names and loop keys and is like 'data-platfom-dev'
   type = map(object({
-    short_name = optional(string)
+    # shortname is for resource names and is like 'dp'
+    short_name = string
+    # environment is only used in prefix for service account and bucket names
+    environment = optional(string, "dev")
     cicd_config = optional(object({
       identity_provider = string
       repository = object({
@@ -85,11 +89,10 @@ variable "fast_stage_3" {
       })
     }))
     folder_config = optional(object({
-      name               = string
-      create_env_folders = optional(bool, false)
-      iam_by_principals  = optional(map(list(string)), {})
-      parent_id          = optional(string)
-      tag_bindings       = optional(map(string), {})
+      name              = string
+      iam_by_principals = optional(map(list(string)), {})
+      parent_id         = optional(string)
+      tag_bindings      = optional(map(string), {})
     }))
     organization_iam_roles = optional(object({
       ro = optional(list(string), [])

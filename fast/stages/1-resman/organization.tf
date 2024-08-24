@@ -37,9 +37,6 @@ locals {
   tag_values_stage2 = {
     for k, v in var.fast_stage_2 : k => replace(k, "_", "-") if v.enabled
   }
-  tag_values_stage3 = {
-    for k, v in var.fast_stage_3 : k => replace(k, "_", "-")
-  }
 }
 
 module "organization" {
@@ -54,20 +51,12 @@ module "organization" {
     (var.tag_names.context) = {
       description = "Resource management context."
       iam         = try(local.tags.context.iam, {})
-      values = merge(
-        {
-          for k, v in local.tag_values_stage2 : v => {
-            iam         = try(local.tags.context.values.iam[v], {})
-            description = try(local.tags.context.values.description[v], null)
-          } if var.fast_stage_2[k].enabled
-        },
-        {
-          for k, v in local.tag_values_stage3 : v => {
-            iam         = try(local.tags.context.values.iam[v], {})
-            description = try(local.tags.context.values.description[v], null)
-          }
-        }
-      )
+      values = {
+        for k, v in local.tag_values_stage2 : v => {
+          iam         = try(local.tags.context.values.iam[v], {})
+          description = try(local.tags.context.values.description[v], null)
+        } if var.fast_stage_2[k].enabled
+      }
     },
     (var.tag_names.environment) = {
       description = "Environment definition."
@@ -75,24 +64,32 @@ module "organization" {
       values = {
         development = {
           iam = try(local.tags.environment.values.development.iam, {})
-          iam_bindings = !var.fast_stage_2.project_factory.enabled ? {} : {
-            pf = {
-              members = [module.pf-sa-rw[0].iam_email]
-              role    = "roles/resourcemanager.tagUser"
+          iam_bindings = (
+            !var.fast_stage_2.project_factory.enabled
+            ? {}
+            : {
+              pf = {
+                members = [module.pf-sa-rw[0].iam_email]
+                role    = "roles/resourcemanager.tagUser"
+              }
             }
-          }
+          )
           description = try(
             local.tags.environment.values.development.description, null
           )
         }
         production = {
           iam = try(local.tags.environment.values.production.iam, {})
-          iam_bindings = !var.fast_stage_2.project_factory.enabled ? {} : {
-            pf = {
-              members = [module.pf-sa-rw[0].iam_email]
-              role    = "roles/resourcemanager.tagUser"
+          iam_bindings = (
+            !var.fast_stage_2.project_factory.enabled
+            ? {}
+            : {
+              pf = {
+                members = [module.pf-sa-rw[0].iam_email]
+                role    = "roles/resourcemanager.tagUser"
+              }
             }
-          }
+          )
           description = try(
             local.tags.environment.values.production.description, null
           )

@@ -60,8 +60,8 @@ module "sec-folder" {
       for role, attrs in local.sec_stage3_iam.prod : role => [
         for v in attrs : (
           v.sa == "ro"
-          ? module.stage3-sa-prod-ro[v.s3].iam_email
-          : module.stage3-sa-prod-rw[v.s3].iam_email
+          ? module.stage3-sa-ro[v.s3].iam_email
+          : module.stage3-sa-rw[v.s3].iam_email
         )
       ]
     }
@@ -104,8 +104,8 @@ module "sec-folder-prod" {
     for role, attrs in local.sec_stage3_iam.prod : role => [
       for v in attrs : (
         v.sa == "ro"
-        ? module.stage3-sa-prod-ro[v.s3].iam_email
-        : module.stage3-sa-prod-rw[v.s3].iam_email
+        ? module.stage3-sa-ro[v.s3].iam_email
+        : module.stage3-sa-rw[v.s3].iam_email
       )
     ]
   }
@@ -127,8 +127,8 @@ module "sec-folder-dev" {
     for role, attrs in local.sec_stage3_iam.dev : role => [
       for v in attrs : (
         v.sa == "ro"
-        ? module.stage3-sa-dev-ro[v.s3].iam_email
-        : module.stage3-sa-dev-rw[v.s3].iam_email
+        ? module.stage3-sa-ro[v.s3].iam_email
+        : module.stage3-sa-rw[v.s3].iam_email
       )
     ]
   }

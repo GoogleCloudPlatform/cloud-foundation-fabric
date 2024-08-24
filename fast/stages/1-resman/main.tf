@@ -54,22 +54,12 @@ locals {
     },
     {
       for k, v in var.fast_stage_3 :
-      k => module.stage3-sa-prod-rw[k].email
+      k => module.stage3-sa-rw[k].email
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-r" => module.stage3-sa-prod-ro[k].email
+      "${k}-r" => module.stage3-sa-ro[k].email
     },
-    {
-      for k, v in var.fast_stage_3 :
-      "${k}-dev" => module.stage3-sa-dev-rw[k].email
-      if v.folder_config.create_env_folders == true
-    },
-    {
-      for k, v in var.fast_stage_3 :
-      "${k}-dev-r" => module.stage3-sa-dev-ro[k].email
-      if v.folder_config.create_env_folders == true
-    }
   )
   tag_keys = (
     var.root_node == null

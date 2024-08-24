@@ -55,17 +55,9 @@ locals {
       for v in local.stage3_sa_roles_in_org : join("/", values(v)) => {
         role = lookup(var.custom_roles, v, v)
         member = (
-          v.env == "prod"
-          ? (
-            v.sa == "rw"
-            ? module.stage3-sa-prod-rw[v.s3].iam_email
-            : module.stage3-sa-prod-ro[v.s3].iam_email
-          )
-          : (
-            v.sa == "rw"
-            ? module.stage3-sa-dev-rw[v.s3].iam_email
-            : module.stage3-sa-dev-ro[v.s3].iam_email
-          )
+          v.sa == "rw"
+          ? module.stage3-sa-rw[v.s3].iam_email
+          : module.stage3-sa-ro[v.s3].iam_email
         )
       }
     },

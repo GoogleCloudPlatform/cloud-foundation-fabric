@@ -25,18 +25,11 @@ locals {
     },
     {
       for k, v in var.fast_stage_3 :
-      "${k}-prod" => merge(v.cicd_config, {
-        env = "prod", short_name = coalesce(v.short_name, k), lvl = 3
+      k => merge(v.cicd_config, {
+        env = v.environment, short_name = coalesce(v.short_name, k), lvl = 3
       })
       if v.cicd_config != null
-    },
-    {
-      for k, v in var.fast_stage_3 :
-      "${k}-dev" => merge(v.cicd_config, {
-        env = "dev", short_name = coalesce(v.short_name, k), lvl = 3
-      })
-      if v.cicd_config != null && v.folder_config.create_env_folders == true
-    },
+    }
   )
   # filter by valid identity provider and type
   cicd_repositories = {
@@ -62,11 +55,11 @@ module "cicd-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = var.automation.project_id
-  name       = "${each.value.env}-resman-${each.value.short_name}-1"
+  name       = "resman-${each.value.short_name}-1"
   display_name = (
     "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account."
   )
-  prefix = var.prefix
+  prefix = "${var.prefix}-${each.value.env}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       each.value.repository.branch == null
@@ -95,11 +88,11 @@ module "cicd-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = var.automation.project_id
-  name       = "${each.value.env}-resman-${each.value.short_name}-1r"
+  name       = "resman-${each.value.short_name}-1r"
   display_name = (
     "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account (read-only)."
   )
-  prefix = var.prefix
+  prefix = "${var.prefix}-${each.value.env}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(

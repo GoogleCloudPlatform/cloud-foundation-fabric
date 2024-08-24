@@ -60,50 +60,24 @@ locals {
         sa            = module.pf-sa-ro[0].email
       })
     },
-    !local.pf_use_envs ? {} : {
-      "2-project-factory-dev" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket-dev[0].name
-        name          = "project-factory-dev"
-        sa            = module.pf-sa-dev-rw[0].email
-      })
-      "2-project-factory-dev-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket-dev[0].name
-        name          = "project-factory-dev"
-        sa            = module.pf-sa-dev-ro[0].email
-      })
-      "2-project-factory-prod" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket-prod[0].name
-        name          = "project-factory-prod"
-        sa            = module.pf-sa-prod-rw[0].email
-      })
-      "2-project-factory-prod-r" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.pf-bucket-prod[0].name
-        name          = "project-factory-prod"
-        sa            = module.pf-sa-prod-ro[0].email
-      })
-    },
     # stage 3
     {
       for k, v in var.fast_stage_3 :
-      "3-${k}-prod" => templatefile(local._tpl_providers, {
+      "3-${k}" => templatefile(local._tpl_providers, {
         backend_extra = null
-        bucket        = module.stage3-bucket-prod[k].name
-        name          = "${k}-prod"
-        sa            = module.stage3-sa-prod-rw[k].email
+        bucket        = module.stage3-bucket[k].name
+        name          = k
+        sa            = module.stage3-sa-rw[k].email
       })
     },
     {
       for k, v in var.fast_stage_3 :
-      "3-${k}-dev" => templatefile(local._tpl_providers, {
+      "3-${k}-r" => templatefile(local._tpl_providers, {
         backend_extra = null
-        bucket        = module.stage3-bucket-dev[k].name
-        name          = "${k}-dev"
-        sa            = module.stage3-sa-dev-rw[k].email
-      }) if v.folder_config.create_env_folders
+        bucket        = module.stage3-bucket[k].name
+        name          = k
+        sa            = module.stage3-sa-ro[k].email
+      })
     },
     # top-level folders
     {

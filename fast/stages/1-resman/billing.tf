@@ -41,20 +41,12 @@ locals {
         role   = "roles/billing.costsManager"
       }
     },
-    # stage 3 prod
+    # stage 3
     {
-      for k, v in var.fast_stage_3 : "${k}-prod" => {
-        member = module.stage3-sa-prod-rw[k].iam_email
+      for k, v in var.fast_stage_3 : k => {
+        member = module.stage3-sa-rw[k].iam_email
         role   = "roles/billing.user"
       }
-    },
-    # stage 3 dev
-    {
-      for k, v in var.fast_stage_3 : "${k}-dev" => {
-        member = module.stage3-sa-dev-rw[k].iam_email
-        role   = "roles/billing.user"
-      }
-      if v.folder_config.create_env_folders == true
     }
   )
   billing_mode = (
