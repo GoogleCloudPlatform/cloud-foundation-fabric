@@ -31,7 +31,7 @@ locals {
       active                           = try(v.active, true)
       description                      = try(v.description, null)
       enable_private_access            = try(v.enable_private_access, true)
-      allow_subnet_cidr_routes_overlap = try(v.allow_subnet_cidr_routes_overlap, false)
+      allow_subnet_cidr_routes_overlap = try(v.allow_subnet_cidr_routes_overlap, null)
       flow_logs_config = can(v.flow_logs_config) ? {
         aggregation_interval = try(v.flow_logs_config.aggregation_interval, null)
         filter_expression    = try(v.flow_logs_config.filter_expression, null)
