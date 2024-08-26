@@ -24,6 +24,15 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
+  iam_stage2_condition = <<-END
+    resource.matchTag(
+      '${local.tag_root}/${var.tag_names.environment}', '%s'
+    )
+    &&
+    api.getAttribute(
+      'iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]
+    )
+  END
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
@@ -52,14 +61,8 @@ locals {
       project-factory   = module.pf-sa-rw[0].email
       project-factory-r = module.pf-sa-ro[0].email
     },
-    {
-      for k, v in var.fast_stage_3 :
-      k => module.stage3-sa-rw[k].email
-    },
-    {
-      for k, v in var.fast_stage_3 :
-      "${k}-r" => module.stage3-sa-ro[k].email
-    },
+    { for k, v in local.stage3 : k => module.stage3-sa-rw[k].email },
+    { for k, v in local.stage3 : "${k}-r" => module.stage3-sa-ro[k].email },
   )
   tag_keys = (
     var.root_node == null
@@ -76,6 +79,12 @@ locals {
     ? module.organization[0].tag_values
     : module.automation-project[0].tag_values
   )
+  top_level_folder_ids = {
+    for k, v in module.top-level-folder : k => v.id
+  }
+  top_level_service_accounts = {
+    for k, v in module.top-level-sa : k => try(v.email)
+  }
 }
 
 # data "google_client_openid_userinfo" "provider_identity" {

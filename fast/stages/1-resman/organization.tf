@@ -66,7 +66,7 @@ module "organization" {
       description = "Environment definition."
       iam         = try(local.tags.environment.iam, {})
       values = {
-        development = {
+        (var.environment_names["dev"]) = {
           iam = try(local.tags.environment.values.development.iam, {})
           iam_bindings = (
             !var.fast_stage_2.project_factory.enabled
@@ -82,7 +82,7 @@ module "organization" {
             local.tags.environment.values.development.description, null
           )
         }
-        production = {
+        (var.environment_names["prod"]) = {
           iam = try(local.tags.environment.values.production.iam, {})
           iam_bindings = (
             !var.fast_stage_2.project_factory.enabled

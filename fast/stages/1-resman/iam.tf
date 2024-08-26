@@ -53,12 +53,26 @@ locals {
     # stage 3
     {
       for v in local.stage3_sa_roles_in_org : join("/", values(v)) => {
-        role = lookup(var.custom_roles, v, v)
+        role = lookup(var.custom_roles, v.role, v.role)
         member = (
           v.sa == "rw"
           ? module.stage3-sa-rw[v.s3].iam_email
           : module.stage3-sa-ro[v.s3].iam_email
         )
+        condition = {
+          title      = "stage3 ${v.s3} ${v.env}"
+          expression = <<-END
+            resource.matchTag(
+              '${local.tag_root}/${var.tag_names.environment}',
+              '${v.env}'
+            )
+            &&
+            resource.matchTag(
+              '${local.tag_root}/${var.tag_names.context}',
+              '${v.context}'
+            )
+          END
+        }
       }
     },
     # billing for all stages

@@ -15,22 +15,25 @@
  */
 
 locals {
+  net_s3_delegated = join(",", formatlist("'%s'", [
+    "roles/composer.sharedVpcAgent",
+    "roles/compute.networkUser",
+    "roles/compute.networkViewer",
+    "roles/container.hostServiceAgentUser",
+    "roles/multiclusterservicediscovery.serviceAgent",
+    "roles/vpcaccess.user",
+  ]))
   net_use_env_folders = (
     var.fast_stage_2.networking.enabled &&
     var.fast_stage_2.networking.folder_config.create_env_folders
   )
-  # TODO: this would be better and more narrowly handled from stage 2 projects
-  net_stage3_iam = {
-    dev = {
-      for v in local.stage3_sa_roles_in_stage2 :
-      lookup(var.custom_roles, v.role, v.role) => v...
-      if v.env == "dev" && v.s2 == "networking"
-    }
-    prod = {
-      for v in local.stage3_sa_roles_in_stage2 :
-      lookup(var.custom_roles, v.role, v.role) => v...
-      if v.env == "prod" && v.s2 == "networking"
-    }
+  net_stage3_iam = !var.fast_stage_2.networking.enabled ? {} : {
+    for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
+      v.sa == "rw"
+      ? module.stage3-sa-rw[v.s3].iam_email
+      : module.stage3-sa-ro[v.s3].iam_email
+    )...
+    if v.s2 == "networking"
   }
 }
 
@@ -43,7 +46,7 @@ module "net-folder" {
     var.fast_stage_2.networking.folder_config.parent_id == null
     ? local.root_node
     : try(
-      module.top-level-folder[var.fast_stage_2.networking.folder_config].parent_id,
+      local.top_level_folder_ids[var.fast_stage_2.networking.folder_config],
       var.fast_stage_2.networking.folder_config.parent_id
     )
   )
@@ -78,20 +81,88 @@ module "net-folder" {
         try(module.sec-sa-ro[0].iam_email, null)
       ]
     },
-    # stage 3s service accounts (if not using environment folders)
-    var.fast_stage_2.networking.folder_config.create_env_folders == true ? {} : {
-      for role, attrs in local.net_stage3_iam.prod : role => [
-        for v in attrs : (
-          v.sa == "ro"
-          ? module.stage3-sa-ro[v.s3].iam_email
-          : module.stage3-sa-rw[v.s3].iam_email
-        )
+    # project factory service accounts
+    (var.fast_stage_2.project_factory.enabled) != true ? {} : {
+      (var.custom_roles.service_project_network_admin) = [
+        module.pf-sa-rw[0].iam_email
+      ]
+      "roles/compute.networkViewer" = [
+        module.pf-sa-ro[0].iam_email
       ]
     }
   )
+  iam_bindings = merge(
+    # project factory delegated grant
+    var.fast_stage_2.project_factory.enabled != true ? {} : {
+      pf_delegated_grant = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = [module.pf-sa-rw[0].iam_email]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            "roles/compute.networkUser"
+          )
+          title       = "project factory project delegated admin"
+          description = "Project factory delegated grant."
+        }
+      }
+    },
+    # stage 3 dev delegated iam admin
+    {
+      stage3_delegated_grant_dev = {
+        role = "roles/resourcemanager.projectIamAdmin"
+        members = [
+          for k, v in local.stage3 : module.stage3-sa-rw[k].iam_email
+          if v.environment == "dev" && v.stage2_iam.networking.iam_admin_delegated
+        ]
+        condition = {
+          expression = format(
+            local.iam_stage2_condition,
+            "development",
+            local.net_s3_delegated
+          )
+          title = "stage 3 project delegated admin dev"
+        }
+      }
+    },
+    # stage 3 prod delegated iam admin
+    {
+      stage3_delegated_grant_prod = {
+        role = "roles/resourcemanager.projectIamAdmin"
+        members = [
+          for k, v in local.stage3 : module.stage3-sa-rw[k].iam_email
+          if v.environment == "prod" && v.stage2_iam.networking.iam_admin_delegated
+        ]
+        condition = {
+          expression = format(
+            local.iam_stage2_condition, "production", local.net_s3_delegated
+          )
+          title = "stage 3 project delegated admin prod"
+        }
+      }
+    },
+    # stage 3 roles
+    {
+      for k, v in local.net_stage3_iam : k => {
+        role    = split(":", k)[0]
+        members = v
+        condition = {
+          title      = "stage 3 ${split(":", k)[1]}"
+          expression = <<-END
+            resource.matchTag(
+              '${local.tag_root}/${var.tag_names.environment}',
+              '${split(":", k)[1]}'
+            )
+          END
+        }
+      }
+    }
+  )
   iam_by_principals = merge(
-    # replace with more selective custom roles for production deployments
-    { (local.principals.gcp-network-admins) = ["roles/editor"] },
+    {
+      # replace with more selective custom roles for production deployments
+      (local.principals.gcp-network-admins) = ["roles/editor"]
+    },
     var.fast_stage_2.networking.folder_config.iam_by_principals
   )
   tag_bindings = {
@@ -107,20 +178,10 @@ module "net-folder-prod" {
   source = "../../../modules/folder"
   count  = local.net_use_env_folders ? 1 : 0
   parent = module.net-folder[0].id
-  name   = "Production"
-  iam = {
-    # stage 3s service accounts
-    for role, attrs in local.net_stage3_iam.prod : role => [
-      for v in attrs : (
-        v.sa == "ro"
-        ? module.stage3-sa-ro[v.s3].iam_email
-        : module.stage3-sa-rw[v.s3].iam_email
-      )
-    ]
-  }
+  name   = title(var.environment_names["prod"])
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environment_names["prod"]}"].id,
       null
     )
   }
@@ -130,20 +191,10 @@ module "net-folder-dev" {
   source = "../../../modules/folder"
   count  = local.net_use_env_folders ? 1 : 0
   parent = module.net-folder[0].id
-  name   = "Development"
-  iam = {
-    # stage 3s service accounts
-    for role, attrs in local.net_stage3_iam.dev : role => [
-      for v in attrs : (
-        v.sa == "ro"
-        ? module.stage3-sa-ro[v.s3].iam_email
-        : module.stage3-sa-rw[v.s3].iam_email
-      )
-    ]
-  }
+  name   = title(var.environment_names["dev"])
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environment_names["dev"]}"].id,
       null
     )
   }

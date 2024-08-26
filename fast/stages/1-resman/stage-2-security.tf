@@ -19,18 +19,13 @@ locals {
     var.fast_stage_2.security.enabled &&
     var.fast_stage_2.security.folder_config.create_env_folders
   )
-  # TODO: this would be better and more narrowly handled from stage 2 projects
-  sec_stage3_iam = {
-    dev = {
-      for v in local.stage3_sa_roles_in_stage2 :
-      lookup(var.custom_roles, v.role, v.role) => v...
-      if v.env == "dev" && v.s2 == "security"
-    }
-    prod = {
-      for v in local.stage3_sa_roles_in_stage2 :
-      lookup(var.custom_roles, v.role, v.role) => v...
-      if v.env == "prod" && v.s2 == "security"
-    }
+  sec_stage3_iam = !var.fast_stage_2.security.enabled ? {} : {
+    for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
+      v.sa == "rw"
+      ? module.stage3-sa-rw[v.s3].iam_email
+      : module.stage3-sa-ro[v.s3].iam_email
+    )...
+    if v.s2 == "security"
   }
 }
 
@@ -43,7 +38,7 @@ module "sec-folder" {
     var.fast_stage_2.security.folder_config.parent_id == null
     ? local.root_node
     : try(
-      module.top-level-folder[var.fast_stage_2.security.folder_config].parent_id,
+      local.top_level_folder_ids[var.fast_stage_2.security.folder_config],
       var.fast_stage_2.security.folder_config.parent_id
     )
   )
@@ -58,34 +53,53 @@ module "sec-folder" {
       "roles/viewer"                         = [module.sec-sa-ro[0].iam_email]
       "roles/resourcemanager.folderViewer"   = [module.sec-sa-ro[0].iam_email]
     },
-    # stage 3s service accounts (if not using environment folders)
-    var.fast_stage_2.security.folder_config.create_env_folders == true ? {} : {
-      for role, attrs in local.sec_stage3_iam.prod : role => [
-        for v in attrs : (
-          v.sa == "ro"
-          ? module.stage3-sa-ro[v.s3].iam_email
-          : module.stage3-sa-rw[v.s3].iam_email
-        )
+    # project factory service accounts
+    (var.fast_stage_2.project_factory.enabled) != true ? {} : {
+      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+        module.pf-sa-rw[0].iam_email
+      ]
+      "roles/cloudkms.viewer" = [
+        module.pf-sa-ro[0].iam_email
       ]
     }
   )
-  iam_bindings = var.fast_stage_2.project_factory.enabled != true ? {} : {
-    pf_delegated_grant = {
-      role    = "roles/resourcemanager.projectIamAdmin"
-      members = [module.pf-sa-rw[0].iam_email]
-      condition = {
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-        )
-        title       = "pf_delegated_grant"
-        description = "Project factory delegated grant."
+  iam_bindings = merge(
+    var.fast_stage_2.project_factory.enabled != true ? {} : {
+      pf_delegated_grant = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = [module.pf-sa-rw[0].iam_email]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+          )
+          title       = "pf_delegated_grant"
+          description = "Project factory delegated grant."
+        }
+      }
+    },
+    # stage 3 IAM bindings use conditions based on environment
+    {
+      for k, v in local.sec_stage3_iam : k => {
+        role    = split(":", k)[0]
+        members = v
+        condition = {
+          title      = "stage 3 ${split(":", k)[1]}"
+          expression = <<-END
+            resource.matchTag(
+              '${local.tag_root}/${var.tag_names.environment}',
+              '${split(":", k)[1]}'
+            )
+          END
+        }
       }
     }
-  }
+  )
   iam_by_principals = merge(
-    # replace with more selective custom roles for production deployments
-    { (local.principals.gcp-security-admins) = ["roles/editor"] },
+    {
+      # replace with more selective custom roles for production deployments
+      (local.principals.gcp-security-admins) = ["roles/editor"]
+    },
     var.fast_stage_2.security.folder_config.iam_by_principals
   )
   tag_bindings = {
@@ -101,7 +115,7 @@ module "sec-folder-prod" {
   source = "../../../modules/folder"
   count  = local.sec_use_env_folders ? 1 : 0
   parent = module.sec-folder[0].id
-  name   = "Production"
+  name   = title(var.environment_names["prod"])
   iam = {
     # stage 3s service accounts
     for role, attrs in local.sec_stage3_iam.prod : role => [
@@ -114,7 +128,7 @@ module "sec-folder-prod" {
   }
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environment_names["prod"]}"].id,
       null
     )
   }
@@ -124,7 +138,7 @@ module "sec-folder-dev" {
   source = "../../../modules/folder"
   count  = local.sec_use_env_folders ? 1 : 0
   parent = module.sec-folder[0].id
-  name   = "Development"
+  name   = title(var.environment_names["dev"])
   iam = {
     # stage 3s service accounts
     for role, attrs in local.sec_stage3_iam.dev : role => [
@@ -137,7 +151,7 @@ module "sec-folder-dev" {
   }
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environment_names["dev"]}"].id,
       null
     )
   }

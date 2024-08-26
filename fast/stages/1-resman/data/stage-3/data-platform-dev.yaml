@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
+# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
-name: GCVE
-short_name: gcve
-automation:
-  enable: false
-root_node_config:
-  context_tag_value: gcve
+short_name: dp
+folder_config:
+  name: Development
+  parent_id: data-platform

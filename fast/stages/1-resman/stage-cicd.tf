@@ -24,7 +24,7 @@ locals {
       if v.cicd_config != null
     },
     {
-      for k, v in var.fast_stage_3 :
+      for k, v in local.stage3 :
       k => merge(v.cicd_config, {
         env = v.environment, short_name = coalesce(v.short_name, k), lvl = 3
       })

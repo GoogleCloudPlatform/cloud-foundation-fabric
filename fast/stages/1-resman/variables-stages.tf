@@ -69,16 +69,23 @@ variable "fast_stage_2" {
   })
   nullable = false
   default  = {}
-  # TODO: CI/CD validation
+  validation {
+    condition = alltrue([
+      for k, v in var.fast_stage_2 :
+      v.cicd_config == null || contains(
+        ["github", "gitlab"],
+        coalesce(try(v.cicd_config.repository.type, null), "-")
+      )
+    ])
+    error_message = "Invalid CI/CD repository type."
+  }
 }
 
 variable "fast_stage_3" {
   description = "FAST stages 3 configurations."
   # key is used for file names and loop keys and is like 'data-platfom-dev'
   type = map(object({
-    # shortname is for resource names and is like 'dp'
-    short_name = string
-    # environment is only used in prefix for service account and bucket names
+    short_name  = string
     environment = optional(string, "dev")
     cicd_config = optional(object({
       identity_provider = string
@@ -94,22 +101,47 @@ variable "fast_stage_3" {
       parent_id         = optional(string)
       tag_bindings      = optional(map(string), {})
     }))
-    organization_iam_roles = optional(object({
-      ro = optional(list(string), [])
-      rw = optional(list(string), [])
-    }), {})
-    stage2_iam_roles = optional(object({
+    organization_iam = optional(object({
+      context_tag_value = string
+      sa_roles = object({
+        ro = optional(list(string), [])
+        rw = optional(list(string), [])
+      })
+    }))
+    stage2_iam = optional(object({
       networking = optional(object({
-        ro = optional(list(string), [])
-        rw = optional(list(string), [])
+        iam_admin_delegated = optional(bool, false)
+        sa_roles = optional(object({
+          ro = optional(list(string), [])
+          rw = optional(list(string), [])
+        }), {})
       }), {})
-      security_iam_roles = optional(object({
-        ro = optional(list(string), [])
-        rw = optional(list(string), [])
+      security = optional(object({
+        iam_admin_delegated = optional(bool, false)
+        sa_roles = optional(object({
+          ro = optional(list(string), [])
+          rw = optional(list(string), [])
+        }), {})
       }), {})
     }), {})
   }))
   nullable = false
   default  = {}
-  # TODO: CI/CD validation
+  validation {
+    condition = alltrue([
+      for k, v in var.fast_stage_3 :
+      contains(["dev", "prod"], coalesce(v.environment, "-"))
+    ])
+    error_message = "Invalid environment value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.fast_stage_3 :
+      v.cicd_config == null || contains(
+        ["github", "gitlab"],
+        coalesce(try(v.cicd_config.repository.type, null), "-")
+      )
+    ])
+    error_message = "Invalid CI/CD repository type."
+  }
 }

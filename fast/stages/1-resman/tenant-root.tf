@@ -55,8 +55,8 @@ module "automation-project" {
       description = "Environment definition."
       iam         = {}
       values = {
-        development = {}
-        production  = {}
+        (var.environment_names["dev"])  = {}
+        (var.environment_names["prod"]) = {}
       }
     }
   })

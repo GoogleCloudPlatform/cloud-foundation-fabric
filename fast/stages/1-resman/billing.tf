@@ -43,7 +43,7 @@ locals {
     },
     # stage 3
     {
-      for k, v in var.fast_stage_3 : k => {
+      for k, v in local.stage3 : k => {
         member = module.stage3-sa-rw[k].iam_email
         role   = "roles/billing.user"
       }

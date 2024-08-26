@@ -15,19 +15,84 @@
  */
 
 locals {
+  _stage3_path = try(
+    pathexpand(var.factories_config.stage_3), null
+  )
+  _stage3_files = try(
+    fileset(local._stage3_path, "**/*.yaml"),
+    []
+  )
+  _stage3 = {
+    for f in local._stage3_files :
+    split(".", f)[0] => yamldecode(file(
+      "${coalesce(local._stage3_path, "-")}/${f}"
+    ))
+  }
+  stage3 = merge({
+    for k, v in local._stage3 : k => {
+      short_name  = v.short_name
+      environment = try(v.environment, "dev")
+      cicd_config = lookup(v, "cicd_config", null) == null ? null : {
+        identity_provider = v.cicd_config.identity_provider
+        repository = merge(v.cicd_config.repository, {
+          branch = try(v.cicd_config.repository.branch, null)
+          type   = try(v.cicd_config.repository.type, "github")
+        })
+      }
+      folder_config = lookup(v, "folder_config", null) == null ? null : {
+        name              = v.folder_config.name
+        iam_by_principals = try(v.folder_config.iam_by_principals, {})
+        parent_id         = try(v.folder_config.parent_id, null)
+        tag_bindings      = try(v.folder_config.tag_bindings, {})
+      }
+      organization_iam = lookup(v, "organization_iam", null) == null ? null : {
+        context_tag_value = v.organization_iam.context_tag_value
+        sa_roles          = merge({ ro = [], rw = [] }, v.organization_iam.sa_roles)
+      }
+      stage2_iam = {
+        networking = {
+          iam_admin_delegated = try(
+            v.stage2_iam.networking.iam_admin_delegated, false
+          )
+          sa_roles = merge(
+            { ro = [], rw = [] }, try(v.stage2_iam.networking.sa_roles, {})
+          )
+        }
+        security = {
+          iam_admin_delegated = try(
+            v.stage2_iam.security.iam_admin_delegated, false
+          )
+          sa_roles = merge(
+            { ro = [], rw = [] }, try(v.stage2_iam.security.sa_roles, {})
+          )
+        }
+      }
+    }
+  }, var.fast_stage_3)
   stage3_sa_roles_in_org = flatten([
-    for k, v in var.fast_stage_3 : [
-      for sa, roles in v.organization_iam_roles : [
-        for r in roles : { role = r, sa = sa, s3 = k }
+    for k, v in local.stage3 : [
+      for sa, roles in try(v.organization_iam.sa_roles, []) : [
+        for role in roles : {
+          context = try(v.organization_iam.context_tag_value, "")
+          env     = var.environment_names[v.environment]
+          role    = role
+          sa      = sa
+          s3      = k
+        }
       ]
     ]
   ])
-  # TODO: this would be better and more narrowly handled from stage 2 projects
-  stage3_sa_roles_in_stage2 = flatten([
-    for k, v in var.fast_stage_3 : [
-      for s2, attrs in v.stage2_iam_roles : [
-        for sa, roles in attrs : [
-          for role in roles : { role = role, sa = sa, s2 = s2, s3 = k }
+  stage3_iam_in_stage2 = flatten([
+    for k, v in local.stage3 : [
+      for s2, attrs in v.stage2_iam : [
+        for sa, roles in attrs.sa_roles : [
+          for role in roles : {
+            env  = var.environment_names[v.environment]
+            role = lookup(var.custom_roles, role, role)
+            sa   = sa
+            s2   = s2
+            s3   = k
+          }
         ]
       ]
     ]
@@ -39,13 +104,13 @@ locals {
 module "stage3-folder" {
   source = "../../../modules/folder"
   for_each = {
-    for k, v in var.fast_stage_3 : k => v if v.folder_config != null
+    for k, v in local.stage3 : k => v if v.folder_config != null
   }
   parent = (
     each.value.folder_config.parent_id == null
     ? local.root_node
     : try(
-      module.top-level-folder[each.value.folder_config.parent_id],
+      local.top_level_folder_ids[each.value.folder_config.parent_id],
       each.value.folder_config.parent_id
     )
   )
@@ -61,11 +126,16 @@ module "stage3-folder" {
 
   }
   iam_by_principals = each.value.folder_config.iam_by_principals
-  tag_bindings = {
-    for k, v in each.value.folder_config.tag_bindings : k => lookup(
-      local.top_level_tags, v, v
-    )
-  }
+  tag_bindings = merge(
+    {
+      environment = local.tag_values["environment/${var.environment_names[each.value.environment]}"].id
+    },
+    {
+      for k, v in each.value.folder_config.tag_bindings : k => lookup(
+        local.top_level_tags, v, v
+      )
+    }
+  )
   depends_on = [module.top-level-folder]
 }
 
@@ -73,7 +143,7 @@ module "stage3-folder" {
 
 module "stage3-sa-rw" {
   source     = "../../../modules/iam-service-account"
-  for_each   = var.fast_stage_3
+  for_each   = local.stage3
   project_id = var.automation.project_id
   name       = "resman-${each.value.short_name}-0"
   display_name = (
@@ -95,7 +165,7 @@ module "stage3-sa-rw" {
 
 module "stage3-sa-ro" {
   source     = "../../../modules/iam-service-account"
-  for_each   = var.fast_stage_3
+  for_each   = local.stage3
   project_id = var.automation.project_id
   name       = "resman-${each.value.short_name}-0r"
   display_name = (
@@ -119,7 +189,7 @@ module "stage3-sa-ro" {
 
 module "stage3-bucket" {
   source        = "../../../modules/gcs"
-  for_each      = var.fast_stage_3
+  for_each      = local.stage3
   project_id    = var.automation.project_id
   name          = "resman-${each.value.short_name}-0"
   prefix        = "${var.prefix}-${each.value.environment}"

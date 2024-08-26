@@ -133,6 +133,11 @@ moved {
 # stage 3 gcve
 
 moved {
+  from = module.branch-gcve-folder[0]
+  to   = module.top-level-folder["gcve"]
+}
+
+moved {
   from = module.branch-gcve-prod-folder[0]
   to   = module.stage3-folder["gcve-prod"]
 }
@@ -168,6 +173,11 @@ moved {
 # stage 3 gke
 
 moved {
+  from = module.branch-gke-folder[0]
+  to   = module.top-level-folder["gke"]
+}
+
+moved {
   from = module.branch-gke-prod-folder[0]
   to   = module.stage3-folder["gke-prod"]
 }
@@ -201,6 +211,11 @@ moved {
 }
 
 # stage 3 data platform
+
+moved {
+  from = module.branch-dp-folder[0]
+  to   = module.top-level-folder["data-platform"]
+}
 
 moved {
   from = module.branch-dp-prod-folder[0]

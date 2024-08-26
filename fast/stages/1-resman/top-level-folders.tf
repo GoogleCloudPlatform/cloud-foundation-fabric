@@ -51,6 +51,7 @@ locals {
         iam_bindings_additive = try(v.iam_bindings_additive, {})
         iam_by_principals     = try(v.iam_by_principals, {})
         org_policies          = try(v.org_policies, {})
+        parent_id             = try(v.parent_id, null)
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
@@ -66,10 +67,9 @@ locals {
 }
 
 module "top-level-folder" {
-  source   = "../../../modules/folder"
-  for_each = local.top_level_folders
-  # TODO: add support for explicit parent id
-  parent              = "organizations/${var.organization.id}"
+  source              = "../../../modules/folder"
+  for_each            = local.top_level_folders
+  parent              = coalesce(each.value.parent_id, local.root_node)
   name                = each.value.name
   contacts            = each.value.contacts
   firewall_policy     = each.value.firewall_policy

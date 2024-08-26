@@ -12,15 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/fast-stage.schema.json
+# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
-short_name: sbx
-main:
-  folder:
-    name: Sandbox
-    service_account_iam:
-      rw:
-        - roles/logging.admin
-        - roles/owner
-        - roles/resourcemanager.folderAdmin
-        - roles/resourcemanager.projectCreator
+short_name: gke
+folder_config:
+  name: Development
+  parent_id: gke

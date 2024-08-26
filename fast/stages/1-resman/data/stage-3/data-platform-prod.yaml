@@ -12,15 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/fast-stage.schema.json
+# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
-short_name: nsec
-main:
-  root_node:
-    service_account_iam:
-      rw:
-        - role: roles/compute.orgFirewallPolicyAdmin
-        - role: ngfw_enterprise_admin
-      # ro:
-      #   - role: roles/compute.orgFirewallPolicyAdmin
-      #   - role: ngfw_enterprise_admin
+short_name: dp
+environment: prod
+folder_config:
+  name: Production
+  parent_id: data-platform

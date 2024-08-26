@@ -30,11 +30,12 @@ locals {
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
     # top-level folders
-    { for k, v in module.top-level-folder : k => v.id }
+    local.top_level_folder_ids
   )
-  service_accounts = merge(local.stage_service_accounts, {
-    for k, v in module.top-level-sa : k => try(v.email)
-  })
+  service_accounts = merge(
+    local.stage_service_accounts,
+    local.top_level_service_accounts
+  )
   tfvars = {
     checklist_hierarchy = local.checklist.hierarchy
     folder_ids          = local.folder_ids
