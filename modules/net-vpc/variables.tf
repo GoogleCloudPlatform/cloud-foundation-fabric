@@ -258,7 +258,7 @@ variable "subnets" {
     region                           = string
     description                      = optional(string)
     enable_private_access            = optional(bool, true)
-    allow_subnet_cidr_routes_overlap = optional(bool, false)
+    allow_subnet_cidr_routes_overlap = optional(bool, null)
     flow_logs_config = optional(object({
       aggregation_interval = optional(string)
       filter_expression    = optional(string)
