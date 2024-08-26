@@ -15,18 +15,23 @@
  */
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Configuration for YAML-based factories."
   type = object({
-    hierarchy = optional(object({
-      folders_data_path = string
-      parent_ids        = optional(map(string), {})
-    }))
-    projects_data_path = optional(string)
+    folders_data_path  = optional(string, "data/hierarchy")
+    projects_data_path = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
-      budgets_data_path     = string
+      budgets_data_path     = optional(string, "data/budgets")
       notification_channels = optional(map(any), {})
     }))
+    context = optional(object({
+      # TODO: add KMS keys
+      folder_ids        = optional(map(string), {})
+      iam_principals    = optional(map(string), {})
+      tag_values        = optional(map(string), {})
+      vpc_host_projects = optional(map(string), {})
+    }), {})
   })
   nullable = false
+  default  = {}
 }

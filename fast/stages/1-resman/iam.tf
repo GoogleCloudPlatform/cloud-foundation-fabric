@@ -24,14 +24,6 @@ locals {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.orgFirewallPolicyAdmin"
       }
-      sa_net_nsec_fw_policy_admin = {
-        member = module.branch-nsec-sa.iam_email
-        role   = "roles/compute.orgFirewallPolicyAdmin"
-      }
-      sa_net_nsec_ngfw_enterprise_admin = {
-        member = module.branch-nsec-sa.iam_email
-        role   = local.custom_roles["ngfw_enterprise_admin"],
-      }
       sa_net_xpn_admin = {
         member = module.branch-network-sa.iam_email
         role   = "roles/compute.xpnAdmin"
@@ -45,6 +37,25 @@ locals {
       #   member = module.branch-security-sa.iam_email
       #   role   = "roles/accesscontextmanager.policyAdmin"
       # }
+    },
+    # optional network security
+    var.fast_features.nsec != true ? {} : {
+      sa_net_nsec_fw_policy_admin = {
+        member = module.branch-nsec-sa[0].iam_email
+        role   = "roles/compute.orgFirewallPolicyAdmin"
+      }
+      sa_net_nsec_ngfw_enterprise_admin = {
+        member = module.branch-nsec-sa[0].iam_email
+        role   = local.custom_roles["ngfw_enterprise_admin"],
+      }
+      sa_net_nsec_r_fw_policy_admin = {
+        member = module.branch-nsec-sa[0].iam_email
+        role   = "roles/compute.orgFirewallPolicyUser"
+      }
+      sa_net_nsec_r_ngfw_enterprise_viewer = {
+        member = module.branch-nsec-r-sa[0].iam_email
+        role   = local.custom_roles["ngfw_enterprise_viewer"],
+      }
     },
     # optional billing roles for network and security
     local.billing_mode != "org" ? {} : {
@@ -80,37 +91,37 @@ locals {
       }
     },
     # optional billing roles for project factory
-    local.billing_mode != "org" || !var.fast_features.project_factory ? {} : {
+    local.billing_mode != "org" ? {} : {
       sa_pf_billing = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_costs_manager = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/billing.costsManager"
       }
       sa_pf_dev_billing = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_dev_costs_manager = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/billing.costsManager"
       }
       sa_pf_prod_billing = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/billing.user"
       }
       sa_pf_prod_costs_manager = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/billing.costsManager"
       }
     },
     # scoped org policy admin grants for project factory
     # TODO: change to use context and environment tags, and tag bindings in stage 2s
-    !var.fast_features.project_factory || var.root_node != null ? {} : {
+    var.root_node != null ? {} : {
       sa_pf_conditional_org_policy = {
-        member = module.branch-pf-sa[0].iam_email
+        member = module.branch-pf-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped"
@@ -121,23 +132,27 @@ locals {
         }
       }
       sa_pf_dev_conditional_org_policy = {
-        member = module.branch-pf-dev-sa[0].iam_email
+        member = module.branch-pf-dev-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_dev"
           description = "Org policy tag scoped grant for project factory dev."
           expression  = <<-END
+            resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
+            &&
             resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'development')
           END
         }
       }
       sa_pf_prod_conditional_org_policy = {
-        member = module.branch-pf-prod-sa[0].iam_email
+        member = module.branch-pf-prod-sa.iam_email
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_pf_scoped_prod"
           description = "Org policy tag scoped grant for project factory prod."
           expression  = <<-END
+            resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
+            &&
             resource.matchTag('${local.tag_root}/${var.tag_names.environment}', 'production')
           END
         }

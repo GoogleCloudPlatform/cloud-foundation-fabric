@@ -45,6 +45,7 @@ fi
 GLOBALS="tfvars/0-globals.auto.tfvars.json"
 PROVIDER_CMD=$CMD
 STAGE_NAME=$(basename "$(pwd)")
+EXTRA_FILES=""
 
 case $STAGE_NAME in
 
@@ -72,6 +73,21 @@ case $STAGE_NAME in
     PROVIDER="tenants/$TENANT/providers/2-networking-providers.tf"
     TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
     tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+  fi
+  ;;
+"2-project-factory"*)
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/2-project-factory-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json"
+    EXTRA_FILES="tfvars/2-networking.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/2-project-factory-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+    EXTRA_FILES="tenants/$TENANT/tfvars/2-networking.auto.tfvars.json"
   fi
   ;;
 "2-security"*)
@@ -137,6 +153,13 @@ fi
 for f in $TFVARS; do
   echo "$CMD/$f ./"
 done
+
+if [[ ! -z ${EXTRA_FILES+x} ]]; then
+  echo "# optional files"
+  for f in $EXTRA_FILES; do
+    echo "$CMD/$f ./"
+  done
+fi
 
 if [[ ! -z ${MESSAGE+x} ]]; then
   echo -e "\n# ---> $MESSAGE <---"

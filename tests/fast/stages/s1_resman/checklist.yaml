@@ -415,18 +415,19 @@ values:
     timeouts: null
 
 counts:
-  google_folder: 56
-  google_folder_iam_binding: 71
-  google_organization_iam_member: 7
-  google_project_iam_member: 6
-  google_service_account: 6
-  google_service_account_iam_binding: 6
-  google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 6
-  google_storage_bucket_iam_member: 6
-  google_storage_bucket_object: 7
-  google_tags_tag_binding: 4
+  google_folder: 57
+  google_folder_iam_binding: 74
+  google_organization_iam_member: 14
+  google_project_iam_member: 10
+  google_service_account: 10
+  google_service_account_iam_binding: 10
+  google_storage_bucket: 5
+  google_storage_bucket_iam_binding: 10
+  google_storage_bucket_iam_member: 10
+  google_storage_bucket_object: 11
+  google_tags_tag_binding: 5
   google_tags_tag_key: 2
   google_tags_tag_value: 9
-  modules: 66
-  resources: 189
+  google_tags_tag_value_iam_binding: 2
+  modules: 73
+  resources: 229

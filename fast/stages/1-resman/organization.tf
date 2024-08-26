@@ -84,11 +84,23 @@ module "organization" {
       iam         = try(local.tags.environment.iam, {})
       values = {
         development = {
-          iam         = try(local.tags.environment.values.development.iam, {})
+          iam = try(local.tags.environment.values.development.iam, {})
+          iam_bindings = {
+            pf = {
+              members = [module.branch-pf-sa.iam_email]
+              role    = "roles/resourcemanager.tagUser"
+            }
+          }
           description = try(local.tags.environment.values.development.description, null)
         }
         production = {
-          iam         = try(local.tags.environment.values.production.iam, {})
+          iam = try(local.tags.environment.values.production.iam, {})
+          iam_bindings = {
+            pf = {
+              members = [module.branch-pf-sa.iam_email]
+              role    = "roles/resourcemanager.tagUser"
+            }
+          }
           description = try(local.tags.environment.values.production.description, null)
         }
       }
