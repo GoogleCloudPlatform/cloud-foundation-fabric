@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-labels:
- team: team-0
-parent: folders/1234567890
-services:
-- compute.googleapis.com
-- storage.googleapis.com
+# yaml-language-server: $schema=../../../schemas/folder.schema.json
+
+name: Team A
+parent: teams
+# iam_by_principals:
+#   "group:team-a-admins@example.com":
+#     - roles/viewer

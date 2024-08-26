@@ -42,12 +42,12 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 - Networking ([Peering/VPN](2-networking-a-simple/README.md)/[NVA (w/ optional BGP support)](2-networking-b-nva/README.md)/[Separate environments](2-networking-c-separate-envs/README.md))  
   Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPC peering/VPN](2-networking-a-simple/README.md), [spokes connected via appliances (w/ optional BGP support)](2-networking-b-nva/README.md) and [separated network environments](2-networking-c-separate-envs/README.md).\
   Exports: host project ids and numbers, vpc self links
+- [Project Factory](./2-project-factory/)  
+  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
 
 ## Environment-level resources (3)
 
 - [Networking Security](./3-network-security/) Manages NGFW Enterprise deployment for the production and development environments.
-- [Project Factory](./3-project-factory/)  
-  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
 - [Google Cloud VMware Engine](3-gcve/)

@@ -18,21 +18,19 @@
 
 locals {
   # used here for convenience, in organization.tf members are explicit
-  billing_ext_users = concat(
-    [
-      module.branch-network-sa.iam_email,
-      module.branch-security-sa.iam_email,
-    ],
-    local.branch_optional_sa_lists.dp-dev,
-    local.branch_optional_sa_lists.dp-prod,
-    local.branch_optional_sa_lists.gke-dev,
-    local.branch_optional_sa_lists.gke-prod,
-    local.branch_optional_sa_lists.gcve-dev,
-    local.branch_optional_sa_lists.gcve-prod,
-    local.branch_optional_sa_lists.pf,
-    local.branch_optional_sa_lists.pf-dev,
-    local.branch_optional_sa_lists.pf-prod,
-  )
+  billing_ext_users = compact([
+    try(module.branch-network-sa.iam_email, null),
+    try(module.branch-pf-dev-sa.iam_email, null),
+    try(module.branch-pf-prod-sa.iam_email, null),
+    try(module.branch-pf-sa.iam_email, null),
+    try(module.branch-security-sa.iam_email, null),
+    try(module.branch-dp-dev-sa[0].iam_email, null),
+    try(module.branch-dp-prod-sa[0].iam_email, null),
+    try(module.branch-gcve-dev-sa[0].iam_email, null),
+    try(module.branch-gcve-prod-sa[0].iam_email, null),
+    try(module.branch-gke-dev-sa[0].iam_email, null),
+    try(module.branch-gke-prod-sa[0].iam_email, null)
+  ])
   billing_mode = (
     var.billing_account.no_iam
     ? null

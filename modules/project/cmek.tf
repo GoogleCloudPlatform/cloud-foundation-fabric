@@ -37,13 +37,13 @@ locals {
     "dataform.googleapis.com" : ["dataform"]
     "datafusion.googleapis.com" : [
       "datafusion", "compute", "storage", "dataproc",
-      "pubusb", "spanner" # these 2 are optional
+      "pubsub", "spanner" # these 2 are optional
     ]
     "dataproc.googleapis.com" : ["dataproc"]
     "datastream.googleapis.com" : ["datastream"]
     "dialogflow.googleapis.com" : ["dialogflow-cmek"]
     "file.googleapis.com" : ["cloud-filer"]
-    "pubsub.googleapis.com" : ["pubusb"]
+    "pubsub.googleapis.com" : ["pubsub"]
     "secretmanager.googleapis.com" : ["secretmanager"]
     "spanner.googleapis.com" : ["spanner"]
     "sqladmin.googleapis.com" : ["cloud-sql"]

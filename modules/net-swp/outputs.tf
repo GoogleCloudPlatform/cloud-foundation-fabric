@@ -16,15 +16,20 @@
 
 output "gateway" {
   description = "The gateway resource."
-  value       = google_network_services_gateway.gateway
+  value       = google_network_services_gateway.default
 }
 
 output "gateway_security_policy" {
   description = "The gateway security policy resource."
-  value       = google_network_services_gateway.gateway.gateway_security_policy
+  value       = google_network_services_gateway.default.gateway_security_policy
 }
 
 output "id" {
   description = "ID of the gateway resource."
-  value       = google_network_services_gateway.gateway.id
+  value       = google_network_services_gateway.default.id
+}
+
+output "service_attachment" {
+  description = "ID of the service attachment resource, if created."
+  value       = var.service_attachment == null ? "" : google_compute_service_attachment.default[0].id
 }

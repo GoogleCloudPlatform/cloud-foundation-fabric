@@ -21,7 +21,7 @@ locals {
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
       basename(trimsuffix(f, ".yaml")) => merge(
-        { parent = dirname(f) },
+        { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
       )
       if !endswith(f, "/_config.yaml")
@@ -31,7 +31,7 @@ locals {
   _projects = merge(
     {
       for f in try(fileset(local._project_path, "**/*.yaml"), []) :
-      trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
+      basename(trimsuffix(f, ".yaml")) => yamldecode(file("${local._project_path}/${f}"))
     },
     local._hierarchy_projects
   )

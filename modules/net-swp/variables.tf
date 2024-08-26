@@ -133,6 +133,21 @@ variable "scope" {
   default     = null
 }
 
+variable "service_attachment" {
+  description = "PSC service attachment configuration."
+  type = object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  })
+  default = null
+}
+
 variable "subnetwork" {
   description = "Name of the subnetwork the Secure Web Proxy is deployed into."
   type        = string

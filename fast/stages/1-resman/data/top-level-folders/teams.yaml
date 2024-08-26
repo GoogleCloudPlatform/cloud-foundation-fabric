@@ -12,9 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  google_project: 1
-  google_project_service: 3
-  google_storage_project_service_account: 1
-  modules: 2
-  resources: 6
+# yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
+
+name: Teams
+automation:
+  enable: false
+iam:
+  "roles/owner":
+    - project-factory
+  "roles/resourcemanager.folderAdmin":
+    - project-factory
+  "roles/resourcemanager.projectCreator":
+    - project-factory
+  "roles/resourcemanager.tagUser":
+    - project-factory
+  "service_project_network_admin":
+    - project-factory
+tag_bindings:
+  context: context/project-factory

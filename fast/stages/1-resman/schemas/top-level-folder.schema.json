@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Folder",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "sa_impersonation_principals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "iam_by_principals": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "name": {
+      "type": "string"
+    },
+    "org_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]+\\.": {
+          "inherit_from_parent": {
+            "type": "boolean"
+          },
+          "reset": {
+            "type": "boolean"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allow": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "all": {
+                      "type": "boolean"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "deny": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "all": {
+                      "type": "boolean"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "enforce": {
+                  "type": "boolean"
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "parent": {
+      "type": "string"
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:roles/|[a-z_]+)": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+          }
+        }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|[a-z_]+)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|[a-z_]+)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:roles/|[a-z_]+)"
+          }
+        }
+      }
+    }
+  }
+}

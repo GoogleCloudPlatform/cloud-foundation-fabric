@@ -14,26 +14,40 @@
 # file: tests/modules/net_swp/examples/basic.yaml
 
 values:
-  module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
-    name: "secure-web-proxy"
-    project: "my-project"
-    location: "europe-west4"
-  module.secure-web-proxy.google_network_services_gateway.gateway:
-    project: "my-project"
-    name: "secure-web-proxy"
-    location: "europe-west4"
-    type: "SECURE_WEB_GATEWAY"
-    addresses: 
-      - "10.142.68.3"
-    ports: [443]
-    certificate_urls: ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
-    network: "projects/my-project/global/networks/my-network"
-    subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
+  module.secure-web-proxy.google_network_security_gateway_security_policy.default:
+    description: Managed by Terraform.
+    location: europe-west4
+    name: secure-web-proxy
+    project: my-project
+    timeouts: null
+    tls_inspection_policy: null
+  module.secure-web-proxy.google_network_services_gateway.default:
+    addresses:
+    - 10.142.68.3
+    certificate_urls:
+    - projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert
     delete_swg_autogen_router_on_destroy: true
+    description: Managed by Terraform.
+    effective_labels:
+      example: value
     labels:
-      example: "value"
-    description: "Managed by Terraform."
+      example: value
+    location: europe-west4
+    name: secure-web-proxy
+    network: projects/my-project/global/networks/my-network
+    ports:
+    - 443
+    project: my-project
+    scope: ''
+    server_tls_policy: null
+    subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
+    terraform_labels:
+      example: value
+    timeouts: null
+    type: SECURE_WEB_GATEWAY
 
 counts:
   google_network_security_gateway_security_policy: 1
   google_network_services_gateway: 1
+  modules: 1
+  resources: 2
