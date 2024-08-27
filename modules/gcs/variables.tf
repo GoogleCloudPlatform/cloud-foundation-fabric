@@ -169,6 +169,7 @@ variable "logging_config" {
 }
 
 variable "managed_folders" {
+  description = "Managed folders to create within the bucket in {PATH => CONFIG} format. Keys must end in /."
   type = map(object({
     force_destroy = optional(bool, false)
     iam           = optional(map(list(string)), {})
