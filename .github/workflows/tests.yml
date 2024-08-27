@@ -80,7 +80,7 @@ jobs:
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' | tee -a /home/runner/.terraformrc
           echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
-          cp default-versions.tf tools/lockfile
+          # cp default-versions.tf tools/lockfile # this is now symlinked
           sed -i -e 's/>=\(.*# tftest\)/=\1/g'  tools/lockfile/default-versions.tf
 
           # change terraform version to the one that is running
