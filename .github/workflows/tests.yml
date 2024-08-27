@@ -84,7 +84,7 @@ jobs:
           sed -i -e 's/>=\(.*# tftest\)/=\1/g'  tools/lockfile/versions.tf
 
           # change terraform version to the one that is running
-          sed -i 's/required_version = .*$/required_version = ">= ${{ matrix.version }}"/g' tools/lockfile/default-versions.tf
+          sed -i 's/required_version = .*$/required_version = ">= ${{ matrix.version }}"/g' tools/lockfile/versions.tf
 
           cd tools/lockfile
           ${{ matrix.flavour }} init -upgrade=true
