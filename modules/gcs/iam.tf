@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,25 @@
 
 # tfdoc:file:description IAM bindings
 
+locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
+}
+
 resource "google_storage_bucket_iam_binding" "authoritative" {
-  for_each = var.iam
+  for_each = local.iam
   bucket   = google_storage_bucket.bucket.name
   role     = each.key
   members  = each.value
