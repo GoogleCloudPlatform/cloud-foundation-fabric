@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -223,9 +223,13 @@ variable "project_id" {
 }
 
 variable "public_access_prevention" {
-  description = "Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention, only if the bucket is subject to the public access prevention organization policy constraint."
+  description = "Prevents public access to the bucket."
   type        = string
   default     = null
+  validation {
+    condition     = var.public_access_prevention == null || contains(["enforced", "inherited"], coalesce(var.public_access_prevention, "none"))
+    error_message = "public_access_prevention must be either enforced or inherited."
+  }
 }
 
 variable "requester_pays" {
@@ -243,6 +247,16 @@ variable "retention_policy" {
   default = null
 }
 
+variable "rpo" {
+  description = "Bucket recovery point objective."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.rpo == null || contains(["ASYNC_TURBO", "DEFAULT"], coalesce(var.rpo, "none"))
+    error_message = "rpo must be one of ASYNC_TURBO, DEFAULT."
+  }
+}
+
 variable "soft_delete_retention" {
   description = "The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable."
   type        = number
@@ -252,7 +266,7 @@ variable "soft_delete_retention" {
 variable "storage_class" {
   description = "Bucket storage class."
   type        = string
-  default     = "MULTI_REGIONAL"
+  default     = "STANDARD"
   validation {
     condition     = contains(["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"], var.storage_class)
     error_message = "Storage class must be one of STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
