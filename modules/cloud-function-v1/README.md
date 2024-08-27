@@ -44,7 +44,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=5   fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### PubSub and non-HTTP triggers
@@ -70,7 +70,7 @@ module "cf-http" {
   ]
 
 }
-# tftest modules=2 resources=7 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=2 resources=8 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### Controlling HTTP access
@@ -94,7 +94,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
+# tftest modules=1 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
 ```
 
 ### GCS bucket creation
@@ -120,7 +120,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
+# tftest modules=1 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
 ```
 
 ### Service account management
@@ -142,7 +142,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -162,7 +162,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### Custom bundle config
@@ -193,7 +193,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf  e2e
+# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf  e2e
 ```
 
 ### Private Cloud Build Pool
@@ -215,7 +215,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/cloudbuild-custom-pool.tf,fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=7 fixtures=fixtures/cloudbuild-custom-pool.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### Multiple Cloud Functions within project
@@ -247,7 +247,7 @@ module "cf-http-two" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=2 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
+# tftest modules=2 resources=8 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
 ```
 
 ### Mounting secrets from Secret Manager
@@ -288,7 +288,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=2 resources=8 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf  inventory=secrets.yaml e2e
+# tftest modules=2 resources=9 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf  inventory=secrets.yaml e2e
 ```
 
 ### Using CMEK to encrypt function resources
@@ -344,7 +344,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest modules=3 resources=9 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=3 resources=10 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -25,4 +25,4 @@ counts:
   google_cloudfunctions_function: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 6
+  resources: 7

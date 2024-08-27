@@ -36,6 +36,6 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 6
+  resources: 7
 
 outputs: {}
