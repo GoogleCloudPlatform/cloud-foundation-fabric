@@ -714,7 +714,7 @@ values:
     project: fast-prod-iac-core-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -760,8 +760,7 @@ values:
     condition: []
     role: roles/storage.admin
   module.automation-tf-checklist-gcs[0].google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -776,14 +775,13 @@ values:
     project: fast-prod-iac-core-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
     - enabled: true
   module.automation-tf-output-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -798,14 +796,13 @@ values:
     project: fast-prod-iac-core-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
     - enabled: true
   module.automation-tf-resman-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -820,7 +817,7 @@ values:
     project: fast-prod-iac-core-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -870,8 +867,7 @@ values:
     condition: []
     role: roles/storage.admin
   module.automation-tf-vpcsc-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -886,7 +882,7 @@ values:
     project: fast-prod-iac-core-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:

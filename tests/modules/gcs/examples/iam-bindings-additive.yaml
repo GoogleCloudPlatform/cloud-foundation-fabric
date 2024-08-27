@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,13 +27,10 @@ values:
     project: project-id
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
-    versioning:
-    - enabled: false
-    autoclass:
-    - enabled: false
+    autoclass: []
   module.bucket.google_storage_bucket_iam_member.bindings["storage-admin-with-delegated_roles"]:
     bucket: test-my-bucket
     condition:
