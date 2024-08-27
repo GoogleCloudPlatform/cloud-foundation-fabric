@@ -285,7 +285,6 @@ module "bucket" {
 
 ## Managed Folders
 ```hcl
-
 module "bucket" {
   source     = "./fabric/modules/gcs"
   project_id = var.project_id
@@ -293,17 +292,17 @@ module "bucket" {
   name       = "my-bucket"
   location   = "EU"
   managed_folders = {
-    "folder1/" = {
+    folder1 = {
       iam = {
         "roles/storage.admin" = ["user:user1@example.com"]
       }
     }
-    "folder1/subfolder/" = {
+    "folder1/subfolder" = {
       force_destroy = true
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest inventory=managed-folders.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
