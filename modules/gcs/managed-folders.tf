@@ -15,8 +15,15 @@
  */
 
 locals {
+  # ensure all keys end with / as required by
+  # google_storage_managed_folder
+  managed_folders = {
+    for k, v in var.managed_folders :
+    (endswith(k, "/") ? k : "${k}/") => v
+  }
+
   managed_folder_iam = flatten([
-    for k, v in var.managed_folders : [
+    for k, v in local.managed_folders : [
       for role, members in v.iam : {
         managed_folder = k
         role           = role
@@ -25,7 +32,7 @@ locals {
     ]
   ])
   managed_folder_iam_bindings = merge([
-    for k, v in var.managed_folders : {
+    for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings :
       "${k}.${binding_key}" => {
         managed_folder = k
@@ -36,7 +43,7 @@ locals {
     }
   ]...)
   managed_folder_iam_bindings_additive = merge([
-    for k, v in var.managed_folders : {
+    for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings_additive :
       "${k}.${binding_key}" => {
         managed_folder = k
@@ -50,7 +57,7 @@ locals {
 
 
 resource "google_storage_managed_folder" "folder" {
-  for_each      = var.managed_folders
+  for_each      = local.managed_folders
   bucket        = google_storage_bucket.bucket.name
   name          = each.key
   force_destroy = each.value.force_destroy
