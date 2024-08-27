@@ -161,6 +161,33 @@ variable "logging_config" {
   default = null
 }
 
+variable "managed_folders" {
+  type = map(object({
+    force_destroy = optional(bool, false)
+    iam           = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "name" {
   description = "Bucket name suffix."
   type        = string
