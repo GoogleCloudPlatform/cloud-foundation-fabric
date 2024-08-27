@@ -40,6 +40,7 @@ resource "google_billing_budget" "default" {
   for_each        = merge(local.factory_budgets, var.budgets)
   billing_account = var.id
   display_name    = each.value.display_name
+  ownership_scope = each.value.ownership_scope
   dynamic "amount" {
     for_each = each.value.amount.use_last_period == true ? [""] : []
     content {
