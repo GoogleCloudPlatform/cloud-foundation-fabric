@@ -17,7 +17,7 @@
 variable "autoclass" {
   description = "Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "cors" {
@@ -316,7 +316,7 @@ variable "uniform_bucket_level_access" {
 variable "versioning" {
   description = "Enable versioning, defaults to false."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "website" {
