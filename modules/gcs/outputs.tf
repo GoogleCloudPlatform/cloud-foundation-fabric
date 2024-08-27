@@ -30,7 +30,9 @@ output "id" {
   value       = "${local.prefix}${lower(var.name)}"
   depends_on = [
     google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
+    google_storage_bucket_iam_binding.bindings,
+    google_storage_bucket_iam_binding.authoritative,
+    google_storage_bucket_iam_member.member
   ]
 }
 
@@ -39,7 +41,9 @@ output "name" {
   value       = "${local.prefix}${lower(var.name)}"
   depends_on = [
     google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
+    google_storage_bucket_iam_binding.bindings,
+    google_storage_bucket_iam_binding.authoritative,
+    google_storage_bucket_iam_member.member
   ]
 }
 

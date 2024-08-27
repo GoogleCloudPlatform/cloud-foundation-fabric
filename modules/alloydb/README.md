@@ -161,6 +161,9 @@ module "alloydb" {
   encryption_config = {
     primary_kms_key_name = var.kms_key.id
   }
+  depends_on = [
+    google_kms_crypto_key_iam_member.alloydb_encrypt_decrypt
+  ]
 }
 
 # tftest modules=1 resources=3 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e

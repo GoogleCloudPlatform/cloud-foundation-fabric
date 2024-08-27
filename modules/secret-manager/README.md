@@ -122,10 +122,10 @@ module "secret-manager" {
 | name | description | sensitive |
 |---|---|:---:|
 | [ids](outputs.tf#L17) | Fully qualified secret ids. |  |
-| [secrets](outputs.tf#L24) | Secret resources. |  |
-| [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
-| [version_versions](outputs.tf#L36) | Version versions keyed by secret name : version name. |  |
-| [versions](outputs.tf#L43) | Secret versions. | ✓ |
+| [secrets](outputs.tf#L27) | Secret resources. |  |
+| [version_ids](outputs.tf#L36) | Version ids keyed by secret name : version name. |  |
+| [version_versions](outputs.tf#L46) | Version versions keyed by secret name : version name. |  |
+| [versions](outputs.tf#L56) | Secret versions. | ✓ |
 
 ## Fixtures
 

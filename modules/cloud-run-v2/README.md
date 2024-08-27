@@ -200,6 +200,9 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
+  depends_on = [
+    google_kms_crypto_key_iam_binding.encrypt_decrypt,
+  ]
 }
 # tftest modules=1 resources=2 fixtures=fixtures/cloud-run-kms-iam-grant.tf e2e
 ```
