@@ -309,9 +309,9 @@ locals {
   SUB_RESOURCE_iam = flatten([
     for k, v in var.SUB_RESOURCEs : [
       for role, members in v.iam : {
-        key     = k
-        role    = role
-        members = members
+        SUB_RESOURCE     = k
+        role             = role
+        members          = members
       }
     ]
   ])
@@ -327,7 +327,7 @@ locals {
     }
   ]...)
   SUB_RESOURCE_iam_bindings_additive = merge([
-    for k, v in var.subresources : {
+    for k, v in var.SUB_RESOURCEs : {
       for binding_key, data in v.iam_bindings_additive :
       binding_key => {
         SUB_RESOURCE = k
