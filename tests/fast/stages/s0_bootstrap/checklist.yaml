@@ -699,7 +699,7 @@ values:
     service: servicenetworking.googleapis.com
     timeouts: null
   module.automation-tf-bootstrap-gcs.google_storage_bucket.bucket:
-    autoclass: null
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
