@@ -15,7 +15,7 @@
  */
 
 locals {
-  _tenants = {
+  tenants = {
     for k, v in var.tenant_configs : k => merge(v, {
       billing_account = merge(v.billing_account, {
         id = coalesce(v.billing_account.id, var.billing_account.id)
@@ -27,15 +27,6 @@ locals {
       })
       locations    = coalesce(v.locations, var.locations)
       organization = coalesce(v.cloud_identity, var.organization)
-    })
-  }
-  tenants = {
-    for k, v in local._tenants : k => merge(v, {
-      gcs_storage_class = (
-        length(split("-", v.locations.gcs)) < 2
-        ? "MULTI_REGIONAL"
-        : "REGIONAL"
-      )
     })
   }
 }

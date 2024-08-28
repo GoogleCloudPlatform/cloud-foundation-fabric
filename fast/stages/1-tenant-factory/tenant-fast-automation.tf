@@ -173,27 +173,25 @@ module "tenant-automation-project-iam" {
 # output files bucket
 
 module "tenant-automation-tf-output-gcs" {
-  source        = "../../../modules/gcs"
-  for_each      = local.fast_tenants
-  project_id    = module.tenant-automation-project[each.key].project_id
-  name          = "iac-core-outputs-0"
-  prefix        = each.value.stage_0_prefix
-  location      = each.value.locations.gcs
-  storage_class = each.value.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  for_each   = local.fast_tenants
+  project_id = module.tenant-automation-project[each.key].project_id
+  name       = "iac-core-outputs-0"
+  prefix     = each.value.stage_0_prefix
+  location   = each.value.locations.gcs
+  versioning = true
 }
 
 # resource hierarchy stage's bucket and service account
 
 module "tenant-automation-tf-resman-gcs" {
-  source        = "../../../modules/gcs"
-  for_each      = local.fast_tenants
-  project_id    = module.tenant-automation-project[each.key].project_id
-  name          = "iac-core-resman-0"
-  prefix        = each.value.stage_0_prefix
-  location      = each.value.locations.gcs
-  storage_class = each.value.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  for_each   = local.fast_tenants
+  project_id = module.tenant-automation-project[each.key].project_id
+  name       = "iac-core-resman-0"
+  prefix     = each.value.stage_0_prefix
+  location   = each.value.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin" = [
       module.tenant-automation-tf-resman-sa[each.key].iam_email

@@ -121,8 +121,7 @@ values:
     condition: []
     role: roles/storage.objectCreator
   module.gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -137,10 +136,8 @@ values:
     project: project-id
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     uniform_bucket_level_access: true
-    versioning:
-    - enabled: false
   module.pubsub.google_pubsub_topic.default:
     kms_key_name: null
     labels: null
