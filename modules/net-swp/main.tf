@@ -97,7 +97,7 @@ resource "google_network_security_gateway_security_policy_rule" "custom_rules" {
   name                    = each.key
   location                = var.region
   description             = coalesce(each.value.description, var.description)
-  gateway_security_policy = google_network_security_gateway_security_policy.default.id
+  gateway_security_policy = google_network_security_gateway_security_policy.default.name
   enabled                 = each.value.enabled
   priority                = each.value.priority
   session_matcher         = each.value.session_matcher
