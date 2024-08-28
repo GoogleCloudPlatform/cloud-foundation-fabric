@@ -124,14 +124,13 @@ module "top-level-sa" {
 }
 
 module "top-level-bucket" {
-  source        = "../../../modules/gcs"
-  for_each      = local.top_level_automation
-  project_id    = var.automation.project_id
-  name          = "prod-resman-${each.key}-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  for_each   = local.top_level_automation
+  project_id = var.automation.project_id
+  name       = "prod-resman-${each.key}-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.top-level-sa[each.key].iam_email]
     "roles/storage.objectViewer" = [module.top-level-sa[each.key].iam_email]

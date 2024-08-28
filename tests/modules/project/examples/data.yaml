@@ -47,8 +47,7 @@ values:
     project: project-id
     timeouts: null
   module.gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -63,11 +62,9 @@ values:
     project: project-id
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
-    versioning:
-    - enabled: false
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: test-host
     timeouts: null

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 locals {
   env_default = [for k, v in var.environments : k if v.is_default][0]
-  gcs_storage_class = (
-    length(split("-", local.locations.gcs)) < 2
-    ? "MULTI_REGIONAL"
-    : "REGIONAL"
-  )
   principals = {
     for k, v in var.groups : k => (
       can(regex("^[a-zA-Z]+:", v))

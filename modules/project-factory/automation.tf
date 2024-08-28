@@ -79,7 +79,7 @@ module "automation-buckets" {
   }
   labels                      = lookup(each.value, "labels", {})
   location                    = lookup(each.value, "location", "EU")
-  storage_class               = lookup(each.value, "storage_class", "MULTI_REGIONAL")
+  storage_class               = lookup(each.value, "storage_class", "STANDARD")
   uniform_bucket_level_access = lookup(each.value, "uniform_bucket_level_access", true)
   versioning                  = lookup(each.value, "versioning", false)
 }

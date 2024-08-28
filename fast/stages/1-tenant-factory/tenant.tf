@@ -111,14 +111,13 @@ module "tenant-sa" {
 # automation bucket
 
 module "tenant-gcs" {
-  source        = "../../../modules/gcs"
-  for_each      = local.tenants
-  project_id    = var.automation.project_id
-  name          = "tenant-${each.key}-0"
-  prefix        = var.prefix
-  location      = each.value.locations.gcs
-  storage_class = each.value.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  for_each   = local.tenants
+  project_id = var.automation.project_id
+  name       = "tenant-${each.key}-0"
+  prefix     = var.prefix
+  location   = each.value.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.tenant-sa[each.key].iam_email]
   }
