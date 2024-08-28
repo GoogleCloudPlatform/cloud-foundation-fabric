@@ -602,7 +602,7 @@ values:
   module.branch-security-folder.google_folder_iam_binding.bindings["tenant_iam_admin_conditional"]:
     condition:
     - description: Certificate Authority Service delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/privateca.certificateManager'])
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/privateca.certificateManager','organizations/123456789012/roles/privateCaUser'])
       title: security_sa_delegated_grants
     members:
     - serviceAccount:fast2-prod-resman-sec-0@fast-prod-automation.iam.gserviceaccount.com
@@ -1106,6 +1106,9 @@ values:
   module.organization[0].google_organization_iam_member.bindings["sa_pf_conditional_org_policy"]:
     condition:
     - description: Org policy tag scoped grant for project factory main.
+      expression: 'resource.matchTag(''123456789012/context'', ''project-factory'')
+
+        '
       title: org_policy_tag_pf_scoped
     member: serviceAccount:fast2-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
@@ -1123,6 +1126,13 @@ values:
   module.organization[0].google_organization_iam_member.bindings["sa_pf_dev_conditional_org_policy"]:
     condition:
     - description: Org policy tag scoped grant for project factory dev.
+      expression: 'resource.matchTag(''123456789012/context'', ''project-factory'')
+
+        &&
+
+        resource.matchTag(''123456789012/environment'', ''development'')
+
+        '
       title: org_policy_tag_pf_scoped_dev
     member: serviceAccount:fast2-dev-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
@@ -1140,6 +1150,13 @@ values:
   module.organization[0].google_organization_iam_member.bindings["sa_pf_prod_conditional_org_policy"]:
     condition:
     - description: Org policy tag scoped grant for project factory prod.
+      expression: 'resource.matchTag(''123456789012/context'', ''project-factory'')
+
+        &&
+
+        resource.matchTag(''123456789012/environment'', ''production'')
+
+        '
       title: org_policy_tag_pf_scoped_prod
     member: serviceAccount:fast2-prod-resman-pf-0@fast-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'

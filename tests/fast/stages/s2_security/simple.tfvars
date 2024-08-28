@@ -4,6 +4,9 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+custom_roles = {
+  private_ca_user = "organizations/123456789012/roles/privateCaUser"
+}
 essential_contacts = "gcp-security-admins@fast.example.com"
 folder_ids = {
   security = null
@@ -28,6 +31,8 @@ service_accounts = {
   security             = "foobar@iam.gserviceaccount.com"
   data-platform-dev    = "foobar@iam.gserviceaccount.com"
   data-platform-prod   = "foobar@iam.gserviceaccount.com"
+  nsec                 = "foobar@iam.gserviceaccount.com"
+  nsec-r               = "foobar@iam.gserviceaccount.com"
   project-factory      = "foobar@iam.gserviceaccount.com"
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"

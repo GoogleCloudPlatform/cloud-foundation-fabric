@@ -137,24 +137,9 @@ ngfw_enterprise_config = {
 }
 ```
 
-You can optionally enable TLS inspection. As a preliminary step, you should activate the TLS components in stage [2-security](../2-security/README.md). Then, activate the inspection in this stage with this minimal configuration.
-
-```tfvars
-ngfw_enterprise_config = {
-  endpoint_zones = [
-    "europe-west1-b",
-    "europe-west1-c",
-    "europe-west1-d"
-  ]
-  tls_inspection = {
-    enabled   = true
-  }
-}
-```
-
-You can refer to the variable definition for further customizations.
-The stage will automatically create as many TLS inspection policies needed, in the regions matching your endpoint zones. The NGFW Enterprise CAS pool and the trusted config created in the security stage should be in the same region as the TLS inspection policy.
-Multiple regions support would require further customization in the security stage.
+You can optionally enable TLS inspection in stage [2-security](../2-security/README.md).
+Ingesting outputs from [stage 2-security](../2-security/README.md), this stage will configure TLS inspection in NGFW Enterprise and will reference the CAs and the trust-configs you created in [stage 2-security](../2-security/README.md).
+Make sure the CAs and the trusted configs created for NGFW Enterprise in the [2-security stage](../2-security/README.md) match the region where you defined your zonal firewall endpoints.
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
@@ -162,6 +147,7 @@ Multiple regions support would require further customization in the security sta
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [3-network-security-providers.tf](./3-network-security-providers.tf) | None |  |  |
 | [main.tf](./main.tf) | Next-Generation Firewall Enterprise configuration. | <code>project</code> | <code>google_network_security_firewall_endpoint</code> |
 | [net-dev.tf](./net-dev.tf) | Security components for dev spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
 | [net-prod.tf](./net-prod.tf) | Security components for prod spoke VPC. | <code>net-firewall-policy</code> | <code>google_network_security_firewall_endpoint_association</code> · <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
@@ -174,16 +160,15 @@ Multiple regions support would require further customization in the security sta
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [folder_ids](variables-fast.tf#L52) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [organization](variables-fast.tf#L101) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
-| [prefix](variables-fast.tf#L111) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [vpc_self_links](variables-fast.tf#L135) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
-| [cas_configs](variables-fast.tf#L30) | The CAS pools and CA ids, by environment. | <code title="object&#40;&#123;&#10;  dev &#61; map&#40;object&#40;&#123;&#10;    ca_pool_id &#61; string&#10;    ca_ids     &#61; map&#40;string&#41;&#10;    location   &#61; string&#10;  &#125;&#41;&#41;&#10;  prod &#61; map&#40;object&#40;&#123;&#10;    ca_pool_id &#61; string&#10;    ca_ids     &#61; map&#40;string&#41;&#10;    location   &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
+| [folder_ids](variables-fast.tf#L30) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [organization](variables-fast.tf#L72) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
+| [prefix](variables-fast.tf#L82) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [vpc_self_links](variables-fast.tf#L106) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
 | [factories_config](variables.tf#L17) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  cidrs &#61; optional&#40;string, &#34;data&#47;cidrs.yaml&#34;&#41;&#10;  firewall_policy_rules &#61; optional&#40;object&#40;&#123;&#10;    dev  &#61; string&#10;    prod &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  firewall_policy_rules &#61; &#123;&#10;    dev  &#61; &#34;data&#47;firewall-policy-rules&#47;dev&#34;&#10;    prod &#61; &#34;data&#47;firewall-policy-rules&#47;prod&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [host_project_ids](variables-fast.tf#L63) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; optional&#40;string&#41;&#10;  prod-spoke-0 &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [host_project_ids](variables-fast.tf#L41) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; optional&#40;string&#41;&#10;  prod-spoke-0 &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [ngfw_enterprise_config](variables.tf#L35) | NGFW Enterprise configuration. | <code title="object&#40;&#123;&#10;  endpoint_zones   &#61; list&#40;string&#41;&#10;  quota_project_id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  endpoint_zones &#61; &#91;&#10;    &#34;europe-west1-b&#34;,&#10;    &#34;europe-west1-c&#34;,&#10;    &#34;europe-west1-d&#34;&#10;  &#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [ngfw_tls_configs](variables-fast.tf#L74) | The CAS and trust configurations key names to be used for NGFW Enterprise. | <code title="object&#40;&#123;&#10;  keys &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      cas           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      trust_configs &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      cas           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      trust_configs &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  tls_inspection &#61; optional&#40;object&#40;&#123;&#10;    enabled               &#61; optional&#40;bool, false&#41;&#10;    exclude_public_ca_set &#61; optional&#40;bool, false&#41;&#10;    min_tls_version       &#61; optional&#40;string, &#34;TLS_1_0&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
-| [tls_inspection_policy_ids](variables-fast.tf#L121) | TLS inspection policy ids for NGFW by environment and region. | <code title="object&#40;&#123;&#10;  dev  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  prod &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
+| [ngfw_tls_configs](variables-fast.tf#L52) | The NGFW Enterprise TLS configurations. | <code title="object&#40;&#123;&#10;  tls_enabled &#61; optional&#40;bool, false&#41;&#10;  tls_ip_ids_by_region &#61; optional&#40;object&#40;&#123;&#10;    dev  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tls_enabled &#61; false&#10;  tls_ip_ids_by_region &#61; &#123;&#10;    dev  &#61; &#123;&#125;&#10;    prod &#61; &#123;&#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
+| [tls_inspection_policy_ids](variables-fast.tf#L92) | TLS inspection policy ids for NGFW by environment and region. | <code title="object&#40;&#123;&#10;  dev  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  prod &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#123;&#125;&#10;  prod &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
 
 ## Outputs
 

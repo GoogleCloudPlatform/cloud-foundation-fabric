@@ -50,15 +50,19 @@ IAM roles on keys can be configured at the logical level for all locations where
 
 ### Certificate Authority Service (CAS)
 
-You can use this stage to optionally leverage Certificate Authority Services (CAS) and create as many CAs you need for each environment. To create custom CAS, you can use the `cas_configs` variable. The variables come with some defaults for demo purposes: for each environment, specifying the CA `location` should be enough for most of your test scenarios.
+With this stage you can leverage Certificate Authority Services (CAS) and create as many CAs you need for each environments. To create custom CAS, you can use the `cas_configs` variable. The variable comes with some defaults, useful for demos: in each environment, specifying the CA `location` should be enough for most of your test scenarios.
 
 ### Trust Configs
 
-The stage lets you also create Certificate Manager trust configs. With trust configs you can trust whole CAs or specific server certificates, when you use them with third-party services in GCP. You can create additional trust configs for each environment with the `trust_configs` variable. At a very minimum, for each trust config you'll need to specify the `location` (the region) and either a `trust_stores` block or an `allowed_certificates` block.
+The stage lets you also create Certificate Manager trust configs. With trust configs you can trust whole CAs or specific server certificates, when you use them with other services, such as NGFW Enterprise. You can create additional trust configs for each environment with the `trust_configs` variable. At a very minimum, each trust config needs a `location` (the region) and either a `trust_stores` block or an `allowed_certificates` block.
 
 ### NGFW Enterprise and TLS inspection support
 
-We deploy NGFW Enterprise in the [network-security stage](../3-network-security/README.md). If you want to enable TLS inspection, NGFW Enterprise requires CAS and -optionally- a Certificate Manager trust config. You can create both leveraging the `cas_configs` and the `trust_configs` variables. Given the [network-security stage](../3-network-security/README.md) needs to reference these resources, you will need to use specific map keys. These are defined in the `ngfw_tls_config_keys` variable, which comes with default and can be further customized. You can read more about NGFW configurations in the [Customizations section](#customizations) of this document.
+We deploy NGFW Enterprise in the [network-security stage](../3-network-security/README.md). If you require TLS inspection, NGFW needs to interact with CAS and -optionally- Certificate Manager trust-configs. These components bind to firewall endpoint associations (created in the [network-security stage](../3-network-security/README.md)) with zonal TLS inspection policies.
+Using this module, you can define CAS configurations and trust-configs for NGFW Enterprise. You can create them using the `cas_configs` and `trust_configs` variables. Anyway, these will need to use specific keys (defined in `ngfw_tls_configs.keys`), so that FAST knows which configurations to use for NGFW Enterprise.
+You can then enable TLS inspection and customize its behavior for NGFW Enterprise, using the `ngfw_tls_configs.tls_inspection` variable. FAST will create the TLS inspection policies for you in the regions where you defined your CAs for NGFW Enterprise.
+When you create your CAs and trust-configs for NGFW Enterprise, make sure their region matches the zones where you will define your firewall endpoints.
+You can read more about NGFW configurations in the [Customizations section](#customizations) of this document.
 
 ## How to run this stage
 
@@ -178,7 +182,7 @@ The script will create one keyring for each specified location and keys on each 
 
 ### NGFW Enterprise - sample TLS configurations
 
-This is a sample configuration that creates a CA and a trust config, both for dev and prod, for NGFW Enterprise.
+This is a minimal configuration that creates a CAs for each environment and enables TLS inspection policies for NGFW Enterprise.
 
 ```tfvars
 cas_configs = {
@@ -193,9 +197,70 @@ cas_configs = {
     }
   }
 }
+tls_inspection = {
+  enabled = true
+}
 ```
 
-You can choose what components to activate in each environment. For example, you may create them just in dev and not in prod. As we do in this example, you can also avoid to create a trust config, if you feel you don't need it. Please, refer to the variable `ngfw_tls_configs` spec for more configuration options.
+You can optionally create also trust-configs for NGFW Enterprise.
+
+```tfvars
+cas_configs = {
+  dev = {
+    ngfw-dev-cas-0 = {
+      location = "europe-west1"
+    }
+  }
+  prod = {
+    ngfw-prod-cas-0 = {
+      location = "europe-west1"
+    }
+  }
+}
+trust_configs = {
+  dev = {
+    ngfw-dev-tc-0 = {
+      allowlisted_certificates = {
+        my_ca = "~/my_keys/srv-dev.crt"
+      }
+      location = "europe-west1"
+    }
+  }
+  prod = {
+    ngfw-prod-tc-0 = {
+      allowlisted_certificates = {
+        my_ca = "~/my_keys/srv-prod.crt"
+      }
+      location = "europe-west1"
+    }
+  }
+}
+tls_inspection = {
+  enabled = true
+}
+```
+
+You can customize the keys of your configurations, as long as they match the ones you specify in the `ngfw_tls_configs.keys` variable.
+
+```tfvars
+cas_configs = {
+  dev = {
+    my-ca-0 = {
+      location = "europe-west1"
+    }
+  }
+}
+ngfw_tls_configs = {
+  keys = {
+    dev = {
+      cas = "my-ca-0"
+    }
+  }
+}
+tls_inspection = {
+  enabled = true
+}
+```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
@@ -232,10 +297,9 @@ You can choose what components to activate in each environment. For example, you
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cas_configs](outputs.tf#L97) | Certificate Authority Service configurations. |  |  |
-| [kms_keys](outputs.tf#L102) | KMS key ids. |  |  |
-| [ngfw_tls_configs](outputs.tf#L107) | The NGFW Enterprise configurations. |  |  |
-| [tfvars](outputs.tf#L112) | Terraform variable files for the following stages. | ✓ |  |
-| [tls_inspection_policy_ids](outputs.tf#L118) | TLS inspection policy ids for NGFW  by environment and region. |  |  |
-| [trust_config_ids](outputs.tf#L123) | Certificate Manager trust-config ids. |  |  |
+| [cas_configs](outputs.tf#L99) | Certificate Authority Service configurations. |  |  |
+| [kms_keys](outputs.tf#L104) | KMS key ids. |  |  |
+| [ngfw_tls_configs](outputs.tf#L109) | The NGFW Enterprise configurations. |  |  |
+| [tfvars](outputs.tf#L114) | Terraform variable files for the following stages. | ✓ |  |
+| [trust_config_ids](outputs.tf#L120) | Certificate Manager trust-config ids. |  |  |
 <!-- END TFDOC -->

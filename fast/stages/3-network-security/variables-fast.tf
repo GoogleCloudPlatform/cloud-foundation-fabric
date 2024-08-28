@@ -27,28 +27,6 @@ variable "billing_account" {
   }
 }
 
-variable "cas_configs" {
-  # tfdoc:variable:source 2-security
-  description = "The CAS pools and CA ids, by environment."
-  type = object({
-    dev = map(object({
-      ca_pool_id = string
-      ca_ids     = map(string)
-      location   = string
-    }))
-    prod = map(object({
-      ca_pool_id = string
-      ca_ids     = map(string)
-      location   = string
-    }))
-  })
-  nullable = false
-  default = {
-    dev  = {}
-    prod = {}
-  }
-}
-
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -73,28 +51,21 @@ variable "host_project_ids" {
 
 variable "ngfw_tls_configs" {
   # tfdoc:variable:source 2-security
-  description = "The CAS and trust configurations key names to be used for NGFW Enterprise."
+  description = "The NGFW Enterprise TLS configurations."
   type = object({
-    keys = optional(object({
-      dev = optional(object({
-        cas           = optional(list(string), [])
-        trust_configs = optional(list(string), [])
-      }), {})
-      prod = optional(object({
-        cas           = optional(list(string), [])
-        trust_configs = optional(list(string), [])
-      }), {})
-    }), {})
-    tls_inspection = optional(object({
-      enabled               = optional(bool, false)
-      exclude_public_ca_set = optional(bool, false)
-      min_tls_version       = optional(string, "TLS_1_0")
-    }), {})
+    tls_enabled = optional(bool, false)
+    tls_ip_ids_by_region = optional(object({
+      dev  = optional(map(string), {})
+      prod = optional(map(string), {})
+    }))
   })
   nullable = false
   default = {
-    dev  = {}
-    prod = {}
+    tls_enabled = false
+    tls_ip_ids_by_region = {
+      dev  = {}
+      prod = {}
+    }
   }
 }
 

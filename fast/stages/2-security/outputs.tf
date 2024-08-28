@@ -51,23 +51,25 @@ locals {
       }
     }
   }
+  ngfw_tls_configs = {
+    tls_enabled = var.ngfw_tls_configs.tls_inspection.enabled
+    tls_ip_ids_by_region = {
+      dev = {
+        for k, v in google_network_security_tls_inspection_policy.ngfw_dev_tls_ips
+        : v.location => v.id
+      }
+      prod = {
+        for k, v in google_network_security_tls_inspection_policy.ngfw_prod_tls_ips
+        : v.location => v.id
+      }
+    }
+  }
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
-    cas_configs               = local.cas_configs
-    kms_keys                  = local.output_kms_keys
-    ngfw_tls_configs          = var.ngfw_tls_configs
-    tls_inspection_policy_ids = local.tls_inspection_policy_ids
-    trust_config_ids          = local.trust_config_ids
-  }
-  tls_inspection_policy_ids = {
-    dev = {
-      for k, v in google_network_security_tls_inspection_policy.ngfw_dev_tls_ips
-      : v.location => v.id
-    }
-    prod = {
-      for k, v in google_network_security_tls_inspection_policy.ngfw_prod_tls_ips
-      : v.location => v.id
-    }
+    cas_configs      = local.cas_configs
+    kms_keys         = local.output_kms_keys
+    ngfw_tls_configs = local.ngfw_tls_configs
+    trust_config_ids = local.trust_config_ids
   }
   trust_config_ids = {
     dev = {
@@ -106,18 +108,13 @@ output "kms_keys" {
 
 output "ngfw_tls_configs" {
   description = "The NGFW Enterprise configurations."
-  value       = var.ngfw_tls_configs
+  value       = local.ngfw_tls_configs
 }
 
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
-}
-
-output "tls_inspection_policy_ids" {
-  description = "TLS inspection policy ids for NGFW  by environment and region."
-  value       = local.tls_inspection_policy_ids
 }
 
 output "trust_config_ids" {

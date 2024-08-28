@@ -50,11 +50,11 @@ outputs:
   custom_roles:
     gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
     network_firewall_policies_admin: organizations/123456789012/roles/networkFirewallPoliciesAdmin
-    network_firewall_policies_viewer: organizations/123456789012/roles/networkFirewallPoliciesViewer
     ngfw_enterprise_admin: organizations/123456789012/roles/ngfwEnterpriseAdmin
     ngfw_enterprise_viewer: organizations/123456789012/roles/ngfwEnterpriseViewer
     organization_admin_viewer: organizations/123456789012/roles/organizationAdminViewer
     organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
+    private_ca_user: organizations/123456789012/roles/privateCaUser
     service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
     storage_viewer: organizations/123456789012/roles/storageViewer
     tag_viewer: organizations/123456789012/roles/tagViewer
