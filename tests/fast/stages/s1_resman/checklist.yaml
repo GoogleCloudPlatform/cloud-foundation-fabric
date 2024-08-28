@@ -244,8 +244,7 @@ values:
   module.branch-network-folder.google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.branch-network-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -260,7 +259,7 @@ values:
     project: fast-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -339,8 +338,7 @@ values:
     condition: []
     role: roles/storage.objectAdmin
   module.branch-pf-dev-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -355,7 +353,7 @@ values:
     project: fast-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -413,8 +411,7 @@ values:
     condition: []
     role: roles/storage.objectAdmin
   module.branch-pf-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -429,7 +426,7 @@ values:
     project: fast-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -447,8 +444,7 @@ values:
     - serviceAccount:fast2-resman-pf-0r@fast-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
   module.branch-pf-prod-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -463,7 +459,7 @@ values:
     project: fast-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
@@ -610,8 +606,7 @@ values:
   module.branch-security-folder.google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.branch-security-gcs.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -626,7 +621,7 @@ values:
     project: fast-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
