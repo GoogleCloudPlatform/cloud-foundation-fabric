@@ -33,7 +33,8 @@ locals {
         },
         try(v.amount, {})
       )
-      display_name = try(v.display_name, null)
+      display_name    = try(v.display_name, null)
+      ownership_scope = try(v.ownership_scope, null)
       filter = try(v.filter, null) == null ? null : {
         credit_types_treatment = (
           try(v.filter.credit_types_treatment, null) == null
