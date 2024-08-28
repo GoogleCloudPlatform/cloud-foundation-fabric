@@ -172,13 +172,12 @@ moved {
 }
 
 module "branch-pf-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-r-sa.iam_email]
@@ -191,13 +190,12 @@ moved {
 }
 
 module "branch-pf-dev-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "dev-resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "dev-resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-dev-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-dev-r-sa.iam_email]
@@ -210,13 +208,12 @@ moved {
 }
 
 module "branch-pf-prod-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "prod-resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "prod-resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-prod-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-prod-r-sa.iam_email]
