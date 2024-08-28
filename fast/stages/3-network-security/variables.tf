@@ -37,11 +37,6 @@ variable "ngfw_enterprise_config" {
   type = object({
     endpoint_zones   = list(string)
     quota_project_id = optional(string, null)
-    tls_inspection = optional(object({
-      enabled               = optional(bool, false)
-      exclude_public_ca_set = optional(bool, false)
-      min_tls_version       = optional(string, "TLS_1_0")
-    }), {})
   })
   nullable = false
   default = {

@@ -1,21 +1,23 @@
 billing_account = {
   id = "000000-111111-222222"
 }
-cas_ids = {
+cas_configs = {
   "dev" = {
-    "dev-ca-0" = {
+    "ngfw-dev-cas-0" = {
+      "ca_pool_id" = "projects/dev-sec-core-0/locations/europe-west1/caPools/dev-ngfw-ca-pool-0"
       "ca_ids" = {
-        "dev-root-ngfw-ca-0" = "projects/dev-sec-core-0/locations/europe-west1/caPools/dev-ngfw-ca-pool-3/certificateAuthorities/dev-root-ngfw-ca-0"
+        "dev-root-ngfw-ca-0" = "projects/dev-sec-core-0/locations/europe-west1/caPools/dev-ngfw-ca-pool-0/certificateAuthorities/dev-root-ngfw-ca-0"
       }
-      "ca_pool_id" = "projects/dev-sec-core-0/locations/europe-west1/caPools/dev-ngfw-ca-pool-3"
+      location = "europe-west1"
     }
   }
   "prod" = {
-    "prod-ca-0" = {
+    "ngfw-prod-cas-0" = {
+      "ca_pool_id" = "projects/prod-sec-core-0/locations/europe-west1/caPools/prod-ngfw-ca-pool-0"
       "ca_ids" = {
-        "prod-root-ngfw-ca-0" = "projects/prod-sec-core-0/locations/europe-west1/caPools/prod-ngfw-ca-pool-3/certificateAuthorities/prod-root-ngfw-ca-0"
+        "prod-root-ngfw-ca-0" = "projects/prod-sec-core-0/locations/europe-west1/caPools/prod-ngfw-ca-pool-0/certificateAuthorities/prod-root-ngfw-ca-0"
       }
-      "ca_pool_id" = "projects/prod-sec-core-0/locations/europe-west1/caPools/prod-ngfw-ca-pool-3"
+      location = "europe-west1"
     }
   }
 }
@@ -38,18 +40,34 @@ ngfw_enterprise_config = {
     enabled = true
   }
 }
+ngfw_tls_config_keys = {
+  dev = {
+    cas           = ["ngfw-dev-cas-0", "ngfw-dev-cas-1"]
+    trust_configs = ["ngfw-dev-tc-0", "ngfw-dev-tc-1"]
+  }
+  prod = {
+    cas           = ["ngfw-prod-cas-0", "ngfw-prod-cas-1"]
+    trust_configs = ["ngfw-prod-tc-0", "ngfw-prod-tc-1"]
+  }
+}
 organization = {
   domain      = "fast.example.com"
   id          = 123456789012
   customer_id = "C00000000"
 }
 prefix = "fast2"
-trust_config_ids = {
+trust_configs = {
   "dev" = {
-    "dev-trust-0" = "projects/dev-sec-core-0/locations/europe-west1/trustConfigs/dev-trust-0"
+    "ngfw-dev-tc-0" = {
+      id       = "projects/dev-sec-core-0/locations/europe-west1/trustConfigs/dev-trust-0"
+      location = "europe-west1"
+    }
   }
   "prod" = {
-    "prod-trust-0" = "projects/prod-sec-core-0/locations/europe-west1/trustConfigs/prod-trust-0"
+    "ngfw-prod-tc-0" = {
+      id       = "projects/prod-sec-core-0/locations/europe-west1/trustConfigs/prod-trust-0"
+      location = "europe-west1"
+    }
   }
 }
 vpc_self_links = {

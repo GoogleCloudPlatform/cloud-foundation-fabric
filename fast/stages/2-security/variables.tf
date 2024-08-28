@@ -91,37 +91,26 @@ variable "kms_keys" {
 variable "ngfw_tls_configs" {
   description = "The CAS and trust configurations key names to be used for NGFW Enterprise."
   type = object({
-    dev = optional(object({
-      cas_configs   = optional(map(string))
-      trust_configs = optional(map(string))
-    }))
-    prod = optional(object({
-      cas_configs   = optional(map(string))
-      trust_configs = optional(map(string))
-    }))
+    keys = optional(object({
+      dev = optional(object({
+        cas           = optional(list(string), ["ngfw-dev-cas-0"])
+        trust_configs = optional(list(string), ["ngfw-dev-tc-0"])
+      }), {})
+      prod = optional(object({
+        cas           = optional(list(string), ["ngfw-prod-cas-0"])
+        trust_configs = optional(list(string), ["ngfw-prod-tc-0"])
+      }), {})
+    }), {})
+    tls_inspection = optional(object({
+      enabled               = optional(bool, false)
+      exclude_public_ca_set = optional(bool, false)
+      min_tls_version       = optional(string, "TLS_1_0")
+    }), {})
   })
   nullable = false
   default = {
-    dev = {
-      cas_configs = {
-        ngfw_dev_cas_primary   = "ngfw-dev-cas-primary"
-        ngfw_dev_cas_secondary = "ngfw-dev-cas-secondary"
-      }
-      trust_configs = {
-        ngfw_dev_tc_primary   = "ngfw-dev-tc-primary"
-        ngfw_dev_tc_secondary = "ngfw-dev-tc-secondary"
-      }
-    }
-    prod = {
-      cas_configs = {
-        ngfw_prod_cas_primary   = "ngfw-prod-cas-primary"
-        ngfw_prod_cas_secondary = "ngfw-prod-cas-secondary"
-      }
-      trust_configs = {
-        ngfw_prod_tc_primary   = "ngfw-prod-tc-primary"
-        ngfw_prod_tc_secondary = "ngfw-prod-tc-secondary"
-      }
-    }
+    dev  = {}
+    prod = {}
   }
 }
 

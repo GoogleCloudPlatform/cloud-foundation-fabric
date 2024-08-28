@@ -27,17 +27,19 @@ variable "billing_account" {
   }
 }
 
-variable "cas_ids" {
+variable "cas_configs" {
   # tfdoc:variable:source 2-security
   description = "The CAS pools and CA ids, by environment."
   type = object({
     dev = map(object({
       ca_pool_id = string
       ca_ids     = map(string)
+      location   = string
     }))
     prod = map(object({
       ca_pool_id = string
       ca_ids     = map(string)
+      location   = string
     }))
   })
   nullable = false
@@ -69,6 +71,33 @@ variable "host_project_ids" {
   default  = {}
 }
 
+variable "ngfw_tls_configs" {
+  # tfdoc:variable:source 2-security
+  description = "The CAS and trust configurations key names to be used for NGFW Enterprise."
+  type = object({
+    keys = optional(object({
+      dev = optional(object({
+        cas           = optional(list(string), [])
+        trust_configs = optional(list(string), [])
+      }), {})
+      prod = optional(object({
+        cas           = optional(list(string), [])
+        trust_configs = optional(list(string), [])
+      }), {})
+    }), {})
+    tls_inspection = optional(object({
+      enabled               = optional(bool, false)
+      exclude_public_ca_set = optional(bool, false)
+      min_tls_version       = optional(string, "TLS_1_0")
+    }), {})
+  })
+  nullable = false
+  default = {
+    dev  = {}
+    prod = {}
+  }
+}
+
 variable "organization" {
   # tfdoc:variable:source 00-globals
   description = "Organization details."
@@ -89,12 +118,12 @@ variable "prefix" {
   }
 }
 
-variable "trust_config_ids" {
+variable "tls_inspection_policy_ids" {
   # tfdoc:variable:source 2-security
-  description = "The certificate manager trust config ids, by environment."
+  description = "TLS inspection policy ids for NGFW by environment and region."
   type = object({
-    dev  = map(string)
-    prod = map(string)
+    dev  = optional(map(string))
+    prod = optional(map(string))
   })
   nullable = false
   default = {

@@ -14,7 +14,7 @@
 
 # yaml-language-server: $schema=../../schemas/custom-role.schema.json
 
-name: networkFirewallPoliciesViewer
+name: privateCaUser
 includedPermissions:
-  - networksecurity.firewallEndpointAssociations.get
-  - networksecurity.firewallEndpointAssociations.list
+  - privateca.caPools.get
+  - privateca.caPools.use

@@ -14,6 +14,7 @@
 #       - prod (to be defined)
 #   action: "apply_security_profile_group"
 #   security_profile_group: "dev"
+#   tls_inspect: true
 
 # ingress-allow-inspect-intra:
 #   description: "Allow and inspect same-env (intra-vpc) traffic."
@@ -23,3 +24,4 @@
 #       - dev (to be defined)
 #   action: "apply_security_profile_group"
 #   security_profile_group: "dev"
+#   tls_inspect: true

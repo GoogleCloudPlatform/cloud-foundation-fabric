@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,46 +24,60 @@ locals {
         }
       ]
     ]),
-    # flatten([
-    #   for location, mod in module.prod-sec-kms : [
-    #     for name, id in mod.key_ids : {
-    #       key = "prod-${name}:${location}"
-    #       id  = id
-    #     }
-    #   ]
-    # ])
+    flatten([
+      for location, mod in module.prod-sec-kms : [
+        for name, id in mod.key_ids : {
+          key = "prod-${name}:${location}"
+          id  = id
+        }
+      ]
+    ])
   )
-  cas_ids = {
+  cas_configs = {
     dev = {
-      for k, v in module.dev-sec-cas
+      for k, v in module.dev-cas
       : k => {
         ca_pool_id = v.ca_pool_id
         ca_ids     = v.ca_ids
+        location   = v.ca_pool.location
       }
     }
-    # prod = {
-    #   for k, v in module.prod-sec-cas
-    #   : k => {
-    #     ca_pool_id = v.ca_pool_id
-    #     ca_ids     = v.ca_ids
-    #   }
-    # }
+    prod = {
+      for k, v in module.prod-cas
+      : k => {
+        ca_pool_id = v.ca_pool_id
+        ca_ids     = v.ca_ids
+        location   = v.ca_pool.location
+      }
+    }
   }
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
   tfvars = {
-    cas_ids          = local.cas_ids
-    kms_keys         = local.output_kms_keys
-    trust_config_ids = local.trust_config_ids
+    cas_configs               = local.cas_configs
+    kms_keys                  = local.output_kms_keys
+    ngfw_tls_configs          = var.ngfw_tls_configs
+    tls_inspection_policy_ids = local.tls_inspection_policy_ids
+    trust_config_ids          = local.trust_config_ids
+  }
+  tls_inspection_policy_ids = {
+    dev = {
+      for k, v in google_network_security_tls_inspection_policy.ngfw_dev_tls_ips
+      : v.location => v.id
+    }
+    prod = {
+      for k, v in google_network_security_tls_inspection_policy.ngfw_prod_tls_ips
+      : v.location => v.id
+    }
   }
   trust_config_ids = {
     dev = {
       for k, v in google_certificate_manager_trust_config.dev_trust_configs
       : k => v.id
     }
-    # prod = {
-    #   for k, v in google_certificate_manager_trust_config.prod_trust_configs
-    #   : k => v.id
-    # }
+    prod = {
+      for k, v in google_certificate_manager_trust_config.prod_trust_configs
+      : k => v.id
+    }
   }
 }
 
@@ -80,14 +94,19 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
-output "cas_ids" {
-  description = "Certificate Authority Service CA pool and CA ids."
-  value       = local.cas_ids
+output "cas_configs" {
+  description = "Certificate Authority Service configurations."
+  value       = local.cas_configs
 }
 
 output "kms_keys" {
   description = "KMS key ids."
   value       = local.output_kms_keys
+}
+
+output "ngfw_tls_configs" {
+  description = "The NGFW Enterprise configurations."
+  value       = var.ngfw_tls_configs
 }
 
 output "tfvars" {
@@ -96,7 +115,12 @@ output "tfvars" {
   value       = local.tfvars
 }
 
+output "tls_inspection_policy_ids" {
+  description = "TLS inspection policy ids for NGFW  by environment and region."
+  value       = local.tls_inspection_policy_ids
+}
+
 output "trust_config_ids" {
-  description = "Certificate Manager trust config ids."
+  description = "Certificate Manager trust-config ids."
   value       = local.trust_config_ids
 }

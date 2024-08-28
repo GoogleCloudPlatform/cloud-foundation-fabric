@@ -59,6 +59,7 @@ variable "custom_roles" {
     ngfw_enterprise_admin           = string
     ngfw_enterprise_viewer          = string
     organization_admin_viewer       = string
+    private_ca_user                 = string
     service_project_network_admin   = string
     storage_viewer                  = string
   })

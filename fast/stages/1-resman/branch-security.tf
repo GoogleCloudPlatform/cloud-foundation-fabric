@@ -60,7 +60,8 @@ module "branch-security-folder" {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
           join(",", formatlist("'%s'", [
-            "roles/privateca.certificateManager"
+            "roles/privateca.certificateManager",
+            var.custom_roles.private_ca_user
           ]))
         )
         title       = "security_sa_delegated_grants"

@@ -35,6 +35,15 @@ variable "billing_account" {
   }
 }
 
+variable "custom_roles" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type = object({
+    private_ca_user = string
+  })
+  default = null
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
@@ -69,6 +78,8 @@ variable "service_accounts" {
   type = object({
     data-platform-dev    = string
     data-platform-prod   = string
+    nsec                 = string
+    nsec-r               = string
     project-factory      = string
     project-factory-dev  = string
     project-factory-prod = string
