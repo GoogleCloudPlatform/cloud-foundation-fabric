@@ -127,6 +127,7 @@ variable "fast_stage_3" {
   }))
   nullable = false
   default  = {}
+  # TODO: upgrade to cross-variable validation
   validation {
     condition = alltrue([
       for k, v in var.fast_stage_3 :
