@@ -89,20 +89,6 @@ variable "prefix" {
   }
 }
 
-variable "tls_inspection_policy_ids" {
-  # tfdoc:variable:source 2-security
-  description = "TLS inspection policy ids for NGFW by environment and region."
-  type = object({
-    dev  = optional(map(string))
-    prod = optional(map(string))
-  })
-  nullable = false
-  default = {
-    dev  = {}
-    prod = {}
-  }
-}
-
 variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Self link for the shared VPC."
