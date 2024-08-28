@@ -25,13 +25,13 @@ locals {
         role   = "roles/billing.user"
       }
     },
-    !var.fast_stage_2.security.enabled ? {} : {
+    !var.fast_stage_2.security.enabled != true ? {} : {
       sa_sec_billing = {
         member = module.sec-sa-rw[0].iam_email
         role   = "roles/billing.user"
       }
     },
-    !var.fast_stage_2.project_factory.enabled ? {} : {
+    !var.fast_stage_2.project_factory.enabled != true ? {} : {
       sa_pf_billing = {
         member = module.pf-sa-rw[0].iam_email
         role   = "roles/billing.user"
