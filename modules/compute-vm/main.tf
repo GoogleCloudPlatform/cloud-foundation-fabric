@@ -67,7 +67,7 @@ locals {
     )
   )
   termination_action = (
-    var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+    var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
 }
 
@@ -280,6 +280,13 @@ resource "google_compute_instance" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    dynamic "max_run_duration" {
+      for_each = var.options.max_run_duration == null ? [] : [""]
+      content {
+        nanos   = var.options.max_run_duration.nanos
+        seconds = var.options.max_run_duration.seconds
+      }
+    }
 
     dynamic "node_affinities" {
       for_each = var.options.node_affinities
@@ -443,6 +450,13 @@ resource "google_compute_instance_template" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    dynamic "max_run_duration" {
+      for_each = var.options.max_run_duration == null ? [] : [""]
+      content {
+        nanos   = var.options.max_run_duration.nanos
+        seconds = var.options.max_run_duration.seconds
+      }
+    }
 
     dynamic "node_affinities" {
       for_each = var.options.node_affinities
