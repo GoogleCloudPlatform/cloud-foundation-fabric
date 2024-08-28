@@ -54,8 +54,7 @@ values:
       failover: false
       max_connections_per_endpoint: 10
     circuit_breakers: []
-    connection_draining_timeout_sec: 0
-    connection_tracking_policy: []
+        connection_tracking_policy: []
     consistent_hash: []
     description: Terraform managed.
     failover_policy: []

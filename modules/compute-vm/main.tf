@@ -326,8 +326,6 @@ resource "google_compute_instance" "default" {
       resource_manager_tags = local.tags_combined
     }
   }
-
-  # guest_accelerator
 }
 
 resource "google_compute_instance_iam_binding" "default" {

@@ -42,8 +42,7 @@ values:
   module.nlb.google_compute_region_backend_service.default:
     affinity_cookie_ttl_sec: null
     circuit_breakers: []
-    connection_draining_timeout_sec: 0
-    connection_tracking_policy: []
+        connection_tracking_policy: []
     consistent_hash: []
     description: Terraform managed.
     enable_cdn: null

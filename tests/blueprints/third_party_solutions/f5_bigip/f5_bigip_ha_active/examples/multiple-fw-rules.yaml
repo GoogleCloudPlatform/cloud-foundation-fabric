@@ -162,8 +162,7 @@ values:
     timeout_sec: 5
     unhealthy_threshold: 2
   module.f5-lb.module.passthrough-ilb[0].google_compute_region_backend_service.default:
-    connection_draining_timeout_sec: 0
-    description: Terraform managed.
+        description: Terraform managed.
     load_balancing_scheme: INTERNAL
     name: test-ilb
     network: projects/my-project/global/networks/dataplane
@@ -192,8 +191,7 @@ values:
     region: europe-west1
     subnetwork: projects/my-project/regions/europe-west1/subnetworks/ipv6_external
   module.f5-lb.module.passthrough-nlb[0].google_compute_region_backend_service.default:
-    connection_draining_timeout_sec: 0
-    description: Terraform managed.
+        description: Terraform managed.
     load_balancing_scheme: EXTERNAL
     locality_lb_policy: null
     name: test-nlb

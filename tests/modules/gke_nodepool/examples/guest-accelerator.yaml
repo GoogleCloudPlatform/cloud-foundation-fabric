@@ -29,7 +29,6 @@ values:
         gpu_driver_installation_config:
         - gpu_driver_version: LATEST
         gpu_partition_size: null
-        gpu_sharing_config: null
         type: nvidia-tesla-a100
       gvnic: []
       machine_type: a2-highgpu-1g
