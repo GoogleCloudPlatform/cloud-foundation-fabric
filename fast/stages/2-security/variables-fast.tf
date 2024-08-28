@@ -35,15 +35,6 @@ variable "billing_account" {
   }
 }
 
-variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type = object({
-    private_ca_user = string
-  })
-  default = null
-}
-
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."

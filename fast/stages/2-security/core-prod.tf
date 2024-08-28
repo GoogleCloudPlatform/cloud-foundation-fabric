@@ -27,16 +27,6 @@ locals {
       role   = "roles/privateca.certificateManager"
     }
   }
-  ngfw_prod_sa_cas_iam_bindings_additive = {
-    nsec_prod_sa_binding = {
-      member = "serviceAccount:${var.service_accounts.nsec}"
-      role   = var.custom_roles.private_ca_user
-    }
-    nsec_prod_sa_r_binding = {
-      member = "serviceAccount:${var.service_accounts.nsec-r}"
-      role   = var.custom_roles.private_ca_user
-    }
-  }
   prod_kms_restricted_admins = [
     for sa in distinct(compact([
       var.service_accounts.data-platform-prod,
@@ -55,12 +45,12 @@ module "prod-sec-project" {
   iam = {
     "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
   }
-  iam_bindings_additive = merge({
+  iam_bindings_additive = {
     for member in local.prod_kms_restricted_admins :
     "kms_restricted_admin.${member}" => merge(local.kms_restricted_admin_template, {
       member = member
     })
-  }, local.ngfw_prod_sa_cas_iam_bindings_additive)
+  }
   labels   = { environment = "prod", team = "security" }
   services = local.project_services
 }

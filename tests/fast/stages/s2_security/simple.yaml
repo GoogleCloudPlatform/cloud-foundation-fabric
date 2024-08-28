@@ -153,16 +153,6 @@ values:
     member: serviceAccount:foobar@iam.gserviceaccount.com
     project: fast-dev-sec-core-0
     role: roles/cloudkms.admin
-  module.dev-sec-project.google_project_iam_member.bindings["nsec_dev_sa_binding"]:
-    condition: []
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: organizations/123456789012/roles/privateCaUser
-  module.dev-sec-project.google_project_iam_member.bindings["nsec_dev_sa_r_binding"]:
-    condition: []
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: organizations/123456789012/roles/privateCaUser
   module.dev-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
     condition: []
     project: fast-dev-sec-core-0
@@ -376,16 +366,6 @@ values:
     member: serviceAccount:foobar@iam.gserviceaccount.com
     project: fast-prod-sec-core-0
     role: roles/cloudkms.admin
-  module.prod-sec-project.google_project_iam_member.bindings["nsec_prod_sa_binding"]:
-    condition: []
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: organizations/123456789012/roles/privateCaUser
-  module.prod-sec-project.google_project_iam_member.bindings["nsec_prod_sa_r_binding"]:
-    condition: []
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: organizations/123456789012/roles/privateCaUser
   module.prod-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
     condition: []
     project: fast-prod-sec-core-0
@@ -473,9 +453,24 @@ counts:
   google_kms_key_ring: 8
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 12
+  google_project_iam_member: 8
   google_project_service: 14
   google_project_service_identity: 12
   google_storage_bucket_object: 1
   modules: 11
-  resources: 69
+  resources: 65
+
+outputs:
+  cas_configs:
+    dev: {}
+    prod: {}
+  kms_keys: __missing__
+  ngfw_tls_configs:
+    tls_enabled: false
+    tls_ip_ids_by_region:
+      dev: {}
+      prod: {}
+  tfvars: __missing__
+  trust_config_ids:
+    dev: {}
+    prod: {}

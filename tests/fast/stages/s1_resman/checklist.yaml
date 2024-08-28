@@ -16,6 +16,7 @@ values:
   google_storage_bucket_object.providers["2-networking"]:
     bucket: test
     cache_control: null
+    content:
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -598,7 +599,7 @@ values:
   module.branch-security-folder.google_folder_iam_binding.bindings["tenant_iam_admin_conditional"]:
     condition:
     - description: Certificate Authority Service delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/privateca.certificateManager','organizations/123456789012/roles/privateCaUser'])
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/privateca.certificateManager'])
       title: security_sa_delegated_grants
     members:
     - serviceAccount:fast2-prod-resman-sec-0@fast-prod-automation.iam.gserviceaccount.com

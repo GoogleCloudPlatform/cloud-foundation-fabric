@@ -4,9 +4,6 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
-custom_roles = {
-  private_ca_user = "organizations/123456789012/roles/privateCaUser"
-}
 essential_contacts = "gcp-security-admins@fast.example.com"
 folder_ids = {
   security = null
