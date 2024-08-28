@@ -14,9 +14,11 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    enable_object_retention: null
     encryption: []
     force_destroy: false
     labels: null
@@ -30,19 +32,29 @@ values:
     storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
-    autoclass: []
-  module.bucket.google_storage_bucket_iam_binding.bindings["storage-admin-with-delegated_roles"]:
+  module.bucket.google_storage_managed_folder.folder["folder1/"]:
     bucket: test-my-bucket
-    condition:
-    - description: null
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/storage.objectAdmin','roles/storage.objectViewer'])
-      title: delegated-role-grants
+    force_destroy: false
+    name: folder1/
+    timeouts: null
+  module.bucket.google_storage_managed_folder.folder["folder1/subfolder/"]:
+    bucket: test-my-bucket
+    force_destroy: true
+    name: folder1/subfolder/
+    timeouts: null
+  module.bucket.google_storage_managed_folder_iam_binding.authoritative["folder1/.roles/storage.admin"]:
+    bucket: test-my-bucket
+    condition: []
+    managed_folder: folder1/
     members:
-    - group:organization-admins@example.org
+    - user:user1@example.com
     role: roles/storage.admin
 
 counts:
   google_storage_bucket: 1
-  google_storage_bucket_iam_binding: 1
+  google_storage_managed_folder: 2
+  google_storage_managed_folder_iam_binding: 1
   modules: 1
-  resources: 2
+  resources: 4
+
+outputs: {}
