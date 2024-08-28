@@ -20,7 +20,7 @@ locals {
   _psa_configs_ranges = flatten([
     for config in local.psa_configs : [
       for k, v in config.ranges : {
-        key   = "${config.key}-${k}"
+        key   = "${config.key}${k}"
         value = v
       }
     ]
@@ -28,7 +28,7 @@ locals {
   _psa_peered_domains = flatten([
     for config in local.psa_configs : [
       for v in config.peered_domains : {
-        key              = "${config.key}-${trimsuffix(replace(v, ".", "-"), "-")}"
+        key              = "${config.key}${trimsuffix(replace(v, ".", "-"), "-")}"
         dns_suffix       = v
         service_producer = config.service_producer
       }
@@ -36,7 +36,11 @@ locals {
   ])
   psa_configs = {
     for v in var.psa_configs : v.service_producer => merge(v, {
-      key = replace(v.service_producer, ".", "-")
+      key = (
+        v.range_prefix != null
+        ? (v.range_prefix == "" ? "" : "${v.range_prefix}-")
+        : format("%s-", replace(v.service_producer, ".", "-"))
+      )
     })
   }
   psa_configs_ranges = {
