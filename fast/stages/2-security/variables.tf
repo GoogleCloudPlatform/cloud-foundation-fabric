@@ -14,12 +14,71 @@
  * limitations under the License.
  */
 
+# Refer 
 variable "cas_configs" {
   description = "The CAS CAs to add to each environment."
   type = object({
     dev = optional(map(object({
-      ca_configs            = map(any)
-      ca_pool_config        = map(any)
+      ca_configs = map(object({
+        deletion_protection                    = optional(string, true)
+        type                                   = optional(string, "SELF_SIGNED")
+        is_ca                                  = optional(bool, true)
+        lifetime                               = optional(string, null)
+        pem_ca_certificate                     = optional(string, null)
+        ignore_active_certificates_on_deletion = optional(bool, false)
+        skip_grace_period                      = optional(bool, true)
+        labels                                 = optional(map(string), null)
+        gcs_bucket                             = optional(string, null)
+        key_spec = optional(object({
+          algorithm  = optional(string, "RSA_PKCS1_2048_SHA256")
+          kms_key_id = optional(string, null)
+        }), {})
+        key_usage = optional(object({
+          cert_sign          = optional(bool, true)
+          client_auth        = optional(bool, false)
+          code_signing       = optional(bool, false)
+          content_commitment = optional(bool, false)
+          crl_sign           = optional(bool, true)
+          data_encipherment  = optional(bool, false)
+          decipher_only      = optional(bool, false)
+          digital_signature  = optional(bool, false)
+          email_protection   = optional(bool, false)
+          encipher_only      = optional(bool, false)
+          key_agreement      = optional(bool, false)
+          key_encipherment   = optional(bool, true)
+          ocsp_signing       = optional(bool, false)
+          server_auth        = optional(bool, true)
+          time_stamping      = optional(bool, false)
+        }), {})
+        subject = optional(object({
+          common_name         = string
+          organization        = string
+          country_code        = optional(string)
+          locality            = optional(string)
+          organizational_unit = optional(string)
+          postal_code         = optional(string)
+          province            = optional(string)
+          street_address      = optional(string)
+          }), {
+          common_name  = "test.example.com"
+          organization = "Test Example"
+        })
+        subject_alt_name = optional(object({
+          dns_names       = optional(list(string), null)
+          email_addresses = optional(list(string), null)
+          ip_addresses    = optional(list(string), null)
+          uris            = optional(list(string), null)
+        }), null)
+        subordinate_config = optional(object({
+          root_ca_id              = optional(string)
+          pem_issuer_certificates = optional(list(string))
+        }), null)
+      }))
+      ca_pool_config = object({
+        ca_pool_id = optional(string, null)
+        name       = optional(string, null)
+        tier       = optional(string, "DEVOPS")
+      })
       location              = string
       iam                   = optional(map(list(string)), {})
       iam_bindings          = optional(map(any), {})
@@ -27,13 +86,87 @@ variable "cas_configs" {
       iam_by_principals     = optional(map(list(string)), {})
     })), {})
     prod = optional(map(object({
-      ca_configs            = map(any)
-      ca_pool_config        = map(any)
-      location              = string
-      iam                   = optional(map(list(string)), {})
-      iam_bindings          = optional(map(any), {})
-      iam_bindings_additive = optional(map(any), {})
-      iam_by_principals     = optional(map(list(string)), {})
+      ca_configs = map(object({
+        deletion_protection                    = optional(string, true)
+        type                                   = optional(string, "SELF_SIGNED")
+        is_ca                                  = optional(bool, true)
+        lifetime                               = optional(string, null)
+        pem_ca_certificate                     = optional(string, null)
+        ignore_active_certificates_on_deletion = optional(bool, false)
+        skip_grace_period                      = optional(bool, true)
+        labels                                 = optional(map(string), null)
+        gcs_bucket                             = optional(string, null)
+        key_spec = optional(object({
+          algorithm  = optional(string, "RSA_PKCS1_2048_SHA256")
+          kms_key_id = optional(string, null)
+        }), {})
+        key_usage = optional(object({
+          cert_sign          = optional(bool, true)
+          client_auth        = optional(bool, false)
+          code_signing       = optional(bool, false)
+          content_commitment = optional(bool, false)
+          crl_sign           = optional(bool, true)
+          data_encipherment  = optional(bool, false)
+          decipher_only      = optional(bool, false)
+          digital_signature  = optional(bool, false)
+          email_protection   = optional(bool, false)
+          encipher_only      = optional(bool, false)
+          key_agreement      = optional(bool, false)
+          key_encipherment   = optional(bool, true)
+          ocsp_signing       = optional(bool, false)
+          server_auth        = optional(bool, true)
+          time_stamping      = optional(bool, false)
+        }), {})
+        subject = optional(object({
+          common_name         = string
+          organization        = string
+          country_code        = optional(string)
+          locality            = optional(string)
+          organizational_unit = optional(string)
+          postal_code         = optional(string)
+          province            = optional(string)
+          street_address      = optional(string)
+          }), {
+          common_name  = "test.example.com"
+          organization = "Test Example"
+        })
+        subject_alt_name = optional(object({
+          dns_names       = optional(list(string), null)
+          email_addresses = optional(list(string), null)
+          ip_addresses    = optional(list(string), null)
+          uris            = optional(list(string), null)
+        }), null)
+        subordinate_config = optional(object({
+          root_ca_id              = optional(string)
+          pem_issuer_certificates = optional(list(string))
+        }), null)
+      }))
+      ca_pool_config = object({
+        ca_pool_id = optional(string, null)
+        name       = optional(string, null)
+        tier       = optional(string, "DEVOPS")
+      })
+      location = string
+      iam      = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
     })), {})
   })
   nullable = false

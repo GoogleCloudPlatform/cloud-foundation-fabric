@@ -1,6 +1,8 @@
 # skip boilerplate check
 ---
-# Following are some NGFW Enterprise ingress rules examples
+# yaml-language-server: $schema=../../../schemas/firewall-policy-rules.schema.json
+
+# Sample NGFW Enterprise ingress rules to uncomment and customize as needed
 
 # ingress-allow-inspect-cross:
 #   description: "Allow and inspect cross-env traffic."
