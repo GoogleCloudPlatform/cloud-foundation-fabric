@@ -313,7 +313,6 @@ module "vpc" {
 # tftest modules=1 resources=7 inventory=psa-prefix.yaml e2e
 ```
 
-
 ### Private Service Networking with peering routes and peered Cloud DNS domains
 
 Custom routes can be optionally exported/imported through the peering formed with the Google managed PSA VPC.
