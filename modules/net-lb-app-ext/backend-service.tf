@@ -257,11 +257,11 @@ resource "google_compute_backend_service" "default" {
     content {
       client_tls_policy = ss.value.client_tls_policy
       subject_alt_names = ss.value.subject_alt_names
-      aws_v4_authentication { 
-        access_key_id = ss.value.aws_v4_authentication.access_key_id
-        access_key = ss.value.aws_v4_authentication.access_key
+      aws_v4_authentication {
+        access_key_id      = ss.value.aws_v4_authentication.access_key_id
+        access_key         = ss.value.aws_v4_authentication.access_key
         access_key_version = ss.value.aws_v4_authentication.access_key_version
-        origin_region = ss.value.aws_v4_authentication.origin_region
+        origin_region      = ss.value.aws_v4_authentication.origin_region
       }
     }
   }
