@@ -16,7 +16,6 @@ values:
   google_storage_bucket_object.providers["2-networking"]:
     bucket: test
     cache_control: null
-    content:
     content_disposition: null
     content_encoding: null
     content_language: null
