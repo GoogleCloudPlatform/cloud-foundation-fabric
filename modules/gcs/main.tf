@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,13 @@ resource "google_storage_bucket" "bucket" {
   default_event_based_hold    = var.default_event_based_hold
   requester_pays              = var.requester_pays
   public_access_prevention    = var.public_access_prevention
-  versioning {
-    enabled = var.versioning
+  rpo                         = var.rpo
+
+  dynamic "versioning" {
+    for_each = var.versioning == null ? [] : [""]
+    content {
+      enabled = var.versioning
+    }
   }
 
   dynamic "autoclass" {
@@ -165,12 +170,14 @@ resource "google_storage_notification" "notification" {
   object_name_prefix = var.notification_config.object_name_prefix
   depends_on         = [google_pubsub_topic_iam_binding.binding]
 }
+
 resource "google_pubsub_topic_iam_binding" "binding" {
   count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
+
 resource "google_pubsub_topic" "topic" {
   count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
   project = var.project_id

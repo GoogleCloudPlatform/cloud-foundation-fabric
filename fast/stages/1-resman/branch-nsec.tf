@@ -79,14 +79,13 @@ moved {
 }
 
 module "branch-nsec-gcs" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_features.nsec ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "prod-resman-nsec-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_features.nsec ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "prod-resman-nsec-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-nsec-sa[0].iam_email]
     "roles/storage.objectViewer" = [module.branch-nsec-r-sa[0].iam_email]

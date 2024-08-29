@@ -53,7 +53,8 @@ variable "budgets" {
       units           = optional(number)
       use_last_period = optional(bool)
     })
-    display_name = optional(string)
+    display_name    = optional(string)
+    ownership_scope = optional(string)
     filter = optional(object({
       credit_types_treatment = optional(object({
         exclude_all       = optional(bool)

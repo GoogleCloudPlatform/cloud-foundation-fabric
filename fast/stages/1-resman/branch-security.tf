@@ -104,13 +104,12 @@ module "branch-security-r-sa" {
 # automation bucket
 
 module "branch-security-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "prod-resman-sec-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "prod-resman-sec-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-security-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-security-r-sa.iam_email]

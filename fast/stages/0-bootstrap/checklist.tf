@@ -128,15 +128,14 @@ check "checklist" {
 # checklist files bucket
 
 module "automation-tf-checklist-gcs" {
-  source        = "../../../modules/gcs"
-  count         = local.uses_checklist ? 1 : 0
-  project_id    = module.automation-project.project_id
-  name          = "iac-core-checklist-0"
-  prefix        = local.prefix
-  location      = local.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
-  depends_on    = [module.organization]
+  source     = "../../../modules/gcs"
+  count      = local.uses_checklist ? 1 : 0
+  project_id = module.automation-project.project_id
+  name       = "iac-core-checklist-0"
+  prefix     = local.prefix
+  location   = local.locations.gcs
+  versioning = true
+  depends_on = [module.organization]
 }
 
 resource "google_storage_bucket_object" "checklist_data" {

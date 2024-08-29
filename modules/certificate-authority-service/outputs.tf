@@ -22,6 +22,11 @@ output "ca_ids" {
   }
 }
 
+output "ca_pool" {
+  description = "The CA pool."
+  value       = try(google_privateca_ca_pool.ca_pool[0], null)
+}
+
 output "ca_pool_id" {
   description = "The CA pool id."
   value       = local.ca_pool_id
