@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
 - [[#2542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2542)] Use generic project name in HA VPN over IC blueprint ([juliocc](https://github.com/juliocc)) <!-- 2024-08-30 07:32:21+00:00 -->
 - [[#2530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2530)] Add managed folders support to `gcs` module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 07:30:53+00:00 -->
 - [[#2531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2531)] Update stable provider too to 5.43 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 06:49:46+00:00 -->
@@ -21,6 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
 - [[#2541](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2541)] Moved blocks and fix to resman for FAST v33-v34 transition ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 07:44:27+00:00 -->
 - [[#2484](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2484)] [FAST] TLS inspection support for NGFW Enterprise ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-30 07:15:17+00:00 -->
 - [[#2530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2530)] Add managed folders support to `gcs` module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 07:30:53+00:00 -->
@@ -43,6 +45,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
 - [[#2538](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2538)] Module net-vpc fix for reserved ranges ([jamesdalf](https://github.com/jamesdalf)) <!-- 2024-08-30 05:10:28+00:00 -->
 - [[#2539](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2539)] Exposing aws_v4_authentication configuration in global external alb ([okguru1](https://github.com/okguru1)) <!-- 2024-08-29 13:45:50+00:00 -->
 - [[#2537](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2537)] Add send_secondary_ip_range_if_empty=true to google_compute_subnetwork ([sruffilli](https://github.com/sruffilli)) <!-- 2024-08-28 14:00:09+00:00 -->
@@ -88,6 +91,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
 - [[#2531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2531)] Update stable provider too to 5.43 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 06:49:46+00:00 -->
 - [[#2525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2525)] Bump provider to last release of version 5 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-27 14:50:59+00:00 -->
 - [[#2520](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2520)] Add e2e pubusb errors ([juliocc](https://github.com/juliocc)) <!-- 2024-08-26 17:55:33+00:00 -->
