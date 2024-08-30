@@ -153,14 +153,14 @@ module "test" {
     attachments = {
       "a" = {
         bgp_range              = "169.254.255.0/29"
-        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/gcpnetworking-hostproject/global/interconnects/interconnect-lab-sea26-zone1"
+        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/myproject/global/interconnects/interconnect-zone1"
         onprem_asn             = 65001
         vlan_tag               = 1001
         vpn_gateways_ip_range  = "10.255.255.0/29"
       }
       "b" = {
         bgp_range              = "169.254.255.8/29"
-        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/gcpnetworking-hostproject/global/interconnects/interconnect-lab-sea26-zone2"
+        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/myproject/global/interconnects/interconnect-zone2"
         onprem_asn             = 65001
         vlan_tag               = 1002
         vpn_gateways_ip_range  = "10.255.255.8/29"
