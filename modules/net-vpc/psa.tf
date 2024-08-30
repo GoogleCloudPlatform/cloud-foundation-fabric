@@ -63,14 +63,11 @@ resource "google_compute_global_address" "psa_ranges" {
 }
 
 resource "google_service_networking_connection" "psa_connection" {
-  for_each = local.psa_configs
-  network  = local.network.id
-  service  = each.key
-  reserved_peering_ranges = [
-    for k, v in google_compute_global_address.psa_ranges :
-    v.name if startswith(k, each.value.key)
-  ]
-  deletion_policy = each.value.deletion_policy
+  for_each                = local.psa_configs
+  network                 = local.network.id
+  service                 = each.key
+  reserved_peering_ranges = formatlist("${each.value.key}%s", keys(each.value.ranges))
+  deletion_policy         = each.value.deletion_policy
 }
 
 resource "google_compute_network_peering_routes_config" "psa_routes" {
