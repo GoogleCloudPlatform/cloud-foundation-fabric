@@ -37,6 +37,8 @@ The following diagram is a high level reference of the resources created and man
 - We use global network firewall policies, as legacy VPC firewall rules are not compatible with NGFW Enterprise. These policies coexist with the legacy VPC firewall rules that we create in the netwroking stage.
 - For your convenience, firewall policy rules leverage factories, so that you can define firewall policy rules using yaml files. The path of these files is configurable. Look in the [Customization](#customizations) section for more details.
 - NGFW Enterprise endpoints are org-level resources that need to reference a quota project for billing purposes. By default, we create a dedicated `xxx-net-ngfw-0` quota project. Anyway, you can choose to leverage an existing project. Look in the [Customization](#customizations) section for more details.
+- Firewall endpoint associations in this stage can reference TLS inspection policies created in the [2-security stage](../2-security/README.md). More info in the customization section of this document.
+- While TLS inspection policies are created in the [2-security stage](../2-security/README.md), FAST still allows the service accounts of this stage and the `gcp-network-admins` group to create and manage them anywhere in the organization.
 
 ## How to run this stage
 
@@ -137,6 +139,10 @@ ngfw_enterprise_config = {
 }
 ```
 
+You can optionally enable TLS inspection in stage [2-security](../2-security/README.md).
+Ingesting outputs from [stage 2-security](../2-security/README.md), this stage will configure TLS inspection in NGFW Enterprise and will reference the CAs and the trust-configs you created in [stage 2-security](../2-security/README.md).
+Make sure the CAs and the trusted configs created for NGFW Enterprise in the [2-security stage](../2-security/README.md) match the region where you defined your zonal firewall endpoints.
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -156,12 +162,13 @@ ngfw_enterprise_config = {
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [folder_ids](variables-fast.tf#L30) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [organization](variables-fast.tf#L52) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
-| [prefix](variables-fast.tf#L62) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [vpc_self_links](variables-fast.tf#L72) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
+| [organization](variables-fast.tf#L72) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-globals</code> |
+| [prefix](variables-fast.tf#L82) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [vpc_self_links](variables-fast.tf#L92) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; string&#10;  prod-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>2-networking</code> |
 | [factories_config](variables.tf#L17) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  cidrs &#61; optional&#40;string, &#34;data&#47;cidrs.yaml&#34;&#41;&#10;  firewall_policy_rules &#61; optional&#40;object&#40;&#123;&#10;    dev  &#61; string&#10;    prod &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  firewall_policy_rules &#61; &#123;&#10;    dev  &#61; &#34;data&#47;firewall-policy-rules&#47;dev&#34;&#10;    prod &#61; &#34;data&#47;firewall-policy-rules&#47;prod&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [host_project_ids](variables-fast.tf#L41) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0  &#61; optional&#40;string&#41;&#10;  prod-spoke-0 &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [ngfw_enterprise_config](variables.tf#L35) | NGFW Enterprise configuration. | <code title="object&#40;&#123;&#10;  endpoint_zones   &#61; list&#40;string&#41;&#10;  quota_project_id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  endpoint_zones &#61; &#91;&#10;    &#34;europe-west1-b&#34;,&#10;    &#34;europe-west1-c&#34;,&#10;    &#34;europe-west1-d&#34;&#10;  &#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [ngfw_tls_configs](variables-fast.tf#L52) | The NGFW Enterprise TLS configurations. | <code title="object&#40;&#123;&#10;  tls_enabled &#61; optional&#40;bool, false&#41;&#10;  tls_ip_ids_by_region &#61; optional&#40;object&#40;&#123;&#10;    dev  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tls_enabled &#61; false&#10;  tls_ip_ids_by_region &#61; &#123;&#10;    dev  &#61; &#123;&#125;&#10;    prod &#61; &#123;&#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>2-security</code> |
 
 ## Outputs
 

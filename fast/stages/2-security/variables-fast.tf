@@ -69,6 +69,8 @@ variable "service_accounts" {
   type = object({
     data-platform-dev    = string
     data-platform-prod   = string
+    nsec                 = string
+    nsec-r               = string
     project-factory      = string
     project-factory-dev  = string
     project-factory-prod = string
