@@ -49,6 +49,26 @@ variable "host_project_ids" {
   default  = {}
 }
 
+variable "ngfw_tls_configs" {
+  # tfdoc:variable:source 2-security
+  description = "The NGFW Enterprise TLS configurations."
+  type = object({
+    tls_enabled = optional(bool, false)
+    tls_ip_ids_by_region = optional(object({
+      dev  = optional(map(string), {})
+      prod = optional(map(string), {})
+    }))
+  })
+  nullable = false
+  default = {
+    tls_enabled = false
+    tls_ip_ids_by_region = {
+      dev  = {}
+      prod = {}
+    }
+  }
+}
+
 variable "organization" {
   # tfdoc:variable:source 00-globals
   description = "Organization details."
