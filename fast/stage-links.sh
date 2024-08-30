@@ -109,13 +109,15 @@ case $STAGE_NAME in
     PROVIDER="providers/3-network-security-providers.tf"
     TFVARS="tfvars/0-bootstrap.auto.tfvars.json
     tfvars/1-resman.auto.tfvars.json
-    tfvars/2-networking.auto.tfvars.json"
+    tfvars/2-networking.auto.tfvars.json
+    tfvars/2-security.auto.tfvars.json"
   else
     unset GLOBALS
     PROVIDER="tenants/$TENANT/providers/3-network-security-providers.tf"
     TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
     tenants/$TENANT/tfvars/1-resman.auto.tfvars.json
-    tenants/$TENANT/tfvars/2-networking.auto.tfvars.json"
+    tenants/$TENANT/tfvars/2-networking.auto.tfvars.json
+    tenants/$TENANT/tfvars/2-security.auto.tfvars.json"
   fi
   ;;
 *)

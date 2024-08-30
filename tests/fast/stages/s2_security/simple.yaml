@@ -12,6 +12,439 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  google_storage_bucket_object.tfvars:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: tfvars/2-security.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.dev-sec-kms["europe"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.dev-sec-kms["europe"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.dev-sec-kms["europe"].google_kms_key_ring.default[0]:
+    location: europe
+    name: dev-europe
+    project: fast-dev-sec-core-0
+    timeouts: null
+  module.dev-sec-kms["europe-west1"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.dev-sec-kms["europe-west1"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.dev-sec-kms["europe-west1"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: dev-europe-west1
+    project: fast-dev-sec-core-0
+    timeouts: null
+  module.dev-sec-kms["europe-west3"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.dev-sec-kms["europe-west3"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.dev-sec-kms["europe-west3"].google_kms_key_ring.default[0]:
+    location: europe-west3
+    name: dev-europe-west3
+    project: fast-dev-sec-core-0
+    timeouts: null
+  module.dev-sec-kms["global"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.dev-sec-kms["global"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.dev-sec-kms["global"].google_kms_key_ring.default[0]:
+    location: global
+    name: dev-global
+    project: fast-dev-sec-core-0
+    timeouts: null
+  module.dev-sec-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      environment: dev
+      team: security
+    folder_id: null
+    labels:
+      environment: dev
+      team: security
+    name: fast-dev-sec-core-0
+    org_id: null
+    project_id: fast-dev-sec-core-0
+    terraform_labels:
+      environment: dev
+      team: security
+    timeouts: null
+  module.dev-sec-project.google_project_iam_binding.authoritative["roles/cloudkms.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:foobar@iam.gserviceaccount.com
+    project: fast-dev-sec-core-0
+    role: roles/cloudkms.viewer
+  ? module.dev-sec-project.google_project_iam_member.bindings["kms_restricted_admin.serviceAccount:foobar@iam.gserviceaccount.com"]
+  : condition:
+    - description: Automation service account delegated grants.
+      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/cloudkms.cryptoKeyEncrypterDecrypter'',''roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation''])
+        &&
+
+        resource.type == ''cloudkms.googleapis.com/CryptoKey''
+
+        '
+      title: kms_sa_delegated_grants
+    member: serviceAccount:foobar@iam.gserviceaccount.com
+    project: fast-dev-sec-core-0
+    role: roles/cloudkms.admin
+  module.dev-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/certificatemanager.serviceAgent
+  module.dev-sec-project.google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/cloudkms.serviceAgent
+  module.dev-sec-project.google_project_iam_member.service_agents["networkmanagement"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/networkmanagement.serviceAgent
+  module.dev-sec-project.google_project_service.project_services["certificatemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["networkmanagement.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["networksecurity.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["privateca.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["secretmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["certificatemanager.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["networkmanagement.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["networksecurity.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["privateca.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.dev-sec-project.google_project_service_identity.default["secretmanager.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  module.folder.google_essential_contacts_contact.contact["gcp-security-admins@fast.example.com"]:
+    email: gcp-security-admins@fast.example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    timeouts: null
+  module.folder.google_folder.folder[0]:
+    display_name: Security
+    parent: organizations/123456789012
+    timeouts: null
+  module.prod-sec-kms["europe"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.prod-sec-kms["europe"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.prod-sec-kms["europe"].google_kms_key_ring.default[0]:
+    location: europe
+    name: prod-europe
+    project: fast-prod-sec-core-0
+    timeouts: null
+  module.prod-sec-kms["europe-west1"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.prod-sec-kms["europe-west1"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.prod-sec-kms["europe-west1"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: prod-europe-west1
+    project: fast-prod-sec-core-0
+    timeouts: null
+  module.prod-sec-kms["europe-west3"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.prod-sec-kms["europe-west3"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.prod-sec-kms["europe-west3"].google_kms_key_ring.default[0]:
+    location: europe-west3
+    name: prod-europe-west3
+    project: fast-prod-sec-core-0
+    timeouts: null
+  module.prod-sec-kms["global"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      service: compute
+    labels:
+      service: compute
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      service: compute
+    timeouts: null
+  module.prod-sec-kms["global"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - user:user1@example.com
+    role: roles/cloudkms.admin
+  module.prod-sec-kms["global"].google_kms_key_ring.default[0]:
+    location: global
+    name: prod-global
+    project: fast-prod-sec-core-0
+    timeouts: null
+  module.prod-sec-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      environment: prod
+      team: security
+    folder_id: null
+    labels:
+      environment: prod
+      team: security
+    name: fast-prod-sec-core-0
+    org_id: null
+    project_id: fast-prod-sec-core-0
+    terraform_labels:
+      environment: prod
+      team: security
+    timeouts: null
+  module.prod-sec-project.google_project_iam_binding.authoritative["roles/cloudkms.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:foobar@iam.gserviceaccount.com
+    project: fast-prod-sec-core-0
+    role: roles/cloudkms.viewer
+  ? module.prod-sec-project.google_project_iam_member.bindings["kms_restricted_admin.serviceAccount:foobar@iam.gserviceaccount.com"]
+  : condition:
+    - description: Automation service account delegated grants.
+      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/cloudkms.cryptoKeyEncrypterDecrypter'',''roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation''])
+        &&
+
+        resource.type == ''cloudkms.googleapis.com/CryptoKey''
+
+        '
+      title: kms_sa_delegated_grants
+    member: serviceAccount:foobar@iam.gserviceaccount.com
+    project: fast-prod-sec-core-0
+    role: roles/cloudkms.admin
+  module.prod-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/certificatemanager.serviceAgent
+  module.prod-sec-project.google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/cloudkms.serviceAgent
+  module.prod-sec-project.google_project_iam_member.service_agents["networkmanagement"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/networkmanagement.serviceAgent
+  module.prod-sec-project.google_project_service.project_services["certificatemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["networkmanagement.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["networksecurity.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["privateca.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["secretmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["certificatemanager.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["networkmanagement.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: networkmanagement.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["networksecurity.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["privateca.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.prod-sec-project.google_project_service_identity.default["secretmanager.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+
 counts:
   google_essential_contacts_contact: 1
   google_folder: 1
@@ -20,9 +453,24 @@ counts:
   google_kms_key_ring: 8
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 4
-  google_project_service: 6
-  google_project_service_identity: 4
+  google_project_iam_member: 8
+  google_project_service: 14
+  google_project_service_identity: 12
   google_storage_bucket_object: 1
   modules: 11
-  resources: 45
+  resources: 65
+
+outputs:
+  cas_configs:
+    dev: {}
+    prod: {}
+  kms_keys: __missing__
+  ngfw_tls_configs:
+    tls_enabled: false
+    tls_ip_ids_by_region:
+      dev: {}
+      prod: {}
+  tfvars: __missing__
+  trust_config_ids:
+    dev: {}
+    prod: {}

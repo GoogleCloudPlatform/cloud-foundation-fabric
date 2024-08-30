@@ -1,6 +1,8 @@
 # skip boilerplate check
 ---
-# Following are some NGFW Enterprise ingress rules examples
+# yaml-language-server: $schema=../../../schemas/firewall-policy-rules.schema.json
+
+# Sample NGFW Enterprise ingress rules to uncomment and customize as needed
 
 # ingress-allow-inspect-cross:
 #   description: "Allow and inspect cross-env traffic."
@@ -10,6 +12,7 @@
 #       - dev (to be defined)
 #   action: "apply_security_profile_group"
 #   security_profile_group: "prod"
+#   tls_inspect: true
 
 # ingress-allow-inspect-intra:
 #   description: "Allow and inspect intra-VPC traffic."
@@ -19,3 +22,4 @@
 #       - prod (to be defined)
 #   action: "apply_security_profile_group"
 #   security_profile_group: "prod"
+#   tls_inspect: true

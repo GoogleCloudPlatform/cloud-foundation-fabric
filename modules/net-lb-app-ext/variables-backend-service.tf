@@ -123,8 +123,13 @@ variable "backend_service_configs" {
     security_settings = optional(object({
       client_tls_policy = string
       subject_alt_names = list(string)
-    }))
-  }))
+      aws_v4_authentication = optional(object({
+        access_key_id      = optional(string)
+        access_key         = optional(string)
+        access_key_version = optional(string)
+        origin_region      = optional(string)
+      }))
+  })) }))
   default  = {}
   nullable = false
   validation {

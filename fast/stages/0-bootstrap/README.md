@@ -490,6 +490,8 @@ By default, all logs are exported to a log bucket, but FAST can create sinks to 
 
 If you need to capture additional logs, please refer to GCP's documentation on [scenarios for exporting logging data](https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics), where you can find ready-made filter expressions for different use cases.
 
+When using Pubsub or BigQuery destinations, make sure the read-only stage service account (`prefix-prod-bootstrap-0r@prefix-prod-iac-core-0.iam.gserviceaccount.com`) has the necessary permissions to view destination resources. You can add them manually via the authoritative `iam` or the additive `iam_bindings_additive` variables. Refer to issue [#2540](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2540) for a discussion on this topic, and simple commands to verify proper permissions have been added.
+
 ### Names and naming convention
 
 Configuring the individual tokens for the naming convention described above, has varying degrees of complexity:
