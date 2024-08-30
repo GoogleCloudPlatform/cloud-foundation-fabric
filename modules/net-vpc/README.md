@@ -277,7 +277,7 @@ module "vpc" {
 # tftest modules=1 resources=7 inventory=psa-prefix.yaml e2e
 ```
 
-The module is able to have a mix of PSA service with a prefix and without. It will allocate the ranges to the default or specified service producer, see the following example:
+Each PSA service can set a different prefix. Ranges will be allocated to the service they are defined in, as in the following example:
 
 ```hcl
 module "vpc" {
@@ -302,7 +302,7 @@ module "vpc" {
       range_prefix     = ""
     },
     {
-      ranges           = { 
+      ranges = {
         example  = "10.0.3.0/24",
         example2 = "10.0.4.0/24"
       }
@@ -310,7 +310,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=7 inventory=psa-prefix.yaml e2e
+# tftest modules=1 resources=14 inventory=psa-prefix-services.yaml e2e
 ```
 
 ### Private Service Networking with peering routes and peered Cloud DNS domains
