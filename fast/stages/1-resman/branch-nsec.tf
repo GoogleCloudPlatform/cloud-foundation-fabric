@@ -16,12 +16,24 @@
 
 # tfdoc:file:description Network security stage resources.
 
-# automation service account
+# TODO: remove in v35.0.0
 
 moved {
   from = module.branch-nsec-sa
   to   = module.branch-nsec-sa[0]
 }
+
+moved {
+  from = module.branch-nsec-r-sa
+  to   = module.branch-nsec-r-sa[0]
+}
+
+moved {
+  from = module.branch-nsec-gcs
+  to   = module.branch-nsec-gcs[0]
+}
+
+# automation service account
 
 module "branch-nsec-sa" {
   source                 = "../../../modules/iam-service-account"
@@ -46,11 +58,6 @@ module "branch-nsec-sa" {
 
 # automation read-only service account
 
-moved {
-  from = module.branch-nsec-r-sa
-  to   = module.branch-nsec-r-sa[0]
-}
-
 module "branch-nsec-r-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.nsec ? 1 : 0
@@ -72,11 +79,6 @@ module "branch-nsec-r-sa" {
 }
 
 # automation bucket
-
-moved {
-  from = module.branch-nsec-gcs
-  to   = module.branch-nsec-gcs[0]
-}
 
 module "branch-nsec-gcs" {
   source     = "../../../modules/gcs"

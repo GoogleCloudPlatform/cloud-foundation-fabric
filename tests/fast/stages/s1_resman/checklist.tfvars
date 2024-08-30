@@ -13,13 +13,14 @@ billing_account = {
 }
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
-  gcve_network_admin              = "organizations/123456789012/roles/gcveNetworkAdmin"
-  network_firewall_policies_admin = "organizations/123456789012/roles/networkFirewallPoliciesAdmin"
-  ngfw_enterprise_admin           = "organizations/123456789012/roles/ngfwEnterpriseAdmin"
-  ngfw_enterprise_viewer          = "organizations/123456789012/roles/ngfwEnterpriseViewer"
-  organization_admin_viewer       = "organizations/123456789012/roles/organizationAdminViewer"
-  service_project_network_admin   = "organizations/123456789012/roles/xpnServiceAdmin"
-  storage_viewer                  = "organizations/123456789012/roles/storageViewer"
+  gcve_network_admin               = "organizations/123456789012/roles/gcveNetworkAdmin"
+  network_firewall_policies_admin  = "organizations/123456789012/roles/networkFirewallPoliciesAdmin"
+  network_firewall_policies_viewer = "organizations/123456789012/roles/networkFirewallPoliciesViewer"
+  ngfw_enterprise_admin            = "organizations/123456789012/roles/ngfwEnterpriseAdmin"
+  ngfw_enterprise_viewer           = "organizations/123456789012/roles/ngfwEnterpriseViewer"
+  organization_admin_viewer        = "organizations/123456789012/roles/organizationAdminViewer"
+  service_project_network_admin    = "organizations/123456789012/roles/xpnServiceAdmin"
+  storage_viewer                   = "organizations/123456789012/roles/storageViewer"
 }
 factories_config = {
   checklist_data = "checklist-data.json"
