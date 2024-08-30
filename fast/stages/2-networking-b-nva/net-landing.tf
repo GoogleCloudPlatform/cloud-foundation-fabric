@@ -62,28 +62,30 @@ module "dmz-vpc" {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
   delete_default_routes_on_create = true
-  routes = {
-    default = {
-      dest_range    = "0.0.0.0/0"
-      next_hop      = "default-internet-gateway"
-      next_hop_type = "gateway"
-      priority      = 1000
-    }
-    to-gcve-primary = {
-      dest_range = var.gcp_ranges.gcp_gcve_primary
-      priority   = 1000
-      #tags          = [local.region_shortnames[var.regions.secondary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-gcve-nva-dmz["primary"].forwarding_rule_addresses[""]
-    }
-    to-gcve-secondary = {
-      dest_range = var.gcp_ranges.gcp_gcve_secondary
-      priority   = 1000
-      #tags          = [local.region_shortnames[var.regions.secondary]]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-gcve-nva-dmz["secondary"].forwarding_rule_addresses[""]
-    }
-  }
+  routes = merge(
+    {
+      default = {
+        dest_range    = "0.0.0.0/0"
+        next_hop      = "default-internet-gateway"
+        next_hop_type = "gateway"
+        priority      = 1000
+      }
+    },
+    (var.network_mode == "gcve") ? {
+      to-gcve-primary = {
+        dest_range    = var.gcp_ranges.gcp_gcve_primary
+        priority      = 1000
+        next_hop_type = "ilb"
+        next_hop      = module.ilb-gcve-nva-dmz["primary"].forwarding_rule_addresses[""]
+      }
+      to-gcve-secondary = {
+        dest_range    = var.gcp_ranges.gcp_gcve_secondary
+        priority      = 1000
+        next_hop_type = "ilb"
+        next_hop      = module.ilb-gcve-nva-dmz["secondary"].forwarding_rule_addresses[""]
+      }
+    } : {}
+  )
 }
 
 module "dmz-firewall" {
