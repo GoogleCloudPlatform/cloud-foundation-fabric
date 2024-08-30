@@ -277,6 +277,42 @@ module "vpc" {
 # tftest modules=1 resources=7 inventory=psa-prefix.yaml e2e
 ```
 
+Each PSA service can set a different prefix. Ranges will be allocated to the service they are defined in, as in the following example:
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = var.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
+    }
+  ]
+  psa_configs = [
+    {
+      ranges       = { myrange = "10.0.1.0/24" }
+      range_prefix = ""
+    },
+    {
+      ranges           = { netapp = "10.0.2.0/24" }
+      service_producer = "netapp.servicenetworking.goog"
+      range_prefix     = ""
+    },
+    {
+      ranges = {
+        example  = "10.0.3.0/24",
+        example2 = "10.0.4.0/24"
+      }
+      service_producer = "example.servicenetworking.goog"
+    }
+  ]
+}
+# tftest modules=1 resources=14 inventory=psa-prefix-services.yaml e2e
+```
+
 ### Private Service Networking with peering routes and peered Cloud DNS domains
 
 Custom routes can be optionally exported/imported through the peering formed with the Google managed PSA VPC.
