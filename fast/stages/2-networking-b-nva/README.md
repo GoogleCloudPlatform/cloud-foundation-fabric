@@ -10,11 +10,12 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "dmz" or "untrusted" VPC centralizes the external connectivity towards untrusted network resources, such as Internet (inbound and outbound) or 3P service providers or parties connected through VPN or Interconnect.
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs -both in hub and spokes- split the management of the network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
+- if GCVE network mode is selected two additional regional trusted hub VPCs provide connectivity to GCVE private clouds, ready to be connected to VMware Engine Networks (VEN). 
 - the design facilitates DNS centralization
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
 
-The diagram shows the high-level designs of the two proposed flavors ("Simple NVA" and "NCC-RA") and it should be used as a reference throughout the following sections.
+The diagram shows the high-level designs of the three proposed network options ("Simple NVA", "NCC-RA" and "GCVE") and it should be used as a reference throughout the following sections.
 
 The final number of subnets, and their IP addressing will depend on the user-specific requirements. It can be easily changed via variables or external data files, without any need to edit the code.
 
@@ -27,7 +28,11 @@ The final number of subnets, and their IP addressing will depend on the user-spe
   <img src="diagram-ncc.svg" alt="NCC-RA diagram">
   </br>NCC-RA diagram
 </p>
-
+<hr/>
+<p align="center">
+  <img src="diagram-gcve.svg" alt="GCVE diagram">
+  </br>GCVE diagram
+</p>
 ## Table of contents
 
 <!-- BEGIN TOC -->

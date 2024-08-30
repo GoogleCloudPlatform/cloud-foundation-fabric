@@ -19,7 +19,7 @@
 module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-landing-0"
+  name            = "prod-net-landing-00"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
   services = concat([
@@ -30,8 +30,13 @@ module "landing-project" {
     "stackdriver.googleapis.com",
     ],
     (
-      var.enable_ncc_ra
+      (var.network_mode == "ncc_ra")
       ? ["networkconnectivity.googleapis.com"]
+      : []
+    ),
+    (
+      (var.network_mode == "gcve")
+      ? ["vmwareengine.googleapis.com"]
       : []
     )
   )
@@ -63,6 +68,20 @@ module "dmz-vpc" {
       next_hop      = "default-internet-gateway"
       next_hop_type = "gateway"
       priority      = 1000
+    }
+    to-gcve-primary = {
+      dest_range = var.gcp_ranges.gcp_gcve_primary
+      priority   = 1000
+      #tags          = [local.region_shortnames[var.regions.secondary]]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-gcve-nva-dmz["primary"].forwarding_rule_addresses[""]
+    }
+    to-gcve-secondary = {
+      dest_range = var.gcp_ranges.gcp_gcve_secondary
+      priority   = 1000
+      #tags          = [local.region_shortnames[var.regions.secondary]]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-gcve-nva-dmz["secondary"].forwarding_rule_addresses[""]
     }
   }
 }
