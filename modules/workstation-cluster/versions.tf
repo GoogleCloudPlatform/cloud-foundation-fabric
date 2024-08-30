@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Fabric release: v34.0.0
+
 terraform {
   required_version = ">= 1.7.4"
   required_providers {

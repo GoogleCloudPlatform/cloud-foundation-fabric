@@ -46,21 +46,6 @@ values:
   google_storage_bucket_object.providers["0-bootstrap"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for bootstrap\n"
-    content_disposition: null
     content_encoding: null
     content_language: null
     customer_encryption: []
@@ -75,21 +60,6 @@ values:
   google_storage_bucket_object.providers["0-bootstrap-r"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for bootstrap\n"
-    content_disposition: null
     content_encoding: null
     content_language: null
     customer_encryption: []
@@ -104,21 +74,6 @@ values:
   google_storage_bucket_object.providers["1-resman"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for resman\n"
-    content_disposition: null
     content_encoding: null
     content_language: null
     customer_encryption: []
@@ -133,21 +88,6 @@ values:
   google_storage_bucket_object.providers["1-resman-r"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
-      \ }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for resman\n"
-    content_disposition: null
     content_encoding: null
     content_language: null
     customer_encryption: []
@@ -162,21 +102,6 @@ values:
   google_storage_bucket_object.providers["1-tenant-factory"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
-      \  prefix = \"tenant-factory\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for tenant-factory\n"
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -192,21 +117,6 @@ values:
   google_storage_bucket_object.providers["1-tenant-factory-r"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
-      \   prefix = \"tenant-factory\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for tenant-factory\n"
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -222,21 +132,6 @@ values:
   google_storage_bucket_object.providers["1-vpcsc"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n   \
-      \ prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for vpcsc\n"
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -252,21 +147,6 @@ values:
   google_storage_bucket_object.providers["1-vpcsc-r"]:
     bucket: fast-prod-iac-core-outputs-0
     cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
-      \  prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for vpcsc\n"
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -1646,9 +1526,9 @@ values:
   module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
     condition:
     - description: Automation service account delegated grants.
-      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/accesscontextmanager.policyAdmin'',''roles/cloudasset.viewer'',''roles/compute.orgFirewallPolicyAdmin'',''roles/compute.xpnAdmin'',''roles/orgpolicy.policyAdmin'',''roles/orgpolicy.policyViewer'',''roles/resourcemanager.organizationViewer''])
+      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/accesscontextmanager.policyAdmin'',''roles/cloudasset.viewer'',''roles/compute.orgFirewallPolicyAdmin'',''roles/compute.orgFirewallPolicyUser'',''roles/compute.xpnAdmin'',''roles/orgpolicy.policyAdmin'',''roles/orgpolicy.policyViewer'',''roles/resourcemanager.organizationViewer''])
 
-        || api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''organizations/123456789012/roles/networkFirewallPoliciesAdmin'',''organizations/123456789012/roles/networkFirewallPoliciesViewer'',''organizations/123456789012/roles/ngfwEnterpriseAdmin'',''organizations/123456789012/roles/ngfwEnterpriseViewer'',''organizations/123456789012/roles/serviceProjectNetworkAdmin'',''organizations/123456789012/roles/tenantNetworkAdmin''])
+        || api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''organizations/123456789012/roles/networkFirewallPoliciesAdmin'',''organizations/123456789012/roles/ngfwEnterpriseAdmin'',''organizations/123456789012/roles/ngfwEnterpriseViewer'',''organizations/123456789012/roles/serviceProjectNetworkAdmin'',''organizations/123456789012/roles/tenantNetworkAdmin''])
 
         '
       title: automation_sa_delegated_grants
@@ -1687,15 +1567,6 @@ values:
     role_id: networkFirewallPoliciesAdmin
     stage: GA
     title: Custom role networkFirewallPoliciesAdmin
-  module.organization.google_organization_iam_custom_role.roles["network_firewall_policies_viewer"]:
-    description: Terraform-managed.
-    org_id: '123456789012'
-    permissions:
-    - networksecurity.firewallEndpointAssociations.get
-    - networksecurity.firewallEndpointAssociations.list
-    role_id: networkFirewallPoliciesViewer
-    stage: GA
-    title: Custom role networkFirewallPoliciesViewer
   module.organization.google_organization_iam_custom_role.roles["ngfw_enterprise_admin"]:
     description: Terraform-managed.
     org_id: '123456789012'
@@ -1724,6 +1595,11 @@ values:
     - networksecurity.securityProfiles.list
     - networksecurity.securityProfiles.update
     - networksecurity.securityProfiles.use
+    - networksecurity.tlsInspectionPolicies.create
+    - networksecurity.tlsInspectionPolicies.get
+    - networksecurity.tlsInspectionPolicies.list
+    - networksecurity.tlsInspectionPolicies.update
+    - networksecurity.tlsInspectionPolicies.use
     role_id: ngfwEnterpriseAdmin
     stage: GA
     title: Custom role ngfwEnterpriseAdmin
@@ -1744,6 +1620,9 @@ values:
     - networksecurity.securityProfiles.get
     - networksecurity.securityProfiles.list
     - networksecurity.securityProfiles.use
+    - networksecurity.tlsInspectionPolicies.get
+    - networksecurity.tlsInspectionPolicies.list
+    - networksecurity.tlsInspectionPolicies.use
     role_id: ngfwEnterpriseViewer
     stage: GA
     title: Custom role ngfwEnterpriseViewer
@@ -2066,7 +1945,7 @@ counts:
   google_logging_project_bucket_config: 4
   google_org_policy_policy: 22
   google_organization_iam_binding: 28
-  google_organization_iam_custom_role: 11
+  google_organization_iam_custom_role: 10
   google_organization_iam_member: 42
   google_project: 3
   google_project_iam_audit_config: 1
@@ -2085,4 +1964,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 21
-  resources: 237
+  resources: 236

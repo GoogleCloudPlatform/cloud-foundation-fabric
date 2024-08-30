@@ -1,0 +1,309 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_network_security_firewall_endpoint.firewall_endpoint["europe-west1-b"]:
+    billing_project_id: fast2-net-ngfw-0
+    labels: null
+    location: europe-west1-b
+    name: fast2-ngfw-endpoint-europe-west1-b
+    parent: organizations/123456789012
+    timeouts: null
+  google_network_security_firewall_endpoint.firewall_endpoint["europe-west1-c"]:
+    billing_project_id: fast2-net-ngfw-0
+    labels: null
+    location: europe-west1-c
+    name: fast2-ngfw-endpoint-europe-west1-c
+    parent: organizations/123456789012
+    timeouts: null
+  google_network_security_firewall_endpoint.firewall_endpoint["europe-west1-d"]:
+    billing_project_id: fast2-net-ngfw-0
+    labels: null
+    location: europe-west1-d
+    name: fast2-ngfw-endpoint-europe-west1-d
+    parent: organizations/123456789012
+    timeouts: null
+  google_network_security_firewall_endpoint_association.dev_fw_ep_association["europe-west1-b"]:
+    disabled: false
+    labels: null
+    location: europe-west1-b
+    name: fast2-dev-epa-europe-west1-b
+    network: projects/123456789/networks/vpc-1
+    parent: projects/dev-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/dev-tls-ip-0
+  google_network_security_firewall_endpoint_association.dev_fw_ep_association["europe-west1-c"]:
+    disabled: false
+    labels: null
+    location: europe-west1-c
+    name: fast2-dev-epa-europe-west1-c
+    network: projects/123456789/networks/vpc-1
+    parent: projects/dev-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/dev-tls-ip-0
+  google_network_security_firewall_endpoint_association.dev_fw_ep_association["europe-west1-d"]:
+    disabled: false
+    labels: null
+    location: europe-west1-d
+    name: fast2-dev-epa-europe-west1-d
+    network: projects/123456789/networks/vpc-1
+    parent: projects/dev-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/dev-tls-ip-0
+  google_network_security_firewall_endpoint_association.prod_fw_ep_association["europe-west1-b"]:
+    disabled: false
+    labels: null
+    location: europe-west1-b
+    name: fast2-prod-epa-europe-west1-b
+    network: projects/123456789/networks/vpc-2
+    parent: projects/prod-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/prod-tls-ip-0
+  google_network_security_firewall_endpoint_association.prod_fw_ep_association["europe-west1-c"]:
+    disabled: false
+    labels: null
+    location: europe-west1-c
+    name: fast2-prod-epa-europe-west1-c
+    network: projects/123456789/networks/vpc-2
+    parent: projects/prod-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/prod-tls-ip-0
+  google_network_security_firewall_endpoint_association.prod_fw_ep_association["europe-west1-d"]:
+    disabled: false
+    labels: null
+    location: europe-west1-d
+    name: fast2-prod-epa-europe-west1-d
+    network: projects/123456789/networks/vpc-2
+    parent: projects/prod-project
+    timeouts: null
+    tls_inspection_policy: projects/project1/locations/europe-west1/tlsInspectionPolicies/prod-tls-ip-0
+  google_network_security_security_profile.dev_sec_profile:
+    description: null
+    labels: null
+    location: global
+    name: fast2-dev-sp-0
+    parent: organizations/123456789012
+    threat_prevention_profile: []
+    timeouts: null
+    type: THREAT_PREVENTION
+  google_network_security_security_profile.prod_sec_profile:
+    description: null
+    labels: null
+    location: global
+    name: fast2-prod-sp-0
+    parent: organizations/123456789012
+    threat_prevention_profile: []
+    timeouts: null
+    type: THREAT_PREVENTION
+  google_network_security_security_profile_group.dev_sec_profile_group:
+    description: Dev security profile group.
+    labels: null
+    location: global
+    name: fast2-dev-spg-0
+    parent: organizations/123456789012
+    timeouts: null
+  google_network_security_security_profile_group.prod_sec_profile_group:
+    description: prod security profile group.
+    labels: null
+    location: global
+    name: fast2-prod-spg-0
+    parent: organizations/123456789012
+    timeouts: null
+  module.dev-spoke-firewall-policy.google_compute_network_firewall_policy.net-global[0]:
+    description: null
+    name: fast2-dev-fw-policy
+    project: dev-project
+    timeouts: null
+  module.dev-spoke-firewall-policy.google_compute_network_firewall_policy_association.net-global["dev-spoke"]:
+    attachment_target: https://www.googleapis.com/compute/v1/projects/123456789/networks/vpc-1
+    firewall_policy: fast2-dev-fw-policy
+    name: fast2-dev-fw-policy-dev-spoke
+    project: dev-project
+    timeouts: null
+  module.dev-spoke-firewall-policy.google_compute_network_firewall_policy_rule.net-global["egress/egress-allow-rfc1918"]:
+    action: allow
+    description: Allow all hosts to RFC-1918
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: fast2-dev-fw-policy
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 2147483546
+    project: dev-project
+    rule_name: egress-allow-rfc1918
+    security_profile_group: null
+    target_secure_tags: []
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+  module.dev-spoke-firewall-policy.google_compute_network_firewall_policy_rule.net-global["egress/egress-inspect-internet"]:
+    action: apply_security_profile_group
+    description: Inspect egress traffic from all dev hosts to Internet
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: fast2-dev-fw-policy
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 0.0.0.0/0
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 2147483547
+    project: dev-project
+    rule_name: egress-inspect-internet
+    target_secure_tags: []
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+  module.ngfw-quota-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    folder_id: '12345678900'
+    labels: null
+    name: fast2-net-ngfw-0
+    org_id: null
+    project_id: fast2-net-ngfw-0
+    timeouts: null
+  module.ngfw-quota-project.google_project_service.project_services["networksecurity.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast2-net-ngfw-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.ngfw-quota-project.google_project_service_identity.default["networksecurity.googleapis.com"]:
+    project: fast2-net-ngfw-0
+    service: networksecurity.googleapis.com
+    timeouts: null
+  module.prod-spoke-firewall-policy.google_compute_network_firewall_policy.net-global[0]:
+    description: null
+    name: fast2-prod-fw-policy
+    project: prod-project
+    timeouts: null
+  module.prod-spoke-firewall-policy.google_compute_network_firewall_policy_association.net-global["prod-spoke"]:
+    attachment_target: https://www.googleapis.com/compute/v1/projects/123456789/networks/vpc-2
+    firewall_policy: fast2-prod-fw-policy
+    name: fast2-prod-fw-policy-prod-spoke
+    project: prod-project
+    timeouts: null
+  module.prod-spoke-firewall-policy.google_compute_network_firewall_policy_rule.net-global["egress/egress-allow-rfc1918"]:
+    action: allow
+    description: Allow all hosts to RFC-1918
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: fast2-prod-fw-policy
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 2147483546
+    project: prod-project
+    rule_name: egress-allow-rfc1918
+    security_profile_group: null
+    target_secure_tags: []
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+  module.prod-spoke-firewall-policy.google_compute_network_firewall_policy_rule.net-global["egress/egress-inspect-internet"]:
+    action: apply_security_profile_group
+    description: Inspect egress traffic from all prod hosts to Internet
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: fast2-prod-fw-policy
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 0.0.0.0/0
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 2147483547
+    project: prod-project
+    rule_name: egress-inspect-internet
+    target_secure_tags: []
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+
+counts:
+  google_compute_network_firewall_policy: 2
+  google_compute_network_firewall_policy_association: 2
+  google_compute_network_firewall_policy_rule: 4
+  google_network_security_firewall_endpoint: 3
+  google_network_security_firewall_endpoint_association: 6
+  google_network_security_security_profile: 2
+  google_network_security_security_profile_group: 2
+  google_project: 1
+  google_project_service: 1
+  google_project_service_identity: 1
+  modules: 3
+  resources: 24
+
+outputs:
+  ngfw_enterprise_endpoint_ids: __missing__
+  ngfw_enterprise_endpoints_quota_project: fast2-net-ngfw-0
+

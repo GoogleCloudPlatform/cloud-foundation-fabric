@@ -29,3 +29,6 @@ includedPermissions:
   - networksecurity.securityProfiles.get
   - networksecurity.securityProfiles.list
   - networksecurity.securityProfiles.use
+  - networksecurity.tlsInspectionPolicies.get
+  - networksecurity.tlsInspectionPolicies.list
+  - networksecurity.tlsInspectionPolicies.use

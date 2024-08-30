@@ -41,7 +41,7 @@ locals {
       (var.custom_roles["network_firewall_policies_admin"]) = [
         try(module.branch-nsec-sa[0].iam_email, null)
       ]
-      (var.custom_roles["network_firewall_policies_viewer"]) = [
+      "roles/compute.orgFirewallPolicyUser" = [
         try(module.branch-nsec-r-sa[0].iam_email, null)
       ]
     }
