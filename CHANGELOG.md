@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+<!-- None < 2024-08-30 08:18:13+00:00 -->
 
 ## [34.0.0] - 2024-08-30
-
-<!-- None < 2024-08-01 11:45:37+00:00 -->
+<!-- 2024-08-30 08:18:13+00:00 < 2024-08-01 11:45:37+00:00 -->
 
 ### BLUEPRINTS
 
@@ -2447,7 +2447,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...HEAD
-[34.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.0.0...v34.0.0
+[34.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...v34.0.0
 [33.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.1...v33.0.0
 [32.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v32.0.1
 [32.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...v32.0.0
