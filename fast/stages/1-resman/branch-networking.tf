@@ -41,7 +41,7 @@ locals {
       (var.custom_roles["network_firewall_policies_admin"]) = [
         try(module.branch-nsec-sa[0].iam_email, null)
       ]
-      (var.custom_roles["network_firewall_policies_viewer"]) = [
+      "roles/compute.orgFirewallPolicyUser" = [
         try(module.branch-nsec-r-sa[0].iam_email, null)
       ]
     }
@@ -187,13 +187,12 @@ module "branch-network-r-sa" {
 # automation bucket
 
 module "branch-network-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "prod-resman-net-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "prod-resman-net-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-network-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-network-r-sa.iam_email]

@@ -38,6 +38,12 @@ resource "google_network_security_firewall_endpoint_association" "dev_fw_ep_asso
   location          = each.value
   firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
   network           = try(local.vpc_ids.dev-spoke-0, null)
+  # If TLS inspection is enabled, link the regional TLS inspection policy
+  tls_inspection_policy = (
+    var.ngfw_tls_configs.tls_enabled
+    ? try(var.ngfw_tls_configs.tls_ip_ids_by_region.dev[substr(each.value, 0, length(each.value) - 2)], null)
+    : null
+  )
 }
 
 module "dev-spoke-firewall-policy" {

@@ -28,9 +28,10 @@ locals {
   _factory_subnets = {
     for k, v in local._factory_data :
     "${v.region_computed}/${try(v.name, k)}" => {
-      active                = try(v.active, true)
-      description           = try(v.description, null)
-      enable_private_access = try(v.enable_private_access, true)
+      active                           = try(v.active, true)
+      description                      = try(v.description, null)
+      enable_private_access            = try(v.enable_private_access, true)
+      allow_subnet_cidr_routes_overlap = try(v.allow_subnet_cidr_routes_overlap, null)
       flow_logs_config = can(v.flow_logs_config) ? {
         aggregation_interval = try(v.flow_logs_config.aggregation_interval, null)
         filter_expression    = try(v.flow_logs_config.filter_expression, null)
@@ -138,12 +139,14 @@ locals {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each      = local.subnets
-  project       = var.project_id
-  network       = local.network.name
-  name          = each.value.name
-  region        = each.value.region
-  ip_cidr_range = each.value.ip_cidr_range
+  provider                         = google-beta
+  for_each                         = local.subnets
+  project                          = var.project_id
+  network                          = local.network.name
+  name                             = each.value.name
+  region                           = each.value.region
+  ip_cidr_range                    = each.value.ip_cidr_range
+  allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   description = (
     each.value.description == null
     ? "Terraform-managed."
@@ -156,24 +159,14 @@ resource "google_compute_subnetwork" "subnetwork" {
   ipv6_access_type = (
     try(each.value.ipv6, null) != null ? each.value.ipv6.access_type : null
   )
-  # private_ipv6_google_access = try(each.value.ipv6.enable_private_access, null)
+  private_ipv6_google_access       = try(each.value.ipv6.enable_private_access, null)
+  send_secondary_ip_range_if_empty = true
+
   dynamic "secondary_ip_range" {
     for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
     content {
       range_name    = secondary_ip_range.key
       ip_cidr_range = secondary_ip_range.value
-      # TODO(sruffilli): Provider 5.29.1 disabled reserved_internal_range because of a bug.
-      #                  Revert to the following once fixed.
-      # ip_cidr_range = (
-      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
-      #   ? null
-      #   : secondary_ip_range.value
-      # )    
-      # reserved_internal_range = (
-      #   startswith(secondary_ip_range.value, "networkconnectivity.googleapis.com")
-      #   ? secondary_ip_range.value
-      #   : null
-      # )
     }
   }
   dynamic "log_config" {

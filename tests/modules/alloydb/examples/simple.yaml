@@ -52,7 +52,6 @@ values:
     network_config:
     - authorized_external_networks: []
       enable_public_ip: false
-    psc_instance_config: []
     query_insights_config:
     - query_plans_per_minute: 5
       query_string_length: 1024
@@ -63,7 +62,7 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: 'DELETE'
+    deletion_policy: DELETE
     folder_id: '1122334455'
     labels: null
     name: test-alloydb
@@ -103,6 +102,7 @@ values:
     address_type: INTERNAL
     description: null
     ip_version: null
+    labels: null
     name: servicenetworking-googleapis-com-alloydb
     prefix_length: 16
     project: test-alloydb
@@ -161,6 +161,7 @@ values:
     purpose: PRIVATE_SERVICE_CONNECT
     region: europe-west8
     role: null
+    send_secondary_ip_range_if_empty: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
     deletion_policy: null
@@ -168,6 +169,7 @@ values:
     - servicenetworking-googleapis-com-alloydb
     service: servicenetworking.googleapis.com
     timeouts: null
+    update_on_creation_fail: null
 
 counts:
   google_alloydb_cluster: 1

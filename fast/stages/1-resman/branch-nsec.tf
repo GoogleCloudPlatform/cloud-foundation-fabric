@@ -16,12 +16,24 @@
 
 # tfdoc:file:description Network security stage resources.
 
-# automation service account
+# TODO: remove in v35.0.0
 
 moved {
   from = module.branch-nsec-sa
   to   = module.branch-nsec-sa[0]
 }
+
+moved {
+  from = module.branch-nsec-r-sa
+  to   = module.branch-nsec-r-sa[0]
+}
+
+moved {
+  from = module.branch-nsec-gcs
+  to   = module.branch-nsec-gcs[0]
+}
+
+# automation service account
 
 module "branch-nsec-sa" {
   source                 = "../../../modules/iam-service-account"
@@ -46,11 +58,6 @@ module "branch-nsec-sa" {
 
 # automation read-only service account
 
-moved {
-  from = module.branch-nsec-r-sa
-  to   = module.branch-nsec-r-sa[0]
-}
-
 module "branch-nsec-r-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.nsec ? 1 : 0
@@ -73,20 +80,14 @@ module "branch-nsec-r-sa" {
 
 # automation bucket
 
-moved {
-  from = module.branch-nsec-gcs
-  to   = module.branch-nsec-gcs[0]
-}
-
 module "branch-nsec-gcs" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_features.nsec ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "prod-resman-nsec-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_features.nsec ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "prod-resman-nsec-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-nsec-sa[0].iam_email]
     "roles/storage.objectViewer" = [module.branch-nsec-r-sa[0].iam_email]

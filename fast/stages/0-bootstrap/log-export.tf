@@ -75,13 +75,12 @@ module "log-export-dataset" {
 }
 
 module "log-export-gcs" {
-  source        = "../../../modules/gcs"
-  count         = contains(local.log_types, "storage") ? 1 : 0
-  project_id    = module.log-export-project.project_id
-  name          = "logs"
-  prefix        = local.prefix
-  location      = local.locations.gcs
-  storage_class = local.gcs_storage_class
+  source     = "../../../modules/gcs"
+  count      = contains(local.log_types, "storage") ? 1 : 0
+  project_id = module.log-export-project.project_id
+  name       = "logs"
+  prefix     = local.prefix
+  location   = local.locations.gcs
 }
 
 module "log-export-logbucket" {

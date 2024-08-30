@@ -48,7 +48,7 @@ locals {
         member = module.branch-nsec-sa[0].iam_email
         role   = local.custom_roles["ngfw_enterprise_admin"],
       }
-      sa_net_nsec_r_fw_policy_admin = {
+      sa_net_nsec_r_fw_policy_user = {
         member = module.branch-nsec-sa[0].iam_email
         role   = "roles/compute.orgFirewallPolicyUser"
       }

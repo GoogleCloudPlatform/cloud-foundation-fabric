@@ -29,6 +29,7 @@ variable "backend_service_configs" {
     protocol                        = optional(string)
     session_affinity                = optional(string)
     timeout_sec                     = optional(number)
+    security_policy                 = optional(string)
     backends = list(object({
       group           = string
       balancing_mode  = optional(string, "UTILIZATION")

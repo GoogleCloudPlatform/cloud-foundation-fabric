@@ -84,11 +84,10 @@ module "log-export-gcs" {
   count = (
     var.root_node != null && contains(local.log_types, "storage") ? 1 : 0
   )
-  project_id    = var.logging.project_id
-  name          = "logs"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
+  project_id = var.logging.project_id
+  name       = "logs"
+  prefix     = var.prefix
+  location   = var.locations.gcs
 }
 
 module "log-export-logbucket" {
