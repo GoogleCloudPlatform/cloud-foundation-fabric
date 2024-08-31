@@ -62,6 +62,21 @@ module "net-folder" {
       "roles/viewer"                         = [module.net-sa-ro[0].iam_email]
       "roles/resourcemanager.folderViewer"   = [module.net-sa-ro[0].iam_email]
     },
+    # network security stage 2 service accounts
+    var.fast_stage_2.network_security.enabled != true ? {} : {
+      "roles/serviceusage.serviceUsageAdmin" = [
+        try(module.nsec-sa-rw[0].iam_email, null)
+      ]
+      (var.custom_roles["network_firewall_policies_admin"]) = [
+        try(module.nsec-sa-rw[0].iam_email, null)
+      ]
+      "roles/compute.orgFirewallPolicyUser" = [
+        try(module.nsec-sa-ro[0].iam_email, null)
+      ]
+      "roles/serviceusage.serviceUsageConsumer" = [
+        try(module.nsec-sa-ro[0].iam_email, null)
+      ]
+    },
     # security stage 2 service accounts
     var.fast_stage_2.security.enabled != true ? {} : {
       "roles/serviceusage.serviceUsageAdmin" = [
