@@ -194,17 +194,14 @@ module "cloud_run" {
   project_id     = var.project_id
   region         = var.region
   name           = "hello"
-  encryption_key = var.kms_key.id
+  encryption_key = module.kms_global.keys.key-global.id
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  depends_on = [
-    google_kms_crypto_key_iam_binding.encrypt_decrypt,
-  ]
 }
-# tftest modules=1 resources=2 fixtures=fixtures/cloud-run-kms-iam-grant.tf e2e
+# tftest modules=4 resources=10 fixtures=fixtures/kms-global-regional-keys.tf e2e
 ```
 
 ## Eventarc triggers
@@ -474,8 +471,8 @@ module "cloud_run" {
 
 ## Fixtures
 
-- [cloud-run-kms-iam-grant.tf](../../tests/fixtures/cloud-run-kms-iam-grant.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)
 - [shared-vpc.tf](../../tests/fixtures/shared-vpc.tf)

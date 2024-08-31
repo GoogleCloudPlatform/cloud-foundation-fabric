@@ -40,6 +40,7 @@ In both modes, an optional service account can be created and assigned to either
   - [Sole Tenancy](#sole-tenancy)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ### Instance using defaults
@@ -553,10 +554,10 @@ module "kms-vm-example" {
   }
   encryption = {
     encrypt_boot      = true
-    kms_key_self_link = var.kms_key.id
+    kms_key_self_link = module.kms_global.keys.key-global.id
   }
 }
-# tftest modules=1 resources=3 inventory=cmek.yaml
+# tftest modules=1 resources=3 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml
 ```
 
 ### Instance template
@@ -854,4 +855,8 @@ module "sole-tenancy" {
 | [service_account_iam_email](outputs.tf#L73) | Service account email. |  |
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
+
+## Fixtures
+
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->

@@ -20,13 +20,13 @@ values:
     continuous_backup_config:
       - enabled: true
         encryption_config:
-          - kms_key_name: kms_key_self_link
+          - kms_key_name: null
         recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
     display_name: primary
     encryption_config:
-      - kms_key_name: kms_key_self_link
+      - kms_key_name: null
     etag: null
     initial_user: []
     labels: null

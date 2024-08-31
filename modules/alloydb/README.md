@@ -159,14 +159,11 @@ module "alloydb" {
     }
   }
   encryption_config = {
-    primary_kms_key_name = var.kms_key.id
+    primary_kms_key_name = module.kms_global.keys.key-global.id
   }
-  depends_on = [
-    google_kms_crypto_key_iam_member.alloydb_encrypt_decrypt
-  ]
 }
 
-# tftest modules=1 resources=3 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e
+# tftest modules=1 resources=3 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml e2e
 ```
 
 ## Tag bindings
@@ -263,5 +260,5 @@ module "alloydb" {
 
 ## Fixtures
 
-- [alloydb-kms-iam-grant.tf](../../tests/fixtures/alloydb-kms-iam-grant.tf)
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->

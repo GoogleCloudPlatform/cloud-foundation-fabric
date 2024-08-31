@@ -32,6 +32,7 @@ This module implements the creation and management of one GCP project including 
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Basic Project Creation
@@ -737,11 +738,11 @@ module "project" {
     "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
-    "compute.googleapis.com" = [var.kms_key.id]
-    "storage.googleapis.com" = [var.kms_key.id]
+    "compute.googleapis.com" = [module.kms_global.keys.key-global.id]
+    "storage.googleapis.com" = [module.kms_global.keys.key-global.id]
   }
 }
-# tftest modules=1 resources=7 e2e
+# tftest modules=1 resources=7 fixtures=fixtures/kms-global-regional-keys.tf  e2e
 ```
 
 ## Tags
@@ -1274,8 +1275,8 @@ module "project" {
     "storage.googleapis.com",
   ]
   service_encryption_key_ids = {
-    "compute.googleapis.com" = [var.kms_key.id]
-    "storage.googleapis.com" = [var.kms_key.id]
+    "compute.googleapis.com" = [module.kms_global.keys.key-global.id]
+    "storage.googleapis.com" = [module.kms_global.keys.key-global.id]
   }
 }
 
@@ -1318,7 +1319,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "${var.prefix}-bucket"
 }
-# tftest modules=7 resources=61 inventory=data.yaml e2e
+# tftest modules=7 resources=61 fixtures=fixtures/kms-global-regional-keys.tf inventory=data.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -1405,4 +1406,8 @@ module "bucket" {
 | [sink_writer_identities](outputs.tf#L158) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L165) | Tag key resources. |  |
 | [tag_values](outputs.tf#L174) | Tag value resources. |  |
+
+## Fixtures
+
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->

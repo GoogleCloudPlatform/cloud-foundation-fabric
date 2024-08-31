@@ -157,7 +157,7 @@ module "db" {
 module "db" {
   source              = "./fabric/modules/cloudsql-instance"
   project_id          = var.project_id
-  encryption_key_name = var.kms_key.id
+  encryption_key_name = module.kms_global.keys.key-global.id
   network_config = {
     connectivity = {
       psa_config = {
@@ -171,12 +171,9 @@ module "db" {
   tier                          = "db-g1-small"
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
-  depends_on = [
-    google_kms_crypto_key_iam_binding.encrypt_decrypt
-  ]
 }
 
-# tftest modules=1 resources=2 fixtures=fixtures/cloudsql-kms-iam-grant.tf e2e
+# tftest modules=1 resources=2 fixtures=fixtures/kms-global-regional-keys.tf  e2e
 ```
 
 ### Instance with PSC enabled
@@ -371,5 +368,5 @@ module "db" {
 
 ## Fixtures
 
-- [cloudsql-kms-iam-grant.tf](../../tests/fixtures/cloudsql-kms-iam-grant.tf)
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->

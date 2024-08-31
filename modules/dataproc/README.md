@@ -130,14 +130,11 @@ module "processing-dp-cluster" {
       }
     }
     encryption_config = {
-      kms_key_name = var.kms_key.id
+      kms_key_name = module.kms_global.keys.key-global.id
     }
   }
-  depends_on = [
-    module.dataproc-service-account, # ensure all grants are done before creating the cluster
-  ]
 }
-# tftest modules=3 resources=8 e2e
+# tftest modules=3 resources=8 fixtures=fixtures/kms-global-regional-keys.tf  e2e
 ```
 
 ### Cluster configuration on GKE
@@ -277,4 +274,5 @@ module "processing-dp-cluster" {
 ## Fixtures
 
 - [gke-cluster-standard.tf](../../tests/fixtures/gke-cluster-standard.tf)
+- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
 <!-- END TFDOC -->

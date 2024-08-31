@@ -90,7 +90,7 @@ module "secret-manager" {
   secrets = {
     test-auto = {
       keys = {
-        global = module.kms_global.keys.key-gl.id
+        global = module.kms_global.keys.key-global.id
       }
     }
     test-auto-nokeys = {}
