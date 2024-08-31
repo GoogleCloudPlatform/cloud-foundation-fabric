@@ -742,7 +742,7 @@ module "project" {
     "storage.googleapis.com" = [module.kms_global.keys.key-global.id]
   }
 }
-# tftest modules=1 resources=7 fixtures=fixtures/kms-global-regional-keys.tf  e2e
+# tftest modules=4 resources=16 fixtures=fixtures/kms-global-regional-keys.tf  e2e
 ```
 
 ## Tags
@@ -1319,7 +1319,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "${var.prefix}-bucket"
 }
-# tftest modules=7 resources=61 fixtures=fixtures/kms-global-regional-keys.tf inventory=data.yaml e2e
+# tftest modules=10 resources=70 fixtures=fixtures/kms-global-regional-keys.tf inventory=data.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->

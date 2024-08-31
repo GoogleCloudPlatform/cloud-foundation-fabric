@@ -25,7 +25,7 @@ values:
   module.create-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: 'DELETE'
+    deletion_policy: DELETE
     folder_id: '1122334455'
     labels: null
     name: test-project
@@ -45,6 +45,7 @@ values:
     location: EU
     max_time_travel_hours: '168'
     project: project-id
+    resource_tags: null
     timeouts: null
   module.gcs.google_storage_bucket.bucket:
     autoclass: []
@@ -71,13 +72,73 @@ values:
   module.host-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: 'DELETE'
+    deletion_policy: DELETE
     folder_id: '1122334455'
     labels: null
     name: test-host
     org_id: null
     project_id: test-host
     timeouts: null
+  module.kms_global.google_kms_crypto_key.default["key-global"]:
+    labels: null
+    name: key-global
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    timeouts: null
+  module.kms_global.google_kms_key_ring.default[0]:
+    location: global
+    name: keyring-gl
+    project: project-id
+    timeouts: null
+  module.kms_global.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
+    condition: []
+    members:
+    - serviceAccount:service-123@gcp-sa-alloydb.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-cloud-sql.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-secretmanager.iam.gserviceaccount.com
+    - serviceAccount:service-123@serverless-robot-prod.iam.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms_regional_primary.google_kms_crypto_key.default["key-a"]:
+    labels: null
+    name: key-a
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    timeouts: null
+  module.kms_regional_primary.google_kms_key_ring.default[0]:
+    location: europe-west8
+    name: keyring-primary
+    project: project-id
+    timeouts: null
+  module.kms_regional_primary.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
+    condition: []
+    members:
+    - serviceAccount:service-123@gcp-sa-alloydb.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-cloud-sql.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-secretmanager.iam.gserviceaccount.com
+    - serviceAccount:service-123@serverless-robot-prod.iam.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms_regional_secondary.google_kms_crypto_key.default["key-b"]:
+    labels: null
+    name: key-b
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    timeouts: null
+  module.kms_regional_secondary.google_kms_key_ring.default[0]:
+    location: europe-west9
+    name: keyring-secondary
+    project: project-id
+    timeouts: null
+  module.kms_regional_secondary.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
+    condition: []
+    members:
+    - serviceAccount:service-123@gcp-sa-alloydb.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-cloud-sql.iam.gserviceaccount.com
+    - serviceAccount:service-123@gcp-sa-secretmanager.iam.gserviceaccount.com
+    - serviceAccount:service-123@serverless-robot-prod.iam.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project
   module.project.data.google_project.project[0]:
@@ -93,13 +154,11 @@ values:
     host_project: test-host
     service_project: test-project
     timeouts: null
-  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.compute-system"]:
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
-    crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["kms_key_self_link.gs-project-accounts"]:
+  module.project.google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]:
     condition: []
-    crypto_key_id: kms_key_self_link
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.google_logging_project_exclusion.logging-exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
@@ -457,7 +516,10 @@ counts:
   google_bigquery_default_service_account: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
+  google_kms_crypto_key: 3
   google_kms_crypto_key_iam_member: 2
+  google_kms_key_ring: 3
+  google_kms_key_ring_iam_binding: 3
   google_logging_project_bucket_config: 1
   google_logging_project_exclusion: 1
   google_logging_project_sink: 4
@@ -473,7 +535,7 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
-  modules: 7
-  resources: 61
+  modules: 10
+  resources: 70
 
 outputs: {}

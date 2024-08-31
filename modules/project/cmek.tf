@@ -54,8 +54,9 @@ locals {
       # use the deps listed above, if the service does not appear
       # there, use all the service agents belonging to the service
       for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name]) : {
-        for key in keys :
-        "${key}.${local._aliased_service_agents[dep].name}" => {
+        # use index in map key, to allow specyfing keys, that will be created in the same apply
+        for index, key in keys :
+        "key-${index}.${local._aliased_service_agents[dep].name}" => {
           key   = key
           agent = local._aliased_service_agents[dep].iam_email
         }
