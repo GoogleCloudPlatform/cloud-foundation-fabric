@@ -30,7 +30,7 @@ locals {
       }
     },
     # stage 2 network security
-    !var.fast_stage_2.networksecurity.enabled ? {} : {
+    !var.fast_stage_2.network_security.enabled ? {} : {
       sa_nsec_fw_policy_admin = {
         member = module.nsec-sa-rw[0].iam_email
         role   = "roles/compute.orgFirewallPolicyAdmin"
