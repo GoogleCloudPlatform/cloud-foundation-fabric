@@ -557,7 +557,7 @@ module "kms-vm-example" {
     kms_key_self_link = module.kms_global.keys.key-global.id
   }
 }
-# tftest modules=1 resources=3 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml
+# tftest modules=4 resources=12 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml
 ```
 
 ### Instance template

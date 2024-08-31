@@ -134,7 +134,7 @@ module "processing-dp-cluster" {
     }
   }
 }
-# tftest modules=3 resources=8 fixtures=fixtures/kms-global-regional-keys.tf  e2e
+# tftest modules=6 resources=17 fixtures=fixtures/kms-global-regional-keys.tf  e2e
 ```
 
 ### Cluster configuration on GKE

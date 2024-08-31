@@ -15,8 +15,7 @@
 values:
   module.kms-vm-example.google_compute_disk.disks["attached-disk"]:
     disk_encryption_key:
-    - kms_key_self_link: null
-      kms_key_service_account: null
+    - kms_key_service_account: null
       raw_key: null
       rsa_encrypted_key: null
     labels:
@@ -41,7 +40,6 @@ values:
         resource_manager_tags:
         size: 10
         type: pd-balanced
-      kms_key_self_link: null
       mode: READ_WRITE
     name: kms-test
     zone: europe-west1-b

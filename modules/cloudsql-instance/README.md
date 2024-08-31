@@ -173,7 +173,7 @@ module "db" {
   terraform_deletion_protection = false
 }
 
-# tftest modules=1 resources=2 fixtures=fixtures/kms-global-regional-keys.tf  e2e
+# tftest modules=4 resources=10 fixtures=fixtures/kms-global-regional-keys.tf e2e
 ```
 
 ### Instance with PSC enabled

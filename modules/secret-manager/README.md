@@ -103,7 +103,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=4 resources=11 fixtures=fixtures/kms-global-regional-keys.tf inventory=secret-cmek.yaml e2e
+# tftest modules=4 resources=12 fixtures=fixtures/kms-global-regional-keys.tf inventory=secret-cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

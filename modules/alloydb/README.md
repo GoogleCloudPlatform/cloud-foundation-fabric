@@ -163,7 +163,7 @@ module "alloydb" {
   }
 }
 
-# tftest modules=1 resources=3 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml e2e
+# tftest modules=4 resources=11 fixtures=fixtures/kms-global-regional-keys.tf inventory=cmek.yaml e2e
 ```
 
 ## Tag bindings
