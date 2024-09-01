@@ -40,6 +40,7 @@ module "folder" {
       role   = "roles/storage.admin"
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=5 inventory=iam.yaml e2e
 ```
@@ -83,6 +84,7 @@ module "folder" {
       role   = "roles/storage.admin"
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=3 inventory=assured-workload.yaml
 ```
@@ -140,6 +142,7 @@ module "folder" {
       rules = [{ deny = { all = true } }]
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=8 inventory=org-policies.yaml e2e
 ```
@@ -160,6 +163,7 @@ module "folder" {
   factories_config = {
     org_policies = "configs/org-policies/"
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
 ```
@@ -231,6 +235,7 @@ module "folder" {
     name   = "test-1"
     policy = module.firewall-policy.id
   }
+  deletion_protection = false
 }
 # tftest modules=2 resources=3 e2e serial
 ```
@@ -314,6 +319,7 @@ module "folder-sink" {
   logging_exclusions = {
     no-gce-instances = "resource.type=gce_instance"
   }
+  deletion_protection = false
 }
 # tftest modules=6 resources=18 inventory=logging.yaml e2e
 ```
@@ -339,6 +345,7 @@ module "folder" {
       DATA_WRITE = []
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
@@ -369,6 +376,7 @@ module "folder" {
   tag_bindings = {
     env-prod = module.org.tag_values["environment/prod"].id
   }
+  deletion_protection = false
 }
 # tftest modules=2 resources=5 inventory=tags.yaml e2e serial
 ```
