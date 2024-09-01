@@ -332,7 +332,7 @@ module "cloud_run" {
     }
   }
   service_account_create = true
-  deletion_protection = false
+  deletion_protection    = false
 }
 # tftest modules=1 resources=2 inventory=service-sa-create.yaml e2e
 ```
@@ -350,7 +350,7 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  service_account = module.iam-service-account.email
+  service_account     = module.iam-service-account.email
   deletion_protection = false
 }
 # tftest modules=2 resources=2 fixtures=fixtures/iam-service-account.tf inventory=service-external-sa.yaml e2e
