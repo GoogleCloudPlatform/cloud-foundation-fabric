@@ -20,7 +20,7 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
-    deletion_protection: true
+    deletion_protection: false
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'

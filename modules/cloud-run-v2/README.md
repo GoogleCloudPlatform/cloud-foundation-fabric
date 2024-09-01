@@ -48,6 +48,7 @@ module "cloud_run" {
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
+  deletion_protection = false
 }
 # tftest modules=2 resources=5 fixtures=fixtures/secret-credentials.tf inventory=service-iam-env.yaml e2e
 ```
@@ -77,6 +78,7 @@ module "cloud_run" {
       }
     }
   }
+  deletion_protection = false
 }
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
@@ -131,6 +133,7 @@ module "cloud_run" {
       egress    = "ALL_TRAFFIC"
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=2 fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml e2e
 ```
@@ -156,6 +159,7 @@ module "cloud_run" {
       min = 3
     }
   }
+  deletion_protection = false
 }
 # tftest modules=1 resources=2 inventory=service-vpc-access-connector-create.yaml e2e
 ```
@@ -179,7 +183,12 @@ module "cloud_run" {
       name       = module.net-vpc-host.subnets["${var.region}/fixture-subnet-28"].name
       project_id = module.project-host.project_id
     }
+    throughput = {
+      max = 200
+      min = 300
+    }
   }
+  deletion_protection = false
 }
 # tftest modules=4 resources=55 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
@@ -287,7 +296,6 @@ module "cloud_run" {
     }
     service_account_email = "cloud-run-trigger@my-project.iam.gserviceaccount.com"
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=2 inventory=service-eventarc-auditlogs-external-sa.yaml
 ```
