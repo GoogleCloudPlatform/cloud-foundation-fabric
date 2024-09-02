@@ -184,8 +184,8 @@ module "cloud_run" {
       project_id = module.project-host.project_id
     }
     throughput = {
-      max = 200
-      min = 300
+      max = 300
+      min = 200
     }
   }
   deletion_protection = false
