@@ -77,7 +77,7 @@ variable "contacts" {
 variable "deletion_protection" {
   description = "Deletion protection setting for this folder."
   type        = bool
-  default     = null
+  default     = false
 }
 
 variable "factories_config" {
@@ -158,4 +158,3 @@ variable "tag_bindings" {
   type        = map(string)
   default     = null
 }
-

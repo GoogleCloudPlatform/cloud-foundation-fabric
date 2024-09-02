@@ -40,7 +40,6 @@ module "folder" {
       role   = "roles/storage.admin"
     }
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=5 inventory=iam.yaml e2e
 ```
@@ -84,7 +83,6 @@ module "folder" {
       role   = "roles/storage.admin"
     }
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=3 inventory=assured-workload.yaml
 ```
@@ -142,7 +140,6 @@ module "folder" {
       rules = [{ deny = { all = true } }]
     }
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=8 inventory=org-policies.yaml e2e
 ```
@@ -163,7 +160,6 @@ module "folder" {
   factories_config = {
     org_policies = "configs/org-policies/"
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
 ```
@@ -235,7 +231,6 @@ module "folder" {
     name   = "test-1"
     policy = module.firewall-policy.id
   }
-  deletion_protection = false
 }
 # tftest modules=2 resources=3 e2e serial
 ```
@@ -319,7 +314,6 @@ module "folder-sink" {
   logging_exclusions = {
     no-gce-instances = "resource.type=gce_instance"
   }
-  deletion_protection = false
 }
 # tftest modules=6 resources=18 inventory=logging.yaml e2e
 ```
@@ -345,7 +339,6 @@ module "folder" {
       DATA_WRITE = []
     }
   }
-  deletion_protection = false
 }
 # tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
@@ -376,7 +369,6 @@ module "folder" {
   tag_bindings = {
     env-prod = module.org.tag_values["environment/prod"].id
   }
-  deletion_protection = false
 }
 # tftest modules=2 resources=5 inventory=tags.yaml e2e serial
 ```
@@ -404,7 +396,7 @@ module "folder" {
 |---|---|:---:|:---:|:---:|
 | [assured_workload_config](variables.tf#L17) | Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false. | <code title="object&#40;&#123;&#10;  compliance_regime         &#61; string&#10;  display_name              &#61; string&#10;  location                  &#61; string&#10;  organization              &#61; string&#10;  enable_sovereign_controls &#61; optional&#40;bool&#41;&#10;  labels                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  partner                   &#61; optional&#40;string&#41;&#10;  partner_permissions &#61; optional&#40;object&#40;&#123;&#10;    assured_workloads_monitoring &#61; optional&#40;bool&#41;&#10;    data_logs_viewer             &#61; optional&#40;bool&#41;&#10;    service_access_approver      &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  violation_notifications_enabled &#61; optional&#40;bool&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L70) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deletion_protection](variables.tf#L77) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>null</code> |
+| [deletion_protection](variables.tf#L77) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
 | [factories_config](variables.tf#L83) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  org_policies &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [firewall_policy](variables.tf#L92) | Hierarchical firewall policy to associate to this folder. | <code title="object&#40;&#123;&#10;  name   &#61; string&#10;  policy &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [folder_create](variables.tf#L101) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |

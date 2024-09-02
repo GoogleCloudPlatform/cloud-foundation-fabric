@@ -1,6 +1,6 @@
 # Cloud Run Module
 
-Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger creation.
+Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger creation. This module uses provider default value for `deletion_protection`, which means service is by default protected from removal (or reprovisioning).
 
 <!-- BEGIN TOC -->
 - [IAM and environment variables](#iam-and-environment-variables)
