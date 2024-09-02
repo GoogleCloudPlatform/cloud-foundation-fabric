@@ -477,6 +477,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.pod_security_policy
     }
   }
+  dynamic "protect_config" {
+    for_each = var.enable_features.protect_config ? [""] : []
+    content {
+      workload_vulnerability_mode = "BASIC"
+    }
+  }
   dynamic "release_channel" {
     for_each = var.release_channel != null ? [""] : []
     content {
