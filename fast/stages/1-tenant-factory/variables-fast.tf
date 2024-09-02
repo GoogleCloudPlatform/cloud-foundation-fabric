@@ -57,6 +57,7 @@ variable "custom_roles" {
     gcve_network_admin              = string
     network_firewall_policies_admin = string
     ngfw_enterprise_admin           = string
+    ngfw_enterprise_viewer          = string
     organization_admin_viewer       = string
     service_project_network_admin   = string
     storage_viewer                  = string

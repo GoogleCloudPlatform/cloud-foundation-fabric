@@ -43,12 +43,13 @@ module "automation-project" {
       description = "Resource management context."
       iam         = {}
       values = {
-        data       = {}
-        gke        = {}
-        gcve       = {}
-        networking = {}
-        sandbox    = {}
-        security   = {}
+        data            = {}
+        gke             = {}
+        gcve            = {}
+        networking      = {}
+        project-factory = {}
+        sandbox         = {}
+        security        = {}
       }
     }
     (var.tag_names.environment) = {
