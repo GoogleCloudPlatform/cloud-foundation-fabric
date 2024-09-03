@@ -20,7 +20,8 @@ output "id" {
   depends_on = [
     google_pubsub_topic.default,
     google_pubsub_topic_iam_binding.authoritative,
-    google_pubsub_topic_iam_binding.bindings
+    google_pubsub_topic_iam_binding.bindings,
+    google_pubsub_topic_iam_member.bindings
   ]
 }
 
@@ -41,7 +42,8 @@ output "subscription_id" {
   }
   depends_on = [
     google_pubsub_subscription_iam_binding.authoritative,
-    google_pubsub_subscription_iam_binding.bindings
+    google_pubsub_subscription_iam_binding.bindings,
+    google_pubsub_subscription_iam_member.members
   ]
 }
 
@@ -50,7 +52,8 @@ output "subscriptions" {
   value       = google_pubsub_subscription.default
   depends_on = [
     google_pubsub_subscription_iam_binding.authoritative,
-    google_pubsub_subscription_iam_binding.bindings
+    google_pubsub_subscription_iam_binding.bindings,
+    google_pubsub_subscription_iam_member.members
   ]
 }
 
@@ -59,6 +62,7 @@ output "topic" {
   value       = google_pubsub_topic.default
   depends_on = [
     google_pubsub_topic_iam_binding.authoritative,
-    google_pubsub_topic_iam_binding.bindings
+    google_pubsub_topic_iam_binding.bindings,
+    google_pubsub_topic_iam_member.bindings
   ]
 }

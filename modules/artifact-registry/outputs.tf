@@ -17,16 +17,25 @@
 output "id" {
   description = "Fully qualified repository id."
   value       = google_artifact_registry_repository.registry.id
+  depends_on = [
+    google_artifact_registry_repository_iam_binding.bindings
+  ]
 }
 
 output "name" {
   description = "Repository name."
   value       = google_artifact_registry_repository.registry.name
+  depends_on = [
+    google_artifact_registry_repository_iam_binding.bindings
+  ]
 }
 
 output "repository" {
   description = "Repository object."
   value       = google_artifact_registry_repository.registry
+  depends_on = [
+    google_artifact_registry_repository_iam_binding.bindings
+  ]
 }
 
 output "url" {
@@ -36,5 +45,8 @@ output "url" {
     var.project_id,
     var.name
   ])
-  depends_on = [google_artifact_registry_repository.registry]
+  depends_on = [
+    google_artifact_registry_repository.registry,
+    google_artifact_registry_repository_iam_binding.bindings
+  ]
 }
