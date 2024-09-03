@@ -18,18 +18,28 @@ locals {
   create_url_lists = { for k, v in var.policy_rules.url_lists : v.url_list => v if v.values != null }
 }
 
-resource "google_network_security_gateway_security_policy" "policy" {
+moved {
+  from = google_network_security_gateway_security_policy.policy
+  to   = google_network_security_gateway_security_policy.default
+}
+
+resource "google_network_security_gateway_security_policy" "default" {
   provider              = google-beta
   project               = var.project_id
   name                  = var.name
   location              = var.region
   description           = var.description
-  tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.tls-policy[0].id : null
+  tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.default[0].id : null
 }
 
-resource "google_network_security_tls_inspection_policy" "tls-policy" {
+moved {
+  from = google_network_security_tls_inspection_policy.tls-policy
+  to   = google_network_security_tls_inspection_policy.default
+}
+
+resource "google_network_security_tls_inspection_policy" "default" {
   count                 = var.tls_inspection_config != null ? 1 : 0
-  provider              = google-beta
+  provider              = google
   project               = var.project_id
   name                  = var.name
   location              = var.region
@@ -40,12 +50,12 @@ resource "google_network_security_tls_inspection_policy" "tls-policy" {
 
 resource "google_network_security_gateway_security_policy_rule" "secure_tag_rules" {
   for_each                = var.policy_rules.secure_tags
-  provider                = google-beta
+  provider                = google
   project                 = var.project_id
   name                    = each.key
   location                = var.region
   description             = coalesce(each.value.description, var.description)
-  gateway_security_policy = google_network_security_gateway_security_policy.policy.name
+  gateway_security_policy = google_network_security_gateway_security_policy.default.name
   enabled                 = each.value.enabled
   priority                = each.value.priority
   session_matcher = trimspace(<<-EOT
@@ -57,29 +67,19 @@ resource "google_network_security_gateway_security_policy_rule" "secure_tag_rule
   basic_profile          = each.value.action
 }
 
-resource "google_network_security_url_lists" "url_lists" {
-  for_each    = local.create_url_lists
-  provider    = google-beta
-  project     = var.project_id
-  name        = each.key
-  location    = var.region
-  description = coalesce(each.value.description, var.description)
-  values      = each.value.values
-}
-
 resource "google_network_security_gateway_security_policy_rule" "url_list_rules" {
   for_each                = var.policy_rules.url_lists
-  provider                = google-beta
+  provider                = google
   project                 = var.project_id
   name                    = each.key
   location                = var.region
   description             = coalesce(each.value.description, var.description)
-  gateway_security_policy = google_network_security_gateway_security_policy.policy.name
+  gateway_security_policy = google_network_security_gateway_security_policy.default.name
   enabled                 = each.value.enabled
   priority                = each.value.priority
   session_matcher = trimspace(<<-EOT
     inUrlList(host(), '%{~if each.value.values != null~}
-    ${~google_network_security_url_lists.url_lists[each.value.url_list].id~}
+    ${~google_network_security_url_lists.default[each.value.url_list].id~}
     %{~else~}
     ${~each.value.url_list~}
     %{~endif~}') %{~if each.value.session_matcher != null} && (${each.value.session_matcher})%{~endif~}
@@ -93,11 +93,11 @@ resource "google_network_security_gateway_security_policy_rule" "url_list_rules"
 resource "google_network_security_gateway_security_policy_rule" "custom_rules" {
   for_each                = var.policy_rules.custom
   project                 = var.project_id
-  provider                = google-beta
+  provider                = google
   name                    = each.key
   location                = var.region
   description             = coalesce(each.value.description, var.description)
-  gateway_security_policy = google_network_security_gateway_security_policy.policy.name
+  gateway_security_policy = google_network_security_gateway_security_policy.default.name
   enabled                 = each.value.enabled
   priority                = each.value.priority
   session_matcher         = each.value.session_matcher
@@ -106,8 +106,27 @@ resource "google_network_security_gateway_security_policy_rule" "custom_rules" {
   basic_profile           = each.value.action
 }
 
-resource "google_network_services_gateway" "gateway" {
-  provider                             = google-beta
+moved {
+  from = google_network_security_url_lists.url_list_rules
+  to   = google_network_security_url_lists.default
+}
+resource "google_network_security_url_lists" "default" {
+  for_each    = local.create_url_lists
+  provider    = google
+  project     = var.project_id
+  name        = each.key
+  location    = var.region
+  description = coalesce(each.value.description, var.description)
+  values      = each.value.values
+}
+
+moved {
+  from = google_network_services_gateway.gateway
+  to   = google_network_services_gateway.default
+}
+
+resource "google_network_services_gateway" "default" {
+  provider                             = google
   project                              = var.project_id
   name                                 = var.name
   location                             = var.region
@@ -118,9 +137,35 @@ resource "google_network_services_gateway" "gateway" {
   ports                                = var.ports
   scope                                = var.scope != null ? var.scope : ""
   certificate_urls                     = var.certificates
-  gateway_security_policy              = google_network_security_gateway_security_policy.policy.id
+  gateway_security_policy              = google_network_security_gateway_security_policy.default.id
   network                              = var.network
   subnetwork                           = var.subnetwork
   delete_swg_autogen_router_on_destroy = var.delete_swg_autogen_router_on_destroy
 }
- 
+
+resource "google_compute_service_attachment" "default" {
+  count          = var.service_attachment == null ? 0 : 1
+  project        = var.project_id
+  region         = var.region
+  name           = var.name
+  description    = "Service attachment for SWP ${var.name}"
+  target_service = google_network_services_gateway.default.self_link
+  nat_subnets    = var.service_attachment.nat_subnets
+  connection_preference = (
+    var.service_attachment.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
+  )
+  consumer_reject_lists = var.service_attachment.consumer_reject_lists
+  domain_names = (
+    var.service_attachment.domain_name == null ? null : [var.service_attachment.domain_name]
+  )
+  enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
+  reconcile_connections = var.service_attachment.reconcile_connections
+  dynamic "consumer_accept_lists" {
+    for_each = var.service_attachment.consumer_accept_lists
+    iterator = accept
+    content {
+      project_id_or_num = accept.key
+      connection_limit  = accept.value
+    }
+  }
+}

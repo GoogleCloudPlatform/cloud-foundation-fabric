@@ -14,85 +14,106 @@
 #
 # file: tests/modules/net_swp/examples/rules.yaml
 values:
-  module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
-    name: "secure-web-proxy"
-    project: "my-project"
-    location: "europe-west4"
-  module.secure-web-proxy.google_network_services_gateway.gateway:
-    project: "my-project"
-    name: "secure-web-proxy"
-    location: "europe-west4"
-    type: "SECURE_WEB_GATEWAY"
-    addresses: 
-      - "10.142.68.3"
-    ports: [80, 443]
-    certificate_urls: ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
-    network: "projects/my-project/global/networks/my-network"
-    subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
-    delete_swg_autogen_router_on_destroy: true
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-1"]:
-    project: "my-project"
-    name: "secure-tag-1"
-    location: "europe-west4"
-    enabled: true
-    priority: 1000
-    session_matcher: "source.matchTag('tagValues/281484836404786')"
-    application_matcher: null
-    tls_inspection_enabled: false
-    basic_profile: "ALLOW"
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-2"]:
-    project: "my-project"
-    name: "secure-tag-2"
-    location: "europe-west4"
-    enabled: true
-    priority: 1001
-    session_matcher: "source.matchTag('tagValues/281484836404786') && (host() != 'google.com')"
-    application_matcher: null
-    tls_inspection_enabled: false
-    basic_profile: "ALLOW"
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-1"]:
-    project: "my-project"
-    name: "url-list-1"
-    location: "europe-west4"
-    enabled: true
-    priority: 1002
-    application_matcher: null
-    tls_inspection_enabled: false
-    basic_profile: "ALLOW"
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-2"]:
-    project: "my-project"
-    name: "url-list-2"
-    location: "europe-west4"
-    enabled: false
-    priority: 1003
-    session_matcher: "inUrlList(host(), 'projects/my-project/locations/europe-west4/urlLists/my-url-list') && (source.matchServiceAccount('my-sa@my-project.iam.gserviceaccount.com'))"
-    application_matcher: null
-    tls_inspection_enabled: false
-    basic_profile: "ALLOW"
-    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy.default:
+    description: Managed by Terraform.
+    location: europe-west4
+    name: secure-web-proxy
+    project: my-project
+    timeouts: null
+    tls_inspection_policy: null
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
-    project: "my-project"
-    name: "custom-rule-1"
-    location: "europe-west4"
-    enabled: true
-    priority: 1004
-    session_matcher: "host() == 'google.com'"
     application_matcher: null
+    basic_profile: DENY
+    description: Managed by Terraform.
+    enabled: true
+    location: europe-west4
+    name: custom-rule-1
+    priority: 1004
+    project: my-project
+    session_matcher: host() == 'google.com'
+    timeouts: null
     tls_inspection_enabled: false
-    basic_profile: "DENY"
-    description: "Managed by Terraform."
-  module.secure-web-proxy.google_network_security_url_lists.url_lists["my-url-list"]:
-    project: "my-project"
-    name: "my-url-list"
-    location: "europe-west4"
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-1"]:
+    application_matcher: null
+    basic_profile: ALLOW
+    description: Managed by Terraform.
+    enabled: true
+    gateway_security_policy: secure-web-proxy
+    location: europe-west4
+    name: secure-tag-1
+    priority: 1000
+    project: my-project
+    session_matcher: source.matchTag('tagValues/281484836404786')
+    timeouts: null
+    tls_inspection_enabled: false
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-2"]:
+    application_matcher: null
+    basic_profile: ALLOW
+    description: Managed by Terraform.
+    enabled: true
+    gateway_security_policy: secure-web-proxy
+    location: europe-west4
+    name: secure-tag-2
+    priority: 1001
+    project: my-project
+    session_matcher: source.matchTag('tagValues/281484836404786') && (host() != 'google.com')
+    timeouts: null
+    tls_inspection_enabled: false
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-1"]:
+    application_matcher: null
+    basic_profile: ALLOW
+    description: Managed by Terraform.
+    enabled: true
+    gateway_security_policy: secure-web-proxy
+    location: europe-west4
+    name: url-list-1
+    priority: 1002
+    project: my-project
+    timeouts: null
+    tls_inspection_enabled: false
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-2"]:
+    application_matcher: null
+    basic_profile: ALLOW
+    description: Managed by Terraform.
+    enabled: false
+    gateway_security_policy: secure-web-proxy
+    location: europe-west4
+    name: url-list-2
+    priority: 1003
+    project: my-project
+    session_matcher: inUrlList(host(), 'projects/my-project/locations/europe-west4/urlLists/my-url-list')
+      && (source.matchServiceAccount('my-sa@my-project.iam.gserviceaccount.com'))
+    timeouts: null
+    tls_inspection_enabled: false
+  module.secure-web-proxy.google_network_security_url_lists.default["my-url-list"]:
+    description: Managed by Terraform.
+    location: europe-west4
+    name: my-url-list
+    project: my-project
+    timeouts: null
     values:
-      - "www.google.com"
-      - "google.com"
-    description: "Managed by Terraform."
+    - www.google.com
+    - google.com
+  module.secure-web-proxy.google_network_services_gateway.default:
+    addresses:
+    - 10.142.68.3
+    certificate_urls:
+    - projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert
+    delete_swg_autogen_router_on_destroy: true
+    description: Managed by Terraform.
+    labels: null
+    location: europe-west4
+    name: secure-web-proxy
+    network: projects/my-project/global/networks/my-network
+    ports:
+    - 80
+    - 443
+    project: my-project
+    scope: ''
+    server_tls_policy: null
+    subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
+    timeouts: null
+    type: SECURE_WEB_GATEWAY
 
 counts:
   google_network_security_gateway_security_policy: 1

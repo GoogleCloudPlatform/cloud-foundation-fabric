@@ -31,7 +31,7 @@ locals {
   _projects = merge(
     {
       for f in try(fileset(local._project_path, "**/*.yaml"), []) :
-      trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
+      basename(trimsuffix(f, ".yaml")) => yamldecode(file("${local._project_path}/${f}"))
     },
     local._hierarchy_projects
   )

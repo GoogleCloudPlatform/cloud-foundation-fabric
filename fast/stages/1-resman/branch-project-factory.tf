@@ -18,11 +18,6 @@
 
 # automation service accounts
 
-moved {
-  from = module.branch-pf-sa[0]
-  to   = module.branch-pf-sa
-}
-
 module "branch-pf-sa" {
   source       = "../../../modules/iam-service-account"
   project_id   = var.automation.project_id
@@ -42,11 +37,6 @@ module "branch-pf-sa" {
   }
 }
 
-moved {
-  from = module.branch-pf-dev-sa[0]
-  to   = module.branch-pf-dev-sa
-}
-
 module "branch-pf-dev-sa" {
   source       = "../../../modules/iam-service-account"
   project_id   = var.automation.project_id
@@ -64,11 +54,6 @@ module "branch-pf-dev-sa" {
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
-}
-
-moved {
-  from = module.branch-pf-prod-sa[0]
-  to   = module.branch-pf-prod-sa
 }
 
 module "branch-pf-prod-sa" {
@@ -92,11 +77,6 @@ module "branch-pf-prod-sa" {
 
 # automation read-only service accounts
 
-moved {
-  from = module.branch-pf-r-sa[0]
-  to   = module.branch-pf-r-sa
-}
-
 module "branch-pf-r-sa" {
   source       = "../../../modules/iam-service-account"
   project_id   = var.automation.project_id
@@ -116,11 +96,6 @@ module "branch-pf-r-sa" {
   }
 }
 
-moved {
-  from = module.branch-pf-dev-r-sa[0]
-  to   = module.branch-pf-dev-r-sa
-}
-
 module "branch-pf-dev-r-sa" {
   source       = "../../../modules/iam-service-account"
   project_id   = var.automation.project_id
@@ -138,11 +113,6 @@ module "branch-pf-dev-r-sa" {
   iam_storage_roles = {
     (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
   }
-}
-
-moved {
-  from = module.branch-pf-prod-r-sa[0]
-  to   = module.branch-pf-prod-r-sa
 }
 
 module "branch-pf-prod-r-sa" {
@@ -166,57 +136,39 @@ module "branch-pf-prod-r-sa" {
 
 # automation buckets
 
-moved {
-  from = module.branch-pf-gcs[0]
-  to   = module.branch-pf-gcs
-}
-
 module "branch-pf-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-r-sa.iam_email]
   }
 }
 
-moved {
-  from = module.branch-pf-dev-gcs[0]
-  to   = module.branch-pf-dev-gcs
-}
-
 module "branch-pf-dev-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "dev-resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "dev-resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-dev-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-dev-r-sa.iam_email]
   }
 }
 
-moved {
-  from = module.branch-pf-prod-gcs[0]
-  to   = module.branch-pf-prod-gcs
-}
-
 module "branch-pf-prod-gcs" {
-  source        = "../../../modules/gcs"
-  project_id    = var.automation.project_id
-  name          = "prod-resman-pf-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "prod-resman-pf-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-pf-prod-sa.iam_email]
     "roles/storage.objectViewer" = [module.branch-pf-prod-r-sa.iam_email]

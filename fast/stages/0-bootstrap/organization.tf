@@ -181,6 +181,7 @@ module "organization" {
                 "roles/accesscontextmanager.policyAdmin",
                 "roles/cloudasset.viewer",
                 "roles/compute.orgFirewallPolicyAdmin",
+                "roles/compute.orgFirewallPolicyUser",
                 "roles/compute.xpnAdmin",
                 "roles/orgpolicy.policyAdmin",
                 "roles/orgpolicy.policyViewer",
@@ -189,6 +190,7 @@ module "organization" {
               , join(",", formatlist("'%s'", [
                 module.organization.custom_role_id["network_firewall_policies_admin"],
                 module.organization.custom_role_id["ngfw_enterprise_admin"],
+                module.organization.custom_role_id["ngfw_enterprise_viewer"],
                 module.organization.custom_role_id["service_project_network_admin"],
                 module.organization.custom_role_id["tenant_network_admin"]
               ]))

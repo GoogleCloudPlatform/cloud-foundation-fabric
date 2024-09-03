@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ locals {
   jit_services = [
     "alloydb.googleapis.com",          # no permissions granted by default
     "artifactregistry.googleapis.com", # roles/artifactregistry.serviceAgent
+    "pubsub.googleapis.com",           # roles/pubsub.serviceAgent
     "storage.googleapis.com",          # no permissions granted by default
     "sqladmin.googleapis.com",         # roles/cloudsql.serviceAgent
   ]
@@ -249,6 +250,13 @@ resource "google_project_iam_binding" "artifactregistry_agent" {
   members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-artifactregistry.iam.gserviceaccount.com"]
   project    = google_project.project.project_id
   role       = "roles/artifactregistry.serviceAgent"
+  depends_on = [google_project_service_identity.jit_si]
+}
+
+resource "google_project_iam_binding" "pubsub_agent" {
+  members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"]
+  project    = google_project.project.project_id
+  role       = "roles/pubsub.serviceAgent"
   depends_on = [google_project_service_identity.jit_si]
 }
 

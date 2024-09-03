@@ -1,0 +1,60 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bucket.google_storage_bucket.bucket:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: test-my-bucket
+    project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    timeouts: null
+    uniform_bucket_level_access: true
+  module.bucket.google_storage_managed_folder.folder["folder1/"]:
+    bucket: test-my-bucket
+    force_destroy: false
+    name: folder1/
+    timeouts: null
+  module.bucket.google_storage_managed_folder.folder["folder1/subfolder/"]:
+    bucket: test-my-bucket
+    force_destroy: true
+    name: folder1/subfolder/
+    timeouts: null
+  module.bucket.google_storage_managed_folder_iam_binding.authoritative["folder1/.roles/storage.admin"]:
+    bucket: test-my-bucket
+    condition: []
+    managed_folder: folder1/
+    members:
+    - user:user1@example.com
+    role: roles/storage.admin
+
+counts:
+  google_storage_bucket: 1
+  google_storage_managed_folder: 2
+  google_storage_managed_folder_iam_binding: 1
+  modules: 1
+  resources: 4
+
+outputs: {}

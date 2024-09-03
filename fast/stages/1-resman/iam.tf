@@ -48,6 +48,14 @@ locals {
         member = module.branch-nsec-sa[0].iam_email
         role   = local.custom_roles["ngfw_enterprise_admin"],
       }
+      sa_net_nsec_r_fw_policy_user = {
+        member = module.branch-nsec-sa[0].iam_email
+        role   = "roles/compute.orgFirewallPolicyUser"
+      }
+      sa_net_nsec_r_ngfw_enterprise_viewer = {
+        member = module.branch-nsec-r-sa[0].iam_email
+        role   = local.custom_roles["ngfw_enterprise_viewer"],
+      }
     },
     # optional billing roles for network and security
     local.billing_mode != "org" ? {} : {

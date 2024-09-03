@@ -265,6 +265,10 @@ variable "options" {
   type = object({
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
+    max_run_duration = optional(object({
+      nanos   = optional(number)
+      seconds = number
+    }))
     node_affinities = optional(map(object({
       values = list(string)
       in     = optional(bool, true)

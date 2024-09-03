@@ -170,14 +170,13 @@ module "branch-gcve-prod-r-sa" {
 # automation buckets
 
 module "branch-gcve-dev-gcs" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_features.gcve ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "dev-resman-gcve-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_features.gcve ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "dev-resman-gcve-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-gcve-dev-sa[0].iam_email]
     "roles/storage.objectViewer" = [module.branch-gcve-dev-r-sa[0].iam_email]
@@ -185,14 +184,13 @@ module "branch-gcve-dev-gcs" {
 }
 
 module "branch-gcve-prod-gcs" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_features.gcve ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "prod-resman-gcve-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_features.gcve ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "prod-resman-gcve-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-gcve-prod-sa[0].iam_email]
     "roles/storage.objectViewer" = [module.branch-gcve-prod-r-sa[0].iam_email]

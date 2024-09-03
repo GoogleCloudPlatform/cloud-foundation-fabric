@@ -1,0 +1,73 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# file: tests/modules/net_swp/examples/basic.yaml
+
+values:
+  module.secure-web-proxy.google_compute_service_attachment.default[0]:
+    connection_preference: ACCEPT_MANUAL
+    consumer_accept_lists:
+    - connection_limit: 1
+      network_url: ''
+      project_id_or_num: my-autoaccept-project-1
+    - connection_limit: 1
+      network_url: ''
+      project_id_or_num: my-autoaccept-project-2
+    consumer_reject_lists: null
+    description: Service attachment for SWP secure-web-proxy
+    domain_names: null
+    enable_proxy_protocol: false
+    name: secure-web-proxy
+    nat_subnets:
+    - projects/my-project/regions/europe-west4/subnetworks/my-psc-subnetwork
+    project: my-project
+    region: europe-west4
+    timeouts: null
+  module.secure-web-proxy.google_network_security_gateway_security_policy.default:
+    description: Managed by Terraform.
+    location: europe-west4
+    name: secure-web-proxy
+    project: my-project
+    timeouts: null
+    tls_inspection_policy: null
+  module.secure-web-proxy.google_network_services_gateway.default:
+    addresses:
+    - 10.142.68.3
+    certificate_urls:
+    - projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert
+    delete_swg_autogen_router_on_destroy: true
+    description: Managed by Terraform.
+    effective_labels:
+      example: value
+    labels:
+      example: value
+    location: europe-west4
+    name: secure-web-proxy
+    network: projects/my-project/global/networks/my-network
+    ports:
+    - 443
+    project: my-project
+    scope: ''
+    server_tls_policy: null
+    subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
+    terraform_labels:
+      example: value
+    timeouts: null
+    type: SECURE_WEB_GATEWAY
+
+counts:
+  google_compute_service_attachment: 1
+  google_network_security_gateway_security_policy: 1
+  google_network_services_gateway: 1
+  modules: 1
+  resources: 3

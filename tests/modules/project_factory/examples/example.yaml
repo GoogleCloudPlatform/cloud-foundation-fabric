@@ -14,8 +14,7 @@
 
 values:
   module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -30,11 +29,9 @@ values:
     project: test-pf-teams-iac-0
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
-    versioning:
-    - enabled: false
   ? module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
   : bucket: test-pf-dev-tb-app0-0-state
     condition: []

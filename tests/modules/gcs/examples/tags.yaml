@@ -14,8 +14,7 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
-    autoclass:
-    - enabled: false
+    autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
@@ -30,11 +29,9 @@ values:
     project: project-id
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     timeouts: null
     uniform_bucket_level_access: true
-    versioning:
-    - enabled: false
   module.bucket.google_tags_tag_binding.binding["env-sandbox"]:
     parent: //storage.googleapis.com/projects/_/buckets/test-my-bucket
     timeouts: null

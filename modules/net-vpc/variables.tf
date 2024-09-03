@@ -185,6 +185,7 @@ variable "psa_configs" {
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
     peered_domains   = optional(list(string), [])
+    range_prefix     = optional(string)
     service_producer = optional(string, "servicenetworking.googleapis.com")
   }))
   nullable = false
@@ -253,11 +254,12 @@ variable "shared_vpc_service_projects" {
 variable "subnets" {
   description = "Subnet configuration."
   type = list(object({
-    name                  = string
-    ip_cidr_range         = string
-    region                = string
-    description           = optional(string)
-    enable_private_access = optional(bool, true)
+    name                             = string
+    ip_cidr_range                    = string
+    region                           = string
+    description                      = optional(string)
+    enable_private_access            = optional(bool, true)
+    allow_subnet_cidr_routes_overlap = optional(bool, null)
     flow_logs_config = optional(object({
       aggregation_interval = optional(string)
       filter_expression    = optional(string)
