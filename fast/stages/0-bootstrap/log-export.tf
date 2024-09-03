@@ -52,6 +52,9 @@ module "log-export-project" {
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
+    (module.organization.custom_role_id["pubsub_iam_viewer"]) = [
+      module.automation-tf-bootstrap-r-sa.iam_email
+    ]
   }
   services = [
     # "cloudresourcemanager.googleapis.com",
