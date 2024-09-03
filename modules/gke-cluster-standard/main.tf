@@ -477,6 +477,13 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.pod_security_policy
     }
   }
+  dynamic "security_posture_config" {
+    for_each = var.enable_features.security_posture_config != null ? [""] : []
+    content {
+      mode                = var.enable_features.security_posture_config.mode
+      vulnerability_mode  = var.enable_features.security_posture_config.vulnerability_mode
+    }
+  }
   dynamic "release_channel" {
     for_each = var.release_channel != null ? [""] : []
     content {
