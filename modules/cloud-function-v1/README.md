@@ -40,8 +40,11 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=1 resources=5   fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
 
 ### PubSub and non-HTTP triggers
@@ -62,6 +65,10 @@ module "cf-http" {
     event    = "google.pubsub.topic.publish"
     resource = module.pubsub.topic.name
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
+
 }
 # tftest modules=2 resources=7 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -83,8 +90,11 @@ module "cf-http" {
   iam = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
 ```
 
 ### GCS bucket creation
@@ -106,8 +116,11 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
 ```
 
 ### Service account management
@@ -125,6 +138,9 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
   service_account_create = true
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -142,6 +158,9 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
   service_account = var.service_account.email
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -170,6 +189,9 @@ module "cf-http" {
       excludes     = ["__pycache__"]
     }
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf  e2e
 ```
@@ -189,6 +211,9 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=6 fixtures=fixtures/cloudbuild-custom-pool.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -218,8 +243,11 @@ module "cf-http-two" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=2 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
 ```
 
 ### Mounting secrets from Secret Manager
@@ -256,8 +284,11 @@ module "cf-http" {
       ]
     }
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=2 resources=8 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf  inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf  inventory=secrets.yaml e2e
 ```
 
 ### Using CMEK to encrypt function resources
@@ -265,52 +296,80 @@ module "cf-http" {
 This encrypt bucket _gcf-sources-*_ with the provided kms key. The repository has to be encrypted with the same kms key.
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "cf-v1"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudkms.googleapis.com",
+    "compute.googleapis.com",
+    "storage.googleapis.com",
+  ]
+  iam = {
+    # grant compute default service account that is used by Cloud Founction
+    # permission to read from the buckets so it can function sources
+    "roles/storage.objectViewer" = [
+      "serviceAccount:${module.project.default_service_accounts.compute}"
+    ]
+  }
+}
+
 module "kms" {
   source     = "./fabric/modules/kms"
-  project_id = var.project_id
+  project_id = module.project.project_id
   keyring = {
     location = var.regions.secondary
-    name     = "function-cmek"
+    name     = "keyring"
   }
   keys = {
-    "key" = {}
+    "key-regional" = {
+    }
   }
   iam = {
     "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-      "serviceAccount:service-${var.project_number}@gcf-admin-robot.iam.gserviceaccount.com",
-      "serviceAccount:service-${var.project_number}@gcp-sa-artifactregistry.iam.gserviceaccount.com",
-      "serviceAccount:service-${var.project_number}@gs-project-accounts.iam.gserviceaccount.com",
+      module.project.service_agents["artifactregistry"].iam_email,
+      module.project.service_agents["cloudfunctions"].iam_email,
+      module.project.service_agents["storage"].iam_email,
     ]
   }
 }
 
 module "artifact-registry" {
   source         = "./fabric/modules/artifact-registry"
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   location       = var.regions.secondary
   name           = "registry"
   format         = { docker = { standard = {} } }
-  encryption_key = module.kms.key_ids["key"]
-  depends_on = [
-    module.kms
-  ]
+  encryption_key = module.kms.key_ids["key-regional"]
+  iam = {
+    "roles/artifactregistry.createOnPushWriter" = [
+      # grant compute default service account that is used by Cloud Build
+      # permission to push compiled container into Artifact Registry
+      "serviceAccount:${module.project.default_service_accounts.compute}",
+    ]
+  }
 }
 
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v1"
-  project_id  = var.project_id
+  project_id  = module.project.project_id
   region      = var.regions.secondary
   name        = "test-cf-http"
   bucket_name = var.bucket
   bundle_config = {
     path = "assets/sample-function/"
   }
-  kms_key = module.kms.key_ids["key"]
+  kms_key = module.kms.key_ids["key-regional"]
   repository_settings = {
     repository = module.artifact-registry.id
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
+# tftest modules=4 resources=25
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

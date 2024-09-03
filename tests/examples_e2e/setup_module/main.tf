@@ -218,19 +218,6 @@ resource "google_service_account" "service_account" {
   depends_on = [google_project_service.project_service]
 }
 
-resource "google_kms_key_ring" "keyring" {
-  name       = "keyring"
-  project    = google_project.project.project_id
-  location   = var.region
-  depends_on = [google_project_service.project_service]
-}
-
-resource "google_kms_crypto_key" "key" {
-  name            = "crypto-key-example"
-  key_ring        = google_kms_key_ring.keyring.id
-  rotation_period = "100000s"
-}
-
 resource "google_project_service_identity" "jit_si" {
   for_each   = toset(local.jit_services)
   provider   = google-beta
@@ -267,14 +254,10 @@ resource "local_file" "terraform_tfvars" {
     billing_account_id = var.billing_account
     folder_id          = google_folder.folder.folder_id
     group_email        = var.group_email
-    keyring = {
-      name = google_kms_key_ring.keyring.name
-    }
-    kms_key_id      = google_kms_crypto_key.key.id
-    organization_id = var.organization_id
-    project_id      = google_project.project.project_id
-    project_number  = google_project.project.number
-    region          = var.region
+    organization_id    = var.organization_id
+    project_id         = google_project.project.project_id
+    project_number     = google_project.project.number
+    region             = var.region
     regions = {
       primary   = var.region
       secondary = var.region_secondary
