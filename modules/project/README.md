@@ -737,11 +737,31 @@ module "project" {
     "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
-    "compute.googleapis.com" = [var.kms_key.id]
-    "storage.googleapis.com" = [var.kms_key.id]
+    "compute.googleapis.com" = [module.kms.keys.key-regional.id]
+    "storage.googleapis.com" = [module.kms.keys.key-regional.id]
   }
 }
-# tftest modules=1 resources=7 e2e
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id # KMS is in different project to prevent dependency cycle
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.compute.iam_email,
+      module.project.service_agents.storage.iam_email,
+    ]
+  }
+}
+
+# tftest modules=2 resources=10 e2e
 ```
 
 ## Tags
@@ -1274,8 +1294,27 @@ module "project" {
     "storage.googleapis.com",
   ]
   service_encryption_key_ids = {
-    "compute.googleapis.com" = [var.kms_key.id]
-    "storage.googleapis.com" = [var.kms_key.id]
+    "compute.googleapis.com" = [module.kms.keys.key-global.id]
+    "storage.googleapis.com" = [module.kms.keys.key-global.id]
+  }
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id # Keys come from different project to prevent dependency cycle
+  keyring = {
+    location = "global"
+    name     = "keyring"
+  }
+  keys = {
+    "key-global" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.compute.iam_email,
+      module.project.service_agents.storage.iam_email
+    ]
   }
 }
 
@@ -1318,7 +1357,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "${var.prefix}-bucket"
 }
-# tftest modules=7 resources=61 inventory=data.yaml e2e
+# tftest inventory=data.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->

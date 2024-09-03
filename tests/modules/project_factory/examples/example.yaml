@@ -143,7 +143,7 @@ values:
     - ALL
     parent: projects/test-pf-dev-ta-app0-be
     timeouts: null
-  ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce.gs-project-accounts"]
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
   : condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter

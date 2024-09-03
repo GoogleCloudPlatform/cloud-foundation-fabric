@@ -535,14 +535,57 @@ module "template-confidential-example" {
 This example shows how to control disk encryption via the the `encryption` variable, in this case the self link to a KMS CryptoKey that will be used to encrypt boot and attached disk. Managing the key with the `../kms` module is of course possible, but is not shown here.
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "gce"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudkms.googleapis.com",
+    "compute.googleapis.com",
+  ]
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.compute.iam_email
+    ]
+  }
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = var.region
+    },
+  ]
+}
+
 module "kms-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = var.project_id
-  zone       = "europe-west1-b"
+  project_id = module.project.project_id
+  zone       = "${var.region}-b"
   name       = "kms-test"
   network_interfaces = [{
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/production"]
   }]
   attached_disks = [{
     name = "attached-disk"
@@ -553,10 +596,10 @@ module "kms-vm-example" {
   }
   encryption = {
     encrypt_boot      = true
-    kms_key_self_link = var.kms_key.id
+    kms_key_self_link = module.kms.keys.key-regional.id
   }
 }
-# tftest modules=1 resources=3 inventory=cmek.yaml
+# tftest inventory=cmek.yaml e2e
 ```
 
 ### Instance template

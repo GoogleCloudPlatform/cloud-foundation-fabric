@@ -252,7 +252,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }]
 }
-# tftest modules=1 resources=7 inventory=psa.yaml e2e
+# tftest inventory=psa.yaml e2e
 ```
 
 The module prefixes the PSA service to address range names, to disable this behaviour just set the `range_prefix` attribute in the PSA configuration:
@@ -274,7 +274,7 @@ module "vpc" {
     range_prefix = ""
   }]
 }
-# tftest modules=1 resources=7 inventory=psa-prefix.yaml e2e
+# tftest inventory=psa-prefix.yaml e2e
 ```
 
 Each PSA service can set a different prefix. Ranges will be allocated to the service they are defined in, as in the following example:
@@ -293,24 +293,18 @@ module "vpc" {
   ]
   psa_configs = [
     {
-      ranges       = { myrange = "10.0.1.0/24" }
-      range_prefix = ""
+      ranges          = { myrange = "10.0.1.0/24" }
+      range_prefix    = ""
+      deletion_policy = "ABANDON"
     },
     {
       ranges           = { netapp = "10.0.2.0/24" }
       service_producer = "netapp.servicenetworking.goog"
       range_prefix     = ""
-    },
-    {
-      ranges = {
-        example  = "10.0.3.0/24",
-        example2 = "10.0.4.0/24"
-      }
-      service_producer = "example.servicenetworking.goog"
     }
   ]
 }
-# tftest modules=1 resources=14 inventory=psa-prefix-services.yaml e2e
+# tftest inventory=psa-prefix-services.yaml e2e
 ```
 
 ### Private Service Networking with peering routes and peered Cloud DNS domains
@@ -494,7 +488,7 @@ module "vpc" {
 
 ```yaml
 name: simple
-region: primary 
+region: primary
 ip_cidr_range: 10.0.1.0/24
 
 # tftest-file id=subnet-simple path=config/subnets/subnet-simple.yaml schema=subnet.schema.json
