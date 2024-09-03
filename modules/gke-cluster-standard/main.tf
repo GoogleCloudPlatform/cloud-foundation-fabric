@@ -480,8 +480,8 @@ resource "google_container_cluster" "cluster" {
   dynamic "security_posture_config" {
     for_each = var.enable_features.security_posture_config != null ? [""] : []
     content {
-      mode                = var.enable_features.security_posture_config.mode
-      vulnerability_mode  = var.enable_features.security_posture_config.vulnerability_mode
+      mode               = var.enable_features.security_posture_config.mode
+      vulnerability_mode = var.enable_features.security_posture_config.vulnerability_mode
     }
   }
   dynamic "release_channel" {
