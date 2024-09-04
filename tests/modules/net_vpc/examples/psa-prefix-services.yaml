@@ -13,28 +13,6 @@
 # limitations under the License.
 
 values:
-  module.vpc.google_compute_global_address.psa_ranges["example-servicenetworking-goog-example"]:
-    address: 10.0.3.0
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    labels: null
-    name: example-servicenetworking-goog-example
-    prefix_length: 24
-    project: project-id
-    purpose: VPC_PEERING
-    timeouts: null
-  module.vpc.google_compute_global_address.psa_ranges["example-servicenetworking-goog-example2"]:
-    address: 10.0.4.0
-    address_type: INTERNAL
-    description: null
-    ip_version: null
-    labels: null
-    name: example-servicenetworking-goog-example2
-    prefix_length: 24
-    project: project-id
-    purpose: VPC_PEERING
-    timeouts: null
   module.vpc.google_compute_global_address.psa_ranges["myrange"]:
     address: 10.0.1.0
     address_type: INTERNAL
@@ -66,12 +44,6 @@ values:
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     project: project-id
     routing_mode: GLOBAL
-    timeouts: null
-  module.vpc.google_compute_network_peering_routes_config.psa_routes["example.servicenetworking.goog"]:
-    export_custom_routes: false
-    import_custom_routes: false
-    network: my-network
-    project: project-id
     timeouts: null
   module.vpc.google_compute_network_peering_routes_config.psa_routes["netapp.servicenetworking.goog"]:
     export_custom_routes: false
@@ -124,14 +96,6 @@ values:
     role: null
     send_secondary_ip_range_if_empty: true
     timeouts: null
-  module.vpc.google_service_networking_connection.psa_connection["example.servicenetworking.goog"]:
-    deletion_policy: null
-    reserved_peering_ranges:
-    - example-servicenetworking-goog-example
-    - example-servicenetworking-goog-example2
-    service: example.servicenetworking.goog
-    timeouts: null
-    update_on_creation_fail: null
   module.vpc.google_service_networking_connection.psa_connection["netapp.servicenetworking.goog"]:
     deletion_policy: null
     reserved_peering_ranges:
@@ -140,7 +104,7 @@ values:
     timeouts: null
     update_on_creation_fail: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
-    deletion_policy: null
+    deletion_policy: ABANDON
     reserved_peering_ranges:
     - myrange
     service: servicenetworking.googleapis.com
@@ -148,13 +112,13 @@ values:
     update_on_creation_fail: null
 
 counts:
-  google_compute_global_address: 4
+  google_compute_global_address: 2
   google_compute_network: 1
-  google_compute_network_peering_routes_config: 3
+  google_compute_network_peering_routes_config: 2
   google_compute_route: 2
   google_compute_subnetwork: 1
-  google_service_networking_connection: 3
+  google_service_networking_connection: 2
   modules: 1
-  resources: 14
+  resources: 10
 
 outputs: {}

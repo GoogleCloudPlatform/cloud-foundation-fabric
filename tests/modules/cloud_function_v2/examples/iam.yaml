@@ -26,7 +26,6 @@ values:
     bucket: bucket
     customer_encryption: []
     detect_md5hash: different hash
-    name: bundle-95c1b0e5b92dae8333539b1e0ad5173b.zip
     source: /tmp/bundle-project-id-test-cf-http.zip
 
 counts:

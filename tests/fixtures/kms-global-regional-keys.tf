@@ -12,18 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_project_service_identity" "secretmanager" {
-  provider = google-beta
-  project  = var.project_id
-  service  = "secretmanager.googleapis.com"
-}
-
-resource "google_project_iam_binding" "bindings" {
-  project = var.project_id
-  role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  members = ["serviceAccount:${resource.google_project_service_identity.secretmanager.email}"]
-}
-
 module "kms_regional_primary" {
   source     = "./fabric/modules/kms"
   project_id = var.project_id
@@ -35,7 +23,14 @@ module "kms_regional_primary" {
     "key-a" = {
     }
   }
-  depends_on = [google_project_iam_binding.bindings]
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      "serviceAccount:service-${var.project_number}@gcp-sa-secretmanager.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-alloydb.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@serverless-robot-prod.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+    ]
+  }
 }
 
 module "kms_regional_secondary" {
@@ -49,7 +44,14 @@ module "kms_regional_secondary" {
     "key-b" = {
     }
   }
-  depends_on = [google_project_iam_binding.bindings]
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      "serviceAccount:service-${var.project_number}@gcp-sa-secretmanager.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-alloydb.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@serverless-robot-prod.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+    ]
+  }
 }
 
 module "kms_global" {
@@ -60,8 +62,15 @@ module "kms_global" {
     name     = "keyring-gl"
   }
   keys = {
-    "key-gl" = {
+    "key-global" = {
     }
   }
-  depends_on = [google_project_iam_binding.bindings]
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      "serviceAccount:service-${var.project_number}@gcp-sa-secretmanager.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-alloydb.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@serverless-robot-prod.iam.gserviceaccount.com",
+      "serviceAccount:service-${var.project_number}@gcp-sa-cloud-sql.iam.gserviceaccount.com",
+    ]
+  }
 }

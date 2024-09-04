@@ -91,19 +91,66 @@ module "processing-dp-cluster" {
 To set cluster configuration use the Customer Managed Encryption key, set `dataproc_config.encryption_config.` variable. The Compute Engine service agent and the Cloud Storage service agent need to have `CryptoKey Encrypter/Decrypter` role on they configured KMS key ([Documentation](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/customer-managed-encryption)).
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "dataproc"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudkms.googleapis.com",
+    "dataproc.googleapis.com",
+    "servicenetworking.googleapis.com",
+  ]
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.dataproc.iam_email
+    ]
+  }
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = var.region
+    },
+  ]
+  psa_configs = [{
+    ranges = { myrange = "10.0.1.0/24" }
+  }]
+}
+
 module "dataproc-service-account" {
   source     = "./fabric/modules/iam-service-account"
-  project_id = var.project_id
+  project_id = module.project.project_id
   name       = "dataproc-worker"
   iam_project_roles = {
-    (var.project_id) = ["roles/dataproc.worker", "roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+    (module.project.project_id) = ["roles/dataproc.worker", "roles/cloudkms.cryptoKeyEncrypterDecrypter"]
   }
 }
 
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
-  network    = var.vpc.name
+  project_id = module.project.project_id
+  network    = module.vpc.name
   ingress_rules = {
     allow-ingress-dataproc = {
       description = "Allow all traffic between Dataproc nodes."
@@ -115,7 +162,7 @@ module "firewall" {
 
 module "processing-dp-cluster" {
   source     = "./fabric/modules/dataproc"
-  project_id = var.project_id
+  project_id = module.project.project_id
   name       = "my-cluster"
   region     = var.region
   dataproc_config = {
@@ -124,20 +171,17 @@ module "processing-dp-cluster" {
         internal_ip_only       = true
         service_account        = module.dataproc-service-account.email
         service_account_scopes = ["cloud-platform"]
-        subnetwork             = var.subnet.self_link
+        subnetwork             = module.vpc.subnet_self_links["${var.region}/production"]
         tags                   = ["dataproc"]
         zone                   = "${var.region}-b"
       }
     }
     encryption_config = {
-      kms_key_name = var.kms_key.id
+      kms_key_name = module.kms.keys.key-regional.id
     }
   }
-  depends_on = [
-    module.dataproc-service-account, # ensure all grants are done before creating the cluster
-  ]
 }
-# tftest modules=3 resources=8 e2e
+# tftest modules=6 resources=28 e2e
 ```
 
 ### Cluster configuration on GKE
