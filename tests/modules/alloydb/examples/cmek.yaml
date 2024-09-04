@@ -19,14 +19,10 @@ values:
     cluster_type: PRIMARY
     continuous_backup_config:
       - enabled: true
-        encryption_config:
-          - kms_key_name: kms_key_self_link
         recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
     display_name: primary
-    encryption_config:
-      - kms_key_name: kms_key_self_link
     etag: null
     initial_user: []
     labels: null
@@ -34,8 +30,7 @@ values:
     maintenance_update_policy: []
     network_config:
       - allocated_ip_range: null
-        network: projects/xxx/global/networks/aaa
-    project: project-id
+    project: test-alloycmek
     restore_backup_source: []
     restore_continuous_backup_source: []
     secondary_config: []
@@ -64,7 +59,5 @@ values:
 counts:
   google_alloydb_cluster: 1
   google_alloydb_instance: 1
-  modules: 1
-  resources: 3
 
 outputs: {}

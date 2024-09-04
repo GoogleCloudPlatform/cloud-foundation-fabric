@@ -39,6 +39,9 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -73,6 +76,9 @@ module "cf-http" {
     pubsub_topic          = module.pubsub.topic.id
     service_account_email = module.trigger-service-account.email
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=3 resources=9 fixtures=fixtures/pubsub.tf,fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -97,8 +103,11 @@ module "cf-http" {
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=iam.yaml e2e
 ```
 
 ### GCS bucket creation
@@ -120,8 +129,11 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=bucket-creation.yaml e2e
 ```
 
 ### Service account management
@@ -139,6 +151,9 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
   service_account_create = true
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -156,6 +171,9 @@ module "cf-http" {
     path = "assets/sample-function/"
   }
   service_account = var.service_account.email
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -184,6 +202,9 @@ module "cf-http" {
       excludes     = ["__pycache__"]
     }
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=5 fixtures=fixtures/functions-default-sa-iam-grants.tf e2e
 ```
@@ -203,6 +224,9 @@ module "cf-http" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 # tftest modules=1 resources=6 fixtures=fixtures/functions-default-sa-iam-grants.tf,fixtures/cloudbuild-custom-pool.tf e2e
 ```
@@ -232,8 +256,11 @@ module "cf-http-two" {
   bundle_config = {
     path = "assets/sample-function/"
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
-# tftest modules=2 resources=7 fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
+# tftest fixtures=fixtures/functions-default-sa-iam-grants.tf inventory=multiple_functions.yaml e2e
 ```
 
 ### Mounting secrets from Secret Manager
@@ -270,9 +297,12 @@ module "cf-http" {
       ]
     }
   }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
 }
 
-# tftest modules=2 resources=8 fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
