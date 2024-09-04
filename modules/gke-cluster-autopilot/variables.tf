@@ -82,6 +82,10 @@ variable "enable_features" {
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
+    security_posture_config = optional(object({
+      mode    = string
+      vulnerability_mode = string
+    }))
     allow_net_admin     = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
