@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-08-30 08:18:13+00:00 -->
+<!-- None < 2024-09-05 10:07:19+00:00 -->
 
-## [34.1.0]
+## [34.1.0] - 2024-09-05
+<!-- 2024-09-05 10:07:19+00:00 < 2024-08-30 08:18:13+00:00 -->
 
 ### BLUEPRINTS
 
