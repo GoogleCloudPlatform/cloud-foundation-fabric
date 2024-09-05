@@ -198,12 +198,42 @@ module "cloud_run" {
 Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key (CMEK). Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey and that Cloud Run Service agent (`service-<PROJECT_NUMBER>@serverless-robot-prod.iam.gserviceaccount.com`) has permission to use the key, for example `roles/cloudkms.cryptoKeyEncrypterDecrypter` IAM role. This setup adds an extra layer of security by utilizing your own encryption keys.
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "cloudrun"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudkms.googleapis.com",
+    "run.googleapis.com",
+  ]
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.run.iam_email
+    ]
+  }
+}
+
 module "cloud_run" {
   source         = "./fabric/modules/cloud-run-v2"
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   region         = var.region
   name           = "hello"
-  encryption_key = var.kms_key.id
+  encryption_key = module.kms.keys.key-regional.id
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -211,7 +241,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest modules=1 resources=2 fixtures=fixtures/cloud-run-kms-iam-grant.tf e2e
+# tftest modules=3 resources=11 e2e
 ```
 
 ## Eventarc triggers
@@ -487,7 +517,6 @@ module "cloud_run" {
 
 ## Fixtures
 
-- [cloud-run-kms-iam-grant.tf](../../tests/fixtures/cloud-run-kms-iam-grant.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)

@@ -147,23 +147,71 @@ module "alloydb" {
 ### CMEK encryption
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "alloycmek"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "alloydb.googleapis.com",
+    "cloudkms.googleapis.com",
+    "servicenetworking.googleapis.com"
+  ]
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.alloydb.iam_email
+    ]
+  }
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = var.region
+    },
+  ]
+  psa_configs = [{
+    ranges = { myrange = "10.0.1.0/24" }
+  }]
+}
+
+
 module "alloydb" {
   source       = "./fabric/modules/alloydb"
-  project_id   = var.project_id
+  project_id   = module.project.project_id
   cluster_name = "primary"
   location     = var.region
   name         = "primary"
   network_config = {
     psa_config = {
-      network = var.vpc.id
+      network = module.vpc.id
     }
   }
   encryption_config = {
-    primary_kms_key_name = var.kms_key.id
+    primary_kms_key_name = module.kms.keys.key-regional.id
   }
 }
 
-# tftest modules=1 resources=3 fixtures=fixtures/alloydb-kms-iam-grant.tf inventory=cmek.yaml e2e
+# tftest inventory=cmek.yaml e2e
 ```
 
 ## Tag bindings
@@ -257,8 +305,4 @@ module "alloydb" {
 | [service_attachment](outputs.tf#L90) | AlloyDB Primary instance service attachment. |  |
 | [service_attachments](outputs.tf#L95) | AlloyDB instances service attachment. |  |
 | [user_passwords](outputs.tf#L102) | Map of containing the password of all users created through terraform. | ✓ |
-
-## Fixtures
-
-- [alloydb-kms-iam-grant.tf](../../tests/fixtures/alloydb-kms-iam-grant.tf)
 <!-- END TFDOC -->

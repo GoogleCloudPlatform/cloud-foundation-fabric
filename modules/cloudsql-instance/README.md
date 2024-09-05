@@ -19,7 +19,6 @@ Note that this module assumes that some options are the same for both the primar
   - [SSL Config](#ssl-config)
 - [Variables](#variables)
 - [Outputs](#outputs)
-- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Examples
@@ -154,14 +153,63 @@ module "db" {
 ### CMEK encryption
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "cloudsql"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudkms.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "sqladmin.googleapis.com",
+  ]
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.region
+    name     = "keyring"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents["cloud-sql"].iam_email
+    ]
+  }
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = var.region
+    },
+  ]
+  psa_configs = [{
+    ranges          = { myrange = "10.0.1.0/24" }
+    deletion_policy = "ABANDON"
+  }]
+}
+
+
 module "db" {
   source              = "./fabric/modules/cloudsql-instance"
-  project_id          = var.project_id
-  encryption_key_name = var.kms_key.id
+  project_id          = module.project.project_id
+  encryption_key_name = module.kms.keys.key-regional.id
   network_config = {
     connectivity = {
       psa_config = {
-        private_network = var.vpc.self_link
+        private_network = module.vpc.self_link
       }
     }
   }
@@ -171,12 +219,9 @@ module "db" {
   tier                          = "db-g1-small"
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
-  depends_on = [
-    google_kms_crypto_key_iam_binding.encrypt_decrypt
-  ]
 }
 
-# tftest modules=1 resources=2 fixtures=fixtures/cloudsql-kms-iam-grant.tf e2e
+# tftest modules=4 resources=21 e2e
 ```
 
 ### Instance with PSC enabled
@@ -368,8 +413,4 @@ module "db" {
 | [self_link](outputs.tf#L114) | Self link of the primary instance. |  |
 | [self_links](outputs.tf#L119) | Self links of all instances. |  |
 | [user_passwords](outputs.tf#L127) | Map of containing the password of all users created through terraform. | ✓ |
-
-## Fixtures
-
-- [cloudsql-kms-iam-grant.tf](../../tests/fixtures/cloudsql-kms-iam-grant.tf)
 <!-- END TFDOC -->
