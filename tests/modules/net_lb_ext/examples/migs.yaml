@@ -13,6 +13,97 @@
 # limitations under the License.
 
 values:
+  module._instance-template.google_compute_instance_template.default[0]:
+    advanced_machine_features: []
+    can_ip_forward: false
+    description: Managed by the compute-vm Terraform module.
+    disk:
+    - auto_delete: true
+      boot: true
+      disk_encryption_key: []
+      disk_name: null
+      disk_size_gb: 10
+      disk_type: pd-balanced
+      labels: null
+      resource_manager_tags: null
+      resource_policies: null
+      source: null
+      source_image: projects/cos-cloud/global/images/family/cos-stable
+      source_image_encryption_key: []
+      source_snapshot: null
+      source_snapshot_encryption_key: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: null
+    guest_accelerator: []
+    instance_description: null
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    min_cpu_platform: null
+    name_prefix: mig-e2e-template-
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      network_ip: null
+      nic_type: null
+      queue_count: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    partner_metadata: null
+    project: project-id
+    region: europe-west8
+    reservation_affinity: []
+    resource_manager_tags: null
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags:
+    - http-server
+    - ssh
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.compute-mig.google_compute_instance_group_manager.default[0]:
+    all_instances_config: []
+    auto_healing_policies: []
+    base_instance_name: mig-e2e-tests
+    description: Terraform managed.
+    list_managed_instances_results: PAGELESS
+    name: mig-e2e-tests
+    named_port: []
+    params: []
+    project: project-id
+    stateful_disk: []
+    stateful_external_ip: []
+    stateful_internal_ip: []
+    target_pools: null
+    timeouts: null
+    version:
+    - name: default
+      target_size: []
+    wait_for_instances: false
+    wait_for_instances_status: STABLE
+    zone: europe-west8-b
   module.nlb.google_compute_forwarding_rule.default[""]:
     all_ports: true
     allow_global_access: null
@@ -35,7 +126,7 @@ values:
   module.nlb.google_compute_region_backend_service.default:
     affinity_cookie_ttl_sec: null
     circuit_breakers: []
-    connection_draining_timeout_sec: 0
+    connection_draining_timeout_sec: 300
     connection_tracking_policy: []
     consistent_hash: []
     description: Terraform managed.
@@ -79,6 +170,8 @@ values:
 
 counts:
   google_compute_forwarding_rule: 1
+  google_compute_instance_group_manager: 1
+  google_compute_instance_template: 1
   google_compute_region_backend_service: 1
   google_compute_region_health_check: 1
   modules: 3

@@ -13,47 +13,100 @@
 # limitations under the License.
 
 values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: false
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west8
+    name: hello
+    project: project-id
+    scaling: []
+    template:
+    - annotations: null
+      containers:
+      - args: null
+        command: null
+        depends_on: null
+        env:
+        - name: SECRET1
+          value: ''
+          value_source:
+          - secret_key_ref:
+            - {}
+        - name: VAR1
+          value: VALUE1
+          value_source: []
+        - name: VAR2
+          value: VALUE2
+          value_source: []
+        image: us-docker.pkg.dev/cloudrun/container/hello
+        liveness_probe: []
+        name: hello
+        volume_mounts: []
+        working_dir: null
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      labels: null
+      revision: null
+      session_affinity: null
+      volumes: []
+      vpc_access: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.cloud_run.google_cloud_run_v2_service_iam_binding.binding["roles/run.invoker"]:
     condition: []
     location: europe-west8
-    name: hello
     members:
-      - allUsers
+    - allUsers
+    name: hello
     project: project-id
     role: roles/run.invoker
-  module.cloud_run.google_cloud_run_v2_service.service[0]:
-    location: europe-west8
-    name: hello
+  module.secret-manager.google_secret_manager_secret.default["credentials"]:
+    annotations: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
     project: project-id
-    template:
-      - containers:
-          - args: null
-            command: null
-            depends_on: null
-            env:
-              - name: VAR1
-                value: VALUE1
-                value_source: []
-              - name: VAR2
-                value: VALUE2
-                value_source: []
-              - name: SECRET1
-                value: null
-                value_source:
-                  - secret_key_ref:
-                      - {}
-            image: us-docker.pkg.dev/cloudrun/container/hello
-            name: hello
-            volume_mounts: []
-            working_dir: null
-        execution_environment: EXECUTION_ENVIRONMENT_GEN1
-        volumes: []
-        vpc_access: []
+    replication:
+    - auto:
+      - customer_managed_encryption: []
+      user_managed: []
+    rotation: []
+    secret_id: credentials
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    topics: []
+    ttl: null
+    version_aliases: null
+    version_destroy_ttl: null
+  module.secret-manager.google_secret_manager_secret_iam_binding.default["credentials.roles/secretmanager.secretAccessor"]:
+    condition: []
+    members:
+    - serviceAccount:123-compute@developer.gserviceaccount.com
+    - serviceAccount:project-id@appspot.gserviceaccount.com
+    role: roles/secretmanager.secretAccessor
+  module.secret-manager.google_secret_manager_secret_version.default["credentials:v1"]:
+    deletion_policy: DELETE
+    enabled: true
+    is_secret_data_base64: false
+    secret_data: manual foo bar spam
+    timeouts: null
 
 counts:
-  google_cloud_run_v2_service_iam_binding: 1
   google_cloud_run_v2_service: 1
+  google_cloud_run_v2_service_iam_binding: 1
+  google_secret_manager_secret: 1
+  google_secret_manager_secret_iam_binding: 1
+  google_secret_manager_secret_version: 1
   modules: 2
   resources: 5
-
-outputs: {}

@@ -24,11 +24,13 @@ variable "vpc_connector_create" {
     instances = optional(object({
       max = optional(number)
       min = optional(number)
-    }), {})
+      }), {}
+    )
     throughput = optional(object({
-      max = optional(number, 1000) # workaround for a wrong default in provider
+      max = optional(number)
       min = optional(number)
-    }), {})
+      }), {}
+    )
     subnet = optional(object({
       name       = optional(string)
       project_id = optional(string)

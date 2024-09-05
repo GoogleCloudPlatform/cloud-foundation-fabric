@@ -13,6 +13,206 @@
 # limitations under the License.
 
 values:
+  module.instance-group["b"].google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/cos-cloud/global/images/family/cos-stable
+        resource_manager_tags: null
+        size: 10
+        storage_pool: null
+        type: pd-ssd
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: f1-micro
+    metadata:
+      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+        \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
+        \ file except in compliance with the License.\n# You may obtain a copy of\
+        \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
+        # Unless required by applicable law or agreed to in writing, software\n# distributed\
+        \ under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES\
+        \ OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License\
+        \ for the specific language governing permissions and\n# limitations under\
+        \ the License.\n\n# https://hub.docker.com/r/nginx/nginx/\n# https://nginx.io/manual/toc/#installation\n\
+        \nusers:\n  - name: nginx\n    uid: 2000\n  \n\nwrite_files:\n  - path: /var/lib/docker/daemon.json\n\
+        \    permissions: 0644\n    owner: root\n    content: |\n      {\n       \
+        \ \"live-restore\": true,\n        \"storage-driver\": \"overlay2\",\n   \
+        \     \"log-opts\": {\n          \"max-size\": \"1024m\"\n        }\n    \
+        \  }\n\n\n  # nginx container service\n  - path: /etc/systemd/system/nginx.service\n\
+        \    permissions: 0644\n    owner: root\n    content: |\n      [Unit]\n  \
+        \    Description=Start nginx container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/nginx\"\n      ExecStartPre=/usr/bin/docker-credential-gcr\
+        \ configure-docker\n      ExecStart=/usr/bin/docker run --rm --name=nginx\
+        \  \\\n        --network host \\\n        nginxdemos/hello:plain-text\n  \
+        \    ExecStop=/usr/bin/docker stop nginx\n\n  \n\nbootcmd:\n  - systemctl\
+        \ start node-problem-detector\n\nruncmd:\n  - iptables -I INPUT 1 -p tcp -m\
+        \ tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT\n  - systemctl\
+        \ daemon-reload\n  - systemctl start nginx\n"
+    metadata_startup_script: null
+    name: nlb-test-b
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags:
+    - http-server
+    - ssh
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-b
+  module.instance-group["b"].google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: nlb-test-b
+    named_port: []
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    timeouts: null
+    zone: europe-west8-b
+  module.instance-group["c"].google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/cos-cloud/global/images/family/cos-stable
+        resource_manager_tags: null
+        size: 10
+        storage_pool: null
+        type: pd-ssd
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: f1-micro
+    metadata:
+      user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
+        \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\
+        \ file except in compliance with the License.\n# You may obtain a copy of\
+        \ the License at\n#\n#     https://www.apache.org/licenses/LICENSE-2.0\n#\n\
+        # Unless required by applicable law or agreed to in writing, software\n# distributed\
+        \ under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES\
+        \ OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License\
+        \ for the specific language governing permissions and\n# limitations under\
+        \ the License.\n\n# https://hub.docker.com/r/nginx/nginx/\n# https://nginx.io/manual/toc/#installation\n\
+        \nusers:\n  - name: nginx\n    uid: 2000\n  \n\nwrite_files:\n  - path: /var/lib/docker/daemon.json\n\
+        \    permissions: 0644\n    owner: root\n    content: |\n      {\n       \
+        \ \"live-restore\": true,\n        \"storage-driver\": \"overlay2\",\n   \
+        \     \"log-opts\": {\n          \"max-size\": \"1024m\"\n        }\n    \
+        \  }\n\n\n  # nginx container service\n  - path: /etc/systemd/system/nginx.service\n\
+        \    permissions: 0644\n    owner: root\n    content: |\n      [Unit]\n  \
+        \    Description=Start nginx container\n      After=gcr-online.target docker.socket\n\
+        \      Wants=gcr-online.target docker.socket docker-events-collector.service\n\
+        \      [Service]\n      Environment=\"HOME=/home/nginx\"\n      ExecStartPre=/usr/bin/docker-credential-gcr\
+        \ configure-docker\n      ExecStart=/usr/bin/docker run --rm --name=nginx\
+        \  \\\n        --network host \\\n        nginxdemos/hello:plain-text\n  \
+        \    ExecStop=/usr/bin/docker stop nginx\n\n  \n\nbootcmd:\n  - systemctl\
+        \ start node-problem-detector\n\nruncmd:\n  - iptables -I INPUT 1 -p tcp -m\
+        \ tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT\n  - systemctl\
+        \ daemon-reload\n  - systemctl start nginx\n"
+    metadata_startup_script: null
+    name: nlb-test-c
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags:
+    - http-server
+    - ssh
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-c
+  module.instance-group["c"].google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: nlb-test-c
+    named_port: []
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    timeouts: null
+    zone: europe-west8-c
   module.nlb.google_compute_forwarding_rule.default[""]:
     all_ports: null
     allow_global_access: null
@@ -36,7 +236,7 @@ values:
   module.nlb.google_compute_region_backend_service.default:
     affinity_cookie_ttl_sec: null
     circuit_breakers: []
-    connection_draining_timeout_sec: 0
+    connection_draining_timeout_sec: 300
     connection_tracking_policy: []
     consistent_hash: []
     description: Terraform managed.
@@ -80,6 +280,8 @@ values:
 
 counts:
   google_compute_forwarding_rule: 1
+  google_compute_instance: 2
+  google_compute_instance_group: 2
   google_compute_region_backend_service: 1
   google_compute_region_health_check: 1
   modules: 3

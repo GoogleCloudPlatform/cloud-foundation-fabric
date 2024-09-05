@@ -37,9 +37,10 @@ locals {
 }
 
 resource "google_folder" "folder" {
-  count        = var.folder_create && var.assured_workload_config == null ? 1 : 0
-  display_name = var.name
-  parent       = var.parent
+  count               = var.folder_create && var.assured_workload_config == null ? 1 : 0
+  display_name        = var.name
+  parent              = var.parent
+  deletion_protection = var.deletion_protection
 }
 
 resource "google_essential_contacts_contact" "contact" {
