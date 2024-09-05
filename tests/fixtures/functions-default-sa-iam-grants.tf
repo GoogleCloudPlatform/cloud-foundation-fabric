@@ -21,12 +21,6 @@ resource "google_project_iam_member" "bucket_default_compute_account_grant" {
   depends_on = [google_project_iam_member.artifact_writer]
 }
 
-resource "google_project_iam_member" "debugging_grant" {
-  project = var.project_id
-  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  role    = "roles/logging.logWriter"
-}
-
 resource "google_project_iam_member" "artifact_writer" {
   project = var.project_id
   member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"

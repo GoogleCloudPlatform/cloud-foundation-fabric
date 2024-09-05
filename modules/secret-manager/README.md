@@ -84,26 +84,94 @@ module "secret-manager" {
 CMEK will be used if an encryption key is set in the `keys` field of `secrets` object for the secret region. For secrets with auto-replication, a global key must be specified.
 
 ```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "sec-mgr"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudkms.googleapis.com",
+    "secretmanager.googleapis.com",
+  ]
+}
+
+module "kms-global" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = "global"
+    name     = "keyring-global"
+  }
+  keys = {
+    "key-global" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.secretmanager.iam_email
+    ]
+  }
+}
+
+
+module "kms-primary-region" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.regions.primary
+    name     = "keyring-regional"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.secretmanager.iam_email
+    ]
+  }
+}
+
+module "kms-secondary-region" {
+  source     = "./fabric/modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    location = var.regions.secondary
+    name     = "keyring-regional"
+  }
+  keys = {
+    "key-regional" = {
+    }
+  }
+  iam = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      module.project.service_agents.secretmanager.iam_email
+    ]
+  }
+}
+
+
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = var.project_id
+  project_id = module.project.project_id
   secrets = {
     test-auto = {
       keys = {
-        global = module.kms_global.keys.key-gl.id
+        global = module.kms-global.keys.key-global.id
       }
     }
     test-auto-nokeys = {}
     test-manual = {
       locations = [var.regions.primary, var.regions.secondary]
       keys = {
-        "${var.regions.primary}"   = module.kms_regional_primary.keys.key-a.id
-        "${var.regions.secondary}" = module.kms_regional_secondary.keys.key-b.id
+        "${var.regions.primary}"   = module.kms-primary-region.keys.key-regional.id
+        "${var.regions.secondary}" = module.kms-secondary-region.keys.key-regional.id
       }
     }
   }
 }
-# tftest modules=4 resources=11 fixtures=fixtures/kms-global-regional-keys.tf inventory=secret-cmek.yaml e2e
+# tftest inventory=secret-cmek.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -122,14 +190,10 @@ module "secret-manager" {
 | name | description | sensitive |
 |---|---|:---:|
 | [ids](outputs.tf#L17) | Fully qualified secret ids. |  |
-| [secrets](outputs.tf#L24) | Secret resources. |  |
-| [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
-| [version_versions](outputs.tf#L36) | Version versions keyed by secret name : version name. |  |
-| [versions](outputs.tf#L43) | Secret versions. | ✓ |
-
-## Fixtures
-
-- [kms-global-regional-keys.tf](../../tests/fixtures/kms-global-regional-keys.tf)
+| [secrets](outputs.tf#L27) | Secret resources. |  |
+| [version_ids](outputs.tf#L36) | Version ids keyed by secret name : version name. |  |
+| [version_versions](outputs.tf#L46) | Version versions keyed by secret name : version name. |  |
+| [versions](outputs.tf#L56) | Secret versions. | ✓ |
 <!-- END TFDOC -->
 ## Requirements
 
