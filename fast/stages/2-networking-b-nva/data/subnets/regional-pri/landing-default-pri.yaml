@@ -2,7 +2,7 @@
 
 # yaml-language-server: $schema=../../../schemas/subnet.schema.json
 
-name: gcve-default
+name: regional-default
 region: primary
-ip_cidr_range: 10.96.0.0/24
-description: Default primary-region subnet for gcve primary
+ip_cidr_range: 10.65.0.0/17
+description: Default primary-region subnet for regional VPC

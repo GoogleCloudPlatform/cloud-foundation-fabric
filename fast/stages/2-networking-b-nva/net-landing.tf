@@ -35,7 +35,7 @@ module "landing-project" {
       : []
     ),
     (
-      (var.network_mode == "gcve")
+      (var.network_mode == "regional_vpc")
       ? ["vmwareengine.googleapis.com"]
       : []
     )
@@ -71,18 +71,18 @@ module "dmz-vpc" {
         priority      = 1000
       }
     },
-    (var.network_mode == "gcve") ? {
-      to-gcve-primary = {
-        dest_range    = var.gcp_ranges.gcp_gcve_primary
+    (var.network_mode == "regional_vpc") ? {
+      to-regional-vpc-primary = {
+        dest_range    = var.gcp_ranges.gcp_regional_vpc_primary
         priority      = 1000
         next_hop_type = "ilb"
-        next_hop      = module.ilb-gcve-nva-dmz["primary"].forwarding_rule_addresses[""]
+        next_hop      = module.ilb-regional-nva-dmz["primary"].forwarding_rule_addresses[""]
       }
-      to-gcve-secondary = {
-        dest_range    = var.gcp_ranges.gcp_gcve_secondary
+      to-regional-vpc-secondary = {
+        dest_range    = var.gcp_ranges.gcp_regional_vpc_secondary
         priority      = 1000
         next_hop_type = "ilb"
-        next_hop      = module.ilb-gcve-nva-dmz["secondary"].forwarding_rule_addresses[""]
+        next_hop      = module.ilb-regional-nva-dmz["secondary"].forwarding_rule_addresses[""]
       }
     } : {}
   )

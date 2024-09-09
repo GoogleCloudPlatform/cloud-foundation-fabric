@@ -5,7 +5,7 @@
 # yaml-language-server: $schema=../../../schemas/firewall-rules.schema.json
 
 ingress:
-  allow-hc-nva-ssh-gcve-sec:
+  allow-hc-nva-ssh-regional-pri:
     description: "Allow traffic from Google healthchecks to NVA appliances"
     source_ranges:
       - healthchecks
@@ -13,7 +13,7 @@ ingress:
       - protocol: tcp
         ports:
           - 22
-  allow-onprem-probes-gcve-sec-example:
+  allow-onprem-probes-regional-pri-example:
     description: "Allow traffic from onprem probes"
     source_ranges:
       - onprem_probes

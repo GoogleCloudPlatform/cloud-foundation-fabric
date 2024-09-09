@@ -5,7 +5,7 @@
 # yaml-language-server: $schema=../../../schemas/firewall-rules.schema.json
 
 ingress:
-  ingress-default-gcve-pri-deny:
+  ingress-default-regional-sec-deny:
     description: "Deny and log any unmatched ingress traffic."
     deny: true
     priority: 65535

@@ -84,21 +84,21 @@ locals {
         zone       = "b"
       }
     },
-    (var.network_mode == "gcve") ?
+    (var.network_mode == "regional_vpc") ?
     {
-      gcve-primary = {
-        network    = module.gcve-primary-vpc[0].self_link
+      regional-vpc-primary = {
+        network    = module.regional-primary-vpc[0].self_link
         project_id = module.landing-project.project_id
         region     = var.regions.primary
-        subnetwork = module.gcve-primary-vpc[0].subnet_self_links["${var.regions.primary}/gcve-default"]
+        subnetwork = module.regional-primary-vpc[0].subnet_self_links["${var.regions.primary}/regional-default"]
         tags       = [local.region_shortnames[var.regions.primary]]
         zone       = "b"
       }
-      gcve-secondary = {
-        network    = module.gcve-secondary-vpc[0].self_link
+      regional-vpc-secondary = {
+        network    = module.regional-secondary-vpc[0].self_link
         project_id = module.landing-project.project_id
         region     = var.regions.secondary
-        subnetwork = module.gcve-secondary-vpc[0].subnet_self_links["${var.regions.secondary}/gcve-default"]
+        subnetwork = module.regional-secondary-vpc[0].subnet_self_links["${var.regions.secondary}/regional-default"]
         tags       = [local.region_shortnames[var.regions.secondary]]
         zone       = "b"
       }

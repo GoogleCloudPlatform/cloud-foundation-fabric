@@ -31,9 +31,9 @@ locals {
     dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
     prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
     },
-    (var.network_mode == "gcve") ? {
-      gcve-primary-0   = module.gcve-primary-vpc[0].subnet_self_links
-      gcve-secondary-0 = module.gcve-secondary-vpc[0].subnet_self_links
+    (var.network_mode == "regional_vpc") ? {
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].subnet_self_links
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].subnet_self_links
     } : {}
   )
   subnet_proxy_only_self_links = {
@@ -79,9 +79,9 @@ locals {
       dev-spoke-0  = module.dev-spoke-vpc.self_link
       prod-spoke-0 = module.prod-spoke-vpc.self_link
     },
-    (var.network_mode == "gcve") ? {
-      gcve-primary-0   = module.gcve-primary-vpc[0].self_link
-      gcve-secondary-0 = module.gcve-secondary-vpc[0].self_link
+    (var.network_mode == "regional_vpc") ? {
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].self_link
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].self_link
     } : {}
   )
 }

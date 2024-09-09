@@ -17,14 +17,14 @@
 locals {
   # routing_config should be aligned to the NVA network interfaces - i.e.
   # local.simple_routing_config[0] sets up the first interface, and so on.
-  gcve_routing_config = {
+  regional_vpc_routing_config = {
     dmz-pri = {
       name                = "dmz-pri"
       enable_masquerading = true
       routes = [
         var.gcp_ranges.gcp_dmz_primary,
         var.gcp_ranges.gcp_dmz_secondary,
-        var.gcp_ranges.gcp_gcve_secondary
+        var.gcp_ranges.gcp_regional_vpc_secondary
       ]
     },
     dmz-sec = {
@@ -33,7 +33,7 @@ locals {
       routes = [
         var.gcp_ranges.gcp_dmz_primary,
         var.gcp_ranges.gcp_dmz_secondary,
-        var.gcp_ranges.gcp_gcve_primary
+        var.gcp_ranges.gcp_regional_vpc_primary
       ]
     },
     landing = {
@@ -47,39 +47,39 @@ locals {
         var.gcp_ranges.gcp_prod_secondary,
       ]
     },
-    gcve-pri = {
-      name = "gcve-pri"
+    regional-vpc-pri = {
+      name = "regional-vpc-pri"
       routes = [
-        var.gcp_ranges.gcp_gcve_primary
+        var.gcp_ranges.gcp_regional_vpc_primary
       ]
     },
-    gcve-sec = {
-      name = "gcve-sec"
+    regional-vpc-sec = {
+      name = "regional-vpc-sec"
       routes = [
-        var.gcp_ranges.gcp_gcve_secondary
+        var.gcp_ranges.gcp_regional_vpc_secondary
       ]
     }
   }
 }
 
 # NVA config
-module "nva-gcve-cloud-config" {
-  for_each             = (var.network_mode == "gcve") ? var.regions : {}
+module "nva-regional-cloud-config" {
+  for_each             = (var.network_mode == "regional_vpc") ? var.regions : {}
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces = concat(
-    [each.key == "primary" ? local.gcve_routing_config.dmz-pri : local.gcve_routing_config.dmz-sec],
-    [local.gcve_routing_config.landing],
-    [each.key == "primary" ? local.gcve_routing_config.gcve-pri : local.gcve_routing_config.gcve-sec]
+    [each.key == "primary" ? local.regional_vpc_routing_config.dmz-pri : local.regional_vpc_routing_config.dmz-sec],
+    [local.regional_vpc_routing_config.landing],
+    [each.key == "primary" ? local.regional_vpc_routing_config.regional-vpc-pri : local.regional_vpc_routing_config.regional-vpc-sec]
   )
 }
 
 
-module "nva-gcve-template" {
-  for_each        = (var.network_mode == "gcve") ? var.regions : {}
+module "nva-regional-template" {
+  for_each        = (var.network_mode == "regional_vpc") ? var.regions : {}
   source          = "../../../modules/compute-vm"
   project_id      = module.landing-project.project_id
-  name            = "nva-gcve-template-${each.key}"
+  name            = "nva-regional-template-${each.key}"
   zone            = "europe-west8-a"
   instance_type   = "e2-standard-4"
   tags            = ["nva"]
@@ -104,18 +104,18 @@ module "nva-gcve-template" {
     },
     ((each.key == "primary") ? #Select the Right VPC con the basis of locality
       {
-        network = module.gcve-primary-vpc[0].self_link
+        network = module.regional-primary-vpc[0].self_link
         subnetwork = try(
-          module.gcve-primary-vpc[0].subnet_self_links["${each.value}/gcve-default"], null
+          module.regional-primary-vpc[0].subnet_self_links["${each.value}/regional-default"], null
         )
         nat       = false
         addresses = null
       }
       :
       {
-        network = module.gcve-secondary-vpc[0].self_link
+        network = module.regional-secondary-vpc[0].self_link
         subnetwork = try(
-          module.gcve-secondary-vpc[0].subnet_self_links["${each.value}/gcve-default"], null
+          module.regional-secondary-vpc[0].subnet_self_links["${each.value}/regional-default"], null
         )
         nat       = false
         addresses = null
@@ -133,17 +133,17 @@ module "nva-gcve-template" {
     termination_action        = "STOP"
   }
   metadata = {
-    user-data = module.nva-gcve-cloud-config[each.key].cloud_config
+    user-data = module.nva-regional-cloud-config[each.key].cloud_config
   }
 }
 
-module "nva-gcve-mig" {
-  for_each          = (var.network_mode == "gcve") ? local.nva_locality : {}
+module "nva-regional-mig" {
+  for_each          = (var.network_mode == "regional_vpc") ? local.nva_locality : {}
   source            = "../../../modules/compute-mig"
   project_id        = module.landing-project.project_id
   location          = "${each.value.region}-${each.value.zone}"
   name              = "nva-cos-${each.key}"
-  instance_template = module.nva-gcve-template[each.value.name].template.self_link
+  instance_template = module.nva-regional-template[each.value.name].template.self_link
   target_size       = 1
   auto_healing_policies = {
     initial_delay_sec = 30
@@ -156,8 +156,8 @@ module "nva-gcve-mig" {
   }
 }
 
-module "ilb-gcve-nva-dmz" {
-  for_each = (var.network_mode == "gcve") ? {
+module "ilb-regional-nva-dmz" {
+  for_each = (var.network_mode == "regional_vpc") ? {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/dmz-default"
@@ -178,7 +178,7 @@ module "ilb-gcve-nva-dmz" {
     subnetwork = try(module.dmz-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
-    for k, v in module.nva-gcve-mig :
+    for k, v in module.nva-regional-mig :
     { group = v.group_manager.instance_group }
     if startswith(k, each.key)
   ]
@@ -190,8 +190,8 @@ module "ilb-gcve-nva-dmz" {
   }
 }
 
-module "ilb-gcve-nva-landing" {
-  for_each = (var.network_mode == "gcve") ? {
+module "ilb-regional-nva-landing" {
+  for_each = (var.network_mode == "regional_vpc") ? {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/landing-default"
@@ -212,7 +212,7 @@ module "ilb-gcve-nva-landing" {
     subnetwork = try(module.landing-vpc.subnet_self_links[each.value.subnet], null)
   }
   backends = [
-    for k, v in module.nva-gcve-mig :
+    for k, v in module.nva-regional-mig :
     { group = v.group_manager.instance_group }
     if startswith(k, each.key)
   ]
@@ -224,17 +224,17 @@ module "ilb-gcve-nva-landing" {
   }
 }
 
-module "ilb-gcve-nva-gcve" {
-  for_each = (var.network_mode == "gcve") ? {
+module "ilb-regional-nva-regional-vpc" {
+  for_each = (var.network_mode == "regional_vpc") ? {
     for k, v in var.regions : k => {
       region = v
-      subnet = "${v}/gcve-default"
+      subnet = "${v}/regional-default"
     }
   } : {}
   source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
-  name          = "nva-gcve-${each.key}"
+  name          = "nva-regional-${each.key}"
   service_label = var.prefix
   forwarding_rules_config = {
     "" = {
@@ -242,15 +242,15 @@ module "ilb-gcve-nva-gcve" {
     }
   }
   vpc_config = (each.key == "primary") ? {
-    network    = module.gcve-primary-vpc[0].self_link
-    subnetwork = try(module.gcve-primary-vpc[0].subnet_self_links[each.value.subnet], null)
+    network    = module.regional-primary-vpc[0].self_link
+    subnetwork = try(module.regional-primary-vpc[0].subnet_self_links[each.value.subnet], null)
     } : {
-    network    = module.gcve-secondary-vpc[0].self_link
-    subnetwork = try(module.gcve-secondary-vpc[0].subnet_self_links[each.value.subnet], null)
+    network    = module.regional-secondary-vpc[0].self_link
+    subnetwork = try(module.regional-secondary-vpc[0].subnet_self_links[each.value.subnet], null)
   }
 
   backends = [
-    for k, v in module.nva-gcve-mig :
+    for k, v in module.nva-regional-mig :
     { group = v.group_manager.instance_group }
     if startswith(k, each.key)
   ]

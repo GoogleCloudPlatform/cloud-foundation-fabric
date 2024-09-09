@@ -19,10 +19,10 @@ locals {
   nva_load_balancers = {
     primary = (var.network_mode == "simple"
       ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
-    : module.ilb-gcve-nva-landing["primary"].forwarding_rule_addresses[""])
+    : module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""])
     secondary = (var.network_mode == "simple"
       ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
-    : module.ilb-gcve-nva-landing["secondary"].forwarding_rule_addresses[""])
+    : module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""])
   }
 }
 

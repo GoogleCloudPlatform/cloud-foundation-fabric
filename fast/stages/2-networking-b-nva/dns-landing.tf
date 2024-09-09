@@ -31,10 +31,10 @@ module "landing-dns-fwd-onprem-example" {
           module.dmz-vpc.self_link,
           module.landing-vpc.self_link
         ],
-        (var.network_mode == "gcve") ?
+        (var.network_mode == "regional_vpc") ?
         [
-          module.gcve-primary-vpc[0].self_link,
-          module.gcve-secondary-vpc[0].self_link
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
         ] : []
       )
       forwarders = { for ip in var.dns.resolvers : ip => null }
@@ -55,10 +55,10 @@ module "landing-dns-fwd-onprem-rev-10" {
           module.dmz-vpc.self_link,
           module.landing-vpc.self_link
         ],
-        (var.network_mode == "gcve") ?
+        (var.network_mode == "regional_vpc") ?
         [
-          module.gcve-primary-vpc[0].self_link,
-          module.gcve-secondary-vpc[0].self_link
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
         ] : []
       )
       forwarders = { for ip in var.dns.resolvers : ip => null }
@@ -78,10 +78,10 @@ module "landing-dns-priv-gcp" {
           # module.dmz-vpc.self_link,
           module.landing-vpc.self_link
         ],
-        (var.network_mode == "gcve") ?
+        (var.network_mode == "regional_vpc") ?
         [
-          module.gcve-primary-vpc[0].self_link,
-          module.gcve-secondary-vpc[0].self_link
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
         ] : []
       )
     }
@@ -105,10 +105,10 @@ module "landing-dns-policy-googleapis" {
       landing = module.landing-vpc.self_link
       dmz     = module.dmz-vpc.self_link
     },
-    (var.network_mode == "gcve") ?
+    (var.network_mode == "regional_vpc") ?
     {
-      gcve-primary   = module.gcve-primary-vpc[0].self_link,
-      gcve-secondary = module.gcve-secondary-vpc[0].self_link
+      regional-primary   = module.regional-primary-vpc[0].self_link,
+      regional-secondary = module.regional-secondary-vpc[0].self_link
     } : {}
   )
 }

@@ -1,15 +1,15 @@
-# GCVE Primary VPC
+# Regional Primary VPC
 
-module "gcve-primary-vpc" {
-  count                           = (var.network_mode == "gcve") ? 1 : 0
+module "regional-primary-vpc" {
+  count                           = (var.network_mode == "regional_vpc") ? 1 : 0
   source                          = "../../../modules/net-vpc"
   project_id                      = module.landing-project.project_id
-  name                            = "prod-gcve-primary-0"
+  name                            = "prod-regional-primary-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/gcve-pri"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/regional-pri"
   }
   dns_policy = {
     inbound = true
@@ -19,7 +19,7 @@ module "gcve-primary-vpc" {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       next_hop_type = "ilb"
-      next_hop      = module.ilb-gcve-nva-gcve["primary"].forwarding_rule_addresses[""]
+      next_hop      = module.ilb-regional-nva-regional-vpc["primary"].forwarding_rule_addresses[""]
     }
   }
   # Set explicit routes for googleapis in case the default route is deleted
@@ -29,33 +29,33 @@ module "gcve-primary-vpc" {
   }
 }
 
-module "gcve-primary-firewall" {
-  count      = (var.network_mode == "gcve") ? 1 : 0
+module "regional-primary-firewall" {
+  count      = (var.network_mode == "regional_vpc") ? 1 : 0
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
-  network    = module.gcve-primary-vpc[0].name
+  network    = module.regional-primary-vpc[0].name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/gcve-pri"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/regional-pri"
   }
 }
 
-# GCVE Secondary VPC
+# Regional Secondary VPC
 
-module "gcve-secondary-vpc" {
-  count = (var.network_mode == "gcve") ? 1 : 0
+module "regional-secondary-vpc" {
+  count = (var.network_mode == "regional_vpc") ? 1 : 0
 
   source                          = "../../../modules/net-vpc"
   project_id                      = module.landing-project.project_id
-  name                            = "prod-gcve-secondary-0"
+  name                            = "prod-regional-secondary-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/gcve-sec"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/regional-sec"
   }
   dns_policy = {
     inbound = true
@@ -65,7 +65,7 @@ module "gcve-secondary-vpc" {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       next_hop_type = "ilb"
-      next_hop      = module.ilb-gcve-nva-gcve["secondary"].forwarding_rule_addresses[""]
+      next_hop      = module.ilb-regional-nva-regional-vpc["secondary"].forwarding_rule_addresses[""]
     }
   }
   # Set explicit routes for googleapis in case the default route is deleted
@@ -75,17 +75,17 @@ module "gcve-secondary-vpc" {
   }
 }
 
-module "gcve-secondary-firewall" {
-  count = (var.network_mode == "gcve") ? 1 : 0
+module "regional-secondary-firewall" {
+  count = (var.network_mode == "regional_vpc") ? 1 : 0
 
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
-  network    = module.gcve-secondary-vpc[0].name
+  network    = module.regional-secondary-vpc[0].name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/gcve-sec"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/regional-sec"
   }
 }
