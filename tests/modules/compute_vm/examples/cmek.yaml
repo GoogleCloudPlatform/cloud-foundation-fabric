@@ -15,18 +15,20 @@
 values:
   module.kms-vm-example.google_compute_disk.disks["attached-disk"]:
     disk_encryption_key:
-    - kms_key_self_link: kms_key_self_link
-      kms_key_service_account: null
+    - kms_key_service_account: null
       raw_key: null
       rsa_encrypted_key: null
     labels:
       disk_name: attached-disk
       disk_type: pd-balanced
     name: kms-test-attached-disk
-    project: project-id
+    project: test-gce
     size: 10
+    source_image_encryption_key: []
+    source_snapshot_encryption_key: []
+    storage_pool: null
     type: pd-balanced
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.kms-vm-example.google_compute_instance.default[0]:
     attached_disk:
     - device_name: attached-disk
@@ -41,16 +43,15 @@ values:
         resource_manager_tags:
         size: 10
         type: pd-balanced
-      kms_key_self_link: kms_key_self_link
       mode: READ_WRITE
     name: kms-test
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.kms-vm-example.google_service_account.service_account[0]:
     account_id: tf-vm-kms-test
     description: null
     disabled: false
     display_name: Terraform VM kms-test.
-    project: project-id
+    project: test-gce
     timeouts: null
 
 counts:

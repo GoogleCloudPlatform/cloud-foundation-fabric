@@ -181,11 +181,11 @@ module "pubsub" {
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified topic id. |  |
-| [schema](outputs.tf#L27) | Schema resource. |  |
-| [schema_id](outputs.tf#L32) | Schema resource id. |  |
-| [subscription_id](outputs.tf#L37) | Subscription ids. |  |
-| [subscriptions](outputs.tf#L48) | Subscription resources. |  |
-| [topic](outputs.tf#L57) | Topic resource. |  |
+| [schema](outputs.tf#L28) | Schema resource. |  |
+| [schema_id](outputs.tf#L33) | Schema resource id. |  |
+| [subscription_id](outputs.tf#L38) | Subscription ids. |  |
+| [subscriptions](outputs.tf#L50) | Subscription resources. |  |
+| [topic](outputs.tf#L60) | Topic resource. |  |
 
 ## Fixtures
 

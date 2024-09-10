@@ -209,6 +209,7 @@ resource "google_cloud_run_v2_service" "service" {
     }
   }
 
+  deletion_protection = var.deletion_protection
   lifecycle {
     ignore_changes = [
       template[0].annotations["run.googleapis.com/operation-id"],
@@ -231,4 +232,3 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
     )
   )
 }
-

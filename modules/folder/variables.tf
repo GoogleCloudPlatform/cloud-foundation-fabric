@@ -74,6 +74,12 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "deletion_protection" {
+  description = "Deletion protection setting for this folder."
+  type        = bool
+  default     = false
+}
+
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
@@ -152,4 +158,3 @@ variable "tag_bindings" {
   type        = map(string)
   default     = null
 }
-

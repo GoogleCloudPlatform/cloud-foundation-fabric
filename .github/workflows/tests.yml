@@ -100,6 +100,7 @@ jobs:
           name: lockfile-${{ runner.os }}-${{ matrix.flavour }}-${{ matrix.version }}
           path: tools/lockfile/.terraform.lock.hcl
           overwrite: true
+          include-hidden-files: true
 
 
   examples-blueprints:

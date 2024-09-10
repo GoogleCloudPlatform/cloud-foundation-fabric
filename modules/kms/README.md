@@ -71,7 +71,7 @@ module "kms" {
   keyring_create = false
   keys           = { key-a = {}, key-b = {}, key-c = {} }
 }
-# tftest skip (uses data sources) e2e
+# tftest skip (uses data sources)
 ```
 
 ### Crypto key purpose
@@ -149,7 +149,6 @@ module "kms" {
 }
 # tftest modules=2 resources=6
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -170,10 +169,10 @@ module "kms" {
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified keyring id. |  |
-| [import_job](outputs.tf#L26) | Keyring import job resources. |  |
-| [key_ids](outputs.tf#L35) | Fully qualified key ids. |  |
-| [keyring](outputs.tf#L47) | Keyring resource. |  |
-| [keys](outputs.tf#L56) | Key resources. |  |
-| [location](outputs.tf#L65) | Keyring location. |  |
-| [name](outputs.tf#L74) | Keyring name. |  |
+| [import_job](outputs.tf#L30) | Keyring import job resources. |  |
+| [key_ids](outputs.tf#L43) | Fully qualified key ids. |  |
+| [keyring](outputs.tf#L56) | Keyring resource. |  |
+| [keys](outputs.tf#L69) | Key resources. |  |
+| [location](outputs.tf#L82) | Keyring location. |  |
+| [name](outputs.tf#L95) | Keyring name. |  |
 <!-- END TFDOC -->

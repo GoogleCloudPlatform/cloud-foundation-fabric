@@ -18,6 +18,8 @@ resource "google_vpc_access_connector" "connector" {
   project       = var.project_id
   name          = "vpc-connector"
   region        = var.region
+  min_instances = 2
+  max_instances = 3
   ip_cidr_range = "192.168.0.0/28"
   network       = var.vpc.self_link
 }

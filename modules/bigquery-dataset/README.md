@@ -347,12 +347,12 @@ module "bigquery-dataset" {
 |---|---|:---:|
 | [dataset](outputs.tf#L17) | Dataset resource. |  |
 | [dataset_id](outputs.tf#L22) | Dataset id. |  |
-| [id](outputs.tf#L36) | Fully qualified dataset id. |  |
-| [materialized_view_ids](outputs.tf#L50) | Map of fully qualified materialized view ids keyed by view ids. |  |
-| [materialized_views](outputs.tf#L55) | Materialized view resources. |  |
-| [self_link](outputs.tf#L60) | Dataset self link. |  |
-| [table_ids](outputs.tf#L74) | Map of fully qualified table ids keyed by table ids. |  |
-| [tables](outputs.tf#L79) | Table resources. |  |
-| [view_ids](outputs.tf#L84) | Map of fully qualified view ids keyed by view ids. |  |
-| [views](outputs.tf#L89) | View resources. |  |
+| [id](outputs.tf#L37) | Fully qualified dataset id. |  |
+| [materialized_view_ids](outputs.tf#L52) | Map of fully qualified materialized view ids keyed by view ids. |  |
+| [materialized_views](outputs.tf#L57) | Materialized view resources. |  |
+| [self_link](outputs.tf#L62) | Dataset self link. |  |
+| [table_ids](outputs.tf#L77) | Map of fully qualified table ids keyed by table ids. |  |
+| [tables](outputs.tf#L82) | Table resources. |  |
+| [view_ids](outputs.tf#L87) | Map of fully qualified view ids keyed by view ids. |  |
+| [views](outputs.tf#L92) | View resources. |  |
 <!-- END TFDOC -->
