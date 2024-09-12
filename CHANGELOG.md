@@ -4,7 +4,30 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2024-08-30 08:18:13+00:00 -->
+<!-- None < 2024-09-05 10:07:19+00:00 -->
+
+## [34.1.0] - 2024-09-05
+<!-- 2024-09-05 10:07:19+00:00 < 2024-08-30 08:18:13+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+
+### FAST
+
+- [[#2545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2545)] Add documentation instructions for potential issues in cicd-github and bootstrap stages ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 12:04:44+00:00 -->
+
+### MODULES
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+- [[#2556](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2556)] Updated the auto pilot gke security posture configuration ([oluakingcp](https://github.com/oluakingcp)) <!-- 2024-09-04 13:53:07+00:00 -->
+- [[#2553](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2553)] Added the GKE security_posture configuration ([oluakingcp](https://github.com/oluakingcp)) <!-- 2024-09-04 13:29:18+00:00 -->
+- [[#2546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2546)] Full examples for CMEK examples ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-04 10:16:50+00:00 -->
+
+### TOOLS
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+- [[#2552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2552)] Upload hidden files ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-03 15:18:21+00:00 -->
 
 ## [34.0.0] - 2024-08-30
 <!-- 2024-08-30 08:18:13+00:00 < 2024-08-01 11:45:37+00:00 -->
@@ -2446,7 +2469,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.1.0...HEAD
+[34.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...v34.1.0
 [34.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...v34.0.0
 [33.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.1...v33.0.0
 [32.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v32.0.1

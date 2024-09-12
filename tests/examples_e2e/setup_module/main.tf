@@ -58,8 +58,9 @@ locals {
 }
 
 resource "google_folder" "folder" {
-  display_name = "E2E Tests ${var.timestamp}-${var.suffix}"
-  parent       = var.parent
+  display_name        = "E2E Tests ${var.timestamp}-${var.suffix}"
+  parent              = var.parent
+  deletion_protection = false
 }
 
 resource "google_project" "project" {
@@ -67,6 +68,7 @@ resource "google_project" "project" {
   billing_account = var.billing_account
   folder_id       = google_folder.folder.id
   project_id      = "${local.prefix}-prj"
+  deletion_policy = "DELETE"
 }
 
 resource "google_project_service" "project_service" {
