@@ -29,6 +29,11 @@ output "lake" {
   value       = google_dataplex_lake.lake.name
 }
 
+output "location" {
+  description = "The location of the Dataplex Lake."
+  value       = google_dataplex_lake.lake.location
+}
+
 output "zones" {
   description = "The zone name of Dataplex Lake."
   value       = distinct(local.zone_assets[*]["zone_name"])
