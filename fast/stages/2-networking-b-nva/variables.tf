@@ -107,7 +107,7 @@ variable "gcp_ranges" {
 }
 
 variable "network_mode" {
-  description = "Selction of the network mode to deploy"
+  description = "Selection of the network design to deploy."
   type        = string
   default     = "simple"
   nullable    = false
