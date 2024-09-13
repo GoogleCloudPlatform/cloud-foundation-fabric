@@ -17,8 +17,8 @@
 locals {
   bootstrap_oauth_client = var.oauth_config.client_secret == null || var.oauth_config.client_id == null
   looker_instance_name   = "${local.prefix}${var.name}"
-  oauth_client_id        = local.bootstrap_oauth_client ? google_iap_client.looker_client.0.client_id : var.oauth_config.client_id
-  oauth_client_secret    = local.bootstrap_oauth_client ? google_iap_client.looker_client.0.secret : var.oauth_config.client_secret
+  oauth_client_id        = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].client_id : var.oauth_config.client_id
+  oauth_client_secret    = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].secret : var.oauth_config.client_secret
   prefix                 = var.prefix == null ? "" : "${var.prefix}-"
 }
 
@@ -104,5 +104,5 @@ resource "google_iap_brand" "looker_brand" {
 resource "google_iap_client" "looker_client" {
   count        = local.bootstrap_oauth_client ? 1 : 0
   display_name = "Looker Core default oauth client."
-  brand        = google_iap_brand.looker_brand.0.name
+  brand        = google_iap_brand.looker_brand[0].name
 }
