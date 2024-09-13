@@ -32,7 +32,7 @@ counts:
   google_compute_router_nat: 2
   google_compute_router_peer: 4
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 12
+  google_compute_subnetwork: 14
   google_compute_vpn_tunnel: 4
   google_dns_managed_zone: 9
   google_dns_policy: 6
@@ -49,7 +49,8 @@ counts:
   google_project_iam_member: 18
   google_project_service: 24
   google_project_service_identity: 18
-  google_storage_bucket_object: 1
-  modules: 45
+  google_storage_bucket_object: 2
+  google_vpc_access_connector: 2
+  modules: 47
   random_id: 2
-  resources: 256
+  resources: 261
