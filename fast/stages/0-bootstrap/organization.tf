@@ -49,7 +49,11 @@ locals {
     var.organization.customer_id == null ? [] : [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
-  drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
+  essential_contacts_domains = concat(
+    var.organization.domain == null ? [] : [var.organization.domain],
+    var.org_policies_config.constraints.allowed_essential_contact_domains
+  )
+  org_policies_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
 
   # intermediate values before we merge in what comes from the checklist
   _iam_principals = {
@@ -237,13 +241,13 @@ module "organization" {
     }
   }
   org_policies = var.bootstrap_user != null ? {} : {
-    "iam.allowedPolicyMemberDomains" = {
+    "essentialcontacts.allowedContactDomains" = {
       rules = [
         {
-          allow = { values = local.drs_domains }
+          allow = { values = local.essential_contacts_domains }
           condition = {
             expression = (
-              "!resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+              "!resource.matchTag('${local.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')"
             )
           }
         },
@@ -251,7 +255,28 @@ module "organization" {
           allow = { all = true }
           condition = {
             expression = (
-              "resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+              "resource.matchTag('${local.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')"
+            )
+            title = "allow-all"
+          }
+        },
+      ]
+    }
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [
+        {
+          allow = { values = local.drs_domains }
+          condition = {
+            expression = (
+              "!resource.matchTag('${local.org_policies_tag_name}', 'allowed-policy-member-domains-all')"
+            )
+          }
+        },
+        {
+          allow = { all = true }
+          condition = {
+            expression = (
+              "resource.matchTag('${local.org_policies_tag_name}', 'allowed-policy-member-domains-all')"
             )
             title = "allow-all"
           }
@@ -266,6 +291,9 @@ module "organization" {
       description = "Organization policy conditions."
       iam         = {}
       values = merge(
+        {
+          allowed-essential-contacts-domains-all = {}
+        },
         {
           allowed-policy-member-domains-all = {}
         },
