@@ -48,7 +48,6 @@ values:
     name: test-looker
     org_id: null
     project_id: test-looker
-    tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
