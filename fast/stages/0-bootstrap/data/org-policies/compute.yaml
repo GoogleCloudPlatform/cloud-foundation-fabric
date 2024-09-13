@@ -22,6 +22,14 @@ compute.disableGuestAttributesAccess:
   rules:
     - enforce: true
 
+compute.disableNestedVirtualization:
+  rules:
+  - enforce: true
+
+compute.disableSerialPortAccess:
+  rules:
+  - enforce: true    
+
 compute.requireOsLogin:
   rules:
     - enforce: true
@@ -36,11 +44,10 @@ compute.skipDefaultNetworkCreation:
   rules:
     - enforce: true
 
-compute.vmExternalIpAccess:
+compute.setNewProjectDefaultToZonalDNSOnly:
   rules:
-    - deny:
-        all: true
-
+  - enforce: true  
+  
 # only allow GCP images by default
 compute.trustedImageProjects:
   rules:
@@ -66,17 +73,14 @@ compute.trustedImageProjects:
         - "is:projects/deeplearning-platform-release"
         - "is:projects/serverless-vpc-access-images"
 
+compute.vmExternalIpAccess:
+  rules:
+    - deny:
+        all: true
+
 # compute.disableInternetNetworkEndpointGroup:
 #   rules:
 #   - enforce: true
-
-compute.disableNestedVirtualization:
-  rules:
-  - enforce: true
-
-compute.disableSerialPortAccess:
-  rules:
-  - enforce: true
 
 # compute.restrictCloudNATUsage:
 #   rules:
@@ -119,10 +123,6 @@ compute.disableSerialPortAccess:
 #       all: true
 
 # compute.restrictXpnProjectLienRemoval:
-#   rules:
-#   - enforce: true
-
-# compute.setNewProjectDefaultToZonalDNSOnly:
 #   rules:
 #   - enforce: true
 
