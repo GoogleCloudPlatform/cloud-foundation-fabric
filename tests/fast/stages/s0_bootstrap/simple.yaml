@@ -19,7 +19,7 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
-  google_org_policy_policy: 22
+  google_org_policy_policy: 23
   google_organization_iam_binding: 28
   google_organization_iam_custom_role: 10
   google_organization_iam_member: 29
