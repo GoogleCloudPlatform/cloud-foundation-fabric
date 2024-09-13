@@ -10,7 +10,7 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "dmz" or "untrusted" VPC centralizes the external connectivity towards untrusted network resources, such as Internet (inbound and outbound) or 3P service providers or parties connected through VPN or Interconnect.
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs -both in hub and spokes- split the management of the network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
-- if Regional VPC network mode is selected two additional regional trusted hub VPCs are deployed to provide connectivity to GCP services (eg. GCVE) that don't multi-regional routing. 
+- if Regional VPC network mode is selected two additional regional trusted hub VPCs are deployed to provide connectivity to GCP services (eg. GCVE) that don't support multi-regional routing. 
 - the design facilitates DNS centralization
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
@@ -79,40 +79,39 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 ## Design overview and choices
 
-### Multi-regional deployment
+### Deployment models
+This stage support three different deployment models that can be controlled by `var.network_mode`. The stage deploys networking resources in two different regions and supports both regional and multi-regional VPCs. Depending on the selected deployment model different routing strategies and NVAs failover modes can be implemented. 
 
-This stage deploys networking resources in two different regions, deployed and configured in order to allow for a manual ("simple" mode) or automated ("ncc-ra") failover in case of failures.
-Two different architectural flavors are provided which, while similar, implement a completely different routing strategy:
-
-- **Simple NVA**, where the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
-- **NCC-RA**, where the network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
+- **Simple NVA**: This network mode deploys multi-regional VPCs, the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
+- **NCC-RA**: This network mode deploys multi-regional VPCs as the simple mode but provides a different routing strategy. The network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
   - avoid using network tags to route traffic
   - automatically send all traffic through the cross-regional NVAs if the ones in-region fail
   - avoid cross-regional traffic unless absolutely necessary for disaster recovery
-
-Switching between the two different models is controlled by `var.enable_ncc_ra`.
+- **Regional VPC**: This network mode is based on the Simple NVA model but deploys two additional regional VPCs to support use cases where multi-regional (tag based, policy based) routing cannot be used.
 
 ### VPC design
 
-The "landing zone" is divided into two VPC networks:
+The "landing zone" is divided into two main networks area:
 
-- the landing VPC: the connectivity hub towards other trusted networks
-- the DMZ VPC: the connectivity hub towards any other untrusted network
+- landing: a multi-regional VPC provides the connectivity hub towards other trusted networks. If the **regional network mode** is selected, two additional regional landing VPC provides connectivity to trusted services that don't support multi regional VPC routing (eg. GCVE).
+- DMZ: a multi-regional VPC provides the connectivity hub towards any other untrusted network
 
 By default, the design assumes the following:
 
-- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the landing VPC
+- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the multi-region landing VPC
 - the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) is deployed in the dmz landing VPC only
 - cross-environment traffic and traffic from any dmz network to any landing network (and vice versa) pass through the NVAs. For demo purposes, the current NVA performs simple routing/natting only
 - any traffic from a landing network to an dmz network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions
 
-The landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
+The landing network area acts as a hub: the multi-region landing VPC bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
 
 - one spoke VPC hosts the development environment resources
 - one spoke VPC hosts the production environment resources
 
 Each virtual network is a [shared VPC](https://cloud.google.com/vpc/docs/shared-vpc): shared VPCs are managed in dedicated *host projects* and shared with other *service projects* that consume the network resources.
 Shared VPC lets organization administrators delegate administrative responsibilities, such as creating and managing instances, to Service Project Admins while maintaining centralized control over network resources like subnets, routes, and firewalls.
+
+When the **regional network mode** is selected, the stage deploys two additional landing VPCs each one with a regional scope. If required the regional VPCs can be exteded as shared VPC and cosumed by other service (spoke) projects.   
 
 Users can easily extend the design to host additional environments, or adopt different logical mappings for the spokes (for example, in order to create a new spoke for each company entity). Adding spokes is trivial and it does not increase the design complexity. The steps to add more spokes are provided in the following sections.
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within the same organization, and with non-production spokes in a different organization.
@@ -137,6 +136,11 @@ Specifically, each NVA establishes two BGP sessions (for redundancy) with the th
 NVAs establish **extra BGP sessions with both cross-regional NVAs**. In this case, the NVAs advertise the regional trusted routes only. This allows cross-spoke (environment) traffic to remain also symmetric (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)). We set these routes to be exchanged at a lower cost than the one set for the other routes.
 
 Following the majority of real-life deployments, **we assume appliances to be stateful and not able to synchronize sessions between multiple NVAs within the same regional cluster**. For this reason, within each regional cluster, NVAs announce the same routes with different MED costs (1 point of difference between the primary and the secondary). This will cause traffic to go deterministically through one applaiance at the time within each region. You can change this default behavior modifying the cost settings in the [NVAs BGP configuration file](./data/bgp-config.tftpl).
+
+#### Regional-VPC NVA
+
+When the **regional network mode** is selected, the VPCs are connected with two sets of sample NVA machines, grouped in regional (multi-zone) [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances connects are multi-nic instances that connect the DMZ VPC with the landing VPCs and provides simple routing/natting functionalities. The appliances are suited for demo purposes only and they should be replaced with enterprise-grade solutions before moving to production.
+The traffic destined to the VMs in each MIG is mediated through regional internal load balancers, both in the landing and in the dmz networks.
 
 ### External connectivity
 
@@ -166,34 +170,36 @@ Minimizing the number of routes (and subnets) in the cloud environment is import
 
 This stage uses a dedicated /11 block (10.64.0.0/11), which should be sized to the own needs. The subnets created in each VPC derive from this range.
 
-The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
+The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *regional trusted landing europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*, *regional trusted landing europe-west4*.
 
 The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed. The last three /24 ranges can be used for [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access)via the `psa_ranges` variable, or for [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal) subnets via the factory.
 
 This is a summary of the subnets allocated by default in this setup:
 
-| name                | description                             | CIDR           |
-| ------------------- | --------------------------------------- | -------------- |
-| landing-default-ew1 | Trusted landing subnet - europe-west1   | 10.128.64.0/24 |
-| landing-default-ew4 | Trusted landing subnet - europe-west4   | 10.128.96.0/24 |
-| dmz-default-ew1     | Untrusted landing subnet - europe-west1 | 10.128.0.0/24  |
-| dmz-default-ew4     | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
-| dev-default-ew1     | Dev spoke subnet - europe-west1         | 10.68.0.0/24   |
-| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.253.0/24 |
-| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.254.0/24 |
-| dev-default-ew1     | Free (L7 ILB) - europe-west1            | 10.68.255.0/24 |
-| dev-default-ew4     | Dev spoke subnet - europe-west4         | 10.84.0.0/24   |
-| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.253.0/24 |
-| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.254.0/24 |
-| dev-default-ew4     | Free (L7 ILB) - europe-west4            | 10.84.255.0/24 |
-| prod-default-ew1    | Prod spoke subnet - europe-west1        | 10.72.0.0/24   |
-| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.253.0/24 |
-| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.254.0/24 |
-| prod-default-ew1    | Free (L7 ILB) - europe-west1            | 10.72.255.0/24 |
-| prod-default-ew4    | Prod spoke subnet - europe-west4        | 10.88.0.0/24   |
-| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.253.0/24 |
-| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.254.0/24 |
-| prod-default-ew4    | Free (L7 ILB) - europe-west4            | 10.88.255.0/24 |
+| name                         | description                                      | CIDR           |
+| ---------------------------- | ------------------------------------------------ | -------------- |
+| landing-default-ew1          | Trusted landing subnet - europe-west1            | 10.64.0.0/24   |
+| landing-default-ew4          | Trusted landing subnet - europe-west4            | 10.80.0.0/24   |
+| regional-landing-default-ew1 | Regional trusted landing subnet - europe-west1   | 10.65.0.0/24   |
+| regional-landing-default-ew4 | Regional trusted landing subnet - europe-west4   | 10.81.0.0/24   |
+| dmz-default-ew1              | Untrusted landing subnet - europe-west1          | 10.64.128.0/24 |
+| dmz-default-ew4              | Untrusted landing subnet - europe-west4          | 10.80.128.0/24 |
+| dev-default-ew1              | Dev spoke subnet - europe-west1                  | 10.68.0.0/24   |
+| dev-default-ew1              | Free (PSA) - europe-west1                        | 10.68.253.0/24 |
+| dev-default-ew1              | Free (PSA) - europe-west1                        | 10.68.254.0/24 |
+| dev-default-ew1              | Free (L7 ILB) - europe-west1                     | 10.68.255.0/24 |
+| dev-default-ew4              | Dev spoke subnet - europe-west4                  | 10.84.0.0/24   |
+| dev-default-ew4              | Free (PSA) - europe-west4                        | 10.84.253.0/24 |
+| dev-default-ew4              | Free (PSA) - europe-west4                        | 10.84.254.0/24 |
+| dev-default-ew4              | Free (L7 ILB) - europe-west4                     | 10.84.255.0/24 |
+| prod-default-ew1             | Prod spoke subnet - europe-west1                 | 10.72.0.0/24   |
+| prod-default-ew1             | Free (PSA) - europe-west1                        | 10.72.253.0/24 |
+| prod-default-ew1             | Free (PSA) - europe-west1                        | 10.72.254.0/24 |
+| prod-default-ew1             | Free (L7 ILB) - europe-west1                     | 10.72.255.0/24 |
+| prod-default-ew4             | Prod spoke subnet - europe-west4                 | 10.88.0.0/24   |
+| prod-default-ew4             | Free (PSA) - europe-west4                        | 10.88.253.0/24 |
+| prod-default-ew4             | Free (PSA) - europe-west4                        | 10.88.254.0/24 |
+| prod-default-ew4             | Free (L7 ILB) - europe-west4                     | 10.88.255.0/24 |
 
 These subnets can be advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
@@ -216,6 +222,13 @@ The Cloud Routers (connected to the VPN gateways in the landing VPC) are configu
 - the spokes and the trusted landing VPC exchange dynamic routes through VPC peerings
 - on-premises is connected to the trusted landing VPC and it dynamically exchanges BGP routes with GCP (with the landing) using HA VPN
 - the NVAs exchange dynamic routes using BGP with Cloud Routers in the DMZ, Cloud Routers in the landing and cross-regional NVAs. This allows VMs in different environments and different regions to communicate.
+
+#### Regional-VPC NVA
+
+- routes between multiple subnets within the same VPC are automatically exchanged by GCP
+- if configured, traffic between regional VPCs is managed by the NVAs though the DMZ VPC
+- services that need to be shared by regional VPC hosts can be deployed on the multi-region landing VPC. The NVAs route the traffic from the regional landing VPCs to multi-region VPC
+- on-premises is connected to the multi-region landing VPC and consumed by regional landing VPCs as shared service.
 
 ### Internet egress
 
