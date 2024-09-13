@@ -36,10 +36,10 @@ This example shows how to set up a public Looker Core instance.
 
 ```hcl
 module "looker" {
-  source         = "./fabric/modules/looker-core"
-  project_id     = var.project_id
-  region         = var.region
-  name           = "looker"
+  source     = "./fabric/modules/looker-core"
+  project_id = var.project_id
+  region     = var.region
+  name       = "looker"
   network_config = {
     public = {}
   }
@@ -59,16 +59,16 @@ module "project" {
   parent          = var.folder_id
   name            = "looker"
   prefix          = var.prefix
-  services        = [
+  services = [
     "servicenetworking.googleapis.com",
     "looker.googleapis.com",
   ]
 }
 
 module "vpc" {
-  source      = "./fabric/modules/net-vpc"
-  project_id  = module.project.project_id
-  name        = "my-network"
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
   psa_configs = [
     {
       ranges = { looker = "10.60.0.0/16" }
@@ -77,10 +77,10 @@ module "vpc" {
 }
 
 module "looker" {
-  source         = "./fabric/modules/looker-core"
-  project_id     = module.project.project_id
-  region         = var.region
-  name           = "looker"
+  source     = "./fabric/modules/looker-core"
+  project_id = module.project.project_id
+  region     = var.region
+  name       = "looker"
   network_config = {
     psa_config = {
       network = module.vpc.id
@@ -103,16 +103,16 @@ module "project" {
   parent          = var.folder_id
   name            = "looker"
   prefix          = var.prefix
-  services        = [
+  services = [
     "servicenetworking.googleapis.com",
     "looker.googleapis.com",
   ]
 }
 
 module "vpc" {
-  source      = "./fabric/modules/net-vpc"
-  project_id  = module.project.project_id
-  name        = "my-network"
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
   psa_configs = [
     {
       ranges = { looker = "10.60.0.0/16" }
@@ -123,7 +123,7 @@ module "vpc" {
 module "kms" {
   source     = "./fabric/modules/kms"
   project_id = module.project.project_id
-  keyring    = {
+  keyring = {
     location = var.region
     name     = "keyring"
   }
@@ -139,10 +139,10 @@ module "kms" {
 }
 
 module "looker" {
-  source         = "./fabric/modules/looker-core"
-  project_id     = module.project.project_id
-  region         = var.region
-  name           = "looker"
+  source     = "./fabric/modules/looker-core"
+  project_id = module.project.project_id
+  region     = var.region
+  name       = "looker"
   admin_settings = {
     allowed_email_domains = ["google.com"]
   }
