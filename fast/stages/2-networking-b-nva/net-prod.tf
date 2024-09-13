@@ -16,7 +16,7 @@
 
 # tfdoc:file:description Production spoke VPC and related resources.
 locals {
-  nva_load_balancers = {
+  nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
     primary = (var.network_mode == "simple"
       ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
     : module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""])

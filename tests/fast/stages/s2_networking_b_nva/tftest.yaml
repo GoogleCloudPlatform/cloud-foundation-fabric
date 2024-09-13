@@ -21,3 +21,6 @@ tests:
   ncc-ra:
     extra_files:
       - ../../plugins/2-networking-serverless-connector/*.tf
+  regional:
+    extra_files:
+      - ../../plugins/2-networking-serverless-connector/*.tf
