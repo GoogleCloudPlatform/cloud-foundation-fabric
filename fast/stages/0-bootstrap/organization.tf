@@ -293,9 +293,7 @@ module "organization" {
       values = merge(
         {
           allowed-essential-contacts-domains-all = {}
-        },
-        {
-          allowed-policy-member-domains-all = {}
+          allowed-policy-member-domains-all      = {}
         },
         var.org_policies_config.tag_values
       )
