@@ -50,8 +50,8 @@ locals {
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   essential_contacts_domains = concat(
-    var.organization.domain == null ? [] : [var.organization.domain],
-    var.org_policies_config.constraints.allowed_essential_contact_domains
+    var.organization.domain == null ? [] : ["@${var.organization.domain}"],
+    [for d in var.org_policies_config.constraints.allowed_essential_contact_domains : "@${d}"]
   )
   org_policies_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
 
