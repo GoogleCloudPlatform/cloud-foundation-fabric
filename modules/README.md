@@ -83,6 +83,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
+- [Biglake catalog](./biglake-catalog)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Data Catalog Tag](./data-catalog-tag)
