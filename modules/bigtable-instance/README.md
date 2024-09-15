@@ -12,7 +12,6 @@ This module allows managing a single BigTable instance, including access configu
 ### Instance with access configuration
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -38,7 +37,6 @@ module "bigtable-instance" {
 ### Instance with tables and column families
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -68,10 +66,52 @@ module "bigtable-instance" {
 # tftest modules=1 resources=4 inventory=columns.yaml
 ```
 
+### Instance with table and authorized view
+
+```hcl
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-west1-b"
+    }
+  }
+  tables = {
+    test = {
+      split_keys = ["a", "b", "c"]
+      column_families = {
+        cf1 = {}
+        cf2 = {}
+        cf3 = {}
+      }
+    }
+    authorized_views = {
+      test-authorized-view = {
+        subset_views = [
+          {
+            row_prefixes = [base64encode("prefix#")]
+            family_subsets = {
+              cf1 = {
+                qualifiers = [base64encode("qualifier"), base64encode("qualifier-second")]
+              }
+              cf2 = {
+                qualifier_prefixes = [""]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=authorized-views.yaml
+```
+
 ### Instance with replication enabled
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -94,7 +134,6 @@ module "bigtable-instance" {
 ### Instance with garbage collection policy
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -128,7 +167,6 @@ not specify a `gc_policy`. If a column family specifies a `gc_policy`, the
 default garbage collection policy is ignored for that column family.
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -160,7 +198,6 @@ module "bigtable-instance" {
 If you are not using autoscaling settings, you must set a specific number of nodes with the variable `num_nodes`.
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -180,7 +217,6 @@ module "bigtable-instance" {
 If you use autoscaling, you should not set the variable `num_nodes`.
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -195,8 +231,6 @@ module "bigtable-instance" {
       }
     }
   }
-
-
 }
 # tftest modules=1 resources=1 inventory=autoscaling1.yaml
 ```
@@ -204,7 +238,6 @@ module "bigtable-instance" {
 ### Instance with autoscaling (based on CPU and/or storage)
 
 ```hcl
-
 module "bigtable-instance" {
   source     = "./fabric/modules/bigtable-instance"
   project_id = "my-project"
@@ -239,7 +272,7 @@ module "bigtable-instance" {
 | [encryption_key](variables.tf#L69) | The KMS key id to used for encryption of the Bigtable instance. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L75) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L81) | Labels to be attached to the instance. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tables](variables.tf#L97) | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;  split_keys &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  column_families &#61; optional&#40;map&#40;object&#40;&#10;    &#123;&#10;      gc_policy &#61; optional&#40;object&#40;&#123;&#10;        deletion_policy &#61; optional&#40;string&#41;&#10;        gc_rules        &#61; optional&#40;string&#41;&#10;        mode            &#61; optional&#40;string&#41;&#10;        max_age         &#61; optional&#40;string&#41;&#10;        max_version     &#61; optional&#40;string&#41;&#10;      &#125;&#41;, null&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tables](variables.tf#L97) | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;  split_keys &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  column_families &#61; optional&#40;map&#40;object&#40;&#10;    &#123;&#10;      gc_policy &#61; optional&#40;object&#40;&#123;&#10;        deletion_policy &#61; optional&#40;string&#41;&#10;        gc_rules        &#61; optional&#40;string&#41;&#10;        mode            &#61; optional&#40;string&#41;&#10;        max_age         &#61; optional&#40;string&#41;&#10;        max_version     &#61; optional&#40;string&#41;&#10;      &#125;&#41;, null&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  authorized_views &#61; optional&#40;map&#40;object&#40;&#123;&#10;    deletion_protection &#61; bool&#10;    subset_views &#61; optional&#40;list&#40;object&#40;&#123;&#10;      row_prefixes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      family_subsets &#61; optional&#40;map&#40;object&#40;&#123;&#10;        qualifiers         &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;        qualifier_prefixes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

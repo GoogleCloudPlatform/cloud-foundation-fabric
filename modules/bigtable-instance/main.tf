@@ -33,6 +33,15 @@ locals {
       autoscaling  = cluster.autoscaling == null ? var.default_autoscaling : cluster.autoscaling
     }
   }
+
+  authorized_views = merge([
+    for table_name, table in var.tables : {
+      for authorized_view_name, authorized_view in table.authorized_views : "${table_name}-${authorized_view_name}" => merge({
+        table_name           = table_name
+        authorized_view_name = authorized_view_name
+      }, authorized_view)
+    }
+  ]...)
 }
 
 resource "google_bigtable_instance" "default" {
@@ -111,6 +120,28 @@ resource "google_bigtable_gc_policy" "default" {
     for_each = try(each.value.gc_policy.max_version, null) != null ? [""] : []
     content {
       number = each.value.gc_policy.max_version
+    }
+  }
+}
+
+resource "google_bigtable_authorized_view" "default" {
+  for_each            = local.authorized_views
+  name                = each.value.authorized_view_name
+  instance_name       = google_bigtable_instance.default.name
+  table_name          = google_bigtable_table.default[each.value.table_name].name
+  deletion_protection = each.value.deletion_protection
+  dynamic "subset_view" {
+    for_each = each.value.subset_views
+    content {
+      row_prefixes = subset_view.value.row_prefixes
+      dynamic "family_subsets" {
+        for_each = each.value.family_subsets
+        content {
+          family_name        = family_subsets.key
+          qualifiers         = family_subsets.value.qualifiers
+          qualifier_prefixes = family_subsets.value.qualifier_prefixes
+        }
+      }
     }
   }
 }

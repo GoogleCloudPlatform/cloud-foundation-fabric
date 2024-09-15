@@ -109,6 +109,16 @@ variable "tables" {
           max_version     = optional(string)
         }), null)
     })), {})
+    authorized_views = optional(map(object({
+      deletion_protection = bool
+      subset_views = optional(list(object({
+        row_prefixes = optional(list(string), [])
+        family_subsets = optional(map(object({
+          qualifiers         = optional(list(string), [])
+          qualifier_prefixes = optional(list(string), [])
+        })), {})
+      })), [])
+    })), {})
   }))
   default = {}
 }
