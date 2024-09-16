@@ -104,8 +104,8 @@ variable "gcp_ranges" {
     gcp_dev_secondary     = "10.84.0.0/16"
     gcp_landing_primary   = "10.64.0.0/17"
     gcp_landing_secondary = "10.80.0.0/17"
-    gcp_dmz_primary       = "10.64.127.0/17"
-    gcp_dmz_secondary     = "10.80.127.0/17"
+    gcp_dmz_primary       = "10.64.128.0/17"
+    gcp_dmz_secondary     = "10.80.128.0/17"
     gcp_prod_primary      = "10.72.0.0/16"
     gcp_prod_secondary    = "10.88.0.0/16"
   }
