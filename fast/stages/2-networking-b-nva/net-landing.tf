@@ -35,7 +35,7 @@ module "landing-project" {
       : []
     ),
     (
-      (var.network_mode == "regional_vpc")
+      var.fast_features.gcve
       ? ["vmwareengine.googleapis.com"]
       : []
     )
