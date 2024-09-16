@@ -80,7 +80,7 @@ module "nva-regional-template" {
   source          = "../../../modules/compute-vm"
   project_id      = module.landing-project.project_id
   name            = "nva-regional-template-${each.key}"
-  zone            = "europe-west8-a"
+  zone            = "${each.value}-${local.nva_zones[0]}"
   instance_type   = "e2-standard-4"
   tags            = ["nva"]
   create_template = true
