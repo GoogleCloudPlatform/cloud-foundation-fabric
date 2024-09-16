@@ -427,6 +427,7 @@ module "cloud_run" {
   iam = {
     "roles/run.invoker" = ["group:${var.group_email}"]
   }
+  deletion_protection = false
 }
 
 # tftest modules=1 resources=2 inventory=job-iam-env.yaml e2e

@@ -244,7 +244,8 @@ variable "org_policies_config" {
   description = "Organization policies customization."
   type = object({
     constraints = optional(object({
-      allowed_policy_member_domains = optional(list(string), [])
+      allowed_essential_contact_domains = optional(list(string), [])
+      allowed_policy_member_domains     = optional(list(string), [])
     }), {})
     import_defaults = optional(bool, false)
     tag_name        = optional(string, "org-policies")
