@@ -37,15 +37,17 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [Multi-regional deployment](#multi-regional-deployment)
+  - [Deployment models](#deployment-models)
   - [VPC design](#vpc-design)
     - [Simple NVA](#simple-nva)
     - [NCC-RA](#ncc-ra)
+    - [Regional-VPC NVA](#regional-vpc-nva)
   - [External connectivity](#external-connectivity)
   - [Internal connectivity](#internal-connectivity)
   - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
     - [Simple NVA](#simple-nva)
     - [NCC-RA](#ncc-ra)
+    - [Regional-VPC NVA](#regional-vpc-nva)
   - [Internet egress](#internet-egress)
   - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
   - [DNS](#dns)
