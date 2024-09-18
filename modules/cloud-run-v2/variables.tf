@@ -86,6 +86,12 @@ variable "custom_audiences" {
   default     = null
 }
 
+variable "deletion_protection" {
+  description = "Deletion protection setting for this Cloud Run service."
+  type        = string
+  default     = null
+}
+
 variable "encryption_key" {
   description = "The full resource name of the Cloud KMS CryptoKey."
   type        = string

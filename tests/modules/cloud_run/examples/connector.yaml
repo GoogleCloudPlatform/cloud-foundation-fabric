@@ -37,8 +37,6 @@ values:
   module.cloud_run.google_vpc_access_connector.connector[0]:
     ip_cidr_range: 10.10.10.0/28
     machine_type: e2-micro
-    max_throughput: 300
-    min_throughput: 200
     name: hello
     network: projects/xxx/global/networks/aaa
     project: project-id

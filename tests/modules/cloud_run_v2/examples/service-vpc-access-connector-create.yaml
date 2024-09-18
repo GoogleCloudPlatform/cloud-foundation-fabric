@@ -14,36 +14,56 @@
 
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
+    annotations: null
     binary_authorization: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: false
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
     location: europe-west8
     name: hello
     project: project-id
+    scaling: []
     template:
-      - containers:
-          - args: null
-            command: null
-            depends_on: null
-            env: []
-            image: us-docker.pkg.dev/cloudrun/container/hello
-            name: hello
-            volume_mounts: []
-        execution_environment: EXECUTION_ENVIRONMENT_GEN1
-        volumes: []
+    - annotations: null
+      containers:
+      - args: null
+        command: null
+        depends_on: null
+        env: []
+        image: us-docker.pkg.dev/cloudrun/container/hello
+        liveness_probe: []
+        name: hello
+        volume_mounts: []
+        working_dir: null
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      labels: null
+      revision: null
+      session_affinity: null
+      volumes: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.cloud_run.google_vpc_access_connector.connector[0]:
     ip_cidr_range: 10.10.10.0/28
     machine_type: e2-micro
-    max_throughput: 1000
+    max_instances: 10
+    min_instances: 3
     name: hello
     network: projects/xxx/global/networks/aaa
     project: project-id
     region: europe-west8
     subnet: []
+    timeouts: null
 
 counts:
   google_cloud_run_v2_service: 1
   google_vpc_access_connector: 1
   modules: 1
   resources: 2
-
-outputs: {}
