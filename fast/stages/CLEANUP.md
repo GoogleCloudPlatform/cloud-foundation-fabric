@@ -4,13 +4,6 @@ If you want to destroy a previous FAST deployment in your organization, follow t
 
 Destruction must be done in reverse order, from stage 3 to stage 0
 
-## Stage 3 (Project Factory)
-
-```bash
-cd $FAST_PWD/3-project-factory/dev/
-terraform destroy
-```
-
 ## Stage 3 (GKE)
 
 Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they need to be removed manually from the state.
@@ -19,8 +12,8 @@ Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they
 cd $FAST_PWD/3-gke-multitenant/dev/
 
 # remove BQ dataset manually
-for x in $(terraform state list | grep google_bigquery_dataset); do  
-  terraform state rm "$x"; 
+for x in $(terraform state list | grep google_bigquery_dataset); do
+  terraform state rm "$x";
 done
 
 terraform destroy
@@ -34,14 +27,21 @@ Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they
 cd $FAST_PWD/3-data-platform/dev/
 
 # remove GCS buckets and BQ dataset manually. Projects will be destroyed anyway
-for x in $(terraform state list | grep google_storage_bucket.bucket); do  
-  terraform state rm "$x"; 
+for x in $(terraform state list | grep google_storage_bucket.bucket); do
+  terraform state rm "$x";
 done
 
-for x in $(terraform state list | grep google_bigquery_dataset); do  
-  terraform state rm "$x"; 
+for x in $(terraform state list | grep google_bigquery_dataset); do
+  terraform state rm "$x";
 done
 
+terraform destroy
+```
+
+## Stage 2 (Project Factory)
+
+```bash
+cd $FAST_PWD/2-project-factory/
 terraform destroy
 ```
 
@@ -69,7 +69,7 @@ Stage 1 is a little more complicated because of the GCS buckets containing your 
 cd $FAST_PWD/1-resman/
 
 # remove buckets from state since terraform refuses to delete them
-for x in $(terraform state list | grep google_storage_bucket.bucket); do  
+for x in $(terraform state list | grep google_storage_bucket.bucket); do
   terraform state rm "$x"
 done
 
@@ -89,12 +89,12 @@ export FAST_BU=$(gcloud config list --format 'value(core.account)')
 terraform apply -var bootstrap_user=$FAST_BU
 
 # remove GCS buckets and BQ dataset manually. Projects will be destroyed anyway
-for x in $(terraform state list | grep google_storage_bucket.bucket); do  
-  terraform state rm "$x"; 
+for x in $(terraform state list | grep google_storage_bucket.bucket); do
+  terraform state rm "$x";
 done
 
-for x in $(terraform state list | grep google_bigquery_dataset); do  
-  terraform state rm "$x"; 
+for x in $(terraform state list | grep google_bigquery_dataset); do
+  terraform state rm "$x";
 done
 
 ## remove the providers file and migrate state
@@ -110,7 +110,7 @@ When the destroy fails, continue with the steps below. Again, make sure your use
 
 ```bash
 # Add the Organization Admin role to $BU_USER in the GCP Console
-# then execute the command below to grant yourself the permissions needed 
+# then execute the command below to grant yourself the permissions needed
 # to finish the destruction
 export FAST_DESTROY_ROLES="roles/resourcemanager.projectDeleter \
   roles/owner roles/resourcemanager.organizationAdmin"
