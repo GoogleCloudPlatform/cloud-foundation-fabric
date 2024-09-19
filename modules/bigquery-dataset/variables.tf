@@ -46,7 +46,7 @@ variable "authorized_datasets" {
 }
 
 variable "authorized_routines" {
-  description = "An array of authorized routine to be authorized on the dataset."
+  description = "An array of routines to be authorized on the dataset."
   type = list(object({
     project_id = string,
     dataset_id = string,
@@ -162,6 +162,44 @@ variable "options" {
 variable "project_id" {
   description = "Id of the project where datasets will be created."
   type        = string
+}
+
+variable "routines" {
+  description = "Routine definitions."
+  type = map(object({
+    description          = optional(string)
+    routine_type         = string
+    language             = optional(string)
+    definition_body      = string
+    imported_libraries   = optional(list(string))
+    determinism_level    = optional(string)
+    data_governance_type = optional(string)
+    return_table_type    = optional(string)
+    arguments = optional(map(object({
+      argument_kind = optional(string)
+      mode          = optional(string)
+      data_type     = optional(string)
+    })), {})
+    spark_options = optional(object({
+      archive_uris    = optional(list(string), [])
+      connection      = string
+      container_image = optional(string)
+      file_uris       = optional(list(string), [])
+      jar_uris        = optional(list(string), [])
+      main_file_uri   = optional(string)
+      main_class      = optional(string)
+      properties      = optional(map(string), {})
+      py_file_uris    = optional(list(string), [])
+      runtime_version = optional(string)
+    }))
+    remote_function_options = optional(object({
+      connection           = string
+      endpoint             = optional(string)
+      max_batching_rows    = optional(string)
+      user_defined_context = optional(map(string), {})
+    }))
+  }))
+  default = {}
 }
 
 variable "tables" {
