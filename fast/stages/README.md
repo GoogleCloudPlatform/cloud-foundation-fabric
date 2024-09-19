@@ -9,7 +9,7 @@ When combined together, each stage is designed to leverage the previous stage's 
 This has two important consequences
 
 - any stage can be swapped out and replaced by different code as long as it respects the contract by providing a predefined set of outputs and optionally accepting a predefined set of variables
-- data flow between stages can be partially automated (see [stage 00 documentation on output files](./0-bootstrap/README.md#output-files-and-cross-stage-variables)), reducing the effort and pain required to compile variables by hand
+- data flow between stages can be partially automated (see [stage 0 documentation on output files](./0-bootstrap/README.md#output-files-and-cross-stage-variables)), reducing the effort and pain required to compile variables by hand
 
 One important assumption is that the flow of data is always forward looking, so no stage needs to depend on outputs generated further down the chain. This greatly simplifies both the logic and the implementation, and allows stages to be effectively independent.
 
