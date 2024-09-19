@@ -96,12 +96,12 @@ variable "network_config" {
       enable_public_ip   = optional(bool, false)
       enable_private_ip  = optional(bool, true)
     }))
-    public = bool
+    public = optional(bool, false)
   })
   nullable = false
   validation {
-    condition     = (var.network_config.public == null) != (var.network_config.psa_config == null)
-    error_message = "Please specify either psa_config or public."
+    condition     = (coalesce(var.network_config.public, false)) == (var.network_config.psa_config == null)
+    error_message = "Please specify either psa_config or public to true."
   }
 }
 

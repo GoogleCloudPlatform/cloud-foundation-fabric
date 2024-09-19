@@ -41,7 +41,7 @@ module "looker" {
   region     = var.region
   name       = "looker"
   network_config = {
-    public = {}
+    public = true
   }
   oauth_config = {
     support_email = "support@google.com"
@@ -168,7 +168,7 @@ module "looker" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L85) | Name of the looker core instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L90) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network            &#61; optional&#40;string&#41;&#10;    allocated_ip_range &#61; optional&#40;string&#41;&#10;    enable_public_ip   &#61; optional&#40;bool, false&#41;&#10;    enable_private_ip  &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;  public &#61; optional&#40;map&#40;string&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [network_config](variables.tf#L90) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network            &#61; string&#10;    allocated_ip_range &#61; optional&#40;string&#41;&#10;    enable_public_ip   &#61; optional&#40;bool, false&#41;&#10;    enable_private_ip  &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;  public &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [oauth_config](variables.tf#L108) | Looker Core Oauth config. Either client ID and secret (existing oauth client) or support email (temporary internal oauth client setup) must be specified. | <code title="object&#40;&#123;&#10;  client_id     &#61; optional&#40;string, null&#41;&#10;  client_secret &#61; optional&#40;string, null&#41;&#10;  support_email &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L141) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L146) | Region for the Looker core instance. | <code>string</code> | ✓ |  |

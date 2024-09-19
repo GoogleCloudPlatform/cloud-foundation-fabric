@@ -28,7 +28,7 @@ resource "google_looker_instance" "looker" {
   consumer_network   = try(var.network_config.psa_config.network, null)
   platform_edition   = var.platform_edition
   private_ip_enabled = try(var.network_config.psa_config.enable_private_ip, null)
-  public_ip_enabled  = var.network_config.public != null || try(var.network_config.psa_config.enable_public_ip, false)
+  public_ip_enabled  = coalesce(var.network_config.public, false) || try(var.network_config.psa_config.enable_public_ip, false)
   region             = var.region
   reserved_range     = try(var.network_config.psa_config.allocated_ip_range, null)
 
