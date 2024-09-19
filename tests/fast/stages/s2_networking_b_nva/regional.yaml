@@ -17,7 +17,7 @@ counts:
   google_compute_firewall: 18
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
-  google_compute_firewall_policy_rule: 5
+  google_compute_firewall_policy_rule: 4
   google_compute_forwarding_rule: 6
   google_compute_ha_vpn_gateway: 2
   google_compute_health_check: 10
@@ -52,4 +52,4 @@ counts:
   google_storage_bucket_object: 1
   modules: 45
   random_id: 2
-  resources: 254
+  resources: 253
