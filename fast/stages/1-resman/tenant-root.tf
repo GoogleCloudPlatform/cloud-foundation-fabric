@@ -41,22 +41,62 @@ module "automation-project" {
   tags = merge(local.tags, {
     (var.tag_names.context) = {
       description = "Resource management context."
-      iam         = {}
+      iam         = try(local.tags.context.iam, {})
       values = {
-        data       = {}
-        gke        = {}
-        gcve       = {}
-        networking = {}
-        sandbox    = {}
-        security   = {}
+        data = {
+          iam         = try(local.tags.context.values.data.iam, {})
+          description = try(local.tags.context.values.data.description, null)
+        }
+        gke = {
+          iam         = try(local.tags.context.values.gke.iam, {})
+          description = try(local.tags.context.values.gke.description, null)
+        }
+        gcve = {
+          iam         = try(local.tags.context.values.gcve.iam, {})
+          description = try(local.tags.context.values.gcve.description, null)
+        }
+        networking = {
+          iam         = try(local.tags.context.values.networking.iam, {})
+          description = try(local.tags.context.values.networking.description, null)
+        }
+        project-factory = {
+          iam         = try(local.tags.context.values.project-factory.iam, {})
+          description = try(local.tags.context.values.project-factory.description, null)
+        }
+        sandbox = {
+          iam         = try(local.tags.context.values.sandbox.iam, {})
+          description = try(local.tags.context.values.sandbox.description, null)
+        }
+        security = {
+          iam         = try(local.tags.context.values.security.iam, {})
+          description = try(local.tags.context.values.security.description, null)
+        }
       }
     }
     (var.tag_names.environment) = {
       description = "Environment definition."
-      iam         = {}
+      iam         = try(local.tags.environment.iam, {})
       values = {
-        development = {}
-        production  = {}
+        development = {
+          iam = try(local.tags.environment.values.development.iam, {})
+          iam_bindings = {
+            pf = {
+              members = [module.branch-pf-sa.iam_email]
+              role    = "roles/resourcemanager.tagUser"
+            }
+          }
+          description = try(local.tags.environment.values.development.description, null)
+        }
+        production = {
+          iam = try(local.tags.environment.values.production.iam, {})
+          iam_bindings = {
+            pf = {
+              members = [module.branch-pf-sa.iam_email]
+              role    = "roles/resourcemanager.tagUser"
+            }
+          }
+          description = try(local.tags.environment.values.production.description, null)
+        }
       }
     }
   })
