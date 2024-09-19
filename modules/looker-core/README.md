@@ -162,7 +162,7 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=4 resources=17 inventory=full.yaml e2e
+# tftest modules=4 resources=22 inventory=full.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
