@@ -614,6 +614,7 @@ The remaining configuration is manual, as it regards the repositories themselves
     - for Source Repositories
       - assign the reader role to the CI/CD service accounts
 - create one repository for each stage
+  - do an initial apply cycle for the stage so that state exists
   - clone and populate them with the stage source
   - edit the modules source to match your modules repository
     - a simple way is using the "Replace in files" function of your editor
