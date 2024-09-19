@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-variable "expire_time" {
-  description = "Timestamp in UTC when the Secret is scheduled to expire."
-  type        = string
-  default     = null
-}
 
 variable "iam" {
   description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
@@ -37,10 +32,11 @@ variable "project_id" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage, their locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  description = "Map of secrets to manage, their optional expire time, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
   type = map(object({
-    locations = optional(list(string), null)
-    keys      = optional(map(string), null)
+    expire_time = optional(string)
+    locations   = optional(list(string))
+    keys        = optional(map(string))
   }))
   default = {}
 }
