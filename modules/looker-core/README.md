@@ -104,8 +104,10 @@ module "project" {
   name            = "looker"
   prefix          = var.prefix
   services = [
-    "servicenetworking.googleapis.com",
+    "cloudkms.googleapis.com",
+    "iap.googleapis.com",
     "looker.googleapis.com",
+    "servicenetworking.googleapis.com"
   ]
 }
 
