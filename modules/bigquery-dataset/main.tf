@@ -403,3 +403,51 @@ resource "google_bigquery_table" "materialized_view" {
     allow_non_incremental_definition = each.value.allow_non_incremental_definition
   }
 }
+
+resource "google_bigquery_routine" "default" {
+  for_each             = var.routines
+  project              = var.project_id
+  dataset_id           = google_bigquery_dataset.default.dataset_id
+  routine_id           = each.key
+  description          = each.value.description
+  routine_type         = each.value.routine_type
+  language             = each.value.language
+  definition_body      = each.value.definition_body
+  imported_libraries   = each.value.imported_libraries
+  determinism_level    = each.value.determinism_level
+  data_governance_type = each.value.data_governance_type
+  return_table_type    = each.value.return_table_type
+  dynamic "arguments" {
+    for_each = each.value.arguments
+    content {
+      name          = arguments.key
+      argument_kind = arguments.value.argument_kind
+      mode          = arguments.value.mode
+      data_type     = arguments.value.data_type
+    }
+  }
+  dynamic "spark_options" {
+    for_each = each.value.spark_options == null ? [] : [""]
+    content {
+      connection      = each.value.spark_options.connection
+      runtime_version = each.value.spark_options.runtime_version
+      container_image = each.value.spark_options.container_image
+      properties      = each.value.spark_options.properties
+      main_file_uri   = each.value.spark_options.main_file_uri
+      py_file_uris    = each.value.spark_options.py_file_uris
+      jar_uris        = each.value.spark_options.jar_uris
+      file_uris       = each.value.spark_options.file_uris
+      archive_uris    = each.value.spark_options.archive_uris
+      main_class      = each.value.spark_options.main_class
+    }
+  }
+  dynamic "remote_function_options" {
+    for_each = each.value.remote_function_options == null ? [] : [""]
+    content {
+      endpoint             = each.value.remote_function_options.endpoint
+      connection           = each.value.remote_function_options.connection
+      max_batching_rows    = each.value.remote_function_options.value.max_batching_rows
+      user_defined_context = each.value.remote_function_options.user_defined_context
+    }
+  }
+}
