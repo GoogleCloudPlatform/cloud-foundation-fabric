@@ -3,7 +3,7 @@
 This stage performs two important tasks:
 
 - create the top-level hierarchy of folders, and the associated resources used later on to automate each part of the hierarchy (eg. Networking)
-- set organization policies on the organization, and any exception required on specific folders
+- configure resource management tags used in scoping specific IAM roles on the resource hierarchy
 
 The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Security, etc.), and then allow easy customizations to complete the implementation of the intended hierarchy design.
 
