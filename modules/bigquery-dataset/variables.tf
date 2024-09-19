@@ -181,22 +181,22 @@ variable "routines" {
       data_type     = optional(string)
     })), {})
     spark_options = optional(object({
-      connection      = optional(string)
-      runtime_version = optional(string)
+      archive_uris    = optional(list(string), [])
+      connection      = string
       container_image = optional(string)
-      properties      = optional(map(string))
+      file_uris       = optional(list(string), [])
+      jar_uris        = optional(list(string), [])
       main_file_uri   = optional(string)
-      py_file_uris    = optional(list(string))
-      jar_uris        = optional(list(string))
-      file_uris       = optional(list(string))
-      archive_uris    = optional(list(string))
       main_class      = optional(string)
+      properties      = optional(map(string), {})
+      py_file_uris    = optional(list(string), [])
+      runtime_version = optional(string)
     }))
     remote_function_options = optional(object({
+      connection           = string
       endpoint             = optional(string)
-      connection           = optional(string)
-      user_defined_context = optional(map(string))
       max_batching_rows    = optional(string)
+      user_defined_context = optional(map(string), {})
     }))
   }))
   default = {}
