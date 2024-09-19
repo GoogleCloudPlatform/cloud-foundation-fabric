@@ -96,7 +96,7 @@ variable "network_config" {
       enable_public_ip   = optional(bool, false)
       enable_private_ip  = optional(bool, true)
     }))
-    public = optional(map(string), null)
+    public = bool
   })
   nullable = false
   validation {
