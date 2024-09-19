@@ -111,8 +111,8 @@ locals {
         plan  = try(module.branch-pf-r-sa-cicd[0].email, null)
       }
       tf_providers_files = {
-        apply = "3-project-factory-providers.tf"
-        plan  = "3-project-factory-r-providers.tf"
+        apply = "2-project-factory-providers.tf"
+        plan  = "2-project-factory-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -122,8 +122,8 @@ locals {
         plan  = try(module.branch-pf-dev-r-sa-cicd[0].email, null)
       }
       tf_providers_files = {
-        apply = "3-project-factory-dev-providers.tf"
-        plan  = "3-project-factory-dev-r-providers.tf"
+        apply = "2-project-factory-dev-providers.tf"
+        plan  = "2-project-factory-dev-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -133,8 +133,8 @@ locals {
         plan  = try(module.branch-pf-prod-r-sa-cicd[0].email, null)
       }
       tf_providers_files = {
-        apply = "3-project-factory-prod-providers.tf"
-        plan  = "3-project-factory-prod-r-providers.tf"
+        apply = "2-project-factory-prod-providers.tf"
+        plan  = "2-project-factory-prod-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }

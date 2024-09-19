@@ -68,7 +68,7 @@ locals {
 module "top-level-folder" {
   source              = "../../../modules/folder"
   for_each            = local.top_level_folders
-  parent              = "organizations/${var.organization.id}"
+  parent              = local.root_node
   name                = each.value.name
   contacts            = each.value.contacts
   firewall_policy     = each.value.firewall_policy
