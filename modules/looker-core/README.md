@@ -13,7 +13,7 @@ is no terraform support for these resources.
 
 > [!WARNING]
 > Please be aware that, at the time of this writing, deleting the looker core instance via terraform is not possible due
-> to https://github.com/hashicorp/terraform-provider-google/issues/19467. The WA is to delete the instance from the
+> to https://github.com/hashicorp/terraform-provider-google/issues/19467. The work-around is to delete the instance from the
 > console (or gcloud with force option) and remove the corresponding resource from the terraform state.
 
 <!-- TOC -->
