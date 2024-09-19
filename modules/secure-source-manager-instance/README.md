@@ -17,7 +17,7 @@ This module allows to create a Secure Source Manager instance and repositories i
 ### Public instance
 
 ```hcl
-module "ssm_instace" {
+module "ssm_instance" {
   source      = "./fabric/modules/secure-source-manager-instance"
   project_id  = var.project_id
   instance_id = "my-instance"
@@ -34,7 +34,7 @@ module "ssm_instace" {
 ### Public instance with CMEK 
 
 ```hcl
-module "ssm_instace" {
+module "ssm_instance" {
   source      = "./fabric/modules/secure-source-manager-instance"
   project_id  = var.project_id
   instance_id = "my-instance"
@@ -52,7 +52,7 @@ module "ssm_instace" {
 ### Private instance
 
 ```hcl
-module "ssm_instace" {
+module "ssm_instance" {
   source      = "./fabric/modules/secure-source-manager-instance"
   project_id  = var.project_id
   instance_id = "my-instance"
@@ -157,16 +157,16 @@ module "ssm_instance" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [instance_id](variables.tf#L47) | Instance ID. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L64) | Location. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L69) | Project ID. | <code>string</code> | ✓ |  |
-| [repositories](variables.tf#L74) | Repositories. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role    &#61; string&#10;    members &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role   &#61; string&#10;    member &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  initial_config &#61; optional&#40;object&#40;&#123;&#10;    default_branch &#61; optional&#40;string&#41;&#10;    gitignores     &#61; optional&#40;string&#41;&#10;    license        &#61; optional&#40;string&#41;&#10;    readme         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  location &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [instance_id](variables.tf#L23) | Instance ID. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L40) | Location. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L45) | Project ID. | <code>string</code> | ✓ |  |
+| [repositories](variables.tf#L50) | Repositories. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role    &#61; string&#10;    members &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role   &#61; string&#10;    member &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  initial_config &#61; optional&#40;object&#40;&#123;&#10;    default_branch &#61; optional&#40;string&#41;&#10;    gitignores     &#61; optional&#40;string&#41;&#10;    license        &#61; optional&#40;string&#41;&#10;    readme         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  location &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [ca_pool](variables.tf#L17) | CA pool. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L23) | IAM bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_bindings](variables.tf#L29) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role    &#61; string&#10;  members &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_bindings_additive](variables.tf#L38) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role   &#61; string&#10;  member &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [kms_key](variables.tf#L52) | KMS key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L58) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables-iam.tf#L17) | IAM bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings](variables-iam.tf#L23) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role    &#61; string&#10;  members &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings_additive](variables-iam.tf#L32) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role   &#61; string&#10;  member &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [kms_key](variables.tf#L28) | KMS key. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L34) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

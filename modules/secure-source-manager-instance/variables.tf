@@ -20,30 +20,6 @@ variable "ca_pool" {
   default     = null
 }
 
-variable "iam" {
-  description = "IAM bindings."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_bindings" {
-  description = "IAM bindings."
-  type = map(object({
-    role    = string
-    members = list(string)
-  }))
-  default = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "IAM bindings."
-  type = map(object({
-    role   = string
-    member = string
-  }))
-  default = {}
-}
-
 variable "instance_id" {
   description = "Instance ID."
   type        = string

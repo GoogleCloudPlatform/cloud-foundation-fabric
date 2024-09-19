@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.ssm_instace.google_secure_source_manager_instance.instance:
+  module.ssm_instance.google_secure_source_manager_instance.instance:
     effective_labels:
       goog-terraform-provisioned: 'true'
     instance_id: my-instance
@@ -25,7 +25,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.ssm_instace.google_secure_source_manager_repository.repositories["my-repository"]:
+  module.ssm_instance.google_secure_source_manager_repository.repositories["my-repository"]:
     description: null
     initial_config: []
     location: europe-west8
