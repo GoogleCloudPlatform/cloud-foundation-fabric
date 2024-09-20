@@ -34,6 +34,7 @@ locals {
 resource "google_secure_source_manager_instance_iam_binding" "authoritative" {
   for_each    = var.iam
   project     = google_secure_source_manager_instance.instance.project
+  location    = google_secure_source_manager_instance.instance.location
   instance_id = google_secure_source_manager_instance.instance.instance_id
   role        = each.key
   members     = each.value
@@ -42,6 +43,7 @@ resource "google_secure_source_manager_instance_iam_binding" "authoritative" {
 resource "google_secure_source_manager_instance_iam_binding" "bindings" {
   for_each    = var.iam_bindings
   project     = google_secure_source_manager_instance.instance.project
+  location    = google_secure_source_manager_instance.instance.location
   instance_id = google_secure_source_manager_instance.instance.instance_id
   role        = each.value.role
   members     = each.value.members
@@ -50,6 +52,7 @@ resource "google_secure_source_manager_instance_iam_binding" "bindings" {
 resource "google_secure_source_manager_instance_iam_member" "bindings" {
   for_each    = var.iam_bindings_additive
   project     = google_secure_source_manager_instance.instance.project
+  location    = google_secure_source_manager_instance.instance.location
   instance_id = google_secure_source_manager_instance.instance.instance_id
   role        = each.value.role
   member      = each.value.member
@@ -58,6 +61,7 @@ resource "google_secure_source_manager_instance_iam_member" "bindings" {
 resource "google_secure_source_manager_repository_iam_binding" "authoritative" {
   for_each      = local.repository_iam
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
+  location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
   role          = each.value.role
   members       = each.value.members
@@ -66,6 +70,7 @@ resource "google_secure_source_manager_repository_iam_binding" "authoritative" {
 resource "google_secure_source_manager_repository_iam_binding" "bindings" {
   for_each      = local.repository_iam_bindings
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
+  location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
   role          = each.value.role
   members       = each.value.members
@@ -74,6 +79,7 @@ resource "google_secure_source_manager_repository_iam_binding" "bindings" {
 resource "google_secure_source_manager_repository_iam_member" "bindings" {
   for_each      = local.repository_iam_bindings_additive
   project       = google_secure_source_manager_repository.repositories[each.value.repository].project
+  location      = google_secure_source_manager_repository.repositories[each.value.repository].location
   repository_id = google_secure_source_manager_repository.repositories[each.value.repository].repository_id
   role          = each.value.role
   member        = each.value.member
