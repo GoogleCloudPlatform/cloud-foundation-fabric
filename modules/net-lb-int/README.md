@@ -383,17 +383,17 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [backend_service](outputs.tf#L17) | Backend resource. |  |
-| [backend_service_id](outputs.tf#L22) | Backend id. |  |
-| [backend_service_self_link](outputs.tf#L27) | Backend self link. |  |
-| [forwarding_rule_addresses](outputs.tf#L32) | Forwarding rule address. |  |
-| [forwarding_rule_self_links](outputs.tf#L40) | Forwarding rule self links. |  |
-| [forwarding_rules](outputs.tf#L48) | Forwarding rule resources. |  |
-| [group_self_links](outputs.tf#L56) | Optional unmanaged instance group self links. |  |
-| [groups](outputs.tf#L63) | Optional unmanaged instance group resources. |  |
-| [health_check](outputs.tf#L68) | Auto-created health-check resource. |  |
-| [health_check_id](outputs.tf#L73) | Auto-created health-check id. |  |
-| [health_check_self_link](outputs.tf#L78) | Auto-created health-check self link. |  |
-| [id](outputs.tf#L83) | Fully qualified forwarding rule ids. |  |
-| [service_attachment_ids](outputs.tf#L91) | Service attachment ids. |  |
+| [backend_service](outputs.tf#L17) | Backend resource. | ✓ |
+| [backend_service_id](outputs.tf#L23) | Backend id. |  |
+| [backend_service_self_link](outputs.tf#L28) | Backend self link. |  |
+| [forwarding_rule_addresses](outputs.tf#L33) | Forwarding rule address. |  |
+| [forwarding_rule_self_links](outputs.tf#L41) | Forwarding rule self links. |  |
+| [forwarding_rules](outputs.tf#L49) | Forwarding rule resources. |  |
+| [group_self_links](outputs.tf#L57) | Optional unmanaged instance group self links. |  |
+| [groups](outputs.tf#L64) | Optional unmanaged instance group resources. |  |
+| [health_check](outputs.tf#L69) | Auto-created health-check resource. |  |
+| [health_check_id](outputs.tf#L74) | Auto-created health-check id. |  |
+| [health_check_self_link](outputs.tf#L79) | Auto-created health-check self link. |  |
+| [id](outputs.tf#L84) | Fully qualified forwarding rule ids. |  |
+| [service_attachment_ids](outputs.tf#L92) | Service attachment ids. |  |
 <!-- END TFDOC -->

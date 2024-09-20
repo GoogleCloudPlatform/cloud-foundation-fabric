@@ -59,6 +59,16 @@ output "materialized_views" {
   value       = google_bigquery_table.materialized_view
 }
 
+output "routine_ids" {
+  description = "Map of fully qualified routine ids keyed by routine ids."
+  value       = { for k, v in google_bigquery_routine.default : v.routine_id => v.id }
+}
+
+output "routines" {
+  description = "Routine resources."
+  value       = google_bigquery_routine.default
+}
+
 output "self_link" {
   description = "Dataset self link."
   value       = google_bigquery_dataset.default.self_link
