@@ -164,7 +164,7 @@ The `fast_features` variable consists of 5 toggles:
 - **`sandbox`** controls the creation of a "Sandbox" top level folder with relaxed policies, intended for sandbox environments where users can experiment
 - **`teams`** controls the creation of the top level "Teams" folder used by the [teams feature in resman](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/1-resman#team-folders).
 
-### Top-level folders
+### Top-level folder management
 
 The `top_level_folders` variable and associated factory allow simple definition of additional top-level folders, and associated configurations.
 

@@ -6,6 +6,33 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2024-09-05 10:07:19+00:00 -->
 
+### BLUEPRINTS
+
+- [[#2574](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2574)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:21:22+00:00 -->
+- [[#2573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2573)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:09:06+00:00 -->
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
+### FAST
+
+- [[#2582](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2582)] Make it explicit in FAST docs that stages need to be run once before CI/CD setup ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:43:36+00:00 -->
+- [[#2581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2581)] Update FAST stage diagrams ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:39:35+00:00 -->
+- [[#2579](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2579)] FAST resman mt fixes ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:02:04+00:00 -->
+- [[#2568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2568)] Update a few references from 3-project-factory to 2-project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2024-09-19 05:11:32+00:00 -->
+- [[#2558](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2558)] Update variables.tf ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-09-16 08:28:22+00:00 -->
+- [[#2564](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2564)] Enables compute.setNewProjectDefaultToZonalDNSOnly and essentialcontacts.allowedContactDomains ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-13 09:09:55+00:00 -->
+- [[#2563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2563)] Update list of imported org policies ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-13 07:05:01+00:00 -->
+
+### MODULES
+
+- [[#2570](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2570)] Bigquery dataset routines ([apichick](https://github.com/apichick)) <!-- 2024-09-19 09:13:32+00:00 -->
+- [[#2583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2583)] **incompatible change:** Support secret-level expire time in secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 08:35:44+00:00 -->
+- [[#2559](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2559)] Fix e2e tests for cloud run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-10 10:04:40+00:00 -->
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
+### TOOLS
+
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
 ## [34.1.0] - 2024-09-05
 <!-- 2024-09-05 10:07:19+00:00 < 2024-08-30 08:18:13+00:00 -->
 

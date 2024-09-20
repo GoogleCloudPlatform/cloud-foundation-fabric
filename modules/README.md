@@ -104,6 +104,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Secure Source Manager instance](./secure-source-manager-instance)
 - [Workstation cluster](./workstation-cluster)
 
 ## Security
