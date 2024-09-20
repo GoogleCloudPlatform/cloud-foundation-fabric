@@ -28,7 +28,7 @@ The following diagram is a high level reference of the resources created and man
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [Toggling features](#toggling-features)
-  - [Top-level folders](#top-level-folders)
+  - [Top-level folder management](#top-level-folder-management)
   - [Secure tags](#secure-tags)
   - [IAM](#iam)
 - [Files](#files)
