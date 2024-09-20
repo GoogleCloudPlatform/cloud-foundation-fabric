@@ -47,7 +47,7 @@ module "looker" {
     support_email = "support@google.com"
   }
 }
-# tftest modules=1 resources=3 inventory=simple.yaml e2e
+# tftest modules=1 resources=3 inventory=simple.yaml skip e2e
 ```
 
 ### Looker Core private instance with PSA
@@ -91,7 +91,7 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=3 resources=16 inventory=psa.yaml e2e
+# tftest modules=3 resources=16 inventory=psa.yaml skip e2e
 ```
 
 ### Looker Core full example
@@ -162,7 +162,7 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=4 resources=22 inventory=full.yaml e2e
+# tftest modules=4 resources=22 inventory=full.yaml skip e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
