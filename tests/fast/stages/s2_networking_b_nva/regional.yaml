@@ -49,7 +49,7 @@ counts:
   google_project_iam_member: 17
   google_project_service: 23
   google_project_service_identity: 17
-  google_storage_bucket_object: 1
-  modules: 45
+  google_storage_bucket_object: 2
+  modules: 47
   random_id: 2
-  resources: 253
+  resources: 258
