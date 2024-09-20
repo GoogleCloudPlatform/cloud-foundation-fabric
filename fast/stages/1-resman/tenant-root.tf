@@ -42,60 +42,35 @@ module "automation-project" {
     (var.tag_names.context) = {
       description = "Resource management context."
       iam         = try(local.tags.context.iam, {})
-      values = {
-        data = {
-          iam         = try(local.tags.context.values.data.iam, {})
-          description = try(local.tags.context.values.data.description, null)
+      values = merge(
+        try(local.tags["context"]["values"], {}),
+        {
+          for k, v in local.tag_values_stage2 : v => {
+            iam         = try(local.tags.context.values.iam[v], {})
+            description = try(local.tags.context.values.description[v], null)
+          } if var.fast_stage_2[k].enabled
         }
-        gke = {
-          iam         = try(local.tags.context.values.gke.iam, {})
-          description = try(local.tags.context.values.gke.description, null)
-        }
-        gcve = {
-          iam         = try(local.tags.context.values.gcve.iam, {})
-          description = try(local.tags.context.values.gcve.description, null)
-        }
-        networking = {
-          iam         = try(local.tags.context.values.networking.iam, {})
-          description = try(local.tags.context.values.networking.description, null)
-        }
-        project-factory = {
-          iam         = try(local.tags.context.values.project-factory.iam, {})
-          description = try(local.tags.context.values.project-factory.description, null)
-        }
-        sandbox = {
-          iam         = try(local.tags.context.values.sandbox.iam, {})
-          description = try(local.tags.context.values.sandbox.description, null)
-        }
-        security = {
-          iam         = try(local.tags.context.values.security.iam, {})
-          description = try(local.tags.context.values.security.description, null)
-        }
-      }
-    }
+      )
+    },
     (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = try(local.tags.environment.iam, {})
       values = {
-        (var.environment_names["dev"]) = {
-          iam = try(local.tags.environment.values.development.iam, {})
-          iam_bindings = {
-            pf = {
-              members = [module.branch-pf-sa.iam_email]
-              role    = "roles/resourcemanager.tagUser"
+        for k, v in var.environment_names : v => {
+          iam = try(local.tags.environment.values[v].iam, {})
+          iam_bindings = (
+            !var.fast_stage_2.project_factory.enabled
+            ? {}
+            : {
+              pf = {
+                members = [module.pf-sa-rw[0].iam_email]
+                role    = "roles/resourcemanager.tagUser"
+              }
             }
-          }
-          description = try(local.tags.environment.values.development.description, null)
-        }
-        (var.environment_names["prod"]) = {
-          iam = try(local.tags.environment.values.production.iam, {})
-          iam_bindings = {
-            pf = {
-              members = [module.branch-pf-sa.iam_email]
-              role    = "roles/resourcemanager.tagUser"
-            }
-          }
-          description = try(local.tags.environment.values.production.description, null)
+          )
+          description = try(
+            local.tags.environment.values[v].description, null
+          )
         }
       }
     }

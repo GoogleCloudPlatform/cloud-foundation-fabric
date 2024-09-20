@@ -71,7 +71,7 @@ module "sec-folder" {
         condition = {
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-            "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+            "'roles/cloudkms.cryptoKeyEncrypterDecrypter'"
           )
           title       = "pf_delegated_grant"
           description = "Project factory delegated grant."

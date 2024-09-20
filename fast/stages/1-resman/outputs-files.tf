@@ -17,36 +17,44 @@
 # tfdoc:file:description Output files persistence to local filesystem.
 
 locals {
-  _stage2_outputs_attrs = {
-    networking = {
-      bucket = try(module.net-bucket[0].name, null)
-      sa = {
-        apply = try(module.net-sa-rw[0].email, null)
-        plan  = try(module.net-sa-ro[0].email, null)
+  _stage2_outputs_attrs = merge(
+    var.fast_stage_2["networking"].enabled != true ? {} : {
+      networking = {
+        bucket = module.net-bucket[0].name
+        sa = {
+          apply = module.net-sa-rw[0].email
+          plan  = module.net-sa-ro[0].email
+        }
+      }
+    },
+    var.fast_stage_2["network_security"].enabled != true ? {} : {
+      network_security = {
+        bucket = module.nsec-bucket[0].name
+        sa = {
+          apply = module.nsec-sa-rw[0].email
+          plan  = module.nsec-sa-ro[0].email
+        }
+      }
+    },
+    var.fast_stage_2["project_factory"].enabled != true ? {} : {
+      project_factory = {
+        bucket = module.pf-bucket[0].name
+        sa = {
+          apply = module.pf-sa-rw[0].email
+          plan  = module.pf-sa-ro[0].email
+        }
+      }
+    },
+    var.fast_stage_2["security"].enabled != true ? {} : {
+      security = {
+        bucket = module.sec-bucket[0].name
+        sa = {
+          apply = module.sec-sa-rw[0].email
+          plan  = module.sec-sa-ro[0].email
+        }
       }
     }
-    network_security = {
-      bucket = try(module.nsec-bucket[0].name, null)
-      sa = {
-        apply = try(module.nsec-sa-rw[0].email, null)
-        plan  = try(module.nsec-sa-ro[0].email, null)
-      }
-    }
-    project_factory = {
-      bucket = try(module.pf-bucket[0].name, null)
-      sa = {
-        apply = try(module.netsec-sa-rw[0].email, null)
-        plan  = try(module.netsec-sa-ro[0].email, null)
-      }
-    }
-    security = {
-      bucket = try(module.sec-bucket[0].name, null)
-      sa = {
-        apply = try(module.sec-sa-rw[0].email, null)
-        plan  = try(module.sec-sa-ro[0].email, null)
-      }
-    }
-  }
+  )
   _cicd_workflow_attrs = merge(
     # stage 2s
     {
@@ -66,7 +74,7 @@ locals {
           plan  = "2-${replace(k, "_", "-")}-providers-r.tf"
         }
         tf_var_files = local.cicd_workflow_files.stage_2
-      } if lookup(local.cicd_repositories, k, null) == null
+      } if lookup(local.cicd_repositories, k, null) != null
     },
     # stage 3
     {
@@ -107,8 +115,8 @@ locals {
         backend_extra = null
         bucket        = v.bucket
         name          = "networking"
-        sa            = v.sa.rw
-      }) if var.fast_stage_2[k].enabled == true
+        sa            = v.sa.apply
+      })
     },
     {
       for k, v in local._stage2_outputs_attrs :
@@ -116,8 +124,8 @@ locals {
         backend_extra = null
         bucket        = v.bucket
         name          = "networking"
-        sa            = v.sa.ro
-      }) if var.fast_stage_2[k].enabled == true
+        sa            = v.sa.plan
+      })
     },
     # stage 3
     {

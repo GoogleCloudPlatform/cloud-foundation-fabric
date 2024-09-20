@@ -115,7 +115,7 @@ module "net-folder" {
         condition = {
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-            "roles/compute.networkUser"
+            "'roles/compute.networkUser', 'roles/composer.sharedVpcAgent', 'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'"
           )
           title       = "project factory project delegated admin"
           description = "Project factory delegated grant."
