@@ -43,6 +43,12 @@ resource "google_looker_instance" "looker" {
       allowed_email_domains = var.admin_settings.allowed_email_domains
     }
   }
+  dynamic "custom_domain" {
+    for_each = var.custom_domain != null ? [""] : []
+    content {
+      domain = var.custom_domain
+    }
+  }
   dynamic "deny_maintenance_period" {
     for_each = var.maintenance_config.deny_maintenance_period != null ? [1] : []
     content {
