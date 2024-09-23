@@ -23,6 +23,12 @@ variable "admin_settings" {
   nullable = true
 }
 
+variable "custom_domain" {
+  description = "Looker core instance custom domain."
+  type        = string
+  default     = null
+}
+
 variable "encryption_config" {
   description = "Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'."
   type = object({
