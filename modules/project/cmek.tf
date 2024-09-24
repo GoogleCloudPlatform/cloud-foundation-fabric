@@ -48,6 +48,7 @@ locals {
     "spanner.googleapis.com" : ["spanner"]
     "sqladmin.googleapis.com" : ["cloud-sql"]
     "storage.googleapis.com" : ["storage"]
+    "run.googleapis.com" : ["cloudrun"]
   }
   _cmek_members = merge(flatten([
     for service, keys in var.service_encryption_key_ids : [

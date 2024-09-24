@@ -79,6 +79,8 @@ resource "google_compute_region_backend_service" "default" {
   session_affinity                = var.backend_service_config.session_affinity
   timeout_sec                     = var.backend_service_config.timeout_sec
 
+  iap { enabled = false }
+
   dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
     content {
