@@ -218,23 +218,17 @@ values:
   module.net-folder-dev[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
-    tags: null
-    timeouts: null
   module.net-folder-dev[0].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.net-folder-prod[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
-    tags: null
-    timeouts: null
   module.net-folder-prod[0].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.net-folder[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
   : condition: []
     members:
@@ -642,8 +636,6 @@ values:
     deletion_protection: false
     display_name: Security
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
     condition: []
     members:
@@ -1077,8 +1069,6 @@ values:
   module.stage3-folder["data-platform-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
-    tags: null
-    timeouts: null
   module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1119,8 +1109,6 @@ values:
   module.stage3-folder["data-platform-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
-    tags: null
-    timeouts: null
   module.stage3-folder["data-platform-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1161,8 +1149,6 @@ values:
   module.stage3-folder["gcve-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
-    tags: null
-    timeouts: null
   module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1203,8 +1189,6 @@ values:
   module.stage3-folder["gcve-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
-    tags: null
-    timeouts: null
   module.stage3-folder["gcve-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1245,8 +1229,6 @@ values:
   module.stage3-folder["gke-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
-    tags: null
-    timeouts: null
   module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1287,8 +1269,6 @@ values:
   module.stage3-folder["gke-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
-    tags: null
-    timeouts: null
   module.stage3-folder["gke-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1330,8 +1310,6 @@ values:
     deletion_protection: false
     display_name: Sandbox
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1735,32 +1713,24 @@ values:
     deletion_protection: false
     display_name: Data Platform
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   module.top-level-folder["data-platform"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["gcve"].google_folder.folder[0]:
     deletion_protection: false
     display_name: GCVE
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   module.top-level-folder["gcve"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["gke"].google_folder.folder[0]:
     deletion_protection: false
     display_name: GKE
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   module.top-level-folder["gke"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["teams"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Teams
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
   ? module.top-level-folder["teams"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
   : condition: []
     members:
@@ -1792,8 +1762,6 @@ values:
     deletion_protection: false
     display_name: Tenants
     parent: organizations/123456789012
-    tags: null
-    timeouts: null
 
 counts:
   google_folder: 16
