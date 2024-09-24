@@ -37,12 +37,11 @@ locals {
     local.top_level_service_accounts
   )
   tfvars = {
-    checklist_hierarchy = local.checklist.hierarchy
-    folder_ids          = local.folder_ids
-    service_accounts    = local.service_accounts
-    tag_keys            = { for k, v in try(local.tag_keys, {}) : k => v.id }
-    tag_names           = var.tag_names
-    tag_values          = { for k, v in try(local.tag_values, {}) : k => v.id }
+    folder_ids       = local.folder_ids
+    service_accounts = local.service_accounts
+    tag_keys         = { for k, v in try(local.tag_keys, {}) : k => v.id }
+    tag_names        = var.tag_names
+    tag_values       = { for k, v in try(local.tag_values, {}) : k => v.id }
   }
 }
 

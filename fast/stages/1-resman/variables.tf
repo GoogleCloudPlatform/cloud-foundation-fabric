@@ -32,7 +32,6 @@ variable "environment_names" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    checklist_data    = optional(string)
     org_policies      = optional(string, "data/org-policies")
     stage_3           = optional(string, "data/stage-3")
     top_level_folders = optional(string, "data/top-level-folders")
