@@ -320,7 +320,8 @@ values:
     description: Terraform managed.
     enable_cdn: null
     failover_policy: []
-    iap: []
+    iap:
+      - enabled: false
     load_balancing_scheme: INTERNAL
     locality_lb_policy: null
     name: test-ilb

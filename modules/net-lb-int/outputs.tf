@@ -16,6 +16,7 @@
 
 output "backend_service" {
   description = "Backend resource."
+  sensitive   = true
   value       = google_compute_region_backend_service.default
 }
 
