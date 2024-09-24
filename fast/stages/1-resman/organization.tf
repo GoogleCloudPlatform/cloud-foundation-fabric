@@ -17,7 +17,7 @@
 # tfdoc:file:description Organization policies.
 
 locals {
-  # service accounts context for user-specified tag values
+  # service accounts expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
@@ -67,15 +67,19 @@ module "organization" {
       iam         = try(local.tags.environment.iam, {})
       values = {
         for k, v in var.environment_names : v => {
-          iam = try(local.tags.environment.values[v].iam, {})
-          iam_bindings = (
+          iam = merge(
+            try(local.tags.environment.values[v].iam, {}),
             !var.fast_stage_2.project_factory.enabled
             ? {}
             : {
-              pf = {
-                members = [module.pf-sa-rw[0].iam_email]
-                role    = "roles/resourcemanager.tagUser"
-              }
+              "roles/resourcemanager.tagUser" = distinct(concat(
+                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"]),
+                [module.pf-sa-rw[0].iam_email]
+              ))
+              "roles/resourcemanager.tagViewer" = distinct(concat(
+                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"]),
+                [module.pf-sa-ro[0].iam_email]
+              ))
             }
           )
           description = try(
