@@ -33,29 +33,32 @@ locals {
 
 resource "google_secure_source_manager_instance_iam_binding" "authoritative" {
   for_each    = var.iam
-  project     = google_secure_source_manager_instance.instance.project
-  location    = google_secure_source_manager_instance.instance.location
-  instance_id = google_secure_source_manager_instance.instance.instance_id
+  project     = var.project_id
+  location    = var.location
+  instance_id = var.instance_id
   role        = each.key
   members     = each.value
+  depends_on  = [google_secure_source_manager_instance.instance]
 }
 
 resource "google_secure_source_manager_instance_iam_binding" "bindings" {
   for_each    = var.iam_bindings
-  project     = google_secure_source_manager_instance.instance.project
-  location    = google_secure_source_manager_instance.instance.location
-  instance_id = google_secure_source_manager_instance.instance.instance_id
+  project     = var.project_id
+  location    = var.location
+  instance_id = var.instance_id
   role        = each.value.role
   members     = each.value.members
+  depends_on  = [google_secure_source_manager_instance.instance]
 }
 
 resource "google_secure_source_manager_instance_iam_member" "bindings" {
   for_each    = var.iam_bindings_additive
-  project     = google_secure_source_manager_instance.instance.project
-  location    = google_secure_source_manager_instance.instance.location
-  instance_id = google_secure_source_manager_instance.instance.instance_id
+  project     = var.project_id
+  location    = var.location
+  instance_id = var.instance_id
   role        = each.value.role
   member      = each.value.member
+  depends_on  = [google_secure_source_manager_instance.instance]
 }
 
 resource "google_secure_source_manager_repository_iam_binding" "authoritative" {
