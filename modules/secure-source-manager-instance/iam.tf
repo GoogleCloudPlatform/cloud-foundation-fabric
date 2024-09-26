@@ -33,19 +33,18 @@ locals {
 
 resource "google_secure_source_manager_instance_iam_binding" "authoritative" {
   for_each    = var.iam
-  project     = var.project_id
-  location    = var.location
-  instance_id = var.instance_id
+  project     = try(google_secure_source_manager_instance.instance.project, var.project_id)
+  location    = try(google_secure_source_manager_instance.instance.location, var.location)
+  instance_id = try(google_secure_source_manager_instance.instance.instance_id, var.instance_id)
   role        = each.key
   members     = each.value
-  depends_on  = [google_secure_source_manager_instance.instance]
 }
 
 resource "google_secure_source_manager_instance_iam_binding" "bindings" {
   for_each    = var.iam_bindings
-  project     = var.project_id
-  location    = var.location
-  instance_id = var.instance_id
+  project     = try(google_secure_source_manager_instance.instance.project, var.project_id)
+  location    = try(google_secure_source_manager_instance.instance.location, var.location)
+  instance_id = try(google_secure_source_manager_instance.instance.instance_id, var.instance_id)
   role        = each.value.role
   members     = each.value.members
   depends_on  = [google_secure_source_manager_instance.instance]
@@ -53,9 +52,9 @@ resource "google_secure_source_manager_instance_iam_binding" "bindings" {
 
 resource "google_secure_source_manager_instance_iam_member" "bindings" {
   for_each    = var.iam_bindings_additive
-  project     = var.project_id
-  location    = var.location
-  instance_id = var.instance_id
+  project     = try(google_secure_source_manager_instance.instance.project, var.project_id)
+  location    = try(google_secure_source_manager_instance.instance.location, var.location)
+  instance_id = try(google_secure_source_manager_instance.instance.instance_id, var.instance_id)
   role        = each.value.role
   member      = each.value.member
   depends_on  = [google_secure_source_manager_instance.instance]
