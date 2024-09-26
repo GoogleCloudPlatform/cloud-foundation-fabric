@@ -50,18 +50,39 @@ resource "google_compute_global_forwarding_rule" "default" {
 resource "google_compute_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.create_configs
   project     = var.project_id
-  name        = "${var.name}-${each.key}"
+  name        = "${var.name}-${each.key}-${random_id.suffix_ssl[each.key].hex}"
   certificate = trimspace(each.value.certificate)
   private_key = trimspace(each.value.private_key)
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "random_id" "suffix_ssl" {
+  for_each    = var.ssl_certificates.create_configs
+  byte_length = 4
+  keepers = {
+    cert_key_hash = base64sha256(trimspace(each.value.certificate) + trimspace(each.value.private_key))
+  }
 }
 
 resource "google_compute_managed_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.managed_configs
   project     = var.project_id
-  name        = "${var.name}-${each.key}"
+  name        = "${var.name}-${each.key}-${random_id.suffix_managed_ssl[each.key].hex}"
   description = each.value.description
   managed {
     domains = each.value.domains
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+resource "random_id" "suffix_managed_ssl" {
+  for_each    = var.ssl_certificates.managed_configs
+  byte_length = 4
+  keepers = {
+    domains_hash = base64sha256(join(",", var.ssl_certificates.managed_configs[each.key].domains))
   }
 }
 
