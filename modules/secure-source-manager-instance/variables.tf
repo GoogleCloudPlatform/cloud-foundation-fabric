@@ -40,7 +40,7 @@ variable "kms_key" {
 variable "labels" {
   description = "Instance labels."
   type        = map(string)
-  default     = {}
+  default     = null
 }
 
 variable "location" {
