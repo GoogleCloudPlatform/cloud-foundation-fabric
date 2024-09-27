@@ -85,6 +85,15 @@ locals {
     vpcsc       = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, "")
     vpcsc_r     = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, "")
   }
+  file_ignore_set = toset([
+    "**/env",
+    "**/*.auto.tfvars",
+    "**/.terraform",
+    "**/.terraform.lock.hcl",
+    "**/.terraform.tfstate.lock.info",
+    "**/terraform.tfstate*",
+    "**/terraform.tfvars",
+  ])
 }
 
 # Secure Source Manager instance and repositories
@@ -114,7 +123,7 @@ module "automation-tf-cicd-ssm" {
   repositories = {
     for repo_key, repo in local.cicd_repositories :
     coalesce(repo.name, repo_key) => {
-      location = local.locations.ssm
+      location = local.locations.ssm # tmp, to be removed after PR#2595
       iam = {
         "roles/securesourcemanager.repoAdmin" = compact(distinct([
           try(local.cicd_service_accounts["bootstrap"], null),
@@ -128,6 +137,24 @@ module "automation-tf-cicd-ssm" {
     }
     if repo.type == "ssm"
   }
+}
+
+# Archive directories
+
+data "archive_file" "bootstrap-stage" {
+  type        = "zip"
+  source_dir  = path.module
+  excludes    = local.file_ignore_set
+  output_path = "${path.module}/env/bootstrap.zip"
+}
+
+data "archive_file" "other-stages" {
+  for_each = { for k, v in local.cicd_repositories : k => v if k != "bootstrap" }
+
+  type        = "zip"
+  source_dir  = (each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}")
+  excludes    = local.file_ignore_set
+  output_path = "${path.module}/env/${each.key}.zip"
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
