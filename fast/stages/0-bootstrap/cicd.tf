@@ -76,14 +76,14 @@ locals {
     ]
   }
   cicd_service_accounts = {
-    bootstrap   = try(module.automation-tf-cicd-sa["bootstrap"].iam_email, "")
-    bootstrap_r = try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, "")
-    resman      = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
-    resman_r    = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
-    tenants     = try(module.automation-tf-cicd-sa["tenants"].iam_email, "")
-    tenants_r   = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, "")
-    vpcsc       = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, "")
-    vpcsc_r     = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, "")
+    bootstrap   = contains(keys(module.automation-tf-cicd-sa), "bootstrap") ? module.automation-tf-cicd-sa["bootstrap"].iam_email : ""
+    bootstrap_r = contains(keys(module.automation-tf-cicd-r-sa), "bootstrap") ? module.automation-tf-cicd-r-sa["bootstrap"].iam_email : ""
+    resman      = contains(keys(module.automation-tf-cicd-sa), "resman") ? module.automation-tf-cicd-sa["resman"].iam_email : ""
+    resman_r    = contains(keys(module.automation-tf-cicd-r-sa), "resman") ? module.automation-tf-cicd-r-sa["resman"].iam_email : ""
+    tenants     = contains(keys(module.automation-tf-cicd-sa), "tenants") ? module.automation-tf-cicd-sa["tenants"].iam_email : ""
+    tenants_r   = contains(keys(module.automation-tf-cicd-r-sa), "tenants") ? module.automation-tf-cicd-r-sa["tenants"].iam_email : ""
+    vpcsc       = contains(keys(module.automation-tf-cicd-sa), "vpcsc") ? module.automation-tf-cicd-sa["vpcsc"].iam_email : ""
+    vpcsc_r     = contains(keys(module.automation-tf-cicd-r-sa), "vpcsc") ? module.automation-tf-cicd-r-sa["vpcsc"].iam_email : ""
   }
 }
 
@@ -109,7 +109,7 @@ module "automation-tf-cicd-ssm" {
       local.cicd_service_accounts["resman_r"],
       local.cicd_service_accounts["tenants_r"],
       local.cicd_service_accounts["vpcsc_r"],
-      try("user:${var.bootstrap_user}", null)
+      var.bootstrap_user != null ? "user:${var.bootstrap_user}" : null
     ]))
   }
   repositories = {
@@ -118,13 +118,13 @@ module "automation-tf-cicd-ssm" {
       location = local.locations.ssm # tmp, to be removed after PR#2595
       iam = {
         "roles/securesourcemanager.repoAdmin" = compact(distinct([
-          try(local.cicd_service_accounts["bootstrap"], null),
-          try(local.cicd_service_accounts[repo_key], null),
-          try("user:${var.bootstrap_user}", null)
+          contains(keys(local.cicd_service_accounts), "bootstrap") ? local.cicd_service_accounts["bootstrap"] : null,
+          contains(keys(local.cicd_service_accounts), repo_key) ? local.cicd_service_accounts[repo_key] : null,
+          var.bootstrap_user != null ? "user:${var.bootstrap_user}" : null
         ]))
         "roles/securesourcemanager.repoReader" = compact(distinct([
-          try(local.cicd_service_accounts["bootstrap_r"], null),
-          try(local.cicd_service_accounts["${repo_key}_r"], null)
+          contains(keys(local.cicd_service_accounts), "bootstrap_r") ? local.cicd_service_accounts["bootstrap_r"] : null,
+          contains(keys(local.cicd_service_accounts), "${repo_key}_r") ? local.cicd_service_accounts["${repo_key}_r"] : null
         ]))
       }
     }
@@ -140,12 +140,12 @@ resource "null_resource" "git_init" {
   provisioner "local-exec" {
     command = <<EOT
       bash ${path.module}/scripts/stages-to-get.sh ${
-        each.key == "bootstrap" ? path.module : (
-          each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}"
-        )
-      } ${module.automation-tf-cicd-ssm.repositories[each.key].uris.git_https} ${try(each.value.branch, null)}
+    each.key == "bootstrap" ? path.module : (
+      each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}"
+    )
+  } ${module.automation-tf-cicd-ssm.repositories[each.key].uris.git_https} ${each.value.branch}
     EOT
-  }
+}
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
