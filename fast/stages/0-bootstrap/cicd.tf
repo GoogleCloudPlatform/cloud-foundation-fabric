@@ -87,29 +87,60 @@ module "automation-tf-cicd-ssm" {
   project_id  = module.automation-project.project_id
   location    = local.locations.ssm
   instance_id = "iac-core-ssm-0"
+  iam = {
+    "roles/securesourcemanager.instanceOwner" = [
+      "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
+      "serviceAccount:${module.automation-tf-cicd-sa["resman"].email}"
+    ]
+    "roles/securesourcemanager.instanceAccessor" = [
+      "serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}",
+      "serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}",
+      "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+      "serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}",
+      "serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}",
+      "serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}",
+    ]
+  }
   repositories = {
     for repo in values(local.cicd_repositories) :
     repo.name => {
       iam = (
         repo.name == "bootstrap" ? {
-          "roles/source.admin" = ["serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}"]
+          "roles/securesourcemanager.repoAdmin" = [
+            "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}"
+          ]
+          "roles/securesourcemanager.repoReader" = [
+            "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+          ]
           } : (
           repo.name == "resman" ? {
-            "roles/source.reader" = [
+            "roles/securesourcemanager.repoAdmin" = [
               "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
               "serviceAccount:${module.automation-tf-cicd-sa["resman"].email}"
             ]
+            "roles/securesourcemanager.repoReader" = [
+              "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+              "serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}"
+            ]
             } : (
             repo.name == "tenants" ? {
-              "roles/source.reader" = [
+              "roles/securesourcemanager.repoAdmin" = [
                 "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
                 "serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}"
               ]
+              "roles/securesourcemanager.repoReader" = [
+                "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+                "serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}"
+              ]
               } : (
               repo.name == "vpcsc" ? {
-                "roles/source.admin" = [
+                "roles/securesourcemanager.repoAdmin" = [
                   "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
                   "serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}"
+                ]
+                "roles/securesourcemanager.repoReader" = [
+                  "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+                  "serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}"
                 ]
               } : {}
             )
