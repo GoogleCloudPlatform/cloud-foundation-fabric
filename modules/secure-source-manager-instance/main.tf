@@ -15,6 +15,7 @@
  */
 
 resource "google_secure_source_manager_instance" "instance" {
+  count       = var.instance_create ? 1 : 0
   instance_id = var.instance_id
   project     = var.project_id
   location    = var.location
@@ -32,9 +33,10 @@ resource "google_secure_source_manager_instance" "instance" {
 resource "google_secure_source_manager_repository" "repositories" {
   for_each      = var.repositories
   repository_id = each.key
-  instance      = google_secure_source_manager_instance.instance.name
+  instance      = try(google_secure_source_manager_instance.instance[0].name, "projects/${var.project_id}/locations/${var.location}/instances/${var.instance_id}")
   project       = var.project_id
-  location      = each.value.location
+  location      = var.location
+  description   = each.value.description
   dynamic "initial_config" {
     for_each = each.value.initial_config == null ? [] : [""]
     content {

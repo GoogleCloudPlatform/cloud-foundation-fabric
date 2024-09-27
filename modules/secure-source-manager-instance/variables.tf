@@ -20,6 +20,12 @@ variable "ca_pool" {
   default     = null
 }
 
+variable "instance_create" {
+  description = "Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance."
+  type        = bool
+  default     = true
+}
+
 variable "instance_id" {
   description = "Instance ID."
   type        = string
@@ -34,7 +40,7 @@ variable "kms_key" {
 variable "labels" {
   description = "Instance labels."
   type        = map(string)
-  default     = {}
+  default     = null
 }
 
 variable "location" {
@@ -66,6 +72,5 @@ variable "repositories" {
       license        = optional(string)
       readme         = optional(string)
     }))
-    location = string
   }))
 }
