@@ -17,6 +17,8 @@
 # tfdoc:file:description Automation project and resources.
 
 locals {
+  cicd_bootstrap_sa    = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
+  cicd_bootstrap_r_sa  = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
   cicd_resman_sa    = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
   cicd_resman_r_sa  = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
   cicd_tenants_sa   = try(module.automation-tf-cicd-sa["tenants"].iam_email, "")

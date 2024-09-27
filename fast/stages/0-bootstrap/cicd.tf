@@ -76,14 +76,14 @@ locals {
     ]
   }
   cicd_service_accounts = {
-    bootstrap   = try("serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}", null)
-    bootstrap_r = try("serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}", null)
-    resman      = try("serviceAccount:${module.automation-tf-cicd-sa["resman"].email}", null)
-    resman_r    = try("serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}", null)
-    tenants     = try("serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}", null)
-    tenants_r   = try("serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}", null)
-    vpcsc       = try("serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}", null)
-    vpcsc_r     = try("serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}", null)
+    bootstrap   = try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
+    bootstrap_r = try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, null)
+    resman      = try(module.automation-tf-cicd-sa["resman"].iam_email, null)
+    resman_r    = try(module.automation-tf-cicd-r-sa["resman"].iam_email, null)
+    tenants     = try(module.automation-tf-cicd-sa["tenants"].iam_email, null)
+    tenants_r   = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, null)
+    vpcsc       = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, null)
+    vpcsc_r     = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, null)
   }
 }
 
@@ -98,66 +98,33 @@ module "automation-tf-cicd-ssm" {
   location    = local.locations.ssm
   instance_id = "iac-core-ssm-0"
   iam = {
-    "roles/securesourcemanager.instanceOwner" = [
+    "roles/securesourcemanager.instanceOwner" = compact([
       local.cicd_service_accounts["bootstrap"],
       local.cicd_service_accounts["resman"]
-    ]
-    "roles/securesourcemanager.instanceAccessor" = [
+    ])
+    "roles/securesourcemanager.instanceAccessor" = compact([
       local.cicd_service_accounts["bootstrap"],
       local.cicd_service_accounts["resman"],
       local.cicd_service_accounts["bootstrap_r"],
       local.cicd_service_accounts["resman_r"],
       local.cicd_service_accounts["tenants_r"],
       local.cicd_service_accounts["vpcsc_r"],
-    ]
+    ])
   }
   repositories = {
-    for repo_key, repo in values(local.cicd_repositories) :
+    for repo_key, repo in local.cicd_repositories :
     coalesce(repo.name, repo_key) => {
-      location    = local.locations.ssm // temp until #2595 merge
-      iam = (
-        repo_key == "bootstrap" ? {
-          "roles/securesourcemanager.repoAdmin" = [
-            local.cicd_service_accounts["bootstrap"]
-          ]
-          "roles/securesourcemanager.repoReader" = [
-            local.cicd_service_accounts["bootstrap_r"],
-          ]
-          } : (
-          repo_key == "resman" ? {
-            "roles/securesourcemanager.repoAdmin" = [
-              local.cicd_service_accounts["bootstrap"],
-              local.cicd_service_accounts["resman"]
-            ]
-            "roles/securesourcemanager.repoReader" = [
-              local.cicd_service_accounts["bootstrap_r"],
-              local.cicd_service_accounts["resman_r"]
-            ]
-            } : (
-            repo_key == "tenants" ? {
-              "roles/securesourcemanager.repoAdmin" = [
-                local.cicd_service_accounts["bootstrap"],
-                local.cicd_service_accounts["tenants"]
-              ]
-              "roles/securesourcemanager.repoReader" = [
-                local.cicd_service_accounts["bootstrap_r"],
-                local.cicd_service_accounts["tenants_r"]
-              ]
-              } : (
-              repo_key == "vpcsc" ? {
-                "roles/securesourcemanager.repoAdmin" = [
-                  local.cicd_service_accounts["bootstrap"],
-                  local.cicd_service_accounts["vpcsc"]
-                ]
-                "roles/securesourcemanager.repoReader" = [
-                  local.cicd_service_accounts["bootstrap_r"],
-                  local.cicd_service_accounts["vpcsc_r"]
-                ]
-              } : {}
-            )
-          )
-        )
-      )
+      location = local.locations.ssm
+      iam = {
+        "roles/securesourcemanager.repoAdmin" = compact(distinct([
+          try(local.cicd_service_accounts["bootstrap"], null),
+          try(local.cicd_service_accounts[repo_key], null)
+        ]))
+        "roles/securesourcemanager.repoReader" = compact(distinct([
+          try(local.cicd_service_accounts["bootstrap_r"], null),
+          try(local.cicd_service_accounts["${repo_key}_r"], null)
+        ]))
+      }
     }
     if repo.type == "ssm"
   }
@@ -172,7 +139,7 @@ module "automation-tf-cicd-sa" {
   name         = "${each.key}-1"
   display_name = "Terraform CI/CD ${each.key} service account."
   prefix       = local.prefix
-  iam = each.value.type != "ssm" ? { 
+  iam = each.value.type != "ssm" ? {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
@@ -203,7 +170,7 @@ module "automation-tf-cicd-r-sa" {
   name         = "${each.key}-1r"
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = local.prefix
-  iam = each.value.type != "ssm" ? { 
+  iam = each.value.type != "ssm" ? {
     "roles/iam.workloadIdentityUser" = [
       format(
         local.workload_identity_providers_defs[each.value.type].principal_repo,
