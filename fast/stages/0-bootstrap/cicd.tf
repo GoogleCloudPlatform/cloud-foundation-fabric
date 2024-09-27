@@ -115,7 +115,6 @@ module "automation-tf-cicd-ssm" {
   repositories = {
     for repo_key, repo in local.cicd_repositories :
     coalesce(repo.name, repo_key) => {
-      location = local.locations.ssm # tmp, to be removed after PR#2595
       iam = {
         "roles/securesourcemanager.repoAdmin" = compact(distinct([
           contains(keys(local.cicd_service_accounts), "bootstrap") ? local.cicd_service_accounts["bootstrap"] : null,
