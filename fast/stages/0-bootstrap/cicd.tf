@@ -36,9 +36,13 @@ locals {
     if(
       v != null
       &&
-      contains(
-        keys(local.workload_identity_providers),
-        coalesce(try(v.identity_provider, null), ":")
+      (
+        try(v.type, null) == "ssm"
+        ||
+        contains(
+          keys(local.workload_identity_providers),
+          coalesce(try(v.identity_provider, null), ":")
+        )
       )
       &&
       fileexists(
@@ -70,6 +74,50 @@ locals {
       "0-bootstrap.auto.tfvars.json",
       "0-globals.auto.tfvars.json"
     ]
+  }
+}
+
+# Secure Source Manager instance and repositories
+
+module "automation-tf-cicd-ssm" {
+  source = "../../../modules/secure-source-manager-instance"
+  count = (
+    contains([for repo in values(coalesce(local.cicd_repositories, {})) : repo.type], "ssm")
+  ) ? 1 : 0
+  project_id  = module.automation-project.project_id
+  location    = local.locations.ssm
+  instance_id = "iac-core-ssm-0"
+  repositories = {
+    for repo in values(local.cicd_repositories) :
+    repo.name => {
+      iam = (
+        repo.name == "bootstrap" ? {
+          "roles/source.admin" = ["serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}"]
+          } : (
+          repo.name == "resman" ? {
+            "roles/source.reader" = [
+              "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
+              "serviceAccount:${module.automation-tf-cicd-sa["resman"].email}"
+            ]
+            } : (
+            repo.name == "tenants" ? {
+              "roles/source.reader" = [
+                "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
+                "serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}"
+              ]
+              } : (
+              repo.name == "vpcsc" ? {
+                "roles/source.admin" = [
+                  "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
+                  "serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}"
+                ]
+              } : {}
+            )
+          )
+        )
+      )
+    }
+    if repo.type == "ssm"
   }
 }
 
