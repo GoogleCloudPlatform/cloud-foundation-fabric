@@ -75,6 +75,16 @@ locals {
       "0-globals.auto.tfvars.json"
     ]
   }
+  cicd_service_accounts = {
+    bootstrap   = try("serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}", null)
+    bootstrap_r = try("serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}", null)
+    resman      = try("serviceAccount:${module.automation-tf-cicd-sa["resman"].email}", null)
+    resman_r    = try("serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}", null)
+    tenants     = try("serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}", null)
+    tenants_r   = try("serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}", null)
+    vpcsc       = try("serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}", null)
+    vpcsc_r     = try("serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}", null)
+  }
 }
 
 # Secure Source Manager instance and repositories
@@ -89,58 +99,59 @@ module "automation-tf-cicd-ssm" {
   instance_id = "iac-core-ssm-0"
   iam = {
     "roles/securesourcemanager.instanceOwner" = [
-      "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
-      "serviceAccount:${module.automation-tf-cicd-sa["resman"].email}"
+      local.cicd_service_accounts["bootstrap"],
+      local.cicd_service_accounts["resman"]
     ]
     "roles/securesourcemanager.instanceAccessor" = [
-      "serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}",
-      "serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}",
-      "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
-      "serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}",
-      "serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}",
-      "serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}",
+      local.cicd_service_accounts["bootstrap"],
+      local.cicd_service_accounts["resman"],
+      local.cicd_service_accounts["bootstrap_r"],
+      local.cicd_service_accounts["resman_r"],
+      local.cicd_service_accounts["tenants_r"],
+      local.cicd_service_accounts["vpcsc_r"],
     ]
   }
   repositories = {
-    for repo in values(local.cicd_repositories) :
-    repo.name => {
+    for repo_key, repo in values(local.cicd_repositories) :
+    coalesce(repo.name, repo_key) => {
+      location    = local.locations.ssm // temp until #2595 merge
       iam = (
-        repo.name == "bootstrap" ? {
+        repo_key == "bootstrap" ? {
           "roles/securesourcemanager.repoAdmin" = [
-            "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}"
+            local.cicd_service_accounts["bootstrap"]
           ]
           "roles/securesourcemanager.repoReader" = [
-            "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
+            local.cicd_service_accounts["bootstrap_r"],
           ]
           } : (
-          repo.name == "resman" ? {
+          repo_key == "resman" ? {
             "roles/securesourcemanager.repoAdmin" = [
-              "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
-              "serviceAccount:${module.automation-tf-cicd-sa["resman"].email}"
+              local.cicd_service_accounts["bootstrap"],
+              local.cicd_service_accounts["resman"]
             ]
             "roles/securesourcemanager.repoReader" = [
-              "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
-              "serviceAccount:${module.automation-tf-cicd-r-sa["resman"].email}"
+              local.cicd_service_accounts["bootstrap_r"],
+              local.cicd_service_accounts["resman_r"]
             ]
             } : (
-            repo.name == "tenants" ? {
+            repo_key == "tenants" ? {
               "roles/securesourcemanager.repoAdmin" = [
-                "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
-                "serviceAccount:${module.automation-tf-cicd-sa["tenants"].email}"
+                local.cicd_service_accounts["bootstrap"],
+                local.cicd_service_accounts["tenants"]
               ]
               "roles/securesourcemanager.repoReader" = [
-                "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
-                "serviceAccount:${module.automation-tf-cicd-r-sa["tenants"].email}"
+                local.cicd_service_accounts["bootstrap_r"],
+                local.cicd_service_accounts["tenants_r"]
               ]
               } : (
-              repo.name == "vpcsc" ? {
+              repo_key == "vpcsc" ? {
                 "roles/securesourcemanager.repoAdmin" = [
-                  "serviceAccount:${module.automation-tf-cicd-sa["bootstrap"].email}",
-                  "serviceAccount:${module.automation-tf-cicd-sa["vpcsc"].email}"
+                  local.cicd_service_accounts["bootstrap"],
+                  local.cicd_service_accounts["vpcsc"]
                 ]
                 "roles/securesourcemanager.repoReader" = [
-                  "serviceAccount:${module.automation-tf-cicd-r-sa["bootstrap"].email}",
-                  "serviceAccount:${module.automation-tf-cicd-r-sa["vpcsc"].email}"
+                  local.cicd_service_accounts["bootstrap_r"],
+                  local.cicd_service_accounts["vpcsc_r"]
                 ]
               } : {}
             )
@@ -161,7 +172,7 @@ module "automation-tf-cicd-sa" {
   name         = "${each.key}-1"
   display_name = "Terraform CI/CD ${each.key} service account."
   prefix       = local.prefix
-  iam = {
+  iam = each.value.type != "ssm" ? { 
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
@@ -176,7 +187,7 @@ module "automation-tf-cicd-sa" {
         each.value.branch
       )
     ]
-  }
+  } : {}
   iam_project_roles = {
     (module.automation-project.project_id) = ["roles/logging.logWriter"]
   }
@@ -192,7 +203,7 @@ module "automation-tf-cicd-r-sa" {
   name         = "${each.key}-1r"
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = local.prefix
-  iam = {
+  iam = each.value.type != "ssm" ? { 
     "roles/iam.workloadIdentityUser" = [
       format(
         local.workload_identity_providers_defs[each.value.type].principal_repo,
@@ -200,7 +211,7 @@ module "automation-tf-cicd-r-sa" {
         each.value.name
       )
     ]
-  }
+  } : {}
   iam_project_roles = {
     (module.automation-project.project_id) = ["roles/logging.logWriter"]
   }

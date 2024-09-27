@@ -34,42 +34,44 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      name              = string
+      name              = optional(string)
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
     }))
     resman = optional(object({
-      name              = string
+      name              = optional(string)
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
     }))
     tenants = optional(object({
-      name              = string
+      name              = optional(string)
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
     }))
     vpcsc = optional(object({
-      name              = string
+      name              = optional(string)
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
     }))
   })
   default = null
+  # validation {
+  #   condition = alltrue([
+  #     for k, v in coalesce(var.cicd_repositories, {}) :
+  #     v == null || try(v.name, null) != null
+  #   ])
+  #   error_message = "Non-null repositories need a non-null name."
+  # }
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.name, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null name."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.identity_provider, null) != null
+      v == null ||
+      try(v.type, null) == "ssm" ||
+      try(v.identity_provider, null) != null
     ])
     error_message = "Non-null repositories need a non-null provider."
   }
