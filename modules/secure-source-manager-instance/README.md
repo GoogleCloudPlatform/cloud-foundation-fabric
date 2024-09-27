@@ -160,7 +160,7 @@ module "ssm_instance" {
 | [iam_bindings_additive](variables-iam.tf#L32) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role   &#61; string&#10;  member &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [instance_create](variables.tf#L23) | Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance. | <code>bool</code> |  | <code>true</code> |
 | [kms_key](variables.tf#L34) | KMS key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L40) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L40) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
