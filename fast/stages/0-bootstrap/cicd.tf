@@ -76,14 +76,14 @@ locals {
     ]
   }
   cicd_service_accounts = {
-    bootstrap   = try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
-    bootstrap_r = try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, null)
-    resman      = try(module.automation-tf-cicd-sa["resman"].iam_email, null)
-    resman_r    = try(module.automation-tf-cicd-r-sa["resman"].iam_email, null)
-    tenants     = try(module.automation-tf-cicd-sa["tenants"].iam_email, null)
-    tenants_r   = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, null)
-    vpcsc       = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, null)
-    vpcsc_r     = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, null)
+    bootstrap   = try(module.automation-tf-cicd-sa["bootstrap"].iam_email, "")
+    bootstrap_r = try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, "")
+    resman      = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
+    resman_r    = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
+    tenants     = try(module.automation-tf-cicd-sa["tenants"].iam_email, "")
+    tenants_r   = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, "")
+    vpcsc       = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, "")
+    vpcsc_r     = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, "")
   }
 }
 
