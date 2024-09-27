@@ -137,6 +137,7 @@ module "automation-project" {
       "networksecurity.googleapis.com",
       "orgpolicy.googleapis.com",
       "pubsub.googleapis.com",
+      "securesourcemanager.googleapis.com",
       "servicenetworking.googleapis.com",
       "serviceusage.googleapis.com",
       "stackdriver.googleapis.com",
