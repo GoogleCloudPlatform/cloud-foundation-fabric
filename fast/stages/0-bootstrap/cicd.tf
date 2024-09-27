@@ -111,14 +111,15 @@ module "automation-tf-cicd-ssm" {
       local.cicd_service_accounts["bootstrap"],
       local.cicd_service_accounts["resman"]
     ])
-    "roles/securesourcemanager.instanceAccessor" = compact([
+    "roles/securesourcemanager.instanceAccessor" = compact(distinct([
       local.cicd_service_accounts["bootstrap"],
       local.cicd_service_accounts["resman"],
       local.cicd_service_accounts["bootstrap_r"],
       local.cicd_service_accounts["resman_r"],
       local.cicd_service_accounts["tenants_r"],
       local.cicd_service_accounts["vpcsc_r"],
-    ])
+      try("user:${var.bootstrap_user}", null)
+    ]))
   }
   repositories = {
     for repo_key, repo in local.cicd_repositories :
@@ -127,7 +128,8 @@ module "automation-tf-cicd-ssm" {
       iam = {
         "roles/securesourcemanager.repoAdmin" = compact(distinct([
           try(local.cicd_service_accounts["bootstrap"], null),
-          try(local.cicd_service_accounts[repo_key], null)
+          try(local.cicd_service_accounts[repo_key], null),
+          try("user:${var.bootstrap_user}", null)
         ]))
         "roles/securesourcemanager.repoReader" = compact(distinct([
           try(local.cicd_service_accounts["bootstrap_r"], null),
@@ -139,22 +141,38 @@ module "automation-tf-cicd-ssm" {
   }
 }
 
-# Archive directories
+# # Archive directories
 
-data "archive_file" "bootstrap-stage" {
-  type        = "zip"
-  source_dir  = path.module
-  excludes    = local.file_ignore_set
-  output_path = "${path.module}/env/bootstrap.zip"
-}
+# data "archive_file" "bootstrap-stage" {
+#   type        = "zip"
+#   source_dir  = path.module
+#   excludes    = local.file_ignore_set
+#   output_path = "${path.module}/env/bootstrap.zip"
+# }
 
-data "archive_file" "other-stages" {
-  for_each = { for k, v in local.cicd_repositories : k => v if k != "bootstrap" }
+# data "archive_file" "other-stages" {
+#   for_each = { for k, v in local.cicd_repositories : k => v if k != "bootstrap" }
 
-  type        = "zip"
-  source_dir  = (each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}")
-  excludes    = local.file_ignore_set
-  output_path = "${path.module}/env/${each.key}.zip"
+#   type        = "zip"
+#   source_dir  = (each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}")
+#   excludes    = local.file_ignore_set
+#   output_path = "${path.module}/env/${each.key}.zip"
+# }
+
+# Push stages to the repos
+
+resource "null_resource" "git_init" {
+  for_each = { for k, v in local.cicd_repositories : k => v if v.type == "ssm" }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      bash ${path.module}/scripts/stages-to-get.sh ${
+        each.key == "bootstrap" ? path.module : (
+          each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}"
+        )
+      } ${module.automation-tf-cicd-ssm.repositories[each.key].uris.git_https} ${try(each.value.branch, null)}
+    EOT
+  }
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
