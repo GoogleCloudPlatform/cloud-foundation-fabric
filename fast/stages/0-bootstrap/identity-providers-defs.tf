@@ -67,5 +67,18 @@ locals {
       principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
       principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
+    # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
+    terraform = {
+      attribute_mapping = {
+        "attribute.tfc_organization_id" = "assertion.terraform_organization_id"
+        "attribute.tfc_project_id"      = "assertion.terraform_project_id"
+        "attribute.tfc_project_name"    = "assertion.terraform_project_name"
+        "google.subject"                = "assertion.terraform_workspace_id"
+        "attribute.tfc_workspace_name"  = "assertion.terraform_workspace_name"
+      }
+      issuer_uri       = "https://app.terraform.io"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+    }
   }
 }
