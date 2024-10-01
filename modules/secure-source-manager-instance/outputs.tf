@@ -16,12 +16,12 @@
 
 output "instance" {
   description = "Instance."
-  value       = google_secure_source_manager_instance.instance
+  value       = try(google_secure_source_manager_instance.instance[0], null)
 }
 
 output "instance_id" {
   description = "Instance id."
-  value       = google_secure_source_manager_instance.instance.id
+  value       = try(google_secure_source_manager_instance.instance[0].id, null)
 }
 
 output "repositories" {
