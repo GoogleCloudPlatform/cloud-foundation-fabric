@@ -36,9 +36,13 @@ locals {
     if(
       v != null
       &&
-      contains(
-        keys(local.workload_identity_providers),
-        coalesce(try(v.identity_provider, null), ":")
+      (
+        try(v.type, null) == "ssm"
+        ||
+        contains(
+          keys(local.workload_identity_providers),
+          coalesce(try(v.identity_provider, null), ":")
+        )
       )
       &&
       fileexists(
@@ -71,6 +75,76 @@ locals {
       "0-globals.auto.tfvars.json"
     ]
   }
+  cicd_service_accounts = {
+    bootstrap   = contains(keys(module.automation-tf-cicd-sa), "bootstrap") ? module.automation-tf-cicd-sa["bootstrap"].iam_email : ""
+    bootstrap_r = contains(keys(module.automation-tf-cicd-r-sa), "bootstrap") ? module.automation-tf-cicd-r-sa["bootstrap"].iam_email : ""
+    resman      = contains(keys(module.automation-tf-cicd-sa), "resman") ? module.automation-tf-cicd-sa["resman"].iam_email : ""
+    resman_r    = contains(keys(module.automation-tf-cicd-r-sa), "resman") ? module.automation-tf-cicd-r-sa["resman"].iam_email : ""
+    tenants     = contains(keys(module.automation-tf-cicd-sa), "tenants") ? module.automation-tf-cicd-sa["tenants"].iam_email : ""
+    tenants_r   = contains(keys(module.automation-tf-cicd-r-sa), "tenants") ? module.automation-tf-cicd-r-sa["tenants"].iam_email : ""
+    vpcsc       = contains(keys(module.automation-tf-cicd-sa), "vpcsc") ? module.automation-tf-cicd-sa["vpcsc"].iam_email : ""
+    vpcsc_r     = contains(keys(module.automation-tf-cicd-r-sa), "vpcsc") ? module.automation-tf-cicd-r-sa["vpcsc"].iam_email : ""
+  }
+}
+
+# Secure Source Manager instance and repositories
+
+module "automation-tf-cicd-ssm" {
+  source = "../../../modules/secure-source-manager-instance"
+  count = (
+    contains([for repo in values(coalesce(local.cicd_repositories, {})) : repo.type], "ssm")
+  ) ? 1 : 0
+  project_id  = module.automation-project.project_id
+  location    = local.locations.ssm
+  instance_id = "iac-core-ssm-0"
+  iam = {
+    "roles/securesourcemanager.instanceOwner" = compact([
+      local.cicd_service_accounts["bootstrap"],
+      local.cicd_service_accounts["resman"]
+    ])
+    "roles/securesourcemanager.instanceAccessor" = compact(distinct([
+      local.cicd_service_accounts["bootstrap"],
+      local.cicd_service_accounts["resman"],
+      local.cicd_service_accounts["bootstrap_r"],
+      local.cicd_service_accounts["resman_r"],
+      local.cicd_service_accounts["tenants_r"],
+      local.cicd_service_accounts["vpcsc_r"],
+      var.bootstrap_user != null ? "user:${var.bootstrap_user}" : null
+    ]))
+  }
+  repositories = {
+    for repo_key, repo in local.cicd_repositories :
+    coalesce(repo.name, repo_key) => {
+      iam = {
+        "roles/securesourcemanager.repoAdmin" = compact(distinct([
+          contains(keys(local.cicd_service_accounts), "bootstrap") ? local.cicd_service_accounts["bootstrap"] : null,
+          contains(keys(local.cicd_service_accounts), repo_key) ? local.cicd_service_accounts[repo_key] : null,
+          var.bootstrap_user != null ? "user:${var.bootstrap_user}" : null
+        ]))
+        "roles/securesourcemanager.repoReader" = compact(distinct([
+          contains(keys(local.cicd_service_accounts), "bootstrap_r") ? local.cicd_service_accounts["bootstrap_r"] : null,
+          contains(keys(local.cicd_service_accounts), "${repo_key}_r") ? local.cicd_service_accounts["${repo_key}_r"] : null
+        ]))
+      }
+    }
+    if repo.type == "ssm"
+  }
+}
+
+# Push stages to the repos
+
+resource "null_resource" "git_init" {
+  for_each = { for k, v in local.cicd_repositories : k => v if v.type == "ssm" }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      bash ${path.module}/scripts/stages-to-get.sh ${
+    each.key == "bootstrap" ? path.module : (
+      each.key == "tenants" ? "${path.module}/../1-tenant-factory" : "${path.module}/../1-${each.key}"
+    )
+  } ${module.automation-tf-cicd-ssm.repositories[each.key].uris.git_https} ${each.value.branch}
+    EOT
+}
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
@@ -82,7 +156,7 @@ module "automation-tf-cicd-sa" {
   name         = "${each.key}-1"
   display_name = "Terraform CI/CD ${each.key} service account."
   prefix       = local.prefix
-  iam = {
+  iam = each.value.type != "ssm" ? {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
@@ -97,7 +171,7 @@ module "automation-tf-cicd-sa" {
         each.value.branch
       )
     ]
-  }
+  } : {}
   iam_project_roles = {
     (module.automation-project.project_id) = ["roles/logging.logWriter"]
   }
@@ -113,7 +187,7 @@ module "automation-tf-cicd-r-sa" {
   name         = "${each.key}-1r"
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = local.prefix
-  iam = {
+  iam = each.value.type != "ssm" ? {
     "roles/iam.workloadIdentityUser" = [
       format(
         local.workload_identity_providers_defs[each.value.type].principal_repo,
@@ -121,7 +195,7 @@ module "automation-tf-cicd-r-sa" {
         each.value.name
       )
     ]
-  }
+  } : {}
   iam_project_roles = {
     (module.automation-project.project_id) = ["roles/logging.logWriter"]
   }

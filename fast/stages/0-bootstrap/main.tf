@@ -28,6 +28,7 @@ locals {
     gcs     = var.locations.gcs
     logging = coalesce(try(local.checklist.location, null), var.locations.logging)
     pubsub  = var.locations.pubsub
+    ssm     = var.locations.ssm
   }
   # naming: environment used in most resource names
   prefix = join("-", compact([var.prefix, local.env_default]))

@@ -16,15 +16,6 @@
 
 # tfdoc:file:description Automation project and resources.
 
-locals {
-  cicd_resman_sa    = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
-  cicd_resman_r_sa  = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
-  cicd_tenants_sa   = try(module.automation-tf-cicd-sa["tenants"].iam_email, "")
-  cicd_tenants_r_sa = try(module.automation-tf-cicd-r-sa["tenants"].iam_email, "")
-  cicd_vpcsc_sa     = try(module.automation-tf-cicd-sa["vpcsc"].iam_email, "")
-  cicd_vpcsc_r_sa   = try(module.automation-tf-cicd-r-sa["vpcsc"].iam_email, "")
-}
-
 module "automation-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -146,6 +137,7 @@ module "automation-project" {
       "networksecurity.googleapis.com",
       "orgpolicy.googleapis.com",
       "pubsub.googleapis.com",
+      "securesourcemanager.googleapis.com",
       "servicenetworking.googleapis.com",
       "serviceusage.googleapis.com",
       "stackdriver.googleapis.com",
@@ -270,15 +262,15 @@ module "automation-tf-resman-sa" {
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
-    local.cicd_resman_sa == "" ? {} : {
+    local.cicd_service_accounts["resman"] == "" ? {} : {
       cicd_token_creator_resman = {
-        member = local.cicd_resman_sa
+        member = local.cicd_service_accounts["resman"]
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     },
-    local.cicd_tenants_sa == "" ? {} : {
+    local.cicd_service_accounts["tenants"] == "" ? {} : {
       cicd_token_creator_tenants = {
-        member = local.cicd_tenants_sa
+        member = local.cicd_service_accounts["tenants"]
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     }
@@ -297,15 +289,15 @@ module "automation-tf-resman-r-sa" {
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
-    local.cicd_resman_r_sa == "" ? {} : {
+    local.cicd_service_accounts["resman_r"] == "" ? {} : {
       cicd_token_creator_resman = {
-        member = local.cicd_resman_r_sa
+        member = local.cicd_service_accounts["resman_r"]
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     },
-    local.cicd_tenants_r_sa == "" ? {} : {
+    local.cicd_service_accounts["tenants_r"] == "" ? {} : {
       cicd_token_creator_tenants = {
-        member = local.cicd_tenants_r_sa
+        member = local.cicd_service_accounts["tenants_r"]
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     }
@@ -354,9 +346,9 @@ module "automation-tf-vpcsc-sa" {
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     },
-    local.cicd_vpcsc_sa == "" ? {} : {
+    local.cicd_service_accounts["vpcsc"] == "" ? {} : {
       cicd_token_creator_vpcsc = {
-        member = local.cicd_vpcsc_sa
+        member = local.cicd_service_accounts["vpcsc"]
         role   = "roles/iam.serviceAccountTokenCreator"
       }
     }
@@ -374,9 +366,9 @@ module "automation-tf-vpcsc-r-sa" {
   prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
-  iam_bindings_additive = local.cicd_vpcsc_r_sa == "" ? {} : {
+  iam_bindings_additive = local.cicd_service_accounts["vpcsc_r"] == "" ? {} : {
     cicd_token_creator_vpcsc = {
-      member = local.cicd_vpcsc_r_sa
+      member = local.cicd_service_accounts["vpcsc_r"]
       role   = "roles/iam.serviceAccountTokenCreator"
     }
   }
