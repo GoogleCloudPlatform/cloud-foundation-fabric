@@ -131,6 +131,7 @@ variable "spoke_configs" {
   description = "Spoke connectivity configurations."
   type = object({
     ncc_configs = optional(object({
+      export_psc = optional(bool, true)
       dev = optional(object({
         exclude_export_ranges = list(string)
         }), {
