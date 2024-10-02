@@ -83,9 +83,8 @@ These modules are used in the examples included in this repository. If you are u
 - [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
+- [Biglake catalog](./biglake-catalog)
 - [Cloud SQL instance](./cloudsql-instance)
-- [Spanner instance](./spanner-instance)
-- [Firestore](./firestore)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Data Catalog Tag](./data-catalog-tag)
 - [Data Catalog Tag Template](./data-catalog-tag-template)
@@ -94,8 +93,11 @@ These modules are used in the examples included in this repository. If you are u
 - [Dataplex](./dataplex)
 - [Dataplex DataScan](./dataplex-datascan/)
 - [Dataproc](./dataproc)
+- [Firestore](./firestore)
 - [GCS](./gcs)
+- [Looker Core](./looker-core)
 - [Pub/Sub](./pubsub)
+- [Spanner instance](./spanner-instance)
 
 ## Development
 

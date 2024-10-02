@@ -122,6 +122,7 @@ variable "enable_monitoring" {
 variable "ext_lb_config" {
   description = "External application load balancer configuration."
   type = object({
+    address         = optional(string)
     log_sample_rate = optional(number)
     outlier_detection = optional(object({
       consecutive_errors                    = optional(number)
@@ -193,6 +194,7 @@ variable "ext_lb_config" {
 variable "int_cross_region_lb_config" {
   description = "Internal application load balancer configuration."
   type = object({
+    addresses       = optional(map(string))
     log_sample_rate = optional(number)
     outlier_detection = optional(object({
       consecutive_errors                    = optional(number)
@@ -213,7 +215,38 @@ variable "int_cross_region_lb_config" {
         nanos   = optional(number)
       }))
     }))
-    certificate_manager_certificates = optional(list(string))
+    certificate_manager_config = object({
+      certificates = map(object({
+        description = optional(string)
+        labels      = optional(map(string), {})
+        location    = optional(string)
+        scope       = optional(string)
+        self_managed = optional(object({
+          pem_certificate = string
+          pem_private_key = string
+        }))
+        managed = optional(object({
+          domains            = list(string)
+          dns_authorizations = optional(list(string))
+          issuance_config    = optional(string)
+        }))
+      }))
+      dns_authorizations = optional(map(object({
+        domain      = string
+        description = optional(string)
+        location    = optional(string)
+        type        = optional(string)
+        labels      = optional(map(string))
+      })))
+      issuance_configs = optional(map(object({
+        ca_pool                    = string
+        description                = optional(string)
+        key_algorithm              = string
+        labels                     = optional(map(string), {})
+        lifetime                   = string
+        rotation_window_percentage = number
+      })))
+    })
   })
   default = null
 }
@@ -221,6 +254,7 @@ variable "int_cross_region_lb_config" {
 variable "int_lb_config" {
   description = "Internal application load balancer configuration."
   type = object({
+    addresses       = optional(map(string))
     log_sample_rate = optional(number)
     outlier_detection = optional(object({
       consecutive_errors                    = optional(number)
@@ -247,7 +281,6 @@ variable "int_lb_config" {
         certificate = string
         private_key = string
       })), {})
-      self_signed_configs = optional(list(string), [])
     })
   })
   default = null
