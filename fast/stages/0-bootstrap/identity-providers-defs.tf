@@ -70,7 +70,7 @@ locals {
     # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
     terraform = {
       attribute_mapping = {
-        "google.subject"                        = "assertion.sub"
+        "google.subject"                        = "assertion.terraform_workspace_id"
         "attribute.aud"                         = "assertion.aud"
         "attribute.terraform_run_phase"         = "assertion.terraform_run_phase"
         "attribute.terraform_project_id"        = "assertion.terraform_project_id"
