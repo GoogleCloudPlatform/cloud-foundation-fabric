@@ -30,6 +30,43 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "cicd_backends" {
+  description = "CI/CD backend configuration. Leave null to use GCS buckets for state."
+  type = object({
+    terraform = optional(object({
+      organization = string
+      workspaces = object({
+        tags    = optional(list(string), null)
+        name    = optional(string, null)
+        project = optional(string, null)
+      })
+      hostname = optional(string, null)
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      (
+        length([for k, v in coalesce(var.cicd_backends, {}) : true if v != null]) == 1
+      )
+    )
+    error_message = "cicd_backends must be either null or contain exactly one backend configuration."
+  }
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      var.cicd_backends.terraform == null ||
+      (
+        var.cicd_backends.terraform.workspaces.tags != null ||
+        var.cicd_backends.terraform.workspaces.name != null ||
+        var.cicd_backends.terraform.workspaces.project != null
+      )
+    )
+    error_message = "At least one of 'tags', 'name', or 'project' must be defined within the 'workspaces' object when 'terraform' is defined."
+  }
+}
+
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
@@ -85,43 +122,6 @@ variable "cicd_repositories" {
       v == null || (try(v.repo, null) != null || try(v.wif_subject, null) != null)
     ])
     error_message = "Either repo or wif_subject must be set for all non-null repositories."
-  }
-}
-
-variable "cicd_backends" {
-  description = "CI/CD backend configuration. Leave null to use GCS buckets for state."
-  type = object({
-    terraform = optional(object({
-      organization = string
-      workspaces = object({
-        tags    = optional(list(string), null)
-        name    = optional(string, null)
-        project = optional(string, null)
-      })
-      hostname = optional(string, null)
-    }))
-  })
-  default = null
-  validation {
-    condition = (
-      var.cicd_backends == null ||
-      (
-        length([for k, v in coalesce(var.cicd_backends, {}) : true if v != null]) == 1
-      )
-    )
-    error_message = "cicd_backends must be either null or contain exactly one backend configuration."
-  }
-  validation {
-    condition = (
-      var.cicd_backends == null ||
-      var.cicd_backends.terraform == null ||
-      (
-        var.cicd_backends.terraform.workspaces.tags != null ||
-        var.cicd_backends.terraform.workspaces.name != null ||
-        var.cicd_backends.terraform.workspaces.project != null
-      )
-    )
-    error_message = "At least one of 'tags', 'name', or 'project' must be defined within the 'workspaces' object when 'terraform' is defined."
   }
 }
 
