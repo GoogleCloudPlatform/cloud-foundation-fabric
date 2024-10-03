@@ -95,11 +95,30 @@ locals {
       },
       } : k => (
       var.cicd_backends != null && try(var.cicd_backends.terraform, null) != null ?
-      templatefile(local._tpl_providers_terraform, merge({
-        name = v.name, sa = v.sa
-        },
-        var.cicd_backends.terraform
-      )) :
+      templatefile(
+        local._tpl_providers_terraform,
+        merge(
+          {
+            name = v.name,
+            sa   = v.sa
+          },
+          {
+            workspaces = lookup(
+              var.cicd_backends.terraform.workspaces,
+              v.name,
+              {
+                tags    = null,
+                name    = null,
+                project = null
+              }
+            )
+          },
+          {
+            organization = var.cicd_backends.terraform.organization,
+            hostname     = var.cicd_backends.terraform.hostname
+          }
+        )
+      ) :
       templatefile(local._tpl_providers_gcs, {
         name          = v.name,
         sa            = v.sa,

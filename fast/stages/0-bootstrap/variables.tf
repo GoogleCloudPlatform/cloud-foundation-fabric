@@ -35,11 +35,11 @@ variable "cicd_backends" {
   type = object({
     terraform = optional(object({
       organization = string
-      workspaces = object({
+      workspaces = map(object({
         tags    = optional(list(string), null)
         name    = optional(string, null)
         project = optional(string, null)
-      })
+      }))
       hostname = optional(string, null)
     }))
   })
@@ -57,13 +57,12 @@ variable "cicd_backends" {
     condition = (
       var.cicd_backends == null ||
       var.cicd_backends.terraform == null ||
-      (
-        var.cicd_backends.terraform.workspaces.tags != null ||
-        var.cicd_backends.terraform.workspaces.name != null ||
-        var.cicd_backends.terraform.workspaces.project != null
-      )
+      alltrue([
+        for k, v in var.cicd_backends.terraform.workspaces :
+        v.tags != null || v.name != null || v.project != null
+      ])
     )
-    error_message = "At least one of 'tags', 'name', or 'project' must be defined within the 'workspaces' object when 'terraform' is defined."
+    error_message = "At least one of 'tags', 'name', or 'project' must be defined for each workspace in the 'workspaces' map when 'terraform' is defined."
   }
 }
 
