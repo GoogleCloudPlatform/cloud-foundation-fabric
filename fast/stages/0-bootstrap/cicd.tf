@@ -24,13 +24,13 @@ locals {
         v.oidc[0].allowed_audiences,
         ["https://iam.googleapis.com/${v.name}"]
       )
-      issuer           = local.workload_identity_providers[k].issuer
-      issuer_uri       = try(v.oidc[0].issuer_uri, null)
-      name             = v.name
+      issuer     = local.workload_identity_providers[k].issuer
+      issuer_uri = try(v.oidc[0].issuer_uri, null)
+      name       = v.name
       principal_branch = (
         k == "azure" ? null : local.workload_identity_providers[k].principal_branch
       )
-      principal_repo   = (
+      principal_repo = (
         k == "azure" ? null : local.workload_identity_providers[k].principal_repo
       )
       principal_oid = (
