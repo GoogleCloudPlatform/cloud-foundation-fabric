@@ -17,23 +17,19 @@ trigger:
 
 variables:
   - name: FAST_SERVICE_ACCOUNT
-    value: $(service_accounts.apply)
+    value: ${service_accounts.apply}
   - name: FAST_SERVICE_ACCOUNT_PLAN
-    value: $(service_accounts.plan)
+    value: ${service_accounts.plan}
   - name: FAST_WIF_PROVIDER
-    value: $(identity_provider)
+    value: ${identity_provider}
   - name: TF_PROVIDERS_FILE
-    value: $(tf_providers_files.apply)
+    value: ${tf_providers_files.apply}
   - name: TF_PROVIDERS_FILE_PLAN
-    value: $(tf_providers_files.plan)
+    value: ${tf_providers_files.plan}
   - name: TF_VERSION
     value: 1.7.4
   - name: FAST_OUTPUTS_BUCKET
-    value: $(outputs_bucket)
-  ${{ if ne(length(tf_var_files), 0) }}:
-    - name: TF_VAR_FILES
-      value: |
-        ${{ join('\n', tf_var_files) }}
+    value: ${outputs_bucket}
 
 stages:
 - stage: pr
@@ -50,7 +46,7 @@ stages:
     - task: Cache@2
       displayName: 'Cache Terraform modules and providers'
       inputs:
-        key: 'terraform | $(Agent.OS) | ${{ hashFiles(''modules/*'') }} | ${{ hashFiles(''terraform.lock.hcl'') }}'
+        key: "terraform | $(Agent.OS) | $[hashFiles('modules/*')] | $[hashFiles('terraform.lock.hcl')]"
         path: '.terraform'
     - task: TerraformInstaller@0
       displayName: 'Install Terraform'
@@ -66,7 +62,7 @@ stages:
         git config --global credential.helper manager
 
         # Authenticate to your Git repository
-        git config --global credential.https://dev.azure.com.username ${{ variables.System.AccessToken }}
+        git config --global credential.https://dev.azure.com.username $(variables.System.AccessToken)
         git config --global credential.https://dev.azure.com.password $ACCESS_TOKEN 
 
         # Exchange the Azure AD token for a Google Cloud token using Workload Identity Federation
@@ -79,13 +75,13 @@ stages:
 
         # Activate the Google Cloud service account using the exchanged token
         gcloud auth activate-service-account --key-file=gcp-token.json
-        gcloud config set auth/credential_file_override $(GOOGLE_CREDENTIALS)
+        gcloud config set auth/credential_file_override gcp-token.json
 
         # Download the files
         gcloud storage cp -r "gs://$(FAST_OUTPUTS_BUCKET)/providers/$(TF_PROVIDERS_FILE_PLAN)" ./providers.tf
-        ${{ each f in parameters.tf_var_files }}:
-          gcloud storage cp gs://$(FAST_OUTPUTS_BUCKET)/tfvars/${{ f }} ./
-        ${{ end }}
+        %{~ for f in tf_var_files ~}
+        - gcloud storage cp -r gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
+        %{~ endfor ~}
       displayName: 'Setup Git and GCP Authentication'
     - script: terraform init -no-color
       displayName: 'Terraform Init'
@@ -184,7 +180,7 @@ stages:
         git config --global credential.helper manager
 
         # Authenticate to your Git repository
-        git config --global credential.https://dev.azure.com.username ${{ variables.System.AccessToken }}
+        git config --global credential.https://dev.azure.com.username $(variables.System.AccessToken)
         git config --global credential.https://dev.azure.com.password $ACCESS_TOKEN 
 
         # Exchange the Azure AD token for a Google Cloud token using Workload Identity Federation
@@ -197,13 +193,13 @@ stages:
 
         # Activate the Google Cloud service account using the exchanged token
         gcloud auth activate-service-account --key-file=gcp-token.json
-        gcloud config set auth/credential_file_override $(GOOGLE_CREDENTIALS)
+        gcloud config set auth/credential_file_override gcp-token.json
 
         # Download the files
         gcloud storage cp -r "gs://$(FAST_OUTPUTS_BUCKET)/providers/$(TF_PROVIDERS_FILE)" ./providers.tf
-        ${{ each f in parameters.tf_var_files }}:
-          gcloud storage cp gs://$(FAST_OUTPUTS_BUCKET)/tfvars/${{ f }} ./
-        ${{ end }}
+        %{~ for f in tf_var_files ~}
+        - gcloud storage cp -r gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
+        %{~ endfor ~}
       displayName: 'Setup Git and GCP Authentication'
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Plan Artifact'
