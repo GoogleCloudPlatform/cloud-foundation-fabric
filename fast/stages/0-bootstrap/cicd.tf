@@ -24,11 +24,11 @@ locals {
         v.oidc[0].allowed_audiences,
         ["https://iam.googleapis.com/${v.name}"]
       )
-      issuer           = local.workload_identity_providers[k].issuer
-      issuer_uri       = try(v.oidc[0].issuer_uri, null)
-      name             = v.name
-      principal_branch = local.workload_identity_providers[k].principal_branch
-      principal_repo   = local.workload_identity_providers[k].principal_repo
+      issuer            = local.workload_identity_providers[k].issuer
+      issuer_uri        = try(v.oidc[0].issuer_uri, null)
+      name              = v.name
+      principal_branch  = local.workload_identity_providers[k].principal_branch
+      principal_subject = local.workload_identity_providers[k].principal_subject
     }
   }
   cicd_repositories = {
@@ -86,14 +86,14 @@ module "automation-tf-cicd-sa" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
+        local.workload_identity_providers_defs[each.value.type].principal_subject,
         google_iam_workload_identity_pool.default[0].name,
-        coalesce(each.value.az_oid, each.value.name)
+        coalesce(each.value.wif_subject, each.value.repo)
       )
       : format(
         local.workload_identity_providers_defs[each.value.type].principal_branch,
         google_iam_workload_identity_pool.default[0].name,
-        each.value.name,
+        each.value.repo,
         each.value.branch
       )
     ]
@@ -116,9 +116,9 @@ module "automation-tf-cicd-r-sa" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
+        local.workload_identity_providers_defs[each.value.type].principal_subject,
         google_iam_workload_identity_pool.default[0].name,
-        coalesce(each.value.az_oid, each.value.name)
+        coalesce(each.value.wif_subject, each.value.repo)
       )
     ]
   }

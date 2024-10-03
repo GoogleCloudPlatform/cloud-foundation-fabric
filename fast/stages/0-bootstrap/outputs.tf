@@ -158,7 +158,8 @@ output "cicd_repositories" {
   value = {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
-      name            = v.name
+      repo            = v.repo
+      wif_subject     = v.wif_subject
       provider        = try(local.cicd_providers[v.identity_provider].name, null)
       service_account = try(module.automation-tf-cicd-sa[k].email, null)
     }

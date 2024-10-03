@@ -34,42 +34,35 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      name              = string
       type              = string
+      repo              = optional(string)
       branch            = optional(string)
       identity_provider = optional(string)
-      az_oid            = optional(string)
+      wif_subject       = optional(string)
     }))
     resman = optional(object({
-      name              = string
       type              = string
+      repo              = optional(string)
       branch            = optional(string)
       identity_provider = optional(string)
-      az_oid            = optional(string)
+      wif_subject       = optional(string)
     }))
     tenants = optional(object({
-      name              = string
       type              = string
+      repo              = optional(string)
       branch            = optional(string)
       identity_provider = optional(string)
-      az_oid            = optional(string)
+      wif_subject       = optional(string)
     }))
     vpcsc = optional(object({
-      name              = string
       type              = string
+      repo              = optional(string)
       branch            = optional(string)
       identity_provider = optional(string)
-      az_oid            = optional(string)
+      wif_subject       = optional(string)
     }))
   })
   default = null
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.name, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null name."
-  }
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
@@ -89,9 +82,9 @@ variable "cicd_repositories" {
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
-      (try(v.type, "") == "azure" && try(v.az_oid, null) != null) || (try(v.type, "") != "azure")
+      v == null || (try(v.repo, null) != null || try(v.wif_subject, null) != null)
     ])
-    error_message = "The az_oid attribute must be set if and only if the repository type is 'azure'."
+    error_message = "Either repo or wif_subject must be set for all non-null repositories."
   }
 }
 
