@@ -27,8 +27,15 @@ locals {
       issuer           = local.workload_identity_providers[k].issuer
       issuer_uri       = try(v.oidc[0].issuer_uri, null)
       name             = v.name
-      principal_branch = local.workload_identity_providers[k].principal_branch
-      principal_repo   = local.workload_identity_providers[k].principal_repo
+      principal_branch = (
+        k == "azure" ? null : local.workload_identity_providers[k].principal_branch
+      )
+      principal_repo   = (
+        k == "azure" ? null : local.workload_identity_providers[k].principal_repo
+      )
+      principal_oid = (
+        k == "azure" ? local.workload_identity_providers[k].principal_oid : null
+      )
     }
   }
   cicd_repositories = {
@@ -84,17 +91,27 @@ module "automation-tf-cicd-sa" {
   prefix       = local.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.name
-      )
-      : format(
-        local.workload_identity_providers_defs[each.value.type].principal_branch,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.name,
-        each.value.branch
+      each.value.branch == null ? (
+        each.value.type == "azure" ? (
+          format(
+            local.workload_identity_providers_defs[each.value.type].principal_oid,
+            google_iam_workload_identity_pool.default[0].name,
+            each.value.az_oid
+          )
+          ) : (
+          format(
+            local.workload_identity_providers_defs[each.value.type].principal_repo,
+            google_iam_workload_identity_pool.default[0].name,
+            each.value.name
+          )
+        )
+        ) : (
+        format(
+          local.workload_identity_providers_defs[each.value.type].principal_branch,
+          google_iam_workload_identity_pool.default[0].name,
+          each.value.name,
+          each.value.branch
+        )
       )
     ]
   }
@@ -115,10 +132,18 @@ module "automation-tf-cicd-r-sa" {
   prefix       = local.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.name
+      each.value.type == "azure" ? (
+        format(
+          local.workload_identity_providers_defs[each.value.type].principal_oid,
+          google_iam_workload_identity_pool.default[0].name,
+          each.value.az_oid
+        )
+        ) : (
+        format(
+          local.workload_identity_providers_defs[each.value.type].principal_repo,
+          google_iam_workload_identity_pool.default[0].name,
+          each.value.name
+        )
       )
     ]
   }

@@ -80,5 +80,13 @@ locals {
       principal_branch = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
       principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
+    # https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
+    azure = {
+      attribute_mapping = {
+        "google.subject" = "assertion.sub"
+        "attribute.oid"  = "assertion.oid"
+      }
+      principal_oid = "principalSet://iam.googleapis.com/%s/attribute.oid/%s"
+    }
   }
 }

@@ -38,24 +38,28 @@ variable "cicd_repositories" {
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
+      az_oid            = optional(string)
     }))
     resman = optional(object({
       name              = string
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
+      az_oid            = optional(string)
     }))
     tenants = optional(object({
       name              = string
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
+      az_oid            = optional(string)
     }))
     vpcsc = optional(object({
       name              = string
       type              = string
       branch            = optional(string)
       identity_provider = optional(string)
+      az_oid            = optional(string)
     }))
   })
   default = null
@@ -81,6 +85,13 @@ variable "cicd_repositories" {
       )
     ])
     error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'azure'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      (try(v.type, "") == "azure" && try(v.az_oid, null) != null) || (try(v.type, "") != "azure")
+    ])
+    error_message = "The az_oid attribute must be set if and only if the repository type is 'azure'."
   }
 }
 
@@ -322,6 +333,14 @@ variable "workload_identity_providers" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.workload_identity_providers :
+      (v.issuer == "azure" && v.custom_settings.issuer_uri != null && length(v.custom_settings.audiences) > 0) ||
+      (v.issuer != "azure")
+    ])
+    error_message = "For Azure workload identity providers (issuer = \"azure\"), both issuer_uri and audiences must be set."
+  }
   # TODO: fix validation
   # validation {
   #   condition     = var.federated_identity_providers.custom_settings == null
