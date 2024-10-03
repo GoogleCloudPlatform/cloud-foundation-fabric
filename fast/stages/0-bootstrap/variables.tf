@@ -88,6 +88,43 @@ variable "cicd_repositories" {
   }
 }
 
+variable "cicd_backends" {
+  description = "CI/CD backend configuration. Leave null to use GCS buckets for state."
+  type = object({
+    terraform = optional(object({
+      organization = string
+      workspaces = object({
+        tags    = optional(list(string), null)
+        name    = optional(string, null)
+        project = optional(string, null)
+      })
+      hostname = optional(string, null)
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      (
+        length([for k, v in coalesce(var.cicd_backends, {}) : true if v != null]) == 1
+      )
+    )
+    error_message = "cicd_backends must be either null or contain exactly one backend configuration."
+  }
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      var.cicd_backends.terraform == null ||
+      (
+        var.cicd_backends.terraform.workspaces.tags != null ||
+        var.cicd_backends.terraform.workspaces.name != null ||
+        var.cicd_backends.terraform.workspaces.project != null
+      )
+    )
+    error_message = "At least one of 'tags', 'name', or 'project' must be defined within the 'workspaces' object when 'terraform' is defined."
+  }
+}
+
 variable "custom_roles" {
   description = "Map of role names => list of permissions to additionally create at the organization level."
   type        = map(list(string))
