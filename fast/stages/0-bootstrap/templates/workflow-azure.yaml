@@ -69,8 +69,19 @@ stages:
         git config --global credential.https://dev.azure.com.username ${{ variables.System.AccessToken }}
         git config --global credential.https://dev.azure.com.password $ACCESS_TOKEN 
 
-        gcloud auth activate-service-account --key-file <(echo "$ACCESS_TOKEN")
+        # Exchange the Azure AD token for a Google Cloud token using Workload Identity Federation
+        gcloud iam workload-identity-pools create-cred-config \
+          "$(FAST_WIF_PROVIDER)" \
+          --service-account="$(FAST_SERVICE_ACCOUNT_PLAN)" \  # Use the plan service account
+          --credential-source-file=<(echo "$ACCESS_TOKEN") \
+          --output-file="gcp-token.json" \
+          --credential-source-type="text"
+
+        # Activate the Google Cloud service account using the exchanged token
+        gcloud auth activate-service-account --key-file=gcp-token.json
         gcloud config set auth/credential_file_override $(GOOGLE_CREDENTIALS)
+
+        # Download the files
         gcloud storage cp -r "gs://$(FAST_OUTPUTS_BUCKET)/providers/$(TF_PROVIDERS_FILE_PLAN)" ./providers.tf
         ${{ each f in parameters.tf_var_files }}:
           gcloud storage cp gs://$(FAST_OUTPUTS_BUCKET)/tfvars/${{ f }} ./
@@ -176,9 +187,20 @@ stages:
         git config --global credential.https://dev.azure.com.username ${{ variables.System.AccessToken }}
         git config --global credential.https://dev.azure.com.password $ACCESS_TOKEN 
 
-        gcloud auth activate-service-account --key-file <(echo "$ACCESS_TOKEN")
+        # Exchange the Azure AD token for a Google Cloud token using Workload Identity Federation
+        gcloud iam workload-identity-pools create-cred-config \
+          "$(FAST_WIF_PROVIDER)" \
+          --service-account="$(FAST_SERVICE_ACCOUNT)" \  # Use the plan service account
+          --credential-source-file=<(echo "$ACCESS_TOKEN") \
+          --output-file="gcp-token.json" \
+          --credential-source-type="text"
+
+        # Activate the Google Cloud service account using the exchanged token
+        gcloud auth activate-service-account --key-file=gcp-token.json
         gcloud config set auth/credential_file_override $(GOOGLE_CREDENTIALS)
-        gcloud storage cp -r "gs://$(FAST_OUTPUTS_BUCKET)/providers/$(TF_PROVIDERS_FILE_PLAN)" ./providers.tf
+
+        # Download the files
+        gcloud storage cp -r "gs://$(FAST_OUTPUTS_BUCKET)/providers/$(TF_PROVIDERS_FILE)" ./providers.tf
         ${{ each f in parameters.tf_var_files }}:
           gcloud storage cp gs://$(FAST_OUTPUTS_BUCKET)/tfvars/${{ f }} ./
         ${{ end }}
