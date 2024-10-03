@@ -86,7 +86,8 @@ locals {
         "google.subject" = "assertion.sub"
         "attribute.oid"  = "assertion.oid"
       }
-      principal_oid = "principalSet://iam.googleapis.com/%s/attribute.oid/%s"
+      principal_branch = null
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.oid/%s"
     }
   }
 }
