@@ -33,9 +33,9 @@ module "branch-gcve-dev-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.identity_providers[each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
@@ -68,9 +68,9 @@ module "branch-gcve-prod-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.identity_providers[each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
@@ -104,9 +104,9 @@ module "branch-gcve-dev-r-sa-cicd" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        local.identity_providers[each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
     ]
   }
@@ -132,9 +132,9 @@ module "branch-gcve-prod-r-sa-cicd" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        local.identity_providers[each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
     ]
   }

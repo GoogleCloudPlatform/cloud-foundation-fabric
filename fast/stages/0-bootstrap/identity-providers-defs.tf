@@ -82,9 +82,9 @@ locals {
         "attribute.terraform_run_id"            = "assertion.terraform_run_id"
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
-      issuer_uri       = "https://app.terraform.io"
-      principal_branch = null
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      issuer_uri        = "https://app.terraform.io"
+      principal_branch  = null
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
     }
     # https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
     azure = {
