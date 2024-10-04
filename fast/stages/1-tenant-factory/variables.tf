@@ -70,10 +70,11 @@ variable "tenant_configs" {
     }))
     fast_config = optional(object({
       cicd_config = optional(object({
-        name              = string
         type              = string
+        repo              = optional(string)
         branch            = optional(string)
         identity_provider = optional(string)
+        wif_subject       = optional(string)
       }))
       groups = optional(object({
         gcp-billing-admins      = optional(string, "gcp-billing-admins")
@@ -110,5 +111,18 @@ variable "tenant_configs" {
       for k, v in var.tenant_configs : length(k) <= 3
     ])
     error_message = "Tenant short name too long, use a maximum of 3 characters."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.tenant_configs :
+      (
+        v.fast_config == null || v.fast_config.cicd_config == null ||
+        (
+          v.fast_config.cicd_config.repo != null ||
+          v.fast_config.cicd_config.wif_subject != null
+        )
+      )
+    ])
+    error_message = "If cicd_config is set, then either repo or wif_subject must also be set."
   }
 }
