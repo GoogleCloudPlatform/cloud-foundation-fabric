@@ -1,0 +1,110 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.additive_iam.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: DOCKER
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: myproject
+    remote_repository_config: []
+    repository_id: myregistry
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+  module.additive_iam.google_artifact_registry_repository_iam_member.members["ci-admin"]:
+    condition: []
+    location: europe-west1
+    member: group:cicd@example.com
+    project: myproject
+    role: roles/artifactregistry.admin
+  module.additive_iam.google_artifact_registry_repository_iam_member.members["ci-read"]:
+    condition: []
+    location: europe-west1
+    member: group:cicd-read@example.com
+    project: myproject
+    role: roles/artifactregistry.reader
+  module.authoritative_iam.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: DOCKER
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: myproject
+    remote_repository_config: []
+    repository_id: myregistry
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+  module.authoritative_iam.google_artifact_registry_repository_iam_binding.authoritative["roles/artifactregistry.admin"]:
+    condition: []
+    location: europe-west1
+    members:
+      - group:cicd@example.com
+    project: myproject
+    role: roles/artifactregistry.admin
+  module.authoritative_iam_conditions.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: DOCKER
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: myproject
+    remote_repository_config: []
+    repository_id: myregistry
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+  module.authoritative_iam_conditions.google_artifact_registry_repository_iam_binding.bindings2["ci-admin"]:
+    condition: []
+    location: europe-west1
+    members:
+      - group:cicd@example.com
+    project: myproject
+    role: roles/artifactregistry.admin
+
+counts:
+  google_artifact_registry_repository: 3
+  google_artifact_registry_repository_iam_binding: 2
+  google_artifact_registry_repository_iam_member: 2
+  modules: 3
+  resources: 7
+
+outputs: {}
