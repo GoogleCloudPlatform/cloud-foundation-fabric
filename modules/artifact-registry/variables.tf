@@ -193,12 +193,6 @@ variable "format" {
   }
 }
 
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
 variable "labels" {
   description = "Labels to be attached to the registry."
   type        = map(string)
