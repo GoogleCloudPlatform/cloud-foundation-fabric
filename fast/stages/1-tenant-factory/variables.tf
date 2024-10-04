@@ -70,10 +70,11 @@ variable "tenant_configs" {
     }))
     fast_config = optional(object({
       cicd_config = optional(object({
-        name              = string
         type              = string
+        repo              = optional(string)
         branch            = optional(string)
         identity_provider = optional(string)
+        wif_subject       = optional(string)
       }))
       groups = optional(object({
         gcp-billing-admins      = optional(string, "gcp-billing-admins")

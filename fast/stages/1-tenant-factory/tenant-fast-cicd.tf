@@ -32,7 +32,7 @@ locals {
       issuer_uri       = try(local._wif_providers[k].oidc[0].issuer_uri, null)
       name             = local._wif_providers[k].name
       principal_branch = v.principal_branch
-      principal_repo   = v.principal_repo
+      principal_subject   = v.principal_subject
       provider         = v.provider
       tenant           = v.tenant
     }
@@ -95,14 +95,14 @@ module "tenant-automation-tf-cicd-sa" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
       : format(
         local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
         var.automation.federated_identity_pool,
-        each.value.name,
+        each.value.repo,
         each.value.branch
       )
     ]
@@ -131,9 +131,9 @@ module "automation-tf-cicd-r-sa" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_repo,
+        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_subject,
         var.automation.federated_identity_pool,
-        each.value.name
+        coalesce(each.value.wif_subject, each.value.repo)
       )
     ]
   }
