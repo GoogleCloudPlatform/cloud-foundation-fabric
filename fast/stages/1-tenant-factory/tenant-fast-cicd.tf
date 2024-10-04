@@ -28,13 +28,13 @@ locals {
         local._wif_providers[k].oidc[0].allowed_audiences,
         ["https://iam.googleapis.com/${local._wif_providers[k].name}"]
       )
-      issuer           = v.issuer
-      issuer_uri       = try(local._wif_providers[k].oidc[0].issuer_uri, null)
-      name             = local._wif_providers[k].name
-      principal_branch = v.principal_branch
-      principal_subject   = v.principal_subject
-      provider         = v.provider
-      tenant           = v.tenant
+      issuer            = v.issuer
+      issuer_uri        = try(local._wif_providers[k].oidc[0].issuer_uri, null)
+      name              = local._wif_providers[k].name
+      principal_branch  = v.principal_branch
+      principal_subject = v.principal_subject
+      provider          = v.provider
+      tenant            = v.tenant
     }
   ]
   # group provider data by tenant
