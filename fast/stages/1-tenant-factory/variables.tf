@@ -112,4 +112,17 @@ variable "tenant_configs" {
     ])
     error_message = "Tenant short name too long, use a maximum of 3 characters."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.tenant_configs :
+      (
+        v.fast_config == null || v.fast_config.cicd_config == null ||
+        (
+          v.fast_config.cicd_config.repo != null ||
+          v.fast_config.cicd_config.wif_subject != null
+        )
+      )
+    ])
+    error_message = "If cicd_config is set, then either repo or wif_subject must also be set."
+  }
 }
