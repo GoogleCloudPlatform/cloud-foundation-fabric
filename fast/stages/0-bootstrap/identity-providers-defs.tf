@@ -70,6 +70,24 @@ locals {
     # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
     terraform = {
       attribute_mapping = {
+        "google.subject"                        = "assertion.terraform_workspace_id"
+        "attribute.aud"                         = "assertion.aud"
+        "attribute.terraform_run_phase"         = "assertion.terraform_run_phase"
+        "attribute.terraform_project_id"        = "assertion.terraform_project_id"
+        "attribute.terraform_project_name"      = "assertion.terraform_project_name"
+        "attribute.terraform_workspace_id"      = "assertion.terraform_workspace_id"
+        "attribute.terraform_workspace_name"    = "assertion.terraform_workspace_name"
+        "attribute.terraform_organization_id"   = "assertion.terraform_organization_id"
+        "attribute.terraform_organization_name" = "assertion.terraform_organization_name"
+        "attribute.terraform_run_id"            = "assertion.terraform_run_id"
+        "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
+      }
+      issuer_uri       = "https://app.terraform.io"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+    }
+        terraform = {
+      attribute_mapping = {
         "attribute.tfc_organization_id" = "assertion.terraform_organization_id"
         "attribute.tfc_project_id"      = "assertion.terraform_project_id"
         "attribute.tfc_project_name"    = "assertion.terraform_project_name"
@@ -77,8 +95,8 @@ locals {
         "attribute.tfc_workspace_name"  = "assertion.terraform_workspace_name"
       }
       issuer_uri        = "https://app.terraform.io"
-      principal_branch  = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
-      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      principal_branch  = null
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
     }
     # https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
     azure = {
