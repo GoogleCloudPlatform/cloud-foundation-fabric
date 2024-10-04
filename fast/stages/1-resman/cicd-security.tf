@@ -40,7 +40,7 @@ module "branch-security-sa-cicd" {
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
         var.automation.federated_identity_pool,
-        each.value.name,
+        each.value.repo,
         each.value.branch
       )
     ]
