@@ -83,20 +83,8 @@ locals {
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
       issuer_uri       = "https://app.terraform.io"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-    }
-        terraform = {
-      attribute_mapping = {
-        "attribute.tfc_organization_id" = "assertion.terraform_organization_id"
-        "attribute.tfc_project_id"      = "assertion.terraform_project_id"
-        "attribute.tfc_project_name"    = "assertion.terraform_project_name"
-        "google.subject"                = "assertion.terraform_workspace_id"
-        "attribute.tfc_workspace_name"  = "assertion.terraform_workspace_name"
-      }
-      issuer_uri        = "https://app.terraform.io"
-      principal_branch  = null
-      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      principal_branch = null
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
     }
     # https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
     azure = {
