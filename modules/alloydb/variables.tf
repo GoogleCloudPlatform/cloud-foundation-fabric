@@ -117,9 +117,13 @@ variable "continuous_backup_configuration" {
 variable "cross_region_replication" {
   description = "Cross region replication config."
   type = object({
-    enabled           = optional(bool, false)
-    promote_secondary = optional(bool, false)
-    region            = optional(string, null)
+    enabled                         = optional(bool, false)
+    promote_secondary               = optional(bool, false)
+    region                          = optional(string, null)
+    secondary_cluster_display_name  = optional(string, null)
+    secondary_cluster_name          = optional(string, null)
+    secondary_instance_display_name = optional(string, null)
+    secondary_instance_name         = optional(string, null)
   })
   default = {}
   validation {
@@ -175,6 +179,11 @@ variable "initial_user" {
     password = string
   })
   default = null
+}
+
+variable "instance_name" {
+  description = "Name of primary instance."
+  type        = string
 }
 
 variable "labels" {
@@ -239,11 +248,6 @@ variable "maintenance_config" {
   }
 }
 
-variable "name" {
-  description = "Name of primary instance."
-  type        = string
-}
-
 variable "network_config" {
   description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
   type = object({
@@ -306,30 +310,6 @@ variable "query_insights_config" {
     record_client_address   = true
     query_plans_per_minute  = 5
   }
-}
-
-variable "secondary_cluster_display_name" {
-  description = "Display name of secondary cluster instance."
-  type        = string
-  default     = null
-}
-
-variable "secondary_cluster_name" {
-  description = "Name of secondary cluster instance."
-  type        = string
-  default     = null
-}
-
-variable "secondary_display_name" {
-  description = "Display name of secondary instance."
-  type        = string
-  default     = null
-}
-
-variable "secondary_name" {
-  description = "Name of secondary instance."
-  type        = string
-  default     = null
 }
 
 variable "tag_bindings" {
