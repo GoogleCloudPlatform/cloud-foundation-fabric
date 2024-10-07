@@ -20,9 +20,9 @@ locals {
   # secondary instance type is aligned with cluster type unless apply is targeting a promotion, in that
   # case cluster will be 'primary' while instance still 'secondary'.
   primary_cluster_name    = "${local.prefix}${var.cluster_name}"
-  primary_instance_name   = "${local.prefix}${var.name}"
-  secondary_cluster_name  = coalesce(var.secondary_cluster_name, "${var.cluster_name}-sec")
-  secondary_instance_name = coalesce(var.secondary_name, "${var.name}-sec")
+  primary_instance_name   = "${local.prefix}${var.instance_name}"
+  secondary_cluster_name  = coalesce(var.cross_region_replication.secondary_cluster_name, "${var.cluster_name}-sec")
+  secondary_instance_name = coalesce(var.cross_region_replication.secondary_instance_name, "${var.instance_name}-sec")
   secondary_instance_type = try(
     var.cross_region_replication.promote_secondary && google_alloydb_cluster.secondary[0].cluster_type == "SECONDARY"
     ? "SECONDARY"
@@ -231,7 +231,7 @@ resource "google_alloydb_cluster" "secondary" {
   cluster_type     = var.cross_region_replication.promote_secondary ? "PRIMARY" : "SECONDARY"
   database_version = var.database_version
   deletion_policy  = "FORCE"
-  display_name     = coalesce(var.secondary_cluster_display_name, local.secondary_cluster_name)
+  display_name     = coalesce(var.cross_region_replication.secondary_cluster_display_name, local.secondary_cluster_name)
   labels           = var.labels
   location         = var.cross_region_replication.region
 
@@ -353,7 +353,7 @@ resource "google_alloydb_instance" "secondary" {
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
   database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
-  display_name      = coalesce(var.secondary_display_name, local.secondary_instance_name)
+  display_name      = coalesce(var.cross_region_replication.secondary_instance_name, local.secondary_instance_name)
   gce_zone          = local.is_regional ? null : var.gce_zone
   instance_id       = local.secondary_instance_name
   instance_type     = local.secondary_instance_type
