@@ -16,20 +16,25 @@
 
 # tfdoc:file:description Production spoke VPC and related resources.
 locals {
+  _simple_nva_lb = {
+    primary   = (var.network_mode == "simple" ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""] : null)
+    secondary = (var.network_mode == "simple" ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
+  }
+  _regional_nva_lb = {
+    primary   = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""] : null)
+    secondary = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
+  }
+  # On the basis of the network modes slects the NVA internal load balacer as next hop for spoke VPC routing
   nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
-    primary = (var.network_mode == "simple"
-      ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
-    : module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""])
-    secondary = (var.network_mode == "simple"
-      ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
-    : module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""])
+    primary   = (var.network_mode == "simple" ? local._simple_nva_lb.primary : local._regional_nva_lb.primary)
+    secondary = (var.network_mode == "simple" ? local._simple_nva_lb.secondary : local._regional_nva_lb.secondary)
   }
 }
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-spoke-00"
+  name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
   services = concat([
