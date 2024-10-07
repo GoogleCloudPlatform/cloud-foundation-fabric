@@ -17,6 +17,7 @@
 import base64
 import binascii
 import collections
+import functools
 import json
 import logging
 import os
@@ -29,11 +30,15 @@ import yaml
 
 from google.auth.transport.requests import AuthorizedSession
 
-HTTP = AuthorizedSession(google.auth.default()[0])
 LOGGER = logging.getLogger('net-dash')
 MONITORING_ROOT = 'netmon/'
 
 Result = collections.namedtuple('Result', 'phase resource data')
+
+
+@functools.cache
+def _http():
+  return AuthorizedSession(google.auth.default()[0])
 
 
 def do_discovery(resources):
@@ -198,10 +203,10 @@ def fetch(request):
   LOGGER.debug(f'fetch {"POST" if request.data else "GET"} {request.url}')
   try:
     if not request.data:
-      response = HTTP.get(request.url, headers=request.headers)
+      response = _http().get(request.url, headers=request.headers)
     else:
-      response = HTTP.post(request.url, headers=request.headers,
-                           data=request.data)
+      response = _http().post(request.url, headers=request.headers,
+                              data=request.data)
   except google.auth.exceptions.RefreshError as e:
     raise SystemExit(e.args[0])
   if response.status_code != 200:
