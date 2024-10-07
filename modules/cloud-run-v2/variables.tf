@@ -195,6 +195,10 @@ variable "revision" {
     max_concurrency            = optional(number)
     max_instance_count         = optional(number)
     min_instance_count         = optional(number)
+    job = optional(object({
+      max_retries = optional(number)
+      task_count  = optional(number)
+    }), {})
     vpc_access = optional(object({
       connector = optional(string)
       egress    = optional(string)
