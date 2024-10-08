@@ -42,6 +42,7 @@ locals {
         tf_var_files = local.cicd_workflow_var_files[k]
       }
     )
+    if v.type != "terraform"
   }
   providers = {
     for k, v in {

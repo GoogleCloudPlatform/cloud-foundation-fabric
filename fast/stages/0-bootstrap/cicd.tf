@@ -39,10 +39,9 @@ locals {
       contains(
         keys(local.workload_identity_providers),
         coalesce(try(v.identity_provider, null), ":")
-      )
-      &&
-      fileexists(
-        format("${path.module}/templates/workflow-%s.yaml", try(v.type, ""))
+        ) && (
+        try(v.type, "") == "terraform" ||
+        fileexists(format("${path.module}/templates/workflow-%s.yaml", try(v.type, "")))
       )
     )
   }
