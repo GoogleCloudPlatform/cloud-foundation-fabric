@@ -8,13 +8,13 @@ The tool tracks several distinct usage types across a variety of resources: proj
 
 The screenshot below is an example of a simple dashboard provided with this blueprint, showing utilization for a specific metric (number of instances per VPC) for multiple VPCs and projects:
 
-<img src="metric.png" width="640px">
+<img src="metric.png" width="640px" alt="diagram">
 
 One other example is the IP utilization information per subnet, allowing you to monitor the percentage of used IP addresses in your GCP subnets.
 
 More complex scenarios are possible by leveraging and combining the 50 different timeseries created by this tool, and connecting them to Cloud Operations dashboards and alerts.
 
-Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) for a high level overview and an end-to-end deployment example, and to the[discovery tool documentation](./src/) to try it as a standalone program or to package it in alternative ways.
+Refer to the [Cloud Function](./deploy-cloud-function/) or [Cloud Run Job](./deploy-cloudrun-job/) instructions for a high level overview and end-to-end deployment examples, and to the[discovery tool documentation](./src/) to try it as a standalone program or to package it in alternative ways.
 
 ## Metrics created
 
