@@ -56,9 +56,9 @@ variable "cicd_backends" {
   validation {
     condition = (
       var.cicd_backends == null ||
-      var.cicd_backends.terraform == null ||
+      try(var.cicd_backends.terraform, null) == null ||
       alltrue([
-        for k, v in var.cicd_backends.terraform.workspaces :
+        for k, v in try(var.cicd_backends.terraform.workspaces, {}) :
         v.tags != null || v.name != null || v.project != null
       ])
     )
