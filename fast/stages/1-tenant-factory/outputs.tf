@@ -17,6 +17,7 @@
 locals {
   _tpl_providers_gcs       = "${path.module}/templates/providers_gcs.tf.tpl"
   _tpl_providers_terraform = "${path.module}/templates/providers_terraform.tf.tpl"
+  _tpl_providers           = var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ? local._tpl_providers_terraform : local._tpl_providers_gcs
   tenant_cicd_workflows = {
     for k, v in local.cicd_repositories :
     k => templatefile("${path.module}/templates/workflow-${v.type}.yaml", {
