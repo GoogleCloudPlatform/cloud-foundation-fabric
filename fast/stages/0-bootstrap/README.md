@@ -679,15 +679,15 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L182) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L187) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L192) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L204) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L209) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L214) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L224) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L231) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L249) | Terraform variable files for the following stages. | ✓ |  |
-| [workforce_identity_pool](outputs.tf#L255) | Workforce Identity Federation pool. |  |  |
-| [workload_identity_pool](outputs.tf#L264) | Workload Identity Federation pool and providers. |  |  |
+| [automation](outputs.tf#L184) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L189) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L194) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L206) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L211) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L216) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L226) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L233) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L251) | Terraform variable files for the following stages. | ✓ |  |
+| [workforce_identity_pool](outputs.tf#L257) | Workforce Identity Federation pool. |  |  |
+| [workload_identity_pool](outputs.tf#L266) | Workload Identity Federation pool and providers. |  |  |
 <!-- END TFDOC -->

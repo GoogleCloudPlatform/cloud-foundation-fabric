@@ -44,57 +44,58 @@ locals {
     )
     if v.type != "terraform"
   }
+  providers_config = {
+    "0-bootstrap" = {
+      name          = "bootstrap",
+      sa            = module.automation-tf-bootstrap-sa.email,
+      bucket        = module.automation-tf-bootstrap-gcs.name,
+      backend_extra = null
+    },
+    "0-bootstrap-r" = {
+      name          = "bootstrap",
+      sa            = module.automation-tf-bootstrap-r-sa.email,
+      bucket        = module.automation-tf-bootstrap-gcs.name,
+      backend_extra = null
+    },
+    "1-resman" = {
+      name          = "resman",
+      sa            = module.automation-tf-resman-sa.email,
+      bucket        = module.automation-tf-resman-gcs.name,
+      backend_extra = null
+    },
+    "1-resman-r" = {
+      name          = "resman",
+      sa            = module.automation-tf-resman-r-sa.email,
+      bucket        = module.automation-tf-resman-gcs.name,
+      backend_extra = null
+    },
+    "1-tenant-factory" = {
+      name          = "tenant-factory",
+      sa            = module.automation-tf-resman-sa.email,
+      bucket        = module.automation-tf-resman-gcs.name,
+      backend_extra = "prefix = \"tenant-factory\""
+    },
+    "1-tenant-factory-r" = {
+      name          = "tenant-factory",
+      sa            = module.automation-tf-resman-r-sa.email,
+      bucket        = module.automation-tf-resman-gcs.name,
+      backend_extra = "prefix = \"tenant-factory\""
+    },
+    "1-vpcsc" = {
+      name          = "vpcsc",
+      sa            = module.automation-tf-vpcsc-sa.email,
+      bucket        = module.automation-tf-vpcsc-gcs.name,
+      backend_extra = "prefix = \"vpcsc\""
+    },
+    "1-vpcsc-r" = {
+      name          = "vpcsc",
+      sa            = module.automation-tf-vpcsc-r-sa.email,
+      bucket        = module.automation-tf-vpcsc-gcs.name,
+      backend_extra = "prefix = \"vpcsc\""
+    },
+  }
   providers = {
-    for k, v in {
-      "0-bootstrap" = {
-        name          = "bootstrap",
-        sa            = module.automation-tf-bootstrap-sa.email,
-        bucket        = module.automation-tf-bootstrap-gcs.name,
-        backend_extra = null
-      },
-      "0-bootstrap-r" = {
-        name          = "bootstrap",
-        sa            = module.automation-tf-bootstrap-r-sa.email,
-        bucket        = module.automation-tf-bootstrap-gcs.name,
-        backend_extra = null
-      },
-      "1-resman" = {
-        name          = "resman",
-        sa            = module.automation-tf-resman-sa.email,
-        bucket        = module.automation-tf-resman-gcs.name,
-        backend_extra = null
-      },
-      "1-resman-r" = {
-        name          = "resman",
-        sa            = module.automation-tf-resman-r-sa.email,
-        bucket        = module.automation-tf-resman-gcs.name,
-        backend_extra = null
-      },
-      "1-tenant-factory" = {
-        name          = "tenant-factory",
-        sa            = module.automation-tf-resman-sa.email,
-        bucket        = module.automation-tf-resman-gcs.name,
-        backend_extra = "prefix = \"tenant-factory\""
-      },
-      "1-tenant-factory-r" = {
-        name          = "tenant-factory",
-        sa            = module.automation-tf-resman-r-sa.email,
-        bucket        = module.automation-tf-resman-gcs.name,
-        backend_extra = "prefix = \"tenant-factory\""
-      },
-      "1-vpcsc" = {
-        name          = "vpcsc",
-        sa            = module.automation-tf-vpcsc-sa.email,
-        bucket        = module.automation-tf-vpcsc-gcs.name,
-        backend_extra = "prefix = \"vpcsc\""
-      },
-      "1-vpcsc-r" = {
-        name          = "vpcsc",
-        sa            = module.automation-tf-vpcsc-r-sa.email,
-        bucket        = module.automation-tf-vpcsc-gcs.name,
-        backend_extra = "prefix = \"vpcsc\""
-      },
-      } : k => (
+    for k, v in local.providers_config : k => (
       var.cicd_backends != null && try(var.cicd_backends.terraform, null) != null ?
       templatefile(
         local._tpl_providers_terraform,
@@ -130,6 +131,7 @@ locals {
   }
   tfvars = {
     automation = {
+      cicd_backends = var.cicd_backends
       federated_identity_pool = try(
         google_iam_workload_identity_pool.default[0].name, null
       )
