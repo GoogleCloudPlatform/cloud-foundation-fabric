@@ -90,12 +90,18 @@ module "automation-tf-cicd-sa" {
         google_iam_workload_identity_pool.default[0].name,
         each.value.name
       )
-      : format(
-        local.workload_identity_providers_defs[each.value.type].principal_branch,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.name,
-        each.value.branch
-      )
+      : length(regexall("%s", local.workload_identity_providers_defs[each.value.type].principal_branch)) == 2
+        ? format(
+          local.workload_identity_providers_defs[each.value.type].principal_branch,
+          google_iam_workload_identity_pool.default[0].name,
+          each.value.branch
+        )
+        : format(
+          local.workload_identity_providers_defs[each.value.type].principal_branch,
+          google_iam_workload_identity_pool.default[0].name,
+          each.value.name,
+          each.value.branch
+        )
     ]
   }
   iam_project_roles = {

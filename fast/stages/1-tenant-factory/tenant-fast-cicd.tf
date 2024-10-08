@@ -99,12 +99,18 @@ module "tenant-automation-tf-cicd-sa" {
         var.automation.federated_identity_pool,
         each.value.name
       )
-      : format(
-        local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
-        var.automation.federated_identity_pool,
-        each.value.name,
-        each.value.branch
-      )
+      : length(regexall("%s", local.workload_identity_providers_defs[each.value.type].principal_branch)) == 2
+        ? format(
+          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
+          var.automation.federated_identity_pool,
+          each.value.branch
+        )
+        : format(
+          local.identity_providers[each.value.tenant][each.value.identity_provider].principal_branch,
+          var.automation.federated_identity_pool,
+          each.value.name,
+          each.value.branch
+        )
     ]
   }
   iam_project_roles = {
