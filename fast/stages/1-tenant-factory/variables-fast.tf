@@ -44,6 +44,7 @@ variable "automation" {
       })
     })
     service_accounts = object({
+      resman   = string
       resman-r = string
     })
   })
