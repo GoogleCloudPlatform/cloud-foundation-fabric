@@ -377,8 +377,9 @@ output "cicd_repositories" {
   description = "WIF configuration for CI/CD repositories."
   value = {
     for k, v in local.cicd_repositories : k => {
-      branch = v.branch
-      name   = v.name
+      branch      = v.branch
+      repo        = v.repo
+      wif_subject = v.wif_subject
       provider = try(
         local.identity_providers[v.identity_provider].name, null
       )

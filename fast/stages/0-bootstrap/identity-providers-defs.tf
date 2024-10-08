@@ -41,9 +41,9 @@ locals {
         "attribute.ref"              = "assertion.ref"
         "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
       }
-      issuer_uri       = "https://token.actions.githubusercontent.com"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      issuer_uri        = "https://token.actions.githubusercontent.com"
+      principal_branch  = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
     # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
     gitlab = {
@@ -63,9 +63,9 @@ locals {
         "attribute.ref_protected"         = "assertion.ref_protected"
         "attribute.ref_type"              = "assertion.ref_type"
       }
-      issuer_uri       = "https://gitlab.com"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      issuer_uri        = "https://gitlab.com"
+      principal_branch  = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
     # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
     terraform = {
@@ -82,9 +82,18 @@ locals {
         "attribute.terraform_run_id"            = "assertion.terraform_run_id"
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
-      issuer_uri       = "https://app.terraform.io"
-      principal_branch = null
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      issuer_uri        = "https://app.terraform.io"
+      principal_branch  = null
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+    }
+    # https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
+    azure = {
+      attribute_mapping = {
+        "google.subject" = "assertion.sub"
+        "attribute.oid"  = "assertion.oid"
+      }
+      principal_branch  = null
+      principal_subject = "principalSet://iam.googleapis.com/%s/attribute.oid/%s"
     }
   }
 }
