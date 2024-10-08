@@ -165,6 +165,7 @@ locals {
         stage_name     = k
       })
     )
+    if v.type != "terraform"
   }
   folder_ids = merge(
     {
