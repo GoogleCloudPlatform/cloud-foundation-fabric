@@ -71,31 +71,27 @@ variable "cicd_repositories" {
   type = object({
     bootstrap = optional(object({
       type              = string
-      repo              = optional(string)
+      repo              = string
       branch            = optional(string)
       identity_provider = optional(string)
-      wif_subject       = optional(string)
     }))
     resman = optional(object({
       type              = string
-      repo              = optional(string)
+      repo              = string
       branch            = optional(string)
       identity_provider = optional(string)
-      wif_subject       = optional(string)
     }))
     tenants = optional(object({
       type              = string
-      repo              = optional(string)
+      repo              = string
       branch            = optional(string)
       identity_provider = optional(string)
-      wif_subject       = optional(string)
     }))
     vpcsc = optional(object({
       type              = string
-      repo              = optional(string)
+      repo              = string
       branch            = optional(string)
       identity_provider = optional(string)
-      wif_subject       = optional(string)
     }))
   })
   default = null
@@ -110,17 +106,10 @@ variable "cicd_repositories" {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["github", "gitlab", "azure"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab"], coalesce(try(v.type, null), "null"))
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'azure'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || (try(v.repo, null) != null || try(v.wif_subject, null) != null)
-    ])
-    error_message = "Either repo or wif_subject must be set for all non-null repositories."
+    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
   }
 }
 
@@ -362,14 +351,6 @@ variable "workload_identity_providers" {
   }))
   default  = {}
   nullable = false
-  validation {
-    condition = alltrue([
-      for k, v in var.workload_identity_providers :
-      (v.issuer == "azure" && v.custom_settings.issuer_uri != null && length(v.custom_settings.audiences) > 0) ||
-      (v.issuer != "azure")
-    ])
-    error_message = "For Azure workload identity providers (issuer = \"azure\"), both issuer_uri and audiences must be set."
-  }
   # TODO: fix validation
   # validation {
   #   condition     = var.federated_identity_providers.custom_settings == null

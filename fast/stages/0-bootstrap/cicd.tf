@@ -88,7 +88,7 @@ module "automation-tf-cicd-sa" {
       ? format(
         local.workload_identity_providers_defs[each.value.type].principal_subject,
         google_iam_workload_identity_pool.default[0].name,
-        coalesce(each.value.wif_subject, each.value.repo)
+        each.value.repo
       )
       : format(
         local.workload_identity_providers_defs[each.value.type].principal_branch,
@@ -118,7 +118,7 @@ module "automation-tf-cicd-r-sa" {
       format(
         local.workload_identity_providers_defs[each.value.type].principal_subject,
         google_iam_workload_identity_pool.default[0].name,
-        coalesce(each.value.wif_subject, each.value.repo)
+        each.value.repo
       )
     ]
   }
