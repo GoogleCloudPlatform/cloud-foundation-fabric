@@ -25,12 +25,17 @@ locals {
     prod-landing = module.landing-project.number
     prod-spoke-0 = module.prod-spoke-project.number
   }
-  subnet_self_links = {
+  subnet_self_links = merge({
     prod-dmz     = module.dmz-vpc.subnet_self_links
     prod-landing = module.landing-vpc.subnet_self_links
     dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
     prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
-  }
+    },
+    (var.network_mode == "regional_vpc") ? {
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].subnet_self_links
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].subnet_self_links
+    } : {}
+  )
   subnet_proxy_only_self_links = {
     prod-dmz = {
       for k, v in module.dmz-vpc.subnets_proxy_only : k => v.id
@@ -67,12 +72,18 @@ locals {
     subnet_psc_self_links        = local.subnet_psc_self_links
     vpc_self_links               = local.vpc_self_links
   }
-  vpc_self_links = {
-    prod-landing = module.landing-vpc.self_link
-    prod-dmz     = module.dmz-vpc.self_link
-    dev-spoke-0  = module.dev-spoke-vpc.self_link
-    prod-spoke-0 = module.prod-spoke-vpc.self_link
-  }
+  vpc_self_links = merge(
+    {
+      prod-landing = module.landing-vpc.self_link
+      prod-dmz     = module.dmz-vpc.self_link
+      dev-spoke-0  = module.dev-spoke-vpc.self_link
+      prod-spoke-0 = module.prod-spoke-vpc.self_link
+    },
+    (var.network_mode == "regional_vpc") ? {
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].self_link
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].self_link
+    } : {}
+  )
 }
 
 # generate tfvars file for subsequent stages

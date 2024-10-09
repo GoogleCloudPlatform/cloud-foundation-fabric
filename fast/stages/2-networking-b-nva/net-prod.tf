@@ -15,6 +15,21 @@
  */
 
 # tfdoc:file:description Production spoke VPC and related resources.
+locals {
+  _simple_nva_lb = {
+    primary   = (var.network_mode == "simple" ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""] : null)
+    secondary = (var.network_mode == "simple" ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
+  }
+  _regional_nva_lb = {
+    primary   = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""] : null)
+    secondary = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
+  }
+  # On the basis of the network modes slects the NVA internal load balacer as next hop for spoke VPC routing
+  nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
+    primary   = (var.network_mode == "simple" ? local._simple_nva_lb.primary : local._regional_nva_lb.primary)
+    secondary = (var.network_mode == "simple" ? local._simple_nva_lb.secondary : local._regional_nva_lb.secondary)
+  }
+}
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
@@ -32,12 +47,7 @@ module "prod-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-    ],
-    (
-      var.fast_features.gcve
-      ? ["vmwareengine.googleapis.com"]
-      : []
-    )
+    ]
   )
   shared_vpc_host_config = {
     enabled = true
@@ -89,34 +99,34 @@ module "prod-spoke-vpc" {
     private    = true
     restricted = true
   }
-  routes = var.enable_ncc_ra ? null : {
+  routes = (var.network_mode == "ncc_ra") ? null : {
     nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.primary
     }
     nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.secondary
     }
     nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.secondary
     }
     nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.primary
     }
   }
 }

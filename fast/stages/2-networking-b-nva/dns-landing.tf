@@ -26,10 +26,17 @@ module "landing-dns-fwd-onprem-example" {
   zone_config = {
     domain = "onprem.example.com."
     forwarding = {
-      client_networks = [
-        module.dmz-vpc.self_link,
-        module.landing-vpc.self_link
-      ]
+      client_networks = concat(
+        [
+          module.dmz-vpc.self_link,
+          module.landing-vpc.self_link
+        ],
+        (var.network_mode == "regional_vpc") ?
+        [
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
+        ] : []
+      )
       forwarders = { for ip in var.dns.resolvers : ip => null }
     }
   }
@@ -43,10 +50,17 @@ module "landing-dns-fwd-onprem-rev-10" {
   zone_config = {
     domain = "10.in-addr.arpa."
     forwarding = {
-      client_networks = [
-        module.dmz-vpc.self_link,
-        module.landing-vpc.self_link
-      ]
+      client_networks = concat(
+        [
+          module.dmz-vpc.self_link,
+          module.landing-vpc.self_link
+        ],
+        (var.network_mode == "regional_vpc") ?
+        [
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
+        ] : []
+      )
       forwarders = { for ip in var.dns.resolvers : ip => null }
     }
   }
@@ -59,10 +73,17 @@ module "landing-dns-priv-gcp" {
   zone_config = {
     domain = "gcp.example.com."
     private = {
-      client_networks = [
-        # module.dmz-vpc.self_link,
-        module.landing-vpc.self_link
-      ]
+      client_networks = concat(
+        [
+          # module.dmz-vpc.self_link,
+          module.landing-vpc.self_link
+        ],
+        (var.network_mode == "regional_vpc") ?
+        [
+          module.regional-primary-vpc[0].self_link,
+          module.regional-secondary-vpc[0].self_link
+        ] : []
+      )
     }
   }
   recordsets = {
@@ -79,8 +100,15 @@ module "landing-dns-policy-googleapis" {
   factories_config = {
     rules = var.factories_config.dns_policy_rules_file
   }
-  networks = {
-    landing = module.landing-vpc.self_link
-    dmz     = module.dmz-vpc.self_link
-  }
+  networks = merge(
+    {
+      landing = module.landing-vpc.self_link
+      dmz     = module.dmz-vpc.self_link
+    },
+    (var.network_mode == "regional_vpc") ?
+    {
+      regional-primary   = module.regional-primary-vpc[0].self_link,
+      regional-secondary = module.regional-secondary-vpc[0].self_link
+    } : {}
+  )
 }

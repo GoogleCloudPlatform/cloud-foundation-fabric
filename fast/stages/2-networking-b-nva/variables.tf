@@ -62,13 +62,6 @@ variable "enable_cloud_nat" {
   nullable    = false
 }
 
-variable "enable_ncc_ra" {
-  description = "Deploy NCC Router Appliance to create a BGP session between core VPCs and the appliances."
-  type        = bool
-  default     = false
-  nullable    = false
-}
-
 variable "essential_contacts" {
   description = "Email used for essential contacts, unset if null."
   type        = string
@@ -100,14 +93,27 @@ variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   type        = map(string)
   default = {
-    gcp_dev_primary       = "10.68.0.0/16"
-    gcp_dev_secondary     = "10.84.0.0/16"
-    gcp_landing_primary   = "10.64.0.0/17"
-    gcp_landing_secondary = "10.80.0.0/17"
-    gcp_dmz_primary       = "10.64.128.0/17"
-    gcp_dmz_secondary     = "10.80.128.0/17"
-    gcp_prod_primary      = "10.72.0.0/16"
-    gcp_prod_secondary    = "10.88.0.0/16"
+    gcp_dev_primary            = "10.68.0.0/16"
+    gcp_dev_secondary          = "10.84.0.0/16"
+    gcp_regional_vpc_primary   = "10.65.0.0/17"
+    gcp_regional_vpc_secondary = "10.81.0.0/17"
+    gcp_landing_primary        = "10.64.0.0/17"
+    gcp_landing_secondary      = "10.80.0.0/17"
+    gcp_dmz_primary            = "10.64.128.0/17"
+    gcp_dmz_secondary          = "10.80.128.0/17"
+    gcp_prod_primary           = "10.72.0.0/16"
+    gcp_prod_secondary         = "10.88.0.0/16"
+  }
+}
+
+variable "network_mode" {
+  description = "Selection of the network design to deploy."
+  type        = string
+  default     = "simple"
+  nullable    = false
+  validation {
+    condition     = contains(["simple", "ncc_ra", "regional_vpc"], var.network_mode)
+    error_message = "Network mode must be either \"simple\" or \"ncc_ra\" or \"regional_vpc\"."
   }
 }
 

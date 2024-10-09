@@ -19,10 +19,10 @@ folder_ids = {
   networking-dev  = null
   networking-prod = null
 }
-network_mode = "simple"
 groups = {
   gcp-network-admins = "gcp-vpc-network-admins"
 }
+network_mode = "regional_vpc"
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"

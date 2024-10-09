@@ -24,21 +24,21 @@ locals {
 }
 
 resource "google_network_connectivity_hub" "hub_landing" {
-  count       = var.enable_ncc_ra ? 1 : 0
+  count       = (var.network_mode == "ncc_ra") ? 1 : 0
   name        = "prod-hub-landing"
   description = "Prod hub landing (trusted)"
   project     = module.landing-project.project_id
 }
 
 resource "google_network_connectivity_hub" "hub_dmz" {
-  count       = var.enable_ncc_ra ? 1 : 0
+  count       = (var.network_mode == "ncc_ra") ? 1 : 0
   name        = "prod-hub-dmz"
   description = "Prod hub DMZ (untrusted)"
   project     = module.landing-project.project_id
 }
 
 module "ncc-spokes-landing" {
-  for_each   = var.enable_ncc_ra ? var.regions : {}
+  for_each   = (var.network_mode == "ncc_ra") ? var.regions : {}
   source     = "../../../modules/ncc-spoke-ra"
   name       = "prod-spoke-landing-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id
@@ -92,7 +92,7 @@ module "ncc-spokes-landing" {
 }
 
 module "ncc-spokes-dmz" {
-  for_each   = var.enable_ncc_ra ? var.regions : {}
+  for_each   = (var.network_mode == "ncc_ra") ? var.regions : {}
   source     = "../../../modules/ncc-spoke-ra"
   name       = "prod-spoke-dmz-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id

@@ -12,7 +12,6 @@ dns = {
   enable_logging = true
 }
 enable_cloud_nat      = true
-enable_ncc_ra         = true
 enable_test_instances = true
 essential_contacts    = "gcp-network-admins@fast.example.com"
 folder_ids = {
@@ -23,6 +22,7 @@ folder_ids = {
 groups = {
   gcp-network-admins = "gcp-vpc-network-admins"
 }
+network_mode = "ncc_ra"
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"
