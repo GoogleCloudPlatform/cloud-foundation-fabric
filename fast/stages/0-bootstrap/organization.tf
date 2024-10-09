@@ -238,6 +238,8 @@ module "organization" {
       destination          = local.log_sink_destinations[name].id
       filter               = attrs.filter
       type                 = attrs.type
+      disabled             = attrs.disabled
+      exclusions           = attrs.exclusions
     }
   }
   org_policies = var.bootstrap_user != null ? {} : {

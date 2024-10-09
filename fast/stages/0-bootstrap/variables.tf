@@ -195,8 +195,10 @@ variable "locations" {
 variable "log_sinks" {
   description = "Org-level log sinks, in name => {type, filter} format."
   type = map(object({
-    filter = string
-    type   = string
+    filter     = string
+    type       = string
+    disabled   = optional(bool, false)
+    exclusions = optional(map(string), {})
   }))
   nullable = false
   default = {
@@ -208,6 +210,9 @@ variable "log_sinks" {
         log_id("cloudaudit.googleapis.com/access_transparency")
       FILTER
       type   = "logging"
+      # exclusions = {
+      #   gke-audit = "protoPayload.serviceName=\"k8s.io\""
+      # }
     }
     iam = {
       filter = <<-FILTER
