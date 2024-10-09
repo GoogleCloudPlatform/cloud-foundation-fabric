@@ -120,7 +120,14 @@ module "projects" {
       )
       network_users = [
         for v in try(each.value.shared_vpc_service_config.network_users, []) :
-        lookup(local.context.iam_principals, v, v)
+        try(
+          # automation service account
+          local.context.iam_principals["${each.key}/${v}"],
+          # other context
+          local.context.iam_principals[v],
+          # passthrough
+          v
+        )
       ]
       # TODO: network subnet users
     })
