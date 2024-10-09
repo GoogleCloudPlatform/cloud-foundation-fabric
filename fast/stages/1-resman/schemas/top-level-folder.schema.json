@@ -108,7 +108,7 @@
         }
       }
     },
-    "parent": {
+    "parent_id": {
       "type": "string"
     },
     "tag_bindings": {
