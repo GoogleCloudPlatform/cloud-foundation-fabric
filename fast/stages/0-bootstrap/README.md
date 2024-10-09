@@ -166,7 +166,7 @@ What is implemented here is a fairly common convention, composed of tokens order
 - an arbitrary identifier used to distinguish similar resources (e.g. `0`, `1`)
 
 > [!WARNING]
-> When using tenant factory, a tenant prefix will be automatically generated as `{prefix}-{tenant-shortname}`. The maximum length of such prefix must be 11 characters or less, which means that the longer org-level prefix you use, the less chars you'll have available for the `tenant-shortname`.
+> When using tenant factory, a tenant prefix will be automatically generated as `{prefix}-{tenant-shortname}`. The maximum length of such prefix must be 10 characters or less, which means that the longer org-level prefix you use, the less chars you'll have available for the `tenant-shortname`.
 
 Tokens are joined by a `-` character, making it easy to separate the individual tokens visually, and to programmatically split them in billing exports to derive initial high-level groupings for cost attribution.
 
