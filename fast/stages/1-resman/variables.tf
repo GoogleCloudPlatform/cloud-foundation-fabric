@@ -112,10 +112,10 @@ variable "cicd_repositories" {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["github", "gitlab"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab", "terraform"], coalesce(try(v.type, null), "null"))
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
+    error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'terraform'."
   }
 }
 

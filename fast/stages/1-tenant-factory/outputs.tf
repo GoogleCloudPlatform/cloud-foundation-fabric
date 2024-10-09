@@ -15,7 +15,9 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  _tpl_providers_gcs       = "${path.module}/templates/providers_gcs.tf.tpl"
+  _tpl_providers_terraform = "${path.module}/templates/providers_terraform.tf.tpl"
+  _tpl_providers           = var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ? local._tpl_providers_terraform : local._tpl_providers_gcs
   tenant_cicd_workflows = {
     for k, v in local.cicd_repositories :
     k => templatefile("${path.module}/templates/workflow-${v.type}.yaml", {
@@ -51,21 +53,91 @@ locals {
       vpcsc_policy_id = try(module.tenant-vpcsc-policy[k].id, null)
     }
   }
-  tenant_providers = {
-    for k, v in local.fast_tenants : k => templatefile(local._tpl_providers, {
+  _tenant_providers = {
+    for k, v in local.fast_tenants : k => {
       backend_extra = null
       bucket        = module.tenant-automation-tf-resman-gcs[k].name
       name          = k
       sa            = module.tenant-automation-tf-resman-sa[k].email
-    })
+    }
   }
-  tenant_providers_r = {
-    for k, v in local.fast_tenants : k => templatefile(local._tpl_providers, {
+  tenant_providers = {
+    for k, v in local._tenant_providers : k => (
+      var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ?
+      templatefile(
+        local._tpl_providers_terraform,
+        merge(
+          {
+            name = v.name,
+            sa   = v.sa
+          },
+          {
+            workspaces = lookup(
+              var.automation.cicd_backends.terraform.workspaces,
+              v.name,
+              {
+                tags    = null,
+                name    = null,
+                project = null
+              }
+            )
+          },
+          {
+            organization = var.automation.cicd_backends.terraform.organization,
+            hostname     = var.automation.cicd_backends.terraform.hostname
+          }
+        )
+      ) :
+      templatefile(local._tpl_providers_gcs, {
+        name          = v.name,
+        sa            = v.sa,
+        bucket        = v.bucket,
+        backend_extra = v.backend_extra
+      })
+    )
+  }
+  _tenant_providers_r = {
+    for k, v in local.fast_tenants : k => {
       backend_extra = null
       bucket        = module.tenant-automation-tf-resman-gcs[k].name
       name          = k
       sa            = module.tenant-automation-tf-resman-r-sa[k].email
-    })
+    }
+  }
+  tenant_providers_r = {
+    for k, v in local._tenant_providers_r : k => (
+      var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ?
+      templatefile(
+        local._tpl_providers_terraform,
+        merge(
+          {
+            name = v.name,
+            sa   = v.sa
+          },
+          {
+            workspaces = lookup(
+              var.automation.cicd_backends.terraform.workspaces,
+              v.name,
+              {
+                tags    = null,
+                name    = null,
+                project = null
+              }
+            )
+          },
+          {
+            organization = var.automation.cicd_backends.terraform.organization,
+            hostname     = var.automation.cicd_backends.terraform.hostname
+          }
+        )
+      ) :
+      templatefile(local._tpl_providers_gcs, {
+        name          = v.name,
+        sa            = v.sa,
+        bucket        = v.bucket,
+        backend_extra = v.backend_extra
+      })
+    )
   }
   tenant_globals = {
     for k, v in local.fast_tenants : k => {

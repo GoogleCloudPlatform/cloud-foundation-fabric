@@ -83,8 +83,8 @@ locals {
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
       issuer_uri       = "https://app.terraform.io"
-      principal_branch = null
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.tfc_workspace_name/%s"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.terraform_workspace_id/%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.terraform_project_id/%s"
     }
   }
 }

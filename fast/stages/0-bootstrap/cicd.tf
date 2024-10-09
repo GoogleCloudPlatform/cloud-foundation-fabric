@@ -39,10 +39,9 @@ locals {
       contains(
         keys(local.workload_identity_providers),
         coalesce(try(v.identity_provider, null), ":")
-      )
-      &&
-      fileexists(
-        format("${path.module}/templates/workflow-%s.yaml", try(v.type, ""))
+        ) && (
+        try(v.type, "") == "terraform" ||
+        fileexists(format("${path.module}/templates/workflow-%s.yaml", try(v.type, "")))
       )
     )
   }
@@ -89,6 +88,12 @@ module "automation-tf-cicd-sa" {
         local.workload_identity_providers_defs[each.value.type].principal_repo,
         google_iam_workload_identity_pool.default[0].name,
         each.value.name
+      )
+      : length(regexall("%s", local.workload_identity_providers_defs[each.value.type].principal_branch)) == 2
+      ? format(
+        local.workload_identity_providers_defs[each.value.type].principal_branch,
+        google_iam_workload_identity_pool.default[0].name,
+        each.value.branch
       )
       : format(
         local.workload_identity_providers_defs[each.value.type].principal_branch,

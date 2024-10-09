@@ -55,8 +55,10 @@ locals {
       contains(
         keys(local.identity_providers),
         coalesce(try(v.identity_provider, null), ":")
-      ) &&
-      fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
+        ) && (
+        try(v.type, "") == "terraform" ||
+        fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
+      )
     )
   }
   cicd_workflow_var_files = {

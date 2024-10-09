@@ -15,7 +15,8 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  _tpl_providers_gcs       = "${path.module}/templates/providers_gcs.tf.tpl"
+  _tpl_providers_terraform = "${path.module}/templates/providers_terraform.tf.tpl"
   cicd_workflow_attrs = {
     data_platform_dev = {
       service_accounts = {
@@ -164,6 +165,7 @@ locals {
         stage_name     = k
       })
     )
+    if v.type != "terraform"
   }
   folder_ids = merge(
     {
@@ -183,179 +185,214 @@ locals {
       for k, v in module.top-level-folder : k => try(v.id, null)
     }
   )
-  providers = merge(
+  _providers = merge(
     {
-      "2-networking" = templatefile(local._tpl_providers, {
+      "2-networking" = {
         backend_extra = null
         bucket        = module.branch-network-gcs.name
         name          = "networking"
         sa            = module.branch-network-sa.email
-      })
-      "2-networking-r" = templatefile(local._tpl_providers, {
+      }
+      "2-networking-r" = {
         backend_extra = null
         bucket        = module.branch-network-gcs.name
         name          = "networking"
         sa            = module.branch-network-r-sa.email
-      })
-      "2-project-factory" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory" = {
         backend_extra = null
         bucket        = module.branch-pf-gcs.name
         name          = "project-factory"
         sa            = module.branch-pf-sa.email
-      })
-      "2-project-factory-r" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory-r" = {
         backend_extra = null
         bucket        = module.branch-pf-gcs.name
         name          = "project-factory"
         sa            = module.branch-pf-r-sa.email
-      })
-      "2-project-factory-dev" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory-dev" = {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs.name
         name          = "project-factory-dev"
         sa            = module.branch-pf-dev-sa.email
-      })
-      "2-project-factory-dev-r" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory-dev-r" = {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs.name
         name          = "project-factory-dev"
         sa            = module.branch-pf-dev-r-sa.email
-      })
-      "2-project-factory-prod" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory-prod" = {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs.name
         name          = "project-factory-prod"
         sa            = module.branch-pf-prod-sa.email
-      })
-      "2-project-factory-prod-r" = templatefile(local._tpl_providers, {
+      }
+      "2-project-factory-prod-r" = {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs.name
         name          = "project-factory-prod"
         sa            = module.branch-pf-prod-r-sa.email
-      })
-      "2-security" = templatefile(local._tpl_providers, {
+      }
+      "2-security" = {
         backend_extra = null
         bucket        = module.branch-security-gcs.name
         name          = "security"
         sa            = module.branch-security-sa.email
-      })
-      "2-security-r" = templatefile(local._tpl_providers, {
+      }
+      "2-security-r" = {
         backend_extra = null
         bucket        = module.branch-security-gcs.name
         name          = "security"
         sa            = module.branch-security-r-sa.email
-      })
+      }
     },
     {
       for k, v in module.top-level-sa :
-      "1-resman-folder-${k}" => templatefile(local._tpl_providers, {
+      "1-resman-folder-${k}" => {
         backend_extra = null
         bucket        = module.top-level-bucket[k].name
         name          = k
         sa            = v.email
-      })
+      }
     },
     !var.fast_features.data_platform ? {} : {
-      "3-data-platform-dev" = templatefile(local._tpl_providers, {
+      "3-data-platform-dev" = {
         backend_extra = null
         bucket        = module.branch-dp-dev-gcs[0].name
         name          = "dp-dev"
         sa            = module.branch-dp-dev-sa[0].email
-      })
-      "3-data-platform-dev-r" = templatefile(local._tpl_providers, {
+      }
+      "3-data-platform-dev-r" = {
         backend_extra = null
         bucket        = module.branch-dp-dev-gcs[0].name
         name          = "dp-dev"
         sa            = module.branch-dp-dev-r-sa[0].email
-      })
-      "3-data-platform-prod" = templatefile(local._tpl_providers, {
+      }
+      "3-data-platform-prod" = {
         backend_extra = null
         bucket        = module.branch-dp-prod-gcs[0].name
         name          = "dp-prod"
         sa            = module.branch-dp-prod-sa[0].email
-      })
-      "3-data-platform-prod-r" = templatefile(local._tpl_providers, {
+      }
+      "3-data-platform-prod-r" = {
         backend_extra = null
         bucket        = module.branch-dp-prod-gcs[0].name
         name          = "dp-prod"
         sa            = module.branch-dp-prod-r-sa[0].email
-      })
+      }
     },
     !var.fast_features.gke ? {} : {
-      "3-gke-dev" = templatefile(local._tpl_providers, {
+      "3-gke-dev" = {
         backend_extra = null
         bucket        = module.branch-gke-dev-gcs[0].name
         name          = "gke-dev"
         sa            = module.branch-gke-dev-sa[0].email
-      })
-      "3-gke-dev-r" = templatefile(local._tpl_providers, {
+      }
+      "3-gke-dev-r" = {
         backend_extra = null
         bucket        = module.branch-gke-dev-gcs[0].name
         name          = "gke-dev"
         sa            = module.branch-gke-dev-r-sa[0].email
-      })
-      "3-gke-prod" = templatefile(local._tpl_providers, {
+      }
+      "3-gke-prod" = {
         backend_extra = null
         bucket        = module.branch-gke-prod-gcs[0].name
         name          = "gke-prod"
         sa            = module.branch-gke-prod-sa[0].email
-      })
-      "3-gke-prod-r" = templatefile(local._tpl_providers, {
+      }
+      "3-gke-prod-r" = {
         backend_extra = null
         bucket        = module.branch-gke-prod-gcs[0].name
         name          = "gke-prod"
         sa            = module.branch-gke-prod-r-sa[0].email
-      })
+      }
     },
     !var.fast_features.gcve ? {} : {
-      "3-gcve-dev" = templatefile(local._tpl_providers, {
+      "3-gcve-dev" = {
         backend_extra = null
         bucket        = module.branch-gcve-dev-gcs[0].name
         name          = "gcve-dev"
         sa            = module.branch-gcve-dev-sa[0].email
-      })
-      "3-gcve-dev-r" = templatefile(local._tpl_providers, {
+      }
+      "3-gcve-dev-r" = {
         backend_extra = null
         bucket        = module.branch-gcve-dev-gcs[0].name
         name          = "gcve-dev"
         sa            = module.branch-gcve-dev-r-sa[0].email
-      })
-      "3-gcve-prod" = templatefile(local._tpl_providers, {
+      }
+      "3-gcve-prod" = {
         backend_extra = null
         bucket        = module.branch-gcve-prod-gcs[0].name
         name          = "gcve-prod"
         sa            = module.branch-gcve-prod-sa[0].email
-      })
-      "3-gcve-prod-r" = templatefile(local._tpl_providers, {
+      }
+      "3-gcve-prod-r" = {
         backend_extra = null
         bucket        = module.branch-gcve-prod-gcs[0].name
         name          = "gcve-prod"
         sa            = module.branch-gcve-prod-r-sa[0].email
-      })
+      }
     },
     !var.fast_features.nsec ? {} : {
-      "3-network-security" = templatefile(local._tpl_providers, {
+      "3-network-security" = {
         backend_extra = null
         bucket        = module.branch-nsec-gcs[0].name
         name          = "network-security"
         sa            = module.branch-nsec-sa[0].email
-      })
-      "3-network-security-r" = templatefile(local._tpl_providers, {
+      }
+      "3-network-security-r" = {
         backend_extra = null
         bucket        = module.branch-nsec-gcs[0].name
         name          = "network-security"
         sa            = module.branch-nsec-r-sa[0].email
-      })
+      }
     },
     !var.fast_features.sandbox ? {} : {
-      "9-sandbox" = templatefile(local._tpl_providers, {
+      "9-sandbox" = {
         backend_extra = null
         bucket        = module.branch-sandbox-gcs[0].name
         name          = "sandbox"
         sa            = module.branch-sandbox-sa[0].email
-      })
+      }
     },
   )
+  providers = {
+    for k, v in local._providers : k => (
+      var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ?
+      templatefile(
+        local._tpl_providers_terraform,
+        merge(
+          {
+            name = v.name,
+            sa   = v.sa
+          },
+          {
+            workspaces = lookup(
+              var.automation.cicd_backends.terraform.workspaces,
+              v.name,
+              {
+                tags    = null,
+                name    = null,
+                project = null
+              }
+            )
+          },
+          {
+            organization = var.automation.cicd_backends.terraform.organization,
+            hostname     = var.automation.cicd_backends.terraform.hostname
+          }
+        )
+      ) :
+      templatefile(local._tpl_providers_gcs, {
+        name          = v.name,
+        sa            = v.sa,
+        bucket        = v.bucket,
+        backend_extra = v.backend_extra
+      })
+    )
+  }
   service_accounts = merge(
     local.branch_service_accounts,
     {
