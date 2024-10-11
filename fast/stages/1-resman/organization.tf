@@ -73,11 +73,11 @@ module "organization" {
             ? {}
             : {
               "roles/resourcemanager.tagUser" = distinct(concat(
-                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"]),
+                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
                 [module.pf-sa-rw[0].iam_email]
               ))
               "roles/resourcemanager.tagViewer" = distinct(concat(
-                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"]),
+                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
                 [module.pf-sa-ro[0].iam_email]
               ))
             }
