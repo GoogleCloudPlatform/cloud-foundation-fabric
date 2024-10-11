@@ -20,6 +20,7 @@ moved {
 }
 
 resource "google_artifact_registry_repository_iam_binding" "authoritative" {
+  provider   = google-beta
   for_each   = local.iam
   project    = var.project_id
   location   = google_artifact_registry_repository.registry.location
