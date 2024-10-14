@@ -11,3 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+FROM python:3-slim-bookworm
+
+COPY src /app/
+RUN pip install -r /app/requirements.txt
+RUN chmod 755 /app/main.py
+
+WORKDIR /app
+
+ENTRYPOINT ["./main.py"]
