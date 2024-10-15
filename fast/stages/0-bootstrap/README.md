@@ -687,6 +687,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [providers](outputs.tf#L188) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
 | [service_accounts](outputs.tf#L195) | Automation service accounts created by this stage. |  |  |
 | [tfvars](outputs.tf#L213) | Terraform variable files for the following stages. | ✓ |  |
-| [workforce_identity_pool](outputs.tf#L219) | Workforce Identity Federation pool. |  |  |
-| [workload_identity_pool](outputs.tf#L228) | Workload Identity Federation pool and providers. |  |  |
+| [tfvars_globals](outputs.tf#L219) | Terraform Globals variable files for the following stages. | ✓ |  |
+| [workforce_identity_pool](outputs.tf#L225) | Workforce Identity Federation pool. |  |  |
+| [workload_identity_pool](outputs.tf#L234) | Workload Identity Federation pool and providers. |  |  |
 <!-- END TFDOC -->
