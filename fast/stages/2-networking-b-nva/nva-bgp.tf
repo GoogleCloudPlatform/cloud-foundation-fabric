@@ -122,7 +122,7 @@ locals {
 }
 
 module "nva-bgp-cloud-config" {
-  for_each             = var.enable_ncc_ra ? local.bgp_nva_configs : {}
+  for_each             = (var.network_mode == "ncc_ra") ? local.bgp_nva_configs : {}
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.bgp_routing_config
@@ -135,7 +135,7 @@ module "nva-bgp-cloud-config" {
 # TODO: use address module
 
 resource "google_compute_address" "nva_static_ip_landing" {
-  for_each     = var.enable_ncc_ra ? local.bgp_nva_configs : {}
+  for_each     = (var.network_mode == "ncc_ra") ? local.bgp_nva_configs : {}
   name         = "nva-ip-landing-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
   subnetwork   = module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"]
@@ -145,7 +145,7 @@ resource "google_compute_address" "nva_static_ip_landing" {
 }
 
 resource "google_compute_address" "nva_static_ip_dmz" {
-  for_each     = var.enable_ncc_ra ? local.bgp_nva_configs : {}
+  for_each     = (var.network_mode == "ncc_ra") ? local.bgp_nva_configs : {}
   name         = "nva-ip-dmz-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
   subnetwork   = module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"]
@@ -155,7 +155,7 @@ resource "google_compute_address" "nva_static_ip_dmz" {
 }
 
 module "nva-bgp" {
-  for_each       = var.enable_ncc_ra ? local.bgp_nva_configs : {}
+  for_each       = (var.network_mode == "ncc_ra") ? local.bgp_nva_configs : {}
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
   name           = "nva-${each.value.shortname}-${each.value.zone}"
