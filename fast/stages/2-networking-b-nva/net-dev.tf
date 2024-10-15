@@ -33,11 +33,6 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
     ],
-    (
-      var.fast_features.gcve
-      ? ["vmwareengine.googleapis.com"]
-      : []
-    )
   )
   shared_vpc_host_config = {
     enabled = true
@@ -90,34 +85,34 @@ module "dev-spoke-vpc" {
     private    = true
     restricted = true
   }
-  routes = var.enable_ncc_ra ? null : {
+  routes = (var.network_mode == "ncc_ra") ? null : {
     nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.primary
     }
     nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.secondary
     }
     nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = [local.region_shortnames[var.regions.primary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.primary
     }
     nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = [local.region_shortnames[var.regions.secondary]]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      next_hop      = local.nva_load_balancers.secondary
     }
   }
 }

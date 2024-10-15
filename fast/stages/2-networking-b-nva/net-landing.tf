@@ -30,8 +30,13 @@ module "landing-project" {
     "stackdriver.googleapis.com",
     ],
     (
-      var.enable_ncc_ra
+      var.network_mode == "ncc_ra"
       ? ["networkconnectivity.googleapis.com"]
+      : []
+    ),
+    (
+      var.fast_features.gcve
+      ? ["vmwareengine.googleapis.com"]
       : []
     )
   )
@@ -57,14 +62,31 @@ module "dmz-vpc" {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
   delete_default_routes_on_create = true
-  routes = {
-    default = {
-      dest_range    = "0.0.0.0/0"
-      next_hop      = "default-internet-gateway"
-      next_hop_type = "gateway"
-      priority      = 1000
-    }
-  }
+  routes = merge(
+    {
+      default = {
+        dest_range    = "0.0.0.0/0"
+        next_hop      = "default-internet-gateway"
+        next_hop_type = "gateway"
+        priority      = 1000
+      }
+    },
+    # Uncomment to enable cross regional VPC traffic
+    # (var.network_mode == "regional_vpc") ? {
+    #   to-regional-vpc-primary = {
+    #     dest_range    = var.gcp_ranges.gcp_regional_vpc_primary
+    #     priority      = 1000
+    #     next_hop_type = "ilb"
+    #     next_hop      = module.ilb-regional-nva-dmz["primary"].forwarding_rule_addresses[""]
+    #   }
+    #   to-regional-vpc-secondary = {
+    #     dest_range    = var.gcp_ranges.gcp_regional_vpc_secondary
+    #     priority      = 1000
+    #     next_hop_type = "ilb"
+    #     next_hop      = module.ilb-regional-nva-dmz["secondary"].forwarding_rule_addresses[""]
+    #   }
+    # } : {}
+  )
 }
 
 module "dmz-firewall" {
