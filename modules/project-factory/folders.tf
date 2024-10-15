@@ -69,7 +69,7 @@ module "hierarchy-folder-lvl-1" {
     for k, v in lookup(each.value, "tag_bindings", {}) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  logging_data_access   = lookup(each.value, "logging_data_access", {})
+  logging_data_access = lookup(each.value, "logging_data_access", {})
 }
 
 module "hierarchy-folder-lvl-2" {
@@ -109,7 +109,7 @@ module "hierarchy-folder-lvl-2" {
     for k, v in lookup(each.value, "tag_bindings", {}) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  logging_data_access   = lookup(each.value, "logging_data_access", {})
+  logging_data_access = lookup(each.value, "logging_data_access", {})
 }
 
 module "hierarchy-folder-lvl-3" {
@@ -149,5 +149,5 @@ module "hierarchy-folder-lvl-3" {
     for k, v in lookup(each.value, "tag_bindings", {}) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  logging_data_access   = lookup(each.value, "logging_data_access", {})
+  logging_data_access = lookup(each.value, "logging_data_access", {})
 }
