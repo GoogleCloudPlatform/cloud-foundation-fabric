@@ -14,28 +14,28 @@
 
 counts:
   google_compute_external_vpn_gateway: 2
-  google_compute_firewall: 12
+  google_compute_firewall: 18
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 4
-  google_compute_forwarding_rule: 4
+  google_compute_forwarding_rule: 6
   google_compute_ha_vpn_gateway: 2
-  google_compute_health_check: 8
+  google_compute_health_check: 10
   google_compute_instance_group_manager: 4
-  google_compute_instance_template: 4
-  google_compute_network: 4
+  google_compute_instance_template: 2
+  google_compute_network: 6
   google_compute_network_peering: 4
-  google_compute_region_backend_service: 4
-  google_compute_route: 15
+  google_compute_region_backend_service: 6
+  google_compute_route: 21
   google_compute_router: 4
   google_compute_router_interface: 4
   google_compute_router_nat: 2
   google_compute_router_peer: 4
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 12
+  google_compute_subnetwork: 14
   google_compute_vpn_tunnel: 4
   google_dns_managed_zone: 9
-  google_dns_policy: 4
+  google_dns_policy: 6
   google_dns_record_set: 3
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 38
@@ -50,7 +50,6 @@ counts:
   google_project_service: 23
   google_project_service_identity: 17
   google_storage_bucket_object: 2
-  google_vpc_access_connector: 2
-  modules: 43
+  modules: 47
   random_id: 2
-  resources: 236
+  resources: 258
