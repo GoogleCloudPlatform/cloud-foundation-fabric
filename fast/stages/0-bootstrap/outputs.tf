@@ -112,6 +112,7 @@ locals {
     }
     custom_roles = module.organization.custom_role_id
     logging = {
+      log_sinks         = var.log_sinks
       project_id        = module.log-export-project.project_id
       project_number    = module.log-export-project.number
       writer_identities = module.organization.sink_writer_identities
