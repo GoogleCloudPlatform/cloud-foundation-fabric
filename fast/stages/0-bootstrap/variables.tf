@@ -110,12 +110,20 @@ variable "environments" {
     }
   }
   validation {
-    condition = (
-      length([for k, v in var.environments : v.primary == true]) <= 1 &&
-      length([for k, v in var.environments : v.secondary == true]) <= 1 &&
-      alltrue([for k, v in var.environments : !(v.primary == true && v.secondary == true)])
-    )
-    error_message = "Only one environment can be primary, only one can be secondary, and no environment can be both."
+    condition     = length([for k, v in var.environments : v if v.primary == true]) == 1
+    error_message = "Exactly one environment must be primary."
+  }
+  validation {
+    condition     = length([for k, v in var.environments : v if v.secondary == true]) == 1
+    error_message = "Exactly one environment must be secondary."
+  }
+  validation {
+    condition     = alltrue([for k, v in var.environments : !(v.primary == true && v.secondary == true)])
+    error_message = "No environment can be both primary and secondary."
+  }
+  validation {
+    condition     = alltrue([for k, _ in var.environments : length(k) <= 7 && can(regex("^[a-z]+$", k))])
+    error_message = "Environment keys must be 7 characters or less and contain only lowercase letters."
   }
 }
 

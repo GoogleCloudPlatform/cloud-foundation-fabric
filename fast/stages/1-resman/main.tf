@@ -76,10 +76,12 @@ locals {
   custom_roles = coalesce(var.custom_roles, {})
   environments = {
     primary = {
-      for k, v in var.environments : k => v if v.primary
+      id   = [for k, v in var.environments : k if v.primary][0]
+      name = [for k, v in var.environments : v.name if v.primary][0]
     }
     secondary = {
-      for k, v in var.environments : k => v if v.secondary
+      id   = [for k, v in var.environments : k if v.secondary][0]
+      name = [for k, v in var.environments : v.name if v.secondary][0]
     }
   }
   identity_providers = coalesce(
