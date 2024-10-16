@@ -51,13 +51,14 @@ locals {
         iam_bindings_additive = try(v.iam_bindings_additive, {})
         iam_by_principals     = try(v.iam_by_principals, {})
         org_policies          = try(v.org_policies, {})
+        parent_id             = try(v.parent_id, null)
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
     var.top_level_folders
   )
   top_level_sa = {
-    for k, v in local.branch_service_accounts :
+    for k, v in local.stage_service_accounts :
     k => "serviceAccount:${v}" if v != null
   }
   top_level_tags = {
@@ -68,7 +69,7 @@ locals {
 module "top-level-folder" {
   source              = "../../../modules/folder"
   for_each            = local.top_level_folders
-  parent              = local.root_node
+  parent              = coalesce(each.value.parent_id, local.root_node)
   name                = each.value.name
   contacts            = each.value.contacts
   firewall_policy     = each.value.firewall_policy
