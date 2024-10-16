@@ -74,6 +74,14 @@ locals {
     ]
   }
   custom_roles = coalesce(var.custom_roles, {})
+  environments = {
+    primary = {
+      for k, v in var.environments : k => v if v.primary
+    }
+    secondary = {
+      for k, v in var.environments : k => v if v.secondary
+    }
+  }
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )

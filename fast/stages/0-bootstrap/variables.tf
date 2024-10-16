@@ -94,24 +94,28 @@ variable "custom_roles" {
 variable "environments" {
   description = "Environment names."
   type = map(object({
-    name       = string
-    is_default = optional(bool, false)
+    name      = string
+    primary   = optional(bool, false)
+    secondary = optional(bool, false)
   }))
   nullable = false
   default = {
     dev = {
-      name = "Development"
+      name      = "Development"
+      secondary = true
     }
     prod = {
-      name       = "Production"
-      is_default = true
+      name    = "Production"
+      primary = true
     }
   }
   validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
+    condition = (
+      length([for k, v in var.environments : v.primary == true]) <= 1 &&
+      length([for k, v in var.environments : v.secondary == true]) <= 1 &&
+      alltrue([for k, v in var.environments : !(v.primary == true && v.secondary == true)])
+    )
+    error_message = "Only one environment can be primary, only one can be secondary, and no environment can be both."
   }
 }
 

@@ -15,7 +15,7 @@
  */
 
 locals {
-  env_default = [for k, v in var.environments : k if v.is_default][0]
+  env_primary = [for k, v in var.environments : k if v.primary][0]
   principals = {
     for k, v in var.groups : k => (
       can(regex("^[a-zA-Z]+:", v))
@@ -30,5 +30,5 @@ locals {
     pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names
-  prefix = join("-", compact([var.prefix, local.env_default]))
+  prefix = join("-", compact([var.prefix, local.env_primary]))
 }
