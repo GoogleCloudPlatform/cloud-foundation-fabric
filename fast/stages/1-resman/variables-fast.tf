@@ -67,6 +67,17 @@ variable "custom_roles" {
   default = null
 }
 
+variable "environments" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Environment names."
+  type = map(object({
+    name      = string
+    primary   = optional(bool, false)
+    secondary = optional(bool, false)
+  }))
+  nullable = false
+}
+
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist

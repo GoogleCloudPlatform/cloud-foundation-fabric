@@ -33,7 +33,7 @@ module "branch-dp-dev-folder" {
   source            = "../../../modules/folder"
   count             = var.fast_features.data_platform ? 1 : 0
   parent            = module.branch-dp-folder[0].id
-  name              = "Development"
+  name              = local.environments.secondary.name
   iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
@@ -52,7 +52,7 @@ module "branch-dp-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      local.tag_values["${var.tag_names.environment}/development"].id,
+      local.tag_values["${var.tag_names.environment}/${lower(local.environments.secondary.name)}"].id,
       null
     )
   }
@@ -62,7 +62,7 @@ module "branch-dp-prod-folder" {
   source            = "../../../modules/folder"
   count             = var.fast_features.data_platform ? 1 : 0
   parent            = module.branch-dp-folder[0].id
-  name              = "Production"
+  name              = local.environments.primary.name
   iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
@@ -79,7 +79,7 @@ module "branch-dp-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      local.tag_values["${var.tag_names.environment}/production"].id,
+      local.tag_values["${var.tag_names.environment}/${lower(local.environments.primary.name)}"].id,
       null
     )
   }
@@ -91,8 +91,8 @@ module "branch-dp-dev-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.data_platform ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "dev-resman-dp-0"
-  display_name = "Terraform data platform development service account."
+  name         = "${local.environments.secondary.id}-resman-dp-0"
+  display_name = "Terraform data platform ${local.environments.secondary.name} service account."
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -111,8 +111,8 @@ module "branch-dp-prod-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.data_platform ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "prod-resman-dp-0"
-  display_name = "Terraform data platform production service account."
+  name         = "${local.environments.primary.id}-resman-dp-0"
+  display_name = "Terraform data platform ${local.environments.primary.name} service account."
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -130,8 +130,8 @@ module "branch-dp-dev-r-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.data_platform ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "dev-resman-dp-0r"
-  display_name = "Terraform data platform development service account (read-only)."
+  name         = "${local.environments.secondary.id}-resman-dp-0r"
+  display_name = "Terraform data platform ${local.environments.secondary.name} service account (read-only)."
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -150,8 +150,8 @@ module "branch-dp-prod-r-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.data_platform ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "prod-resman-dp-0r"
-  display_name = "Terraform data platform production service account (read-only)."
+  name         = "${local.environments.primary.id}-resman-dp-0r"
+  display_name = "Terraform data platform ${local.environments.primary.name} service account (read-only)."
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -172,7 +172,7 @@ module "branch-dp-dev-gcs" {
   source     = "../../../modules/gcs"
   count      = var.fast_features.data_platform ? 1 : 0
   project_id = var.automation.project_id
-  name       = "dev-resman-dp-0"
+  name       = "${local.environments.secondary.id}-resman-dp-0"
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true
@@ -186,7 +186,7 @@ module "branch-dp-prod-gcs" {
   source     = "../../../modules/gcs"
   count      = var.fast_features.data_platform ? 1 : 0
   project_id = var.automation.project_id
-  name       = "prod-resman-dp-0"
+  name       = "${local.environments.primary.id}-resman-dp-0"
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

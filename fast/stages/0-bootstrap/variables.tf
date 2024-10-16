@@ -94,24 +94,36 @@ variable "custom_roles" {
 variable "environments" {
   description = "Environment names."
   type = map(object({
-    name       = string
-    is_default = optional(bool, false)
+    name      = string
+    primary   = optional(bool, false)
+    secondary = optional(bool, false)
   }))
   nullable = false
   default = {
     dev = {
-      name = "Development"
+      name      = "Development"
+      secondary = true
     }
     prod = {
-      name       = "Production"
-      is_default = true
+      name    = "Production"
+      primary = true
     }
   }
   validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
+    condition     = length([for k, v in var.environments : v if v.primary == true]) == 1
+    error_message = "Exactly one environment must be primary."
+  }
+  validation {
+    condition     = length([for k, v in var.environments : v if v.secondary == true]) == 1
+    error_message = "Exactly one environment must be secondary."
+  }
+  validation {
+    condition     = alltrue([for k, v in var.environments : !(v.primary == true && v.secondary == true)])
+    error_message = "No environment can be both primary and secondary."
+  }
+  validation {
+    condition     = alltrue([for k, _ in var.environments : length(k) <= 7 && can(regex("^[a-z]+$", k))])
+    error_message = "Environment keys must be 7 characters or less and contain only lowercase letters."
   }
 }
 
