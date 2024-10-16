@@ -254,6 +254,12 @@ output "tfvars" {
   value       = local.tfvars
 }
 
+output "tfvars_globals" {
+  description = "Terraform Globals variable files for the following stages."
+  sensitive   = true
+  value       = local.tfvars_globals
+}
+
 output "workforce_identity_pool" {
   description = "Workforce Identity Federation pool."
   value = {
