@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,25 @@
  */
 
 terraform {
-  backend "gcs" {
-    bucket                      = "${bucket}"
-    impersonate_service_account = "${sa}"
-    %{~ if backend_extra != null ~}
-    ${indent(4, backend_extra)}
+  cloud {
+    organization = "${organization}"
+    %{~ if hostname != null ~}
+    hostname = "${hostname}"
     %{~ endif ~}
+    workspaces {
+      %{~ if workspaces.name != null ~}
+      name  = "${workspaces.name}"
+      %{~ endif ~}
+      %{~ if workspaces.tags != null ~}
+      tags = [ %{ for tags in workspaces.tags ~} "${tags}", %{ endfor ~} ]
+      %{~ endif ~}
+      %{~ if workspaces.project != null ~}
+      project = "${workspaces.project}"
+      %{~ endif ~}
+    }
   }
 }
+
 provider "google" {
   impersonate_service_account = "${sa}"
 }

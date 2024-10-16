@@ -37,6 +37,12 @@ module "branch-pf-sa-cicd" {
         var.automation.federated_identity_pool,
         each.value.name
       )
+      : length(regexall("%s", local.identity_providers[each.value.identity_provider].principal_branch)) == 2
+      ? format(
+        local.identity_providers[each.value.identity_provider].principal_branch,
+        var.automation.federated_identity_pool,
+        each.value.branch
+      )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
         var.automation.federated_identity_pool,
@@ -72,6 +78,12 @@ module "branch-pf-dev-sa-cicd" {
         var.automation.federated_identity_pool,
         each.value.name
       )
+      : length(regexall("%s", local.identity_providers[each.value.identity_provider].principal_branch)) == 2
+      ? format(
+        local.identity_providers[each.value.identity_provider].principal_branch,
+        var.automation.federated_identity_pool,
+        each.value.branch
+      )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
         var.automation.federated_identity_pool,
@@ -106,6 +118,12 @@ module "branch-pf-prod-sa-cicd" {
         local.identity_providers[each.value.identity_provider].principal_repo,
         var.automation.federated_identity_pool,
         each.value.name
+      )
+      : length(regexall("%s", local.identity_providers[each.value.identity_provider].principal_branch)) == 2
+      ? format(
+        local.identity_providers[each.value.identity_provider].principal_branch,
+        var.automation.federated_identity_pool,
+        each.value.branch
       )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
