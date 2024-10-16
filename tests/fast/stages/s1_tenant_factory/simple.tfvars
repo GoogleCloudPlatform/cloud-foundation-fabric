@@ -1,4 +1,5 @@
 automation = {
+  cicd_backends                = null
   federated_identity_pool      = null
   federated_identity_providers = null
   project_id                   = "fast-prod-automation"
