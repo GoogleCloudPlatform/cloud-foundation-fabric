@@ -44,6 +44,7 @@ variable "data_defaults" {
       perimeter_bridges = optional(list(string), [])
       is_dry_run        = optional(bool, false)
     }))
+    logging_data_access = optional(map(map(list(string))), {})
   })
   nullable = false
   default  = {}
@@ -88,6 +89,7 @@ variable "data_overrides" {
       perimeter_bridges = optional(list(string), [])
       is_dry_run        = optional(bool, false)
     }))
+    logging_data_access = optional(map(map(list(string))), {})
   })
   nullable = false
   default  = {}
