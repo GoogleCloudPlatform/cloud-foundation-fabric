@@ -17,6 +17,49 @@
 # tfdoc:file:description Organization policies.
 
 locals {
+  _context_tag_values_stage2 = {
+    for k, v in var.fast_stage_2 :
+    k => replace(k, "_", "-") if v.enabled
+  }
+  context_tag_values = merge(
+    try(local.tags["context"]["values"], {}),
+    # top-level folders
+    {
+      for k, v in local.top_level_folders : v.context_name => {
+        iam         = try(local.tags.context.values.iam[v.context_name], {})
+        description = try(local.tags.context.values.description[v.context_name], null)
+      } if v.context_name != null
+    },
+    # stage 2s
+    {
+      for k, v in local._context_tag_values_stage2 : v => {
+        iam         = try(local.tags.context.values.iam[v], {})
+        description = try(local.tags.context.values.description[v], null)
+      }
+    },
+  )
+  environment_tag_values = {
+    for k, v in var.environment_names : v => {
+      iam = merge(
+        try(local.tags.environment.values[v].iam, {}),
+        !var.fast_stage_2.project_factory.enabled
+        ? {}
+        : {
+          "roles/resourcemanager.tagUser" = distinct(concat(
+            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
+            [module.pf-sa-rw[0].iam_email]
+          ))
+          "roles/resourcemanager.tagViewer" = distinct(concat(
+            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
+            [module.pf-sa-ro[0].iam_email]
+          ))
+        }
+      )
+      description = try(
+        local.tags.environment.values[v].description, null
+      )
+    }
+  }
   # service accounts expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
@@ -35,9 +78,6 @@ locals {
       }
     })
   }
-  tag_values_stage2 = {
-    for k, v in var.fast_stage_2 : k => replace(k, "_", "-") if v.enabled
-  }
 }
 
 module "organization" {
@@ -52,41 +92,12 @@ module "organization" {
     (var.tag_names.context) = {
       description = "Resource management context."
       iam         = try(local.tags.context.iam, {})
-      values = merge(
-        try(local.tags["context"]["values"], {}),
-        {
-          for k, v in local.tag_values_stage2 : v => {
-            iam         = try(local.tags.context.values.iam[v], {})
-            description = try(local.tags.context.values.description[v], null)
-          } if var.fast_stage_2[k].enabled
-        }
-      )
+      values      = local.context_tag_values
     },
     (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = try(local.tags.environment.iam, {})
-      values = {
-        for k, v in var.environment_names : v => {
-          iam = merge(
-            try(local.tags.environment.values[v].iam, {}),
-            !var.fast_stage_2.project_factory.enabled
-            ? {}
-            : {
-              "roles/resourcemanager.tagUser" = distinct(concat(
-                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
-                [module.pf-sa-rw[0].iam_email]
-              ))
-              "roles/resourcemanager.tagViewer" = distinct(concat(
-                try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
-                [module.pf-sa-ro[0].iam_email]
-              ))
-            }
-          )
-          description = try(
-            local.tags.environment.values[v].description, null
-          )
-        }
-      }
+      values      = local.environment_tag_values
     }
   })
 }

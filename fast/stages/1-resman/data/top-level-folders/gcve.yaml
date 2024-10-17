@@ -17,5 +17,4 @@
 name: GCVE
 automation:
   enable: false
-tag_bindings:
-  context: context/gcve
+context_name: gcve

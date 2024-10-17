@@ -17,5 +17,4 @@
 name: Data Platform
 automation:
   enable: false
-tag_bindings:
-  context: context/data-platform
+context_name: data-platform

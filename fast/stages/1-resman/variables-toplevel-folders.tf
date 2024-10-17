@@ -24,6 +24,8 @@ variable "top_level_folders" {
       sa_impersonation_principals = optional(list(string), [])
     }), {})
     contacts = optional(map(list(string)), {})
+    # TODO: remember to document this, and how to use the same value in other folders
+    context_name = optional(string)
     firewall_policy = optional(object({
       name   = string
       policy = string

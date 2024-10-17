@@ -97,6 +97,7 @@ locals {
       ]
     ]
   ])
+  stage3_shortnames = distinct([for k, v in local.stage3 : v.short_name])
 }
 
 # top-level folder
@@ -131,8 +132,8 @@ module "stage3-folder" {
       environment = local.tag_values["environment/${var.environment_names[each.value.environment]}"].id
     },
     {
-      for k, v in each.value.folder_config.tag_bindings : k => lookup(
-        local.top_level_tags, v, v
+      for k, v in each.value.folder_config.tag_bindings : k => try(
+        local.tag_values[v].id, v
       )
     }
   )

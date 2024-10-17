@@ -41,6 +41,7 @@ locals {
           sa_impersonation_principals = []
         })
         contacts              = try(v.contacts, {})
+        context_name          = try(v.context_name, null)
         firewall_policy       = try(v.firewall_policy, null)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
@@ -60,9 +61,6 @@ locals {
   top_level_sa = {
     for k, v in local.stage_service_accounts :
     k => "serviceAccount:${v}" if v != null
-  }
-  top_level_tags = {
-    for k, v in try(local.tag_values, {}) : k => v.id
   }
 }
 
@@ -98,11 +96,16 @@ module "top-level-folder" {
   # we don't replace here to avoid dynamic values in keys
   iam_by_principals = each.value.iam_by_principals
   org_policies      = each.value.org_policies
-  tag_bindings = {
-    for k, v in each.value.tag_bindings : k => lookup(
-      local.top_level_tags, v, v
-    )
-  }
+  tag_bindings = merge(
+    # explicit tag bindings
+    {
+      for k, v in each.value.tag_bindings : k => try(local.tag_values[v].id, v)
+    },
+    # implicit tag binding on own context tag value
+    each.value.context_name == null ? {} : {
+      context = local.tag_values["context/${each.value.context_name}"].id
+    }
+  )
 }
 
 module "top-level-sa" {

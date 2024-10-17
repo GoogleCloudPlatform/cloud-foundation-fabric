@@ -19,6 +19,12 @@
         }
       }
     },
+    "contacts": {
+      "type": "string"
+    },
+    "context_name": {
+      "type": "string"
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
