@@ -325,5 +325,5 @@ gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-boot
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tenants](outputs.tf#L202) | Tenant base configuration. |  |  |
+| [tenants](outputs.tf#L130) | Tenant base configuration. |  |  |
 <!-- END TFDOC -->
