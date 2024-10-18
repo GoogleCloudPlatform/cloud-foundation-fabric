@@ -59,8 +59,10 @@ module "net-folder" {
       "roles/resourcemanager.folderAdmin"    = [module.net-sa-rw[0].iam_email]
       "roles/resourcemanager.projectCreator" = [module.net-sa-rw[0].iam_email]
       "roles/compute.xpnAdmin"               = [module.net-sa-rw[0].iam_email]
+      "roles/resourcemanager.tagUser"        = [module.net-sa-rw[0].iam_email]
       "roles/viewer"                         = [module.net-sa-ro[0].iam_email]
       "roles/resourcemanager.folderViewer"   = [module.net-sa-ro[0].iam_email]
+      "roles/resourcemanager.tagViewer"      = [module.net-sa-ro[0].iam_email]
     },
     # network security stage 2 service accounts
     var.fast_stage_2.network_security.enabled != true ? {} : {

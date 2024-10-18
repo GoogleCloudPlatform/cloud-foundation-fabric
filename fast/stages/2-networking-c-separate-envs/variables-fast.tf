@@ -35,6 +35,16 @@ variable "billing_account" {
   }
 }
 
+variable "environment_names" {
+  # tfdoc:variable:source 1-resman
+  description = "Long environment names."
+  type = object({
+    dev  = string
+    prod = string
+  })
+  default = null
+}
+
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -88,4 +98,11 @@ variable "service_accounts" {
     project-factory-prod = string
   })
   default = null
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Root-level tag values."
+  type        = map(string)
+  default     = {}
 }

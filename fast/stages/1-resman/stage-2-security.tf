@@ -50,8 +50,10 @@ module "sec-folder" {
       "roles/owner"                          = [module.sec-sa-rw[0].iam_email]
       "roles/resourcemanager.folderAdmin"    = [module.sec-sa-rw[0].iam_email]
       "roles/resourcemanager.projectCreator" = [module.sec-sa-rw[0].iam_email]
+      "roles/resourcemanager.tagUser"        = [module.net-sa-rw[0].iam_email]
       "roles/viewer"                         = [module.sec-sa-ro[0].iam_email]
       "roles/resourcemanager.folderViewer"   = [module.sec-sa-ro[0].iam_email]
+      "roles/resourcemanager.tagViewer"      = [module.net-sa-ro[0].iam_email]
     },
     # project factory service accounts
     (var.fast_stage_2.project_factory.enabled) != true ? {} : {

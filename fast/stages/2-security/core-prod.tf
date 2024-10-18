@@ -37,9 +37,11 @@ locals {
 }
 
 module "prod-sec-project" {
-  source          = "../../../modules/project"
-  name            = "prod-sec-core-0"
-  parent          = var.folder_ids.security
+  source = "../../../modules/project"
+  name   = "prod-sec-core-0"
+  parent = coalesce(
+    var.folder_ids.security-prod, var.folder_ids.security
+  )
   prefix          = var.prefix
   billing_account = var.billing_account.id
   iam = {
@@ -53,6 +55,9 @@ module "prod-sec-project" {
   }
   labels   = { environment = "prod", team = "security" }
   services = local.project_services
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["prod"]
+  }
 }
 
 module "prod-sec-kms" {

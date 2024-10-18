@@ -41,17 +41,21 @@ locals {
   environment_tag_values = {
     for k, v in var.environment_names : v => {
       iam = merge(
+        # user-defined configuration
         try(local.tags.environment.values[v].iam, {}),
-        !var.fast_stage_2.project_factory.enabled
-        ? {}
-        : {
+        # stage 2 service accounts
+        {
           "roles/resourcemanager.tagUser" = distinct(concat(
             try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
-            [module.pf-sa-rw[0].iam_email]
+            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
+            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
+            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
             try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
-            [module.pf-sa-ro[0].iam_email]
+            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
+            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
+            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],
           ))
         }
       )

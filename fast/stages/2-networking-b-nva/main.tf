@@ -17,7 +17,11 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  nva_zones = ["b", "c"]
+  env_tag_values = {
+    for k, v in var.environment_names : k => var.tag_values["environment/${v}"]
+  }
+  has_env_folders = var.folder_ids.networking-dev != null
+  nva_zones       = ["b", "c"]
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),

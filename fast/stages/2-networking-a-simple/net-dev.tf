@@ -20,8 +20,10 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
-  parent          = var.folder_ids.networking-dev
-  prefix          = var.prefix
+  parent = coalesce(
+    var.folder_ids.networking-dev, var.folder_ids.networking
+  )
+  prefix = var.prefix
   services = concat(
     [
       "container.googleapis.com",
@@ -69,6 +71,9 @@ module "dev-spoke-project" {
         )
       }
     }
+  }
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["dev"]
   }
 }
 

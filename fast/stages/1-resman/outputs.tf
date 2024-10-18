@@ -37,11 +37,12 @@ locals {
     local.top_level_service_accounts
   )
   tfvars = {
-    folder_ids       = local.folder_ids
-    service_accounts = local.service_accounts
-    tag_keys         = { for k, v in try(local.tag_keys, {}) : k => v.id }
-    tag_names        = var.tag_names
-    tag_values       = { for k, v in try(local.tag_values, {}) : k => v.id }
+    environment_names = var.environment_names
+    folder_ids        = local.folder_ids
+    service_accounts  = local.service_accounts
+    tag_keys          = { for k, v in try(local.tag_keys, {}) : k => v.id }
+    tag_names         = var.tag_names
+    tag_values        = { for k, v in try(local.tag_values, {}) : k => v.id }
   }
 }
 
