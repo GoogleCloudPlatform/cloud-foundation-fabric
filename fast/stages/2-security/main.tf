@@ -18,7 +18,7 @@ locals {
   env_tag_values = {
     for k, v in var.environment_names : k => var.tag_values["environment/${v}"]
   }
-  has_env_folders = var.folder_ids.networking-dev != null
+  has_env_folders = var.folder_ids.security-dev != null
   # additive IAM binding for delegated KMS admins
   kms_restricted_admin_template = {
     role = "roles/cloudkms.admin"
