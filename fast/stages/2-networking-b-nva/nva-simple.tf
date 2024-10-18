@@ -104,7 +104,7 @@ module "nva-simple-mig" {
   for_each          = (var.network_mode == "simple") ? local.nva_locality : {}
   source            = "../../../modules/compute-mig"
   project_id        = module.landing-project.project_id
-  location          = each.value.zone
+  location          = "${each.value.region}-${each.value.zone}"
   name              = "nva-cos-${each.key}"
   instance_template = module.nva-simple-template[each.key].template.self_link
   target_size       = 1
