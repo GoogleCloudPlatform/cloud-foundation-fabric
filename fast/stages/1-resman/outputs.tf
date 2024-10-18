@@ -32,41 +32,6 @@ locals {
     # top-level folders
     local.top_level_folder_ids
   )
-  providers = {
-    for k, v in local._providers : k => (
-      var.automation.cicd_backends != null && try(var.automation.cicd_backends.terraform, null) != null ?
-      templatefile(
-        local._tpl_providers_terraform,
-        merge(
-          {
-            name = v.name,
-            sa   = v.sa
-          },
-          {
-            workspaces = lookup(
-              var.automation.cicd_backends.terraform.workspaces,
-              v.name,
-              {
-                tags    = null,
-                name    = null,
-                project = null
-              }
-            )
-          },
-          {
-            organization = var.automation.cicd_backends.terraform.organization,
-            hostname     = var.automation.cicd_backends.terraform.hostname
-          }
-        )
-      ) :
-      templatefile(local._tpl_providers_gcs, {
-        name          = v.name,
-        sa            = v.sa,
-        bucket        = v.bucket,
-        backend_extra = v.backend_extra
-      })
-    )
-  }
   service_accounts = merge(
     local.stage_service_accounts,
     local.top_level_service_accounts
