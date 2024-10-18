@@ -17,4 +17,3 @@
 name: Sandbox
 automation:
   short_name: sbx
-is_fast_context: true

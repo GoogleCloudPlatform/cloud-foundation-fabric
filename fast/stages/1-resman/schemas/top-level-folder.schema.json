@@ -38,7 +38,8 @@
       "$ref": "#/$defs/iam_by_principals"
     },
     "is_fast_context": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": true
     },
     "name": {
       "type": "string"

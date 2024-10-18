@@ -42,7 +42,7 @@ locals {
         })
         contacts              = try(v.contacts, {})
         firewall_policy       = try(v.firewall_policy, null)
-        is_fast_context       = try(v.context_name, null)
+        is_fast_context       = try(v.is_fast_context, true)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
         logging_settings      = try(v.logging_settings, null)
@@ -103,7 +103,7 @@ module "top-level-folder" {
       for k, v in each.value.tag_bindings : k => try(local.tag_values[v].id, v)
     },
     # implicit tag binding on own context tag value
-    each.value.is_fast_context == null ? {} : {
+    each.value.is_fast_context != true ? {} : {
       context = local.tag_values["context/${each.key}"].id
     }
   )
