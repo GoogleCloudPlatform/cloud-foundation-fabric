@@ -13,87 +13,6 @@
 # limitations under the License.
 
 values:
-  google_storage_bucket_object.providers["2-networking"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-networking-providers.tf
-  google_storage_bucket_object.providers["2-networking-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-networking-r-providers.tf
-  google_storage_bucket_object.providers["2-project-factory"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-project-factory-providers.tf
-  google_storage_bucket_object.providers["2-project-factory-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-project-factory-r-providers.tf
-  google_storage_bucket_object.providers["2-security"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-security-providers.tf
-  google_storage_bucket_object.providers["2-security-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-security-r-providers.tf
-  google_storage_bucket_object.providers["3-data-platform-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-data-platform-dev-providers.tf
-  google_storage_bucket_object.providers["3-data-platform-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-data-platform-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-data-platform-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-data-platform-prod-providers.tf
-  google_storage_bucket_object.providers["3-data-platform-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-data-platform-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-gcve-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-dev-providers.tf
-  google_storage_bucket_object.providers["3-gcve-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-gcve-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-prod-providers.tf
-  google_storage_bucket_object.providers["3-gcve-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-gke-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-dev-providers.tf
-  google_storage_bucket_object.providers["3-gke-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-gke-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-prod-providers.tf
-  google_storage_bucket_object.providers["3-gke-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-dev-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-prod-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-sandbox"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-sandbox-providers.tf
-  google_storage_bucket_object.providers["3-sandbox-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-sandbox-r-providers.tf
-  google_storage_bucket_object.tfvars:
-    bucket: fast2-prod-iac-core-outputs
-    name: tfvars/1-resman.auto.tfvars.json
-  google_storage_bucket_object.workflows["networking"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: workflows/networking-workflow.yaml
-  google_storage_bucket_object.workflows["security"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: workflows/security-workflow.yaml
   module.cicd-sa-ro["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
     condition: []
     project: fast2-prod-automation
@@ -218,17 +137,23 @@ values:
   module.net-folder-dev[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
+    timeouts: null
   module.net-folder-dev[0].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.net-folder-prod[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
+    timeouts: null
   module.net-folder-prod[0].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.net-folder[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
   : condition: []
     members:
@@ -435,11 +360,6 @@ values:
     member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/cloudasset.viewer
-  module.organization[0].google_organization_iam_member.bindings["sandbox"]:
-    condition: []
-    member: serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/billing.user
   module.organization[0].google_tags_tag_key.default["context"]:
     description: Resource management context.
     parent: organizations/123456789012
@@ -485,6 +405,10 @@ values:
   module.organization[0].google_tags_tag_value.default["context/security"]:
     description: Managed by the Terraform organization module.
     short_name: security
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/tenants"]:
+    description: Managed by the Terraform organization module.
+    short_name: tenants
     timeouts: null
   module.organization[0].google_tags_tag_value.default["environment/development"]:
     description: Managed by the Terraform organization module.
@@ -636,6 +560,8 @@ values:
     deletion_protection: false
     display_name: Security
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
     condition: []
     members:
@@ -1029,46 +955,11 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["sandbox"].google_storage_bucket.bucket:
-    autoclass: []
-    cors: []
-    custom_placement_config: []
-    default_event_based_hold: null
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    enable_object_retention: null
-    encryption: []
-    force_destroy: false
-    labels: null
-    lifecycle_rule: []
-    location: EU
-    logging: []
-    name: fast2-dev-resman-sbx-0
-    project: fast2-prod-automation
-    requester_pays: null
-    retention_policy: []
-    storage_class: MULTI_REGIONAL
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-    uniform_bucket_level_access: true
-    versioning:
-    - enabled: true
-  module.stage3-bucket["sandbox"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
-    bucket: fast2-dev-resman-sbx-0
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/storage.objectAdmin
-  module.stage3-bucket["sandbox"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
-    bucket: fast2-dev-resman-sbx-0
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0r@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/storage.objectViewer
   module.stage3-folder["data-platform-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
+    timeouts: null
   module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1109,6 +1000,8 @@ values:
   module.stage3-folder["data-platform-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
+    timeouts: null
   module.stage3-folder["data-platform-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1149,6 +1042,8 @@ values:
   module.stage3-folder["gcve-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
+    timeouts: null
   module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1189,6 +1084,8 @@ values:
   module.stage3-folder["gcve-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
+    timeouts: null
   module.stage3-folder["gcve-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1229,6 +1126,8 @@ values:
   module.stage3-folder["gke-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
+    timeouts: null
   module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1269,6 +1168,8 @@ values:
   module.stage3-folder["gke-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
+    timeouts: null
   module.stage3-folder["gke-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -1305,49 +1206,6 @@ values:
     - serviceAccount:fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/viewer
   module.stage3-folder["gke-prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
-  module.stage3-folder["sandbox"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Sandbox
-    parent: organizations/123456789012
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/compute.xpnAdmin
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/logging.admin
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/owner
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/resourcemanager.folderAdmin
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0r@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/resourcemanager.folderViewer
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/resourcemanager.projectCreator
-  module.stage3-folder["sandbox"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-sbx-0r@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/viewer
-  module.stage3-folder["sandbox"].google_tags_tag_binding.binding["context"]:
-    timeouts: null
-  module.stage3-folder["sandbox"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   ? module.stage3-sa-ro["data-platform-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
   : condition: []
@@ -1506,26 +1364,6 @@ values:
     members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.stage3-sa-ro["project-factory-prod"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
-  : bucket: fast2-prod-iac-core-outputs
-    condition: []
-    role: organizations/123456789012/roles/storageViewer
-  ? module.stage3-sa-ro["sandbox"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
-  : condition: []
-    project: fast2-prod-automation
-    role: roles/serviceusage.serviceUsageConsumer
-  module.stage3-sa-ro["sandbox"].google_service_account.service_account[0]:
-    account_id: fast2-dev-resman-sbx-0r
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform resman sandbox service account (read-only).
-    project: fast2-prod-automation
-    timeouts: null
-  module.stage3-sa-ro["sandbox"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
-    members: null
-    role: roles/iam.serviceAccountTokenCreator
-  ? module.stage3-sa-ro["sandbox"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: organizations/123456789012/roles/storageViewer
@@ -1689,48 +1527,44 @@ values:
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  ? module.stage3-sa-rw["sandbox"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
-  : condition: []
-    project: fast2-prod-automation
-    role: roles/serviceusage.serviceUsageConsumer
-  module.stage3-sa-rw["sandbox"].google_service_account.service_account[0]:
-    account_id: fast2-dev-resman-sbx-0
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform resman sandbox service account.
-    project: fast2-prod-automation
-    timeouts: null
-  module.stage3-sa-rw["sandbox"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
-    members: null
-    role: roles/iam.serviceAccountTokenCreator
-  ? module.stage3-sa-rw["sandbox"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
-  : bucket: fast2-prod-iac-core-outputs
-    condition: []
-    role: roles/storage.objectAdmin
   module.top-level-folder["data-platform"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Data Platform
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   module.top-level-folder["data-platform"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["gcve"].google_folder.folder[0]:
     deletion_protection: false
     display_name: GCVE
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   module.top-level-folder["gcve"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["gke"].google_folder.folder[0]:
     deletion_protection: false
     display_name: GKE
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   module.top-level-folder["gke"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["sandbox"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Sandbox
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["teams"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Teams
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
   ? module.top-level-folder["teams"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
   : condition: []
     members:
@@ -1762,24 +1596,28 @@ values:
     deletion_protection: false
     display_name: Tenants
     parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["tenants"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
 
 counts:
   google_folder: 16
-  google_folder_iam_binding: 80
-  google_organization_iam_member: 14
-  google_project_iam_member: 28
-  google_service_account: 28
-  google_service_account_iam_binding: 28
-  google_storage_bucket: 12
-  google_storage_bucket_iam_binding: 24
-  google_storage_bucket_iam_member: 28
-  google_storage_bucket_object: 27
+  google_folder_iam_binding: 73
+  google_organization_iam_member: 13
+  google_project_iam_member: 26
+  google_service_account: 26
+  google_service_account_iam_binding: 26
+  google_storage_bucket: 11
+  google_storage_bucket_iam_binding: 22
+  google_storage_bucket_iam_member: 26
+  google_storage_bucket_object: 25
   google_tags_tag_binding: 16
   google_tags_tag_key: 2
-  google_tags_tag_value: 10
+  google_tags_tag_value: 11
   google_tags_tag_value_iam_binding: 4
-  modules: 57
-  resources: 317
+  modules: 54
+  resources: 297
 
 outputs:
   cicd_repositories:
@@ -1796,3 +1634,4 @@ outputs:
         branch: null
         name: test/00-security
         type: gitlab
+
