@@ -17,6 +17,54 @@
 # tfdoc:file:description Organization policies.
 
 locals {
+  _context_tag_values_stage2 = {
+    for k, v in var.fast_stage_2 :
+    k => replace(k, "_", "-") if v.enabled
+  }
+  context_tag_values = merge(
+    try(local.tags["context"]["values"], {}),
+    # top-level folders
+    {
+      for k, v in local.top_level_folders : k => {
+        iam         = try(local.tags.context.values.iam[k], {})
+        description = try(local.tags.context.values.description[k], null)
+      } if v.is_fast_context == true
+    },
+    # stage 2s
+    {
+      for k, v in local._context_tag_values_stage2 : v => {
+        iam         = try(local.tags.context.values.iam[v], {})
+        description = try(local.tags.context.values.description[v], null)
+      }
+    },
+  )
+  environment_tag_values = {
+    for k, v in var.environment_names : v => {
+      iam = merge(
+        # user-defined configuration
+        try(local.tags.environment.values[v].iam, {}),
+        # stage 2 service accounts
+        {
+          "roles/resourcemanager.tagUser" = distinct(concat(
+            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
+            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
+            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
+            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
+          ))
+          "roles/resourcemanager.tagViewer" = distinct(concat(
+            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
+            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
+            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
+            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],
+          ))
+        }
+      )
+      description = try(
+        local.tags.environment.values[v].description, null
+      )
+    }
+  }
+  # service accounts expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
@@ -48,62 +96,12 @@ module "organization" {
     (var.tag_names.context) = {
       description = "Resource management context."
       iam         = try(local.tags.context.iam, {})
-      values = {
-        data = {
-          iam         = try(local.tags.context.values.data.iam, {})
-          description = try(local.tags.context.values.data.description, null)
-        }
-        gke = {
-          iam         = try(local.tags.context.values.gke.iam, {})
-          description = try(local.tags.context.values.gke.description, null)
-        }
-        gcve = {
-          iam         = try(local.tags.context.values.gcve.iam, {})
-          description = try(local.tags.context.values.gcve.description, null)
-        }
-        networking = {
-          iam         = try(local.tags.context.values.networking.iam, {})
-          description = try(local.tags.context.values.networking.description, null)
-        }
-        project-factory = {
-          iam         = try(local.tags.context.values.project-factory.iam, {})
-          description = try(local.tags.context.values.project-factory.description, null)
-        }
-        sandbox = {
-          iam         = try(local.tags.context.values.sandbox.iam, {})
-          description = try(local.tags.context.values.sandbox.description, null)
-        }
-        security = {
-          iam         = try(local.tags.context.values.security.iam, {})
-          description = try(local.tags.context.values.security.description, null)
-        }
-      }
-    }
+      values      = local.context_tag_values
+    },
     (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = try(local.tags.environment.iam, {})
-      values = {
-        development = {
-          iam = try(local.tags.environment.values.development.iam, {})
-          iam_bindings = {
-            pf = {
-              members = [module.branch-pf-sa.iam_email]
-              role    = "roles/resourcemanager.tagUser"
-            }
-          }
-          description = try(local.tags.environment.values.development.description, null)
-        }
-        production = {
-          iam = try(local.tags.environment.values.production.iam, {})
-          iam_bindings = {
-            pf = {
-              members = [module.branch-pf-sa.iam_email]
-              role    = "roles/resourcemanager.tagUser"
-            }
-          }
-          description = try(local.tags.environment.values.production.description, null)
-        }
-      }
+      values      = local.environment_tag_values
     }
   })
 }

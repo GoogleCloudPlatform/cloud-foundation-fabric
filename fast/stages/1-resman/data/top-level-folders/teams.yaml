@@ -15,6 +15,7 @@
 # yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
 
 name: Teams
+# automation is disabled since this is just a "container" for the pf
 automation:
   enable: false
 iam:
@@ -28,5 +29,7 @@ iam:
     - project-factory
   "service_project_network_admin":
     - project-factory
+# don't create a context tag since this uses the pf tag
+is_fast_context: false
 tag_bindings:
   context: context/project-factory

@@ -17,6 +17,10 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  env_tag_values = {
+    for k, v in var.environment_names : k => var.tag_values["environment/${v}"]
+  }
+  has_env_folders = var.folder_ids.networking-dev != null
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
@@ -36,9 +40,7 @@ locals {
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Networking"
-  folder_create = var.folder_ids.networking == null
+  folder_create = false
   id            = var.folder_ids.networking
   contacts = (
     var.essential_contacts == null

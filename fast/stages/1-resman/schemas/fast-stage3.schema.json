@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FAST stage 3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "short_name"
+  ],
+  "properties": {
+    "short_name": {
+      "type": "string"
+    },
+    "environment": {
+      "enum": [
+        "dev",
+        "prod"
+      ]
+    },
+    "cicd_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_provider",
+        "repository"
+      ],
+      "properties": {
+        "identity_provider": {
+          "type": "string"
+        },
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "github",
+                "gitlab"
+              ],
+              "default": "github"
+            }
+          }
+        }
+      }
+    },
+    "folder_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "iam_by_principals": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|[a-z_]+)"
+              }
+            }
+          }
+        },
+        "parent_id": {
+          "type": "string"
+        },
+        "tag_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z0-9_-]+$": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "organization_iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_tag_value"
+      ],
+      "properties": {
+        "context_tag_value": {
+          "type": "string"
+        },
+        "sa_roles": {
+          "$ref": "#/$defs/sa_roles"
+        }
+      }
+    },
+    "stage2_iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "networking": {
+          "$ref": "#/$defs/stage2_iam"
+        },
+        "security": {
+          "$ref": "#/$defs/stage2_iam"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sa_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ro": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rw": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stage2_iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam_admin_delegated": {
+          "type": "boolean"
+        },
+        "sa_roles": {
+          "$ref": "#/$defs/sa_roles"
+        }
+      }
+    }
+  }
+}

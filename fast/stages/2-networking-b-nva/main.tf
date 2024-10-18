@@ -17,6 +17,47 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  _regional_nva_lb = {
+    primary = (
+      var.network_mode == "regional_vpc"
+      ? module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""]
+      : null
+    )
+    secondary = (
+      var.network_mode == "regional_vpc"
+      ? module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""]
+      : null
+    )
+  }
+  _simple_nva_lb = {
+    primary = (
+      var.network_mode == "simple"
+      ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      : null
+    )
+    secondary = (
+      var.network_mode == "simple"
+      ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      : null
+    )
+  }
+  env_tag_values = {
+    for k, v in var.environment_names : k => var.tag_values["environment/${v}"]
+  }
+  has_env_folders = var.folder_ids.networking-dev != null
+  # select the NVA ILB as next hop for spoke VPC routing depending on net mode
+  nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
+    primary = (
+      var.network_mode == "simple"
+      ? local._simple_nva_lb.primary
+      : local._regional_nva_lb.primary
+    )
+    secondary = (
+      var.network_mode == "simple"
+      ? local._simple_nva_lb.secondary
+      : local._regional_nva_lb.secondary
+    )
+  }
   nva_zones = ["b", "c"]
   # combine all regions from variables and subnets
   regions = distinct(concat(
@@ -42,9 +83,7 @@ locals {
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Networking"
-  folder_create = var.folder_ids.networking == null
+  folder_create = false
   id            = var.folder_ids.networking
   contacts = (
     var.essential_contacts == null

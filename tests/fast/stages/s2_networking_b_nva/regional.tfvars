@@ -13,9 +13,13 @@ dns = {
 }
 enable_cloud_nat      = true
 enable_test_instances = true
-essential_contacts    = "gcp-network-admins@fast.example.com"
+environment_names = {
+  dev  = "development"
+  prod = "production"
+}
+essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
-  networking      = null
+  networking      = "folders/12345"
   networking-dev  = null
   networking-prod = null
 }
@@ -115,4 +119,8 @@ vpn_onprem_secondary_config = {
       vpn_gateway_interface = 1
     }
   }
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }

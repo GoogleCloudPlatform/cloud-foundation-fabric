@@ -11,10 +11,14 @@ dns = {
   resolvers      = ["10.10.10.10"]
   enable_logging = true
 }
-enable_cloud_nat   = true
+enable_cloud_nat = true
+environment_names = {
+  dev  = "development"
+  prod = "production"
+}
 essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
-  networking      = null
+  networking      = "folders/12345"
   networking-dev  = null
   networking-prod = null
 }
@@ -36,6 +40,10 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast2"
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
+}
 # spoke_configs defaults to peering
 vpn_onprem_primary_config = {
   peer_external_gateways = {

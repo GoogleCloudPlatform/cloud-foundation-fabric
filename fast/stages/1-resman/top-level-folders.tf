@@ -42,6 +42,7 @@ locals {
         })
         contacts              = try(v.contacts, {})
         firewall_policy       = try(v.firewall_policy, null)
+        is_fast_context       = try(v.is_fast_context, true)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
         logging_settings      = try(v.logging_settings, null)
@@ -51,24 +52,23 @@ locals {
         iam_bindings_additive = try(v.iam_bindings_additive, {})
         iam_by_principals     = try(v.iam_by_principals, {})
         org_policies          = try(v.org_policies, {})
+        parent_id             = try(v.parent_id, null)
+        short_name            = try(v.short_name, null)
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
     var.top_level_folders
   )
   top_level_sa = {
-    for k, v in local.branch_service_accounts :
+    for k, v in local.stage_service_accounts :
     k => "serviceAccount:${v}" if v != null
-  }
-  top_level_tags = {
-    for k, v in try(local.tag_values, {}) : k => v.id
   }
 }
 
 module "top-level-folder" {
   source              = "../../../modules/folder"
   for_each            = local.top_level_folders
-  parent              = local.root_node
+  parent              = coalesce(each.value.parent_id, local.root_node)
   name                = each.value.name
   contacts            = each.value.contacts
   firewall_policy     = each.value.firewall_policy
@@ -97,18 +97,23 @@ module "top-level-folder" {
   # we don't replace here to avoid dynamic values in keys
   iam_by_principals = each.value.iam_by_principals
   org_policies      = each.value.org_policies
-  tag_bindings = {
-    for k, v in each.value.tag_bindings : k => lookup(
-      local.top_level_tags, v, v
-    )
-  }
+  tag_bindings = merge(
+    # explicit tag bindings
+    {
+      for k, v in each.value.tag_bindings : k => try(local.tag_values[v].id, v)
+    },
+    # implicit tag binding on own context tag value
+    each.value.is_fast_context != true ? {} : {
+      context = local.tag_values["context/${each.key}"].id
+    }
+  )
 }
 
 module "top-level-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.top_level_automation
   project_id   = var.automation.project_id
-  name         = "prod-resman-${each.key}-0"
+  name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} folder service account."
   prefix       = var.prefix
   iam = {
@@ -126,7 +131,7 @@ module "top-level-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.top_level_automation
   project_id = var.automation.project_id
-  name       = "prod-resman-${each.key}-0"
+  name       = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

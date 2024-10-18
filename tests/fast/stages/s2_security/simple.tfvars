@@ -4,9 +4,13 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+environment_names = {
+  dev  = "development"
+  prod = "production"
+}
 essential_contacts = "gcp-security-admins@fast.example.com"
 folder_ids = {
-  security = null
+  security = "folders/12345678"
 }
 organization = {
   domain      = "fast.example.com"
@@ -33,4 +37,8 @@ service_accounts = {
   project-factory      = "foobar@iam.gserviceaccount.com"
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }

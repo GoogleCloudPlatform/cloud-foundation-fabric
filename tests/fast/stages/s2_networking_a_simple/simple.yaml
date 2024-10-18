@@ -35,7 +35,6 @@ counts:
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 38
   google_essential_contacts_contact: 1
-  google_folder: 1
   google_monitoring_alert_policy: 2
   google_monitoring_dashboard: 3
   google_monitoring_monitored_project: 2
@@ -45,7 +44,8 @@ counts:
   google_project_service: 23
   google_project_service_identity: 17
   google_storage_bucket_object: 2
+  google_tags_tag_binding: 3
   google_vpc_access_connector: 2
   modules: 29
   random_id: 1
-  resources: 185
+  resources: 187
