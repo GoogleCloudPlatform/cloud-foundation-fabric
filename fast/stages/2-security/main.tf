@@ -63,9 +63,7 @@ locals {
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Security"
-  folder_create = var.folder_ids.security == null
+  folder_create = false
   id            = var.folder_ids.security
   contacts = (
     var.essential_contacts == null
