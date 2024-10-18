@@ -291,8 +291,8 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L48) | WIF configuration for CI/CD repositories. |  |  |
-| [folder_ids](outputs.tf#L60) | Folder ids. |  |  |
-| [providers](outputs.tf#L66) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
-| [tfvars](outputs.tf#L74) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L49) | WIF configuration for CI/CD repositories. |  |  |
+| [folder_ids](outputs.tf#L61) | Folder ids. |  |  |
+| [providers](outputs.tf#L67) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
+| [tfvars](outputs.tf#L75) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
