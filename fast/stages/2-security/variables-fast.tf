@@ -42,7 +42,6 @@ variable "environment_names" {
     dev  = string
     prod = string
   })
-  default = null
 }
 
 variable "folder_ids" {
@@ -50,8 +49,8 @@ variable "folder_ids" {
   description = "Folder name => id mappings, the 'security' folder name must exist."
   type = object({
     security      = string
-    security-dev  = string
-    security-prod = string
+    security-dev  = optional(string)
+    security-prod = optional(string)
   })
 }
 

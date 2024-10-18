@@ -42,7 +42,6 @@ variable "environment_names" {
     dev  = string
     prod = string
   })
-  default = null
 }
 
 variable "fast_features" {
