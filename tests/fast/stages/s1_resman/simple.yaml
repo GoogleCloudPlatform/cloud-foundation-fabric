@@ -201,6 +201,16 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
+  module.net-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.net-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
   module.net-folder[0].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]:
     condition: []
     members:
@@ -419,24 +429,32 @@ values:
     condition: []
     members:
     - serviceAccount:fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.tagUser
   ? module.organization[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagViewer"]
   : condition: []
     members:
     - serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
   module.organization[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"]:
     condition: []
     members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.tagUser
   module.organization[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagViewer"]:
     condition: []
     members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
   module.pf-bucket[0].google_storage_bucket.bucket:
@@ -598,6 +616,16 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
+  module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
   module.sec-folder[0].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
@@ -1587,7 +1615,7 @@ values:
 
 counts:
   google_folder: 16
-  google_folder_iam_binding: 73
+  google_folder_iam_binding: 77
   google_organization_iam_member: 13
   google_project_iam_member: 26
   google_service_account: 26
@@ -1601,21 +1629,4 @@ counts:
   google_tags_tag_value: 11
   google_tags_tag_value_iam_binding: 4
   modules: 54
-  resources: 297
-
-outputs:
-  cicd_repositories:
-    networking:
-      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno
-      repository:
-        branch: main
-        name: test/00-networking
-        parent_id: null
-        type: github
-    security:
-      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-gitlab-ludomagno
-      repository:
-        branch: null
-        name: test/00-security
-        type: gitlab
-
+  resources: 301
