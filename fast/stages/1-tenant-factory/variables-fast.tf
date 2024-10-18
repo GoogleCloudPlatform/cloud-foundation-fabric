@@ -32,17 +32,6 @@ variable "automation" {
       principal_branch = string
       principal_repo   = string
     }))
-    cicd_backends = object({
-      terraform = object({
-        organization = string
-        workspaces = map(object({
-          tags    = list(string)
-          name    = string
-          project = string
-        }))
-        hostname = string
-      })
-    })
     service_accounts = object({
       resman   = string
       resman-r = string
