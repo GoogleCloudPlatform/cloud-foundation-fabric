@@ -20,8 +20,11 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
-  parent = coalesce(
-    var.folder_ids.networking-dev, var.folder_ids.networking
+  # tflint barfs on coalesce
+  parent = (
+    var.folder_ids.networking-dev != null
+    ? var.folder_ids.networking-dev
+    : var.folder_ids.networking
   )
   prefix = var.prefix
   services = concat(

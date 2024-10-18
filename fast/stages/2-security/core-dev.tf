@@ -40,8 +40,11 @@ locals {
 module "dev-sec-project" {
   source = "../../../modules/project"
   name   = "dev-sec-core-0"
-  parent = coalesce(
-    var.folder_ids.security-dev, var.folder_ids.security
+  # tflint barfs on coalesce
+  parent = (
+    var.folder_ids.security-dev != null
+    ? var.folder_ids.security-dev
+    : var.folder_ids.security
   )
   prefix          = var.prefix
   billing_account = var.billing_account.id
