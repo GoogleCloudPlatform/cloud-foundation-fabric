@@ -22,14 +22,15 @@ variable "top_level_folders" {
     automation = optional(object({
       enable                      = optional(bool, true)
       sa_impersonation_principals = optional(list(string), [])
+      short_name                  = optional(string)
     }), {})
     contacts = optional(map(list(string)), {})
-    # TODO: remember to document this, and how to use the same value in other folders
-    context_name = optional(string)
     firewall_policy = optional(object({
       name   = string
       policy = string
     }))
+    # TODO: remember to document this, and how to use the same value in other folders
+    is_fast_context     = optional(bool, true)
     logging_data_access = optional(map(map(list(string))), {})
     logging_exclusions  = optional(map(string), {})
     logging_settings = optional(object({

@@ -25,10 +25,10 @@ locals {
     try(local.tags["context"]["values"], {}),
     # top-level folders
     {
-      for k, v in local.top_level_folders : v.context_name => {
-        iam         = try(local.tags.context.values.iam[v.context_name], {})
-        description = try(local.tags.context.values.description[v.context_name], null)
-      } if v.context_name != null
+      for k, v in local.top_level_folders : k => {
+        iam         = try(local.tags.context.values.iam[k], {})
+        description = try(local.tags.context.values.description[k], null)
+      } if v.is_fast_context == true
     },
     # stage 2s
     {

@@ -41,8 +41,8 @@ locals {
           sa_impersonation_principals = []
         })
         contacts              = try(v.contacts, {})
-        context_name          = try(v.context_name, null)
         firewall_policy       = try(v.firewall_policy, null)
+        is_fast_context       = try(v.context_name, null)
         logging_data_access   = try(v.logging_data_access, {})
         logging_exclusions    = try(v.logging_exclusions, {})
         logging_settings      = try(v.logging_settings, null)
@@ -53,6 +53,7 @@ locals {
         iam_by_principals     = try(v.iam_by_principals, {})
         org_policies          = try(v.org_policies, {})
         parent_id             = try(v.parent_id, null)
+        short_name            = try(v.short_name, null)
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
@@ -102,8 +103,8 @@ module "top-level-folder" {
       for k, v in each.value.tag_bindings : k => try(local.tag_values[v].id, v)
     },
     # implicit tag binding on own context tag value
-    each.value.context_name == null ? {} : {
-      context = local.tag_values["context/${each.value.context_name}"].id
+    each.value.is_fast_context == null ? {} : {
+      context = local.tag_values["context/${each.key}"].id
     }
   )
 }
@@ -112,7 +113,7 @@ module "top-level-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.top_level_automation
   project_id   = var.automation.project_id
-  name         = "prod-resman-${each.key}-0"
+  name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} folder service account."
   prefix       = var.prefix
   iam = {
@@ -130,7 +131,7 @@ module "top-level-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.top_level_automation
   project_id = var.automation.project_id
-  name       = "prod-resman-${each.key}-0"
+  name       = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

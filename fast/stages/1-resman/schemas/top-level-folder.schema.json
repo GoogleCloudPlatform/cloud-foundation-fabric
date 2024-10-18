@@ -16,13 +16,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "short_name": {
+          "type": "string"
         }
       }
     },
     "contacts": {
-      "type": "string"
-    },
-    "context_name": {
       "type": "string"
     },
     "iam": {
@@ -36,6 +36,9 @@
     },
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
+    },
+    "is_fast_context": {
+      "type": "boolean"
     },
     "name": {
       "type": "string"
