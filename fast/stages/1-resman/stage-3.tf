@@ -97,7 +97,6 @@ locals {
       ]
     ]
   ])
-  stage3_shortnames = distinct([for k, v in local.stage3 : v.short_name])
 }
 
 # top-level folder
