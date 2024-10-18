@@ -21,6 +21,7 @@ resource "google_network_connectivity_hub" "default" {
   name        = "hub"
   description = "Hub"
   project     = module.landing-project.project_id
+  export_psc  = var.spoke_configs.ncc_configs.export_psc
 }
 
 resource "google_network_connectivity_spoke" "spoke-dev" {

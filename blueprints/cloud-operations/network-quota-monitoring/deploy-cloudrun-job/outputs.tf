@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-terraform {
-  backend "gcs" {
-    bucket                      = "${bucket}"
-    impersonate_service_account = "${sa}"
-    %{~ if backend_extra != null ~}
-    ${indent(4, backend_extra)}
-    %{~ endif ~}
-  }
-}
-provider "google" {
-  impersonate_service_account = "${sa}"
-}
-provider "google-beta" {
-  impersonate_service_account = "${sa}"
+output "docker_tag" {
+  description = "Docker tag for the container image."
+  value       = "${module.ar.url}/${var.name}"
 }
 
-# end provider.tf for ${name}
+output "project_id" {
+  description = "Project id."
+  value       = module.project.project_id
+}
+
+output "service_account" {
+  description = "Cloud Run Job service account."
+  value       = module.sa.email
+}

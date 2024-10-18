@@ -291,8 +291,23 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
+<<<<<<< HEAD
 | [cicd_repositories](outputs.tf#L48) | WIF configuration for CI/CD repositories. |  |  |
 | [folder_ids](outputs.tf#L60) | Folder ids. |  |  |
 | [providers](outputs.tf#L66) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
 | [tfvars](outputs.tf#L74) | Terraform variable files for the following stages. | ✓ |  |
+=======
+| [cicd_repositories](outputs.tf#L413) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L427) | Data for the Data Platform stage. |  |  |
+| [folder_ids](outputs.tf#L443) | Folder ids. |  |  |
+| [gcve](outputs.tf#L448) | Data for the GCVE stage. |  | <code>03-gcve</code> |
+| [gke_multitenant](outputs.tf#L469) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L490) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L499) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L518) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
+| [sandbox](outputs.tf#L525) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L539) | Data for the networking stage. |  | <code>02-security</code> |
+| [tfvars](outputs.tf#L550) | Terraform variable files for the following stages. | ✓ |  |
+
+>>>>>>> origin/master
 <!-- END TFDOC -->

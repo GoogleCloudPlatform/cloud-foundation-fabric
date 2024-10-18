@@ -30,6 +30,42 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "cicd_backends" {
+  description = "CI/CD backend configuration. Leave null to use GCS buckets for state."
+  type = object({
+    terraform = optional(object({
+      organization = string
+      workspaces = map(object({
+        tags    = optional(list(string), null)
+        name    = optional(string, null)
+        project = optional(string, null)
+      }))
+      hostname = optional(string, null)
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      (
+        length([for k, v in coalesce(var.cicd_backends, {}) : true if v != null]) == 1
+      )
+    )
+    error_message = "cicd_backends must be either null or contain exactly one backend configuration."
+  }
+  validation {
+    condition = (
+      var.cicd_backends == null ||
+      try(var.cicd_backends.terraform, null) == null ||
+      alltrue([
+        for k, v in try(var.cicd_backends.terraform.workspaces, {}) :
+        v.tags != null || v.name != null || v.project != null
+      ])
+    )
+    error_message = "At least one of 'tags', 'name', or 'project' must be defined for each workspace in the 'workspaces' map when 'terraform' is defined."
+  }
+}
+
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
@@ -77,10 +113,10 @@ variable "cicd_repositories" {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["github", "gitlab"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab", "terraform"], coalesce(try(v.type, null), "null"))
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
+    error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'terraform'."
   }
 }
 
@@ -195,8 +231,10 @@ variable "locations" {
 variable "log_sinks" {
   description = "Org-level log sinks, in name => {type, filter} format."
   type = map(object({
-    filter = string
-    type   = string
+    filter     = string
+    type       = string
+    disabled   = optional(bool, false)
+    exclusions = optional(map(string), {})
   }))
   nullable = false
   default = {
@@ -208,6 +246,9 @@ variable "log_sinks" {
         log_id("cloudaudit.googleapis.com/access_transparency")
       FILTER
       type   = "logging"
+      # exclusions = {
+      #   gke-audit = "protoPayload.serviceName=\"k8s.io\""
+      # }
     }
     iam = {
       filter = <<-FILTER

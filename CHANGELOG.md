@@ -8,12 +8,18 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2585)] Apigee x foundations certificate manager ([apichick](https://github.com/apichick)) <!-- 2024-09-24 06:49:36+00:00 -->
+- [[#2584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2584)] README fixes to FAST docs ([skalolazka](https://github.com/skalolazka)) <!-- 2024-09-19 13:23:40+00:00 -->
 - [[#2574](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2574)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:21:22+00:00 -->
 - [[#2573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2573)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:09:06+00:00 -->
 - [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
 
 ### FAST
 
+- [[#2604](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2604)] fixed tfe wif definition variables ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-03 13:41:31+00:00 -->
+- [[#2600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2600)] FAST: Adds support for PSC transitivity to 2-a ([sruffilli](https://github.com/sruffilli)) <!-- 2024-10-02 09:39:24+00:00 -->
+- [[#2598](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2598)] added terraform enterprise/hcp terraform def to wif providers ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-01 23:12:49+00:00 -->
+- [[#2584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2584)] README fixes to FAST docs ([skalolazka](https://github.com/skalolazka)) <!-- 2024-09-19 13:23:40+00:00 -->
 - [[#2582](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2582)] Make it explicit in FAST docs that stages need to be run once before CI/CD setup ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:43:36+00:00 -->
 - [[#2581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2581)] Update FAST stage diagrams ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:39:35+00:00 -->
 - [[#2579](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2579)] FAST resman mt fixes ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:02:04+00:00 -->
@@ -24,6 +30,16 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2599](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2599)] Alloydb variables refactor ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-10-06 09:49:16+00:00 -->
+- [[#2606](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2606)] feat: implement the new iam interface in `artifact-registry` ([NitriKx](https://github.com/NitriKx)) <!-- 2024-10-04 13:49:48+00:00 -->
+- [[#2595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2595)] Allow manage existing SSM instance ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-09-27 10:13:30+00:00 -->
+- [[#2572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2572)] Added biglake-catalog module ([apichick](https://github.com/apichick)) <!-- 2024-09-24 15:39:29+00:00 -->
+- [[#2593](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2593)] Fix looker README and add custom url for looker instance module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-09-23 09:12:24+00:00 -->
+- [[#2590](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2590)] Fix permadiff on iap attribute in net-lb-app-int module ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-09-20 11:35:18+00:00 -->
+- [[#2565](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2565)] New looker core module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-09-20 10:12:09+00:00 -->
+- [[#2587](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2587)] Project Module CMEK: added CloudRun ([artemBogdantsev](https://github.com/artemBogdantsev)) <!-- 2024-09-20 08:30:06+00:00 -->
+- [[#2586](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2586)] Add location for each SSM IAM resource ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-09-20 07:30:46+00:00 -->
+- [[#2569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2569)] Secure source manager ([apichick](https://github.com/apichick)) <!-- 2024-09-19 10:29:01+00:00 -->
 - [[#2570](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2570)] Bigquery dataset routines ([apichick](https://github.com/apichick)) <!-- 2024-09-19 09:13:32+00:00 -->
 - [[#2583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2583)] **incompatible change:** Support secret-level expire time in secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 08:35:44+00:00 -->
 - [[#2559](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2559)] Fix e2e tests for cloud run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-10 10:04:40+00:00 -->

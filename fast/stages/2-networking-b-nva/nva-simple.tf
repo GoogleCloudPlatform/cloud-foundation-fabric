@@ -50,14 +50,14 @@ locals {
 
 # NVA config
 module "nva-simple-cloud-config" {
-  count                = var.enable_ncc_ra ? 0 : 1
+  count                = (var.network_mode == "simple") ? 1 : 0
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.simple_routing_config
 }
 
 module "nva-simple-template" {
-  for_each        = var.enable_ncc_ra ? {} : local.nva_locality
+  for_each        = (var.network_mode == "simple") ? local.nva_locality : {}
   source          = "../../../modules/compute-vm"
   project_id      = module.landing-project.project_id
   name            = "nva-simple-template-${each.key}"
@@ -101,10 +101,10 @@ module "nva-simple-template" {
 }
 
 module "nva-simple-mig" {
-  for_each          = var.enable_ncc_ra ? {} : local.nva_locality
+  for_each          = (var.network_mode == "simple") ? local.nva_locality : {}
   source            = "../../../modules/compute-mig"
   project_id        = module.landing-project.project_id
-  location          = each.value.region
+  location          = each.value.zone
   name              = "nva-cos-${each.key}"
   instance_template = module.nva-simple-template[each.key].template.self_link
   target_size       = 1
@@ -120,12 +120,12 @@ module "nva-simple-mig" {
 }
 
 module "ilb-nva-dmz" {
-  for_each = var.enable_ncc_ra ? {} : {
+  for_each = (var.network_mode == "simple") ? {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/dmz-default"
     }
-  }
+  } : {}
   source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
@@ -154,12 +154,12 @@ module "ilb-nva-dmz" {
 }
 
 module "ilb-nva-landing" {
-  for_each = var.enable_ncc_ra ? {} : {
+  for_each = (var.network_mode == "simple") ? {
     for k, v in var.regions : k => {
       region = v
       subnet = "${v}/landing-default"
     }
-  }
+  } : {}
   source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region

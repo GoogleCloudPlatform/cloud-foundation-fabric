@@ -17,72 +17,93 @@
 # tfdoc:file:description Temporary instances for testing
 
 locals {
-  test-vms = {
-    dev-spoke-primary = {
-      network    = module.dev-spoke-vpc.self_link
-      project_id = module.dev-spoke-project.project_id
-      region     = var.regions.primary
-      subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
-      tags       = [local.region_shortnames[var.regions.primary]]
-      zone       = "b"
-    }
-    dev-spoke-secondary = {
-      network    = module.dev-spoke-vpc.self_link
-      project_id = module.dev-spoke-project.project_id
-      region     = var.regions.secondary
-      subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default"]
-      tags       = [local.region_shortnames[var.regions.secondary]]
-      zone       = "b"
-    }
-    dmz-primary = {
-      network    = module.dmz-vpc.self_link
-      project_id = module.landing-project.project_id
-      region     = var.regions.primary
-      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/dmz-default"]
-      tags       = [local.region_shortnames[var.regions.primary]]
-      zone       = "b"
-    }
-    dmz-secondary = {
-      network    = module.dmz-vpc.self_link
-      project_id = module.landing-project.project_id
-      region     = var.regions.secondary
-      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/dmz-default"]
-      tags       = [local.region_shortnames[var.regions.secondary]]
-      zone       = "b"
-    }
-    landing-primary = {
-      network    = module.landing-vpc.self_link
-      project_id = module.landing-project.project_id
-      region     = var.regions.primary
-      subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
-      tags       = [local.region_shortnames[var.regions.primary]]
-      zone       = "b"
-    }
-    landing-secondary = {
-      network    = module.landing-vpc.self_link
-      project_id = module.landing-project.project_id
-      region     = var.regions.secondary
-      subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default"]
-      tags       = [local.region_shortnames[var.regions.secondary]]
-      zone       = "b"
-    }
-    prod-spoke-primary = {
-      network    = module.prod-spoke-vpc.self_link
-      project_id = module.prod-spoke-project.project_id
-      region     = var.regions.primary
-      subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
-      tags       = [local.region_shortnames[var.regions.primary]]
-      zone       = "b"
-    }
-    prod-spoke-secondary = {
-      network    = module.prod-spoke-vpc.self_link
-      project_id = module.prod-spoke-project.project_id
-      region     = var.regions.secondary
-      subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default"]
-      tags       = [local.region_shortnames[var.regions.secondary]]
-      zone       = "b"
-    }
-  }
+  test-vms = merge(
+    {
+      dev-spoke-primary = {
+        network    = module.dev-spoke-vpc.self_link
+        project_id = module.dev-spoke-project.project_id
+        region     = var.regions.primary
+        subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
+        tags       = [local.region_shortnames[var.regions.primary]]
+        zone       = "b"
+      }
+      dev-spoke-secondary = {
+        network    = module.dev-spoke-vpc.self_link
+        project_id = module.dev-spoke-project.project_id
+        region     = var.regions.secondary
+        subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default"]
+        tags       = [local.region_shortnames[var.regions.secondary]]
+        zone       = "b"
+      }
+      dmz-primary = {
+        network    = module.dmz-vpc.self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.primary
+        subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/dmz-default"]
+        tags       = [local.region_shortnames[var.regions.primary]]
+        zone       = "b"
+      }
+      dmz-secondary = {
+        network    = module.dmz-vpc.self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.secondary
+        subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/dmz-default"]
+        tags       = [local.region_shortnames[var.regions.secondary]]
+        zone       = "b"
+      }
+      landing-primary = {
+        network    = module.landing-vpc.self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.primary
+        subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
+        tags       = [local.region_shortnames[var.regions.primary]]
+        zone       = "b"
+      }
+      landing-secondary = {
+        network    = module.landing-vpc.self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.secondary
+        subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default"]
+        tags       = [local.region_shortnames[var.regions.secondary]]
+        zone       = "b"
+      }
+      prod-spoke-primary = {
+        network    = module.prod-spoke-vpc.self_link
+        project_id = module.prod-spoke-project.project_id
+        region     = var.regions.primary
+        subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
+        tags       = [local.region_shortnames[var.regions.primary]]
+        zone       = "b"
+      }
+      prod-spoke-secondary = {
+        network    = module.prod-spoke-vpc.self_link
+        project_id = module.prod-spoke-project.project_id
+        region     = var.regions.secondary
+        subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default"]
+        tags       = [local.region_shortnames[var.regions.secondary]]
+        zone       = "b"
+      }
+    },
+    (var.network_mode == "regional_vpc") ?
+    {
+      regional-vpc-primary = {
+        network    = module.regional-primary-vpc[0].self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.primary
+        subnetwork = module.regional-primary-vpc[0].subnet_self_links["${var.regions.primary}/regional-default"]
+        tags       = [local.region_shortnames[var.regions.primary]]
+        zone       = "b"
+      }
+      regional-vpc-secondary = {
+        network    = module.regional-secondary-vpc[0].self_link
+        project_id = module.landing-project.project_id
+        region     = var.regions.secondary
+        subnetwork = module.regional-secondary-vpc[0].subnet_self_links["${var.regions.secondary}/regional-default"]
+        tags       = [local.region_shortnames[var.regions.secondary]]
+        zone       = "b"
+      }
+    } : {}
+  )
 }
 
 module "test-vms" {

@@ -10,11 +10,12 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "dmz" or "untrusted" VPC centralizes the external connectivity towards untrusted network resources, such as Internet (inbound and outbound) or 3P service providers or parties connected through VPN or Interconnect.
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs -both in hub and spokes- split the management of the network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
+- if Regional VPC network mode is selected two additional regional trusted hub VPCs are deployed to provide connectivity to GCP services (eg. GCVE) that don't support multi-regional routing. 
 - the design facilitates DNS centralization
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
 
-The diagram shows the high-level designs of the two proposed flavors ("Simple NVA" and "NCC-RA") and it should be used as a reference throughout the following sections.
+The diagram shows the high-level designs of the three proposed network options ("Simple NVA", "NCC-RA" and "Regional VPC") and it should be used as a reference throughout the following sections.
 
 The final number of subnets, and their IP addressing will depend on the user-specific requirements. It can be easily changed via variables or external data files, without any need to edit the code.
 
@@ -27,21 +28,26 @@ The final number of subnets, and their IP addressing will depend on the user-spe
   <img src="diagram-ncc.svg" alt="NCC-RA diagram">
   </br>NCC-RA diagram
 </p>
-
+<hr/>
+<p align="center">
+  <img src="diagram-regional.svg" alt="GCVE diagram">
+  </br>Regional VPC diagram
+</p>
 ## Table of contents
 
 <!-- BEGIN TOC -->
-- [Table of contents](#table-of-contents)
 - [Design overview and choices](#design-overview-and-choices)
-  - [Multi-regional deployment](#multi-regional-deployment)
+  - [Deployment models](#deployment-models)
   - [VPC design](#vpc-design)
     - [Simple NVA](#simple-nva)
     - [NCC-RA](#ncc-ra)
+    - [Regional-VPC NVA](#regional-vpc-nva)
   - [External connectivity](#external-connectivity)
   - [Internal connectivity](#internal-connectivity)
   - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
     - [Simple NVA](#simple-nva)
     - [NCC-RA](#ncc-ra)
+    - [Regional-VPC NVA](#regional-vpc-nva)
   - [Internet egress](#internet-egress)
   - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
   - [DNS](#dns)
@@ -75,40 +81,39 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 ## Design overview and choices
 
-### Multi-regional deployment
+### Deployment models
+This stage support three different deployment models that can be controlled by `var.network_mode`. The stage deploys networking resources in two different regions and supports both regional and multi-regional VPCs. Depending on the selected deployment model different routing strategies and NVAs failover modes can be implemented. 
 
-This stage deploys networking resources in two different regions, deployed and configured in order to allow for a manual ("simple" mode) or automated ("ncc-ra") failover in case of failures.
-Two different architectural flavors are provided which, while similar, implement a completely different routing strategy:
-
-- **Simple NVA**, where the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
-- **NCC-RA**, where the network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
+- **Simple NVA**: This network mode deploys multi-regional VPCs, the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
+- **NCC-RA**: This network mode deploys multi-regional VPCs as the simple mode but provides a different routing strategy. The network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
   - avoid using network tags to route traffic
   - automatically send all traffic through the cross-regional NVAs if the ones in-region fail
   - avoid cross-regional traffic unless absolutely necessary for disaster recovery
-
-Switching between the two different models is controlled by `var.enable_ncc_ra`.
+- **Regional VPC**: This network mode is based on the Simple NVA model but deploys two additional regional VPCs to support use cases where multi-regional (tag based, policy based) routing cannot be used.
 
 ### VPC design
 
-The "landing zone" is divided into two VPC networks:
+The "landing zone" is divided into two main networks area:
 
-- the landing VPC: the connectivity hub towards other trusted networks
-- the DMZ VPC: the connectivity hub towards any other untrusted network
+- landing: a multi-regional VPC provides the connectivity hub towards other trusted networks. If the **regional network mode** is selected, two additional regional landing VPC provides connectivity to trusted services that don't support multi regional VPC routing (eg. GCVE).
+- DMZ: a multi-regional VPC provides the connectivity hub towards any other untrusted network
 
 By default, the design assumes the following:
 
-- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the landing VPC
+- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the multi-region landing VPC
 - the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) is deployed in the dmz landing VPC only
 - cross-environment traffic and traffic from any dmz network to any landing network (and vice versa) pass through the NVAs. For demo purposes, the current NVA performs simple routing/natting only
 - any traffic from a landing network to an dmz network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions
 
-The landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
+The landing network area acts as a hub: the multi-region landing VPC bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
 
 - one spoke VPC hosts the development environment resources
 - one spoke VPC hosts the production environment resources
 
 Each virtual network is a [shared VPC](https://cloud.google.com/vpc/docs/shared-vpc): shared VPCs are managed in dedicated *host projects* and shared with other *service projects* that consume the network resources.
 Shared VPC lets organization administrators delegate administrative responsibilities, such as creating and managing instances, to Service Project Admins while maintaining centralized control over network resources like subnets, routes, and firewalls.
+
+When the **regional network mode** is selected, the stage deploys two additional landing VPCs each one with a regional scope. If required the regional VPCs can be exteded as shared VPC and cosumed by other service (spoke) projects.   
 
 Users can easily extend the design to host additional environments, or adopt different logical mappings for the spokes (for example, in order to create a new spoke for each company entity). Adding spokes is trivial and it does not increase the design complexity. The steps to add more spokes are provided in the following sections.
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within the same organization, and with non-production spokes in a different organization.
@@ -133,6 +138,11 @@ Specifically, each NVA establishes two BGP sessions (for redundancy) with the th
 NVAs establish **extra BGP sessions with both cross-regional NVAs**. In this case, the NVAs advertise the regional trusted routes only. This allows cross-spoke (environment) traffic to remain also symmetric (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)). We set these routes to be exchanged at a lower cost than the one set for the other routes.
 
 Following the majority of real-life deployments, **we assume appliances to be stateful and not able to synchronize sessions between multiple NVAs within the same regional cluster**. For this reason, within each regional cluster, NVAs announce the same routes with different MED costs (1 point of difference between the primary and the secondary). This will cause traffic to go deterministically through one applaiance at the time within each region. You can change this default behavior modifying the cost settings in the [NVAs BGP configuration file](./data/bgp-config.tftpl).
+
+#### Regional-VPC NVA
+
+When the **regional network mode** is selected, the VPCs are connected with two sets of sample NVA machines, grouped in regional (multi-zone) [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances connects are multi-nic instances that connect the DMZ VPC with the landing VPCs and provides simple routing/natting functionalities. The appliances are suited for demo purposes only and they should be replaced with enterprise-grade solutions before moving to production.
+The traffic destined to the VMs in each MIG is mediated through regional internal load balancers, both in the landing and in the dmz networks.
 
 ### External connectivity
 
@@ -162,34 +172,36 @@ Minimizing the number of routes (and subnets) in the cloud environment is import
 
 This stage uses a dedicated /11 block (10.64.0.0/11), which should be sized to the own needs. The subnets created in each VPC derive from this range.
 
-The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
+The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *regional trusted landing europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*, *regional trusted landing europe-west4*.
 
 The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed. The last three /24 ranges can be used for [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access)via the `psa_ranges` variable, or for [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal) subnets via the factory.
 
 This is a summary of the subnets allocated by default in this setup:
 
-| name                | description                             | CIDR           |
-| ------------------- | --------------------------------------- | -------------- |
-| landing-default-ew1 | Trusted landing subnet - europe-west1   | 10.128.64.0/24 |
-| landing-default-ew4 | Trusted landing subnet - europe-west4   | 10.128.96.0/24 |
-| dmz-default-ew1     | Untrusted landing subnet - europe-west1 | 10.128.0.0/24  |
-| dmz-default-ew4     | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
-| dev-default-ew1     | Dev spoke subnet - europe-west1         | 10.68.0.0/24   |
-| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.253.0/24 |
-| dev-default-ew1     | Free (PSA) - europe-west1               | 10.68.254.0/24 |
-| dev-default-ew1     | Free (L7 ILB) - europe-west1            | 10.68.255.0/24 |
-| dev-default-ew4     | Dev spoke subnet - europe-west4         | 10.84.0.0/24   |
-| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.253.0/24 |
-| dev-default-ew4     | Free (PSA) - europe-west4               | 10.84.254.0/24 |
-| dev-default-ew4     | Free (L7 ILB) - europe-west4            | 10.84.255.0/24 |
-| prod-default-ew1    | Prod spoke subnet - europe-west1        | 10.72.0.0/24   |
-| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.253.0/24 |
-| prod-default-ew1    | Free (PSA) - europe-west1               | 10.72.254.0/24 |
-| prod-default-ew1    | Free (L7 ILB) - europe-west1            | 10.72.255.0/24 |
-| prod-default-ew4    | Prod spoke subnet - europe-west4        | 10.88.0.0/24   |
-| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.253.0/24 |
-| prod-default-ew4    | Free (PSA) - europe-west4               | 10.88.254.0/24 |
-| prod-default-ew4    | Free (L7 ILB) - europe-west4            | 10.88.255.0/24 |
+| name                         | description                                      | CIDR           |
+| ---------------------------- | ------------------------------------------------ | -------------- |
+| landing-default-ew1          | Trusted landing subnet - europe-west1            | 10.64.0.0/24   |
+| landing-default-ew4          | Trusted landing subnet - europe-west4            | 10.80.0.0/24   |
+| regional-landing-default-ew1 | Regional trusted landing subnet - europe-west1   | 10.65.0.0/24   |
+| regional-landing-default-ew4 | Regional trusted landing subnet - europe-west4   | 10.81.0.0/24   |
+| dmz-default-ew1              | Untrusted landing subnet - europe-west1          | 10.64.128.0/24 |
+| dmz-default-ew4              | Untrusted landing subnet - europe-west4          | 10.80.128.0/24 |
+| dev-default-ew1              | Dev spoke subnet - europe-west1                  | 10.68.0.0/24   |
+| dev-default-ew1              | Free (PSA) - europe-west1                        | 10.68.253.0/24 |
+| dev-default-ew1              | Free (PSA) - europe-west1                        | 10.68.254.0/24 |
+| dev-default-ew1              | Free (L7 ILB) - europe-west1                     | 10.68.255.0/24 |
+| dev-default-ew4              | Dev spoke subnet - europe-west4                  | 10.84.0.0/24   |
+| dev-default-ew4              | Free (PSA) - europe-west4                        | 10.84.253.0/24 |
+| dev-default-ew4              | Free (PSA) - europe-west4                        | 10.84.254.0/24 |
+| dev-default-ew4              | Free (L7 ILB) - europe-west4                     | 10.84.255.0/24 |
+| prod-default-ew1             | Prod spoke subnet - europe-west1                 | 10.72.0.0/24   |
+| prod-default-ew1             | Free (PSA) - europe-west1                        | 10.72.253.0/24 |
+| prod-default-ew1             | Free (PSA) - europe-west1                        | 10.72.254.0/24 |
+| prod-default-ew1             | Free (L7 ILB) - europe-west1                     | 10.72.255.0/24 |
+| prod-default-ew4             | Prod spoke subnet - europe-west4                 | 10.88.0.0/24   |
+| prod-default-ew4             | Free (PSA) - europe-west4                        | 10.88.253.0/24 |
+| prod-default-ew4             | Free (PSA) - europe-west4                        | 10.88.254.0/24 |
+| prod-default-ew4             | Free (L7 ILB) - europe-west4                     | 10.88.255.0/24 |
 
 These subnets can be advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
@@ -212,6 +224,13 @@ The Cloud Routers (connected to the VPN gateways in the landing VPC) are configu
 - the spokes and the trusted landing VPC exchange dynamic routes through VPC peerings
 - on-premises is connected to the trusted landing VPC and it dynamically exchanges BGP routes with GCP (with the landing) using HA VPN
 - the NVAs exchange dynamic routes using BGP with Cloud Routers in the DMZ, Cloud Routers in the landing and cross-regional NVAs. This allows VMs in different environments and different regions to communicate.
+
+#### Regional-VPC NVA
+
+- routes between multiple subnets within the same VPC are automatically exchanged by GCP
+- if configured, traffic between regional VPCs is managed by the NVAs though the DMZ VPC
+- services that need to be shared by regional VPC hosts can be deployed on the multi-region landing VPC. The NVAs route the traffic from the regional landing VPCs to multi-region VPC
+- on-premises is connected to the multi-region landing VPC and consumed by regional landing VPCs as shared service.
 
 ### Internet egress
 
@@ -502,8 +521,10 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [net-dev.tf](./net-dev.tf) | Dev spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
 | [net-landing.tf](./net-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [net-prod.tf](./net-prod.tf) | Production spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
+| [net-regional-vpc.tf](./net-regional-vpc.tf) | None | <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
 | [nva-bgp-ncc.tf](./nva-bgp-ncc.tf) | None |  | <code>google_network_connectivity_hub</code> |
 | [nva-bgp.tf](./nva-bgp.tf) | None |  | <code>google_compute_address</code> |
+| [nva-regional-vpc.tf](./nva-regional-vpc.tf) | None |  |  |
 | [nva-simple.tf](./nva-simple.tf) | None | <code>simple-nva</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
@@ -525,26 +546,26 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [create_test_instances](variables.tf#L42) | Enables the creation of test VMs in each VPC, useful to test and troubleshoot connectivity. | <code>bool</code> |  | <code>false</code> |  |
 | [dns](variables.tf#L48) | DNS configuration. | <code title="object&#40;&#123;&#10;  enable_logging &#61; optional&#40;bool, true&#41;&#10;  resolvers      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [enable_cloud_nat](variables.tf#L58) | Deploy Cloud NAT. | <code>bool</code> |  | <code>false</code> |  |
-| [enable_ncc_ra](variables.tf#L65) | Deploy NCC Router Appliance to create a BGP session between core VPCs and the appliances. | <code>bool</code> |  | <code>false</code> |  |
-| [essential_contacts](variables.tf#L72) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
-| [factories_config](variables.tf#L78) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [essential_contacts](variables.tf#L65) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
+| [factories_config](variables.tf#L71) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [fast_features](variables-fast.tf#L38) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  gcve &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-0-bootstrap</code> |
-| [gcp_ranges](variables.tf#L99) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary       &#61; &#34;10.68.0.0&#47;16&#34;&#10;  gcp_dev_secondary     &#61; &#34;10.84.0.0&#47;16&#34;&#10;  gcp_landing_primary   &#61; &#34;10.64.0.0&#47;17&#34;&#10;  gcp_landing_secondary &#61; &#34;10.80.0.0&#47;17&#34;&#10;  gcp_dmz_primary       &#61; &#34;10.64.128.0&#47;17&#34;&#10;  gcp_dmz_secondary     &#61; &#34;10.80.128.0&#47;17&#34;&#10;  gcp_prod_primary      &#61; &#34;10.72.0.0&#47;16&#34;&#10;  gcp_prod_secondary    &#61; &#34;10.88.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [outputs_location](variables.tf#L114) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [psa_ranges](variables.tf#L120) | IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  prod &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [regions](variables.tf#L140) | Region definitions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [gcp_ranges](variables.tf#L92) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary            &#61; &#34;10.68.0.0&#47;16&#34;&#10;  gcp_dev_secondary          &#61; &#34;10.84.0.0&#47;16&#34;&#10;  gcp_regional_vpc_primary   &#61; &#34;10.65.0.0&#47;17&#34;&#10;  gcp_regional_vpc_secondary &#61; &#34;10.81.0.0&#47;17&#34;&#10;  gcp_landing_primary        &#61; &#34;10.64.0.0&#47;17&#34;&#10;  gcp_landing_secondary      &#61; &#34;10.80.0.0&#47;17&#34;&#10;  gcp_dmz_primary            &#61; &#34;10.64.128.0&#47;17&#34;&#10;  gcp_dmz_secondary          &#61; &#34;10.80.128.0&#47;17&#34;&#10;  gcp_prod_primary           &#61; &#34;10.72.0.0&#47;16&#34;&#10;  gcp_prod_secondary         &#61; &#34;10.88.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [network_mode](variables.tf#L109) | Selection of the network design to deploy. | <code>string</code> |  | <code>&#34;simple&#34;</code> |  |
+| [outputs_location](variables.tf#L120) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [psa_ranges](variables.tf#L126) | IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  prod &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [regions](variables.tf#L146) | Region definitions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [service_accounts](variables-fast.tf#L78) | Automation service accounts in name => email format. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  gke-dev              &#61; string&#10;  gke-prod             &#61; string&#10;  project-factory      &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>1-resman</code> |
-| [vpn_onprem_primary_config](variables.tf#L152) | VPN gateway configuration for onprem interconnection in the primary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [vpn_onprem_secondary_config](variables.tf#L195) | VPN gateway configuration for onprem interconnection in the secondary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [vpn_onprem_primary_config](variables.tf#L158) | VPN gateway configuration for onprem interconnection in the primary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [vpn_onprem_secondary_config](variables.tf#L201) | VPN gateway configuration for onprem interconnection in the secondary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [host_project_ids](outputs.tf#L95) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L100) | Network project numbers. |  |  |
-| [ping_commands](outputs.tf#L105) | Ping commands for test instances to be run to check VPC reachability. |  |  |
-| [shared_vpc_self_links](outputs.tf#L110) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L115) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L121) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [host_project_ids](outputs.tf#L106) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L111) | Network project numbers. |  |  |
+| [ping_commands](outputs.tf#L116) | Ping commands for test instances to be run to check VPC reachability. |  |  |
+| [shared_vpc_self_links](outputs.tf#L121) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L126) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L132) | External IP Addresses for the GCP VPN gateways. |  |  |
 <!-- END TFDOC -->

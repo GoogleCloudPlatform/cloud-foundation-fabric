@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: regional-default
+region: secondary
+ip_cidr_range: 10.81.0.0/17
+description: Default secondary-region subnet for regional VPC
