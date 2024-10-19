@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-# Refer 
 variable "cas_configs" {
   description = "The CAS CAs to add to each environment."
   type = object({

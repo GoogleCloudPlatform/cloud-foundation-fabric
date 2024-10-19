@@ -27,6 +27,9 @@ Usage with GCS output files bucket:
 
 Usage with local output files folder:
   stage-links.sh FOLDER_PATH
+
+Point path/GCS URI to the tenant folder in tenant mode:
+  stage-links.sh FOLDER_PATH/TENANT_SHORTNAME
 END
   exit 0
 fi

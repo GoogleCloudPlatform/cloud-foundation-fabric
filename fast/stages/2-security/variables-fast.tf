@@ -64,20 +64,6 @@ variable "prefix" {
   }
 }
 
-variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    nsec                 = string
-    nsec-r               = string
-    project-factory      = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
-}
-
 variable "tag_values" {
   # tfdoc:variable:source 1-resman
   description = "Root-level tag values."

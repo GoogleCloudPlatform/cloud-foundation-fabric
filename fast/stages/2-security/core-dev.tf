@@ -15,26 +15,10 @@
  */
 
 locals {
-  # Extract NGFW locations from dev CAS
   ngfw_dev_locations = toset([
-    for k, v in var.cas_configs.dev
-    : v.location
+    for k, v in var.cas_configs.dev : v.location
     if contains(var.ngfw_tls_configs.keys.dev.cas, k)
   ])
-  ngfw_dev_sa_agent_cas_iam_bindings_additive = {
-    nsec_dev_agent_sa_binding = {
-      member = module.dev-sec-project.service_agents["networksecurity"].iam_email
-      role   = "roles/privateca.certificateManager"
-    }
-  }
-  dev_kms_restricted_admins = [
-    for sa in distinct(compact([
-      var.service_accounts.data-platform-dev,
-      var.service_accounts.project-factory,
-      var.service_accounts.project-factory-dev,
-      var.service_accounts.project-factory-prod
-    ])) : "serviceAccount:${sa}"
-  ]
 }
 
 module "dev-sec-project" {
@@ -45,17 +29,8 @@ module "dev-sec-project" {
   )
   prefix          = var.prefix
   billing_account = var.billing_account.id
-  iam = {
-    "roles/cloudkms.viewer" = local.dev_kms_restricted_admins
-  }
-  iam_bindings_additive = {
-    for member in local.dev_kms_restricted_admins :
-    "kms_restricted_admin.${member}" => merge(local.kms_restricted_admin_template, {
-      member = member
-    })
-  }
-  labels   = { environment = "dev", team = "security" }
-  services = local.project_services
+  labels          = { environment = "dev" }
+  services        = local.project_services
   tag_bindings = local.has_env_folders ? {} : {
     environment = local.env_tag_values["dev"]
   }
@@ -82,7 +57,15 @@ module "dev-cas" {
   iam_bindings   = each.value.iam_bindings
   iam_bindings_additive = (
     contains(var.ngfw_tls_configs.keys.dev.cas, each.key)
-    ? merge(local.ngfw_dev_sa_agent_cas_iam_bindings_additive, each.value.iam_bindings_additive)
+    ? merge(
+      {
+        nsec_agent = {
+          member = module.dev-sec-project.service_agents["networksecurity"].iam_email
+          role   = "roles/privateca.certificateManager"
+        }
+      },
+      each.value.iam_bindings_additive
+    )
     : each.value.iam_bindings_additive
   )
   iam_by_principals = each.value.iam_by_principals
