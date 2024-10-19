@@ -137,7 +137,6 @@ values:
     name: fast-dev-sec-core-0
     org_id: null
     project_id: fast-dev-sec-core-0
-    tags: null
     terraform_labels:
       environment: dev
       goog-terraform-provisioned: 'true'
@@ -339,7 +338,6 @@ values:
     name: fast-prod-sec-core-0
     org_id: null
     project_id: fast-prod-sec-core-0
-    tags: null
     terraform_labels:
       environment: prod
       goog-terraform-provisioned: 'true'
