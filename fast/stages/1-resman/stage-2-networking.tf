@@ -15,6 +15,7 @@
  */
 
 locals {
+  # IAM roles stage 3 service accounts can be assigned on networking
   net_s3_delegated = join(",", formatlist("'%s'", [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",
@@ -23,11 +24,8 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]))
-  net_use_env_folders = (
-    var.fast_stage_2.networking.enabled &&
-    var.fast_stage_2.networking.folder_config.create_env_folders
-  )
-  net_stage3_iam = !var.fast_stage_2.networking.enabled ? {} : {
+  # normalize IAM bindings for stage 3 service accounts
+  net_s3_iam = !var.fast_stage_2.networking.enabled ? {} : {
     for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
       v.sa == "rw"
       ? module.stage3-sa-rw[v.s3].iam_email
@@ -35,6 +33,10 @@ locals {
     )...
     if v.s2 == "networking"
   }
+  net_use_env_folders = (
+    var.fast_stage_2.networking.enabled &&
+    var.fast_stage_2.networking.folder_config.create_env_folders
+  )
 }
 
 # top-level folder
@@ -160,7 +162,7 @@ module "net-folder" {
     },
     # stage 3 roles
     {
-      for k, v in local.net_stage3_iam : k => {
+      for k, v in local.net_s3_iam : k => {
         role    = split(":", k)[0]
         members = v
         condition = {

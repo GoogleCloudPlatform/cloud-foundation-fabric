@@ -15,7 +15,9 @@
  */
 
 locals {
+  # intermediate normalization of repository configurations
   _cicd_configs = merge(
+    # stage 2s
     {
       for k, v in var.fast_stage_2 :
       k => merge(v.cicd_config, {
@@ -23,6 +25,7 @@ locals {
       })
       if v.cicd_config != null
     },
+    # stage 3s
     {
       for k, v in local.stage3 :
       k => merge(v.cicd_config, {
@@ -31,13 +34,14 @@ locals {
       if v.cicd_config != null
     }
   )
-  # filter by valid identity provider and type
+  # finalize configurations and filter by valid identity provider and type
   cicd_repositories = {
     for k, v in local._cicd_configs : k => v if(
       contains(keys(local.identity_providers), v.identity_provider) &&
       fileexists("${path.module}/templates/workflow-${v.repository.type}.yaml")
     )
   }
+  # lists of input files for each stage
   cicd_workflow_files = {
     stage_2 = [
       "0-bootstrap.auto.tfvars.json",

@@ -17,6 +17,7 @@
 # tfdoc:file:description Output files persistence to local filesystem.
 
 locals {
+  # output file definitions for enabled stage 2s
   _stage2_outputs_attrs = merge(
     var.fast_stage_2["networking"].enabled != true ? {} : {
       networking = {
@@ -55,6 +56,7 @@ locals {
       }
     }
   )
+  # CI/CD workflow definitions for enabled stages
   _cicd_workflow_attrs = merge(
     # stage 2s
     {
@@ -107,6 +109,7 @@ locals {
     )
   }
   outputs_location = try(pathexpand(var.outputs_location), "")
+  # render provider files from template
   providers = merge(
     # stage 2
     {

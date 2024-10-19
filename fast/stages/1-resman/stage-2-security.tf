@@ -19,7 +19,7 @@ locals {
     var.fast_stage_2.security.enabled &&
     var.fast_stage_2.security.folder_config.create_env_folders
   )
-  sec_stage3_iam = !var.fast_stage_2.security.enabled ? {} : {
+  sec_s3_iam = !var.fast_stage_2.security.enabled ? {} : {
     for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
       v.sa == "rw"
       ? module.stage3-sa-rw[v.s3].iam_email
@@ -82,7 +82,7 @@ module "sec-folder" {
     },
     # stage 3 IAM bindings use conditions based on environment
     {
-      for k, v in local.sec_stage3_iam : k => {
+      for k, v in local.sec_s3_iam : k => {
         role    = split(":", k)[0]
         members = v
         condition = {
@@ -120,7 +120,7 @@ module "sec-folder-prod" {
   name   = title(var.environment_names["prod"])
   iam = {
     # stage 3s service accounts
-    for role, attrs in local.sec_stage3_iam.prod : role => [
+    for role, attrs in local.sec_s3_iam.prod : role => [
       for v in attrs : (
         v.sa == "ro"
         ? module.stage3-sa-ro[v.s3].iam_email
@@ -143,7 +143,7 @@ module "sec-folder-dev" {
   name   = title(var.environment_names["dev"])
   iam = {
     # stage 3s service accounts
-    for role, attrs in local.sec_stage3_iam.dev : role => [
+    for role, attrs in local.sec_s3_iam.dev : role => [
       for v in attrs : (
         v.sa == "ro"
         ? module.stage3-sa-ro[v.s3].iam_email

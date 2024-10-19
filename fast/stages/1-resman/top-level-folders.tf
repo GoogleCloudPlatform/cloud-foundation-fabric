@@ -15,6 +15,7 @@
  */
 
 locals {
+  # read and decode factory files
   _top_level_path = try(
     pathexpand(var.factories_config.top_level_folders), null
   )
@@ -28,11 +29,14 @@ locals {
       "${coalesce(local._top_level_path, "-")}/${f}"
     ))
   }
+  # extract automation configurations for folders that define them
   top_level_automation = {
     for k, v in local.top_level_folders :
     k => v.automation if try(v.automation.enable, null) == true
   }
+  # merge top folders from factory and variable data
   top_level_folders = merge(
+    # normalize factory data attributes with defaults and nulls
     {
       for k, v in local._top_level_folders : k => merge(v, {
         name = try(v.name, k)

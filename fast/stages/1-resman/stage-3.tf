@@ -15,6 +15,7 @@
  */
 
 locals {
+  # read and decode factory files
   _stage3_path = try(
     pathexpand(var.factories_config.stage_3), null
   )
@@ -28,47 +29,55 @@ locals {
       "${coalesce(local._stage3_path, "-")}/${f}"
     ))
   }
-  stage3 = merge({
-    for k, v in local._stage3 : k => {
-      short_name  = v.short_name
-      environment = try(v.environment, "dev")
-      cicd_config = lookup(v, "cicd_config", null) == null ? null : {
-        identity_provider = v.cicd_config.identity_provider
-        repository = merge(v.cicd_config.repository, {
-          branch = try(v.cicd_config.repository.branch, null)
-          type   = try(v.cicd_config.repository.type, "github")
-        })
-      }
-      folder_config = lookup(v, "folder_config", null) == null ? null : {
-        name              = v.folder_config.name
-        iam_by_principals = try(v.folder_config.iam_by_principals, {})
-        parent_id         = try(v.folder_config.parent_id, null)
-        tag_bindings      = try(v.folder_config.tag_bindings, {})
-      }
-      organization_iam = lookup(v, "organization_iam", null) == null ? null : {
-        context_tag_value = v.organization_iam.context_tag_value
-        sa_roles          = merge({ ro = [], rw = [] }, v.organization_iam.sa_roles)
-      }
-      stage2_iam = {
-        networking = {
-          iam_admin_delegated = try(
-            v.stage2_iam.networking.iam_admin_delegated, false
-          )
+  # merge stage 3 from factory and variable data
+  stage3 = merge(
+    # normalize factory data attributes with defaults and nulls
+    {
+      for k, v in local._stage3 : k => {
+        short_name  = v.short_name
+        environment = try(v.environment, "dev")
+        cicd_config = lookup(v, "cicd_config", null) == null ? null : {
+          identity_provider = v.cicd_config.identity_provider
+          repository = merge(v.cicd_config.repository, {
+            branch = try(v.cicd_config.repository.branch, null)
+            type   = try(v.cicd_config.repository.type, "github")
+          })
+        }
+        folder_config = lookup(v, "folder_config", null) == null ? null : {
+          name              = v.folder_config.name
+          iam_by_principals = try(v.folder_config.iam_by_principals, {})
+          parent_id         = try(v.folder_config.parent_id, null)
+          tag_bindings      = try(v.folder_config.tag_bindings, {})
+        }
+        organization_iam = lookup(v, "organization_iam", null) == null ? null : {
+          context_tag_value = v.organization_iam.context_tag_value
           sa_roles = merge(
-            { ro = [], rw = [] }, try(v.stage2_iam.networking.sa_roles, {})
+            { ro = [], rw = [] }, v.organization_iam.sa_roles
           )
         }
-        security = {
-          iam_admin_delegated = try(
-            v.stage2_iam.security.iam_admin_delegated, false
-          )
-          sa_roles = merge(
-            { ro = [], rw = [] }, try(v.stage2_iam.security.sa_roles, {})
-          )
+        stage2_iam = {
+          networking = {
+            iam_admin_delegated = try(
+              v.stage2_iam.networking.iam_admin_delegated, false
+            )
+            sa_roles = merge(
+              { ro = [], rw = [] }, try(v.stage2_iam.networking.sa_roles, {})
+            )
+          }
+          security = {
+            iam_admin_delegated = try(
+              v.stage2_iam.security.iam_admin_delegated, false
+            )
+            sa_roles = merge(
+              { ro = [], rw = [] }, try(v.stage2_iam.security.sa_roles, {})
+            )
+          }
         }
       }
-    }
-  }, var.fast_stage_3)
+    },
+    var.fast_stage_3
+  )
+  # extract and normalize organization IAM for stage 3s
   stage3_sa_roles_in_org = flatten([
     for k, v in local.stage3 : [
       for sa, roles in try(v.organization_iam.sa_roles, []) : [
@@ -82,6 +91,7 @@ locals {
       ]
     ]
   ])
+  # extract and normalize stage 2 IAM for stage 2s
   stage3_iam_in_stage2 = flatten([
     for k, v in local.stage3 : [
       for s2, attrs in v.stage2_iam : [

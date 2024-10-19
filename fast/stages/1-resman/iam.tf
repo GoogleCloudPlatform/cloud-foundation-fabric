@@ -17,6 +17,7 @@
 # tfdoc:file:description Organization or root node-level IAM bindings.
 
 locals {
+  # aggregated map of organization IAM additive bindings for stages
   iam_bindings_additive = merge(
     # stage 2 networking
     !var.fast_stage_2.networking.enabled ? {} : {

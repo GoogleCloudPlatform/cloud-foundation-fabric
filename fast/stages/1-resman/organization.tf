@@ -17,11 +17,14 @@
 # tfdoc:file:description Organization policies.
 
 locals {
+  # context tag values for enabled stage 2s (merged in the final map below)
   _context_tag_values_stage2 = {
     for k, v in var.fast_stage_2 :
     k => replace(k, "_", "-") if v.enabled
   }
+  # merge all context tag values into a single map
   context_tag_values = merge(
+    # user-defined
     try(local.tags["context"]["values"], {}),
     # top-level folders
     {
@@ -37,7 +40,9 @@ locals {
         description = try(local.tags.context.values.description[v], null)
       }
     },
+    # stage 3 define no context as they attach to a top-level folder
   )
+  # environment tag values and their IAM bindings for stage 2 service accounts
   environment_tag_values = {
     for k, v in var.environment_names : v => {
       iam = merge(
@@ -64,7 +69,7 @@ locals {
       )
     }
   }
-  # service accounts expansion for user-specified tag values
+  # service account expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
@@ -88,7 +93,7 @@ module "organization" {
   source          = "../../../modules/organization"
   count           = var.root_node == null ? 1 : 0
   organization_id = "organizations/${var.organization.id}"
-  # additive bindings via delegated IAM grant set in stage 0
+  # additive bindings leveraging the delegated IAM grant set in stage 0
   iam_bindings_additive = local.iam_bindings_additive
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
