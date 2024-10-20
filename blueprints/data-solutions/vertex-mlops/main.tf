@@ -141,10 +141,10 @@ module "vpc-local" {
   name       = "vertex"
   subnets = [
     {
-      "name" : "subnet-${var.region}",
-      "region" : "${var.region}",
-      "ip_cidr_range" : "10.4.0.0/24",
-      "secondary_ip_range" : null
+      name                  = "subnet-${var.region}",
+      region                = var.region,
+      ip_cidr_range         = "10.4.0.0/24"
+      enable_private_access = true
     }
   ]
   psa_configs = [{
@@ -264,6 +264,7 @@ module "project" {
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudbuild.googleapis.com",
+    "containerfilesystem.googleapis.com",
     "compute.googleapis.com",
     "datacatalog.googleapis.com",
     "dataflow.googleapis.com",
