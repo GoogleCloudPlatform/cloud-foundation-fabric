@@ -45,6 +45,12 @@ variable "groups" {
   nullable = false
 }
 
+variable "identity_pool_assertions" {
+  description = "Assertions to be used by Workload Identityf Federation on tokens, for example: assertion.repository_owner=='ORGANIZATION'."
+  type        = string
+  default     = null
+}
+
 variable "identity_pool_claims" {
   description = "Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created."
   type        = string
