@@ -1,12 +1,12 @@
 # Resource hierarchy
 
-This stage manages the upper part of the resource management hierarchy, and decouples later stages (networking, etc.) from the organization by managing their prerequisite resources.
+This stage manages the upper part of the resource management hierarchy, and decouples later stages (networking, etc.) from the organization via folders, IaC resources and IAM bindings.
 
 The complete hierarchy is not managed here, as considerations on departments, teams, and applications are too granular and best managed via the [project factory](../2-project-factory/), which this stage enables.
 
 As many other parts of FAST, this stage implements several factories that allow simplified management and operations of recurring sets of resources.
 
-The following diagram is a high level reference of the resources created and managed here:
+The following diagram is a high level reference of the resources created and managed here, and gives an initial representation of its three main configuration elements: top-level folders, FAST stage 2s and stage 3s.
 
 <p align="center">
   <img src="diagram.png" alt="Resource-management diagram">
@@ -38,25 +38,38 @@ The following diagram is a high level reference of the resources created and man
 
 ## Design overview and choices
 
-This stage implements the basics of a design that we've seen working well for a variety of customers, where the hierarchy is laid out following two conceptually different approaches:
+This stage is designed to offer a good amount of flexibility in designing the organizational hierarchy, while still providing a default approach that we've seen working well for a variety of customers where the hierarchy is logically split in two different areas:
 
-- core or shared resources (e.g. Networking) are grouped in top-level folders which map to their type or purpose, simplifying centralized management by dedicated operations teams
-- team or application resources are grouped under one or more top-level "teams" folders, and typically host managed services (storage, etc.) where individual teams have access
+- core or shared resources (e.g. Networking) are grouped in dedicated top-level folders, which allow centralized management by dedicated teams
+- team or application resources are grouped under one or more top-level "teams" folders, and typically host managed services (storage, etc.) which centralize access and billing for each individual team or application
 
 This split approach usually allow concise mapping of functional and operational patterns to IAM roles and GCP-specific constructs:
 
 - core services are clearly separated, with very few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
 - new sets of core services (e.g. shared GKE clusters) are added as a unit, minimizing operational complexity
-- team and application resources outside of centralized management are grouped together, providing a unified view and easy budgeting
-- automation for core resources can be segregated via separate service accounts and buckets for each stage, minimizing impact perimeter
+- team and application resources outside of centralized management are grouped together, providing a unified view and easy budgeting/cost-allocation
+- automation for core resources can be segregated via separate service accounts and buckets for each stage, minimizing blast radius
 
 Resource names follow the FAST convention discussed in the [Bootstrap stage documentation](../0-bootstrap/README.md#naming).
 
-### Resource management primitives
+## Resource management primitives
 
-This stage is not designed to allow free-form hierarchy design, as in our experience that is seldom conducive to a functionally and operationally optimal GCP organization. What this stage exposes instead is a set of primitives that you can use with in their predefined configuration, or configure to suit your needs while still keeping with our general approach to resource management.
+This stage allows a certain degree of free-form hierarchy design, contstraining it via a set of primitives that implement specific FAST functionality.
 
-## Stage 2
+### Top-level folders
+
+Top-level folders, as indicated by their name, are folders directly attached to the organization that can be freely defined via Terraform variables or factory YAML files. They represent a node in the organization, which can be used to partition the hierarchy via IAM or tag bindings, and to implement separate automation stages via their optional IaC resources.
+
+Top-level folders support the full interface of the [folder module](../../../modules/folder/), and can fit in the FAST design in different ways:
+
+- as supporting folders for the project factory, by granting high level permissions to its service accounts via IAM and tag bindings (see the ["Teams" example in the data folder](./data/top-level-folders/teams.yaml))
+- as hierarchy and IAM grouping nodes for environment-specific stage 3 folder (see the ["GCVE" example in the data folder](./data/top-level-folders/gcve.yaml))
+- as standalone folders to support custom usage, with or without associated IaC resources (see the ["Sandbox" exanple in the data folder](./data/top-level-folders/sandbox.yaml))
+- as grouping nodes for all stage 2, for example via a "Shared Services" top-level folder configured set as the `folder_config.parent_id` attribute for networking and security stages
+
+Top-level folders support context-based expansion for service accounts and organization-level tags, which can be referenced by name (e.g. `project-factory` to refer to the project factory service accounts). This allows writing portable organization-independent YAML that can be shared across different FAST installations.
+
+### Stage 2
 
 FAST stage 2s implement core infrastructure or services which are shared across the organization, and are directly supported here via a fixed set that includes the networking stage, the security stage, and the org-wide hierarchy and project factory.
 
@@ -65,8 +78,6 @@ All of these stages are optional, they are enabled by default but can easily be 
 Configuration of these stages is via the `fast_stage2` variable, which is set by default for maximum compatibility with previous FAST versions.
 
 ## Stage 3
-
-## Top-level folders
 
 ## Project factory
 
