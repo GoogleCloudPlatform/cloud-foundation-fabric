@@ -14,11 +14,13 @@ The following diagram is a high level reference of the resources created and man
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [Resource management primitives](#resource-management-primitives)
-- [Stage 2](#stage-2)
-- [Stage 3](#stage-3)
-- [Top-level folders](#top-level-folders)
-- [Project factory](#project-factory)
+- [Resource management primitives](#resource-management-primitives)
+  - [Top-level folders](#top-level-folders)
+  - [Stage 2](#stage-2)
+  - [Stage 3](#stage-3)
+  - [Project (and hierarchy) factory](#project-and-hierarchy-factory)
+- [Other design considerations](#other-design-considerations)
+  - [Secure tags](#secure-tags)
   - [Multitenancy](#multitenancy)
   - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
 - [How to run this stage](#how-to-run-this-stage)
@@ -26,11 +28,6 @@ The following diagram is a high level reference of the resources created and man
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
-- [Customizations](#customizations)
-  - [Toggling features](#toggling-features)
-  - [Top-level folder management](#top-level-folder-management)
-  - [Secure tags](#secure-tags)
-  - [IAM](#iam)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -38,23 +35,25 @@ The following diagram is a high level reference of the resources created and man
 
 ## Design overview and choices
 
-This stage is designed to offer a good amount of flexibility in designing the organizational hierarchy, while still providing a default approach that we've seen working well for a variety of customers where the hierarchy is logically split in two different areas:
+This stage is designed to offer a good amount of flexibility in laying out the organizational hierarchy, while still providing a default approach that we've seen working across different types of users and organizations.
 
-- core or shared resources (e.g. Networking) are grouped in dedicated top-level folders, which allow centralized management by dedicated teams
-- team or application resources are grouped under one or more top-level "teams" folders, and typically host managed services (storage, etc.) which centralize access and billing for each individual team or application
+The default design provided here splits the hierarchy in two different logical areas:
 
-This split approach usually allow concise mapping of functional and operational patterns to IAM roles and GCP-specific constructs:
+- core or shared resources (e.g. networking) which are grouped in dedicated top-level folders that implement centralized management by dedicated teams
+- team or application resources which are grouped under one or more top-level "teams" folders, and typically host managed services (storage, etc.) billed and controlled by their distributed teams
 
-- core services are clearly separated, with very few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
-- new sets of core services (e.g. shared GKE clusters) are added as a unit, minimizing operational complexity
-- team and application resources outside of centralized management are grouped together, providing a unified view and easy budgeting/cost-allocation
-- automation for core resources can be segregated via separate service accounts and buckets for each stage, minimizing blast radius
+This split approach allows concise mapping of functional and operational patterns to IAM roles and GCP-specific constructs:
+
+- core services are clearly separated, providing few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
+- new sets of core services (fleets of VMs, shared GKE clusters, etc.) are added as a unit, minimizing operational complexity
+- team and application resources not subject to centralized management are grouped together, providing a unified view and easy budgeting/cost-allocation
+- automation for core resources is segregated via separate service accounts and buckets for each area (shared service, application) effectively minimizing blast radius
 
 Resource names follow the FAST convention discussed in the [Bootstrap stage documentation](../0-bootstrap/README.md#naming).
 
 ## Resource management primitives
 
-This stage allows a certain degree of free-form hierarchy design, contstraining it via a set of primitives that implement specific FAST functionality.
+This stage allows a certain degree of free-form hierarchy design on top of instead of the default layout, by providing a set of high level primitives that implement specific FAST functionality: top-level folders, centralized stage 2, environment-level stage 3 for shared services, and the project factory.
 
 ### Top-level folders
 
@@ -63,29 +62,91 @@ Top-level folders, as indicated by their name, are folders directly attached to 
 Top-level folders support the full interface of the [folder module](../../../modules/folder/), and can fit in the FAST design in different ways:
 
 - as supporting folders for the project factory, by granting high level permissions to its service accounts via IAM and tag bindings (see the ["Teams" example in the data folder](./data/top-level-folders/teams.yaml))
-- as hierarchy and IAM grouping nodes for environment-specific stage 3 folder (see the ["GCVE" example in the data folder](./data/top-level-folders/gcve.yaml))
 - as standalone folders to support custom usage, with or without associated IaC resources (see the ["Sandbox" exanple in the data folder](./data/top-level-folders/sandbox.yaml))
-- as grouping nodes for all stage 2, for example via a "Shared Services" top-level folder configured set as the `folder_config.parent_id` attribute for networking and security stages
+- as grouping nodes for the environment-specific stage 3 folders (see the ["GCVE" example in the data folder](./data/top-level-folders/gcve.yaml))
+- as a grouping node for stage 2s, for example via a "Shared Services" top-level folder set as the `folder_config.parent_id` attribute for networking and security stages
 
 Top-level folders support context-based expansion for service accounts and organization-level tags, which can be referenced by name (e.g. `project-factory` to refer to the project factory service accounts). This allows writing portable organization-independent YAML that can be shared across different FAST installations.
 
 ### Stage 2
 
-FAST stage 2s implement core infrastructure or services which are shared across the organization, and are directly supported here via a fixed set that includes the networking stage, the security stage, and the org-wide hierarchy and project factory.
+FAST stage 2s implement core infrastructure services shared across the organization. In the FAST design networking, security, network security and the project factory are defined as stage 2.
 
-All of these stages are optional, they are enabled by default but can easily be turned off -- and then turned on when needed -- to avoid having supporting resources (service accounts, buckets, IAM) created.
+FAST stage 2s are typically managed by dedicated teams, they implement environment separation internally due to the complexity of their designs, and provide resources and specific IAM permissions to other shared services implemented as stage 3s (e.g. Shared VPC networks, IAM delegated grants on host projects/subnets or KMS keys).
 
-Configuration of these stages is via the `fast_stage2` variable, which is set by default for maximum compatibility with previous FAST versions.
+The default configuration enables all stage 2s except network security. Each stage can be customized via a set of variable-level attributes:
 
-## Stage 3
+- `short_name` defines the name used for the stage IaC buckets and service accounts
+- `cicd_config` turns on CI/CD configuration and generates the workflow file for the stage
+- `folder_config` controls whether environment-level folders are created under the stage main folder (e.g. `Networking/Development`), allows defining additional IAM bindings on the main folder, or changing its name and parent
 
-## Project factory
+Folder configuration is only available for networking and security stages, as the project factory and network security stages are "folderless", using top-level folders or organization-level resources.
 
-Top-level folders for teams or departments can be easily created via the `top_level_folders` variable or the associated factory, which expose the full power of the underlying [folder module](../../../modules/folder/).
+Each stage creates its own tag value in the `context` key, which is used by FAST for conditional roles at the organization level (`context/networking`, `context/project-factory` etc.). The tag value is assigned to the stage's folder, and can be applied to other folders to enable specific functionality, as described further down for the project factory.
 
-The suggestion is to use this feature sparingly so as to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../2-project-factory/) stage.
+Think of stage 2s as "named stages" which have specific ties and privileges on the organization. Due to their complexity and the potential need for custom changes, they are implemented in code via dedicated terraform resources each in a stage file (e.g. `stage2-networking.tf`).
 
-Top-level folders also support defining associated resources for automation, and auto-created provider files to bootstrap Infrastructure and Code. An example is provided below.
+### Stage 3
+
+FAST stage 3s are designed to host shared infrastructure that leverages core services from stage 2 (networking, encryption keys, etc.), has limited access to the organization, and is partitioned (or "cloned") by environment.
+
+As shared services they are still managed by dedicated teams, but principals and permissions might differ between environments. Most stage 3s leverage folders (environment-level project factories are the exception), where the stage root folder is created via top-level folders configuration, and the lower level environment folders are part of the stage.
+
+Configuration can be done either via Terraform variables or factory YAML files. The second option is used by default, providing a set of factory files for top-level folders and stage 3s that mirror the legacy FAST hierarchy implemented via code.
+
+Stage 3 configuration is similar to the stage 2 one described above except for a few differences. Each stage defined in the `fast_stage_3` map:
+
+- can define an arbitrary name in the map key, which is used for the stage's output files and internal context-based substitutions
+- needs to define an environment which is present in the bootstrap `environment_names` definition
+- can define organization-level IAM bindings that are conditional to the stage tag value, or an arbitrary one defined in configuration
+- can define stage 2-level tag bindings that are effective only on the stage 2 resources matching the same environment
+
+> TODO: examples from data, make sure the add IAM for GCVE etc. there
+
+### Project (and hierarchy) factory
+
+Despite being itself a stage 2 (and potentially one or more environment-specific stage 3), the project factory is an important primitive to shape the lower level resource hierarchy which implements folder and project management.
+
+By default FAST offers a single organization-wide project factory with the following characteristics:
+
+- any top-level folder with the suitable set of roles can be managed as a sub-hierarchy tree by the project factory (see the ["Teams" definition](./data/top-level-folders/teams.yaml) in the data folder)
+- organization policy management on its folders and projects by the project factory only requires binding the `context/project-factory` tag value
+- networking-related project configuration is available by default, the project factory can grant a limited set of roles on network resources, and attach service projects to VPC host projects
+- security-related project configuration is available by default, the project factory can grant the KMS encrypt/decrypt role on centralized KMS key in the security stage
+
+If environment-specific project factories are desirable, they can be configured as stage 3 as the examples in the stage3 data folder show.
+
+## Other design considerations
+
+### Secure tags
+
+This stage manages [Secure Tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) at the organization level, via two sets of keys and values:
+
+- a default set of tags used by FAST itself in specific IAM conditions that allow automation service accounts to gain organization-level privileges or specific access to parts of the resource management hierarchy
+- an optional set of user-defined tags that can be used in organization policy or IAM conditions
+
+The first set of default tags cannot be overridden and defines the following keys and values (key names can be changed via the `tag_names` variable):
+
+- `context` to identify parts of the resource hierarchy, with `data`, `gke`, `networking`, `sandbox`, `security` and `teams` values
+- `environment` to identify folders and projects belonging to specific environments, with `development` and `production` values
+
+The second set is optional and allows defining a custom tag hierarchy, including IAM bindings that can refer to specific identities, or to the internally defined automation service accounts via their names, like in the following example:
+
+```tfvars
+tags = {
+  my-custom-tag = {
+    values = {
+      eggs = {}
+      spam = {
+        description = "Example tag value."
+        iam = {
+          "roles/resourcemanager.tagUser" = ["sandbox"]
+        }
+      }
+    }
+  }
+}
+```
 
 ### Multitenancy
 
@@ -143,8 +204,6 @@ Variables in this stage -- like most other FAST stages -- are broadly divided in
 - variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
 - and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
 
-The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
-
 Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
 
 ```tfvars
@@ -159,95 +218,6 @@ Once provider and variable values are in place and the correct user is configure
 terraform init
 terraform apply
 ```
-
-## Customizations
-
-### Toggling features
-
-Some FAST features used here and by the following stages can be enabled or disabled using the `fast_features` variables.
-
-The `fast_features` variable consists of 5 toggles:
-
-- **`data_platform`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-data-platform](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-data-platform) stage
-- **`gcve`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gcve](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gcve) stage
-- **`gke`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gke-multitenant](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gke-multitenant) stage
-- **`project_factory`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [2-project-factory](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/2-project-factory) stage
-- **`sandbox`** controls the creation of a "Sandbox" top level folder with relaxed policies, intended for sandbox environments where users can experiment
-- **`teams`** controls the creation of the top level "Teams" folder used by the [teams feature in resman](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/1-resman#team-folders).
-
-### Top-level folder management
-
-The `top_level_folders` variable and associated factory allow simple definition of additional top-level folders, and associated configurations.
-
-The following is an example that creates two folders via tfvars, and also configures the factory to define additional folders via YAML. Folders defined via the variable or factory files support the same interface of the [folder module](../../../modules/folder/).
-
-```tfvars
-factories_config = {
-  top_level_folders = "~/fast-config/data/1-resman/folders"
-}
-top_level_folders = {
-  test-1 = {
-    name = "Test 1"
-    iam = {
-      "roles/viewer" = [
-        "group:test-1-viewers@example.org"
-      ]
-    }
-  }
-  test-2 = {
-    # disable creation of the automation SA and bucket
-    automation = {
-      enable = false
-    }
-    name = "Test 2"
-  }
-}
-```
-
-```yaml
-# ~/fast-config/data/1-resman/folders/test-4.yaml
-name: Test 4
-automation: null
-iam:
-  roles/browser:
-    - domain:example.org
-```
-
-### Secure tags
-
-This stage manages [Secure Tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) at the organization level, via two sets of keys and values:
-
-- a default set of tags used by FAST itself in specific IAM conditions that allow automation service accounts to gain organization-level privileges or specific access to parts of the resource management hierarchy
-- an optional set of user-defined tags that can be used in organization policy or IAM conditions
-
-The first set of default tags cannot be overridden and defines the following keys and values (key names can be changed via the `tag_names` variable):
-
-- `context` to identify parts of the resource hierarchy, with `data`, `gke`, `networking`, `sandbox`, `security` and `teams` values
-- `environment` to identify folders and projects belonging to specific environments, with `development` and `production` values
-
-The second set is optional and allows defining a custom tag hierarchy, including IAM bindings that can refer to specific identities, or to the internally defined automation service accounts via their names, like in the following example:
-
-```tfvars
-tags = {
-  my-custom-tag = {
-    values = {
-      eggs = {}
-      spam = {
-        description = "Example tag value."
-        iam = {
-          "roles/resourcemanager.tagUser" = ["sandbox"]
-        }
-      }
-    }
-  }
-}
-```
-
-### IAM
-
-The `folder_iam` variable can be used to manage authoritative bindings for all top-level folders. For additional control, IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies through the IAM-related variables (`iam`, `iam_bindings`, `iam_bindings_additive`) of the relevant modules.
-
-A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
