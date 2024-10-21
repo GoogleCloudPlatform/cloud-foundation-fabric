@@ -37,6 +37,15 @@ variable "billing_account" {
   }
 }
 
+variable "environment_names" {
+  # tfdoc:variable:source 1-resman
+  description = "Long environment names."
+  type = object({
+    dev  = string
+    prod = string
+  })
+}
+
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -52,18 +61,8 @@ variable "folder_ids" {
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
     networking      = string
-    networking-dev  = string
-    networking-prod = string
-  })
-}
-
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
+    networking-dev  = optional(string)
+    networking-prod = optional(string)
   })
 }
 
@@ -92,3 +91,9 @@ variable "service_accounts" {
   default = null
 }
 
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Root-level tag values."
+  type        = map(string)
+  default     = {}
+}

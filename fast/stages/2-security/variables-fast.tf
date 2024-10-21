@@ -35,21 +35,22 @@ variable "billing_account" {
   }
 }
 
+variable "environment_names" {
+  # tfdoc:variable:source 1-resman
+  description = "Long environment names."
+  type = object({
+    dev  = string
+    prod = string
+  })
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
   type = object({
-    security = string
-  })
-}
-
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
+    security      = string
+    security-dev  = optional(string)
+    security-prod = optional(string)
   })
 }
 
@@ -63,16 +64,9 @@ variable "prefix" {
   }
 }
 
-variable "service_accounts" {
+variable "tag_values" {
   # tfdoc:variable:source 1-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    nsec                 = string
-    nsec-r               = string
-    project-factory      = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
+  description = "Root-level tag values."
+  type        = map(string)
+  default     = {}
 }
