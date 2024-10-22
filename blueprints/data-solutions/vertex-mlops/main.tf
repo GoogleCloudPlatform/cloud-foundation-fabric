@@ -143,7 +143,7 @@ module "vpc-local" {
     {
       name                  = "subnet-${var.region}",
       region                = var.region,
-      ip_cidr_range         = "10.4.0.0/24"
+      ip_cidr_range         = "10.5.0.0/24"
       enable_private_access = true
     }
   ]
