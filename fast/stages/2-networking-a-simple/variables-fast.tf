@@ -75,21 +75,6 @@ variable "prefix" {
   }
 }
 
-variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts in name => email format."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    gke-dev              = string
-    gke-prod             = string
-    project-factory      = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
-  default = null
-}
-
 variable "stage_config" {
   # tfdoc:variable:source 1-resman
   description = "FAST stage configuration."
