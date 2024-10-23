@@ -54,12 +54,10 @@ locals {
     [for d in var.org_policies_config.constraints.allowed_essential_contact_domains : "@${d}"]
   )
   org_policies_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
-
-  # intermediate values before we merge in what comes from the checklist
-  _iam_principals = {
+  iam_principals = {
     for k, v in local.iam_principal_bindings : k => v.authoritative
   }
-  _iam = merge(
+  iam = merge(
     {
       for r in local.iam_delete_roles : r => []
     },
@@ -67,36 +65,16 @@ locals {
       for b in local._iam_bindings_auth : b.role => b.member...
     }
   )
-  _iam_bindings_additive = {
+  iam_bindings_additive = {
     for b in local._iam_bindings_add : "${b.role}-${b.member}" => {
       member = b.member
       role   = b.role
     }
   }
-  # final values combining all sources
-  iam_principals = {
-    for k, v in local._iam_principals : k => distinct(concat(
-      v,
-      try(local.checklist.iam_principals[k], [])
-    ))
-  }
-  iam = {
-    for k, v in local._iam : k => distinct(concat(
-      v,
-      try(local.checklist.iam[k].authoritative, [])
-    ))
-  }
-  iam_bindings_additive = merge(
-    local._iam_bindings_additive,
-    {
-      for k, v in try(local.checklist.iam_bindings, {}) :
-      v.key => v if lookup(local._iam_bindings_additive, v.key, null) == null
-    }
-  )
-  # compute authoritative and additive roles for use by add-ons (checklist, etc.)
+  # compute authoritative and additive roles for use by add-ons
   iam_roles_authoritative = distinct(concat(
-    flatten(values(local._iam_principals)),
-    keys(local._iam)
+    flatten(values(local.iam_principals)),
+    keys(local.iam)
   ))
 }
 

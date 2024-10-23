@@ -200,15 +200,6 @@ output "service_accounts" {
   }
 }
 
-# output "test" {
-#   value = {
-#     checklist               = local.checklist
-#     iam_roles_authoritative = local.iam_roles_authoritative
-#     iam_roles_additive      = local.iam_roles_additive
-#     test                    = local.checklist
-#   }
-# }
-
 # ready to use variable values for subsequent stages
 output "tfvars" {
   description = "Terraform variable files for the following stages."
