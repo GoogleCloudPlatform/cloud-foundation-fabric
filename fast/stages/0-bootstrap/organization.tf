@@ -71,11 +71,6 @@ locals {
       role   = b.role
     }
   }
-  # compute authoritative and additive roles for use by add-ons
-  iam_roles_authoritative = distinct(concat(
-    flatten(values(local.iam_principals)),
-    keys(local.iam)
-  ))
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files

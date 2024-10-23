@@ -42,10 +42,6 @@ locals {
     values(module.dev-spoke-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
   ))
-  service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) :
-    k => "serviceAccount:${v}" if v != null
-  }
 }
 
 module "folder" {
