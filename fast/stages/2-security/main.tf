@@ -20,6 +20,15 @@ locals {
     k => var.tag_values["environment/${v}"]
   }
   has_env_folders = var.folder_ids.security-dev != null
+  iam_delegated = join(",", formatlist("'%s'", [
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  ]))
+  iam_delegated_principals = try(
+    var.stage_config["security"].iam_delegated_principals, {}
+  )
+  iam_viewer_principals = try(
+    var.stage_config["security"].iam_viewer_principals, {}
+  )
   # list of locations with keys
   kms_locations = distinct(flatten([
     for k, v in var.kms_keys : v.locations

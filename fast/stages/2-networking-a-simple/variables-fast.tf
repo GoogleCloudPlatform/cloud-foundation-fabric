@@ -37,6 +37,15 @@ variable "billing_account" {
   }
 }
 
+variable "custom_roles" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type = object({
+    project_iam_viewer = string
+  })
+  default = null
+}
+
 variable "environment_names" {
   # tfdoc:variable:source 1-resman
   description = "Long environment names."
@@ -44,16 +53,6 @@ variable "environment_names" {
     dev  = string
     prod = string
   })
-}
-
-variable "fast_features" {
-  # tfdoc:variable:source 0-0-bootstrap
-  description = "Selective control for top-level FAST features."
-  type = object({
-    gcve = optional(bool, false)
-  })
-  default  = {}
-  nullable = false
 }
 
 variable "folder_ids" {
@@ -89,6 +88,20 @@ variable "service_accounts" {
     project-factory-prod = string
   })
   default = null
+}
+
+variable "stage_config" {
+  # tfdoc:variable:source 1-resman
+  description = "FAST stage configuration."
+  type = object({
+    networking = optional(object({
+      short_name               = optional(string)
+      iam_delegated_principals = optional(map(list(string)), {})
+      iam_viewer_principals    = optional(map(list(string)), {})
+    }), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "tag_values" {

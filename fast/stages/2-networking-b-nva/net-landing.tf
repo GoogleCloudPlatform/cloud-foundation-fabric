@@ -25,24 +25,15 @@ module "landing-project" {
     var.folder_ids.networking
   )
   prefix = var.prefix
-  services = concat([
+  services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
+    "networkconnectivity.googleapis.com",
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com",
-    ],
-    (
-      var.network_mode == "ncc_ra"
-      ? ["networkconnectivity.googleapis.com"]
-      : []
-    ),
-    (
-      var.fast_features.gcve
-      ? ["vmwareengine.googleapis.com"]
-      : []
-    )
-  )
+    "vmwareengine.googleapis.com"
+  ]
   shared_vpc_host_config = {
     enabled = true
   }

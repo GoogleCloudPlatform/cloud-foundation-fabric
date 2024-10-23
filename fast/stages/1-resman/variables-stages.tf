@@ -150,6 +150,14 @@ variable "fast_stage_3" {
   }
   validation {
     condition = alltrue([
+      for k, v in var.fast_stage_3 : v.implements_stage == null || contains(
+        ["gcve", "gke", "data-platform"], coalesce(v.implements_stage, "-")
+      )
+    ])
+    error_message = "Only existing stage 3s can be implemented, or no stage (null)."
+  }
+  validation {
+    condition = alltrue([
       for k, v in var.fast_stage_3 :
       v.cicd_config == null || contains(
         ["github", "gitlab"],

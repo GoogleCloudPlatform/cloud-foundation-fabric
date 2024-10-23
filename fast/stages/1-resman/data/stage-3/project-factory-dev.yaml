@@ -15,3 +15,9 @@
 # yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
 short_name: pf
+environment: dev
+stage2_iam:
+  networking:
+    iam_admin_delegated: true
+  security:
+    iam_admin_delegated: true

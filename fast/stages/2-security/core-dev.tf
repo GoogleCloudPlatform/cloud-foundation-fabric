@@ -34,6 +34,26 @@ module "dev-sec-project" {
   tag_bindings = local.has_env_folders ? {} : {
     environment = local.env_tag_values["dev"]
   }
+  # optionally delegate a fixed set of IAM roles to selected principals
+  iam = {
+    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
+  }
+  iam_bindings = (
+    lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_delegated_principals["dev"], [])
+        condition = {
+          title       = "dev_stage3_sa_delegated_grants"
+          description = "${var.environment_names["dev"]} project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
+      }
+    }
+  )
 }
 
 module "dev-sec-kms" {

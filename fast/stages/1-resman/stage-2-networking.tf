@@ -15,15 +15,6 @@
  */
 
 locals {
-  # IAM roles stage 3 service accounts can be assigned on networking
-  net_s3_delegated = join(",", formatlist("'%s'", [
-    "roles/composer.sharedVpcAgent",
-    "roles/compute.networkUser",
-    "roles/compute.networkViewer",
-    "roles/container.hostServiceAgentUser",
-    "roles/multiclusterservicediscovery.serviceAgent",
-    "roles/vpcaccess.user",
-  ]))
   # normalize IAM bindings for stage 3 service accounts
   net_s3_iam = !var.fast_stage_2.networking.enabled ? {} : {
     for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
@@ -126,44 +117,10 @@ module "net-folder" {
         }
       }
     },
-    # stage 3 dev delegated iam admin
-    {
-      stage3_delegated_grant_dev = {
-        role = "roles/resourcemanager.projectIamAdmin"
-        members = [
-          for k, v in local.stage3 : module.stage3-sa-rw[k].iam_email
-          if v.environment == "dev" && v.stage2_iam.networking.iam_admin_delegated
-        ]
-        condition = {
-          expression = format(
-            local.iam_stage2_condition,
-            "development",
-            local.net_s3_delegated
-          )
-          title = "stage 3 project delegated admin dev"
-        }
-      }
-    },
-    # stage 3 prod delegated iam admin
-    {
-      stage3_delegated_grant_prod = {
-        role = "roles/resourcemanager.projectIamAdmin"
-        members = [
-          for k, v in local.stage3 : module.stage3-sa-rw[k].iam_email
-          if v.environment == "prod" && v.stage2_iam.networking.iam_admin_delegated
-        ]
-        condition = {
-          expression = format(
-            local.iam_stage2_condition, "production", local.net_s3_delegated
-          )
-          title = "stage 3 project delegated admin prod"
-        }
-      }
-    },
     # stage 3 roles
     {
       for k, v in local.net_s3_iam : k => {
-        role    = split(":", k)[0]
+        role    = lookup(var.custom_roles, split(":", k)[0], split(":", k)[0])
         members = v
         condition = {
           title      = "stage 3 ${split(":", k)[1]}"

@@ -58,6 +58,7 @@ variable "custom_roles" {
     service_project_network_admin   = string
     storage_viewer                  = string
     gcve_network_admin              = optional(string)
+    gcve_network_viewer             = optional(string)
     network_firewall_policies_admin = optional(string)
     ngfw_enterprise_admin           = optional(string)
     ngfw_enterprise_viewer          = optional(string)

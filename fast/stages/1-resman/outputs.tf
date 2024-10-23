@@ -38,11 +38,39 @@ locals {
   )
   tfvars = {
     environment_names = var.environment_names
-    folder_ids        = local.folder_ids
-    service_accounts  = local.service_accounts
-    tag_keys          = { for k, v in try(local.tag_keys, {}) : k => v.id }
-    tag_names         = var.tag_names
-    tag_values        = { for k, v in try(local.tag_values, {}) : k => v.id }
+    stage_config = merge(
+      {
+        for k, v in local.stage3 : k => {
+          environment = v.environment
+          short_name  = v.short_name
+        }
+      },
+      {
+        for k, v in var.fast_stage_2 : k => {
+          short_name = v.short_name
+          # rw service accounts for stage 3s that need delegated IAM on stage 2s
+          iam_delegated_principals = {
+            for ek, ev in var.environment_names : ek => [
+              for sk, sv in local.stage3 :
+              "serviceAccount:${local.stage_service_accounts[sk]}"
+              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
+            ]
+          }
+          iam_viewer_principals = {
+            for ek, ev in var.environment_names : ek => [
+              for sk, sv in local.stage3 :
+              "serviceAccount:${local.stage_service_accounts["${sk}-r"]}"
+              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
+            ]
+          }
+        } if v.enabled == true
+      }
+    )
+    folder_ids       = local.folder_ids
+    service_accounts = local.service_accounts
+    tag_keys         = { for k, v in try(local.tag_keys, {}) : k => v.id }
+    tag_names        = var.tag_names
+    tag_values       = { for k, v in try(local.tag_values, {}) : k => v.id }
   }
 }
 

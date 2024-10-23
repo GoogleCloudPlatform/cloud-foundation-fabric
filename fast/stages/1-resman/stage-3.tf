@@ -34,8 +34,9 @@ locals {
     # normalize factory data attributes with defaults and nulls
     {
       for k, v in local._stage3 : k => {
-        short_name  = v.short_name
-        environment = try(v.environment, "dev")
+        short_name       = v.short_name
+        environment      = try(v.environment, "dev")
+        implements_stage = try(v.implements_stage, null)
         cicd_config = lookup(v, "cicd_config", null) == null ? null : {
           identity_provider = v.cicd_config.identity_provider
           repository = merge(v.cicd_config.repository, {

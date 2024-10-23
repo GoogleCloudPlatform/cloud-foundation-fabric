@@ -4,7 +4,8 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "short_name"
+    "short_name",
+    "environment"
   ],
   "properties": {
     "short_name": {

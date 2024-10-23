@@ -16,3 +16,8 @@
 
 short_name: pf
 environment: prod
+stage2_iam:
+  networking:
+    iam_admin_delegated: true
+  security:
+    iam_admin_delegated: true

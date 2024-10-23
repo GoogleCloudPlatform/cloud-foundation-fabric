@@ -24,15 +24,6 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  iam_stage2_condition = <<-END
-    resource.matchTag(
-      '${local.tag_root}/${var.tag_names.environment}', '%s'
-    )
-    &&
-    api.getAttribute(
-      'iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]
-    )
-  END
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
