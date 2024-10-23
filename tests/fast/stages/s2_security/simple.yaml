@@ -430,10 +430,11 @@ counts:
   google_kms_crypto_key_iam_binding: 8
   google_kms_key_ring: 8
   google_project: 2
+  google_project_iam_binding: 4
   google_project_iam_member: 6
   google_project_service: 14
   google_project_service_identity: 12
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
   modules: 11
-  resources: 62
+  resources: 66

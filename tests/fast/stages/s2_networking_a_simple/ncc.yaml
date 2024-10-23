@@ -35,12 +35,12 @@ counts:
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 2
   google_project: 3
-  google_project_iam_binding: 4
-  google_project_iam_member: 18
-  google_project_service: 24
-  google_project_service_identity: 18
+  google_project_iam_binding: 2
+  google_project_iam_member: 20
+  google_project_service: 26
+  google_project_service_identity: 20
   google_storage_bucket_object: 2
   google_tags_tag_binding: 3
   google_vpc_access_connector: 2
   modules: 24
-  resources: 175
+  resources: 179
