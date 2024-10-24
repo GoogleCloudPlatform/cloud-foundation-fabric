@@ -249,7 +249,24 @@ variable "volumes" {
     }))
     cloud_sql_instances = optional(list(string))
     empty_dir_size      = optional(string)
+    gcs = optional(object({
+      # needs revision.gen2_execution_environment
+      bucket       = string
+      is_read_only = optional(bool)
+    }))
+    nfs = optional(object({
+      server       = string
+      path         = optional(string)
+      is_read_only = optional(bool)
+    }))
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.volumes :
+      sum([for kk, vv in v : vv == null ? 0 : 1]) == 1
+    ])
+    error_message = "Only one type of volume can be defined at a time."
+  }
 }
