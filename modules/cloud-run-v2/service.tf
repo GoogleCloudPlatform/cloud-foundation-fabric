@@ -205,6 +205,21 @@ resource "google_cloud_run_v2_service" "service" {
             size_limit = volumes.value.empty_dir_size
           }
         }
+        dynamic "gcs" {
+          for_each = volumes.value.gcs == null ? [] : [""]
+          content {
+            bucket    = volumes.value.bucket
+            read_only = volumes.value.is_read_only
+          }
+        }
+        dynamic "nfs" {
+          for_each = volumes.value.nfs == null ? [] : [""]
+          content {
+            server    = volumes.value.server
+            path      = volumes.value.path
+            read_only = volumes.value.is_read_only
+          }
+        }
       }
     }
   }
