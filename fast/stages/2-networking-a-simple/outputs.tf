@@ -26,9 +26,9 @@ locals {
     prod-spoke-0 = module.prod-spoke-project.number
   }
   subnet_self_links = {
-    prod-landing = module.landing-vpc.subnet_self_links
-    dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
-    prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
+    prod-landing = module.landing-vpc.subnet_ids
+    dev-spoke-0  = module.dev-spoke-vpc.subnet_ids
+    prod-spoke-0 = module.prod-spoke-vpc.subnet_ids
   }
   subnet_proxy_only_self_links = {
     prod-landing = {
@@ -61,9 +61,9 @@ locals {
     vpc_self_links               = local.vpc_self_links
   }
   vpc_self_links = {
-    prod-landing = module.landing-vpc.self_link
-    dev-spoke-0  = module.dev-spoke-vpc.self_link
-    prod-spoke-0 = module.prod-spoke-vpc.self_link
+    prod-landing = module.landing-vpc.id
+    dev-spoke-0  = module.dev-spoke-vpc.id
+    prod-spoke-0 = module.prod-spoke-vpc.id
   }
 }
 

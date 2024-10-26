@@ -1,81 +1,107 @@
-# GCVE Private Cloud Minimal
+# Minimal GCVE Private Cloud
 
-This blueprint presents an opinionated architecture to handle different Google VMware Engine deployment scenarios: from a simple single region private cloud to multi-region private clouds spread across different locations. The general idea behind this blueprint is to deploy a single project hosting one or more GCVE private clouds connected to a shared VMware Engine Network (VEN).
-Optionally this blueprint can deploy the VMWare Engine Network peerings to pre-existing VPCs.
+This stage implements an opinionated architecture to handle different Google VMware Engine deployment scenarios: from a simple single region Private Cloud to multi-region Private Clouds spread across different locations.
 
-Multiple deployments of this blueprint allow the user to achieve more complex design solutions as for example GCVE private clouds deployed on different projects or connected to independent VMWare Engine Networks.
+The general approach used here is to deploy a single project hosting one or more GCVE Private Clouds, connected to a shared VMware Engine Network (VEN). Peerings to existing VPC networks can also be configured.
 
-This blueprint is used as part of the [FAST GCVE stage](../../../fast/stages/3-gcve/) but it can also be used independently if desired.
+Multiple deployments of this stage allow implementig more complex designs, for example using multiple projects for different Private Clouds, or connections to independent VMWare Engine Networks.
+
+Like any other FAST stage, this can be used as a standalone deployment provided the [minimum prerequisites](#running-in-isolation) are met. This is the base diagram of the resources deployed via this stage.
 
 <p align="center">
-  <img src="diagram.png" alt="GCVE single region private cloud">
+  <img src="diagram.png" alt="GCVE single region Private Cloud">
 </p>
 
-The blueprint manages:
-- project creation
-- project-level organization policy definitions
-- billing setup (billing account attachment)
-- API/services enablement
-- IAM role assignment for groups
-- VMware Engine private clouds creation
-- [VMware Engine Network](https://cloud.google.com/vmware-engine/docs/networking/vmware-engine-network#standard_networks) creation
-- VPC attachment (Optional)
+## Table of contents
 
-### User groups
+<!-- BEGIN TOC -->
 
-Based on our GCP best practices, a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups bound to the main GCVE [predefined roles](https://cloud.google.com/vmware-engine/docs/iam#vmware-engine-roles):
-- *VMware Engine Administrators*. They have full access to the VMWare Engine Service.
-- *VMware Engine Viewers*. They have read-only access to the VMware Engine Service.
+## Design overview and choices
 
+This stage implements GCP best practices for using GCVE in a simple (but easily extensible) scenario. Refer to the [GCVE documentation](https://cloud.google.com/vmware-engine/docs/overview) for an in depth overview.
 
-### Network
+## How to run this stage
 
-This blueprint expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [Networking with separated single environment](../../../fast/stages/2-networking-c-separate-envs)) or from an external source.
-The blueprint can optionally configure the [VMware Engine Network peering](https://cloud.google.com/vmware-engine/docs/networking/peer-vpc-network) on the peer VPC by granting the following permissions on the project that hosts the VPC:
-- vmwareengine.networkPeerings.create
-- vmwareengine.networkPeerings.get
-- vmwareengine.networkPeerings.list
-- vmwareengine.operations.get
-The permissions can be assigned through the predefined role *vmwareengine.vmwareengineAdmin*. The creation of a dedicated custom role is strongly recommended anyway to comply with the least privilege principle.
+This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management and networking.
 
-## Basic usage
+Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
 
-The following example shows how to deploy a CGVE private cloud and connect it to a VPC
+### Provider and Terraform variables
 
-```hcl
-module "gcve-pc" {
-  source             = "./fabric/blueprints/gcve/pc-minimal"
-  billing_account_id = "000000-000000-000000"
-  folder_id          = "folders/000000000000"
-  project_id         = "myprojectid"
-  groups = {
-    gcp-gcve-admins  = "group:gcp-gcve-admins@acme.com"
-    gcp-gcve-viewers = "group:gcp-gcve-viewers@acme.com"
-  }
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-  prefix = "myprefix"
+The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
-  network_peerings = {
-    dev-spoke-ven = {
-      peer_network    = "projects/spokeproject/regions/europe-west1/subnetworks/dev-default-ew1"
-      peer_project_id = "peerprojectid"
-    }
-  }
+```bash
+../../../stage-links.sh ~/fast-config
 
-  private_cloud_configs = {
-    dev-pc = {
-      cidr = "172.26.16.0/22"
-      zone = "europe-west1-a"
-      management_cluster_config = {
-        name         = "mgmt-cluster"
-        node_count   = 1
-        node_type_id = "standard-72"
-      }
-    }
-  }
-}
-# tftest modules=3 resources=9
+# copy and paste the following commands for '3-gcve'
+
+ln -s ~/fast-config/providers/3-gcve-dev-providers.tf ./
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 ```
+
+```bash
+../../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '3-gcve'
+
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-gcve-dev-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+```
+
+### Impersonating the automation service account
+
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+
+### Variable configuration
+
+Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
+
+- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `*.auto.tfvars.json` files linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+
+The full list can be found in the [Variables](#variables) table at the bottom of this document.
+
+### Running the stage
+
+Once provider and variable values are in place and the correct user is configured, the stage can be run:
+
+```bash
+terraform init
+terraform apply
+```
+
+### Running in isolation
+
+This stage can be run in isolation by providing the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`0-bootstrap`](../../0-bootstrap), [`1-resman`](../../1-resman), [`2-networking`](../../2-networking-a-simple).
+
+When running in isolation, the following roles are needed on the principal used to apply Terraform:
+
+- on the organization or network folder level
+  - `roles/xpnAdmin` or a custom role which includes the following permissions
+    - `"compute.organizations.enableXpnResource"`,
+    - `"compute.organizations.disableXpnResource"`,
+    - `"compute.subnetworks.setIamPolicy"`,
+- on each folder where projects are created
+  - `"roles/logging.admin"`
+  - `"roles/owner"`
+  - `"roles/resourcemanager.folderAdmin"`
+  - `"roles/resourcemanager.projectCreator"`
+- on the host project for the Shared VPC
+  - `"roles/browser"`
+  - `"roles/compute.viewer"`
+- on the organization or billing account
+  - `roles/billing.admin`
+
+The VPC host project, VPC and subnets should already exist.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
@@ -83,7 +109,7 @@ module "gcve-pc" {
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [gcve-pc.tf](./gcve-pc.tf) | GCVE private cloud. | <code>gcve-private-cloud</code> | <code>google_vmwareengine_network_peering</code> |
+| [gcve-pc.tf](./gcve-pc.tf) | GCVE Private Cloud. | <code>gcve-private-cloud</code> | <code>google_vmwareengine_network_peering</code> |
 | [main.tf](./main.tf) | Project. | <code>project</code> |  |
 | [output.tf](./output.tf) | Output variables. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
@@ -96,8 +122,8 @@ module "gcve-pc" {
 | [folder_id](variables.tf#L22) | Folder used for the GCVE project in folders/nnnnnnnnnnn format. | <code>string</code> | ✓ |  |
 | [groups](variables.tf#L27) | GCVE groups. | <code title="object&#40;&#123;&#10;  gcp-gcve-admins  &#61; string&#10;  gcp-gcve-viewers &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [prefix](variables.tf#L81) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [private_cloud_configs](variables.tf#L90) | The VMware private cloud configurations. The key is the unique private cloud name suffix. | <code title="map&#40;object&#40;&#123;&#10;  cidr &#61; string&#10;  zone &#61; string&#10;  additional_cluster_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  management_cluster_config &#61; optional&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    name              &#61; optional&#40;string, &#34;mgmt-cluster&#34;&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L112) | ID of the project that will contain the GCVE private cloud. | <code>string</code> | ✓ |  |
+| [private_cloud_configs](variables.tf#L90) | The VMware Private Cloud configurations. The key is the unique Private Cloud name suffix. | <code title="map&#40;object&#40;&#123;&#10;  cidr &#61; string&#10;  zone &#61; string&#10;  additional_cluster_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  management_cluster_config &#61; optional&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    name              &#61; optional&#40;string, &#34;mgmt-cluster&#34;&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L112) | ID of the project that will contain the GCVE Private Cloud. | <code>string</code> | ✓ |  |
 | [iam](variables.tf#L36) | Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables.tf#L43) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L50) | Project-level labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
