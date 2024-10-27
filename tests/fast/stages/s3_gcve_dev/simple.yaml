@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gcve/prod
-
-tests:
-  simple:
+counts:
+  google_project: 1
+  google_project_iam_member: 3
+  google_project_service: 4
+  google_project_service_identity: 2
+  google_vmwareengine_network: 1
+  google_vmwareengine_network_peering: 2
+  google_vmwareengine_private_cloud: 1
+  modules: 2
+  resources: 14
