@@ -76,28 +76,46 @@ Before running this stage, you need to make sure you have the correct credential
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-security'
+# File linking commands for security stage
 
-ln -s ~/fast-config/providers/2-security-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/2-security-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/2-security.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/fast-test-00/2-nsec.auto.tfvars.json ./
 ```
 
 ```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-security'
+# File linking commands for security stage
 
+# provider file
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-security-providers.tf ./
+
+# input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-security.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-nsec.auto.tfvars.json ./
 ```
 
 ### Impersonating the automation service account

@@ -56,7 +56,11 @@ set -a && source .fast-stage.env && set +a
 echo -e "# File linking commands for $FAST_STAGE_DESCRIPTION stage\n"
 
 echo "# provider file"
-echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}-providers.tf ./"
+if [[ ! -z ${FAST_STAGE_PROVIDERS+x} ]]; then
+  echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_PROVIDERS}-providers.tf ./"
+else
+  echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}-providers.tf ./"
+fi
 
 if [[ ! -z ${FAST_STAGE_DEPS+x} ]]; then
   echo -e "\n# input files from other stages"

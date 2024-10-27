@@ -399,22 +399,30 @@ Once the initial `apply` completes successfully, configure a remote backend usin
 - the GCS bucket where output files are always stored
 - Terraform outputs (not recommended as it's more complex)
 
-The following two snippets show how to leverage the `stage-links.sh` script in the root FAST folder to fetch the commands required for output files linking or copying, using either the local output folder configured via Terraform variables, or the GCS bucket which can be derived from the `automation` output.
+The following two snippets show how to leverage the `fast-links.sh` script in the FAST stages folder to fetch the commands required for output files linking or copying, using either the local output folder configured via Terraform variables, or the GCS bucket which can be derived from the `automation` output.
 
 ```bash
-../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '0-bootstrap'
+# File linking commands for organization bootstrap stage
 
-ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/0-bootstrap-providers.tf ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/0-bootstrap.auto.tfvars ./
 ```
 
 ```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '0-bootstrap'
+# File linking commands for organization bootstrap stage
 
+# provider file
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/0-bootstrap-providers.tf ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/0-bootstrap.auto.tfvars ./
 ```
 
 Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`. If your organization was created with "Secure by Default Org Policy", that is with some of the org policies enabled, add `-var 'org_policies_config={"import_defaults": true}'` to `terraform apply`:
