@@ -274,6 +274,6 @@ terraform apply
 |---|---|:---:|---|
 | [cicd_repositories](outputs.tf#L77) | WIF configuration for CI/CD repositories. |  |  |
 | [folder_ids](outputs.tf#L89) | Folder ids. |  |  |
-| [providers](outputs.tf#L95) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
-| [tfvars](outputs.tf#L103) | Terraform variable files for the following stages. | ✓ |  |
+| [providers](outputs.tf#L95) | Terraform provider files for this stage and dependent stages. | ✓ |  |
+| [tfvars](outputs.tf#L102) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

@@ -93,7 +93,6 @@ output "folder_ids" {
 
 # ready to use provider configurations for subsequent stages
 output "providers" {
-  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform 03-network-security
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers

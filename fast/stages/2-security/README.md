@@ -58,7 +58,7 @@ The stage lets you also create Certificate Manager trust configs. With trust con
 
 ### NGFW Enterprise and TLS inspection support
 
-We deploy NGFW Enterprise in the [network-security stage](../3-network-security/README.md). If you require TLS inspection, NGFW needs to interact with CAS and -optionally- Certificate Manager trust-configs. These components bind to firewall endpoint associations (created in the [network-security stage](../3-network-security/README.md)) with zonal TLS inspection policies.
+We deploy NGFW Enterprise in the [network security stage](../2-network-security/README.md). If you require TLS inspection, NGFW needs to interact with CAS and -optionally- Certificate Manager trust-configs. These components bind to firewall endpoint associations (created in the network security stage) with zonal TLS inspection policies.
 Using this module, you can define CAS configurations and trust-configs for NGFW Enterprise. You can create them using the `cas_configs` and `trust_configs` variables. Anyway, these will need to use specific keys (defined in `ngfw_tls_configs.keys`), so that FAST knows which configurations to use for NGFW Enterprise.
 You can then enable TLS inspection and customize its behavior for NGFW Enterprise, using the `ngfw_tls_configs.tls_inspection` variable. FAST will create the TLS inspection policies for you in the regions where you defined your CAs for NGFW Enterprise.
 When you create your CAs and trust-configs for NGFW Enterprise, make sure their region matches the zones where you will define your firewall endpoints.
