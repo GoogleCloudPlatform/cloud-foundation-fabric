@@ -50,4 +50,4 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 - [Networking Security](./3-network-security/) Manages NGFW Enterprise deployment for the production and development environments.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
-- [Google Cloud VMware Engine](3-gcve/)
+- [Google Cloud VMware Engine](3-gcve-dev/)
