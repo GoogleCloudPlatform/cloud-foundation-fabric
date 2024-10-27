@@ -4,16 +4,16 @@ Each of the folders contained here is a separate "stage", or Terraform root modu
 
 Each stage can be run in isolation (for example to only bring up a hub and spoke VPC in an existing environment), but when combined together they form a modular setup that allows top-down configuration of a whole GCP organization.
 
-When combined together, each stage is designed to leverage the previous stage's resources and to provide outputs to the following stages via predefined contracts, that regulate what is exchanged.
+When deploying as part of a whole organization setup, each stage provides information on its resources to the following stages via predefined contracts, and each stage can pick and choose what to leverage from the preceding ones.
 
-This has two important consequences
+This has two important consequences:
 
-- any stage can be swapped out and replaced by different code as long as it respects the contract by providing a predefined set of outputs and optionally accepting a predefined set of variables
+- any stage can be swapped out and replaced by different code as long as it respects the contract, by providing a predefined set of outputs and optionally accepting a predefined set of variables
 - data flow between stages can be partially automated (see [stage 0 documentation on output files](./0-bootstrap/README.md#output-files-and-cross-stage-variables)), reducing the effort and pain required to compile variables by hand
 
-One important assumption is that the flow of data is always forward looking, so no stage needs to depend on outputs generated further down the chain. This greatly simplifies both the logic and the implementation, and allows stages to be effectively independent.
+One important assumption is that the flow of data is always forward looking (or sideways for optional components), so no stage needs to depend on outputs generated further down the chain. This greatly simplifies both the logic and the implementation, and allows stages to be effectively independent.
 
-To achieve this, we rely on specific GCP functionality like [delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) that allow controlled delegation of responsibilities, for example to allow managing IAM bindings at the organization level in different stages only for specific roles.
+To achieve this, we rely on specific GCP functionality like [delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) to allow controlled delegation of responsibilities, and [conditional access via tags](https://cloud.google.com/iam/docs/tags-access-control) to constrain scope for organization-level roles or when specific resources are managed lower in the chain than IAM bindings.
 
 Refer to each stage's documentation for a detailed description of its purpose, the architectural choices made in its design, and how it can be configured and wired together to terraform a whole GCP organization. The following is a brief overview of each stage.
 
@@ -44,10 +44,10 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
   Exports: host project ids and numbers, vpc self links
 - [Project Factory](./2-project-factory/)  
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
+- [Network Security](./2-network-security/) Optional stage that integrates with security and networking stages to manage a centralized [NGFW Enterprise](https://cloud.google.com/firewall/docs/about-firewalls) deployment.
 
 ## Environment-level resources (3)
 
-- [Networking Security](./3-network-security/) Manages NGFW Enterprise deployment for the production and development environments.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
 - [Google Cloud VMware Engine](3-gcve-dev/)
