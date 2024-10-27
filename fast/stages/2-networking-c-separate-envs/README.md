@@ -343,7 +343,7 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 | [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [billing_account](variables-fast.tf#L27) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [environment_names](variables-fast.tf#L49) | Long environment names. | <code title="object&#40;&#123;&#10;  dev  &#61; string&#10;  prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [folder_ids](variables-fast.tf#L58) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; optional&#40;string&#41;&#10;  networking-prod &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [folder_ids](variables-fast.tf#L58) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; optional&#40;string&#41;&#10;  networking-prod &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
 | [prefix](variables-fast.tf#L68) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [alert_config](variables.tf#L17) | Configuration for monitoring alerts. | <code title="object&#40;&#123;&#10;  vpn_tunnel_established &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_tunnel_bandwidth &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    threshold_mbys        &#61; optional&#40;string, &#34;187.5&#34;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  vpn_tunnel_established &#61; &#123;&#125;&#10;  vpn_tunnel_bandwidth   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L40) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  project_iam_viewer &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
@@ -363,11 +363,11 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [dev_cloud_dns_inbound_policy](outputs.tf#L77) | IP Addresses for Cloud DNS inbound policy for the dev environment. |  |  |
-| [host_project_ids](outputs.tf#L82) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L87) | Network project numbers. |  |  |
-| [prod_cloud_dns_inbound_policy](outputs.tf#L92) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
-| [shared_vpc_self_links](outputs.tf#L97) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L102) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L108) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [dev_cloud_dns_inbound_policy](outputs.tf#L79) | IP Addresses for Cloud DNS inbound policy for the dev environment. |  |  |
+| [host_project_ids](outputs.tf#L84) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L89) | Network project numbers. |  |  |
+| [prod_cloud_dns_inbound_policy](outputs.tf#L94) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
+| [shared_vpc_self_links](outputs.tf#L99) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L104) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L110) | External IP Addresses for the GCP VPN gateways. |  |  |
 <!-- END TFDOC -->
