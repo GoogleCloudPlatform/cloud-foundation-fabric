@@ -76,7 +76,7 @@ locals {
         stage_name = k
         tf_providers_files = {
           apply = "2-${replace(k, "_", "-")}-providers.tf"
-          plan  = "2-${replace(k, "_", "-")}-providers-r.tf"
+          plan  = "2-${replace(k, "_", "-")}-r-providers.tf"
         }
         tf_var_files = local.cicd_workflow_files.stage_2
       } if lookup(local.cicd_repositories, k, null) != null
@@ -99,7 +99,7 @@ locals {
         stage_name = v.short_name
         tf_providers_files = {
           apply = "${v.lvl}-${k}-providers.tf"
-          plan  = "${v.lvl}-${k}-providers-r.tf"
+          plan  = "${v.lvl}-${k}-r-providers.tf"
         }
         tf_var_files = local.cicd_workflow_files.stage_3
       } if v.lvl == 3
