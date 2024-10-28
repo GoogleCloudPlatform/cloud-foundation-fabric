@@ -20,20 +20,28 @@ output "folders" {
 }
 
 output "projects" {
-  description = "Project module outputs."
-  value       = module.projects
+  description = "Created projects."
+  value = {
+    for k, v in module.projects.projects : k => {
+      number     = v.number
+      project_id = v.id
+      automation_buckets = {
+        for kk, vv in module.projects.automation_buckets :
+        trimprefix(kk, "${k}/") => vv.name
+        if startswith(kk, "${k}/")
+      }
+      automation_service_accounts = {
+        for kk, vv in module.projects.automation_service_accounts :
+        trimprefix(kk, "${k}/") => vv.email
+        if startswith(kk, "${k}/")
+      }
+    }
+  }
 }
 
 output "service_accounts" {
   description = "Service account emails."
   value = {
     for k, v in module.service-accounts : k => v.email
-  }
-}
-
-output "automation_service_accounts" {
-  description = "Automation Service Accounts"
-  value = {
-    for k, v in module.automation-service-accounts : k => v.email
   }
 }
