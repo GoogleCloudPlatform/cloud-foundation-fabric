@@ -124,8 +124,9 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles = optional(string, "data/custom-roles")
-    org_policy   = optional(string, "data/org-policies")
+    custom_roles     = optional(string, "data/custom-roles")
+    org_policies     = optional(string, "data/org-policies")
+    org_policies_iac = optional(string, "data/org-policies-iac")
   })
   nullable = false
   default  = {}
@@ -246,6 +247,7 @@ variable "log_sinks" {
 variable "org_policies_config" {
   description = "Organization policies customization."
   type = object({
+    iac_policy_member_domains = optional(list(string))
     constraints = optional(object({
       allowed_essential_contact_domains = optional(list(string), [])
       allowed_policy_member_domains     = optional(list(string), [])
