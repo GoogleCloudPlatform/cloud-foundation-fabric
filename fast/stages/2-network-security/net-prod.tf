@@ -16,32 +16,55 @@
 
 # tfdoc:file:description Security components for prod spoke VPC.
 
-resource "google_network_security_security_profile" "prod_sec_profile" {
+moved {
+  from = google_network_security_security_profile.prod_sec_profile
+  to   = google_network_security_security_profile.prod
+}
+
+resource "google_network_security_security_profile" "prod" {
   name     = "${var.prefix}-prod-sp-0"
   type     = "THREAT_PREVENTION"
   parent   = "organizations/${var.organization.id}"
   location = "global"
 }
 
-resource "google_network_security_security_profile_group" "prod_sec_profile_group" {
-  name                      = "${var.prefix}-prod-spg-0"
-  parent                    = "organizations/${var.organization.id}"
-  location                  = "global"
-  description               = "prod security profile group."
-  threat_prevention_profile = try(google_network_security_security_profile.prod_sec_profile.id, null)
+moved {
+  from = google_network_security_security_profile_group.prod_sec_profile_group
+  to   = google_network_security_security_profile_group.prod
 }
 
-resource "google_network_security_firewall_endpoint_association" "prod_fw_ep_association" {
-  for_each          = toset(var.ngfw_enterprise_config.endpoint_zones)
-  name              = "${var.prefix}-prod-epa-${each.key}"
-  parent            = "projects/${try(var.host_project_ids.prod-spoke-0, null)}"
-  location          = each.value
-  firewall_endpoint = google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
-  network           = try(local.vpc_ids.prod-spoke-0, null)
+resource "google_network_security_security_profile_group" "prod" {
+  name        = "${var.prefix}-prod-spg-0"
+  parent      = "organizations/${var.organization.id}"
+  location    = "global"
+  description = "prod security profile group."
+  threat_prevention_profile = try(
+    google_network_security_security_profile.prod.id, null
+  )
+}
+
+moved {
+  from = google_network_security_firewall_endpoint_association.prod_fw_ep_association
+  to   = google_network_security_firewall_endpoint_association.prod
+}
+
+resource "google_network_security_firewall_endpoint_association" "prod" {
+  for_each = toset(var.ngfw_enterprise_config.endpoint_zones)
+  name     = "${var.prefix}-prod-epa-${each.key}"
+  parent   = "projects/${try(var.host_project_ids.prod-spoke-0, null)}"
+  location = each.value
+  firewall_endpoint = (
+    google_network_security_firewall_endpoint.firewall_endpoint[each.key].id
+  )
+  network = try(local.vpc_ids.prod-spoke-0, null)
   # If TLS inspection is enabled, link the regional TLS inspection policy
   tls_inspection_policy = (
     var.ngfw_tls_configs.tls_enabled
-    ? try(var.ngfw_tls_configs.tls_ip_ids_by_region.prod[substr(each.value, 0, length(each.value) - 2)], null)
+    # TODO: make this try less verbose and more readable
+    ? try(
+      var.ngfw_tls_configs.tls_ip_ids_by_region.prod[substr(each.value, 0, length(each.value) - 2)],
+      null
+    )
     : null
   )
 }
@@ -52,14 +75,18 @@ module "prod-spoke-firewall-policy" {
   parent_id = try(var.host_project_ids.prod-spoke-0, null)
   region    = "global"
   security_profile_group_ids = {
-    prod = "//networksecurity.googleapis.com/${try(google_network_security_security_profile_group.prod_sec_profile_group.id, "")}"
+    prod = local.security_profile_group_ids.prod
   }
   attachments = {
     prod-spoke = try(var.vpc_self_links.prod-spoke-0, null)
   }
   factories_config = {
-    cidr_file_path          = var.factories_config.cidrs
-    egress_rules_file_path  = "${var.factories_config.firewall_policy_rules.prod}/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.firewall_policy_rules.prod}/ingress.yaml"
+    cidr_file_path = var.factories_config.cidrs
+    egress_rules_file_path = (
+      "${var.factories_config.firewall_policy_rules.prod}/egress.yaml"
+    )
+    ingress_rules_file_path = (
+      "${var.factories_config.firewall_policy_rules.prod}/ingress.yaml"
+    )
   }
 }

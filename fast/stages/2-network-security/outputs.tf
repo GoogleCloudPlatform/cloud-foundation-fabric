@@ -14,12 +14,61 @@
  * limitations under the License.
  */
 
+locals {
+  security_profile_group_ids = {
+    dev = format(
+      "//networksecurity.googleapis.com/%s",
+      try(google_network_security_security_profile_group.dev.id, "")
+    )
+    prod = format(
+      "//networksecurity.googleapis.com/%s",
+      try(google_network_security_security_profile_group.prod.id, "")
+    )
+  }
+  tfvars = {
+    association_ids = {
+      dev = {
+        for k, v in google_network_security_firewall_endpoint_association.dev :
+        k => v.id
+      }
+      prod = {
+        for k, v in google_network_security_firewall_endpoint_association.prod :
+        k => v.id
+      }
+    }
+    endpoint_ids = {
+      for _, v in google_network_security_firewall_endpoint.firewall_endpoint
+      : v.location => v.id
+    }
+    firewall_policy_ids = {
+      dev  = module.dev-spoke-firewall-policy.id
+      prod = module.prod-spoke-firewall-policy.id
+    }
+    security_profile_group_ids = local.security_profile_group_ids
+    quota_project_id           = module.ngfw-quota-project.id
+  }
+}
+
+# generate tfvars file for subsequent stages
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/2-nsec.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/2-nsec.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
+}
+
+# outputs
+
 output "ngfw_enterprise_endpoint_ids" {
   description = "The NGFW Enterprise endpoint ids."
-  value = {
-    for _, v in google_network_security_firewall_endpoint.firewall_endpoint
-    : v.location => v.id
-  }
+  value       = local.tfvars.endpoint_ids
 }
 
 output "ngfw_enterprise_endpoints_quota_project" {

@@ -75,7 +75,7 @@ echo "$CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./"
 if [[ ! -z ${FAST_STAGE_OPTIONAL+x} ]]; then
   echo -e "\n# optional files"
   for f in $FAST_STAGE_OPTIONAL; do
-    echo "$CMD/$f.auto.tfvars.json ./"
+    echo "$CMD/tfvars/$f.auto.tfvars.json ./"
   done
 fi
 

@@ -1,3 +1,6 @@
+automation = {
+  outputs_bucket = "test"
+}
 billing_account = {
   id = "000000-111111-222222"
 }

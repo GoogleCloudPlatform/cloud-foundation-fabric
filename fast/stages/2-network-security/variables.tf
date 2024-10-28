@@ -47,3 +47,9 @@ variable "ngfw_enterprise_config" {
     ]
   }
 }
+
+variable "outputs_location" {
+  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
+}

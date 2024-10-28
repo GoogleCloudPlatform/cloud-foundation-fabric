@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description FAST stage interface.
+
+variable "automation" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
