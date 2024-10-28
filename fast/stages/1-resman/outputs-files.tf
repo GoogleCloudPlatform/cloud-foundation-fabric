@@ -67,10 +67,13 @@ locals {
         identity_provider = try(
           local.identity_providers[local.cicd_repositories[k].identity_provider].name, null
         )
-        outputs_bucket   = var.automation.outputs_bucket
-        service_accounts = v.sa
-        repository       = local.cicd_repositories[k].repository
-        stage_name       = k
+        outputs_bucket = var.automation.outputs_bucket
+        service_accounts = {
+          apply = try(module.cicd-sa-rw[k].email, "")
+          plan  = try(module.cicd-sa-ro[k].email, "")
+        }
+        repository = local.cicd_repositories[k].repository
+        stage_name = k
         tf_providers_files = {
           apply = "2-${replace(k, "_", "-")}-providers.tf"
           plan  = "2-${replace(k, "_", "-")}-providers-r.tf"
@@ -90,8 +93,8 @@ locals {
         outputs_bucket = var.automation.outputs_bucket
         repository     = v.repository
         service_accounts = {
-          apply = module.stage3-sa-rw[0].email
-          plan  = module.stage3-sa-ro[0].email
+          apply = module.cicd-sa-rw[0].email
+          plan  = module.cicd-sa-ro[0].email
         }
         stage_name = v.short_name
         tf_providers_files = {
