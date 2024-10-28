@@ -141,7 +141,9 @@ resource "google_compute_resource_policy" "snapshot" {
 }
 
 resource "google_compute_disk_resource_policy_attachment" "boot" {
-  for_each = { for i, v in try(var.boot_disk.snapshot_schedule, []) : i => v }
+  for_each = var.boot_disk.snapshot_schedule != null ? {
+    for i, v in var.boot_disk.snapshot_schedule : i => v
+  } : {}
   project  = var.project_id
   zone     = var.zone
   name = try(

@@ -735,13 +735,13 @@ module "instance" {
   }]
   boot_disk = {
     image             = "projects/cos-cloud/global/images/family/cos-stable"
-    snapshot_schedule = "boot"
+    snapshot_schedule = ["boot"]
   }
   attached_disks = [
     {
       name              = "disk-1"
       size              = 10
-      snapshot_schedule = "generic-vm"
+      snapshot_schedule = ["generic-vm"]
     }
   ]
   snapshot_schedules = {
