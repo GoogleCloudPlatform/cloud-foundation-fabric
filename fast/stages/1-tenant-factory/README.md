@@ -155,6 +155,12 @@ terraform init
 terraform apply
 ```
 
+#### Organization policy errors
+
+If you get an organization policy error assigning IAM roles or setting essential contacts on tenant-level resources, make sure the tenant configuration contains the right customer id and domain in the `cloud_identity` attributes, and the administrative principals and essential contacts for the tenant belong to the right Cloud Identity.
+
+If both are correct, wait a couple of minutes for the organization policies to be enforced and retry. Remember to also check the organization-level IaC project org policies, which can be customized via the bootstrap stage variables.
+
 ## Tenant configuration
 
 This stage has only three variables that can be customized:
