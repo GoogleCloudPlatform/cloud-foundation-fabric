@@ -13,6 +13,7 @@ Typical use cases include large organizations managing a single Cloud subscripti
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
+    - [Organization policy errors](#organization-policy-errors)
 - [Tenant configuration](#tenant-configuration)
   - [Configurations for both simple and FAST tenants](#configurations-for-both-simple-and-fast-tenants)
   - [Configurations for FAST tenants](#configurations-for-fast-tenants)
