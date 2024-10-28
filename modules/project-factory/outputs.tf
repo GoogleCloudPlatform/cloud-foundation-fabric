@@ -30,3 +30,11 @@ output "service_accounts" {
     for k, v in module.service-accounts : k => v.email
   }
 }
+
+output "automation_service_accounts" {
+  description = "Automation Service Accounts"
+  #   value       = module.automation-service-accounts
+  value = {
+    for k, v in module.automation-service-accounts : k => v.email
+  }
+}

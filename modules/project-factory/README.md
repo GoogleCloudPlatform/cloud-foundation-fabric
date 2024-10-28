@@ -448,6 +448,7 @@ update_rules:
 
 | name | description | sensitive |
 |---|---|:---:|
+| [automation_service_accounts](outputs.tf#L34) | Automation Service Accounts |  |
 | [folders](outputs.tf#L17) | Folder ids. |  |
 | [projects](outputs.tf#L22) | Project module outputs. |  |
 | [service_accounts](outputs.tf#L27) | Service account emails. |  |

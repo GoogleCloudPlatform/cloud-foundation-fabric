@@ -28,3 +28,8 @@ output "service_accounts" {
   description = "Created service accounts."
   value       = module.projects.service_accounts
 }
+
+output "automation_service_accounts" {
+  description = "Created Automation Service Accounts."
+  value       = module.projects.automation_service_accounts
+}
