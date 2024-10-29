@@ -73,7 +73,7 @@ FILE_RE_RESOURCES = re.compile(r'(?sm)resource\s+"([^"]+)"')
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
-MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z_]+:[0-1]\s*?)+) -->')
+MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z_]+:\S+\s*?)+) -->')
 OUT_ENUM = enum.Enum('O', 'OPEN ATTR ATTR_DATA CLOSE COMMENT TXT SKIP')
 OUT_RE = re.compile(r'''(?smx)
     # output open
@@ -193,6 +193,8 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
     opts = get_tfref_opts(readme)
     files = opts.get('files', files)
     show_extra = opts.get('show_extra', show_extra)
+    if 'exclude' in opts:
+      exclude_files = (exclude_files or []) + [opts['exclude']]
   abspath = os.path.abspath(module_path)
   try:
     if os.path.dirname(abspath).endswith('/modules'):
@@ -346,7 +348,7 @@ def get_tfref_opts(readme):
   try:
     for o in m.group(1).split():
       k, v = o.split(':')
-      opts[k] = bool(int(v))
+      opts[k] = v if k == 'exclude' else bool(int(v))
   except (TypeError, ValueError) as e:
     raise SystemExit(f'incorrect option mark: {e}')
   return opts

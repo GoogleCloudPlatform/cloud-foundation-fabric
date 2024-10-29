@@ -286,7 +286,7 @@ Some references that might be useful in setting up this stage:
 
 - [VPC SC CSCC requirements](https://cloud.google.com/security-command-center/docs/troubleshooting).
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-vpcsc-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

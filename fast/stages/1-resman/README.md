@@ -235,7 +235,7 @@ terraform init
 terraform apply
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-resman-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

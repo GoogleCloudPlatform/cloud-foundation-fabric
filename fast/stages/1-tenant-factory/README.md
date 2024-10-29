@@ -300,7 +300,7 @@ gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-glob
 gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-bootstrap.auto.tfvars.json ./
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-tenant-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

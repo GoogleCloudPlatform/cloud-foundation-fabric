@@ -280,7 +280,7 @@ tls_inspection = {
 }
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-security-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

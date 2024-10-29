@@ -334,7 +334,7 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 - change the values of the mappings in the `regions` variable to the regions you are going to use
 - change the regions in the factory subnet files in the `data` folder
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

@@ -171,7 +171,7 @@ Fleet management is entirely optional, and uses two separate variables:
 
 Clusters can then be configured for fleet registration and one of the config management templates attached via the cluster-level `fleet_config` attribute.
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:3-gke-dev-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
