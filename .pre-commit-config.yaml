@@ -102,3 +102,9 @@ repos:
   rev: v0.40.2
   hooks:
   - id: yapf
+
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.2.6
+  hooks:
+  - id: codespell
+    exclude: requirements.txt$|excalidraw$
