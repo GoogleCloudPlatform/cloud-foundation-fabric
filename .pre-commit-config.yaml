@@ -22,7 +22,7 @@ repos:
     args:
     - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
     files: ^modules/
-    exclude: (tests/fixtures/|tools/lockfile/)
+    exclude: (tests/fixtures/|tools/lockfile/|^fast)
   # - id: terraform_validate
   #   args:
   #   - --hook-config=--retry-once-with-cleanup=true
