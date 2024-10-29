@@ -32,11 +32,12 @@ variable "project_id" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage, their optional expire time, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  description = "Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
   type = map(object({
-    expire_time = optional(string)
-    locations   = optional(list(string))
-    keys        = optional(map(string))
+    expire_time         = optional(string)
+    locations           = optional(list(string))
+    keys                = optional(map(string))
+    version_destroy_ttl = optional(string)
   }))
   default = {}
 }
