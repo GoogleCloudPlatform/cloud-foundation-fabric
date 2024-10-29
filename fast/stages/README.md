@@ -48,6 +48,5 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
 
 ## Environment-level resources (3)
 
-- [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-dev/)
 - [Google Cloud VMware Engine](3-gcve-dev/)
