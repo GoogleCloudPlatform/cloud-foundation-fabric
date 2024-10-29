@@ -21,6 +21,7 @@ folder_config:
   parent_id: gke
 stage2_iam:
   networking:
+    iam_admin_delegated: true
     sa_roles:
       ro:
         - roles/dns.reader
