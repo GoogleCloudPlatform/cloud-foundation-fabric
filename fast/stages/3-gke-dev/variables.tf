@@ -15,7 +15,7 @@
  */
 
 variable "clusters" {
-  description = "Clusters configuration. Refer to the gke-cluster-standard module for type details."
+  description = "Clusters configuration. Refer to the gke-cluster module for type details."
   type = map(object({
     cluster_autoscaling = optional(any)
     description         = optional(string)
@@ -26,6 +26,10 @@ variable "clusters" {
       shielded_nodes    = true
       workload_identity = true
     })
+    fleet_config = optional(object({
+      register                  = optional(bool, true)
+      configmanagement_template = optional(string)
+    }), {})
     issue_client_certificate = optional(bool, false)
     labels                   = optional(map(string))
     location                 = string
@@ -45,12 +49,10 @@ variable "clusters" {
     min_master_version = optional(string)
     monitoring_config = optional(object({
       enable_system_metrics = optional(bool, true)
-
       # (Optional) control plane metrics
       enable_api_server_metrics         = optional(bool, false)
       enable_controller_manager_metrics = optional(bool, false)
       enable_scheduler_metrics          = optional(bool, false)
-
       # (Optional) kube state metrics
       enable_daemonset_metrics   = optional(bool, false)
       enable_deployment_metrics  = optional(bool, false)
@@ -58,7 +60,6 @@ variable "clusters" {
       enable_pod_metrics         = optional(bool, false)
       enable_statefulset_metrics = optional(bool, false)
       enable_storage_metrics     = optional(bool, false)
-
       # Google Cloud Managed Service for Prometheus
       enable_managed_prometheus = optional(bool, true)
     }), {})
@@ -73,9 +74,9 @@ variable "clusters" {
         services = string
       }))
       secondary_range_names = optional(object({
-        pods     = optional(string, "pods")
-        services = optional(string, "services")
-      }))
+        pods     = string
+        services = string
+      }), { pods = "pods", services = "services" })
       master_authorized_ranges = optional(map(string))
       master_ipv4_cidr_block   = optional(string)
     })
@@ -84,63 +85,8 @@ variable "clusters" {
   nullable = false
 }
 
-variable "fleet_configmanagement_clusters" {
-  description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "fleet_configmanagement_templates" {
-  description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
-  type = map(object({
-    binauthz = bool
-    config_sync = object({
-      git = object({
-        gcp_service_account_email = string
-        https_proxy               = string
-        policy_dir                = string
-        secret_type               = string
-        sync_branch               = string
-        sync_repo                 = string
-        sync_rev                  = string
-        sync_wait_secs            = number
-      })
-      prevent_drift = string
-      source_format = string
-    })
-    hierarchy_controller = object({
-      enable_hierarchical_resource_quota = bool
-      enable_pod_tree_labels             = bool
-    })
-    policy_controller = object({
-      audit_interval_seconds     = number
-      exemptable_namespaces      = list(string)
-      log_denies_enabled         = bool
-      referential_rules_enabled  = bool
-      template_library_installed = bool
-    })
-    version = string
-  }))
-  default  = {}
-  nullable = false
-}
-
-variable "fleet_features" {
-  description = "Enable and configure fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
-  type = object({
-    appdevexperience             = bool
-    configmanagement             = bool
-    identityservice              = bool
-    multiclusteringress          = string
-    multiclusterservicediscovery = bool
-    servicemesh                  = bool
-  })
-  default = null
-}
-
-variable "fleet_workload_identity" {
-  description = "Use Fleet Workload Identity for clusters. Enables GKE Hub if set to true."
+variable "deletion_protection" {
+  description = "Prevent Terraform from destroying data resources."
   type        = bool
   default     = false
   nullable    = false
@@ -199,15 +145,27 @@ variable "nodepools" {
   nullable = false
 }
 
-variable "outputs_location" {
-  description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
+variable "stage_config" {
+  description = "FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management."
+  type = object({
+    environment = string
+    name        = string
+  })
+  default = {
+    environment = "dev"
+    name        = "gke-dev"
+  }
 }
 
-variable "project_services" {
-  description = "Additional project services to enable."
-  type        = list(string)
-  default     = []
-  nullable    = false
+variable "vpc_config" {
+  description = "VPC-level configuration for project and clusters."
+  type = object({
+    host_project_id = string
+    vpc_self_link   = string
+  })
+  nullable = false
+  default = {
+    host_project_id = "dev-spoke-0"
+    vpc_self_link   = "dev-spoke-0"
+  }
 }

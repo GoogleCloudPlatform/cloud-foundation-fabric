@@ -17,6 +17,7 @@
 # tfdoc:file:description Project and usage dataset.
 
 locals {
+  folder_id = var.folder_ids[var.stage_config.name]
   gke_nodes_sa_roles = [
     "autoscaling.metricsWriter",
     "logging.logWriter",
@@ -24,47 +25,51 @@ locals {
     "monitoring.metricWriter",
     "stackdriver.resourceMetadata.writer"
   ]
+  project_name = "${var.stage_config.environment}-gke-core-0"
 }
 
 module "gke-project-0" {
-  source            = "../../../modules/project"
-  billing_account   = var.billing_account_id
-  name              = var.project_id
-  parent            = var.folder_id
-  prefix            = var.prefix
-  iam_by_principals = var.iam_by_principals
-  labels            = var.labels
+  source          = "../../../modules/project"
+  billing_account = var.billing_account.id
+  name            = local.project_name
+  parent          = local.folder_id
+  prefix          = var.prefix
   iam = merge(var.iam, {
     "roles/gkehub.serviceAgent" = [
       module.gke-project-0.service_agents.fleet.iam_email
     ] }
   )
+  iam_by_principals = var.iam_by_principals
   iam_bindings_additive = {
     for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
       member = module.gke-nodes-service-account.iam_email
       role   = "roles/${r}"
     }
   }
-  services = concat(
-    [
-      "anthos.googleapis.com",
-      "anthosconfigmanagement.googleapis.com",
-      "cloudresourcemanager.googleapis.com",
-      "container.googleapis.com",
-      "dns.googleapis.com",
-      "gkeconnect.googleapis.com",
-      "gkehub.googleapis.com",
-      "iam.googleapis.com",
-      "multiclusteringress.googleapis.com",
-      "multiclusterservicediscovery.googleapis.com",
-      "stackdriver.googleapis.com",
-      "trafficdirector.googleapis.com"
-    ],
-    var.project_services
-  )
+  labels = {
+    environment = lower(var.environments[var.stage_config.environment].name)
+  }
+  services = [
+    "anthos.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "container.googleapis.com",
+    "dns.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
+    "iam.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "stackdriver.googleapis.com",
+    "trafficdirector.googleapis.com"
+  ]
   shared_vpc_service_config = {
-    attach       = true
-    host_project = var.vpc_config.host_project_id
+    attach = true
+    host_project = lookup(
+      var.host_project_ids,
+      var.vpc_config.host_project_id,
+      var.vpc_config.host_project_id
+    )
     service_agent_iam = merge({
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
@@ -76,7 +81,7 @@ module "gke-project-0" {
       !local.fleet_mcs_enabled ? {} : {
         "roles/multiclusterservicediscovery.serviceAgent" = ["mcsd"]
         "roles/compute.networkViewer" = [
-          "serviceAccount:${var.prefix}-${var.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
+          "serviceAccount:${var.prefix}-${local.project_name}.svc.id.goog[gke-mcs/gke-mcs-importer]"
         ]
     })
   }

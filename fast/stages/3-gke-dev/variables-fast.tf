@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-}
-
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
-    id           = string
-    is_org_level = optional(bool, true)
+    id = string
   })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
+}
+
+variable "environments" {
+  # tfdoc:variable:source 1-resman
+  description = "Long environment names."
+  type = object({
+    dev = object({
+      name = string
+    })
+  })
 }
 
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type = object({
-    gke-dev = string
-  })
+  description = "Folder name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
+  description = "Shared VPC host project name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "prefix" {
@@ -61,10 +58,18 @@ variable "prefix" {
   }
 }
 
+variable "subnet_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Subnet VPC name => { name => self link }  mappings."
+  type        = map(map(string))
+  nullable    = false
+  default     = {}
+}
+
 variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
+  description = "Shared VPC name => self link mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

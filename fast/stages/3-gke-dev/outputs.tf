@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gke-multitenant/dev/
+output "cluster_ids" {
+  description = "Cluster ids."
+  value = {
+    for k, v in module.gke-cluster : k => v.id
+  }
+}
 
-tests:
-  simple:
+output "clusters" {
+  description = "Cluster resources."
+  sensitive   = true
+  value       = module.gke-cluster
+}
+
+output "project_id" {
+  description = "GKE project id."
+  value       = module.gke-project-0.project_id
+}

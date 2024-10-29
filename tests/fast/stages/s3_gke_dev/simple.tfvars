@@ -1,6 +1,3 @@
-automation = {
-  outputs_bucket = "test"
-}
 billing_account = {
   id = "012345-67890A-BCDEF0",
 }
@@ -19,6 +16,11 @@ clusters = {
       subnetwork             = "projects/prj-host/regions/europe-west1/subnetworks/gke-0"
       master_ipv4_cidr_block = "172.16.20.0/28"
     }
+  }
+}
+environments = {
+  dev = {
+    name = "Development"
   }
 }
 nodepools = {

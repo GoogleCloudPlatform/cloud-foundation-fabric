@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description GKE nodepools.
+# tfdoc:file:description GKE clusters.
 
 locals {
   nodepools = merge([
@@ -26,6 +26,49 @@ locals {
       })
     }
   ]...)
+  subnet_self_links = try(
+    var.subnet_self_links[var.vpc_config.vpc_self_link], {}
+  )
+  vpc_self_link = lookup(
+    var.vpc_self_links,
+    var.vpc_config.vpc_self_link,
+    var.vpc_config.vpc_self_link
+  )
+}
+
+module "gke-cluster" {
+  source                   = "../../../modules/gke-cluster-standard"
+  for_each                 = var.clusters
+  name                     = each.key
+  project_id               = module.gke-project-0.project_id
+  cluster_autoscaling      = each.value.cluster_autoscaling
+  description              = each.value.description
+  enable_features          = each.value.enable_features
+  enable_addons            = each.value.enable_addons
+  issue_client_certificate = each.value.issue_client_certificate
+  labels                   = each.value.labels
+  location                 = each.value.location
+  logging_config           = each.value.logging_config
+  maintenance_config       = each.value.maintenance_config
+  max_pods_per_node        = each.value.max_pods_per_node
+  min_master_version       = each.value.min_master_version
+  monitoring_config        = each.value.monitoring_config
+  node_locations           = each.value.node_locations
+  private_cluster_config   = each.value.private_cluster_config
+  release_channel          = each.value.release_channel
+  vpc_config = merge(each.value.vpc_config, {
+    network = try(
+      var.vpc_self_links[each.value.vpc_config.network],
+      each.value.vpc_config.network,
+      local.vpc_self_link
+    )
+    subnetwork = try(
+      local.subnet_self_links[each.value.vpc_config.subnetwork],
+      each.value.vpc_config.subnetwork,
+      null
+    )
+  })
+  deletion_protection = var.deletion_protection
 }
 
 module "gke-nodepool" {

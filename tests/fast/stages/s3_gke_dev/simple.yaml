@@ -23,6 +23,5 @@ counts:
   google_project_service: 12
   google_project_service_identity: 7
   google_service_account: 1
-  google_storage_bucket_object: 1
-  modules: 6
-  resources: 43
+  modules: 5
+  resources: 42

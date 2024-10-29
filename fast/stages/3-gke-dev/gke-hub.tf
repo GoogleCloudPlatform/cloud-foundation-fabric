@@ -17,29 +17,32 @@
 # tfdoc:file:description GKE hub configuration.
 
 locals {
-  fleet_enabled = (
-    var.fleet_features != null || var.fleet_workload_identity
-  )
+  fleet_clusters = var.fleet_config == null ? {} : {
+    for k, v in var.clusters : k => v.configmanagement_template
+    if v.fleet_config.register == true
+  }
   fleet_mcs_enabled = (
-    try(var.fleet_features.multiclusterservicediscovery, false) == true
+    try(
+      var.fleet_config.enable_features.multiclusterservicediscovery, false
+    ) == true
   )
 }
 
 module "gke-hub" {
   source     = "../../../modules/gke-hub"
-  count      = local.fleet_enabled ? 1 : 0
+  count      = var.fleet_config != null ? 1 : 0
   project_id = module.gke-project-0.project_id
   clusters = {
-    for cluster_id in keys(var.clusters) :
-    cluster_id => module.gke-cluster[cluster_id].id
+    for k, v in local.fleet_clusters : k => module.gke-cluster[k].id
   }
-  features                   = var.fleet_features
+  features                   = var.fleet_config.enable_features
   configmanagement_templates = var.fleet_configmanagement_templates
-  configmanagement_clusters  = var.fleet_configmanagement_clusters
+  configmanagement_clusters = {
+    for k, v in local.fleet_clusters : v => k...
+  }
   workload_identity_clusters = (
-    var.fleet_workload_identity ? keys(var.clusters) : []
+    var.fleet_config.use_workload_identity ? keys(local.fleet_clusters) : []
   )
-
   depends_on = [
     module.gke-nodepool
   ]
