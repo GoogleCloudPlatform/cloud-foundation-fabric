@@ -43,4 +43,4 @@ counts:
   google_storage_bucket_object: 2
   google_vpc_access_connector: 2
   modules: 24
-  resources: 173
+  resources: 174
