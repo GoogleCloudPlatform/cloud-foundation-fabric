@@ -27,6 +27,27 @@ Tie major version releases to FAST releases containing breaking changes or new a
 1. Create a PR from `fast-dev` to master. This allows for a final review of all changes included in the release and ensures that all tests pass against the release candidate.
 1. Merge the PR into master and tag with the new major version number (e.g., v2.0.0, v3.0.0).
 
+### Development Workflow Examples:
+
+#### Scenario 1: Large-scale change of one or more modules (e.g., IAM refactor):
+
+- Modules are updated incrementally in `master`. Each change must ensure compatibility with the current FAST version running on `master`.
+- A new minor release is cut after the module restructuring is complete.
+- The next FAST release will incorporate the module changes by merging `master` into `fast-dev`.
+
+#### Scenario 2: FAST requires a change to a module:
+
+- The module change is submitted as a PR to `master`.
+- Once the PR is merged into `master`, `master` is merged into `fast-dev`.
+- FAST is updated in the `fast-dev` branch to use the new module feature.
+- A new minor release can optionally be cut to make the module change available independently. This allows other consumers to use the module updates without waiting for the next major FAST release.
+- The next major FAST release will include this module change.
+
+#### Scenario 3: Large-scale change to FAST:
+
+- The change is implemented in the `fast-dev` branch as one or more PRs.
+- When the changes are complete and tested, a new major version of FAST is released. This will include merging `fast-dev` back into `master` as part of the release process.
+
 ## Decision
 
 ## Consequences
