@@ -38,7 +38,7 @@ counts:
   google_dns_policy: 4
   google_dns_record_set: 3
   google_dns_response_policy: 1
-  google_dns_response_policy_rule: 38
+  google_dns_response_policy_rule: 39
   google_essential_contacts_contact: 1
   google_monitoring_alert_policy: 2
   google_monitoring_dashboard: 3
@@ -53,4 +53,8 @@ counts:
   google_vpc_access_connector: 2
   modules: 43
   random_id: 2
+<<<<<<< HEAD
   resources: 242
+=======
+  resources: 237
+>>>>>>> origin/master
