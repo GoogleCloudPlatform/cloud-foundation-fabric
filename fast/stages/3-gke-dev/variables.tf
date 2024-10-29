@@ -106,12 +106,6 @@ variable "iam_by_principals" {
   nullable    = false
 }
 
-variable "labels" {
-  description = "Project-level labels."
-  type        = map(string)
-  default     = {}
-}
-
 variable "nodepools" {
   description = "Nodepools configuration. Refer to the gke-nodepool module for type details."
   type = map(map(object({
