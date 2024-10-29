@@ -64,6 +64,9 @@ gcr:
 gcr-all:
   dns_name: "*.gcr.io."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+gke-all:
+  dns_name: "*.gke.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 googleapis-all:
   dns_name: "*.googleapis.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
