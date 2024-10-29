@@ -53,8 +53,4 @@ counts:
   google_vpc_access_connector: 2
   modules: 47
   random_id: 2
-<<<<<<< HEAD
-  resources: 264
-=======
-  resources: 259
->>>>>>> origin/master
+  resources: 265
