@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2024-09-05 10:07:19+00:00 -->
+- [[#2649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2649)] Clarify fast-dev purpose ([juliocc](https://github.com/juliocc)) <!-- 2024-10-30 14:08:04+00:00 -->
 
 ### BLUEPRINTS
 
