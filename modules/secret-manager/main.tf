@@ -36,11 +36,12 @@ locals {
 }
 
 resource "google_secret_manager_secret" "default" {
-  for_each    = var.secrets
-  project     = var.project_id
-  secret_id   = each.key
-  labels      = lookup(var.labels, each.key, null)
-  expire_time = each.value.expire_time
+  for_each            = var.secrets
+  project             = var.project_id
+  secret_id           = each.key
+  labels              = lookup(var.labels, each.key, null)
+  expire_time         = each.value.expire_time
+  version_destroy_ttl = each.value.version_destroy_ttl
 
   dynamic "replication" {
     for_each = each.value.locations == null ? [""] : []
