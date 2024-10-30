@@ -46,7 +46,7 @@ A Shared VPC is used here, either from one of the FAST networking stages (e.g. [
 
 ### Encryption
 
-Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../2-security) or from an external source. This step is optional and depends on customer policies and security best practices.
+Cloud KMS crypto keys can be configured either from the [FAST security stage](../../2-security) or from an external source. This step is optional and depends on customer policies and security best practices.
 
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
 

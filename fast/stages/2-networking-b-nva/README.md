@@ -10,7 +10,7 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "dmz" or "untrusted" VPC centralizes the external connectivity towards untrusted network resources, such as Internet (inbound and outbound) or 3P service providers or parties connected through VPN or Interconnect.
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs -both in hub and spokes- split the management of the network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
-- if Regional VPC network mode is selected two additional regional trusted hub VPCs are deployed to provide connectivity to GCP services (eg. GCVE) that don't support multi-regional routing. 
+- if Regional VPC network mode is selected two additional regional trusted hub VPCs are deployed to provide connectivity to GCP services (eg. GCVE) that don't support multi-regional routing.
 - the design facilitates DNS centralization
 
 Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related some pros and cons, are discussed below.
@@ -82,7 +82,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 ## Design overview and choices
 
 ### Deployment models
-This stage support three different deployment models that can be controlled by `var.network_mode`. The stage deploys networking resources in two different regions and supports both regional and multi-regional VPCs. Depending on the selected deployment model different routing strategies and NVAs failover modes can be implemented. 
+This stage support three different deployment models that can be controlled by `var.network_mode`. The stage deploys networking resources in two different regions and supports both regional and multi-regional VPCs. Depending on the selected deployment model different routing strategies and NVAs failover modes can be implemented.
 
 - **Simple NVA**: This network mode deploys multi-regional VPCs, the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
 - **NCC-RA**: This network mode deploys multi-regional VPCs as the simple mode but provides a different routing strategy. The network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
@@ -113,7 +113,7 @@ The landing network area acts as a hub: the multi-region landing VPC bridges int
 Each virtual network is a [shared VPC](https://cloud.google.com/vpc/docs/shared-vpc): shared VPCs are managed in dedicated *host projects* and shared with other *service projects* that consume the network resources.
 Shared VPC lets organization administrators delegate administrative responsibilities, such as creating and managing instances, to Service Project Admins while maintaining centralized control over network resources like subnets, routes, and firewalls.
 
-When the **regional network mode** is selected, the stage deploys two additional landing VPCs each one with a regional scope. If required the regional VPCs can be exteded as shared VPC and cosumed by other service (spoke) projects.   
+When the **regional network mode** is selected, the stage deploys two additional landing VPCs each one with a regional scope. If required the regional VPCs can be extended as shared VPC and consumed by other service (spoke) projects.
 
 Users can easily extend the design to host additional environments, or adopt different logical mappings for the spokes (for example, in order to create a new spoke for each company entity). Adding spokes is trivial and it does not increase the design complexity. The steps to add more spokes are provided in the following sections.
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within the same organization, and with non-production spokes in a different organization.
