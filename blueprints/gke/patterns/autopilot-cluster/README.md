@@ -59,7 +59,7 @@ This blueprint by default deploys an Autopilot cluster with private nodes and pr
 - Use namespaces to restrict access to cluster resources: this blueprint deploys the underlying infrastructure, namespace handling is left to applications.
 
 ### Networking
-- Create a custom mode VPC: this blueprint can optinally deploy a new custom VPC with a single subnet. Otherwise, an existing VPC and subnet can be used.
+- Create a custom mode VPC: this blueprint can optionally deploy a new custom VPC with a single subnet. Otherwise, an existing VPC and subnet can be used.
 - Create a proxy-only subnet: the `vpc_create` variable allows the creation of proxy only subnet, if needed.
 - Configure Shared VPC: by default a new VPC is created within the project, but a Shared VPC can be used when the blueprint handles project creation.
 - Connect the cluster's VPC network to an on-premises network: skipped, out of scope for this blueprint

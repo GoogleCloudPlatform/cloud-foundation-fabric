@@ -224,7 +224,7 @@ module "project-factory" {
       "stackdriver.googleapis.com"
     ]
   }
-  # always use this contaxt and prefix, regardless of what is in the yaml file
+  # always use this contacts and prefix, regardless of what is in the yaml file
   data_overrides = {
     contacts = {
       "admin@example.org" = ["ALL"]

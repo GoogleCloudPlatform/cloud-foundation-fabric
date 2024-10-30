@@ -169,7 +169,7 @@ resource "google_compute_region_network_endpoint" "internet" {
   port       = each.value.port
 }
 
-# PSC Procuder Service attachments
+# PSC Producer Service attachments
 resource "google_compute_service_attachment" "default" {
   count          = var.service_attachment == null ? 0 : 1
   project        = var.project_id
