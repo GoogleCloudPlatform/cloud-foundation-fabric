@@ -36,7 +36,7 @@ The following is a non-exhaustive list of **non-breaking** changes for a module:
 ### Development Workflow:
 
 * **Modules and Documentation:** Changes to modules and documentation will be made directly to the `master` branch.
-* **FAST Development:** FAST development will occur in a dedicated, protected branch named `fast-dev`. All changes to `fast-dev` must be submitted via Pull Requests..
+* **FAST Development:** large FAST changes will occur in a dedicated, protected branch named `fast-dev`.
 
 As shown in the diagram below, the repository will now contain two long-lived branches: `master` and `fast-dev`.
 
@@ -56,7 +56,6 @@ This case is highlighted in green in the the diagram above. The process is as fo
 This case is highlighted in red in the the diagram above. The process is as follows:
 
 1. Merge `master` into `fast-dev`. This ensures that the latest module and documentation changes are included in the FAST release.
-1. Merge the PR into `master` and tag with the new major version number (e.g., v2.0.0, v3.0.0).
 1. Create a new pre-release from `fast-dev` in GitHub as explained in the [Contributing guide](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/CONTRIBUTING.md#cutting-a-new-release)
 
 ### Development Workflow Examples:
