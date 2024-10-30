@@ -32,7 +32,7 @@ provider "google" {
 
 ### IAM bindings
 
-Billing account IAM bindings implement [the same interface](../__docs/20230816-iam-refactor.md) used for all other modules.
+Billing account IAM bindings implement [the same interface](../../adrs/modules/20230816-iam-refactor.md) used for all other modules.
 
 ```hcl
 module "billing-account" {
