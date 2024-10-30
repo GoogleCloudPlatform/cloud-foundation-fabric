@@ -40,7 +40,7 @@ The following is a non-exhaustive list of **non-breaking** changes for a module:
 
 As shown in the diagram below, the repository will now contain two long-lived branches: `master` and `fast-dev`.
 
-![Branching](versioning.png)
+![Branching](20241029-versioning.png)
 
 ### FAST Release Process:
 
