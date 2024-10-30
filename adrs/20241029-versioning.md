@@ -73,9 +73,12 @@ This case is highlighted in red in the the diagram above. The process is as foll
 - Devolop changes.
 - Open and merge a PR against fast-dev. In the description, use the `breaks-Fast` (if needed) label in the PR.
 
-Note: as part of the development of your changes, we encourage merge `master` frequently into your own branch to simplify the final merge back to master.
+> [!TIP]
+> Aas part of the development of your changes, we encourage merge `master` frequently into your own branch to simplify the final merge back to master.
 
 ## Decision
+
+Pilot starting from version 35.
 
 ## Consequences
 
