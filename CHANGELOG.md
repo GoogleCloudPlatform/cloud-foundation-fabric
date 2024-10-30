@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2024-09-05 10:07:19+00:00 -->
-- [[#2649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2649)] Clarify fast-dev purpose ([juliocc](https://github.com/juliocc)) <!-- 2024-10-30 14:08:04+00:00 -->
 
 ### BLUEPRINTS
 
@@ -21,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2649)] Clarify fast-dev purpose ([juliocc](https://github.com/juliocc)) <!-- 2024-10-30 14:08:04+00:00 -->
 - [[#2643](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2643)] Add codespell to pre-commit  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-10-30 09:30:37+00:00 -->
 - [[#2641](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2641)] Adding DNS for GKE control plane to private google access APIs ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-10-29 13:09:26+00:00 -->
 - [[#2630](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2630)] [FAST] Fix stage 2 simple NVA wrong location - causing test failures ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-10-18 12:43:03+00:00 -->
