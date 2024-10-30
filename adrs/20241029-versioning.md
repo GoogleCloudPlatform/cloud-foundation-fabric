@@ -16,7 +16,7 @@ Our current versioning scheme releases new versions based on changes across modu
 
 Change the versioning schema as follows:
 
-- **Major Release (X.0.0):** A major release is reserved for changes that introduce breaking changes to the core functionality of the Terraform modules.  This means any modification that requires users to change variables or manipulate state to maintain compatibility. Removing functionality from FAST is also considered a breaking change.
+- **Major Release (X.0.0):** A major release is reserved for changes that introduce breaking changes to the core functionality of FAST.  This means any modification that requires users to change variables or manipulate state to maintain compatibility. Removing functionality from FAST is also considered a breaking change.
 - **minor release (1.Y.0):** A minor release signifies breaking changes within individual modules or components of the project, while maintaining backward compatibility with the overall structure and purpose of the module collection.
 - **Patch Release (1.0.Z)**: Any other changes that do not introduce breaking changes, including bug fixes, performance enhancements, and new non-breaking features, constitute a patch release. These updates are backward compatible and should not require any modifications to existing Terraform configurations.
 
