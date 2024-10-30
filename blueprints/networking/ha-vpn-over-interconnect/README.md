@@ -4,7 +4,7 @@ This blueprint creates a complete HA VPN over Interconnect setup, which leverage
 
 This blueprint supports Dedicated Interconnect and Partner Interconnect.
 
-In case of Partner Interconnect only partial apply is possible at first, which creates the VLAN Attachments. Only once the partner connection is established it is possible to deploy HA VPN Gateway and all dependant resources. 
+In case of Partner Interconnect only partial apply is possible at first, which creates the VLAN Attachments. Only once the partner connection is established it is possible to deploy HA VPN Gateway and all dependent resources.
 
 ## Managed resources and services
 

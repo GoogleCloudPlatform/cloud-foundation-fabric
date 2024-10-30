@@ -22,11 +22,11 @@ $BackupPath = "C:\Backup"
 
 if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {
   Write-Output "Performing initial setup for witness"
-  
+
   All-Instances-Ready
 
   if (-not(Test-Path -Path $WitnessPath -PathType Container)) {
-    Write-Log "Creatin witness directory $WitnessPath and share..."
+    Write-Log "Creating witness directory $WitnessPath and share..."
     New-Item $WitnessPath -type directory
     New-SmbShare -Name QWitness -Path $WitnessPath -Description "SQL File Share Quorum Witness" -FullAccess ${node_netbios_1}$,${node_netbios_2}$
     Start-Sleep -s 10
@@ -40,7 +40,7 @@ if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {
   }
 
   icacls $WitnessPath /t /grant '${node_netbios_1}$:(OI)(CI)(M)'
-  icacls $WitnessPath /t /grant '${node_netbios_2}$:(OI)(CI)(M)'  
+  icacls $WitnessPath /t /grant '${node_netbios_2}$:(OI)(CI)(M)'
 
   Cluster-In-Domain
 

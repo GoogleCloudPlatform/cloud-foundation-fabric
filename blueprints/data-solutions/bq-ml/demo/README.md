@@ -27,7 +27,7 @@ In this tutorial we will make use of the following main components:
 	- standard: to create a view which contains the model features and the target variable
 	- ML: to train, evaluate and make batch predictions
 - Vertex AI:
-	- Pipeline: to define a configurable and re-usable set of steps to train and evaluate a BQML model
+	- Pipeline: to define a configurable and reusable set of steps to train and evaluate a BQML model
 	- Experiment: to keep track of all the trainings done via the Pipeline
 	- Model Registry: to keep track of the trained versions of a specific model
 	- Endpoint: to serve the model via API

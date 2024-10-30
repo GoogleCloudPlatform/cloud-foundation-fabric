@@ -10,7 +10,7 @@ This plugin does not manage
 The plugin only requires a specific configuration if the defaults it uses need to be changed:
 
 - the connector-specific subnets default to the `10.255.255.0` range
-- the machine type, number of instances and thoughput use the API defaults
+- the machine type, number of instances and throughput use the API defaults
 
 To enable the plugin, simply copy or link its files in the networking stage.
 

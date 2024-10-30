@@ -163,7 +163,7 @@ The YAML data files are self-explanatory and the included [schema files](./schem
 
 The project factory manages its folder hierarchy via a filesystem tree, rooted in the path defined via the `factories_config.hierarchy_data` variable.
 
-Filesystem folders which contain a `_config.yaml` file are mapped to folders in the resource management hierarchy. Their YAML configuration files allow definining folder attributes like descriptive name, IAM bindings, organization policies, tag bindings.
+Filesystem folders which contain a `_config.yaml` file are mapped to folders in the resource management hierarchy. Their YAML configuration files allow defining folder attributes like descriptive name, IAM bindings, organization policies, tag bindings.
 
 This is the simple filesystem hierarchy provided here as an example.
 

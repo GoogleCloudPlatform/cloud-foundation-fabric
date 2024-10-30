@@ -69,7 +69,7 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
   subnetwork            = var.vpc_config.subnetworks[each.key]
   labels                = var.labels
   target                = local.fwd_rule_target
-  # during the preview phase you cannot change ths attribute on an existing rule
+  # during the preview phase you cannot change this attribute on an existing rule
   dynamic "service_directory_registrations" {
     for_each = var.service_directory_registration == null ? [] : [""]
     content {

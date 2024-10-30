@@ -105,23 +105,23 @@
 
 - name: Create certificate and private key
   shell: >
-    openssl req  \ 
+    openssl req  \
     -nodes \
     -new \
     -x509 \
     -keyout ~/hybrid-files/certs/server.key \
     -out ~/hybrid-files/certs/server.crt \
-    -subj "/CN=apigee.com' \ 
+    -subj "/CN=apigee.com' \
     -addext "subjectAltName={{ hostnames | map('regex_replace', '^', 'DNS:') | join(',') }}""
     -days 3650
 
-- name: Read certificate 
-  slurp: 
+- name: Read certificate
+  slurp:
     src: ~/hybrid-files/certs/server.crt
   register: certificate_output
 
-- name: Read private ket 
-  slurp: 
+- name: Read private key
+  slurp:
     src: ~/hybrid-files/certs/server.key
   register: privatekey_output
 
@@ -232,10 +232,10 @@
       type: Ready
       status: True
 
-- name: 
+- name:
   kubernetes.core.k8s:
-    state: present   
-    definition: 
+    state: present
+    definition:
       apiVersion: apigee.cloud.google.com/v1alpha1
       kind: ApigeeRoute
       metadata:
@@ -252,12 +252,12 @@
             mode: SIMPLE
         selector:
           app: apigee-ingressgateway
-        enableNonSniClient: true 
+        enableNonSniClient: true
 
 - name: Create google-managed certificate
   kubernetes.core.k8s:
-    state: present   
-    definition: 
+    state: present
+    definition:
       apiVersion: networking.gke.io/v1
       kind: ManagedCertificate
       metadata:
@@ -265,11 +265,11 @@
         namespace: apigee
       spec:
         domains: "{{ hostnames }}"
-      
+
 - name: Create backend config
   kubernetes.core.k8s:
-    state: present  
-    definition:  
+    state: present
+    definition:
       apiVersion: cloud.google.com/v1
       kind: BackendConfig
       metadata:
@@ -330,4 +330,4 @@
           service:
             name: apigee-ingressgateway-hybrid
             port:
-              number: 443    
+              number: 443
