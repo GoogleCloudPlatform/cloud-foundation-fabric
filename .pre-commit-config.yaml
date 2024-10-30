@@ -107,4 +107,4 @@ repos:
   rev: v2.2.6
   hooks:
   - id: codespell
-    exclude: requirements.txt$|excalidraw$
+    exclude: (requirements.txt$|excalidraw$|package-lock\.json$|go\.sum$)

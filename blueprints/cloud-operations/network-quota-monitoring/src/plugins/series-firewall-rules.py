@@ -33,7 +33,7 @@ def timeseries(resources):
   # return a single descriptor for network as we don't have limits
   yield MetricDescriptor(f'network/firewall_rules_used',
                          'Firewall rules used per network', ('project', 'name'))
-  # return used/vailable/ratio descriptors for project
+  # return used/available/ratio descriptors for project
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'project/{dtype}', name, ('project',),
                            dtype.endswith('ratio'))
