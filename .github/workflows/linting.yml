@@ -17,6 +17,7 @@ on:
   pull_request:
     branches:
       - master
+      - fast-dev
 
 jobs:
   linting:
