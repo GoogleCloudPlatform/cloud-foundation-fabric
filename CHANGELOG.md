@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [36.0.0-rc1] - 2024-10-31
+
+### FAST
+
+- [[#2649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2649)] Final fixes for v36.0.0-rc1 ([ludoo](https://github.com/ludoo)) 
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] **incompatible change:** Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) 
+
 ## [35.0.0] - 2024-10-30
 <!-- None < 2024-09-05 10:07:19+00:00 -->
 
@@ -2535,6 +2542,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...HEAD
+[36.0.0-rc1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...v36.0.0-rc1
 [35.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.1.0...v35.0.0
 [34.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...v34.1.0
 [34.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...v34.0.0
