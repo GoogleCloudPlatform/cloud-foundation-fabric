@@ -17,4 +17,5 @@
 name: Sandbox
 automation:
   enable: true
-  short_name: sbx
+  environment_name: dev
+  short_name: sbox

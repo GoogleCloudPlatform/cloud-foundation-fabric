@@ -55,6 +55,14 @@ moved {
   from = module.branch-nsec-r-sa[0]
   to   = module.nsec-sa-ro[0]
 }
+moved {
+  from = module.branch-networking-sa-cicd["0"]
+  to   = module.cicd-sa-rw["networking"]
+}
+moved {
+  from = module.branch-networking-r-sa-cicd["0"]
+  to   = module.cicd-sa-ro["networking"]
+}
 
 # stage 2 project factory
 
@@ -70,6 +78,14 @@ moved {
   from = module.branch-pf-r-sa
   to   = module.pf-sa-ro[0]
 }
+moved {
+  from = module.branch-pf-sa-cicd
+  to   = module.cicd-sa-rw["project-factory"]
+}
+moved {
+  from = module.branch-pf-r-sa-cicd
+  to   = module.cicd-sa-ro["project-factory"]
+}
 
 # stage 2 security
 
@@ -83,11 +99,19 @@ moved {
 }
 moved {
   from = module.branch-security-sa
-  to   = module.sec-sa-ro[0]
+  to   = module.sec-sa-rw[0]
 }
 moved {
   from = module.branch-security-r-sa
-  to   = module.sec-sa-rw[0]
+  to   = module.sec-sa-ro[0]
+}
+moved {
+  from = module.branch-security-sa-cicd["0"]
+  to   = module.cicd-sa-rw["security"]
+}
+moved {
+  from = module.branch-security-r-sa-cicd["0"]
+  to   = module.cicd-sa-ro["security"]
 }
 
 # project factory dev
