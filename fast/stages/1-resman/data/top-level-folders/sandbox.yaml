@@ -16,4 +16,5 @@
 
 name: Sandbox
 automation:
+  enable: true
   short_name: sbx

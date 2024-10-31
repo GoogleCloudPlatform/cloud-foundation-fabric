@@ -32,7 +32,8 @@ locals {
   # extract automation configurations for folders that define them
   top_level_automation = {
     for k, v in local.top_level_folders :
-    k => v.automation if try(v.automation.enable, null) == true
+    k => merge({ sa_impersonation_principals = [] }, v.automation)
+    if try(v.automation.enable, null) == true
   }
   # merge top folders from factory and variable data
   top_level_folders = merge(
@@ -120,7 +121,7 @@ module "top-level-sa" {
   name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} folder service account."
   prefix       = var.prefix
-  iam = {
+  iam = each.value.sa_impersonation_principals == null ? {} : {
     "roles/iam.serviceAccountTokenCreator" = each.value.sa_impersonation_principals
   }
   iam_project_roles = {

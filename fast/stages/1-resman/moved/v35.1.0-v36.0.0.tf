@@ -14,6 +14,127 @@
  * limitations under the License.
  */
 
+# stage 2 networking
+
+moved {
+  from = module.branch-network-folder
+  to   = module.net-folder[0]
+}
+moved {
+  from = module.branch-network-dev-folder
+  to   = module.net-folder-dev[0]
+}
+moved {
+  from = module.branch-network-prod-folder
+  to   = module.net-folder-prod[0]
+}
+moved {
+  from = module.branch-network-gcs
+  to   = module.net-bucket[0]
+}
+moved {
+  from = module.branch-network-sa
+  to   = module.net-sa-ro[0]
+}
+moved {
+  from = module.branch-network-r-sa
+  to   = module.net-sa-rw[0]
+}
+
+# stage 2 network security
+
+moved {
+  from = module.branch-nsec-gcs[0]
+  to   = module.nsec-bucket[0]
+}
+moved {
+  from = module.branch-nsec-sa[0]
+  to   = module.nsec-sa-rw[0]
+}
+moved {
+  from = module.branch-nsec-r-sa[0]
+  to   = module.nsec-sa-ro[0]
+}
+
+# stage 2 project factory
+
+moved {
+  from = module.branch-pf-gcs
+  to   = module.pf-bucket[0]
+}
+moved {
+  from = module.branch-pf-sa
+  to   = module.pf-sa-rw[0]
+}
+moved {
+  from = module.branch-pf-r-sa
+  to   = module.pf-sa-ro[0]
+}
+
+# stage 2 security
+
+moved {
+  from = module.branch-security-folder
+  to   = module.sec-folder[0]
+}
+moved {
+  from = module.branch-security-gcs
+  to   = module.sec-bucket[0]
+}
+moved {
+  from = module.branch-security-sa
+  to   = module.sec-sa-ro[0]
+}
+moved {
+  from = module.branch-security-r-sa
+  to   = module.sec-sa-rw[0]
+}
+
+# project factory dev
+
+moved {
+  from = module.branch-pf-dev-gcs
+  to   = module.stage3-bucket["project-factory-dev"]
+}
+moved {
+  from = module.branch-pf-dev-sa
+  to   = module.stage3-sa-rw["project-factory-dev"]
+}
+moved {
+  from = module.branch-pf-dev-r-sa
+  to   = module.stage3-sa-ro["project-factory-dev"]
+}
+
+# project factory prod
+
+moved {
+  from = module.branch-pf-prod-gcs
+  to   = module.stage3-bucket["project-factory-prod"]
+}
+moved {
+  from = module.branch-pf-prod-sa
+  to   = module.stage3-sa-rw["project-factory-prod"]
+}
+moved {
+  from = module.branch-pf-prod-r-sa
+  to   = module.stage3-sa-ro["project-factory-prod"]
+}
+
+# sandbox
+
+moved {
+  from = module.branch-sandbox-folder[0]
+  to   = module.top-level-folder["sandbox"]
+}
+moved {
+  from = module.branch-sandbox-gcs[0]
+  to   = module.top-level-bucket["sandbox"]
+}
+moved {
+  from = module.branch-sandbox-sa[0]
+  to   = module.top-level-sa["sandbox"]
+}
+
 # stage 3 gke
 
 moved {
