@@ -9,6 +9,15 @@ As usual, consider this a guideline with no guarantees. Migrations between FAST 
 <!-- markdownlint-disable MD024 -->
 
 <!-- BEGIN TOC -->
+- [v35.1.0 to v36.0.0](#v3510-to-v3600)
+  - [Bootstrap stage](#bootstrap-stage)
+  - [Resource Management stage](#resource-management-stage)
+  - [Networking stages](#networking-stages)
+  - [Security stage](#security-stage)
+- [v34.0.0 to v35.1.0](#v3400-to-v3510)
+  - [Bootstrap stage](#bootstrap-stage)
+  - [Resource management stage](#resource-management-stage)
+  - [Networking](#networking)
 <!-- END TOC -->
 
 ## v35.1.0 to v36.0.0
@@ -46,6 +55,14 @@ Given the amount of resource changes at the IAM level, we suggest applying twice
 **Non-breaking changes:**
 
 - GCS and local output files will be recreated
+
+### Networking stages
+
+IAM bindings for stage 3 service accounts change and will be dropped and recreated.
+
+### Security stage
+
+IAM bindings for stage 3 service accounts change and will be dropped and recreated.
 
 ## v34.0.0 to v35.1.0
 

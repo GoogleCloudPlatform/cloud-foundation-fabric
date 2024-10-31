@@ -515,7 +515,10 @@ def render_toc(readme, toc):
 def main(module_path=None, exclude_file=None, files=False, replace=True,
          show_extra=True, toc_only=False):
   'Program entry point.'
-  readme_path = os.path.join(module_path, 'README.md')
+  if toc_only and module_path.endswith('.md'):
+    readme_path = module_path
+  else:
+    readme_path = os.path.join(module_path, 'README.md')
   readme = get_readme(readme_path)
   if not toc_only:
     doc = create_tfref(module_path, files, show_extra, exclude_file, readme)
