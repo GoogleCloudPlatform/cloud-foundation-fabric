@@ -15,44 +15,45 @@
  */
 
 locals {
-  # Extract NGFW locations from prod CAS
   ngfw_prod_locations = toset([
-    for k, v in var.cas_configs.prod
-    : v.location
+    for k, v in var.cas_configs.prod : v.location
     if contains(var.ngfw_tls_configs.keys.prod.cas, k)
   ])
-  ngfw_prod_sa_agent_cas_iam_bindings_additive = {
-    nsec_prod_agent_sa_binding = {
-      member = module.prod-sec-project.service_agents["networksecurity"].iam_email
-      role   = "roles/privateca.certificateManager"
-    }
-  }
-  prod_kms_restricted_admins = [
-    for sa in distinct(compact([
-      var.service_accounts.data-platform-prod,
-      var.service_accounts.project-factory,
-      var.service_accounts.project-factory-prod
-    ])) : "serviceAccount:${sa}"
-  ]
 }
 
 module "prod-sec-project" {
-  source          = "../../../modules/project"
-  name            = "prod-sec-core-0"
-  parent          = var.folder_ids.security
+  source = "../../../modules/project"
+  name   = "prod-sec-core-0"
+  parent = coalesce(
+    var.folder_ids.security-prod, var.folder_ids.security
+  )
   prefix          = var.prefix
   billing_account = var.billing_account.id
+  labels          = { environment = "prod" }
+  services        = local.project_services
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["prod"]
+  }
+  # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
-    "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
+    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["prod"], [])
   }
-  iam_bindings_additive = {
-    for member in local.prod_kms_restricted_admins :
-    "kms_restricted_admin.${member}" => merge(local.kms_restricted_admin_template, {
-      member = member
-    })
-  }
-  labels   = { environment = "prod", team = "security" }
-  services = local.project_services
+  iam_bindings = (
+    lookup(local.iam_delegated_principals, "prod", null) == null ? {} : {
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_delegated_principals["prod"], [])
+        condition = {
+          title       = "prod_stage3_sa_delegated_grants"
+          description = "${var.environment_names["prod"]} project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
+      }
+    }
+  )
 }
 
 module "prod-sec-kms" {
@@ -76,7 +77,15 @@ module "prod-cas" {
   iam_bindings   = each.value.iam_bindings
   iam_bindings_additive = (
     contains(var.ngfw_tls_configs.keys.prod.cas, each.key)
-    ? merge(local.ngfw_prod_sa_agent_cas_iam_bindings_additive, each.value.iam_bindings_additive)
+    ? merge(
+      {
+        nsec_agent = {
+          member = module.prod-sec-project.service_agents["networksecurity"].iam_email
+          role   = "roles/privateca.certificateManager"
+        }
+      },
+      each.value.iam_bindings_additive
+    )
     : each.value.iam_bindings_additive
   )
   iam_by_principals = each.value.iam_by_principals

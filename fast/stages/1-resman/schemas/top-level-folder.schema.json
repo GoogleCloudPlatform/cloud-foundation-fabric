@@ -16,8 +16,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "short_name": {
+          "type": "string"
         }
       }
+    },
+    "contacts": {
+      "type": "string"
     },
     "iam": {
       "$ref": "#/$defs/iam"
@@ -30,6 +36,10 @@
     },
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
+    },
+    "is_fast_context": {
+      "type": "boolean",
+      "default": true
     },
     "name": {
       "type": "string"
@@ -108,7 +118,7 @@
         }
       }
     },
-    "parent": {
+    "parent_id": {
       "type": "string"
     },
     "tag_bindings": {

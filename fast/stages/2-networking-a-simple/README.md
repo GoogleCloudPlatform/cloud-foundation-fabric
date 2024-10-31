@@ -109,7 +109,7 @@ This is a summary of the main options:
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
 - [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center)
   - Pros: full bandwidth with no configurations, no extra latency, transitivity between spokes, feature (PSC transitivity, Private NAT, rich roadmap)
-  - Cons: traffic between spokes incour charges, PSA transitivity currently not supported, architectures involving NVAs can't currently easily be implemented 
+  - Cons: traffic between spokes incour charges, PSA transitivity currently not supported, architectures involving NVAs can't currently easily be implemented
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-b-nva](../2-networking-b-nva/)
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
@@ -280,28 +280,46 @@ Before running this stage, you need to make sure you have the correct credential
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-networking-*'
+# File linking commands for networking (simple) stage
 
-ln -s ~/fast-config/providers/2-networking-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/2-networking-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/2-networking.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/fast-test-00/2-nsec.auto.tfvars.json ./
 ```
 
 ```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-networking-*'
+# File linking commands for networking (simple) stage
 
+# provider file
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
+
+# input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-networking.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-nsec.auto.tfvars.json ./
 ```
 
 ### Impersonating the automation service account
@@ -452,7 +470,7 @@ VPN configuration also controls BGP advertisements, which requires the following
 
 DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `dev.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy one of the other environments DNS files [e.g. (dns-dev.tf)](dns-dev.tf) into a new `dns-*.tf` file suffixed with the environment name (e.g. `dns-staging.tf`), and update its content accordingly. Don't forget to add a peering zone from the landing to the newly created environment private zone.
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
@@ -483,21 +501,22 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 |---|---|:---:|:---:|:---:|:---:|
 | [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [billing_account](variables-fast.tf#L27) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [folder_ids](variables-fast.tf#L50) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; string&#10;  networking-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [organization](variables-fast.tf#L60) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L70) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [environment_names](variables-fast.tf#L49) | Long environment names. | <code title="object&#40;&#123;&#10;  dev  &#61; string&#10;  prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [folder_ids](variables-fast.tf#L58) | Folders to be used for the networking resources in folders/nnnnnnnnnnn format. | <code title="object&#40;&#123;&#10;  networking      &#61; string&#10;  networking-dev  &#61; optional&#40;string&#41;&#10;  networking-prod &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [prefix](variables-fast.tf#L68) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [alert_config](variables.tf#L17) | Configuration for monitoring alerts. | <code title="object&#40;&#123;&#10;  vpn_tunnel_established &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_tunnel_bandwidth &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    threshold_mbys        &#61; optional&#40;string, &#34;187.5&#34;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  vpn_tunnel_established &#61; &#123;&#125;&#10;  vpn_tunnel_bandwidth   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [create_test_instances](variables.tf#L42) | Enables the creation of test VMs in each VPC, useful to test and troubleshoot connectivity. | <code>bool</code> |  | <code>false</code> |  |
+| [custom_roles](variables-fast.tf#L40) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  project_iam_viewer &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 | [dns](variables.tf#L48) | DNS configuration. | <code title="object&#40;&#123;&#10;  enable_logging &#61; optional&#40;bool, true&#41;&#10;  resolvers      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [enable_cloud_nat](variables.tf#L58) | Deploy Cloud NAT. | <code>bool</code> |  | <code>false</code> |  |
 | [essential_contacts](variables.tf#L65) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
 | [factories_config](variables.tf#L71) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [fast_features](variables-fast.tf#L40) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  gcve &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-0-bootstrap</code> |
 | [outputs_location](variables.tf#L92) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [psa_ranges](variables.tf#L98) | IP ranges used for Private Service Access (CloudSQL, etc.). | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  prod &#61; optional&#40;list&#40;object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [regions](variables.tf#L118) | Region definitions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [service_accounts](variables-fast.tf#L80) | Automation service accounts in name => email format. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  gke-dev              &#61; string&#10;  gke-prod             &#61; string&#10;  project-factory      &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>1-resman</code> |
 | [spoke_configs](variables.tf#L130) | Spoke connectivity configurations. | <code title="object&#40;&#123;&#10;  ncc_configs &#61; optional&#40;object&#40;&#123;&#10;    export_psc &#61; optional&#40;bool, true&#41;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      exclude_export_ranges &#61; list&#40;string&#41;&#10;      &#125;&#41;, &#123;&#10;      exclude_export_ranges &#61; &#91;&#93;&#10;    &#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      exclude_export_ranges &#61; list&#40;string&#41;&#10;      &#125;&#41;, &#123;&#10;      exclude_export_ranges &#61; &#91;&#93;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  peering_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      export        &#61; optional&#40;bool, true&#41;&#10;      import        &#61; optional&#40;bool, true&#41;&#10;      public_export &#61; optional&#40;bool&#41;&#10;      public_import &#61; optional&#40;bool&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_configs &#61; optional&#40;object&#40;&#123;&#10;    dev &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65501&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    landing &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65500&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    prod &#61; optional&#40;object&#40;&#123;&#10;      asn &#61; optional&#40;number, 65502&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  peering_configs &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [stage_config](variables-fast.tf#L78) | FAST stage configuration. | <code title="object&#40;&#123;&#10;  networking &#61; optional&#40;object&#40;&#123;&#10;    short_name               &#61; optional&#40;string&#41;&#10;    iam_delegated_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_viewer_principals    &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [tag_values](variables-fast.tf#L92) | Root-level tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 | [vpn_onprem_primary_config](variables.tf#L199) | VPN gateway configuration for onprem interconnection in the primary region. | <code title="object&#40;&#123;&#10;  peer_external_gateways &#61; map&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  router_config &#61; object&#40;&#123;&#10;    create    &#61; optional&#40;bool, true&#41;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs

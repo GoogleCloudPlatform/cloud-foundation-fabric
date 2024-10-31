@@ -1,13 +1,12 @@
 # Resource hierarchy
 
-This stage performs two important tasks:
+This stage manages the upper part of the resource management hierarchy, and decouples later stages (networking, etc.) from the organization via folders, IaC resources and IAM bindings.
 
-- create the top-level hierarchy of folders, and the associated resources used later on to automate each part of the hierarchy (eg. Networking)
-- configure resource management tags used in scoping specific IAM roles on the resource hierarchy
+The complete hierarchy is not managed here, as considerations on departments, teams, and applications are too granular and best managed via the [project factory](../2-project-factory/), which this stage enables.
 
-The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Security, etc.), and then allow easy customizations to complete the implementation of the intended hierarchy design.
+As many other parts of FAST, this stage implements several factories that allow simplified management and operations of recurring sets of resources.
 
-The following diagram is a high level reference of the resources created and managed here:
+The following diagram is a high level reference of the resources created and managed here, and gives an initial representation of its three main configuration elements: top-level folders, FAST stage 2s and stage 3s.
 
 <p align="center">
   <img src="diagram.png" alt="Resource-management diagram">
@@ -15,7 +14,13 @@ The following diagram is a high level reference of the resources created and man
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [Department or team folders](#department-or-team-folders)
+- [Resource management primitives](#resource-management-primitives)
+  - [Top-level folders](#top-level-folders)
+  - [Stage 2](#stage-2)
+  - [Stage 3](#stage-3)
+  - [Project (and hierarchy) factory](#project-and-hierarchy-factory)
+- [Other design considerations](#other-design-considerations)
+  - [Secure tags](#secure-tags)
   - [Multitenancy](#multitenancy)
   - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
 - [How to run this stage](#how-to-run-this-stage)
@@ -23,11 +28,6 @@ The following diagram is a high level reference of the resources created and man
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
-- [Customizations](#customizations)
-  - [Toggling features](#toggling-features)
-  - [Top-level folders](#top-level-folders)
-  - [Secure tags](#secure-tags)
-  - [IAM](#iam)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -35,160 +35,88 @@ The following diagram is a high level reference of the resources created and man
 
 ## Design overview and choices
 
-Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers, where the hierarchy is laid out following two conceptually different approaches:
+This stage is designed to offer a good amount of flexibility in laying out the organizational hierarchy, while still providing a default approach that we've seen working across different types of users and organizations.
 
-- core or shared resources are grouped in hierarchy branches that map to their type or purpose (e.g. Networking)
-- team or application resources are grouped in lower level hierarchy branches that map to management or operational considerations (e.g. which team manages a set of applications, or owns a subset of company data, etc.)
+The default design provided here splits the hierarchy in two different logical areas:
 
-This split approach usually represents well functional and operational patterns, where core resources are centrally managed by individual teams (e.g. networking, security, fleets of similar VMS, etc.), while teams need more granularity to access managed services used by the applications they maintain.
+- core or shared resources (e.g. networking) which are grouped in dedicated top-level folders that implement centralized management by dedicated teams
+- team or application resources which are grouped under one or more top-level "teams" folders, and typically host managed services (storage, etc.) billed and controlled by their distributed teams
 
-The approach also adapts to different high level requirements:
+This split approach allows concise mapping of functional and operational patterns to IAM roles and GCP-specific constructs:
 
-- it can be used either for single organizations containing multiple environments, or with multiple organizations dedicated to specific environments (e.g. prod/nonprod), as the environment split is implemented at the project or lower folder level
-- it adapts to complex scenarios, with different countries or corporate entities using the same GCP organization, as core services are typically shared, and/or an extra layer on top can be used as a drop-in to implement the country/entity separation
+- core services are clearly separated, providing few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
+- new sets of core services (fleets of VMs, shared GKE clusters, etc.) are added as a unit, minimizing operational complexity
+- team and application resources not subject to centralized management are grouped together, providing a unified view and easy budgeting/cost-allocation
+- automation for core resources is segregated via separate service accounts and buckets for each area (shared service, application) effectively minimizing blast radius
 
-Additionally, a few critical benefits are directly provided by this design:
+Resource names follow the FAST convention discussed in the [Bootstrap stage documentation](../0-bootstrap/README.md#naming).
 
-- core services are clearly separated, with very few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
-- adding a new set of core services (e.g. shared GKE clusters) is a trivial operation that does not break the existing design
-- grouping application resources and services using teams or business logic is a flexible approach, which maps well to typical operational or budget requirements
-- automation stages (e.g. Networking) can be segregated in a simple and effective way, by creating the required service accounts and buckets for each stage here, and applying a handful of IAM roles to the relevant folder
+## Resource management primitives
 
-For a discussion on naming, please refer to the [Bootstrap stage documentation](../0-bootstrap/README.md#naming), as the same approach is shared by all stages.
-
-### Department or team folders
-
-Top-level folders for teams or departments can be easily created via the `top_level_folders` variable or the associated factory, which expose the full power of the underlying [folder module](../../../modules/folder/).
-
-The suggestion is to use this feature sparingly so as to keep the top level of the hierarchy simple, and minimize changes to this stage due to its security implications. One approach is to create a grouping folder (e.g. `Departments` or `Teams`) here, and delegate management of lower level folders to the [project factory](../2-project-factory/) stage.
-
-Top-level folders also support defining associated resources for automation, and auto-created provider files to bootstrap Infrastructure and Code. An example is provided below.
-
-### Multitenancy
-
-Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../2-project-factory/) support for folder and project management.
-
-### Workload Identity Federation and CI/CD
-
-This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
-
-For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-bootstrap/README.md#cicd-repositories).
-
-## How to run this stage
-
-This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
-
-It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the actual roles needed.
-
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
-
-### Provider and Terraform variables
-
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
-
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
-
-```bash
-../../stage-links.sh ~/fast-config
-
-# copy and paste the following commands for '1-resman'
-
-ln -s ~/fast-config/providers/1-resman-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-```
-
-```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
-
-# copy and paste the following commands for '1-resman'
-
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-resman-providers.tf ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-```
-
-### Impersonating the automation service account
-
-The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
-
-### Variable configuration
-
-Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
-
-- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
-- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
-
-The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
-
-Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
-
-```tfvars
-outputs_location = "~/fast-config"
-```
-
-### Running the stage
-
-Once provider and variable values are in place and the correct user is configured, the stage can be run:
-
-```bash
-terraform init
-terraform apply
-```
-
-## Customizations
-
-### Toggling features
-
-Some FAST features used here and by the following stages can be enabled or disabled using the `fast_features` variables.
-
-The `fast_features` variable consists of 5 toggles:
-
-- **`data_platform`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-data-platform](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-data-platform) stage
-- **`gcve`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gcve](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gcve) stage
-- **`gke`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gke-multitenant](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gke-multitenant) stage
-- **`project_factory`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [2-project-factory](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/2-project-factory) stage
-- **`sandbox`** controls the creation of a "Sandbox" top level folder with relaxed policies, intended for sandbox environments where users can experiment
-- **`teams`** controls the creation of the top level "Teams" folder used by the [teams feature in resman](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/1-resman#team-folders).
+This stage allows a certain degree of free-form hierarchy design on top of instead of the default layout, by providing a set of high level primitives that implement specific FAST functionality: top-level folders, centralized stage 2, environment-level stage 3 for shared services, and the project factory.
 
 ### Top-level folders
 
-The `top_level_folders` variable and associated factory allow simple definition of additional top-level folders, and associated configurations.
+Top-level folders, as indicated by their name, are folders directly attached to the organization that can be freely defined via Terraform variables or factory YAML files. They represent a node in the organization, which can be used to partition the hierarchy via IAM or tag bindings, and to implement separate automation stages via their optional IaC resources.
 
-The following is an example that creates two folders via tfvars, and also configures the factory to define additional folders via YAML. Folders defined via the variable or factory files support the same interface of the [folder module](../../../modules/folder/).
+Top-level folders support the full interface of the [folder module](../../../modules/folder/), and can fit in the FAST design in different ways:
 
-```tfvars
-factories_config = {
-  top_level_folders = "~/fast-config/data/1-resman/folders"
-}
-top_level_folders = {
-  test-1 = {
-    name = "Test 1"
-    iam = {
-      "roles/viewer" = [
-        "group:test-1-viewers@example.org"
-      ]
-    }
-  }
-  test-2 = {
-    # disable creation of the automation SA and bucket
-    automation = {
-      enable = false
-    }
-    name = "Test 2"
-  }
-}
-```
+- as supporting folders for the project factory, by granting high level permissions to its service accounts via IAM and tag bindings (see the ["Teams" example in the data folder](./data/top-level-folders/teams.yaml))
+- as standalone folders to support custom usage, with or without associated IaC resources (see the ["Sandbox" exanple in the data folder](./data/top-level-folders/sandbox.yaml))
+- as grouping nodes for the environment-specific stage 3 folders (see the ["GCVE" example in the data folder](./data/top-level-folders/gcve.yaml))
+- as a grouping node for stage 2s, for example via a "Shared Services" top-level folder set as the `folder_config.parent_id` attribute for networking and security stages
 
-```yaml
-# ~/fast-config/data/1-resman/folders/test-4.yaml
-name: Test 4
-automation: null
-iam:
-  roles/browser:
-    - domain:example.org
-```
+Top-level folders support context-based expansion for service accounts and organization-level tags, which can be referenced by name (e.g. `project-factory` to refer to the project factory service accounts). This allows writing portable organization-independent YAML that can be shared across different FAST installations.
+
+### Stage 2
+
+FAST stage 2s implement core infrastructure services shared across the organization. In the FAST design networking, security, network security and the project factory are defined as stage 2.
+
+FAST stage 2s are typically managed by dedicated teams, they implement environment separation internally due to the complexity of their designs, and provide resources and specific IAM permissions to other shared services implemented as stage 3s (e.g. Shared VPC networks, IAM delegated grants on host projects/subnets or KMS keys).
+
+The default configuration enables all stage 2s except network security. Each stage can be customized via a set of variable-level attributes:
+
+- `short_name` defines the name used for the stage IaC buckets and service accounts
+- `cicd_config` turns on CI/CD configuration and generates the workflow file for the stage
+- `folder_config` controls whether environment-level folders are created under the stage main folder (e.g. `Networking/Development`), allows defining additional IAM bindings on the main folder, or changing its name and parent
+
+Folder configuration is only available for networking and security stages, as the project factory and network security stages are "folderless", using top-level folders or organization-level resources.
+
+Each stage creates its own tag value in the `context` key, which is used by FAST for conditional roles at the organization level (`context/networking`, `context/project-factory` etc.). The tag value is assigned to the stage's folder, and can be applied to other folders to enable specific functionality, as described further down for the project factory.
+
+Think of stage 2s as "named stages" which have specific ties and privileges on the organization. Due to their complexity and the potential need for custom changes, they are implemented in code via dedicated terraform resources each in a stage file (e.g. `stage2-networking.tf`).
+
+### Stage 3
+
+FAST stage 3s are designed to host shared infrastructure that leverages core services from stage 2 (networking, encryption keys, etc.), has limited access to the organization, and is partitioned (or "cloned") by environment.
+
+As shared services they are still managed by dedicated teams, but principals and permissions might differ between environments. Most stage 3s leverage folders (environment-level project factories are the exception), where the stage root folder is created via top-level folders configuration, and the lower level environment folders are part of the stage.
+
+Configuration can be done either via Terraform variables or factory YAML files. The second option is used by default, providing a set of factory files for top-level folders and stage 3s that mirror the legacy FAST hierarchy implemented via code.
+
+Stage 3 configuration is similar to the stage 2 one described above except for a few differences. Each stage defined in the `fast_stage_3` map:
+
+- can define an arbitrary name in the map key, which is used for the stage's output files and internal context-based substitutions
+- needs to define an environment which is present in the bootstrap `environment_names` definition
+- can define organization-level IAM bindings that are conditional to the stage tag value, or an arbitrary one defined in configuration
+- can define stage 2-level tag bindings that are effective only on the stage 2 resources matching the same environment
+
+> TODO: examples from data, make sure the add IAM for GCVE etc. there
+
+### Project (and hierarchy) factory
+
+Despite being itself a stage 2 (and potentially one or more environment-specific stage 3), the project factory is an important primitive to shape the lower level resource hierarchy which implements folder and project management.
+
+By default FAST offers a single organization-wide project factory with the following characteristics:
+
+- any top-level folder with the suitable set of roles can be managed as a sub-hierarchy tree by the project factory (see the ["Teams" definition](./data/top-level-folders/teams.yaml) in the data folder)
+- organization policy management on its folders and projects by the project factory only requires binding the `context/project-factory` tag value
+- networking-related project configuration is available by default, the project factory can grant a limited set of roles on network resources, and attach service projects to VPC host projects
+- security-related project configuration is available by default, the project factory can grant the KMS encrypt/decrypt role on centralized KMS key in the security stage
+
+If environment-specific project factories are desirable, they can be configured as stage 3 as the examples in the stage3 data folder show.
+
+## Other design considerations
 
 ### Secure tags
 
@@ -220,82 +148,147 @@ tags = {
 }
 ```
 
-### IAM
+### Multitenancy
 
-The `folder_iam` variable can be used to manage authoritative bindings for all top-level folders. For additional control, IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies through the IAM-related variables (`iam`, `iam_bindings`, `iam_bindings_additive`) of the relevant modules.
+Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../2-project-factory/) support for folder and project management.
 
-A full reference of IAM roles managed by this stage [is available here](./IAM.md).
+### Workload Identity Federation and CI/CD
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
+
+For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-bootstrap/README.md#cicd-repositories).
+
+## How to run this stage
+
+This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
+
+It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the actual roles needed.
+
+Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+
+### Provider and Terraform variables
+
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+
+Using local output files.
+
+```bash
+../fast-links.sh ~/fast-config
+
+# File linking commands for resource management stage
+
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/1-resman-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/1-resman.auto.tfvars ./
+```
+
+Using the GCS outputs bucket.
+
+```bash
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# File linking commands for resource management stage
+
+# provider file
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-resman-providers.tf ./
+
+# input files from other stages
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/1-resman.auto.tfvars ./
+```
+
+### Impersonating the automation service account
+
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+
+### Variable configuration
+
+Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
+
+- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+
+Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
+
+```tfvars
+outputs_location = "~/fast-config"
+```
+
+### Running the stage
+
+Once provider and variable values are in place and the correct user is configured, the stage can be run:
+
+```bash
+terraform init
+terraform apply
+```
+
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-resman-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
 | name | description | modules | resources |
 |---|---|---|---|
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
-| [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-gcve.tf](./branch-gcve.tf) | GCVE stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-gke.tf](./branch-gke.tf) | GKE multitenant stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-nsec.tf](./branch-nsec.tf) | Network security stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-project-factory.tf](./branch-project-factory.tf) | Project factory stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [checklist.tf](./checklist.tf) | None | <code>folder</code> |  |
-| [cicd-data-platform.tf](./cicd-data-platform.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> |  |
-| [cicd-gcve.tf](./cicd-gcve.tf) | CI/CD resources for the GCVE branch. | <code>iam-service-account</code> |  |
-| [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the GKE multitenant branch. | <code>iam-service-account</code> |  |
-| [cicd-netsec.tf](./cicd-netsec.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> |  |
-| [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> |  |
-| [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the project factories. | <code>iam-service-account</code> |  |
-| [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> |  |
 | [iam.tf](./iam.tf) | Organization or root node-level IAM bindings. |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
-| [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
-| [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
+| [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [stage-2-network-security.tf](./stage-2-network-security.tf) | None | <code>gcs</code> · <code>iam-service-account</code> |  |
+| [stage-2-networking.tf](./stage-2-networking.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [stage-2-project-factory.tf](./stage-2-project-factory.tf) | None | <code>gcs</code> · <code>iam-service-account</code> |  |
+| [stage-2-security.tf](./stage-2-security.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [stage-3.tf](./stage-3.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [stage-cicd.tf](./stage-cicd.tf) | None | <code>iam-service-account</code> |  |
 | [tenant-logging.tf](./tenant-logging.tf) | Audit log project and sink for tenant root folder. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>pubsub</code> |  |
 | [tenant-root.tf](./tenant-root.tf) | None | <code>folder</code> · <code>project</code> |  |
 | [top-level-folders.tf](./top-level-folders.tf) | None | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
+| [variables-stages.tf](./variables-stages.tf) | None |  |  |
+| [variables-toplevel-folders.tf](./variables-toplevel-folders.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
 ## Variables
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    audiences        &#61; list&#40;string&#41;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_branch &#61; string&#10;    principal_repo   &#61; string&#10;  &#125;&#41;&#41;&#10;  cicd_backends &#61; object&#40;&#123;&#10;    terraform &#61; object&#40;&#123;&#10;      organization &#61; string&#10;      workspaces &#61; map&#40;object&#40;&#123;&#10;        tags    &#61; list&#40;string&#41;&#10;        name    &#61; string&#10;        project &#61; string&#10;      &#125;&#41;&#41;&#10;      hostname &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    resman-r &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L53) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [logging](variables-fast.tf#L109) | Logging configuration for tenants. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;  log_sinks &#61; optional&#40;map&#40;object&#40;&#123;&#10;    filter &#61; string&#10;    type   &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-tenant-factory</code> |
-| [organization](variables-fast.tf#L122) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L140) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [cicd_repositories](variables.tf#L20) | CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  data_platform_dev &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  data_platform_prod &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gke_dev &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gke_prod &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gcve_dev &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gcve_prod &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  nsec &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  networking &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  project_factory &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  project_factory_dev &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  project_factory_prod &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  security &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    type              &#61; string&#10;    branch            &#61; optional&#40;string&#41;&#10;    identity_provider &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [custom_roles](variables-fast.tf#L64) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  gcve_network_admin              &#61; string&#10;  network_firewall_policies_admin &#61; string&#10;  network_firewall_policies_viewer &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_admin            &#61; string&#10;  ngfw_enterprise_viewer           &#61; string&#10;  organization_admin_viewer        &#61; string&#10;  service_project_network_admin    &#61; string&#10;  storage_viewer                   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
-| [factories_config](variables.tf#L122) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  checklist_data    &#61; optional&#40;string&#41;&#10;  org_policies      &#61; optional&#40;string, &#34;data&#47;org-policies&#34;&#41;&#10;  top_level_folders &#61; optional&#40;string, &#34;data&#47;top-level-folders&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [fast_features](variables.tf#L133) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform &#61; optional&#40;bool, false&#41;&#10;  gke           &#61; optional&#40;bool, false&#41;&#10;  gcve          &#61; optional&#40;bool, false&#41;&#10;  nsec          &#61; optional&#40;bool, false&#41;&#10;  sandbox       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [folder_iam](variables.tf#L146) | Authoritative IAM for top-level folders. | <code title="object&#40;&#123;&#10;  data_platform &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  gcve          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  gke           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  sandbox       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  security      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  network       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [groups](variables-fast.tf#L81) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code title="object&#40;&#123;&#10;  gcp-billing-admins      &#61; optional&#40;string, &#34;gcp-billing-admins&#34;&#41;&#10;  gcp-devops              &#61; optional&#40;string, &#34;gcp-devops&#34;&#41;&#10;  gcp-network-admins      &#61; optional&#40;string, &#34;gcp-vpc-network-admins&#34;&#41;&#10;  gcp-organization-admins &#61; optional&#40;string, &#34;gcp-organization-admins&#34;&#41;&#10;  gcp-security-admins     &#61; optional&#40;string, &#34;gcp-security-admins&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [locations](variables-fast.tf#L96) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  gcs     &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [outputs_location](variables.tf#L160) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
-| [root_node](variables-fast.tf#L146) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-bootstrap</code> |
-| [tag_names](variables.tf#L166) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context     &#61; optional&#40;string, &#34;context&#34;&#41;&#10;  environment &#61; optional&#40;string, &#34;environment&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [tags](variables.tf#L180) | Custom secure tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [top_level_folders](variables.tf#L201) | Additional top-level folders. Keys are used for service account and bucket names, values implement the folders module interface with the addition of the 'automation' attribute. | <code title="map&#40;object&#40;&#123;&#10;  name &#61; string&#10;  automation &#61; optional&#40;object&#40;&#123;&#10;    enable                      &#61; optional&#40;bool, true&#41;&#10;    sa_impersonation_principals &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  firewall_policy &#61; optional&#40;object&#40;&#123;&#10;    name   &#61; string&#10;    policy &#61; string&#10;  &#125;&#41;&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;map&#40;list&#40;string&#41;&#41;&#41;, &#123;&#125;&#41;&#10;  logging_exclusions  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  logging_settings &#61; optional&#40;object&#40;&#123;&#10;    disable_default_sink &#61; optional&#40;bool&#41;&#10;    storage_location     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  logging_sinks &#61; optional&#40;map&#40;object&#40;&#123;&#10;    bq_partitioned_table &#61; optional&#40;bool, false&#41;&#10;    description          &#61; optional&#40;string&#41;&#10;    destination          &#61; string&#10;    disabled             &#61; optional&#40;bool, false&#41;&#10;    exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    filter               &#61; optional&#40;string&#41;&#10;    iam                  &#61; optional&#40;bool, true&#41;&#10;    include_children     &#61; optional&#40;bool, true&#41;&#10;    type                 &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  org_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;    inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;    reset               &#61; optional&#40;bool&#41;&#10;    rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      allow &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      deny &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        description &#61; optional&#40;string&#41;&#10;        expression  &#61; optional&#40;string&#41;&#10;        location    &#61; optional&#40;string&#41;&#10;        title       &#61; optional&#40;string&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    audiences        &#61; list&#40;string&#41;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_branch &#61; string&#10;    principal_repo   &#61; string&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    resman-r &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [billing_account](variables-fast.tf#L42) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [logging](variables-fast.tf#L97) | Logging configuration for tenants. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;  log_sinks &#61; optional&#40;map&#40;object&#40;&#123;&#10;    filter &#61; string&#10;    type   &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-tenant-factory</code> |
+| [organization](variables-fast.tf#L110) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L128) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [custom_roles](variables-fast.tf#L53) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  organization_admin_viewer       &#61; string&#10;  service_project_network_admin   &#61; string&#10;  storage_viewer                  &#61; string&#10;  gcve_network_admin              &#61; optional&#40;string&#41;&#10;  gcve_network_viewer             &#61; optional&#40;string&#41;&#10;  network_firewall_policies_admin &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_admin           &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_viewer          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
+| [environment_names](variables.tf#L20) | Long environment names. | <code title="object&#40;&#123;&#10;  dev  &#61; string&#10;  prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#34;development&#34;&#10;  prod &#61; &#34;production&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [factories_config](variables.tf#L32) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  org_policies      &#61; optional&#40;string, &#34;data&#47;org-policies&#34;&#41;&#10;  stage_3           &#61; optional&#40;string, &#34;data&#47;stage-3&#34;&#41;&#10;  top_level_folders &#61; optional&#40;string, &#34;data&#47;top-level-folders&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [fast_stage_2](variables-stages.tf#L17) | FAST stages 2 configurations. | <code title="object&#40;&#123;&#10;  networking &#61; optional&#40;object&#40;&#123;&#10;    enabled    &#61; optional&#40;bool, true&#41;&#10;    short_name &#61; optional&#40;string, &#34;net&#34;&#41;&#10;    cicd_config &#61; optional&#40;object&#40;&#123;&#10;      identity_provider &#61; string&#10;      repository &#61; object&#40;&#123;&#10;        name      &#61; string&#10;        branch    &#61; optional&#40;string&#41;&#10;        parent_id &#61; optional&#40;string&#41;&#10;        type      &#61; optional&#40;string, &#34;github&#34;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    folder_config &#61; optional&#40;object&#40;&#123;&#10;      create_env_folders &#61; optional&#40;bool, true&#41;&#10;      iam_by_principals  &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      name               &#61; optional&#40;string, &#34;Networking&#34;&#41;&#10;      parent_id          &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  network_security &#61; optional&#40;object&#40;&#123;&#10;    enabled    &#61; optional&#40;bool, false&#41;&#10;    short_name &#61; optional&#40;string, &#34;nsec&#34;&#41;&#10;    cicd_config &#61; optional&#40;object&#40;&#123;&#10;      identity_provider &#61; string&#10;      repository &#61; object&#40;&#123;&#10;        name      &#61; string&#10;        branch    &#61; optional&#40;string&#41;&#10;        parent_id &#61; optional&#40;string&#41;&#10;        type      &#61; optional&#40;string, &#34;github&#34;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  project_factory &#61; optional&#40;object&#40;&#123;&#10;    enabled    &#61; optional&#40;bool, true&#41;&#10;    short_name &#61; optional&#40;string, &#34;pf&#34;&#41;&#10;    cicd_config &#61; optional&#40;object&#40;&#123;&#10;      identity_provider &#61; string&#10;      repository &#61; object&#40;&#123;&#10;        name   &#61; string&#10;        branch &#61; optional&#40;string&#41;&#10;        type   &#61; optional&#40;string, &#34;github&#34;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  security &#61; optional&#40;object&#40;&#123;&#10;    enabled    &#61; optional&#40;bool, true&#41;&#10;    short_name &#61; optional&#40;string, &#34;sec&#34;&#41;&#10;    cicd_config &#61; optional&#40;object&#40;&#123;&#10;      identity_provider &#61; string&#10;      repository &#61; object&#40;&#123;&#10;        name   &#61; string&#10;        branch &#61; optional&#40;string&#41;&#10;        type   &#61; optional&#40;string, &#34;github&#34;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    folder_config &#61; optional&#40;object&#40;&#123;&#10;      create_env_folders &#61; optional&#40;bool, false&#41;&#10;      iam_by_principals  &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      name               &#61; optional&#40;string, &#34;Security&#34;&#41;&#10;      parent_id          &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [fast_stage_3](variables-stages.tf#L97) | FAST stages 3 configurations. | <code title="map&#40;object&#40;&#123;&#10;  short_name  &#61; string&#10;  environment &#61; optional&#40;string, &#34;dev&#34;&#41;&#10;  cicd_config &#61; optional&#40;object&#40;&#123;&#10;    identity_provider &#61; string&#10;    repository &#61; object&#40;&#123;&#10;      name   &#61; string&#10;      branch &#61; optional&#40;string&#41;&#10;      type   &#61; optional&#40;string, &#34;github&#34;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  folder_config &#61; optional&#40;object&#40;&#123;&#10;    name              &#61; string&#10;    iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    parent_id         &#61; optional&#40;string&#41;&#10;    tag_bindings      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  organization_iam &#61; optional&#40;object&#40;&#123;&#10;    context_tag_value &#61; string&#10;    sa_roles &#61; object&#40;&#123;&#10;      ro &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      rw &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  stage2_iam &#61; optional&#40;object&#40;&#123;&#10;    networking &#61; optional&#40;object&#40;&#123;&#10;      iam_admin_delegated &#61; optional&#40;bool, false&#41;&#10;      sa_roles &#61; optional&#40;object&#40;&#123;&#10;        ro &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;        rw &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    security &#61; optional&#40;object&#40;&#123;&#10;      iam_admin_delegated &#61; optional&#40;bool, false&#41;&#10;      sa_roles &#61; optional&#40;object&#40;&#123;&#10;        ro &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;        rw &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [groups](variables-fast.tf#L69) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code title="object&#40;&#123;&#10;  gcp-billing-admins      &#61; optional&#40;string, &#34;gcp-billing-admins&#34;&#41;&#10;  gcp-devops              &#61; optional&#40;string, &#34;gcp-devops&#34;&#41;&#10;  gcp-network-admins      &#61; optional&#40;string, &#34;gcp-vpc-network-admins&#34;&#41;&#10;  gcp-organization-admins &#61; optional&#40;string, &#34;gcp-organization-admins&#34;&#41;&#10;  gcp-security-admins     &#61; optional&#40;string, &#34;gcp-security-admins&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [locations](variables-fast.tf#L84) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  gcs     &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [outputs_location](variables.tf#L43) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
+| [root_node](variables-fast.tf#L134) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-bootstrap</code> |
+| [tag_names](variables.tf#L49) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context     &#61; optional&#40;string, &#34;context&#34;&#41;&#10;  environment &#61; optional&#40;string, &#34;environment&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [tags](variables.tf#L63) | Custom secure tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [top_level_folders](variables-toplevel-folders.tf#L17) | Additional top-level folders. Keys are used for service account and bucket names, values implement the folders module interface with the addition of the 'automation' attribute. | <code title="map&#40;object&#40;&#123;&#10;  name      &#61; string&#10;  parent_id &#61; optional&#40;string&#41;&#10;  automation &#61; optional&#40;object&#40;&#123;&#10;    enable                      &#61; optional&#40;bool, true&#41;&#10;    sa_impersonation_principals &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    short_name                  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  firewall_policy &#61; optional&#40;object&#40;&#123;&#10;    name   &#61; string&#10;    policy &#61; string&#10;  &#125;&#41;&#41;&#10;  is_fast_context     &#61; optional&#40;bool, true&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;map&#40;list&#40;string&#41;&#41;&#41;, &#123;&#125;&#41;&#10;  logging_exclusions  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  logging_settings &#61; optional&#40;object&#40;&#123;&#10;    disable_default_sink &#61; optional&#40;bool&#41;&#10;    storage_location     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  logging_sinks &#61; optional&#40;map&#40;object&#40;&#123;&#10;    bq_partitioned_table &#61; optional&#40;bool, false&#41;&#10;    description          &#61; optional&#40;string&#41;&#10;    destination          &#61; string&#10;    disabled             &#61; optional&#40;bool, false&#41;&#10;    exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    filter               &#61; optional&#40;string&#41;&#10;    iam                  &#61; optional&#40;bool, true&#41;&#10;    include_children     &#61; optional&#40;bool, true&#41;&#10;    type                 &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  org_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;    inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;    reset               &#61; optional&#40;bool&#41;&#10;    rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      allow &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      deny &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        description &#61; optional&#40;string&#41;&#10;        expression  &#61; optional&#40;string&#41;&#10;        location    &#61; optional&#40;string&#41;&#10;        title       &#61; optional&#40;string&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L413) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L427) | Data for the Data Platform stage. |  |  |
-| [folder_ids](outputs.tf#L443) | Folder ids. |  |  |
-| [gcve](outputs.tf#L448) | Data for the GCVE stage. |  | <code>03-gcve</code> |
-| [gke_multitenant](outputs.tf#L469) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L490) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L499) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L518) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>03-network-security</code> |
-| [sandbox](outputs.tf#L525) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L539) | Data for the networking stage. |  | <code>02-security</code> |
-| [tfvars](outputs.tf#L550) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L77) | WIF configuration for CI/CD repositories. |  |  |
+| [folder_ids](outputs.tf#L89) | Folder ids. |  |  |
+| [providers](outputs.tf#L95) | Terraform provider files for this stage and dependent stages. | ✓ |  |
+| [tfvars](outputs.tf#L102) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

@@ -15,8 +15,7 @@
  */
 
 locals {
-  _tpl_providers_gcs       = "${path.module}/templates/providers_gcs.tf.tpl"
-  _tpl_providers_terraform = "${path.module}/templates/providers_terraform.tf.tpl"
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   # render CI/CD workflow templates
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
@@ -42,96 +41,59 @@ locals {
         tf_var_files = local.cicd_workflow_var_files[k]
       }
     )
-    if v.type != "terraform"
-  }
-  providers_config = {
-    "0-bootstrap" = {
-      name          = "bootstrap",
-      sa            = module.automation-tf-bootstrap-sa.email,
-      bucket        = module.automation-tf-bootstrap-gcs.name,
-      backend_extra = null
-    },
-    "0-bootstrap-r" = {
-      name          = "bootstrap",
-      sa            = module.automation-tf-bootstrap-r-sa.email,
-      bucket        = module.automation-tf-bootstrap-gcs.name,
-      backend_extra = null
-    },
-    "1-resman" = {
-      name          = "resman",
-      sa            = module.automation-tf-resman-sa.email,
-      bucket        = module.automation-tf-resman-gcs.name,
-      backend_extra = null
-    },
-    "1-resman-r" = {
-      name          = "resman",
-      sa            = module.automation-tf-resman-r-sa.email,
-      bucket        = module.automation-tf-resman-gcs.name,
-      backend_extra = null
-    },
-    "1-tenant-factory" = {
-      name          = "tenant-factory",
-      sa            = module.automation-tf-resman-sa.email,
-      bucket        = module.automation-tf-resman-gcs.name,
-      backend_extra = "prefix = \"tenant-factory\""
-    },
-    "1-tenant-factory-r" = {
-      name          = "tenant-factory",
-      sa            = module.automation-tf-resman-r-sa.email,
-      bucket        = module.automation-tf-resman-gcs.name,
-      backend_extra = "prefix = \"tenant-factory\""
-    },
-    "1-vpcsc" = {
-      name          = "vpcsc",
-      sa            = module.automation-tf-vpcsc-sa.email,
-      bucket        = module.automation-tf-vpcsc-gcs.name,
-      backend_extra = "prefix = \"vpcsc\""
-    },
-    "1-vpcsc-r" = {
-      name          = "vpcsc",
-      sa            = module.automation-tf-vpcsc-r-sa.email,
-      bucket        = module.automation-tf-vpcsc-gcs.name,
-      backend_extra = "prefix = \"vpcsc\""
-    },
   }
   providers = {
-    for k, v in local.providers_config : k => (
-      var.cicd_backends != null && try(var.cicd_backends.terraform, null) != null ?
-      templatefile(
-        local._tpl_providers_terraform,
-        merge(
-          {
-            name = v.name,
-            sa   = v.sa
-          },
-          {
-            workspaces = lookup(
-              var.cicd_backends.terraform.workspaces,
-              v.name,
-              {
-                tags    = null,
-                name    = null,
-                project = null
-              }
-            )
-          },
-          {
-            organization = var.cicd_backends.terraform.organization,
-            hostname     = var.cicd_backends.terraform.hostname
-          }
-        )
-      ) :
-      templatefile(local._tpl_providers_gcs, {
-        name          = v.name,
-        sa            = v.sa,
-        bucket        = v.bucket,
-        backend_extra = v.backend_extra
-      })
-    )
+    "0-bootstrap" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-bootstrap-gcs.name
+      name          = "bootstrap"
+      sa            = module.automation-tf-bootstrap-sa.email
+    })
+    "0-bootstrap-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-bootstrap-gcs.name
+      name          = "bootstrap"
+      sa            = module.automation-tf-bootstrap-r-sa.email
+    })
+    "1-resman" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "resman"
+      sa            = module.automation-tf-resman-sa.email
+    })
+    "1-resman-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "resman"
+      sa            = module.automation-tf-resman-r-sa.email
+    })
+    "1-tenant-factory" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"tenant-factory\""
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "tenant-factory"
+      sa            = module.automation-tf-resman-sa.email
+    })
+    "1-tenant-factory-r" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"tenant-factory\""
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "tenant-factory"
+      sa            = module.automation-tf-resman-r-sa.email
+    })
+    "1-vpcsc" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"vpcsc\""
+      bucket        = module.automation-tf-vpcsc-gcs.name
+      name          = "vpcsc"
+      sa            = module.automation-tf-vpcsc-sa.email
+    })
+    "1-vpcsc-r" = templatefile(local._tpl_providers, {
+      backend_extra = "prefix = \"vpcsc\""
+      bucket        = module.automation-tf-vpcsc-gcs.name
+      name          = "vpcsc"
+      sa            = module.automation-tf-vpcsc-r-sa.email
+    })
   }
   tfvars = {
     automation = {
-      cicd_backends = var.cicd_backends
       federated_identity_pool = try(
         google_iam_workload_identity_pool.default[0].name, null
       )
@@ -237,15 +199,6 @@ output "service_accounts" {
     resman    = module.automation-tf-resman-sa.email
   }
 }
-
-# output "test" {
-#   value = {
-#     checklist               = local.checklist
-#     iam_roles_authoritative = local.iam_roles_authoritative
-#     iam_roles_additive      = local.iam_roles_additive
-#     test                    = local.checklist
-#   }
-# }
 
 # ready to use variable values for subsequent stages
 output "tfvars" {

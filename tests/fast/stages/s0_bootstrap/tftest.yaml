@@ -16,14 +16,10 @@
 module: fast/stages/0-bootstrap
 
 tests:
-  checklist:
-    extra_files:
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-data.json
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-org-iam.json
   simple:
     inventory:
       - simple.yaml
       - simple_projects.yaml
       - simple_sas.yaml
-  
+
   iam_by_principals:

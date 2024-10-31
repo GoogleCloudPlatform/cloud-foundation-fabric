@@ -13,13 +13,14 @@
 # limitations under the License.
 
 values:
-  module.gcve-pc.google_vmwareengine_network.private_cloud_network[0]:
+  module.gcve-pc.google_vmwareengine_network.default[0]:
     description: Terraform-managed.
     location: global
     name: gcve-pc-default
     project: gcve-test-project
+    timeouts: null
     type: STANDARD
-  module.gcve-pc.google_vmwareengine_network_policy.vmw_engine_network_policies["ew8"]:
+  module.gcve-pc.google_vmwareengine_network_policy.default["ew8"]:
     description: Terraform-managed.
     edge_services_cidr: 192.168.100.0/26
     external_ip:
@@ -29,7 +30,9 @@ values:
     location: europe-west8
     name: gcve-pc-ew8
     project: gcve-test-project
-  module.gcve-pc.google_vmwareengine_private_cloud.vmw_engine_private_clouds["pcc_one"]:
+    timeouts: null
+  module.gcve-pc.google_vmwareengine_private_cloud.default["pcc_one"]:
+    deletion_delay_hours: null
     description: Managed by Terraform.
     location: europe-west8-a
     management_cluster:
@@ -38,10 +41,14 @@ values:
       - custom_core_count: 0
         node_count: 3
         node_type_id: standard-72
+      stretched_cluster_config: []
     name: gcve-pc-pcc_one
     network_config:
     - management_cidr: 192.168.0.0/24
     project: gcve-test-project
+    send_deletion_delay_hours_if_zero: null
+    timeouts: null
+    type: null
 
 counts:
   google_vmwareengine_network: 1

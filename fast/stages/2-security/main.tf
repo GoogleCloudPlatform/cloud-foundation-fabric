@@ -15,24 +15,20 @@
  */
 
 locals {
-  # additive IAM binding for delegated KMS admins
-  kms_restricted_admin_template = {
-    role = "roles/cloudkms.admin"
-    condition = {
-      title       = "kms_sa_delegated_grants"
-      description = "Automation service account delegated grants."
-      expression = format(
-        <<-EOT
-           api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]) &&
-           resource.type == 'cloudkms.googleapis.com/CryptoKey'
-        EOT
-        , join(",", formatlist("'%s'", [
-          "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-          "roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation"
-        ]))
-      )
-    }
+  env_tag_values = {
+    for k, v in var.environment_names :
+    k => var.tag_values["environment/${v}"]
   }
+  has_env_folders = var.folder_ids.security-dev != null
+  iam_delegated = join(",", formatlist("'%s'", [
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  ]))
+  iam_delegated_principals = try(
+    var.stage_config["security"].iam_delegated_principals, {}
+  )
+  iam_viewer_principals = try(
+    var.stage_config["security"].iam_viewer_principals, {}
+  )
   # list of locations with keys
   kms_locations = distinct(flatten([
     for k, v in var.kms_keys : v.locations
@@ -59,9 +55,7 @@ locals {
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Security"
-  folder_create = var.folder_ids.security == null
+  folder_create = false
   id            = var.folder_ids.security
   contacts = (
     var.essential_contacts == null

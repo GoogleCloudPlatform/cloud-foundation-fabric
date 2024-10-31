@@ -15,6 +15,18 @@
  */
 
 locals {
+  _regional_nva_lb = {
+    primary = (
+      var.network_mode == "regional_vpc"
+      ? module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""]
+      : null
+    )
+    secondary = (
+      var.network_mode == "regional_vpc"
+      ? module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""]
+      : null
+    )
+  }
   # routing_config should be aligned to the NVA network interfaces - i.e.
   # local.simple_routing_config[0] sets up the first interface, and so on.
   regional_vpc_routing_config = {
