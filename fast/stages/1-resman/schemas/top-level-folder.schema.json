@@ -11,6 +11,9 @@
         "enable": {
           "type": "boolean"
         },
+        "environment_name": {
+          "type": "string"
+        },
         "sa_impersonation_principals": {
           "type": "array",
           "items": {

@@ -32,7 +32,10 @@ locals {
   # extract automation configurations for folders that define them
   top_level_automation = {
     for k, v in local.top_level_folders :
-    k => merge({ sa_impersonation_principals = [] }, v.automation)
+    k => merge(
+      { environment_name = "prod", sa_impersonation_principals = [] },
+      v.automation
+    )
     if try(v.automation.enable, null) == true
   }
   # merge top folders from factory and variable data
@@ -43,6 +46,7 @@ locals {
         name = try(v.name, k)
         automation = try(v.automation, {
           enable                      = true
+          environment_name            = "prod"
           sa_impersonation_principals = []
         })
         contacts              = try(v.contacts, {})
@@ -118,7 +122,7 @@ module "top-level-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.top_level_automation
   project_id   = var.automation.project_id
-  name         = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
+  name         = "${each.value.environment_name}-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} folder service account."
   prefix       = var.prefix
   iam = each.value.sa_impersonation_principals == null ? {} : {
@@ -136,7 +140,7 @@ module "top-level-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.top_level_automation
   project_id = var.automation.project_id
-  name       = "prod-resman-${coalesce(each.value.short_name, each.key)}-0"
+  name       = "${each.value.environment_name}-resman-${coalesce(each.value.short_name, each.key)}-0"
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

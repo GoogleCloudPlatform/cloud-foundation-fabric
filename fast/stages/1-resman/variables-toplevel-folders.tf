@@ -21,6 +21,7 @@ variable "top_level_folders" {
     parent_id = optional(string)
     automation = optional(object({
       enable                      = optional(bool, true)
+      environment_name            = optional(string, "prod")
       sa_impersonation_principals = optional(list(string), [])
       short_name                  = optional(string)
     }), {})
