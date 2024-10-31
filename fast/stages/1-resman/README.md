@@ -241,7 +241,6 @@ terraform apply
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [_moved-v34.0.0.tf](./_moved-v34.0.0.tf) | None |  |  |
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
 | [iam.tf](./iam.tf) | Organization or root node-level IAM bindings. |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
