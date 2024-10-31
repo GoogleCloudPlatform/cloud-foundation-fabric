@@ -36,6 +36,8 @@ As usual, consider this a guideline with no guarantees. Migrations between FAST 
 
 ### Resource Management stage
 
+The Resource Management stage has been largely refactored, adopting factories to simplify the creation of multiple environments and the creation and deployment of new "Stage 3" stages. Before upgrading it's highly recommended to familiarize yourself with the documentation, to assess whether your specific configurations need to be migrated to the new variables.
+
 The [file containing moved blocks](./1-resman/moved/v35.1.0-v36.0.0.tf) for this release can be used to preserve most of the important resources which changed from the previous release. Just link it in the stage and plan/apply to see the remaining changes.
 
 The moved blocks are not exhaustive and do not include resources that can be dropped and recreated with limited impact like IAM and tag bindings. As usual, proceed with care as we provide no guarantee, just a starting point.
