@@ -122,7 +122,10 @@ module "projects" {
         for v in try(each.value.shared_vpc_service_config.network_users, []) :
         lookup(local.context.iam_principals, v, v)
       ]
-      # TODO: network subnet users
+      network_subnet_users = {
+        for subnet, users in try(each.value.shared_vpc_service_config.network_subnet_users, {}) :
+        subnet => [for v in users : lookup(local.context.iam_principals, v, v)]
+      }
     })
   )
   tag_bindings = {
