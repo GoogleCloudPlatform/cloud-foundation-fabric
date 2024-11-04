@@ -17,6 +17,7 @@
 locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
+  topic_create = try(var.notification_config.topic_create, null) != null
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -172,14 +173,15 @@ resource "google_storage_notification" "notification" {
 }
 
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
+  count   = local.topic_create ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
 
 resource "google_pubsub_topic" "topic" {
-  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
-  project = var.project_id
-  name    = var.notification_config.topic_name
+  count        = local.topic_create ? 1 : 0
+  project      = var.project_id
+  name         = var.notification_config.topic_name
+  kms_key_name = try(var.notification_config.topic_create.kms_key_id, null)
 }

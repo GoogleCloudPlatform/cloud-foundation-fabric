@@ -15,15 +15,21 @@
  */
 
 locals {
-  spanner_instance = var.instance_create ? google_spanner_instance.spanner_instance[0] : data.google_spanner_instance.spanner_instance[0]
+  spanner_instance = (
+    var.instance_create
+    ? google_spanner_instance.spanner_instance[0]
+    : data.google_spanner_instance.spanner_instance[0]
+  )
 }
 
 resource "google_spanner_instance_config" "spanner_instance_config" {
-  count        = try(var.instance.config.auto_create, null) == null ? 0 : 1
-  name         = var.instance.config.name
-  project      = var.project_id
-  display_name = coalesce(var.instance.config.auto_create.display_name, var.instance.config.name)
-  base_config  = var.instance.config.auto_create.base_config
+  count   = try(var.instance.config.auto_create, null) == null ? 0 : 1
+  name    = var.instance.config.name
+  project = var.project_id
+  display_name = coalesce(
+    var.instance.config.auto_create.display_name, var.instance.config.name
+  )
+  base_config = var.instance.config.auto_create.base_config
   dynamic "replicas" {
     for_each = var.instance.config.auto_create.replicas
     content {
@@ -42,9 +48,13 @@ data "google_spanner_instance" "spanner_instance" {
 }
 
 resource "google_spanner_instance" "spanner_instance" {
-  count            = var.instance_create ? 1 : 0
-  project          = var.project_id
-  config           = var.instance.config.auto_create == null ? var.instance.config.name : google_spanner_instance_config.spanner_instance_config[0].name
+  count   = var.instance_create ? 1 : 0
+  project = var.project_id
+  config = (
+    var.instance.config.auto_create == null
+    ? var.instance.config.name
+    : google_spanner_instance_config.spanner_instance_config[0].name
+  )
   name             = var.instance.name
   display_name     = coalesce(var.instance.display_name, var.instance.name)
   num_nodes        = var.instance.num_nodes
@@ -64,8 +74,12 @@ resource "google_spanner_instance" "spanner_instance" {
       dynamic "autoscaling_targets" {
         for_each = var.instance.autoscaling.targets == null ? [] : [""]
         content {
-          high_priority_cpu_utilization_percent = var.instance.autoscaling.targets.high_priority_cpu_utilization_percent
-          storage_utilization_percent           = var.instance.autoscaling.targets.storage_utilization_percent
+          high_priority_cpu_utilization_percent = (
+            var.instance.autoscaling.targets.high_priority_cpu_utilization_percent
+          )
+          storage_utilization_percent = (
+            var.instance.autoscaling.targets.storage_utilization_percent
+          )
         }
       }
     }
