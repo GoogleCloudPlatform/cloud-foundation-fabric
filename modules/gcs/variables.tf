@@ -269,6 +269,12 @@ variable "public_access_prevention" {
   }
 }
 
+variable "enable_object_retention" {
+  description = "Enables object retention on a storage bucket"
+  type        = bool
+  default     = null
+}
+
 variable "requester_pays" {
   description = "Enables Requester Pays on a storage bucket."
   type        = bool

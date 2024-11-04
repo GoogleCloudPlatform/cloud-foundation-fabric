@@ -316,6 +316,7 @@ module "bucket" {
 | [cors](variables.tf#L23) | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;  origin          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  method          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  response_header &#61; optional&#40;list&#40;string&#41;&#41;&#10;  max_age_seconds &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [custom_placement_config](variables.tf#L34) | The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [default_event_based_hold](variables.tf#L40) | Enable event based hold to new objects added to specific bucket, defaults to false. | <code>bool</code> |  | <code>null</code> |
+| [enable_object_retention](variables.tf#L272) | Enables object retention on a storage bucket | <code>bool</code> |  | <code>null</code> |
 | [encryption_key](variables.tf#L46) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
 | [force_destroy](variables.tf#L52) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables.tf#L58) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -330,15 +331,15 @@ module "bucket" {
 | [objects_to_upload](variables.tf#L221) | Objects to be uploaded to bucket. | <code title="map&#40;object&#40;&#123;&#10;  name                &#61; string&#10;  metadata            &#61; optional&#40;map&#40;string&#41;&#41;&#10;  content             &#61; optional&#40;string&#41;&#10;  source              &#61; optional&#40;string&#41;&#10;  cache_control       &#61; optional&#40;string&#41;&#10;  content_disposition &#61; optional&#40;string&#41;&#10;  content_encoding    &#61; optional&#40;string&#41;&#10;  content_language    &#61; optional&#40;string&#41;&#10;  content_type        &#61; optional&#40;string&#41;&#10;  event_based_hold    &#61; optional&#40;bool&#41;&#10;  temporary_hold      &#61; optional&#40;bool&#41;&#10;  detect_md5hash      &#61; optional&#40;string&#41;&#10;  storage_class       &#61; optional&#40;string&#41;&#10;  kms_key_name        &#61; optional&#40;string&#41;&#10;  customer_encryption &#61; optional&#40;object&#40;&#123;&#10;    encryption_algorithm &#61; optional&#40;string&#41;&#10;    encryption_key       &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L247) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
 | [public_access_prevention](variables.tf#L262) | Prevents public access to the bucket. | <code>string</code> |  | <code>null</code> |
-| [requester_pays](variables.tf#L272) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
-| [retention_policy](variables.tf#L278) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [rpo](variables.tf#L287) | Bucket recovery point objective. | <code>string</code> |  | <code>null</code> |
-| [soft_delete_retention](variables.tf#L297) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L303) | Bucket storage class. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L313) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [uniform_bucket_level_access](variables.tf#L320) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L326) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>null</code> |
-| [website](variables.tf#L332) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [requester_pays](variables.tf#L278) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
+| [retention_policy](variables.tf#L284) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [rpo](variables.tf#L293) | Bucket recovery point objective. | <code>string</code> |  | <code>null</code> |
+| [soft_delete_retention](variables.tf#L303) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L309) | Bucket storage class. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L319) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [uniform_bucket_level_access](variables.tf#L326) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L332) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>null</code> |
+| [website](variables.tf#L338) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
