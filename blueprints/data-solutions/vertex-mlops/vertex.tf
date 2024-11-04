@@ -114,6 +114,8 @@ resource "google_workbench_instance" "playground" {
     service_accounts {
       email = module.service-account-notebook.email
     }
+    # full list of supported metadata keys:
+    # https://cloud.google.com/vertex-ai/docs/workbench/instances/manage-metadata
     metadata = {
       notebook-disable-nbconvert = "false"
       notebook-disable-downloads = "false"
@@ -125,12 +127,7 @@ resource "google_workbench_instance" "playground" {
   disable_proxy_access = true
   instance_owners      = try(tolist(var.notebooks[each.key].owner), null)
 
-  # Remove once terraform-provider-google/issues/9164 is fixed
-  # lifecycle {
-  #   ignore_changes = [disk_encryption, kms_key]
-  # }
 
-  #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
   depends_on = [
     google_project_iam_member.shared_vpc,
   ]
