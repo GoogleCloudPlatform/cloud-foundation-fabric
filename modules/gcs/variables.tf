@@ -210,7 +210,7 @@ variable "notification_config" {
     topic_name     = string
     create_topic = optional(object({
       kms_key_id = optional(string)
-    }))
+    }), {})
     event_types        = optional(list(string))
     custom_attributes  = optional(map(string))
     object_name_prefix = optional(string)
