@@ -143,6 +143,7 @@ module "bucket_export" {
     ]
   }
   notification_config = {
+    create_topic      = {}
     enabled           = true
     payload_format    = "JSON_API_V1"
     sa_email          = module.project.service_agents.storage.email

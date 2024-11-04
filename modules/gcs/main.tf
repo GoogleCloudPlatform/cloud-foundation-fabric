@@ -17,7 +17,7 @@
 locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
-  topic_create = try(var.notification_config.topic_create, null) != null
+  topic_create = try(var.notification_config.create_topic, null) != null
 }
 
 resource "google_storage_bucket" "bucket" {
