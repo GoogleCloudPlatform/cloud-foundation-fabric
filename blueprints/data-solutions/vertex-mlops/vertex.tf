@@ -37,13 +37,6 @@ module "service-account-notebook" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
   name       = "notebook-sa"
-  iam_project_roles = {
-    (module.project.project_id) = [
-      "roles/logging.logWriter",
-      "roles/monitoring.metricWriter",
-      "roles/serviceusage.serviceUsageConsumer",
-    ]
-  }
 }
 
 resource "google_notebooks_runtime" "runtime" {
