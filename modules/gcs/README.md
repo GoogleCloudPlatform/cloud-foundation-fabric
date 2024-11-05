@@ -316,7 +316,7 @@ module "bucket" {
 | [cors](variables.tf#L23) | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;  origin          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  method          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  response_header &#61; optional&#40;list&#40;string&#41;&#41;&#10;  max_age_seconds &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [custom_placement_config](variables.tf#L34) | The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [default_event_based_hold](variables.tf#L40) | Enable event based hold to new objects added to specific bucket, defaults to false. | <code>bool</code> |  | <code>null</code> |
-| [enable_object_retention](variables.tf#L46) | Enables object retention on a storage bucket | <code>bool</code> |  | <code>null</code> |
+| [enable_object_retention](variables.tf#L46) | Enables object retention on a storage bucket. | <code>bool</code> |  | <code>null</code> |
 | [encryption_key](variables.tf#L52) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
 | [force_destroy](variables.tf#L58) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables.tf#L64) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

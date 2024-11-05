@@ -44,7 +44,7 @@ variable "default_event_based_hold" {
 }
 
 variable "enable_object_retention" {
-  description = "Enables object retention on a storage bucket"
+  description = "Enables object retention on a storage bucket."
   type        = bool
   default     = null
 }
