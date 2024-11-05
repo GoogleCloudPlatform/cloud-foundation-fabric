@@ -1,0 +1,62 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/project.schema.json
+
+name: ta-d-ce-0
+shared_vpc_service_config:
+  host_project: dev-spoke-0
+  network_users:
+    - gcp-devops
+services:
+  - compute.googleapis.com
+iam:
+  roles/owner:
+    # refer to the rw service account defined below
+    - rw
+  roles/viewer:
+    # refer to the ro service account defined below
+    - ro
+automation:
+  # no context is possible here
+  # use the complete project id
+  project: main-iac-pf-0
+  service_accounts:
+    rw:
+      description: Read/write automation sa for team a app 0.
+      iam_bindings_additive:
+        devops-ro:
+          member: "group:gcp-devops@example.org"
+          role: "roles/iam.serviceAccountTokenCreator"
+      iam_project_roles:
+        main-dev-net-spoke-0:
+          - roles/compute.networkUser
+    ro:
+      description: Read-only automation sa for team a app 0.
+      iam_bindings_additive:
+        devops-ro:
+          member: "group:gcp-devops@example.org"
+          role: "roles/iam.serviceAccountTokenCreator"
+      iam_project_roles:
+        main-dev-net-spoke-0:
+          - roles/compute.networkViewer
+  buckets:
+    state:
+      description: Terraform state bucket for team a app 0.
+      iam:
+        roles/storage.objectViewer:
+          - rw
+          - ro
+        roles/storage.objectUser:
+          - rw
