@@ -184,7 +184,7 @@ You can control these actions by adjusting the settings in the `var.service_agen
 The `service_agents` output provides a convenient way to access information about all active service agents in the project. Note that this output only includes details for service agents that are currently active (i.e. their API is listed in `var.services`) within your project.
 
 > [!IMPORTANT]
-> You can only access a service agent's details through the `service_agents` output if it's corresponding API is enabled through the `services` variable.
+> You can only access a service agent's details through the `service_agents` output if its corresponding API is enabled through the `services` variable.
 
 The complete list of Google Cloud service agents, including their names, default roles, and associated APIs, is maintained in the  [service-agents.yaml](./service-agents.yaml) file.  This file is regularly updated to reflect the [official list of Google Cloud service agents](https://cloud.google.com/iam/docs/service-agents) using the [`build_service_agents`](../../tools/build_service_agents.py) script.
 
@@ -273,7 +273,7 @@ service_agents = {
 
 Notice that some service agents appear under multiple names. For example, the Kubernetes Engine Service Agent shows up as `container-engine-robot` but also has the `container` and `container-engine` aliases. These aliases exist only in Fabric for convenience and backwards compatibility. Refer to the table below for the list of aliases.
 
-| Canonical Name                 Aliases                    |
+| Canonical Name                 | Aliases                    |
 |--------------------------------|----------------------------|
 | bigquery-encryption            | bq                         |
 | cloudservices                  | cloudsvc                   |

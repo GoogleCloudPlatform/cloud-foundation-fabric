@@ -399,6 +399,13 @@
   role: null
   is_primary: false
   aliases: []
+- name: chronicle-sv
+  display_name: Chronicle Security Validation Service Account
+  api: chronicle.googleapis.com
+  identity: service-%s@gcp-sa-chronicle-sv.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: chronicle
   display_name: Chronicle Service Account
   api: chronicle.googleapis.com
@@ -440,13 +447,6 @@
   identity: service-%s@gcp-sa-bigtable.iam.gserviceaccount.com
   role: null
   is_primary: true
-  aliases: []
-- name: cloudbuild-sa
-  display_name: Cloud Build Service Agent
-  api: cloudbuild.googleapis.com
-  identity: '%s@cloudbuild.gserviceaccount.com'
-  role: roles/cloudbuild.builds.builder
-  is_primary: false
   aliases: []
 - name: cloudbuild
   display_name: Cloud Build Service Agent
@@ -616,6 +616,13 @@
   api: networkmanagement.googleapis.com
   identity: service-%s@gcp-sa-networkmanagement.iam.gserviceaccount.com
   role: roles/networkmanagement.serviceAgent
+  is_primary: true
+  aliases: []
+- name: notebooksecurityscanner
+  display_name: Cloud Notebook Security Scanner Service Agent
+  api: notebooksecurityscanner.googleapis.com
+  identity: service-%s@gcp-sa-notebooksecurityscanner.iam.gserviceaccount.com
+  role: null
   is_primary: true
   aliases: []
 - name: cloudoptim
@@ -794,6 +801,13 @@
   role: roles/containerscanning.ServiceAgent
   is_primary: true
   aliases: []
+- name: containersec
+  display_name: Container Security Service Agent
+  api: containersecurity.googleapis.com
+  identity: service-%s@gcp-sa-containersec.iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
 - name: ktd-control
   display_name: Container Threat Detection Service Agent
   api: containerthreatdetection.googleapis.com
@@ -955,6 +969,13 @@
   role: roles/firebaseapphosting.serviceAgent
   is_primary: true
   aliases: []
+- name: firebasedataconnect
+  display_name: Firebase Data Connect Service Account
+  api: firebasedataconnect.googleapis.com
+  identity: service-%s@gcp-sa-firebasedataconnect.iam.gserviceaccount.com
+  role: roles/firebasedataconnect.serviceAgent
+  is_primary: true
+  aliases: []
 - name: firebasemods
   display_name: Firebase Extensions Service Agent
   api: firebaseextensions.googleapis.com
@@ -1041,12 +1062,12 @@
   is_primary: false
   aliases:
   - cloudsvc
-- name: dep
-  display_name: Google Cloud Dataplane Extensibility Platform (DEP) Service Account
-  api: networkservices.googleapis.com
-  identity: service-%s@gcp-sa-dep.iam.gserviceaccount.com
-  role: null
-  is_primary: false
+- name: dataprocrmnode
+  display_name: Google Cloud Dataproc Resource Manager Node Service Agent
+  api: dataprocrm.googleapis.com
+  identity: service-%s@gcp-sa-dataprocrmnode.iam.gserviceaccount.com
+  role: roles/dataprocrm.nodeServiceAgent
+  is_primary: true
   aliases: []
 - name: dataproc-accounts
   display_name: Google Cloud Dataproc Service Agent
@@ -1102,6 +1123,13 @@
   aliases:
   - cloudrun
   - run
+- name: dep
+  display_name: Google Cloud Service Extensions Service Account
+  api: networkservices.googleapis.com
+  identity: service-%s@gcp-sa-dep.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: containerregistry
   display_name: Google Container Registry Service Agent
   api: containerregistry.googleapis.com
@@ -1196,6 +1224,13 @@
   aliases:
   - container
   - container-engine
+- name: cloudbuild-sa
+  display_name: Legacy Cloud Build service account
+  api: cloudbuild.googleapis.com
+  identity: '%s@cloudbuild.gserviceaccount.com'
+  role: roles/cloudbuild.builds.builder
+  is_primary: false
+  aliases: []
 - name: livestream
   display_name: Livestream Service Account
   api: livestream.googleapis.com
@@ -1210,11 +1245,25 @@
   role: roles/looker.serviceAgent
   is_primary: true
   aliases: []
+- name: managedflink
+  display_name: Managed Flink Service Agent
+  api: managedflink.googleapis.com
+  identity: service-%s@gcp-sa-managedflink.iam.gserviceaccount.com
+  role: roles/managedflink.serviceAgent
+  is_primary: true
+  aliases: []
 - name: managedkafka
   display_name: Managed Kafka Service Account
   api: managedkafka.googleapis.com
   identity: service-%s@gcp-sa-managedkafka.iam.gserviceaccount.com
   role: roles/managedkafka.serviceAgent
+  is_primary: true
+  aliases: []
+- name: memorystore
+  display_name: Memorystore Service Agent
+  api: memorystore.googleapis.com
+  identity: service-%s@gcp-sa-memorystore.iam.gserviceaccount.com
+  role: roles/memorystore.serviceAgent
   is_primary: true
   aliases: []
 - name: meshconfig
@@ -1281,6 +1330,13 @@
   role: roles/ondemandscanning.serviceAgent
   is_primary: true
   aliases: []
+- name: oci
+  display_name: Oracle Database@Google Cloud Service Account
+  api: oracledatabase.googleapis.com
+  identity: service-%s@gcp-sa-oci.iam.gserviceaccount.com
+  role: roles/oci.serviceAgent
+  is_primary: true
+  aliases: []
 - name: parallelstore
   display_name: Parallelstore Service Agent
   api: parallelstore.googleapis.com
@@ -1342,6 +1398,13 @@
   api: secretmanager.googleapis.com
   identity: service-%s@gcp-sa-secretmanager.iam.gserviceaccount.com
   role: null
+  is_primary: true
+  aliases: []
+- name: sourcemanager
+  display_name: Secure Source Manager Service Account
+  api: securesourcemanager.googleapis.com
+  identity: service-%s@gcp-sa-sourcemanager.iam.gserviceaccount.com
+  role: roles/securesourcemanager.serviceAgent
   is_primary: true
   aliases: []
 - name: securewebproxy
@@ -1463,6 +1526,13 @@
   role: roles/aiplatform.user
   is_primary: false
   aliases: []
+- name: vertex-bp
+  display_name: Vertex AI Batch Prediction Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-bp.iam.gserviceaccount.com
+  role: roles/aiplatform.batchPredictionServiceAgent
+  is_primary: false
+  aliases: []
 - name: vertex-nb
   display_name: Vertex AI Colab Service Account
   api: aiplatform.googleapis.com
@@ -1498,12 +1568,26 @@
   role: roles/aiplatform.notebookServiceAgent
   is_primary: false
   aliases: []
+- name: vertex-op
+  display_name: Vertex AI Online Prediction Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-%s@gcp-sa-vertex-op.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: vertex-tune
   display_name: Vertex AI Secure Fine Tuning Service Agent
   api: aiplatform.googleapis.com
   identity: service-%s@gcp-sa-vertex-tune.iam.gserviceaccount.com
   role: roles/aiplatform.tuningServiceAgent
   is_primary: false
+  aliases: []
+- name: firebasevertexai
+  display_name: Vertex AI in Firebase Service Account
+  api: firebasevertexai.googleapis.com
+  identity: service-%s@gcp-sa-firebasevertexai.iam.gserviceaccount.com
+  role: roles/firebaseml.serviceAgent
+  is_primary: true
   aliases: []
 - name: vertex-agent
   display_name: Vertex Agent Service Agent
