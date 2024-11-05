@@ -43,6 +43,12 @@ variable "default_event_based_hold" {
   default     = null
 }
 
+variable "enable_object_retention" {
+  description = "Enables object retention on a storage bucket"
+  type        = bool
+  default     = null
+}
+
 variable "encryption_key" {
   description = "KMS key that will be used for encryption."
   type        = string
@@ -267,12 +273,6 @@ variable "public_access_prevention" {
     condition     = var.public_access_prevention == null || contains(["enforced", "inherited"], coalesce(var.public_access_prevention, "none"))
     error_message = "public_access_prevention must be either enforced or inherited."
   }
-}
-
-variable "enable_object_retention" {
-  description = "Enables object retention on a storage bucket"
-  type        = bool
-  default     = null
 }
 
 variable "requester_pays" {
