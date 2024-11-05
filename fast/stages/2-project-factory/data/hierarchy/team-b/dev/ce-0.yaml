@@ -33,6 +33,7 @@ automation:
   buckets:
     state:
       description: Terraform state bucket for team b dev ce.
+      iam:
         roles/storage.objectCreator:
           - rw
         roles/storage.objectViewer:
