@@ -29,6 +29,7 @@ resource "google_storage_bucket" "bucket" {
   uniform_bucket_level_access = var.uniform_bucket_level_access
   labels                      = var.labels
   default_event_based_hold    = var.default_event_based_hold
+  enable_object_retention     = var.enable_object_retention
   requester_pays              = var.requester_pays
   public_access_prevention    = var.public_access_prevention
   rpo                         = var.rpo
