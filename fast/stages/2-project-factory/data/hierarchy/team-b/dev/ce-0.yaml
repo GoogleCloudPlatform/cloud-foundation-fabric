@@ -14,12 +14,6 @@
 
 # yaml-language-server: $schema=../../schemas/project.schema.json
 
-shared_vpc_service_config:
-  host_project: dev-spoke-0
-  network_users:
-    - gcp-devops
-services:
-  - compute.googleapis.com
 iam:
   roles/owner:
     # refer to the rw service account defined below
@@ -30,32 +24,18 @@ iam:
 automation:
   # no context is possible here
   # use the complete project id
-  project: main-iac-pf-0
+  project: xxx-iac-pf-0
   service_accounts:
     rw:
-      description: Read/write automation sa for team a app 0.
-      iam_bindings_additive:
-        devops-ro:
-          member: "group:gcp-devops@example.org"
-          role: "roles/iam.serviceAccountTokenCreator"
-      iam_project_roles:
-        main-dev-net-spoke-0:
-          - roles/compute.networkUser
+      description: Read/write automation sa for team a dev ce.
     ro:
-      description: Read-only automation sa for team a app 0.
-      iam_bindings_additive:
-        devops-ro:
-          member: "group:gcp-devops@example.org"
-          role: "roles/iam.serviceAccountTokenCreator"
-      iam_project_roles:
-        main-dev-net-spoke-0:
-          - roles/compute.networkViewer
+      description: Read-only automation sa for team a dev ce.
   buckets:
     state:
-      description: Terraform state bucket for team a app 0.
-      iam:
+      description: Terraform state bucket for team b dev ce.
+        roles/storage.objectCreator:
+          - rw
         roles/storage.objectViewer:
           - rw
           - ro
-        roles/storage.objectUser:
-          - rw
+          - group:devops@example.org
