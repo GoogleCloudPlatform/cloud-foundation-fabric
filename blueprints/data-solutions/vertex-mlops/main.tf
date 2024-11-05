@@ -234,11 +234,18 @@ module "project" {
       module.service-account-github.iam_email,
       module.project.service_agents.cloudbuild.iam_email
     ]
-    "roles/monitoring.metricWriter" = [module.service-account-mlops.iam_email]
-    "roles/run.invoker"             = [module.service-account-mlops.iam_email]
+    "roles/logging.logWriter" = [
+      module.service-account-notebook.iam_email,
+    ]
+    "roles/monitoring.metricWriter" = [
+      module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email,
+    ]
+    "roles/run.invoker" = [module.service-account-mlops.iam_email]
     "roles/serviceusage.serviceUsageConsumer" = [
       module.service-account-mlops.iam_email,
-      module.service-account-github.iam_email
+      module.service-account-github.iam_email,
+      module.service-account-notebook.iam_email,
     ]
     "roles/storage.admin" = [
       module.service-account-mlops.iam_email,
