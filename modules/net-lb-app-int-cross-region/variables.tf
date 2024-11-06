@@ -159,6 +159,19 @@ variable "service_directory_registration" {
   default = null
 }
 
+variable "ssl_certificates" {
+  description = "SSL target proxy certificates (only if protocol is HTTPS)."
+  type = object({
+    certificate_ids = optional(list(string), [])
+    create_configs = optional(map(object({
+      certificate = string
+      private_key = string
+    })), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
