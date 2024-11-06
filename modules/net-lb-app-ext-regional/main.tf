@@ -79,8 +79,8 @@ resource "google_compute_region_target_https_proxy" "default" {
   name                             = var.name
   region                           = var.region
   description                      = var.description
-  certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
-  ssl_certificates                 = local.proxy_ssl_certificates
+  certificate_manager_certificates = length(var.https_proxy_config.certificate_manager_certificates) > 0 ? var.https_proxy_config.certificate_manager_certificates : null
+  ssl_certificates                 = length(local.proxy_ssl_certificates) > 0 ? local.proxy_ssl_certificates : null
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_region_url_map.default.id
 }
