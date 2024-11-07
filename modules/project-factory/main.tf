@@ -123,7 +123,7 @@ module "projects" {
         lookup(local.context.iam_principals, v, v)
       ]
       network_subnet_users = {
-        for subnet, users in try(each.value.shared_vpc_service_config.network_subnet_users, {}) :
+        for subnet, users in each.value.shared_vpc_service_config.network_subnet_users :
         subnet => [for v in users : lookup(local.context.iam_principals, v, v)]
       }
     })
