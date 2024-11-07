@@ -302,6 +302,7 @@ IAM bindings in the host project for API service identities can be managed from 
 
 - via the `service_agent_iam` attribute, by specifying the set of roles and service agents
 - via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
+- via the `service_subnet_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a map of `"<region>/<subnet_name>"` -> a list of services. This will grant `compute.networkUser` to the specified subnet, and remaining permissions to the project.
 - via the `service_agent_subnet_iam` attribute, by providing a map of `"<region>/<subnet_name>"` -> `[ "<service_identity>", (...)]`, to grant `compute.networkUser` role on subnet level to service identity
 
 While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (e.g. compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
