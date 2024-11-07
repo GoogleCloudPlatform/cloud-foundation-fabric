@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v35.0.0
-
-terraform {
-  required_version = ">= 1.7.4"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 6.1.0, < 7.0.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 6.1.0, < 7.0.0" # tftest
-    }
-  }
-}
+apiVersion: networking.gke.io/v1
+kind: ServiceAttachment
+metadata:
+  name: chronicle-sa-${tenant}
+  namespace: ${namespace}
+spec:
+  connectionPreference: ACCEPT_MANUAL
+  natSubnets:
+  - psc
+  proxyProtocol: false
+  resourceRef:
+    kind: Service
+    name: ${service_name}

@@ -17,6 +17,7 @@
 locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
+  topic_create = try(var.notification_config.create_topic, null) != null
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -28,6 +29,7 @@ resource "google_storage_bucket" "bucket" {
   uniform_bucket_level_access = var.uniform_bucket_level_access
   labels                      = var.labels
   default_event_based_hold    = var.default_event_based_hold
+  enable_object_retention     = var.enable_object_retention
   requester_pays              = var.requester_pays
   public_access_prevention    = var.public_access_prevention
   rpo                         = var.rpo
@@ -172,14 +174,15 @@ resource "google_storage_notification" "notification" {
 }
 
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
+  count   = local.topic_create ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
 
 resource "google_pubsub_topic" "topic" {
-  count   = try(var.notification_config.create_topic, null) == true ? 1 : 0
-  project = var.project_id
-  name    = var.notification_config.topic_name
+  count        = local.topic_create ? 1 : 0
+  project      = var.project_id
+  name         = var.notification_config.topic_name
+  kms_key_name = try(var.notification_config.topic_create.kms_key_id, null)
 }

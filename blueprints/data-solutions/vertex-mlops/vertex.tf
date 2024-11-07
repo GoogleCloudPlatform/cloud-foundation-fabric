@@ -79,54 +79,49 @@ resource "google_notebooks_runtime" "runtime" {
   }
 }
 
-resource "google_notebooks_instance" "playground" {
-  for_each     = { for k, v in var.notebooks : k => v if v.type == "USER_MANAGED" }
-  name         = "${var.prefix}-${each.key}"
-  location     = "${var.region}-b"
-  machine_type = var.notebooks[each.key].machine_type
-  project      = module.project.project_id
+resource "google_workbench_instance" "playground" {
+  for_each = { for k, v in var.notebooks : k => v if v.type == "USER_MANAGED" }
+  project  = module.project.project_id
+  name     = "${var.prefix}-${each.key}"
+  location = "${var.region}-b"
 
-  container_image {
-    repository = "gcr.io/deeplearning-platform-release/base-cpu"
-    tag        = "latest"
+  gce_setup {
+    machine_type = var.notebooks[each.key].machine_type
+    container_image {
+      repository = "gcr.io/deeplearning-platform-release/workbench-container"
+      tag        = "latest"
+    }
+    boot_disk {
+      disk_size_gb    = 150
+      disk_type       = "PD_SSD"
+      disk_encryption = var.service_encryption_keys.notebooks != null ? "CMEK" : null
+      kms_key         = var.service_encryption_keys.notebooks
+    }
+
+    disable_public_ip = var.notebooks[each.key].internal_ip_only
+
+    network_interfaces {
+      network = local.vpc
+      subnet  = local.subnet
+    }
+    service_accounts {
+      email = module.service-account-notebook.email
+    }
+    # full list of supported metadata keys:
+    # https://cloud.google.com/vertex-ai/docs/workbench/instances/manage-metadata
+    metadata = {
+      notebook-disable-nbconvert = "false"
+      notebook-disable-downloads = "false"
+      notebook-disable-terminal  = "false"
+      notebook-disable-root      = "true"
+    }
+    tags = ["ssh"]
   }
-
-  install_gpu_driver = true
-  boot_disk_type     = "PD_SSD"
-  boot_disk_size_gb  = 110
-  disk_encryption    = var.service_encryption_keys.notebooks != null ? "CMEK" : null
-  kms_key            = var.service_encryption_keys.notebooks
-
-  no_public_ip    = var.notebooks[each.key].internal_ip_only
-  no_proxy_access = false
-
-  network = local.vpc
-  subnet  = local.subnet
-
-  instance_owners = try(tolist(var.notebooks[each.key].owner), null)
-  service_account = module.service-account-notebook.email
-  service_account_scopes = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/userinfo.email",
-  ]
+  disable_proxy_access = true
+  instance_owners      = try(tolist(var.notebooks[each.key].owner), null)
 
 
-  metadata = {
-    notebook-disable-nbconvert = "false"
-    notebook-disable-downloads = "false"
-    notebook-disable-terminal  = "false"
-    notebook-disable-root      = "true"
-  }
-
-  # Remove once terraform-provider-google/issues/9164 is fixed
-  lifecycle {
-    ignore_changes = [disk_encryption, kms_key]
-  }
-
-  #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
-  # tags = ["ssh"]
   depends_on = [
     google_project_iam_member.shared_vpc,
   ]
 }
-

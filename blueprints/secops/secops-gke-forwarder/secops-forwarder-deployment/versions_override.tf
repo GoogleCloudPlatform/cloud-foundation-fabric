@@ -12,18 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v35.0.0
-
 terraform {
-  required_version = ">= 1.7.4"
   required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 6.1.0, < 7.0.0" # tftest
+    restful = {
+      source = "magodo/restful"
     }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 6.1.0, < 7.0.0" # tftest
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
     }
   }
 }

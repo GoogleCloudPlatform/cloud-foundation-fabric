@@ -1,6 +1,6 @@
 # Terraform end-to-end blueprints for Google Cloud
 
-This section provides **[networking blueprints](./networking/)** that implement core patterns or features, **[data solutions blueprints](./data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./cloud-operations/)** that leverage specific products to meet specific operational needs, **[GKE](./gke/)** and **[Serverless](./serverless/)** blueprints, and **[factories](./factories/)** that implement resource factories for the repetitive creation of specific resources.
+This section provides **[networking blueprints](./networking/)** that implement core patterns or features, **[data solutions blueprints](./data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./cloud-operations/)** that leverage specific products to meet specific operational needs, **[GKE](./gke/)**, **[SecOps](./secops/)** security blueprints, **[Serverless](./serverless/)** blueprints, and **[factories](./factories/)** that implement resource factories for the repetitive creation of specific resources.
 
 Currently available blueprints:
 
@@ -10,6 +10,7 @@ Currently available blueprints:
 - **factories** - [Fabric resource factories](./factories)
 - **GKE** - [Binary Authorization Pipeline Blueprint](./gke/binauthz), [Storage API](./gke/binauthz/image), [Multi-cluster mesh on GKE (fleet API)](./gke/multi-cluster-mesh-gke-fleet-api), [GKE Multitenant Blueprint](./gke/multitenant-fleet), [Shared VPC with GKE support](./networking/shared-vpc-gke/), [GKE Autopilot](./gke/autopilot)
 - **networking** - [Calling a private Cloud Function from On-premises](./networking/private-cloud-function-from-onprem), [HA VPN over Interconnect](./networking/ha-vpn-over-interconnect/), [GLB and multi-regional daisy-chaining through hybrid NEGs](./networking/glb-hybrid-neg-internal), [Hybrid connectivity to on-premise services through PSC](./networking/psc-hybrid), [HTTP Load Balancer with Cloud Armor](./networking/glb-and-armor), [Internal Load Balancer as Next Hop](./networking/ilb-next-hop), On-prem DNS and Google Private Access,  [PSC Producer](./networking/psc-hybrid/psc-producer), [PSC Consumer](./networking/psc-hybrid/psc-consumer), [Shared VPC with optional GKE cluster](./networking/shared-vpc-gke), [VPC Connectivity Lab](./networking/vpc-connectivity-lab/)
+- **SecOps** - [SecOps GKE Forwarder](./secops/secops-gke-forwarder)
 - **serverless** - [Cloud Run series](./serverless/cloud-run-explore)
 - **third party solutions** - [OpenShift on GCP user-provisioned infrastructure](./third-party-solutions/openshift), [Wordpress deployment on Cloud Run](./third-party-solutions/wordpress/cloudrun)
 
