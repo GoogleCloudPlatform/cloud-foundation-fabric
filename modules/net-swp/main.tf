@@ -27,6 +27,7 @@ moved {
 }
 
 resource "google_network_security_gateway_security_policy" "default" {
+  provider    = google-beta
   project     = var.project_id
   name        = var.name
   location    = var.region
