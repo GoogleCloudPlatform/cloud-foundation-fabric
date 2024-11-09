@@ -15,12 +15,9 @@
  */
 
 variable "addresses" {
-  description = "One or more IP addresses to be used for Secure Web Proxy."
+  description = "Optional IP addresses to be used for Secure Web Proxy."
   type        = list(string)
-  validation {
-    condition     = length(var.addresses) > 0
-    error_message = "Must specify at least one IP address."
-  }
+  default     = null
 }
 
 variable "certificates" {
