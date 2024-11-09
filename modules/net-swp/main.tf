@@ -15,7 +15,10 @@
  */
 
 locals {
-  create_url_lists = { for k, v in var.policy_rules.url_lists : v.url_list => v if v.values != null }
+  create_url_lists = {
+    for k, v in var.policy_rules.url_lists
+    : v.url_list => v if v.values != null
+  }
 }
 
 moved {
@@ -24,12 +27,15 @@ moved {
 }
 
 resource "google_network_security_gateway_security_policy" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  name                  = var.name
-  location              = var.region
-  description           = var.description
-  tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.default[0].id : null
+  provider    = google-beta
+  project     = var.project_id
+  name        = var.name
+  location    = var.region
+  description = var.description
+  tls_inspection_policy = try(coalesce(
+    var.tls_inspection_config.id,
+    try(google_network_security_tls_inspection_policy.default[0].id, null)
+  ), null)
 }
 
 moved {
@@ -38,19 +44,17 @@ moved {
 }
 
 resource "google_network_security_tls_inspection_policy" "default" {
-  count                 = var.tls_inspection_config != null ? 1 : 0
-  provider              = google
+  count                 = var.tls_inspection_config.create_config != null ? 1 : 0
   project               = var.project_id
   name                  = var.name
   location              = var.region
-  description           = coalesce(var.tls_inspection_config.description, var.description)
-  ca_pool               = var.tls_inspection_config.ca_pool
-  exclude_public_ca_set = var.tls_inspection_config.exclude_public_ca_set
+  description           = coalesce(var.tls_inspection_config.create_config.description, var.description)
+  ca_pool               = var.tls_inspection_config.create_config.ca_pool
+  exclude_public_ca_set = var.tls_inspection_config.create_config.exclude_public_ca_set
 }
 
 resource "google_network_security_gateway_security_policy_rule" "secure_tag_rules" {
   for_each                = var.policy_rules.secure_tags
-  provider                = google
   project                 = var.project_id
   name                    = each.key
   location                = var.region
@@ -69,7 +73,6 @@ resource "google_network_security_gateway_security_policy_rule" "secure_tag_rule
 
 resource "google_network_security_gateway_security_policy_rule" "url_list_rules" {
   for_each                = var.policy_rules.url_lists
-  provider                = google
   project                 = var.project_id
   name                    = each.key
   location                = var.region
@@ -93,7 +96,6 @@ resource "google_network_security_gateway_security_policy_rule" "url_list_rules"
 resource "google_network_security_gateway_security_policy_rule" "custom_rules" {
   for_each                = var.policy_rules.custom
   project                 = var.project_id
-  provider                = google
   name                    = each.key
   location                = var.region
   description             = coalesce(each.value.description, var.description)
@@ -112,7 +114,6 @@ moved {
 }
 resource "google_network_security_url_lists" "default" {
   for_each    = local.create_url_lists
-  provider    = google
   project     = var.project_id
   name        = each.key
   location    = var.region
@@ -126,7 +127,6 @@ moved {
 }
 
 resource "google_network_services_gateway" "default" {
-  provider                             = google
   project                              = var.project_id
   name                                 = var.name
   location                             = var.region

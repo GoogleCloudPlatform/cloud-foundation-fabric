@@ -120,6 +120,8 @@ module "secure-web-proxy" {
 
 ### Secure Web Proxy with TLS inspection
 
+You can activate TLS inspection and let the module handle the TLS inspection policy creation.
+
 ```hcl
 resource "google_privateca_ca_pool" "pool" {
   name     = "secure-web-proxy-capool"
@@ -194,31 +196,65 @@ module "secure-web-proxy" {
     }
   }
   tls_inspection_config = {
-    ca_pool = google_privateca_ca_pool.pool.id
+    create_config = {
+      ca_pool = google_privateca_ca_pool.pool.id
+    }
   }
 }
 # tftest modules=1 resources=7 inventory=tls.yaml
+```
+
+You can also refer to existing TLS inspection policies (even cross-project).
+
+```hcl
+module "secure-web-proxy" {
+  source = "./fabric/modules/net-swp"
+
+  project_id   = "my-project"
+  region       = "europe-west4"
+  name         = "secure-web-proxy"
+  network      = "projects/my-project/global/networks/my-network"
+  subnetwork   = "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
+  addresses    = ["10.142.68.3"]
+  certificates = ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
+  ports        = [443]
+  policy_rules = {
+    custom = {
+      custom-rule-1 = {
+        priority               = 1000
+        session_matcher        = "host() == 'google.com'"
+        application_matcher    = "request.path.contains('generate_204')"
+        action                 = "ALLOW"
+        tls_inspection_enabled = true
+      }
+    }
+  }
+  tls_inspection_config = {
+    id = "projects/another-project/locations/europe-west1/tlsInspectionPolicies/tls-ip-0"
+  }
+}
+# tftest modules=1 resources=3 inventory=tls-no-ip.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [addresses](variables.tf#L19) | One or more IP addresses to be used for Secure Web Proxy. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [certificates](variables.tf#L28) | List of certificates to be used for Secure Web Proxy. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [name](variables.tf#L51) | Name of the Secure Web Proxy resource. | <code>string</code> | ✓ |  |
-| [network](variables.tf#L56) | Name of the network the Secure Web Proxy is deployed into. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L120) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L125) | Region where resources will be created. | <code>string</code> | ✓ |  |
-| [subnetwork](variables.tf#L151) | Name of the subnetwork the Secure Web Proxy is deployed into. | <code>string</code> | ✓ |  |
-| [delete_swg_autogen_router_on_destroy](variables.tf#L33) | Delete automatically provisioned Cloud Router on destroy. | <code>bool</code> |  | <code>true</code> |
-| [description](variables.tf#L39) | Optional description for the created resources. | <code>string</code> |  | <code>&#34;Managed by Terraform.&#34;</code> |
-| [labels](variables.tf#L45) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_rules](variables.tf#L61) | List of policy rule definitions, default to allow action. Available keys: secure_tags, url_lists, custom. URL lists that only have values set will be created. | <code title="object&#40;&#123;&#10;  secure_tags &#61; optional&#40;map&#40;object&#40;&#123;&#10;    tag                    &#61; string&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#10;&#10;  url_lists &#61; optional&#40;map&#40;object&#40;&#123;&#10;    url_list               &#61; string&#10;    values                 &#61; optional&#40;list&#40;string&#41;&#41;&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#10;&#10;  custom &#61; optional&#40;map&#40;object&#40;&#123;&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ports](variables.tf#L114) | Ports to use for Secure Web Proxy. | <code>list&#40;number&#41;</code> |  | <code>&#91;443&#93;</code> |
-| [scope](variables.tf#L130) | Scope determines how configuration across multiple Gateway instances are merged. | <code>string</code> |  | <code>null</code> |
-| [service_attachment](variables.tf#L136) | PSC service attachment configuration. | <code title="object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [tls_inspection_config](variables.tf#L156) | TLS inspection configuration. | <code title="object&#40;&#123;&#10;  ca_pool               &#61; optional&#40;string, null&#41;&#10;  exclude_public_ca_set &#61; optional&#40;bool, false&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [addresses](variables.tf#L17) | One or more IP addresses to be used for Secure Web Proxy. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [certificates](variables.tf#L26) | List of certificates to be used for Secure Web Proxy. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [name](variables.tf#L49) | Name of the Secure Web Proxy resource. | <code>string</code> | ✓ |  |
+| [network](variables.tf#L54) | Name of the network the Secure Web Proxy is deployed into. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L118) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L123) | Region where resources will be created. | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L149) | Name of the subnetwork the Secure Web Proxy is deployed into. | <code>string</code> | ✓ |  |
+| [delete_swg_autogen_router_on_destroy](variables.tf#L31) | Delete automatically provisioned Cloud Router on destroy. | <code>bool</code> |  | <code>true</code> |
+| [description](variables.tf#L37) | Optional description for the created resources. | <code>string</code> |  | <code>&#34;Managed by Terraform.&#34;</code> |
+| [labels](variables.tf#L43) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_rules](variables.tf#L59) | List of policy rule definitions, default to allow action. Available keys: secure_tags, url_lists, custom. URL lists that only have values set will be created. | <code title="object&#40;&#123;&#10;  secure_tags &#61; optional&#40;map&#40;object&#40;&#123;&#10;    tag                    &#61; string&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#10;&#10;  url_lists &#61; optional&#40;map&#40;object&#40;&#123;&#10;    url_list               &#61; string&#10;    values                 &#61; optional&#40;list&#40;string&#41;&#41;&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#10;&#10;  custom &#61; optional&#40;map&#40;object&#40;&#123;&#10;    session_matcher        &#61; optional&#40;string&#41;&#10;    application_matcher    &#61; optional&#40;string&#41;&#10;    priority               &#61; number&#10;    action                 &#61; optional&#40;string, &#34;ALLOW&#34;&#41;&#10;    enabled                &#61; optional&#40;bool, true&#41;&#10;    tls_inspection_enabled &#61; optional&#40;bool, false&#41;&#10;    description            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ports](variables.tf#L112) | Ports to use for Secure Web Proxy. | <code>list&#40;number&#41;</code> |  | <code>&#91;443&#93;</code> |
+| [scope](variables.tf#L128) | Scope determines how configuration across multiple Gateway instances are merged. | <code>string</code> |  | <code>null</code> |
+| [service_attachment](variables.tf#L134) | PSC service attachment configuration. | <code title="object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tls_inspection_config](variables.tf#L154) | TLS inspection configuration. | <code title="object&#40;&#123;&#10;  create_config &#61; optional&#40;object&#40;&#123;&#10;    ca_pool               &#61; optional&#40;string, null&#41;&#10;    description           &#61; optional&#40;string, null&#41;&#10;    exclude_public_ca_set &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, null&#41;&#10;  id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
