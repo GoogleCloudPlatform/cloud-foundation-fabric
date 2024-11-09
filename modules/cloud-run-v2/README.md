@@ -5,6 +5,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 <!-- BEGIN TOC -->
 - [IAM and environment variables](#iam-and-environment-variables)
 - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+- [Connecting to Cloud SQL database](#connecting-to-cloud-sql-database)
 - [Beta features](#beta-features)
 - [VPC Access Connector](#vpc-access-connector)
 - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
@@ -82,6 +83,33 @@ module "cloud_run" {
 }
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
+
+## Connecting to Cloud SQL database
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        cloudsql = "/cloudsql"
+      }
+    }
+  }
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.cloudsql-instance.connection_name]
+    }
+  }
+  deletion_protection = false
+}
+# tftest fixtures=fixtures/cloudsql-instance.tf inventory=cloudsql.yaml e2e
+```
+
 
 ## Beta features
 
@@ -518,6 +546,7 @@ module "cloud_run" {
 
 ## Fixtures
 
+- [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)
