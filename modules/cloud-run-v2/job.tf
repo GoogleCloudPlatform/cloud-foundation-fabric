@@ -130,16 +130,16 @@ resource "google_cloud_run_v2_job" "job" {
           dynamic "gcs" {
             for_each = volumes.value.gcs == null ? [] : [""]
             content {
-              bucket    = volumes.value.bucket
-              read_only = volumes.value.is_read_only
+              bucket    = volumes.value.gcs.bucket
+              read_only = volumes.value.gcs.is_read_only
             }
           }
           dynamic "nfs" {
             for_each = volumes.value.nfs == null ? [] : [""]
             content {
-              server    = volumes.value.server
-              path      = volumes.value.path
-              read_only = volumes.value.is_read_only
+              server    = volumes.value.nfs.server
+              path      = volumes.value.nfs.path
+              read_only = volumes.value.nfs.is_read_only
             }
           }
         }
