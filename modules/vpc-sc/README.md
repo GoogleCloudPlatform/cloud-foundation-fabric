@@ -229,6 +229,24 @@ module "test" {
     egress_policies  = "data/egress-policies"
     ingress_policies = "data/ingress-policies"
   }
+  ingress_policies = {
+    sa-tf-test = {
+      from = {
+        identities = [
+          "serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com",
+          "serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com"
+        ]
+        access_levels = ["*"]
+      }
+      to = {
+        operations = [{
+          service_name     = "compute.googleapis.com",
+          method_selectors = ["ProjectsService.Get", "RegionsService.Get"]
+        }]
+        resources = ["*"]
+      }
+    }
+  }
   service_perimeters_regular = {
     r1 = {
       status = {
@@ -236,7 +254,7 @@ module "test" {
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
-        ingress_policies    = ["sa-tf-test-geo", "sa-tf-test"]
+        ingress_policies    = ["sa-tf-test", "sa-tf-test-geo"]
         vpc_accessible_services = {
           allowed_services   = ["storage.googleapis.com"]
           enable_restriction = true
@@ -245,7 +263,7 @@ module "test" {
     }
   }
 }
-# tftest modules=1 resources=3 files=a1,a2,e1,i1,i2 inventory=factory.yaml
+# tftest modules=1 resources=3 files=a1,a2,e1,i1 inventory=factory.yaml
 ```
 
 ```yaml
@@ -281,33 +299,14 @@ to:
 ```yaml
 from:
   access_levels:
-    - "*"
-  identities:
-    - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
-    - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
-to:
-  operations:
-    - service_name: compute.googleapis.com
-      method_selectors:
-        - ProjectsService.Get
-        - RegionsService.Get
-  resources:
-    - "*"
-# tftest-file id=i1 path=data/ingress-policies/sa-tf-test.yaml schema=ingress-policy.schema.json
-```
-
-```yaml
-from:
-  access_levels:
     - geo-it
-  identities:
-    - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+  identity_type: ANY_IDENTITY
 to:
   operations:
     - service_name: "*"
   resources:
     - projects/1234567890
-# tftest-file id=i2 path=data/ingress-policies/sa-tf-test-geo.yaml schema=ingress-policy.schema.json
+# tftest-file id=i1 path=data/ingress-policies/sa-tf-test-geo.yaml schema=ingress-policy.schema.json
 ```
 
 ## Notes
