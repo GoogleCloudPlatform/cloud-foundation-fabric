@@ -12,101 +12,123 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Changelog maintenance.
+
+This script allows adding or replacing individual release sections in our
+CHANGELOG.md file.
+
+It works on a set of simple principles
+
+- a release is identified by two boundaries, the release for which we want to
+  capture PRs (`release_to` or end release) and the release preceding it
+  (`release_from` or start release)
+- the end release can be null, to capture unreleased merged PRs (the
+  'Unreleased' block in changelog)
+- the start release can be null, to start capturing from the last published
+  release (again to populate the 'Unreleased' block)
+- merged PRs between the start and end times are captured and used to populate
+  the release block
+- PRs are grouped by their `on:` labels, and flagged as containing incompatible
+  changes if they have one of the `breaks:` labels
+- draft PRs or PRs merged against a base different from the one specified via
+  the `merged_to` argument (defaulting to `master`) are ignored
+- the unreleased block can optionally be marked with a release name via the
+  `release_as` argument to prepare for a new release
+
+Example usage:
+
+- update the Unreleased section after PRs have been merged, both start and end
+  releases use defaults, only PRs to `master` are tracked
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write
+  ```
+- update an existing release on the master branch
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write \
+    --release-from=v34.0.0 --release-to=v35.0.0
+  ```
+- create a new release on the master branch
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write \
+    --release-from=v35.0.0 --release-as=v36.0.0
+  ```
+- create an rc release on the fast-dev branch capturing only branch-merged PRs
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write \
+    --release-from=v35.0.0 --release-as=v36.0.0-rc1 --merged-to=fast-dev
+  ```
+- create an rc release on the fast-dev branch also capturing master merged PRs
+  e.g. when releasing an rc2 with fast-dev aligned on master
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write \
+    --release-from=v35.0.0 --release-as=v36.0.0-rc1 \
+    --merged-to=fast-dev --merged-to=master
+  ```
+'''
 
 import click
 import collections
+import datetime
+import functools
+import requests
 
-import ghapi.all
 import iso8601
 
+HEADING = (
+    '# Changelog\n\n'
+    'All notable changes to this project will be documented in this file.\n'
+    '<!-- markdownlint-disable MD024 -->\n')
 LINK_MARKER = '<!-- markdown-link-check-disable -->'
 ORG = 'GoogleCloudPlatform'
 REPO = 'cloud-foundation-fabric'
+API_URL = f'https://api.github.com/repos/{ORG}/{REPO}'
 URL = f'https://github.com/{ORG}/{REPO}'
+CHANGE_URL = f'[{{name}}]: {URL}/compare/v{{release_from}}...{{release_to}}'
 
-PullRequest = collections.namedtuple('PullRequest',
-                                     'id author title merged_at labels')
 FileRelease = collections.namedtuple('FileRelease',
-                                     'name published since content')
-GitRelease = collections.namedtuple('GitRelease', 'name published since pulls')
-Section = collections.namedtuple('Section', 'text')
+                                     'name published content link',
+                                     defaults=([], None))
+PullRequest = collections.namedtuple('PullRequest',
+                                     'id base author title merged_at labels')
 
 
 class Error(Exception):
   pass
 
 
-def _paginate(method, **kw):
-  'Paginate GitHub API call.'
-  page = 1
-  while True:
-    result = method(page=page, per_page=100, **kw)
-    for item in result:
-      yield item
-    if len(result) < 100:
-      break
-    page += 1
+@functools.cache
+def _http(token):
+  'HTTP requests session with authentication header.'
+  session = requests.Session()
+  session.headers.update({'Authorization': f'Bearer {token}'})
+  return session
 
 
-def changelog_load(path):
-  'Parse changelog file and return structured data.'
-  releases = []
+def _strip_relname(name):
+  if name is None:
+    return 'Unreleased'
+  if name.startswith('['):
+    name = name[1:-1]
+  if name.startswith('v'):
+    name = name[1:]
+  return name
+
+
+def fetch(token, path, **kw):
+  'Fetch request and JSON decode response.'
   try:
-    with open(path) as f:
-      for l in f.readlines():
-        l = l.strip()
-        if l.startswith(LINK_MARKER):
-          break
-        if l.startswith('## '):
-          name, _, date = l[3:].partition(' - ')
-          releases.append(FileRelease(name[1:-1], date, None, []))
-        elif releases:
-          releases[-1].content.append(l)
-    return releases
-  except (IOError, OSError) as e:
-    raise Error(f'Cannot open {path}: {e.args[0]}')
+    resp = _http(token).get(f'{API_URL}/{path}', **kw)
+  except requests.HTTPError as e:
+    raise Error(f'HTTP error: {e}')
+  return resp.json()
 
 
-def changelog_dumps(file_releases, git_releases=None):
-  'Return formatted changelog from structured data, overriding versions.'
-  git_releases = git_releases or {}
-  buffer = [
-      ('# Changelog\n\n'
-       'All notable changes to this project will be documented in this file.\n'
-       '<!-- markdownlint-disable MD024 -->\n')
-  ]
-  ref_buffer = ['<!-- markdown-link-check-disable -->']
-  for i, release in enumerate(file_releases):
-    name, published, _, items = release
-    prev_name = file_releases[i +
-                              1].name if i + 1 < len(file_releases) else '0.1'
-    if name != 'Unreleased':
-      buffer.append(f'## [{name}] - {published}')
-      ref_buffer.append(f'[{name}]: {URL}/compare/v{prev_name}...v{name}')
-    else:
-      buffer.append(f'## [{name}]')
-      ref_buffer.append(f'[Unreleased]: {URL}/compare/v{prev_name}...HEAD')
-    release = git_releases.get(name, git_releases.get(f'v{name}'))
-    if release:
-      buffer.append(f'<!-- {release.published} < {release.since} -->')
-      pulls = group_pulls(release.pulls)
-      for k in sorted(pulls.keys(), key=lambda s: s or ''):
-        if k is not None:
-          buffer.append(f'### {k}\n')
-        for pull in pulls[k]:
-          buffer.append(format_pull(pull))
-        buffer.append('')
-    else:
-      buffer.append('\n'.join(items))
-  return '\n'.join(buffer + ref_buffer + [''])
-
-
-def format_pull(pull):
+def format_pull(pull, group=None):
   'Format pull request.'
   url = 'https://github.com'
   pull_url = f'{url}/{ORG}/{REPO}/pull'
   prefix = ''
-  if 'incompatible change' in pull.labels:
+  if f'breaks:{group}' in pull.labels or 'incompatible change' in pull.labels:
     prefix = '**incompatible change:** '
   return (f'- [[#{pull.id}]({pull_url}/{pull.id})] '
           f'{prefix}'
@@ -114,7 +136,69 @@ def format_pull(pull):
           f'([{pull.author}]({url}/{pull.author})) <!-- {pull.merged_at} -->')
 
 
+def format_release(pull_groups, release_as, release_to, release_from, date_to,
+                   date_from):
+  'Format release changelog heading and text.'
+  if release_as:
+    # if we're releasing date to is today
+    date_to = datetime.date.today()
+  comment = f'<!-- from: {date_from} to: {date_to} since: {release_from} -->'
+  if release_to is None and not release_as:
+    buffer = [f'## [{release_as or "Unreleased"}] {comment}']
+  else:
+    buffer = [(f'## [{_strip_relname(release_to or release_as)}] - '
+               f'{date_to.strftime("%Y-%m-%d")} {comment}')]
+  for group in sorted(pull_groups.keys(), key=lambda s: s or ''):
+    if group is not None:
+      buffer.append(f'### {group.upper()}\n')
+    for pull in pull_groups[group]:
+      buffer.append(format_pull(pull, group))
+    buffer.append('')
+  return '\n'.join(buffer)
+
+
+def get_pulls(token, date_from, date_to, merged_to):
+  'Get and normalize pull requests from the Github API.'
+  url = 'pulls?state=closed&sort=updated&direction=desc&per_page=100'
+  page = 1
+  lookbehinds = 0
+  while True:
+    pulls = fetch(token, f'{url}&page={page}')
+    unmerged = 0
+    for r in pulls:
+      pull_id = r['number']
+      merged_at = r['merged_at']
+      if merged_at is None:
+        unmerged += 1
+        continue
+      pull = PullRequest(pull_id, r['base']['ref'], r['user']['login'],
+                         r['title'], iso8601.parse_date(merged_at),
+                         [l['name'].lower() for l in r['labels']])
+      if pull.base not in merged_to or pull.merged_at <= date_from:
+        unmerged += 1
+        continue
+      if date_to and pull.merged_at >= date_to:
+        continue
+      yield pull
+    if len(pulls) < 100:
+      break
+    elif unmerged == 100:
+      if lookbehinds >= 1:
+        break
+      lookbehinds += 1
+    page += 1
+
+
+def get_release_date(token, name=None):
+  'Get published date for a specific release or the latest release.'
+  path = f'releases/tags/{name}' if name else f'releases/latest'
+  release = fetch(token, path)
+  if not release.get('draft'):
+    return iso8601.parse_date(release['published_at'])
+
+
 def group_pulls(pulls):
+  'Group pull requests by on: label.'
   pulls.sort(key=lambda p: p.merged_at, reverse=True)
   groups = {None: []}
   for pull in pulls:
@@ -123,91 +207,106 @@ def group_pulls(pulls):
       groups[None].append(pull)
       continue
     for label in labels:
-      group = groups.setdefault(label.upper(), [])
+      group = groups.setdefault(label, [])
       group.append(pull)
   return groups
 
 
-def get_api(token, owner=ORG, name=REPO):
-  'Get GitHub API object.'
-  return ghapi.all.GhApi(owner=owner, repo=name, token=token)
+def load_changelog(filename):
+  'Return structured data from changelog file.'
+  releases = {}
+  links = None
+  name = None
+  try:
+    with open(filename) as f:
+      for l in f.readlines():
+        l = l.strip()
+        if l.startswith(LINK_MARKER):
+          links = {}
+          continue
+        if l.startswith('## '):
+          name, _, date = l[3:].partition(' - ')
+          name = _strip_relname(name)
+          if not date.strip():
+            date = datetime.date.today()
+          else:
+            date = datetime.datetime.strptime(date.split()[0],
+                                              '%Y-%m-%d').date()
+          releases[name] = FileRelease(name, date, [l])
+        elif name and links is None:
+          releases[name].content.append(l)
+        elif l.startswith('['):
+          name, _, _ = l.partition(':')
+          links[_strip_relname(name)] = l
+  except (IOError, OSError) as e:
+    raise Error(f'Cannot open {filename}: {e.args[0]}')
+  return releases, links
 
 
-def get_pulls(api):
-  'Get all pull requests (GH sometimes forgets pulls with filters).'
-  pulls = []
-  # this should be done on the fly with sort='updated', direction='desc'
-  # if the API could be trusted (they cannot)
-  for p in _paginate(api.pulls.list, base='master', state='closed'):
-    try:
-      merged_at = iso8601.parse_date(p['merged_at'])
-    except iso8601.ParseError:
-      continue
-    pulls.append(
-        PullRequest(p['number'], p['user']['login'], p['title'], merged_at,
-                    [l['name'] for l in p['labels']]))
-  pulls.sort(key=lambda p: p.merged_at, reverse=True)
-  return pulls
-
-
-def get_release_pulls(api, releases):
-  'Get and add pull requests for releases.'
-  i = 0
-  for p in get_pulls(api):
-    if releases[i].published and p.merged_at >= releases[i].published:
-      continue
-    if releases[i].since and p.merged_at <= releases[i].since:
-      i += 1
-      if i == len(releases):
-        break
-    releases[i].pulls.append(p)
-  return releases
-
-
-def get_releases(api, filter_names=None):
-  'Get releases with optional filter on release names.'
-  Buffer = collections.namedtuple('Buffer', 'name published')
-  buffer = Buffer('Unreleased', None)
-  for r in _paginate(api.repos.list_releases):
-    published = iso8601.parse_date(r['published_at'])
-    if not filter_names or buffer.name in filter_names:
-      yield GitRelease(buffer.name, buffer.published, published, [])
-    buffer = Buffer(r['name'], published)
-  if buffer and (not filter_names or buffer.name in filter_names):
-    yield GitRelease(buffer.name, buffer.published, None, [])
+def write_changelog(releases, links, rel_changes, release_as, release_to,
+                    release_from, filename='CHANGELOG.md'):
+  'Inject the pull request data and write changelog to file.'
+  rel_buffer, link_buffer = [], []
+  release_to = _strip_relname(release_to)
+  sorted_releases = sorted(releases.values(), reverse=True,
+                           key=lambda r: r.published)
+  if release_as:
+    # inject an empty 'Unreleased' block as the current one will be replaced
+    rel_buffer.append('## Unreleased\n')
+    rel_link = CHANGE_URL.format(name='Unreleased', release_from=release_as,
+                                 release_to='HEAD')
+    link_buffer.append(rel_link)
+  for rel in sorted_releases:
+    rel_link = links.get(rel.name)
+    if rel.name == release_to:
+      rel_buffer.append(rel_changes)
+      if release_as:
+        rel_link = CHANGE_URL.format(name=release_as, release_from=release_from,
+                                     release_to=release_as)
+    else:
+      rel_buffer.append('\n'.join(rel.content))
+    link_buffer.append(rel_link)
+  open(filename, 'w').write(
+      '\n'.join([HEADING] + rel_buffer +
+                ['<!-- markdown-link-check-disable -->'] + link_buffer))
 
 
 @click.command
-@click.option('--all-releases', is_flag=True, default=False,
-              help='All releases.')
+@click.option('--merged-to', required=False, default=('master',), multiple=True,
+              help='Only include PRs merged to these branches.')
+@click.option('--release-as', required=False, default=None,
+              help='Use this name for the Unreleased section as a new release.')
 @click.option(
-    '--release', required=False, default=['Unreleased'], multiple=True,
-    help='Release to replace, specify multiple times for more than one version.'
+    '--release-from', required=False, default=None,
+    help='Lower bound of the comparison, defaults to previous full release.')
+@click.option(
+    '--release-to', required=False, default=None, help=
+    'Release to replace and use as upper bound of the comparison. Leave unspecified for a new release.'
 )
 @click.option('--token', required=True, envvar='GH_TOKEN',
               help='GitHub API token.')
 @click.option('--write', '-w', is_flag=True, required=False, default=False,
               help='Write modified changelog file.')
-@click.argument('changelog', required=False, default='CHANGELOG.md',
+@click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
-def main(token, changelog='CHANGELOG.md', all_releases=False, release=None,
-         write=False):
-  api = get_api(token)
-  release = [] if all_releases else release
-  releases = [r for r in get_releases(api, release)]
-  releases = {r.name: r for r in get_release_pulls(api, releases)}
+def main(token, changelog_file='CHANGELOG.md', merged_to=None, release_as=None,
+         release_from=None, release_to=None, write=False):
+  if release_as is not None and release_to is not None:
+    raise SystemExit('Only one of `release_as` and `release_to` can be used.')
   try:
-    changelog_releases = changelog_load(changelog)
-    result = changelog_dumps(changelog_releases, releases)
+    date_from = get_release_date(token, release_from)
+    date_to = None if not release_to else get_release_date(token, release_to)
+    pulls = list(get_pulls(token, date_from, date_to, merged_to or ('master',)))
+    pull_groups = group_pulls(pulls)
+    rel_changes = format_release(pull_groups, release_as, release_to,
+                                 release_from, date_to, date_from)
+    if not write:
+      raise SystemExit(0)
+    releases, links = load_changelog(changelog_file)
+    write_changelog(releases, links, rel_changes, release_as, release_to,
+                    release_from, changelog_file)
   except Error as e:
-    raise SystemExit(f'Cannot read or generate changelog: {e.args[0]}')
-  if not write:
-    print(result)
-  else:
-    try:
-      open(changelog, 'w').write(result)
-    except (IOError, OSError) as e:
-      raise SystemExit('Cannot write to changelog file.')
+    raise SystemExit(f'Error running command: {e}')
 
 
 if __name__ == '__main__':
