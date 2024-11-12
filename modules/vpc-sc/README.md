@@ -21,6 +21,7 @@ If you are using [Application Default Credentials](https://cloud.google.com/sdk/
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Tests](#tests)
 <!-- END TOC -->
 
 ## Examples
