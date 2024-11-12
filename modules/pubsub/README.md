@@ -115,6 +115,29 @@ module "pubsub" {
 # tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
 ```
 
+### BigQuery Subscription with service account email
+
+BigQuery subscription example configuration with service account email.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "my-topic"
+  subscriptions = {
+    test-bigquery = {
+      bigquery = {
+        table                 = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
+        use_table_schema      = true
+        write_metadata        = false
+        service_account_email = module.pubsub_service_account.email
+      }
+    }
+  }
+}
+# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
+```
+
 ### Cloud Storage subscriptions
 
 Cloud Storage subscriptions need extra configuration in the `cloud_storage_subscription_configs` variable.
