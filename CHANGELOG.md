@@ -3,7 +3,29 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased]
+## [Unreleased] <!-- from: 2024-10-30 14:20:58+00:00 to: None since: v35.0.0 -->
+
+### BLUEPRINTS
+
+- [[#2514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2514)] New SecOps blueprints section and SecOps GKE Forwarder ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-05 13:41:37+00:00 -->
+- [[#2658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2658)] Update service agents spec ([juliocc](https://github.com/juliocc)) <!-- 2024-11-05 11:10:23+00:00 -->
+- [[#2659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2659)] Fix Vertex MLOps blueprint  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-05 10:22:43+00:00 -->
+- [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
+- [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
+
+### MODULES
+
+- [[#2676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2676)] Fix "inconsistent conditional result types" error in `modules/vpc-sc` ([joelvoss](https://github.com/joelvoss)) <!-- 2024-11-12 09:27:51+00:00 -->
+- [[#2673](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2673)] bump modules/README github tag reference ([kaue](https://github.com/kaue)) <!-- 2024-11-11 18:13:12+00:00 -->
+- [[#2670](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2670)] Fix the location of the GCS and NFS attributes ([wintermi](https://github.com/wintermi)) <!-- 2024-11-11 09:01:16+00:00 -->
+- [[#2669](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2669)] Additional examples for Cloud Run and Cloud SQL ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-10 06:02:30+00:00 -->
+- [[#2668](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2668)] SWP: remove condition from `addresses` variable and make it null by default ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-09 21:50:47+00:00 -->
+- [[#2666](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2666)] Update SWP ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-09 12:54:13+00:00 -->
+- [[#2657](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2657)] add enable_object_retention argument ([kejti23](https://github.com/kejti23)) <!-- 2024-11-05 16:27:29+00:00 -->
+- [[#2658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2658)] Update service agents spec ([juliocc](https://github.com/juliocc)) <!-- 2024-11-05 11:10:23+00:00 -->
+- [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
+- [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
+- [[#2653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2653)] Add required enabled field introduced in Terraform version 5.41.0 ([jacobmammoliti](https://github.com/jacobmammoliti)) <!-- 2024-11-01 07:01:14+00:00 -->
 
 ## [36.0.0-rc1] - 2024-10-31
 
