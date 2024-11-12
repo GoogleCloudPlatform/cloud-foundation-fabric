@@ -70,6 +70,7 @@ import click
 import collections
 import datetime
 import functools
+import logging
 import requests
 
 import iso8601
@@ -120,6 +121,8 @@ def fetch(token, path, **kw):
     resp = _http(token).get(f'{API_URL}/{path}', **kw)
   except requests.HTTPError as e:
     raise Error(f'HTTP error: {e}')
+  if resp.status_code != 200:
+    raise Error(f'HTTP status {resp.status_code} for {path}')
   return resp.json()
 
 
@@ -287,20 +290,27 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
               help='GitHub API token.')
 @click.option('--write', '-w', is_flag=True, required=False, default=False,
               help='Write modified changelog file.')
+@click.option('--verbose', '-v', is_flag=True, default=False,
+              help='Print information about the running operations')
 @click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
 def main(token, changelog_file='CHANGELOG.md', merged_to=None, release_as=None,
-         release_from=None, release_to=None, write=False):
+         release_from=None, release_to=None, write=False, verbose=False):
+  logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)
   if release_as is not None and release_to is not None:
     raise SystemExit('Only one of `release_as` and `release_to` can be used.')
   try:
     date_from = get_release_date(token, release_from)
+    logging.info(f'release date from: {date_from}')
     date_to = None if not release_to else get_release_date(token, release_to)
+    logging.info(f'release date to: {date_to}')
     pulls = list(get_pulls(token, date_from, date_to, merged_to or ('master',)))
+    logging.info(f'number of pulls: {len(pulls)}')
     pull_groups = group_pulls(pulls)
     rel_changes = format_release(pull_groups, release_as, release_to,
                                  release_from, date_to, date_from)
     if not write:
+      print(rel_changes)
       raise SystemExit(0)
     releases, links = load_changelog(changelog_file)
     write_changelog(releases, links, rel_changes, release_as, release_to,
