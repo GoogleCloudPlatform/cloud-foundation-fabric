@@ -93,8 +93,9 @@ values:
           resources:
           - '*'
       - ingress_from:
-        - identities: null
-          identity_type: ANY_IDENTITY
+        - identities:
+          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          identity_type: null
           sources:
           - resource: null
         ingress_to:
