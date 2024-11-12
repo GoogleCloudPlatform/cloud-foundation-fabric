@@ -19,6 +19,7 @@ Note that this module assumes that some options are the same for both the primar
   - [SSL Config](#ssl-config)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Examples
@@ -143,11 +144,15 @@ module "db" {
     user2 = {
       password = "mypassword"
     }
+    # IAM Service Account
+    (module.iam-service-account.email) = {
+      type = "CLOUD_IAM_SERVICE_ACCOUNT"
+    }
   }
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=1 resources=6 inventory=custom.yaml e2e
+# tftest fixtures=fixtures/iam-service-account.tf inventory=custom.yaml e2e
 ```
 
 ### CMEK encryption
@@ -413,4 +418,8 @@ module "db" {
 | [self_link](outputs.tf#L114) | Self link of the primary instance. |  |
 | [self_links](outputs.tf#L119) | Self links of all instances. |  |
 | [user_passwords](outputs.tf#L127) | Map of containing the password of all users created through terraform. | ✓ |
+
+## Fixtures
+
+- [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 <!-- END TFDOC -->

@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-
-
 variable "addresses" {
-  description = "One or more IP addresses to be used for Secure Web Proxy."
+  description = "Optional IP addresses to be used for Secure Web Proxy."
   type        = list(string)
-  validation {
-    condition     = length(var.addresses) > 0
-    error_message = "Must specify at least one IP address."
-  }
+  default     = null
 }
 
 variable "certificates" {
@@ -156,9 +151,20 @@ variable "subnetwork" {
 variable "tls_inspection_config" {
   description = "TLS inspection configuration."
   type = object({
-    ca_pool               = optional(string, null)
-    exclude_public_ca_set = optional(bool, false)
-    description           = optional(string)
+    create_config = optional(object({
+      ca_pool               = optional(string, null)
+      description           = optional(string, null)
+      exclude_public_ca_set = optional(bool, false)
+    }), null)
+    id = optional(string, null)
   })
-  default = null
+  nullable = false
+  default  = {}
+  validation {
+    condition = !(
+      var.tls_inspection_config.create_config != null &&
+      var.tls_inspection_config.id != null
+    )
+    error_message = "You can't assign values both to `create.config.ca_pool` and `id`."
+  }
 }
