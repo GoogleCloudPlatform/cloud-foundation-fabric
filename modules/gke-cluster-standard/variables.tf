@@ -364,6 +364,7 @@ variable "node_config" {
     labels            = optional(map(string))
     service_account   = optional(string)
     tags              = optional(list(string))
+    workload_metadata_config_mode = optional(string)
   })
   default  = {}
   nullable = false
