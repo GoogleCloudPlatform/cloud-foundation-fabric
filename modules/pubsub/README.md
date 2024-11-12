@@ -130,7 +130,7 @@ module "pubsub" {
         table                 = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
         use_table_schema      = true
         write_metadata        = false
-        service_account_email = module.pubsub_service_account.email
+        service_account_email = var.service_account.email
       }
     }
   }
