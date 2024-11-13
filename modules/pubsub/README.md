@@ -120,6 +120,12 @@ module "pubsub" {
 BigQuery subscription example configuration with service account email.
 
 ```hcl
+module "iam-service-account" {
+  source     = "./fabric/modules/iam-service-account"
+  project_id = var.project_id
+  name       = "fixture-service-account"
+}
+
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
   project_id = var.project_id
