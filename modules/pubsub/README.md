@@ -130,13 +130,12 @@ module "pubsub" {
         table                 = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
         use_table_schema      = true
         write_metadata        = false
-        drop_unknown_fields   = true
-        service_account_email = var.service_account.email
+        service_account_email = module.iam-service-account.email
       }
     }
   }
 }
-# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
+# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription-with-service-account.yaml e2e
 ```
 
 ### Cloud Storage subscriptions
