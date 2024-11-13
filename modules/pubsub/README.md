@@ -131,7 +131,7 @@ module "pubsub" {
   project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
-    test-bigquery = {
+    test-bigquery-with-service-account = {
       bigquery = {
         table                 = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
         use_table_schema      = true
