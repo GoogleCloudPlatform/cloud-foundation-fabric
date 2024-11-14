@@ -157,10 +157,10 @@ module "net-folder-prod" {
   source = "../../../modules/folder"
   count  = local.net_use_env_folders ? 1 : 0
   parent = module.net-folder[0].id
-  name   = title(var.environment_names["prod"])
+  name   = var.environments["prod"].name
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environment_names["prod"]}"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environments["prod"].tag_name}"].id,
       null
     )
   }
@@ -170,10 +170,10 @@ module "net-folder-dev" {
   source = "../../../modules/folder"
   count  = local.net_use_env_folders ? 1 : 0
   parent = module.net-folder[0].id
-  name   = title(var.environment_names["dev"])
+  name   = var.environments["dev"].name
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environment_names["dev"]}"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environments["dev"].tag_name}"].id,
       null
     )
   }

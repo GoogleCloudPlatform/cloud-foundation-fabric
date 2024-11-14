@@ -37,7 +37,6 @@ locals {
     local.top_level_service_accounts
   )
   tfvars = {
-    environment_names = var.environment_names
     stage_config = merge(
       {
         for k, v in local.stage3 : k => {
@@ -50,14 +49,14 @@ locals {
           short_name = v.short_name
           # rw service accounts for stage 3s that need delegated IAM on stage 2s
           iam_delegated_principals = {
-            for ek, ev in var.environment_names : ek => [
+            for ek, _ in var.environments : ek => [
               for sk, sv in local.stage3 :
               "serviceAccount:${local.stage_service_accounts[sk]}"
               if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
             ]
           }
           iam_viewer_principals = {
-            for ek, ev in var.environment_names : ek => [
+            for ek, _ in var.environments : ek => [
               for sk, sv in local.stage3 :
               "serviceAccount:${local.stage_service_accounts["${sk}-r"]}"
               if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)

@@ -51,7 +51,7 @@ module "prod-spoke-project" {
         members = try(local.iam_delegated_principals["prod"], [])
         condition = {
           title       = "prod_stage3_sa_delegated_grants"
-          description = "${var.environment_names["prod"]} host project delegated grants."
+          description = "${var.environments["prod"].name} host project delegated grants."
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
             local.iam_delegated

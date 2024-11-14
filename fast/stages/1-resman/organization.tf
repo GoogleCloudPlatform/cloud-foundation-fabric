@@ -44,20 +44,20 @@ locals {
   )
   # environment tag values and their IAM bindings for stage 2 service accounts
   environment_tag_values = {
-    for k, v in var.environment_names : v => {
+    for k, v in var.environments : v.tag_name => {
       iam = merge(
         # user-defined configuration
-        try(local.tags.environment.values[v].iam, {}),
+        try(local.tags.environment.values[v.tag_name].iam, {}),
         # stage 2 service accounts
         {
           "roles/resourcemanager.tagUser" = distinct(concat(
-            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagUser"], []),
+            try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
             !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
             !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
             !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
-            try(local.tags.environment.values[v].iam["roles/resourcemanager.tagViewer"], []),
+            try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
             !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
             !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
             !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],

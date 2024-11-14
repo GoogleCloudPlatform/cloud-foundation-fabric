@@ -17,18 +17,6 @@
 # defaults for variables marked with global tfdoc annotations, can be set via
 # the tfvars file generated in stage 00 and stored in its outputs
 
-variable "environment_names" {
-  description = "Long environment names."
-  type = object({
-    dev  = string
-    prod = string
-  })
-  default = {
-    dev  = "development"
-    prod = "production"
-  }
-}
-
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({

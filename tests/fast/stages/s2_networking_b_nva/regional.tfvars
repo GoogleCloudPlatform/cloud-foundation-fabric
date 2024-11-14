@@ -14,9 +14,17 @@ dns = {
 }
 enable_cloud_nat      = true
 enable_test_instances = true
-environment_names = {
-  dev  = "development"
-  prod = "production"
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
 }
 essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {

@@ -120,7 +120,7 @@ module "sec-folder-prod" {
   source = "../../../modules/folder"
   count  = local.sec_use_env_folders ? 1 : 0
   parent = module.sec-folder[0].id
-  name   = title(var.environment_names["prod"])
+  name   = var.environments["prod"].name
   iam = {
     # stage 3s service accounts
     for role, attrs in local.sec_s3_iam.prod : role => [
@@ -133,7 +133,7 @@ module "sec-folder-prod" {
   }
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environment_names["prod"]}"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environments["prod"].tag_name}"].id,
       null
     )
   }
@@ -143,7 +143,7 @@ module "sec-folder-dev" {
   source = "../../../modules/folder"
   count  = local.sec_use_env_folders ? 1 : 0
   parent = module.sec-folder[0].id
-  name   = title(var.environment_names["dev"])
+  name   = var.environments["dev"].name
   iam = {
     # stage 3s service accounts
     for role, attrs in local.sec_s3_iam.dev : role => [
@@ -156,7 +156,7 @@ module "sec-folder-dev" {
   }
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environment_names["dev"]}"].id,
+      local.tag_values["${var.tag_names.environment}/${var.environments["dev"].tag_name}"].id,
       null
     )
   }

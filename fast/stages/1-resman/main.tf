@@ -19,6 +19,7 @@ locals {
   # automation_resman_sa = try(
   #   data.google_client_openid_userinfo.provider_identity[0].email, null
   # )
+  # tag values use descriptive names
   gcs_storage_class = (
     length(split("-", var.locations.gcs)) < 2
     ? "MULTI_REGIONAL"

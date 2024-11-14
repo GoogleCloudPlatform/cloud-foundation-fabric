@@ -45,7 +45,7 @@ module "dev-sec-project" {
         members = try(local.iam_delegated_principals["dev"], [])
         condition = {
           title       = "dev_stage3_sa_delegated_grants"
-          description = "${var.environment_names["dev"]} project delegated grants."
+          description = "${var.environments["dev"].name} project delegated grants."
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
             local.iam_delegated
