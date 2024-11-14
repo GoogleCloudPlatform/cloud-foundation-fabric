@@ -392,3 +392,12 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
+
+variable "gpu" {
+  description = "GPU information."
+  type = object({
+    count = number
+    type  = string
+  })
+  default = null
+}
