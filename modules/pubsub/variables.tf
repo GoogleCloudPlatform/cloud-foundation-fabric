@@ -100,28 +100,22 @@ variable "schema" {
 variable "subscriptions" {
   description = "Topic subscriptions. Also define push configs for push subscriptions. If options is set to null subscription defaults will be used. Labels default to topic labels if set to null."
   type = map(object({
-    labels                       = optional(map(string))
     ack_deadline_seconds         = optional(number)
-    message_retention_duration   = optional(string)
-    retain_acked_messages        = optional(bool, false)
+    enable_exactly_once_delivery = optional(bool, false)
+    enable_message_ordering      = optional(bool, false)
     expiration_policy_ttl        = optional(string)
     filter                       = optional(string)
-    enable_message_ordering      = optional(bool, false)
-    enable_exactly_once_delivery = optional(bool, false)
-    dead_letter_policy = optional(object({
-      topic                 = string
-      max_delivery_attempts = optional(number)
-    }))
-    retry_policy = optional(object({
-      minimum_backoff = optional(number)
-      maximum_backoff = optional(number)
-    }))
+    iam                          = optional(map(list(string)), {})
+    labels                       = optional(map(string))
+    message_retention_duration   = optional(string)
+    retain_acked_messages        = optional(bool, false)
     bigquery = optional(object({
-      table               = string
-      use_table_schema    = optional(bool, false)
-      use_topic_schema    = optional(bool, false)
-      write_metadata      = optional(bool, false)
-      drop_unknown_fields = optional(bool, false)
+      table                 = string
+      drop_unknown_fields   = optional(bool, false)
+      service_account_email = optional(string)
+      use_table_schema      = optional(bool, false)
+      use_topic_schema      = optional(bool, false)
+      write_metadata        = optional(bool, false)
     }))
     cloud_storage = optional(object({
       bucket          = string
@@ -133,17 +127,10 @@ variable "subscriptions" {
         write_metadata = optional(bool, false)
       }))
     }))
-    push = optional(object({
-      endpoint   = string
-      attributes = optional(map(string))
-      no_wrapper = optional(bool, false)
-      oidc_token = optional(object({
-        audience              = optional(string)
-        service_account_email = string
-      }))
+    dead_letter_policy = optional(object({
+      topic                 = string
+      max_delivery_attempts = optional(number)
     }))
-
-    iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
       role    = string
@@ -162,6 +149,19 @@ variable "subscriptions" {
         description = optional(string)
       }))
     })), {})
+    push = optional(object({
+      endpoint   = string
+      attributes = optional(map(string))
+      no_wrapper = optional(bool, false)
+      oidc_token = optional(object({
+        audience              = optional(string)
+        service_account_email = string
+      }))
+    }))
+    retry_policy = optional(object({
+      minimum_backoff = optional(number)
+      maximum_backoff = optional(number)
+    }))
   }))
   default  = {}
   nullable = false

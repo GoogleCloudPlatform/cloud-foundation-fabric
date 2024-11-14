@@ -5,6 +5,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 <!-- BEGIN TOC -->
 - [IAM and environment variables](#iam-and-environment-variables)
 - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+- [Mounting GCS buckets](#mounting-gcs-buckets)
 - [Connecting to Cloud SQL database](#connecting-to-cloud-sql-database)
 - [Beta features](#beta-features)
 - [VPC Access Connector](#vpc-access-connector)
@@ -82,6 +83,34 @@ module "cloud_run" {
   deletion_protection = false
 }
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
+```
+
+## Mounting GCS buckets
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        bucket = "/bucket"
+      }
+    }
+  }
+  volumes = {
+    bucket = {
+      gcs = {
+        bucket       = var.bucket
+        is_read_only = false
+      }
+    }
+  }
+}
+# tftest inventory=gcs-mount.yaml e2e
 ```
 
 ## Connecting to Cloud SQL database
