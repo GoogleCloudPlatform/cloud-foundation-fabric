@@ -1446,7 +1446,7 @@ values:
 
 counts:
   google_folder: 13
-  google_folder_iam_binding: 72
+  google_folder_iam_binding: 74
   google_organization_iam_member: 14
   google_project_iam_member: 23
   google_service_account: 23
@@ -1460,4 +1460,4 @@ counts:
   google_tags_tag_value: 11
   google_tags_tag_value_iam_binding: 4
   modules: 47
-  resources: 273
+  resources: 275
