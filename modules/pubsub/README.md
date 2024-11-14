@@ -124,7 +124,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=3 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
+# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
 ```
 
 ## BigQuery Subscription with service account email
