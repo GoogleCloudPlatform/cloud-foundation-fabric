@@ -275,8 +275,8 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
       rel_buffer.append('\n'.join(rel.content))
     link_buffer.append(rel_link)
   open(filename, 'w').write(
-        '\n'.join([HEADING] + rel_buffer +
-                  ['<!-- markdown-link-check-disable -->'] + link_buffer))
+      '\n'.join([HEADING] + rel_buffer +
+                ['<!-- markdown-link-check-disable -->'] + link_buffer))
 
 @click.command
 @click.option('--merged-to', required=False, default=('master',), multiple=True,
