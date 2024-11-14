@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,16 +208,16 @@ resource "google_cloud_run_v2_service" "service" {
         dynamic "gcs" {
           for_each = volumes.value.gcs == null ? [] : [""]
           content {
-            bucket    = volumes.value.bucket
-            read_only = volumes.value.is_read_only
+            bucket    = volumes.value.gcs.bucket
+            read_only = volumes.value.gcs.is_read_only
           }
         }
         dynamic "nfs" {
           for_each = volumes.value.nfs == null ? [] : [""]
           content {
-            server    = volumes.value.server
-            path      = volumes.value.path
-            read_only = volumes.value.is_read_only
+            server    = volumes.value.nfs.server
+            path      = volumes.value.nfs.path
+            read_only = volumes.value.nfs.is_read_only
           }
         }
       }

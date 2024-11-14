@@ -13,8 +13,15 @@ All notable changes to this project will be documented in this file.
 - [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
 - [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
 
+### FAST
+
+- [[#2681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2681)] Keeping my contributor status :) ([drebes](https://github.com/drebes)) <!-- 2024-11-13 20:28:44+00:00 -->
+- [[#2680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2680)] Swap groups_iam/iam_group for iam_by_principals in bootstrap README ([robrankin](https://github.com/robrankin)) <!-- 2024-11-13 15:33:41+00:00 -->
+
 ### MODULES
 
+- [[#2686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2686)] Fix gcs & NFS mounts for cloud-run-v2 service ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-14 12:33:21+00:00 -->
+- [[#2682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2682)] Add support for service account in pubsub module bigquery subscriptions ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 11:05:37+00:00 -->
 - [[#2676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2676)] Fix "inconsistent conditional result types" error in `modules/vpc-sc` ([joelvoss](https://github.com/joelvoss)) <!-- 2024-11-12 09:27:51+00:00 -->
 - [[#2673](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2673)] bump modules/README github tag reference ([kaue](https://github.com/kaue)) <!-- 2024-11-11 18:13:12+00:00 -->
 - [[#2670](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2670)] Fix the location of the GCS and NFS attributes ([wintermi](https://github.com/wintermi)) <!-- 2024-11-11 09:01:16+00:00 -->
