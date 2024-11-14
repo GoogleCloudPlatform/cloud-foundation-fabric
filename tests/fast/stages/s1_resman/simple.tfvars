@@ -53,6 +53,7 @@ automation = {
 }
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
+  billing_viewer                   = "organizations/123456789012/roles/billingViewer"
   gcve_network_admin               = "organizations/123456789012/roles/gcveNetworkAdmin"
   gcve_network_viewer              = "organizations/123456789012/roles/gcveNetworkViewer"
   network_firewall_policies_admin  = "organizations/123456789012/roles/networkFirewallPoliciesAdmin"
