@@ -278,6 +278,7 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
       '\n'.join([HEADING] + rel_buffer +
                 ['<!-- markdown-link-check-disable -->'] + link_buffer))
 
+
 @click.command
 @click.option('--merged-to', required=False, default=('master',), multiple=True,
               help='Only include PRs merged to these branches.')
