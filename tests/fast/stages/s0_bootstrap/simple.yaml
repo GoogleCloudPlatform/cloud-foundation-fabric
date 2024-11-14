@@ -21,7 +21,7 @@ counts:
   google_logging_project_bucket_config: 4
   google_org_policy_policy: 24
   google_organization_iam_binding: 27
-  google_organization_iam_custom_role: 12
+  google_organization_iam_custom_role: 13
   google_organization_iam_member: 29
   google_project: 3
   google_project_iam_audit_config: 1
@@ -41,13 +41,14 @@ counts:
   google_tags_tag_value: 2
   local_file: 10
   modules: 20
-  resources: 234
+  resources: 235
 
 outputs:
   automation: __missing__
   billing_dataset: __missing__
   cicd_repositories: {}
   custom_roles:
+    billing_viewer: organizations/123456789012/roles/billingViewer
     gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
     gcve_network_viewer: organizations/123456789012/roles/gcveNetworkViewer
     network_firewall_policies_admin: organizations/123456789012/roles/networkFirewallPoliciesAdmin
