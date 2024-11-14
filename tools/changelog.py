@@ -228,8 +228,11 @@ def load_changelog(filename):
           links = {}
           continue
         if l.startswith('## '):
-          name, _, date = l[3:].partition(' - ')
-          name = _strip_relname(name)
+          if l[4:].startswith('Unreleased'):
+            name, date = 'Unreleased', ''
+          else:
+            name, _, date = l[3:].partition(' - ')
+            name = _strip_relname(name)
           if not date.strip():
             date = datetime.date.today()
           else:
@@ -261,6 +264,8 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
     link_buffer.append(rel_link)
   for rel in sorted_releases:
     rel_link = links.get(rel.name)
+    if rel_link is None:
+      raise Error(f"no link found for {rel.name}")
     if rel.name == release_to:
       rel_buffer.append(rel_changes)
       if release_as:
@@ -270,9 +275,8 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
       rel_buffer.append('\n'.join(rel.content))
     link_buffer.append(rel_link)
   open(filename, 'w').write(
-      '\n'.join([HEADING] + rel_buffer +
-                ['<!-- markdown-link-check-disable -->'] + link_buffer))
-
+        '\n'.join([HEADING] + rel_buffer +
+                  ['<!-- markdown-link-check-disable -->'] + link_buffer))
 
 @click.command
 @click.option('--merged-to', required=False, default=('master',), multiple=True,
