@@ -476,10 +476,10 @@ One other area where we directly support customizations is IAM. The code here, a
 
 In code, the distinction above reflects on how IAM bindings are specified in the underlying module variables:
 
-- group roles "for humans" always use `iam_groups` variables
+- group roles "for humans" always use `iam_by_principals` variables
 - service account roles always use `iam` variables
 
-This makes it easy to tweak user roles by adding mappings to the `iam_groups` variables of the relevant resources, without having to understand and deal with the details of service account roles.
+This makes it easy to tweak user roles by adding mappings to the `iam_by_principals` variables of the relevant resources, without having to understand and deal with the details of service account roles.
 
 One more critical difference in IAM bindings is between authoritative and additive:
 
@@ -490,7 +490,7 @@ This stage groups all IAM definitions in the [organization-iam.tf](./organizatio
 
 When customizations are needed, three stage-level variables allow injecting additional bindings to match the desired setup:
 
-- `group_iam` allows adding authoritative bindings for groups
+- `iam_by_principals` allows adding authoritative bindings for groups
 - `iam` allows adding authoritative bindings for any type of supported principal, and is merged with the internal `iam` local and then with group bindings at the module level
 - `iam_bindings_additive` allows adding individual role/member pairs, and also supports IAM conditions
 
