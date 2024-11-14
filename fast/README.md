@@ -14,7 +14,7 @@ Fabric FAST was initially conceived to help enterprises quickly set up a GCP org
 
 FAST uses the concept of stages, which individually perform precise tasks but taken together build a functional, ready-to-use GCP organization. More importantly, stages are modeled around the security boundaries that typically appear in mature organizations. This arrangement allows delegating ownership of each stage to the team responsible for the types of resources it manages. For example, as its name suggests, the networking stage sets up all the networking elements and is usually the responsibility of a dedicated networking team within the organization.
 
-From the perspective of FAST's overall design, stages also work as contacts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain. The diagram below shows the relationships between stages.
+From the perspective of FAST's overall design, stages also work as contracts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain. The diagram below shows the relationships between stages.
 
 <p align="center">
   <img src="stages.svg" alt="Stages diagram">
