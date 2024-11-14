@@ -60,6 +60,9 @@ module "sec-folder" {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         module.pf-sa-rw[0].iam_email
       ]
+      (var.custom_roles.project_iam_viewer) = [
+        module.pf-sa-ro[0].iam_email
+      ]
       "roles/cloudkms.viewer" = [
         module.pf-sa-ro[0].iam_email
       ]
