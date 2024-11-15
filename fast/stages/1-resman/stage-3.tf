@@ -199,14 +199,13 @@ module "stage3-sa-ro" {
 # automation bucket
 
 module "stage3-bucket" {
-  source        = "../../../modules/gcs"
-  for_each      = local.stage3
-  project_id    = var.automation.project_id
-  name          = "resman-${each.value.short_name}-0"
-  prefix        = "${var.prefix}-${each.value.environment}"
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  for_each   = local.stage3
+  project_id = var.automation.project_id
+  name       = "resman-${each.value.short_name}-0"
+  prefix     = "${var.prefix}-${each.value.environment}"
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.stage3-sa-rw[each.key].iam_email]
     "roles/storage.objectViewer" = [module.stage3-sa-ro[each.key].iam_email]
