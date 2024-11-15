@@ -8,9 +8,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "enable": {
-          "type": "boolean"
-        },
         "environment_name": {
           "type": "string"
         },
