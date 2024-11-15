@@ -101,6 +101,9 @@ module "cloud_run" {
       }
     }
   }
+  revision = {
+    gen2_execution_environment = true
+  }
   volumes = {
     bucket = {
       gcs = {
@@ -161,12 +164,13 @@ module "cloud_run" {
     max_instance_count         = 20
     vpc_access = {
       egress = "ALL_TRAFFIC"
-      subnet = "default"
+      subnet = var.subnet.name
       tags   = ["tag1", "tag2", "tag3"]
     }
   }
+  deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=service-beta-features.yaml
+# tftest modules=1 resources=1 inventory=service-beta-features.yaml e2e
 ```
 
 ## VPC Access Connector

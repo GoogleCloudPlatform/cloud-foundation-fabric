@@ -24,7 +24,7 @@ values:
         volume_mounts:
         - mount_path: /bucket
           name: bucket
-      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      execution_environment: EXECUTION_ENVIRONMENT_GEN2
       volumes:
       - cloud_sql_instance: []
         empty_dir: []

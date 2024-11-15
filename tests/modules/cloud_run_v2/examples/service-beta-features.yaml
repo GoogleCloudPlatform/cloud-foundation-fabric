@@ -34,7 +34,7 @@ values:
           - connector: null
             egress: ALL_TRAFFIC
             network_interfaces:
-              - subnetwork: default
+              - subnetwork: subnet_name
                 tags:
                   - tag1
                   - tag2
