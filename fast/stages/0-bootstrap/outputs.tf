@@ -136,10 +136,17 @@ locals {
   tfvars_globals = {
     billing_account = var.billing_account
     groups          = local.principals
-    environments    = var.environments
-    locations       = local.locations
-    organization    = var.organization
-    prefix          = var.prefix
+    environments = {
+      for k, v in var.environments :
+      k => merge(v, {
+        tag_name = (
+          v.tag_name != null ? v.tag_name : lower(replace(v.name, " ", "-"))
+        )
+      })
+    }
+    locations    = local.locations
+    organization = var.organization
+    prefix       = var.prefix
   }
 }
 

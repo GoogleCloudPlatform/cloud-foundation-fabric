@@ -68,6 +68,23 @@ variable "custom_roles" {
   default = null
 }
 
+variable "environments" {
+  # tfdoc:variable:source 0-globals
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    tag_name   = string
+    is_default = optional(bool, false)
+  }))
+  nullable = false
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
+}
+
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist

@@ -44,13 +44,21 @@ variable "custom_roles" {
   default = null
 }
 
-variable "environment_names" {
-  # tfdoc:variable:source 1-resman
-  description = "Long environment names."
-  type = object({
-    dev  = string
-    prod = string
-  })
+variable "environments" {
+  # tfdoc:variable:source 0-globals
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    tag_name   = string
+    is_default = optional(bool, false)
+  }))
+  nullable = false
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
 }
 
 variable "folder_ids" {

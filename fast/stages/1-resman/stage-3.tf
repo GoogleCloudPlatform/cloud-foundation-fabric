@@ -84,7 +84,7 @@ locals {
       for sa, roles in try(v.organization_iam.sa_roles, []) : [
         for role in roles : {
           context = try(v.organization_iam.context_tag_value, "")
-          env     = var.environment_names[v.environment]
+          env     = var.environments[v.environment].tag_name
           role    = role
           sa      = sa
           s3      = k
@@ -98,7 +98,7 @@ locals {
       for s2, attrs in v.stage2_iam : [
         for sa, roles in attrs.sa_roles : [
           for role in roles : {
-            env  = var.environment_names[v.environment]
+            env  = var.environments[v.environment].tag_name
             role = lookup(var.custom_roles, role, role)
             sa   = sa
             s2   = s2
@@ -139,7 +139,7 @@ module "stage3-folder" {
   iam_by_principals = each.value.folder_config.iam_by_principals
   tag_bindings = merge(
     {
-      environment = local.tag_values["environment/${var.environment_names[each.value.environment]}"].id
+      environment = local.tag_values["environment/${var.environments[each.value.environment].tag_name}"].id
     },
     {
       for k, v in each.value.folder_config.tag_bindings : k => try(

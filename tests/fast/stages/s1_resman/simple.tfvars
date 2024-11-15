@@ -65,6 +65,18 @@ custom_roles = {
   service_project_network_admin    = "organizations/123456789012/roles/xpnServiceAdmin"
   storage_viewer                   = "organizations/123456789012/roles/storageViewer"
 }
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
+}
 logging = {
   project_id = "fast-prod-log-audit-0"
 }

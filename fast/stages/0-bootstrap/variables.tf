@@ -96,6 +96,7 @@ variable "environments" {
   type = map(object({
     name       = string
     is_default = optional(bool, false)
+    tag_name   = optional(string)
   }))
   nullable = false
   default = {
@@ -112,6 +113,14 @@ variable "environments" {
       for k, v in var.environments : v.is_default == true
     ])
     error_message = "At least one environment should be marked as default."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : join(" ", regexall(
+        "[a-zA-Z][a-zA-Z0-9\\s-]+[a-zA-Z0-9]", v.name
+      )) == v.name
+    ])
+    error_message = "Environment names can only contain letters numbers dashes or spaces."
   }
 }
 
