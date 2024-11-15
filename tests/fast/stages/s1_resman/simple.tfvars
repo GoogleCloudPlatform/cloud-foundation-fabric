@@ -61,7 +61,7 @@ custom_roles = {
   ngfw_enterprise_admin            = "organizations/123456789012/roles/ngfwEnterpriseAdmin"
   ngfw_enterprise_viewer           = "organizations/123456789012/roles/ngfwEnterpriseViewer"
   organization_admin_viewer        = "organizations/123456789012/roles/organizationAdminViewer"
-  project_iam_viewer               = "organizations/123456789012/roles/projectIAMViewer"
+  project_iam_viewer               = "organizations/123456789012/roles/projectIamViewer"
   service_project_network_admin    = "organizations/123456789012/roles/xpnServiceAdmin"
   storage_viewer                   = "organizations/123456789012/roles/storageViewer"
 }
