@@ -15,6 +15,3 @@
 # yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
 
 name: GCVE
-# automation is disabled since this is just a "container" for stage 3s
-automation:
-  enable: false

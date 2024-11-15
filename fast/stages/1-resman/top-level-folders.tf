@@ -32,11 +32,8 @@ locals {
   # extract automation configurations for folders that define them
   top_level_automation = {
     for k, v in local.top_level_folders :
-    k => merge(
-      { environment_name = "prod", sa_impersonation_principals = [] },
-      v.automation
-    )
-    if try(v.automation.enable, null) == true
+    k => v.automation
+    if v.automation != null
   }
   # merge top folders from factory and variable data
   top_level_folders = merge(
@@ -44,11 +41,11 @@ locals {
     {
       for k, v in local._top_level_folders : k => merge(v, {
         name = try(v.name, k)
-        automation = try(v.automation, {
-          enable                      = true
-          environment_name            = "prod"
-          sa_impersonation_principals = []
-        })
+        automation = !can(v.automation) ? null : {
+          environment_name            = try(v.automation.environment_name, "prod")
+          sa_impersonation_principals = try(v.automation.sa_impersonation_principals, [])
+          short_name                  = try(v.automation.short_name, null)
+        }
         contacts              = try(v.contacts, {})
         firewall_policy       = try(v.firewall_policy, null)
         is_fast_context       = try(v.is_fast_context, true)
@@ -62,7 +59,6 @@ locals {
         iam_by_principals     = try(v.iam_by_principals, {})
         org_policies          = try(v.org_policies, {})
         parent_id             = try(v.parent_id, null)
-        short_name            = try(v.short_name, null)
         tag_bindings          = try(v.tag_bindings, {})
       })
     },
