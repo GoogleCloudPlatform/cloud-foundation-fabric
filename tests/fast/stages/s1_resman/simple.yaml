@@ -1393,7 +1393,6 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
-    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1431,7 +1430,6 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
-    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
