@@ -1461,7 +1461,6 @@ values:
     deletion_protection: false
     display_name: GCVE
     parent: organizations/123456789012
-    tags: null
     timeouts: null
   module.top-level-folder["gcve"].google_tags_tag_binding.binding["context"]:
     timeouts: null
