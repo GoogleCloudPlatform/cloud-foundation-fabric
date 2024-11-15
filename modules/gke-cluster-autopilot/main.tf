@@ -223,6 +223,8 @@ resource "google_container_cluster" "cluster" {
           display_name = range.key
         }
       }
+      gcp_public_cidrs_access_enabled      = var.vpc_config.gcp_public_cidrs_access
+      private_endpoint_enforcement_enabled = var.vpc_config.private_endpoint_enforcement
     }
   }
 
@@ -273,6 +275,17 @@ resource "google_container_cluster" "cluster" {
     content {
       network_tags {
         tags = toset(var.node_config.tags)
+      }
+    }
+  }
+
+  dynamic "control_plane_endpoints_config" {
+    for_each = (
+      var.control_plane_endpoints_config != null ? [""] : []
+    )
+    content {
+      dns_endpoint_config {
+        allow_external_traffic = var.control_plane_endpoints_config.dns_endpoint_config.allow_external_traffic
       }
     }
   }

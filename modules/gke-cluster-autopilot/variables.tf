@@ -35,6 +35,16 @@ variable "backup_configs" {
   nullable = false
 }
 
+variable "control_plane_endpoints_config" {
+  description = "Configuration for all of the cluster's control plane endpoints."
+  type = object({
+    dns_endpoint_config = optional(object({
+      allow_external_traffic = optional(bool)
+    }))
+  })
+  default = null
+}
+
 variable "deletion_protection" {
   description = "Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail."
   type        = bool
@@ -259,9 +269,11 @@ variable "vpc_config" {
       pods     = optional(string)
       services = optional(string)
     }))
-    additional_ranges        = optional(list(string))
-    master_authorized_ranges = optional(map(string))
-    stack_type               = optional(string)
+    additional_ranges            = optional(list(string))
+    master_authorized_ranges     = optional(map(string))
+    gcp_public_cidrs_access      = optional(bool)
+    private_endpoint_enforcement = optional(bool)
+    stack_type                   = optional(string)
   })
   nullable = false
 }

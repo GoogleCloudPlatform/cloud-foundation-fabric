@@ -116,6 +116,16 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "control_plane_endpoints_config" {
+  description = "Configuration for all of the cluster's control plane endpoints."
+  type = object({
+    dns_endpoint_config = optional(object({
+      allow_external_traffic = optional(bool)
+    }))
+  })
+  default = null
+}
+
 variable "default_nodepool" {
   description = "Enable default nodepool."
   type = object({
@@ -417,9 +427,11 @@ variable "vpc_config" {
       pods     = optional(string)
       services = optional(string)
     }))
-    additional_ranges        = optional(list(string))
-    master_authorized_ranges = optional(map(string))
-    stack_type               = optional(string)
+    additional_ranges            = optional(list(string))
+    master_authorized_ranges     = optional(map(string))
+    gcp_public_cidrs_access      = optional(bool)
+    private_endpoint_enforcement = optional(bool)
+    stack_type                   = optional(string)
   })
   nullable = false
 }
