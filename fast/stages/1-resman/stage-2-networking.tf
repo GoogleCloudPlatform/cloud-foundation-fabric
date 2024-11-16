@@ -71,10 +71,6 @@ module "net-folder" {
       "roles/serviceusage.serviceUsageConsumer" = [
         module.nsec-sa-ro[0].iam_email
       ]
-      # FIXME: this role does not exist. And a try was hiding the error
-      # (var.custom_roles["network_firewall_policies_viewer"]) = [
-      #   module.nsec-sa-ro[0].iam_email
-      # ]
     },
     # security stage 2 service accounts
     var.fast_stage_2.security.enabled != true ? {} : {
