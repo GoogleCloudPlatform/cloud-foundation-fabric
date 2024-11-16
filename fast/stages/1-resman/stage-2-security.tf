@@ -208,14 +208,13 @@ module "sec-sa-ro" {
 # automation bucket
 
 module "sec-bucket" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_stage_2.security.enabled ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "prod-resman-${var.fast_stage_2.security.short_name}-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_stage_2.security.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "prod-resman-${var.fast_stage_2.security.short_name}-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.sec-sa-rw[0].iam_email]
     "roles/storage.objectViewer" = [module.sec-sa-ro[0].iam_email]

@@ -59,14 +59,13 @@ module "pf-sa-ro" {
 # automation bucket
 
 module "pf-bucket" {
-  source        = "../../../modules/gcs"
-  count         = var.fast_stage_2.project_factory.enabled ? 1 : 0
-  project_id    = var.automation.project_id
-  name          = "resman-${var.fast_stage_2.project_factory.short_name}-0"
-  prefix        = var.prefix
-  location      = var.locations.gcs
-  storage_class = local.gcs_storage_class
-  versioning    = true
+  source     = "../../../modules/gcs"
+  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "resman-${var.fast_stage_2.project_factory.short_name}-0"
+  prefix     = var.prefix
+  location   = var.locations.gcs
+  versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.pf-sa-rw[0].iam_email]
     "roles/storage.objectViewer" = [module.pf-sa-ro[0].iam_email]
