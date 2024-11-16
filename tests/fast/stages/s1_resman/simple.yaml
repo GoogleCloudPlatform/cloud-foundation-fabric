@@ -115,7 +115,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -544,7 +544,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -621,7 +621,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -775,7 +775,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -812,7 +812,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -849,7 +849,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -886,7 +886,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -923,7 +923,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -960,7 +960,7 @@ values:
     project: fast2-prod-automation
     requester_pays: null
     retention_policy: []
-    storage_class: MULTI_REGIONAL
+    storage_class: STANDARD
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
