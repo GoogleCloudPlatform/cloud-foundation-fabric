@@ -60,35 +60,29 @@ module "net-folder" {
     # network security stage 2 service accounts
     var.fast_stage_2.network_security.enabled != true ? {} : {
       "roles/serviceusage.serviceUsageAdmin" = [
-        try(module.nsec-sa-rw[0].iam_email, null)
+        module.nsec-sa-rw[0].iam_email
       ]
       (var.custom_roles["network_firewall_policies_admin"]) = [
-        try(module.nsec-sa-rw[0].iam_email, null)
+        module.nsec-sa-rw[0].iam_email
       ]
       "roles/compute.orgFirewallPolicyUser" = [
-        try(module.nsec-sa-ro[0].iam_email, null)
+        module.nsec-sa-ro[0].iam_email
       ]
       "roles/serviceusage.serviceUsageConsumer" = [
-        try(module.nsec-sa-ro[0].iam_email, null)
+        module.nsec-sa-ro[0].iam_email
       ]
+      # FIXME: this role does not exist. And a try was hiding the error
+      # (var.custom_roles["network_firewall_policies_viewer"]) = [
+      #   module.nsec-sa-ro[0].iam_email
+      # ]
     },
     # security stage 2 service accounts
     var.fast_stage_2.security.enabled != true ? {} : {
       "roles/serviceusage.serviceUsageAdmin" = [
-        try(module.sec-sa-rw[0].iam_email, null)
+        module.sec-sa-rw[0].iam_email
       ]
       "roles/serviceusage.serviceUsageConsumer" = [
-        try(module.sec-sa-ro[0].iam_email, null)
-      ]
-    },
-    try(var.custom_roles["network_firewall_policies_admin"], null) == null ? {} : {
-      (var.custom_roles["network_firewall_policies_admin"]) = [
-        try(module.sec-sa-rw[0].iam_email, null)
-      ]
-    },
-    try(var.custom_roles["network_firewall_policies_viewer"], null) == null ? {} : {
-      (var.custom_roles["network_firewall_policies_viewer"]) = [
-        try(module.sec-sa-ro[0].iam_email, null)
+        module.sec-sa-ro[0].iam_email
       ]
     },
     # project factory service accounts
