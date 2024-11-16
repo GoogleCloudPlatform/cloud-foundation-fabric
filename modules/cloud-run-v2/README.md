@@ -112,6 +112,7 @@ module "cloud_run" {
       }
     }
   }
+  deletion_protection = false
 }
 # tftest inventory=gcs-mount.yaml e2e
 ```
