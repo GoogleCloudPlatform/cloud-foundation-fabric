@@ -102,6 +102,9 @@ fast_stage_2 = {
       }
     }
   }
+  network_security = {
+    enabled = true
+  }
 }
 tags = {
   context = {
