@@ -450,8 +450,7 @@ update_rules:
 |---|---|:---:|
 | [folders](outputs.tf#L17) | Folder ids. |  |
 | [projects](outputs.tf#L22) | Created projects. |  |
-| [service_accounts](outputs.tf#L42) | Service account emails. |  |
-
+| [service_accounts](outputs.tf#L43) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
 
