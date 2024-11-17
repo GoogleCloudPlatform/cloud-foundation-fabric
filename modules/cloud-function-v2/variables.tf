@@ -225,8 +225,12 @@ variable "vpc_connector" {
 variable "vpc_connector_config" {
   description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
   type = object({
-    ip_cidr_range = string
-    network       = string
+    ip_cidr_range  = string
+    max_instances  = optional(number)
+    max_throughput = optional(number)
+    min_instances  = optional(number)
+    min_throughput = optional(number)
+    network        = string
   })
   default = null
 }
