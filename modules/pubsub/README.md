@@ -136,6 +136,11 @@ module "iam-service-account" {
   source     = "./fabric/modules/iam-service-account"
   project_id = var.project_id
   name       = "fixture-service-account"
+  iam_project_roles = {
+    "${var.project_id}" = [
+      "roles/bigquery.dataEditor",
+    ]
+  }
 }
 
 module "pubsub" {
@@ -152,8 +157,11 @@ module "pubsub" {
       }
     }
   }
+  depends_on = [
+    module.iam-service-account # wait for IAM grants to finish
+  ]
 }
-# tftest modules=3 resources=6 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription-with-service-account.yaml e2e
+# tftest fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription-with-service-account.yaml e2e
 ```
 
 ## Cloud Storage subscriptions
