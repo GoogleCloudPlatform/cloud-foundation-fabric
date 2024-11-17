@@ -493,8 +493,9 @@ module "apigee-x-foundations" {
 | [endpoint_attachment_hosts](outputs.tf#L31) | Endpoint attachment hosts. |  |  |
 | [ext_lb_ip_address](outputs.tf#L36) | External IP address. |  |  |
 | [instance_service_attachments](outputs.tf#L41) | Instance service attachments. |  |  |
-| [int_cross_region_lb_ip_addresses](outputs.tf#L46) | Internal IP addresses. |  |  |
-| [int_lb_ip_addresses](outputs.tf#L51) | Internal IP addresses. |  |  |
-| [project](outputs.tf#L56) | Project. |  |  |
-| [project_id](outputs.tf#L61) | Project id. |  |  |
+| [instances](outputs.tf#L46) | Instances. |  |  |
+| [int_cross_region_lb_ip_addresses](outputs.tf#L51) | Internal IP addresses. |  |  |
+| [int_lb_ip_addresses](outputs.tf#L56) | Internal IP addresses. |  |  |
+| [project](outputs.tf#L61) | Project. |  |  |
+| [project_id](outputs.tf#L66) | Project id. |  |  |
 <!-- END TFDOC -->

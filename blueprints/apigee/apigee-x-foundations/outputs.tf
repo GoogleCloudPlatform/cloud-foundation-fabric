@@ -43,6 +43,11 @@ output "instance_service_attachments" {
   value       = { for k, v in module.apigee.instances : k => v.service_attachment }
 }
 
+output "instances" {
+  description = "Instances."
+  value       = module.apigee.instances
+}
+
 output "int_cross_region_lb_ip_addresses" {
   description = "Internal IP addresses."
   value       = var.int_cross_region_lb_config != null && length(local.int_cross_region_instances) > 0 ? module.int_cross_region_lb[0].addresses : null
