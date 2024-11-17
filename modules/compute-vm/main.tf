@@ -385,6 +385,13 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "guest_accelerator" {
+    for_each = local.gpu ? [var.gpu] : []
+    content {
+      type  = guest_accelerator.value.type
+      count = guest_accelerator.value.count
+    }
+  }
   dynamic "disk" {
     for_each = local.attached_disks
     iterator = config

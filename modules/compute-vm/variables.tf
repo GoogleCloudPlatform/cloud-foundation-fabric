@@ -394,10 +394,25 @@ variable "zone" {
 }
 
 variable "gpu" {
-  description = "GPU information."
+  description = "GPU information. Based on https://cloud.google.com/compute/docs/gpus"
   type = object({
     count = number
     type  = string
   })
   default = null
+
+  validation {
+    condition = (
+      var.gpu == null ||
+      var.gpu.count > 0
+    )
+    error_message = "GPU must not be empty."
+  }
+  validation {
+    condition = (
+      var.gpu == null ||
+      can(regex("^[a-zA-Z0-9-]+$", var.gpu.type))
+    )
+    error_message = "GPU type must only contain alphanumeric characters, dashes (-), or numbers."
+  }
 }
