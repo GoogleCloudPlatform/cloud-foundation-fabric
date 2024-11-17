@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,15 @@ resource "google_cloud_run_v2_service" "service" {
           }
         }
         dynamic "volume_mounts" {
-          for_each = coalesce(containers.value.volume_mounts, tomap({}))
+          for_each = { for k, v in coalesce(containers.value.volume_mounts, tomap({})) : k => v if k != "cloudsql" }
+          content {
+            name       = volume_mounts.key
+            mount_path = volume_mounts.value
+          }
+        }
+        # CloudSQL is the last mount in the list returned by API
+        dynamic "volume_mounts" {
+          for_each = { for k, v in coalesce(containers.value.volume_mounts, tomap({})) : k => v if k == "cloudsql" }
           content {
             name       = volume_mounts.key
             mount_path = volume_mounts.value
@@ -174,7 +182,7 @@ resource "google_cloud_run_v2_service" "service" {
       }
     }
     dynamic "volumes" {
-      for_each = var.volumes
+      for_each = { for k, v in var.volumes : k => v if v.cloud_sql_instances == null }
       content {
         name = volumes.key
         dynamic "secret" {
@@ -192,12 +200,7 @@ resource "google_cloud_run_v2_service" "service" {
             }
           }
         }
-        dynamic "cloud_sql_instance" {
-          for_each = length(coalesce(volumes.value.cloud_sql_instances, [])) == 0 ? [] : [""]
-          content {
-            instances = volumes.value.cloud_sql_instances
-          }
-        }
+
         dynamic "empty_dir" {
           for_each = volumes.value.empty_dir_size == null ? [] : [""]
           content {
@@ -208,16 +211,29 @@ resource "google_cloud_run_v2_service" "service" {
         dynamic "gcs" {
           for_each = volumes.value.gcs == null ? [] : [""]
           content {
-            bucket    = volumes.value.bucket
-            read_only = volumes.value.is_read_only
+            bucket    = volumes.value.gcs.bucket
+            read_only = volumes.value.gcs.is_read_only
           }
         }
         dynamic "nfs" {
           for_each = volumes.value.nfs == null ? [] : [""]
           content {
-            server    = volumes.value.server
-            path      = volumes.value.path
-            read_only = volumes.value.is_read_only
+            server    = volumes.value.nfs.server
+            path      = volumes.value.nfs.path
+            read_only = volumes.value.nfs.is_read_only
+          }
+        }
+      }
+    }
+    # CloudSQL is the last volume in the list returned by API
+    dynamic "volumes" {
+      for_each = { for k, v in var.volumes : k => v if v.cloud_sql_instances != null }
+      content {
+        name = volumes.key
+        dynamic "cloud_sql_instance" {
+          for_each = length(coalesce(volumes.value.cloud_sql_instances, [])) == 0 ? [] : [""]
+          content {
+            instances = volumes.value.cloud_sql_instances
           }
         }
       }

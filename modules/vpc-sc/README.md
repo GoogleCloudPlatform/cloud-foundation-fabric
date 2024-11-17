@@ -21,6 +21,7 @@ If you are using [Application Default Credentials](https://cloud.google.com/sdk/
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Tests](#tests)
 <!-- END TOC -->
 
 ## Examples
@@ -362,3 +363,73 @@ to:
 | [service_perimeters_bridge](outputs.tf#L47) | Bridge service perimeter resources. |  |
 | [service_perimeters_regular](outputs.tf#L52) | Regular service perimeter resources. |  |
 <!-- END TFDOC -->
+
+## Tests
+
+```hcl
+module "test" {
+  source        = "./fabric/modules/vpc-sc"
+  access_policy = "12345678"
+  factories_config = {
+    access_levels    = "data/access-levels"
+    egress_policies  = "data/egress-policies"
+    ingress_policies = "data/ingress-policies"
+  }
+  ingress_policies = {
+    variable-policy = {
+      from = {
+        identities = [
+          "serviceAccount:sa-0@myproject.iam.gserviceaccount.com"
+        ]
+        access_levels = ["*"]
+      }
+      to = {
+        operations = [{ service_name = "*" }]
+        resources  = ["*"]
+      }
+    }
+  }
+  service_perimeters_regular = {
+    default = {
+      status = {
+        access_levels    = ["geo-it"]
+        resources        = ["projects/11111"]
+        egress_policies  = ["variable-policy", "factory-egress-policy"]
+        ingress_policies = ["variable-policy", "factory-ingress-policy"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 files=t1a1,t1i1,t1e1
+```
+
+```yaml
+conditions:
+  - regions:
+      - IT
+# tftest-file id=t1a1 path=data/access-levels/geo-it.yaml schema=access-level.schema.json
+```
+
+```yaml
+from:
+  access_levels:
+    - geo-it
+  identity_type: ANY_IDENTITY
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - projects/1234567890
+# tftest-file id=t1i1 path=data/ingress-policies/factory-ingress-policy.yaml schema=ingress-policy.schema.json
+```
+
+```yaml
+from:
+  identity_type: ANY_IDENTITY
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - "*"
+# tftest-file id=t1e1 path=data/egress-policies/factory-egress-policy.yaml schema=egress-policy.schema.json
+```

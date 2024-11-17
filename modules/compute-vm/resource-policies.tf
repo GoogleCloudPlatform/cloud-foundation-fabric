@@ -29,6 +29,29 @@ locals {
     # externally managed policy
     : [var.instance_schedule.resource_policy_id]
   )
+
+  disk_zonal_schedule_attachments = flatten([
+    for disk_key, disk_data in try(local.attached_disks_zonal, []) :
+    disk_data.snapshot_schedule != null ? [
+      for schedule in disk_data.snapshot_schedule : {
+        disk_key          = disk_key
+        source_type       = disk_data.source_type
+        source            = disk_data.source
+        snapshot_schedule = schedule
+      }
+    ] : []
+  ])
+  disk_regional_schedule_attachments = flatten([
+    for disk_key, disk_data in try(local.attached_disks_regional, []) :
+    disk_data.snapshot_schedule != null ? [
+      for schedule in disk_data.snapshot_schedule : {
+        disk_key          = disk_key
+        source_type       = disk_data.source_type
+        source            = disk_data.source
+        snapshot_schedule = schedule
+      }
+    ] : []
+  ])
 }
 
 resource "google_compute_resource_policy" "schedule" {
@@ -118,12 +141,12 @@ resource "google_compute_resource_policy" "snapshot" {
 }
 
 resource "google_compute_disk_resource_policy_attachment" "boot" {
-  count   = var.boot_disk.snapshot_schedule != null ? 1 : 0
-  project = var.project_id
-  zone    = var.zone
+  for_each = var.boot_disk.snapshot_schedule != null ? toset(var.boot_disk.snapshot_schedule) : []
+  project  = var.project_id
+  zone     = var.zone
   name = try(
-    google_compute_resource_policy.snapshot[var.boot_disk.snapshot_schedule].name,
-    var.boot_disk.snapshot_schedule
+    google_compute_resource_policy.snapshot[each.value].name,
+    each.value
   )
   disk       = var.name
   depends_on = [google_compute_instance.default]
@@ -131,9 +154,10 @@ resource "google_compute_disk_resource_policy_attachment" "boot" {
 
 resource "google_compute_disk_resource_policy_attachment" "attached" {
   for_each = {
-    for k, v in local.attached_disks_zonal :
-    k => v if v.snapshot_schedule != null
+    for attachment in local.disk_zonal_schedule_attachments :
+    "${attachment.disk_key}-${attachment.snapshot_schedule}" => attachment
   }
+
   project = var.project_id
   zone    = var.zone
   name = try(
@@ -143,7 +167,7 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
   disk = (
     each.value.source_type == "attach"
     ? each.value.source
-    : google_compute_disk.disks[each.key].name
+    : google_compute_disk.disks[each.value.disk_key].name
   )
   depends_on = [
     google_compute_instance.default,
@@ -153,11 +177,11 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
 
 resource "google_compute_region_disk_resource_policy_attachment" "attached" {
   for_each = {
-    for k, v in local.attached_disks_regional :
-    k => v if v.snapshot_schedule != null
+    for attachment in local.disk_regional_schedule_attachments :
+    "${attachment.disk_key}-${attachment.snapshot_schedule}" => attachment
   }
+
   project = var.project_id
-  region  = substr(var.zone, 0, length(var.zone) - 2)
   name = try(
     google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule
@@ -165,10 +189,10 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
   disk = (
     each.value.source_type == "attach"
     ? each.value.source
-    : google_compute_region_disk.disks[each.key].name
+    : google_compute_disk.disks[each.value.disk_key].name
   )
   depends_on = [
     google_compute_instance.default,
-    google_compute_region_disk.disks
+    google_compute_disk.disks
   ]
 }

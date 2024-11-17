@@ -43,6 +43,12 @@ variable "default_event_based_hold" {
   default     = null
 }
 
+variable "enable_object_retention" {
+  description = "Enables object retention on a storage bucket."
+  type        = bool
+  default     = null
+}
+
 variable "encryption_key" {
   description = "KMS key that will be used for encryption."
   type        = string
@@ -204,11 +210,13 @@ variable "name" {
 variable "notification_config" {
   description = "GCS Notification configuration."
   type = object({
-    enabled            = bool
-    payload_format     = string
-    topic_name         = string
-    sa_email           = string
-    create_topic       = optional(bool, true)
+    enabled        = bool
+    payload_format = string
+    sa_email       = string
+    topic_name     = string
+    create_topic = optional(object({
+      kms_key_id = optional(string)
+    }), {})
     event_types        = optional(list(string))
     custom_attributes  = optional(map(string))
     object_name_prefix = optional(string)

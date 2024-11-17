@@ -32,7 +32,7 @@ counts:
   google_dns_policy: 2
   google_dns_record_set: 2
   google_dns_response_policy: 2
-  google_dns_response_policy_rule: 76
+  google_dns_response_policy_rule: 78
   google_essential_contacts_contact: 1
   google_folder: 1
   google_monitoring_alert_policy: 4
@@ -46,4 +46,4 @@ counts:
   google_vpc_access_connector: 2
   modules: 22
   random_id: 2
-  resources: 204
+  resources: 206

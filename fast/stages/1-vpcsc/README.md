@@ -33,9 +33,9 @@ The approach to VPC-SC design implemented in this stage aims at providing the si
 
 This stage uses a single VPC-SC perimeter by default, which is enough to provide protection against data exfiltration and use of credentials from outside of established boundaries, while minimizing operational toil.
 
-The perimeter is set to dry-run mode by default, but the suggestion is to switch to enforced mode immediately after definining the initial set of access level and ingress/egress policies. This prevents the common situation where a complex design is deployed in dry-run mode, and then never enforced as the burden of addressing all violations is too high. A simpler design like the one presented here that employs very coarse access levels can be enforced quickly, and then refined iteratively as operations are streamlined and familiarity with VPC-SC quirks increases.
+The perimeter is set to dry-run mode by default, but the suggestion is to switch to enforced mode immediately after defining the initial set of access level and ingress/egress policies. This prevents the common situation where a complex design is deployed in dry-run mode, and then never enforced as the burden of addressing all violations is too high. A simpler design like the one presented here that employs very coarse access levels can be enforced quickly, and then refined iteratively as operations are streamlined and familiarity with VPC-SC quirks increases.
 
-The stage is designed to allow definining additional perimeters via the `perimeters` variable, with a few caveats:
+The stage is designed to allow defining additional perimeters via the `perimeters` variable, with a few caveats:
 
 - there's no support for perimeter bridges, if those are needed they need to be integrated via code (which is easy enough to do anyway)
 - resource discovery is only supported for the default perimeter, using the `default` key in the `perimeters` variable (again, that is reasonably easy to change via code if needed)

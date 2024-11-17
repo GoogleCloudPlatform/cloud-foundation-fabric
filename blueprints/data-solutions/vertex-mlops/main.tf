@@ -141,10 +141,10 @@ module "vpc-local" {
   name       = "vertex"
   subnets = [
     {
-      "name" : "subnet-${var.region}",
-      "region" : "${var.region}",
-      "ip_cidr_range" : "10.4.0.0/24",
-      "secondary_ip_range" : null
+      name                  = "subnet-${var.region}",
+      region                = var.region,
+      ip_cidr_range         = "10.5.0.0/24"
+      enable_private_access = true
     }
   ]
   psa_configs = [{
@@ -234,11 +234,18 @@ module "project" {
       module.service-account-github.iam_email,
       module.project.service_agents.cloudbuild.iam_email
     ]
-    "roles/monitoring.metricWriter" = [module.service-account-mlops.iam_email]
-    "roles/run.invoker"             = [module.service-account-mlops.iam_email]
+    "roles/logging.logWriter" = [
+      module.service-account-notebook.iam_email,
+    ]
+    "roles/monitoring.metricWriter" = [
+      module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email,
+    ]
+    "roles/run.invoker" = [module.service-account-mlops.iam_email]
     "roles/serviceusage.serviceUsageConsumer" = [
       module.service-account-mlops.iam_email,
-      module.service-account-github.iam_email
+      module.service-account-github.iam_email,
+      module.service-account-notebook.iam_email,
     ]
     "roles/storage.admin" = [
       module.service-account-mlops.iam_email,
@@ -264,6 +271,7 @@ module "project" {
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudbuild.googleapis.com",
+    "containerfilesystem.googleapis.com",
     "compute.googleapis.com",
     "datacatalog.googleapis.com",
     "dataflow.googleapis.com",

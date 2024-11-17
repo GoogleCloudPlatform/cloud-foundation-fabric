@@ -5,7 +5,9 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 <!-- BEGIN TOC -->
 - [IAM and environment variables](#iam-and-environment-variables)
 - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
-- [Beta features](#beta-features)
+- [Mounting GCS buckets](#mounting-gcs-buckets)
+- [Connecting to Cloud SQL database](#connecting-to-cloud-sql-database)
+- [Direct VPC Egress](#direct-vpc-egress)
 - [VPC Access Connector](#vpc-access-connector)
 - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
 - [Eventarc triggers](#eventarc-triggers)
@@ -83,17 +85,75 @@ module "cloud_run" {
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
 
-## Beta features
-
-To use beta features like Direct VPC Egress, set the launch stage to a preview stage.
+## Mounting GCS buckets
 
 ```hcl
 module "cloud_run" {
-  source       = "./fabric/modules/cloud-run-v2"
-  project_id   = var.project_id
-  name         = "hello"
-  region       = var.region
-  launch_stage = "BETA"
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        bucket = "/bucket"
+      }
+    }
+  }
+  revision = {
+    gen2_execution_environment = true
+  }
+  volumes = {
+    bucket = {
+      gcs = {
+        bucket       = var.bucket
+        is_read_only = false
+        mount_options = [ # Beta feature
+          "metadata-cache-ttl-secs=120s",
+          "type-cache-max-size-mb=4",
+        ]
+      }
+    }
+  }
+  deletion_protection = false
+}
+# tftest inventory=gcs-mount.yaml e2e
+```
+
+## Connecting to Cloud SQL database
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        cloudsql = "/cloudsql"
+      }
+    }
+  }
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.cloudsql-instance.connection_name]
+    }
+  }
+  deletion_protection = false
+}
+# tftest fixtures=fixtures/cloudsql-instance.tf inventory=cloudsql.yaml e2e
+```
+
+## Direct VPC Egress
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -104,12 +164,13 @@ module "cloud_run" {
     max_instance_count         = 20
     vpc_access = {
       egress = "ALL_TRAFFIC"
-      subnet = "default"
+      subnet = var.subnet.name
       tags   = ["tag1", "tag2", "tag3"]
     }
   }
+  deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=service-beta-features.yaml
+# tftest modules=1 resources=1 inventory=service-direct-vpc.yaml e2e
 ```
 
 ## VPC Access Connector
@@ -518,6 +579,7 @@ module "cloud_run" {
 
 ## Fixtures
 
+- [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)
