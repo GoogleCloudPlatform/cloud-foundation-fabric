@@ -25,6 +25,9 @@ variable "top_level_folders" {
       short_name                  = optional(string)
     }))
     contacts = optional(map(list(string)), {})
+    factories_config = optional(object({
+      org_policies = optional(string)
+    }))
     firewall_policy = optional(object({
       name   = string
       policy = string

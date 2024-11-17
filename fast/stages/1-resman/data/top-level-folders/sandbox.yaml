@@ -18,3 +18,5 @@ name: Sandbox
 automation:
   environment_name: dev
   short_name: sbox
+factories_config:
+  org_policies: data/org-policies/sandbox
