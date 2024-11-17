@@ -80,7 +80,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:[a-z_-]+)\.googleapis\.com$": {
+        "^(?:[a-z_-]+)\\.googleapis\\.com$": {
           "type": "object",
           "additionalProperties": false,
           "patternProperties": {
