@@ -13,6 +13,81 @@
 # limitations under the License.
 
 values:
+  google_storage_bucket_object.providers["1-resman-folder-sandbox"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/1-resman-folder-sandbox-providers.tf
+  google_storage_bucket_object.providers["1-resman-folder-tenants"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/1-resman-folder-tenants-providers.tf
+  google_storage_bucket_object.providers["2-network-security"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-network-security-providers.tf
+  google_storage_bucket_object.providers["2-network-security-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-network-security-r-providers.tf
+  google_storage_bucket_object.providers["2-networking"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-networking-providers.tf
+  google_storage_bucket_object.providers["2-networking-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-networking-r-providers.tf
+  google_storage_bucket_object.providers["2-project-factory"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-project-factory-providers.tf
+  google_storage_bucket_object.providers["2-project-factory-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-project-factory-r-providers.tf
+  google_storage_bucket_object.providers["2-security"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-security-providers.tf
+  google_storage_bucket_object.providers["2-security-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/2-security-r-providers.tf
+  google_storage_bucket_object.providers["3-gcve-dev"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gcve-dev-providers.tf
+  google_storage_bucket_object.providers["3-gcve-dev-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gcve-dev-r-providers.tf
+  google_storage_bucket_object.providers["3-gcve-prod"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gcve-prod-providers.tf
+  google_storage_bucket_object.providers["3-gcve-prod-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gcve-prod-r-providers.tf
+  google_storage_bucket_object.providers["3-gke-dev"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gke-dev-providers.tf
+  google_storage_bucket_object.providers["3-gke-dev-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gke-dev-r-providers.tf
+  google_storage_bucket_object.providers["3-gke-prod"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gke-prod-providers.tf
+  google_storage_bucket_object.providers["3-gke-prod-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-gke-prod-r-providers.tf
+  google_storage_bucket_object.providers["3-project-factory-dev"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-project-factory-dev-providers.tf
+  google_storage_bucket_object.providers["3-project-factory-dev-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-project-factory-dev-r-providers.tf
+  google_storage_bucket_object.providers["3-project-factory-prod"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-project-factory-prod-providers.tf
+  google_storage_bucket_object.providers["3-project-factory-prod-r"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/3-project-factory-prod-r-providers.tf
+  google_storage_bucket_object.tfvars:
+    bucket: fast2-prod-iac-core-outputs
+    name: tfvars/1-resman.auto.tfvars.json
+  google_storage_bucket_object.workflows["networking"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: workflows/networking-workflow.yaml
+  google_storage_bucket_object.workflows["security"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: workflows/security-workflow.yaml
   module.cicd-sa-ro["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
     condition: []
     project: fast2-prod-automation
@@ -154,7 +229,7 @@ values:
   ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
   : condition: []
     members:
-    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
     role: organizations/123456789012/roles/networkFirewallPoliciesAdmin
   module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/projectIamViewer"]:
     condition: []
@@ -171,6 +246,11 @@ values:
     members:
     - serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/compute.networkViewer
+  module.net-folder[0].google_folder_iam_binding.authoritative["roles/compute.orgFirewallPolicyUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.orgFirewallPolicyUser
   module.net-folder[0].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -356,6 +436,83 @@ values:
     bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
+  module.nsec-bucket[0].google_storage_bucket.bucket:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-resman-nsec-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.nsec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-resman-nsec-0
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.nsec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-resman-nsec-0
+    condition: []
+    members:
+    - serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  ? module.nsec-sa-ro[0].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.nsec-sa-ro[0].google_service_account.service_account[0]:
+    account_id: fast2-resman-nsec-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman network security main service account (read-only).
+    project: fast2-prod-automation
+    timeouts: null
+  module.nsec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.nsec-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.nsec-sa-rw[0].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.nsec-sa-rw[0].google_service_account.service_account[0]:
+    account_id: fast2-resman-nsec-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman network security main service account.
+    project: fast2-prod-automation
+    timeouts: null
+  module.nsec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.nsec-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
   module.organization[0].google_organization_iam_member.bindings["gcve-dev"]:
     condition: []
     member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
@@ -396,11 +553,31 @@ values:
     member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/compute.orgFirewallPolicyAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_fw_policy_user"]:
+    condition: []
+    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyUser
+  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_ngfw_enterprise_admin"]:
+    condition: []
+    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_ro_ngfw_enterprise_viewer"]:
+    condition: []
+    member: serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseViewer
   module.organization[0].google_organization_iam_member.bindings["sa_net_xpn_admin"]:
     condition: []
     member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/compute.xpnAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_nsec_fw_policy_admin"]:
+    condition: []
+    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyAdmin
   module.organization[0].google_organization_iam_member.bindings["sa_pf_billing"]:
     condition: []
     member: serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
@@ -461,6 +638,10 @@ values:
   module.organization[0].google_tags_tag_value.default["context/gke"]:
     description: Managed by the Terraform organization module.
     short_name: gke
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/network-security"]:
+    description: Managed by the Terraform organization module.
+    short_name: network-security
     timeouts: null
   module.organization[0].google_tags_tag_value.default["context/networking"]:
     description: Managed by the Terraform organization module.
@@ -1575,18 +1756,36 @@ values:
 
 counts:
   google_folder: 13
-  google_folder_iam_binding: 74
-  google_organization_iam_member: 15
-  google_project_iam_member: 24
-  google_service_account: 24
-  google_service_account_iam_binding: 24
-  google_storage_bucket: 11
-  google_storage_bucket_iam_binding: 22
-  google_storage_bucket_iam_member: 24
-  google_storage_bucket_object: 23
+  google_folder_iam_binding: 75
+  google_organization_iam_member: 19
+  google_project_iam_member: 26
+  google_service_account: 26
+  google_service_account_iam_binding: 26
+  google_storage_bucket: 12
+  google_storage_bucket_iam_binding: 24
+  google_storage_bucket_iam_member: 26
+  google_storage_bucket_object: 25
   google_tags_tag_binding: 13
   google_tags_tag_key: 2
-  google_tags_tag_value: 11
+  google_tags_tag_value: 12
   google_tags_tag_value_iam_binding: 4
-  modules: 49
-  resources: 284
+  modules: 52
+  resources: 303
+
+outputs:
+  cicd_repositories:
+    networking:
+      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno
+      repository:
+        branch: main
+        name: test/00-networking
+        parent_id: null
+        type: github
+    security:
+      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-gitlab-ludomagno
+      repository:
+        branch: null
+        name: test/00-security
+        type: gitlab
+  folder_ids: __missing__
+  tfvars: __missing__
