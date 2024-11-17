@@ -70,8 +70,8 @@ module "myproject-default-service-accounts" {
 | [email](outputs.tf#L17) | Service account email. |  |
 | [iam_email](outputs.tf#L25) | IAM-format service account email. |  |
 | [id](outputs.tf#L33) | Fully qualified service account id. |  |
-| [key](outputs.tf#L42) | Service account key. | ✓ |
-| [name](outputs.tf#L48) | Service account name. |  |
-| [service_account](outputs.tf#L57) | Service account resource. |  |
-| [service_account_credentials](outputs.tf#L62) | Service account json credential templates for uploaded public keys data. |  |
+| [key](outputs.tf#L41) | Service account key. | ✓ |
+| [name](outputs.tf#L47) | Service account name. |  |
+| [service_account](outputs.tf#L55) | Service account resource. |  |
+| [service_account_credentials](outputs.tf#L60) | Service account json credential templates for uploaded public keys data. |  |
 <!-- END TFDOC -->

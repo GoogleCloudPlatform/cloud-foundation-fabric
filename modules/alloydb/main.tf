@@ -302,14 +302,6 @@ resource "google_alloydb_cluster" "secondary" {
     }
   }
 
-  dynamic "initial_user" {
-    for_each = var.initial_user != null ? [""] : []
-    content {
-      user     = var.initial_user.user
-      password = var.initial_user.password
-    }
-  }
-
   dynamic "maintenance_update_policy" {
     for_each = var.maintenance_config.enabled ? [""] : []
     content {

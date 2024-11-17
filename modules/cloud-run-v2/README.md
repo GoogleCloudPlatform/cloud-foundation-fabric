@@ -7,7 +7,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
 - [Mounting GCS buckets](#mounting-gcs-buckets)
 - [Connecting to Cloud SQL database](#connecting-to-cloud-sql-database)
-- [Beta features](#beta-features)
+- [Direct VPC Egress](#direct-vpc-egress)
 - [VPC Access Connector](#vpc-access-connector)
 - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
 - [Eventarc triggers](#eventarc-triggers)
@@ -101,14 +101,22 @@ module "cloud_run" {
       }
     }
   }
+  revision = {
+    gen2_execution_environment = true
+  }
   volumes = {
     bucket = {
       gcs = {
         bucket       = var.bucket
         is_read_only = false
+        mount_options = [ # Beta feature
+          "metadata-cache-ttl-secs=120s",
+          "type-cache-max-size-mb=4",
+        ]
       }
     }
   }
+  deletion_protection = false
 }
 # tftest inventory=gcs-mount.yaml e2e
 ```
@@ -139,18 +147,13 @@ module "cloud_run" {
 # tftest fixtures=fixtures/cloudsql-instance.tf inventory=cloudsql.yaml e2e
 ```
 
-
-## Beta features
-
-To use beta features like Direct VPC Egress, set the launch stage to a preview stage.
-
+## Direct VPC Egress
 ```hcl
 module "cloud_run" {
-  source       = "./fabric/modules/cloud-run-v2"
-  project_id   = var.project_id
-  name         = "hello"
-  region       = var.region
-  launch_stage = "BETA"
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -161,12 +164,13 @@ module "cloud_run" {
     max_instance_count         = 20
     vpc_access = {
       egress = "ALL_TRAFFIC"
-      subnet = "default"
+      subnet = var.subnet.name
       tags   = ["tag1", "tag2", "tag3"]
     }
   }
+  deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=service-beta-features.yaml
+# tftest modules=1 resources=1 inventory=service-direct-vpc.yaml e2e
 ```
 
 ## VPC Access Connector
