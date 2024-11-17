@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,17 @@ output "folders" {
 output "projects" {
   description = "Created projects."
   value = {
-    for k, v in module.projects.projects : k => {
+    for k, v in module.projects : k => {
       number     = v.number
       project_id = v.id
+      project    = v
       automation_buckets = {
-        for kk, vv in module.projects.automation_buckets :
+        for kk, vv in module.automation-buckets :
         trimprefix(kk, "${k}/") => vv.name
         if startswith(kk, "${k}/")
       }
       automation_service_accounts = {
-        for kk, vv in module.projects.automation_service_accounts :
+        for kk, vv in module.automation-service-accounts :
         trimprefix(kk, "${k}/") => vv.email
         if startswith(kk, "${k}/")
       }
