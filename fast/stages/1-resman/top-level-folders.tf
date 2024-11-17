@@ -47,6 +47,7 @@ locals {
           short_name                  = try(v.automation.short_name, null)
         }
         contacts              = try(v.contacts, {})
+        factories_config      = try(v.factories_config, null)
         firewall_policy       = try(v.firewall_policy, null)
         is_fast_context       = try(v.is_fast_context, true)
         logging_data_access   = try(v.logging_data_access, {})
@@ -76,6 +77,7 @@ module "top-level-folder" {
   parent              = coalesce(each.value.parent_id, local.root_node)
   name                = each.value.name
   contacts            = each.value.contacts
+  factories_config    = each.value.factories_config
   firewall_policy     = each.value.firewall_policy
   logging_data_access = each.value.logging_data_access
   logging_exclusions  = each.value.logging_exclusions

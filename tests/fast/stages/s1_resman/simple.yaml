@@ -1656,6 +1656,29 @@ values:
     deletion_protection: false
     display_name: Sandbox
     parent: organizations/123456789012
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        values: []
+    timeouts: null
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["sql.restrictPublicIp"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
     timeouts: null
   module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
     timeouts: null
@@ -1757,6 +1780,7 @@ values:
 counts:
   google_folder: 13
   google_folder_iam_binding: 75
+  google_org_policy_policy: 2
   google_organization_iam_member: 19
   google_project_iam_member: 26
   google_service_account: 26
@@ -1770,7 +1794,7 @@ counts:
   google_tags_tag_value: 12
   google_tags_tag_value_iam_binding: 4
   modules: 52
-  resources: 303
+  resources: 305
 
 outputs:
   cicd_repositories:

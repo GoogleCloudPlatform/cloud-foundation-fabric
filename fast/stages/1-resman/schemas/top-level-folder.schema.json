@@ -23,7 +23,42 @@
       }
     },
     "contacts": {
-      "type": "string"
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "@": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:ALL|SUSPENSION|SECURITY|TECHNICAL|BILLING|LEGAL|PRODUCT_UPDATES)$"
+          }
+        }
+      }
+    },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "org_policies": {
+          "type": "string"
+        }
+      }
+    },
+    "firewall_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "policy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        }
+      }
     },
     "iam": {
       "$ref": "#/$defs/iam"
@@ -40,6 +75,86 @@
     "is_fast_context": {
       "type": "boolean",
       "default": true
+    },
+    "logging_data_access": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:[a-z_-]+)\\.googleapis\\.com$": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(?:DATA_READ|DATA_WRITE|ADMIN_READ)$": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "@"
+              }
+            }
+          }
+        }
+      }
+    },
+    "logging_exclusions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "logging_settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "disable_default_sink": {
+          "type": "boolean"
+        },
+        "storage_location": {
+          "type": "string"
+        }
+      }
+    },
+    "logging_sinks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "destination",
+          "type"
+        ],
+        "properties": {
+          "bq_partitioned_table": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "exclusions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "filter": {
+            "type": "string"
+          },
+          "iam": {
+            "type": "boolean"
+          },
+          "include_children": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
     },
     "name": {
       "type": "string"
