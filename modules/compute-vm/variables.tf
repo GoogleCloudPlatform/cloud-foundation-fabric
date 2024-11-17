@@ -408,11 +408,31 @@ variable "gpu" {
     )
     error_message = "GPU must not be empty."
   }
+
   validation {
     condition = (
       var.gpu == null ||
-      can(regex("^[a-zA-Z0-9-]+$", var.gpu.type))
+      var.gpu.count > 0
     )
-    error_message = "GPU type must only contain alphanumeric characters, dashes (-), or numbers."
+    error_message = "GPU must not be empty."
+  }
+  validation {
+    condition = (
+      var.gpu == null ||
+      contains(
+        [
+          "nvidia-tesla-a100",
+          "nvidia-tesla-p100",
+          "nvidia-tesla-v100",
+          "nvidia-tesla-k80",
+          "nvidia-tesla-p4",
+          "nvidia-tesla-t4",
+          "nvidia-l4",
+          "nvidia-a2"
+        ],
+        try(var.gpu.type, "-")
+      )
+    )
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2."
   }
 }
