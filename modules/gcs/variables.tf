@@ -43,6 +43,12 @@ variable "default_event_based_hold" {
   default     = null
 }
 
+variable "enable_hierarchical_namespace" {
+  description = "Enables hierarchical namespace."
+  type        = bool
+  default     = null
+}
+
 variable "enable_object_retention" {
   description = "Enables object retention on a storage bucket."
   type        = bool
