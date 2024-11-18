@@ -28,7 +28,6 @@ values:
       advanced_machine_features: []
       availability_type: ZONAL
       collation: null
-      data_cache_config: []
       database_flags: []
       deletion_protection_enabled: false
       deny_maintenance_period: []
