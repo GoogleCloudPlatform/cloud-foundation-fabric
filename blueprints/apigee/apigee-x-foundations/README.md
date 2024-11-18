@@ -501,4 +501,5 @@ module "apigee-x-foundations" {
 | [int_lbs](outputs.tf#L71) | Internal LBs. |  |  |
 | [project](outputs.tf#L76) | Project. |  |  |
 | [project_id](outputs.tf#L81) | Project id. |  |  |
+| [psc_negs](outputs.tf#L86) | PSC NEGs. |  |  |
 <!-- END TFDOC -->
