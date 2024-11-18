@@ -82,3 +82,8 @@ output "project_id" {
   description = "Project id."
   value       = module.project.project_id
 }
+
+output "psc_negs" {
+  description = "PSC NEGs."
+  value       = google_compute_region_network_endpoint_group.psc_negs
+}

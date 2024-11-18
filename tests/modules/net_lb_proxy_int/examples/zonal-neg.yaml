@@ -91,7 +91,6 @@ values:
     description: Terraform managed.
     enable_cdn: null
     failover_policy: []
-    iap: []
     load_balancing_scheme: INTERNAL_MANAGED
     locality_lb_policy: null
     name: int-tcp-proxy

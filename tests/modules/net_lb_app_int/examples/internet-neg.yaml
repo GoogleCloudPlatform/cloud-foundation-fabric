@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.ilb-l7.google_compute_forwarding_rule.default:                                                                                                                                                                                                                                                                                                                                                                                 
+  module.ilb-l7.google_compute_forwarding_rule.default:
     description: Terraform managed.
     ip_protocol: TCP
     load_balancing_scheme: INTERNAL_MANAGED
@@ -31,7 +31,6 @@ values:
     description: Terraform managed.
     failover_policy: []
     health_checks: null
-    iap: []
     load_balancing_scheme: INTERNAL_MANAGED
     name: ilb-test-default
     network: null
