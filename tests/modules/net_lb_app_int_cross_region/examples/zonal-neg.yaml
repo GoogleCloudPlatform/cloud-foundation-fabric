@@ -41,7 +41,6 @@ values:
     connection_draining_timeout_sec: 300
     consistent_hash: []
     description: Terraform managed.
-    iap: []
     load_balancing_scheme: INTERNAL_MANAGED
     locality_lb_policies: []
     name: ilb-test-default

@@ -48,11 +48,12 @@ resource "google_cloud_run_v2_service" "service" {
       }
     }
     dynamic "vpc_access" {
-      for_each = try(var.revision.vpc_access.subnet, null) == null ? [] : [""]
+      for_each = var.revision.vpc_access.subnet == null && var.revision.vpc_access.network == null ? [] : [""]
       content {
         egress = var.revision.vpc_access.egress
         network_interfaces {
           subnetwork = var.revision.vpc_access.subnet
+          network    = var.revision.vpc_access.network
           tags       = var.revision.vpc_access.tags
         }
       }
