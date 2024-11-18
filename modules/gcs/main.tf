@@ -74,6 +74,14 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
+  dynamic "hierarchical_namespace" {
+    for_each = var.enable_hierarchical_namespace == null ? [] : [""]
+
+    content {
+      enabled = var.enable_hierarchical_namespace
+    }
+  }
+
   dynamic "logging" {
     for_each = var.logging_config == null ? [] : [""]
     content {
