@@ -59,16 +59,16 @@ Setup terraform providers in the root module to deal with kubernetes resources a
 
 ```terraform
 data "google_client_config" "identity" {
-  count = module.chronicle-forwarder.fleet_host != null ? 1 : 0
+  count = module.bindplane-gke.fleet_host != null ? 1 : 0
 }
 
 provider "kubernetes" {
-  host  = module.chronicle-forwarder.fleet_host
+  host  = module.bindplane-gke.fleet_host
   token = try(data.google_client_config.identity.0.access_token, null)
 }
 
 provider "kubectl" {
-  host = module.chronicle-forwarder.fleet_host
+  host = module.bindplane-gke.fleet_host
   token = try(data.google_client_config.identity.0.access_token, null)
 }
 ```
@@ -130,7 +130,7 @@ Access the management console leveraging credentials bootstrapped via terraform 
 ```hcl
 module "bindplane-gke" {
   source     = "./fabric/blueprints/secops/bindplane-gke"
-  project_id = "bindplane"
+  project_id = "test"
   bindplane_secrets = {
     user            = "admin"
     password        = "thisisnotasecret"
