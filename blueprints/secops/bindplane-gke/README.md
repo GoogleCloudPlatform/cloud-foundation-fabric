@@ -131,6 +131,10 @@ Access the management console leveraging credentials bootstrapped via terraform 
 module "bindplane-gke" {
   source     = "./fabric/blueprints/secops/bindplane-gke"
   project_id = "test"
+  project_create = {
+    billing_account_id = "12345-ABCDEF-12345"
+    parent             = "folders/2345678901"
+  }
   bindplane_secrets = {
     user            = "admin"
     password        = "thisisnotasecret"
@@ -148,8 +152,8 @@ module "bindplane-gke" {
     subnet_self_link    = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/regions/europe-west1/subnetworks/gke"
     ip_range_gke_master = "192.168.0.0/28"
   }
-  region   = "europe-west8"
-  prefix   = "tmp"
+  region = "europe-west8"
+  prefix = "tmp"
 }
-# tftest modules=9 resources=50
+# tftest modules=10 resources=45
 ```
