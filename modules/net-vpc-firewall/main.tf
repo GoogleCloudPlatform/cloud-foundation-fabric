@@ -25,7 +25,7 @@ locals {
   _factory_rule_list = flatten([
     for f in local._factory_rule_files : [
       for direction, ruleset in yamldecode(file(f)) : [
-        for name, rule in coalesce(ruleset, {}) : {
+        for name, rule in coalesce(ruleset, tomap({})) : {
           name                 = name
           deny                 = try(rule.deny, false)
           rules                = try(rule.rules, [{ protocol = "all", ports = null }])
