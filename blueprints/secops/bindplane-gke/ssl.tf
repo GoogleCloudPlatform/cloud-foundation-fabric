@@ -75,7 +75,7 @@ resource "tls_private_key" "server_key" {
 resource "tls_cert_request" "server_csr" {
   count           = local.bootstrap_self_signed_cert ? 1 : 0
   private_key_pem = tls_private_key.server_key.0.private_key_pem
-  dns_names       = ["bindplane.${var.hostname}"]
+  dns_names       = ["${var.dns_config.hostname}.${var.dns_config.domain}"]
 
   dynamic "subject" {
     for_each = toset(local.cert_subjects)
