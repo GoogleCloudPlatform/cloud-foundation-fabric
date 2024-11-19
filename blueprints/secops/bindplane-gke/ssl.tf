@@ -32,7 +32,7 @@ locals {
 #######################################################################
 
 resource "tls_private_key" "ca_private_key" {
-  count = local.bootstrap_self_signed_cert ? 1 : 0
+  count     = local.bootstrap_self_signed_cert ? 1 : 0
   algorithm = "RSA"
 }
 
@@ -41,7 +41,7 @@ resource "tls_private_key" "ca_private_key" {
 #######################################################################
 
 resource "tls_self_signed_cert" "ca_cert" {
-  count = local.bootstrap_self_signed_cert ? 1 : 0
+  count             = local.bootstrap_self_signed_cert ? 1 : 0
   private_key_pem   = tls_private_key.ca_private_key.0.private_key_pem
   is_ca_certificate = true
   dynamic "subject" {
@@ -68,12 +68,12 @@ resource "tls_self_signed_cert" "ca_cert" {
 #######################################################################
 
 resource "tls_private_key" "server_key" {
-  count = local.bootstrap_self_signed_cert ? 1 : 0
+  count     = local.bootstrap_self_signed_cert ? 1 : 0
   algorithm = "RSA"
 }
 
 resource "tls_cert_request" "server_csr" {
-  count = local.bootstrap_self_signed_cert ? 1 : 0
+  count           = local.bootstrap_self_signed_cert ? 1 : 0
   private_key_pem = tls_private_key.server_key.0.private_key_pem
   dns_names       = ["bindplane.${var.hostname}"]
 
@@ -91,7 +91,7 @@ resource "tls_cert_request" "server_csr" {
 }
 
 resource "tls_locally_signed_cert" "server_singed_cert" {
-  count = local.bootstrap_self_signed_cert ? 1 : 0
+  count              = local.bootstrap_self_signed_cert ? 1 : 0
   cert_request_pem   = tls_cert_request.server_csr.0.cert_request_pem
   ca_private_key_pem = tls_private_key.ca_private_key.0.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.ca_cert.0.cert_pem

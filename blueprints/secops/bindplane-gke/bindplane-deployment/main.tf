@@ -15,7 +15,7 @@
  */
 
 locals {
-  bindplane_password = coalesce(var.bindplane_secrets.password, try(random_password.password.0.result,null))
+  bindplane_password = coalesce(var.bindplane_secrets.password, try(random_password.password.0.result, null))
 }
 
 resource "random_password" "password" {

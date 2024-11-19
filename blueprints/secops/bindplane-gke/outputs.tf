@@ -16,12 +16,12 @@
 
 output "bindplane_hostname" {
   description = "BindPlane OP Management console hostname."
-  value = "https://${var.dns_config.hostname}.${var.dns_config.domain}"
+  value       = "https://${var.dns_config.hostname}.${var.dns_config.domain}"
 }
 
 output "ca_cert" {
   description = "TLS CA certificate."
-  value = try(tls_self_signed_cert.ca_cert.0.cert_pem, null)
+  value       = try(tls_self_signed_cert.ca_cert.0.cert_pem, null)
 }
 
 output "cluster_ca_certificate" {
@@ -36,5 +36,5 @@ output "fleet_host" {
 
 output "lb_ip_address" {
   description = "Ingress LB address."
-  value = module.addresses.internal_addresses["ingress"].address
+  value       = module.addresses.internal_addresses["ingress"].address
 }

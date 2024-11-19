@@ -27,7 +27,7 @@ variable "bindplane_secrets" {
 
 variable "bindplane_tls" {
   description = "Bindplane TLS certificates."
-  type        = object({
+  type = object({
     cer = string
     key = string
   })

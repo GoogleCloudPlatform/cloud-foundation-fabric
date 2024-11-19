@@ -143,7 +143,7 @@ module "addresses" {
       subnet_self_link = var.network_config.subnet_self_link
       service_attachment = {
         psc_service_attachment_link = module.db.psc_service_attachment_link
-        global_access = true
+        global_access               = true
       }
     }
   }
@@ -175,7 +175,7 @@ module "bindplane-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
   name       = "bindplane"
-  iam        = {
+  iam = {
     "roles/iam.workloadIdentityUser" = ["serviceAccount:${module.project.project_id}.svc.id.goog[bindplane/bindplane]"]
   }
   iam_project_roles = {
@@ -190,8 +190,8 @@ module "bindplane-deployment" {
   depends_on        = [module.bindplane-cluster]
   bindplane_secrets = var.bindplane_secrets
   bindplane_tls = {
-    cer = coalesce(var.bindplane_config.tls_certificate_cer, try(tls_locally_signed_cert.server_singed_cert.0.cert_pem,null))
-    key = coalesce(var.bindplane_config.tls_certificate_key, try(tls_private_key.server_key.0.private_key_pem,null))
+    cer = coalesce(var.bindplane_config.tls_certificate_cer, try(tls_locally_signed_cert.server_singed_cert.0.cert_pem, null))
+    key = coalesce(var.bindplane_config.tls_certificate_key, try(tls_private_key.server_key.0.private_key_pem, null))
   }
 }
 

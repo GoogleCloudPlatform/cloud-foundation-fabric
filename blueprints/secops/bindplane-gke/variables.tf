@@ -49,8 +49,8 @@ variable "dns_config" {
   description = "DNS config."
   type = object({
     bootstrap_private_zone = optional(bool, false)
-    domain = optional(string, "example.com")
-    hostname = optional(string, "bindplane")
+    domain                 = optional(string, "example.com")
+    hostname               = optional(string, "bindplane")
   })
   default = {}
 }
@@ -58,11 +58,11 @@ variable "dns_config" {
 variable "network_config" {
   description = "Shared VPC network configurations to use for GKE cluster."
   type = object({
-    host_project        = optional(string)
-    network_self_link   = string
-    subnet_self_link    = string
-    ip_range_gke_master = string
-    secondary_pod_range_name = optional(string, "pods")
+    host_project                  = optional(string)
+    network_self_link             = string
+    subnet_self_link              = string
+    ip_range_gke_master           = string
+    secondary_pod_range_name      = optional(string, "pods")
     secondary_services_range_name = optional(string, "services")
   })
 }
@@ -71,8 +71,8 @@ variable "postgresql_config" {
   description = "Cloud SQL postgresql config."
   type = object({
     availability_type = optional(string, "REGIONAL")
-    database_version = optional(string, "POSTGRES_13")
-    tier = optional(string, "db-g1-small")
+    database_version  = optional(string, "POSTGRES_13")
+    tier              = optional(string, "db-g1-small")
   })
   default = {}
 }
