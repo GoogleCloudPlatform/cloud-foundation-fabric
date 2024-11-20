@@ -513,6 +513,28 @@ values:
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
+  module.organization-roles["data/roles/gcve"].google_organization_iam_custom_role.roles["gcve_network_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - vmwareengine.networkPeerings.create
+    - vmwareengine.networkPeerings.delete
+    - vmwareengine.networkPeerings.get
+    - vmwareengine.networkPeerings.list
+    - vmwareengine.operations.get
+    role_id: gcveNetworkAdmin
+    stage: GA
+    title: Custom role gcveNetworkAdmin
+  module.organization-roles["data/roles/gcve"].google_organization_iam_custom_role.roles["gcve_network_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - vmwareengine.networkPeerings.get
+    - vmwareengine.networkPeerings.list
+    - vmwareengine.operations.get
+    role_id: gcveNetworkViewer
+    stage: GA
+    title: Custom role gcveNetworkViewer
   module.organization[0].google_organization_iam_member.bindings["gcve-dev"]:
     condition: []
     member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
@@ -1781,6 +1803,7 @@ counts:
   google_folder: 13
   google_folder_iam_binding: 75
   google_org_policy_policy: 2
+  google_organization_iam_custom_role: 2
   google_organization_iam_member: 19
   google_project_iam_member: 26
   google_service_account: 26
@@ -1793,8 +1816,8 @@ counts:
   google_tags_tag_key: 2
   google_tags_tag_value: 12
   google_tags_tag_value_iam_binding: 4
-  modules: 52
-  resources: 305
+  modules: 53
+  resources: 307
 
 outputs:
   cicd_repositories:
@@ -1811,5 +1834,8 @@ outputs:
         branch: null
         name: test/00-security
         type: gitlab
+  custom_roles:
+    gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
+    gcve_network_viewer: organizations/123456789012/roles/gcveNetworkViewer
   folder_ids: __missing__
   tfvars: __missing__
