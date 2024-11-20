@@ -52,6 +52,16 @@ variable "host_project_ids" {
   default     = {}
 }
 
+variable "locations" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    gcs = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

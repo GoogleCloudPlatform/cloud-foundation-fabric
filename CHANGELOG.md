@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
+- [[#2705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2705)] Added outputs to apigee-x-foundations blueprint (PSC NEGs) ([apichick](https://github.com/apichick)) <!-- 2024-11-18 07:36:49+00:00 -->
+- [[#2704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2704)] Added outputs to apigee-x-foundations blueprint (instances and lbs) ([apichick](https://github.com/apichick)) <!-- 2024-11-17 16:28:30+00:00 -->
 - [[#2514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2514)] New SecOps blueprints section and SecOps GKE Forwarder ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-05 13:41:37+00:00 -->
 - [[#2658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2658)] Update service agents spec ([juliocc](https://github.com/juliocc)) <!-- 2024-11-05 11:10:23+00:00 -->
 - [[#2659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2659)] Fix Vertex MLOps blueprint  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-05 10:22:43+00:00 -->
@@ -15,11 +18,23 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2715)] Allow setting GCS location default/override in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-11-18 16:45:52+00:00 -->
+- [[#2640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2640)] Add Automation Service Accounts Output ([joshw123](https://github.com/joshw123)) <!-- 2024-11-17 17:29:06+00:00 -->
 - [[#2681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2681)] Keeping my contributor status :) ([drebes](https://github.com/drebes)) <!-- 2024-11-13 20:28:44+00:00 -->
 - [[#2680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2680)] Swap groups_iam/iam_group for iam_by_principals in bootstrap README ([robrankin](https://github.com/robrankin)) <!-- 2024-11-13 15:33:41+00:00 -->
 
 ### MODULES
 
+- [[#2715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2715)] Allow setting GCS location default/override in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-11-18 16:45:52+00:00 -->
+- [[#2689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2689)] add GPU options to compute-vm module ([ooshrioo](https://github.com/ooshrioo)) <!-- 2024-11-18 15:40:38+00:00 -->
+- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
+- [[#2711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2711)] Allow providing network for Direct VPC access ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-18 09:25:20+00:00 -->
+- [[#2640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2640)] Add Automation Service Accounts Output ([joshw123](https://github.com/joshw123)) <!-- 2024-11-17 17:29:06+00:00 -->
+- [[#2702](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2702)] Move direct vpc out of BETA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 11:52:50+00:00 -->
+- [[#2700](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2700)] Fix non-empty plan after mixing CloudSQL with other mounts ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 10:55:37+00:00 -->
+- [[#2699](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2699)] Fix E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 10:02:16+00:00 -->
+- [[#2692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2692)] Fix examples for GCS mount ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-15 08:58:01+00:00 -->
+- [[#2687](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2687)] Fix initial user on secondary cluster issue ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-14 21:20:38+00:00 -->
 - [[#2686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2686)] Fix gcs & NFS mounts for cloud-run-v2 service ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-14 12:33:21+00:00 -->
 - [[#2682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2682)] Add support for service account in pubsub module bigquery subscriptions ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 11:05:37+00:00 -->
 - [[#2676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2676)] Fix "inconsistent conditional result types" error in `modules/vpc-sc` ([joelvoss](https://github.com/joelvoss)) <!-- 2024-11-12 09:27:51+00:00 -->
@@ -33,6 +48,10 @@ All notable changes to this project will be documented in this file.
 - [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
 - [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
 - [[#2653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2653)] Add required enabled field introduced in Terraform version 5.41.0 ([jacobmammoliti](https://github.com/jacobmammoliti)) <!-- 2024-11-01 07:01:14+00:00 -->
+
+### TOOLS
+
+- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
 
 ## [35.0.0] - 2024-10-30
 <!-- None < 2024-09-05 10:07:19+00:00 -->

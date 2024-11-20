@@ -20,7 +20,8 @@ module "projects" {
   source = "../../../modules/project-factory"
   data_defaults = {
     # more defaults are available, check the project factory variables
-    billing_account = var.billing_account.id
+    billing_account  = var.billing_account.id
+    storage_location = var.locations.gcs
   }
   data_merges = {
     services = [
