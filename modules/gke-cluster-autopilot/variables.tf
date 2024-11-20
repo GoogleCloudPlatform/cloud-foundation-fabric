@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,11 +199,20 @@ variable "name" {
 variable "node_config" {
   description = "Configuration for nodes and nodepools."
   type = object({
-    boot_disk_kms_key = optional(string)
-    service_account   = optional(string)
-    tags              = optional(list(string))
+    boot_disk_kms_key             = optional(string)
+    service_account               = optional(string)
+    tags                          = optional(list(string))
+    workload_metadata_config_mode = optional(string)
   })
-  default = {}
+  default  = {}
+  nullable = false
+  validation {
+    condition = contains(
+      ["GCE_METADATA", "GKE_METADATA", "null"],
+      coalesce(var.node_config.workload_metadata_config_mode, "null")
+    )
+    error_message = "node_config.workload_metadata_config_mode must be GCE_METADATA or GKE_METADATA."
+  }
 }
 
 variable "node_locations" {
