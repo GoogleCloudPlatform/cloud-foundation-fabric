@@ -147,6 +147,7 @@ locals {
       additive = concat(
         [
           "roles/accesscontextmanager.policyAdmin",
+          "roles/iam.organizationRoleAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [

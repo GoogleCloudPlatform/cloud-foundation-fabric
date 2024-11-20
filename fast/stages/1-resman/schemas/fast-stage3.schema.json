@@ -52,6 +52,15 @@
         }
       }
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_roles": {
+          "type": "string"
+        }
+      }
+    },
     "folder_config": {
       "type": "object",
       "additionalProperties": false,

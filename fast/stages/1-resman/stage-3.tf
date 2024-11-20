@@ -44,6 +44,9 @@ locals {
             type   = try(v.cicd_config.repository.type, "github")
           })
         }
+        factories_config = lookup(v, "factories_config", null) == null ? null : {
+          custom_roles = try(v.factories_config.custom_roles, null)
+        }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
           name              = v.folder_config.name
           iam_by_principals = try(v.folder_config.iam_by_principals, {})
@@ -99,7 +102,7 @@ locals {
         for sa, roles in attrs.sa_roles : [
           for role in roles : {
             env  = var.environments[v.environment].tag_name
-            role = lookup(var.custom_roles, role, role)
+            role = lookup(local.custom_roles, role, role)
             sa   = sa
             s2   = s2
             s3   = k
@@ -108,6 +111,22 @@ locals {
       ]
     ]
   ])
+  stage3_factories = [
+    for k, v in local.stage3 :
+    v.factories_config
+    if v.factories_config != null
+  ]
+}
+
+# Stage 3 custom role factories
+
+module "organization-roles" {
+  for_each        = toset([for x in local.stage3_factories : x.custom_roles])
+  source          = "../../../modules/organization"
+  organization_id = "organizations/${var.organization.id}"
+  factories_config = {
+    custom_roles = each.value
+  }
 }
 
 # top-level folder

@@ -62,7 +62,7 @@ module "net-folder" {
       "roles/serviceusage.serviceUsageAdmin" = [
         module.nsec-sa-rw[0].iam_email
       ]
-      (var.custom_roles["network_firewall_policies_admin"]) = [
+      (local.custom_roles["network_firewall_policies_admin"]) = [
         module.nsec-sa-rw[0].iam_email
       ]
       "roles/compute.orgFirewallPolicyUser" = [
@@ -83,10 +83,10 @@ module "net-folder" {
     },
     # project factory service accounts
     (var.fast_stage_2.project_factory.enabled) != true ? {} : {
-      (var.custom_roles.service_project_network_admin) = [
+      (var.custom_roles["service_project_network_admin"]) = [
         module.pf-sa-rw[0].iam_email
       ]
-      (var.custom_roles.project_iam_viewer) = [
+      (var.custom_roles["project_iam_viewer"]) = [
         module.pf-sa-ro[0].iam_email
       ]
       "roles/compute.networkViewer" = [
@@ -113,7 +113,7 @@ module "net-folder" {
     # stage 3 roles
     {
       for k, v in local.net_s3_iam : k => {
-        role    = lookup(var.custom_roles, split(":", k)[0], split(":", k)[0])
+        role    = lookup(local.custom_roles, split(":", k)[0], split(":", k)[0])
         members = v
         condition = {
           title      = "stage 3 ${split(":", k)[1]}"

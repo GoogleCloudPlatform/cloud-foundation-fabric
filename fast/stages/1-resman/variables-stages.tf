@@ -48,6 +48,9 @@ variable "fast_stage_2" {
           type      = optional(string, "github")
         })
       }))
+      factories_config = optional(object({
+        custom_roles = optional(string, "data/roles/nsec")
+      }), {})
     }), {})
     project_factory = optional(object({
       enabled    = optional(bool, true)
@@ -108,6 +111,9 @@ variable "fast_stage_3" {
         type   = optional(string, "github")
       })
     }))
+    factories_config = optional(object({
+      custom_roles = optional(string)
+    }), {})
     folder_config = optional(object({
       name              = string
       iam_by_principals = optional(map(list(string)), {})

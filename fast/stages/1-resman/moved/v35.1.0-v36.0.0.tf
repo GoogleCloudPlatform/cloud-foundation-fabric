@@ -236,3 +236,21 @@ moved {
   from = module.branch-gcve-prod-r-sa[0]
   to   = module.stage3-sa-ro["gcve-prod"]
 }
+
+import {
+  for_each = var.fast_stage_2.network_security.enabled ? [""] : []
+  to       = module.nsec-organization-roles[0].google_organization_iam_custom_role.roles["network_firewall_policies_admin"]
+  id       = "organizations/${var.organization.id}/roles/networkFirewallPoliciesAdmin"
+}
+
+import {
+  for_each = var.fast_stage_2.network_security.enabled ? [""] : []
+  to       = module.nsec-organization-roles[0].google_organization_iam_custom_role.roles["ngfw_enterprise_admin"]
+  id       = "organizations/${var.organization.id}/roles/ngfwEnterpriseAdmin"
+}
+
+import {
+  for_each = var.fast_stage_2.network_security.enabled ? [""] : []
+  to       = module.nsec-organization-roles[0].google_organization_iam_custom_role.roles["ngfw_enterprise_viewer"]
+  id       = "organizations/${var.organization.id}/roles/ngfwEnterpriseViewer"
+}

@@ -20,6 +20,13 @@ locals {
   #   data.google_client_openid_userinfo.provider_identity[0].email, null
   # )
   # tag values use descriptive names
+  custom_roles = merge(
+    var.custom_roles,
+    [
+      for k, v in module.organization-roles :
+      v.custom_role_id
+    ]...
+  )
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )

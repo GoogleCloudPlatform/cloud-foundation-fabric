@@ -38,7 +38,7 @@ locals {
       }
       sa_net_nsec_ngfw_enterprise_admin = {
         member = module.nsec-sa-rw[0].iam_email
-        role   = var.custom_roles["ngfw_enterprise_admin"],
+        role   = local.custom_roles["ngfw_enterprise_admin"],
       }
       sa_net_nsec_fw_policy_user = {
         member = module.nsec-sa-rw[0].iam_email
@@ -46,7 +46,7 @@ locals {
       }
       sa_net_nsec_ro_ngfw_enterprise_viewer = {
         member = module.nsec-sa-ro[0].iam_email
-        role   = var.custom_roles["ngfw_enterprise_viewer"],
+        role   = local.custom_roles["ngfw_enterprise_viewer"],
       }
     },
     # stage 2 security
@@ -73,7 +73,7 @@ locals {
     # stage 3
     {
       for v in local.stage3_sa_roles_in_org : join("/", values(v)) => {
-        role = lookup(var.custom_roles, v.role, v.role)
+        role = lookup(local.custom_roles, v.role, v.role)
         member = (
           v.sa == "rw"
           ? module.stage3-sa-rw[v.s3].iam_email

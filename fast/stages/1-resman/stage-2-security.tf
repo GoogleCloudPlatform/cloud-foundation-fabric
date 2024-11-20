@@ -86,7 +86,7 @@ module "sec-folder" {
     # stage 3 IAM bindings use conditions based on environment
     {
       for k, v in local.sec_s3_iam : k => {
-        role    = lookup(var.custom_roles, split(":", k)[0], split(":", k)[0])
+        role    = lookup(local.custom_roles, split(":", k)[0], split(":", k)[0])
         members = v
         condition = {
           title      = "stage 3 ${split(":", k)[1]}"

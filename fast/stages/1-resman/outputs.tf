@@ -37,6 +37,7 @@ locals {
     local.top_level_service_accounts
   )
   tfvars = {
+    custom_roles = local.custom_roles
     stage_config = merge(
       {
         for k, v in local.stage3 : k => {
@@ -82,6 +83,14 @@ output "cicd_repositories" {
         local.identity_providers[v.identity_provider].name, null
       )
     }
+  }
+}
+
+output "custom_roles" {
+  description = "Organization-level custom roles created by resman."
+  value = {
+    for k in setsubtract(keys(local.custom_roles), keys(var.custom_roles)) :
+    k => local.custom_roles[k]
   }
 }
 
