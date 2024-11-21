@@ -31,7 +31,6 @@ values:
     description: Terraform managed.
     failover_policy: []
     health_checks: null
-    iap: []
     load_balancing_scheme: INTERNAL_MANAGED
     name: ilb-test-default
     network: null
