@@ -67,7 +67,7 @@ variable "node_config" {
   type = object({
     boot_disk_kms_key   = optional(string)
     disk_size_gb        = optional(number)
-    disk_type           = optional(string)
+    disk_type           = optional(string, "pd-balanced")
     ephemeral_ssd_count = optional(number)
     gcfs                = optional(bool, false)
     guest_accelerator = optional(object({
@@ -105,9 +105,8 @@ variable "node_config" {
     spot                          = optional(bool)
     workload_metadata_config_mode = optional(string)
   })
-  default = {
-    disk_type = "pd-balanced"
-  }
+  default  = {}
+  nullable = false
   validation {
     condition = (
       alltrue([
@@ -118,6 +117,13 @@ variable "node_config" {
       ])
     )
     error_message = "Invalid GPU driver version."
+  }
+  validation {
+    condition = contains(
+      ["GCE_METADATA", "GKE_METADATA", "null"],
+      coalesce(var.node_config.workload_metadata_config_mode, "null")
+    )
+    error_message = "node_config.workload_metadata_config_mode must be GCE_METADATA or GKE_METADATA."
   }
 }
 

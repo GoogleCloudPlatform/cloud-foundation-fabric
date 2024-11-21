@@ -18,7 +18,7 @@ locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   is_mysql     = can(regex("^MYSQL", var.database_version))
   is_postgres  = can(regex("^POSTGRES", var.database_version))
-  has_replicas = try(length(var.replicas) > 0, false)
+  has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
 
   // Enable backup if the user asks for it or if the user is deploying
@@ -30,15 +30,15 @@ locals {
     k =>
     local.is_mysql ?
     {
-      name     = try(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
-      host     = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = try(v.type, "BUILT_IN")
+      name     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
+      host     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = coalesce(v.type, "BUILT_IN")
       } : {
       name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
       host     = null
-      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = try(v.type, "BUILT_IN")
+      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = coalesce(v.type, "BUILT_IN")
     }
   }
 
