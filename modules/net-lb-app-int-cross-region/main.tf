@@ -55,7 +55,7 @@ locals {
   }
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
-    [for k, v in google_compute_region_ssl_certificate.default : v.id]
+    [for k, v in google_compute_ssl_certificate.default : v.id]
   )
 }
 
@@ -80,6 +80,19 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
       namespace                = var.service_directory_registration.namespace
       service_directory_region = var.service_directory_registration.service_directory_region
     }
+  }
+}
+
+resource "google_compute_ssl_certificate" "default" {
+  for_each = var.ssl_certificates.create_configs
+  project  = var.project_id
+
+  name        = "${var.name}-${each.key}"
+  certificate = each.value.certificate
+  private_key = each.value.private_key
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
