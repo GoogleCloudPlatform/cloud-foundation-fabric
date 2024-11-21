@@ -34,7 +34,8 @@ variable "data_defaults" {
       service_subnet_iam_grants = optional(map(list(string)), {})
       network_subnet_users      = optional(map(list(string)), {})
     }), { host_project = null })
-    tag_bindings = optional(map(string), {})
+    storage_location = optional(string)
+    tag_bindings     = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
       display_name   = optional(string, "Terraform-managed.")
@@ -78,6 +79,7 @@ variable "data_overrides" {
     parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)))
+    storage_location           = optional(string)
     tag_bindings               = optional(map(string))
     services                   = optional(list(string))
     # non-project resources

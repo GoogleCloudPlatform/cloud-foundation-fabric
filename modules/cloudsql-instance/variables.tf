@@ -230,7 +230,8 @@ variable "replicas" {
     region              = string
     encryption_key_name = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "root_password" {

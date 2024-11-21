@@ -5,7 +5,9 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 <!-- BEGIN TOC -->
 - [IAM and environment variables](#iam-and-environment-variables)
 - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
-- [Beta features](#beta-features)
+- [Mounting GCS buckets](#mounting-gcs-buckets)
+- [Connecting to Cloud SQL database](#connecting-to-cloud-sql-database)
+- [Direct VPC Egress](#direct-vpc-egress)
 - [VPC Access Connector](#vpc-access-connector)
 - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
 - [Eventarc triggers](#eventarc-triggers)
@@ -83,17 +85,75 @@ module "cloud_run" {
 # tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
 
-## Beta features
-
-To use beta features like Direct VPC Egress, set the launch stage to a preview stage.
+## Mounting GCS buckets
 
 ```hcl
 module "cloud_run" {
-  source       = "./fabric/modules/cloud-run-v2"
-  project_id   = var.project_id
-  name         = "hello"
-  region       = var.region
-  launch_stage = "BETA"
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        bucket = "/bucket"
+      }
+    }
+  }
+  revision = {
+    gen2_execution_environment = true
+  }
+  volumes = {
+    bucket = {
+      gcs = {
+        bucket       = var.bucket
+        is_read_only = false
+        mount_options = [ # Beta feature
+          "metadata-cache-ttl-secs=120s",
+          "type-cache-max-size-mb=4",
+        ]
+      }
+    }
+  }
+  deletion_protection = false
+}
+# tftest inventory=gcs-mount.yaml e2e
+```
+
+## Connecting to Cloud SQL database
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        cloudsql = "/cloudsql"
+      }
+    }
+  }
+  volumes = {
+    "cloudsql" = {
+      cloud_sql_instances = [module.cloudsql-instance.connection_name]
+    }
+  }
+  deletion_protection = false
+}
+# tftest fixtures=fixtures/cloudsql-instance.tf inventory=cloudsql.yaml e2e
+```
+
+## Direct VPC Egress
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -104,12 +164,13 @@ module "cloud_run" {
     max_instance_count         = 20
     vpc_access = {
       egress = "ALL_TRAFFIC"
-      subnet = "default"
+      subnet = var.subnet.name
       tags   = ["tag1", "tag2", "tag3"]
     }
   }
+  deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=service-beta-features.yaml
+# tftest modules=1 resources=1 inventory=service-direct-vpc.yaml e2e
 ```
 
 ## VPC Access Connector
@@ -495,11 +556,11 @@ module "cloud_run" {
 | [labels](variables.tf#L142) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [launch_stage](variables.tf#L148) | The launch stage as defined by Google Cloud Platform Launch Stages. | <code>string</code> |  | <code>null</code> |
 | [prefix](variables.tf#L170) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [revision](variables.tf#L190) | Revision template configurations. | <code title="object&#40;&#123;&#10;  name                       &#61; optional&#40;string&#41;&#10;  gen2_execution_environment &#61; optional&#40;bool&#41;&#10;  max_concurrency            &#61; optional&#40;number&#41;&#10;  max_instance_count         &#61; optional&#40;number&#41;&#10;  min_instance_count         &#61; optional&#40;number&#41;&#10;  job &#61; optional&#40;object&#40;&#123;&#10;    max_retries &#61; optional&#40;number&#41;&#10;    task_count  &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  vpc_access &#61; optional&#40;object&#40;&#123;&#10;    connector &#61; optional&#40;string&#41;&#10;    egress    &#61; optional&#40;string&#41;&#10;    subnet    &#61; optional&#40;string&#41;&#10;    tags      &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  timeout &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_account](variables.tf#L221) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L227) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [tag_bindings](variables.tf#L233) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [volumes](variables.tf#L240) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret &#61; optional&#40;object&#40;&#123;&#10;    name         &#61; string&#10;    default_mode &#61; optional&#40;string&#41;&#10;    path         &#61; optional&#40;string&#41;&#10;    version      &#61; optional&#40;string&#41;&#10;    mode         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloud_sql_instances &#61; optional&#40;list&#40;string&#41;&#41;&#10;  empty_dir_size      &#61; optional&#40;string&#41;&#10;  gcs &#61; optional&#40;object&#40;&#123;&#10;    bucket       &#61; string&#10;    is_read_only &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  nfs &#61; optional&#40;object&#40;&#123;&#10;    server       &#61; string&#10;    path         &#61; optional&#40;string&#41;&#10;    is_read_only &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [revision](variables.tf#L190) | Revision template configurations. | <code title="object&#40;&#123;&#10;  name                       &#61; optional&#40;string&#41;&#10;  gen2_execution_environment &#61; optional&#40;bool&#41;&#10;  max_concurrency            &#61; optional&#40;number&#41;&#10;  max_instance_count         &#61; optional&#40;number&#41;&#10;  min_instance_count         &#61; optional&#40;number&#41;&#10;  job &#61; optional&#40;object&#40;&#123;&#10;    max_retries &#61; optional&#40;number&#41;&#10;    task_count  &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  vpc_access &#61; optional&#40;object&#40;&#123;&#10;    connector &#61; optional&#40;string&#41;&#10;    egress    &#61; optional&#40;string&#41;&#10;    network   &#61; optional&#40;string&#41;&#10;    subnet    &#61; optional&#40;string&#41;&#10;    tags      &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  timeout &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account](variables.tf#L228) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L234) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [tag_bindings](variables.tf#L240) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [volumes](variables.tf#L247) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret &#61; optional&#40;object&#40;&#123;&#10;    name         &#61; string&#10;    default_mode &#61; optional&#40;string&#41;&#10;    path         &#61; optional&#40;string&#41;&#10;    version      &#61; optional&#40;string&#41;&#10;    mode         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloud_sql_instances &#61; optional&#40;list&#40;string&#41;&#41;&#10;  empty_dir_size      &#61; optional&#40;string&#41;&#10;  gcs &#61; optional&#40;object&#40;&#123;&#10;    bucket       &#61; string&#10;    is_read_only &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  nfs &#61; optional&#40;object&#40;&#123;&#10;    server       &#61; string&#10;    path         &#61; optional&#40;string&#41;&#10;    is_read_only &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | Populate this to create a Serverless VPC Access connector. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  network       &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;    &#125;&#41;, &#123;&#125;&#10;  &#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;    &#125;&#41;, &#123;&#125;&#10;  &#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
@@ -518,6 +579,7 @@ module "cloud_run" {
 
 ## Fixtures
 
+- [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)

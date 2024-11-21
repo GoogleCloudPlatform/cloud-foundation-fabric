@@ -33,6 +33,11 @@ output "endpoint_attachment_hosts" {
   value       = module.apigee.endpoint_attachment_hosts
 }
 
+output "ext_lb" {
+  description = "External LB."
+  value       = var.ext_lb_config != null && length(local.ext_instances) > 0 ? module.ext_lb[0] : null
+}
+
 output "ext_lb_ip_address" {
   description = "External IP address."
   value       = var.ext_lb_config != null && length(local.ext_instances) > 0 ? module.ext_lb[0].address : null
@@ -41,6 +46,16 @@ output "ext_lb_ip_address" {
 output "instance_service_attachments" {
   description = "Instance service attachments."
   value       = { for k, v in module.apigee.instances : k => v.service_attachment }
+}
+
+output "instances" {
+  description = "Instances."
+  value       = module.apigee.instances
+}
+
+output "int_cross_region_lb" {
+  description = "Internal cross-region LBs."
+  value       = var.int_cross_region_lb_config != null && length(local.int_cross_region_instances) > 0 ? module.int_cross_region_lb[0] : null
 }
 
 output "int_cross_region_lb_ip_addresses" {
@@ -53,6 +68,11 @@ output "int_lb_ip_addresses" {
   value       = var.int_lb_config != null && length(local.int_instances) > 0 ? { for k, v in module.int_lb : k => v.address } : null
 }
 
+output "int_lbs" {
+  description = "Internal LBs."
+  value       = module.int_lb
+}
+
 output "project" {
   description = "Project."
   value       = module.project
@@ -61,4 +81,9 @@ output "project" {
 output "project_id" {
   description = "Project id."
   value       = module.project.project_id
+}
+
+output "psc_negs" {
+  description = "PSC NEGs."
+  value       = google_compute_region_network_endpoint_group.psc_negs
 }

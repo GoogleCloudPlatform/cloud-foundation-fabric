@@ -75,7 +75,6 @@ values:
       description: Terraform managed.
       max_rate_per_endpoint: 1
     description: Terraform managed.
-    iap: []
     load_balancing_scheme: INTERNAL_MANAGED
     name: ilb-test-default
     project: project-id

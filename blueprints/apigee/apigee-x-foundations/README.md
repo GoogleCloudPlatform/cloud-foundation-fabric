@@ -491,10 +491,15 @@ module "apigee-x-foundations" {
 | [apigee_vpc_id](outputs.tf#L22) | Apigee VPC. |  |  |
 | [apigee_vpc_self_link](outputs.tf#L27) | Apigee VPC. |  |  |
 | [endpoint_attachment_hosts](outputs.tf#L31) | Endpoint attachment hosts. |  |  |
-| [ext_lb_ip_address](outputs.tf#L36) | External IP address. |  |  |
-| [instance_service_attachments](outputs.tf#L41) | Instance service attachments. |  |  |
-| [int_cross_region_lb_ip_addresses](outputs.tf#L46) | Internal IP addresses. |  |  |
-| [int_lb_ip_addresses](outputs.tf#L51) | Internal IP addresses. |  |  |
-| [project](outputs.tf#L56) | Project. |  |  |
-| [project_id](outputs.tf#L61) | Project id. |  |  |
+| [ext_lb](outputs.tf#L36) | External LB. |  |  |
+| [ext_lb_ip_address](outputs.tf#L41) | External IP address. |  |  |
+| [instance_service_attachments](outputs.tf#L46) | Instance service attachments. |  |  |
+| [instances](outputs.tf#L51) | Instances. |  |  |
+| [int_cross_region_lb](outputs.tf#L56) | Internal cross-region LBs. |  |  |
+| [int_cross_region_lb_ip_addresses](outputs.tf#L61) | Internal IP addresses. |  |  |
+| [int_lb_ip_addresses](outputs.tf#L66) | Internal IP addresses. |  |  |
+| [int_lbs](outputs.tf#L71) | Internal LBs. |  |  |
+| [project](outputs.tf#L76) | Project. |  |  |
+| [project_id](outputs.tf#L81) | Project id. |  |  |
+| [psc_negs](outputs.tf#L86) | PSC NEGs. |  |  |
 <!-- END TFDOC -->

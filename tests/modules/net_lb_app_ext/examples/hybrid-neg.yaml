@@ -29,7 +29,6 @@ values:
     description: Terraform managed.
     edge_security_policy: null
     enable_cdn: null
-    iap: []
     load_balancing_scheme: EXTERNAL
     locality_lb_policies: []
     locality_lb_policy: null

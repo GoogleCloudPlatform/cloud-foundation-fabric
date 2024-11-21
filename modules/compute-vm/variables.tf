@@ -153,6 +153,35 @@ variable "encryption" {
   default = null
 }
 
+variable "gpu" {
+  description = "GPU information. Based on https://cloud.google.com/compute/docs/gpus."
+  type = object({
+    count = number
+    type  = string
+  })
+  default = null
+
+  validation {
+    condition = (
+      var.gpu == null ||
+      contains(
+        [
+          "nvidia-tesla-a100",
+          "nvidia-tesla-p100",
+          "nvidia-tesla-v100",
+          "nvidia-tesla-k80",
+          "nvidia-tesla-p4",
+          "nvidia-tesla-t4",
+          "nvidia-l4",
+          "nvidia-a2"
+        ],
+        try(var.gpu.type, "-")
+      )
+    )
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2."
+  }
+}
+
 variable "group" {
   description = "Define this variable to create an instance group for instances. Disabled for template use."
   type = object({
@@ -392,3 +421,5 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
+
+
