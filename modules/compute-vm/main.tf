@@ -30,11 +30,12 @@ locals {
     k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
-    var.options.spot || var.confidential_compute
+    var.options.spot || var.confidential_compute || local.gpu
     ? "TERMINATE"
     : "MIGRATE"
   )
   region = join("-", slice(split("-", var.zone), 0, 2))
+  gpu    = var.gpu != null
   service_account = var.service_account == null ? null : {
     email = (
       var.service_account.auto_create
@@ -333,6 +334,14 @@ resource "google_compute_instance" "default" {
       resource_manager_tags = local.tags_combined
     }
   }
+
+  dynamic "guest_accelerator" {
+    for_each = local.gpu ? [var.gpu] : []
+    content {
+      type  = guest_accelerator.value.type
+      count = guest_accelerator.value.count
+    }
+  }
 }
 
 resource "google_compute_instance_iam_binding" "default" {
@@ -376,6 +385,13 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "guest_accelerator" {
+    for_each = local.gpu ? [var.gpu] : []
+    content {
+      type  = guest_accelerator.value.type
+      count = guest_accelerator.value.count
+    }
+  }
   dynamic "disk" {
     for_each = local.attached_disks
     iterator = config

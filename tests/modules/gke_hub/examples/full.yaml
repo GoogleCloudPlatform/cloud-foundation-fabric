@@ -95,10 +95,8 @@ values:
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
       fast_socket: []
-      gcfs_config: []
       gvnic: []
       host_maintenance_policy: []
-      kubelet_config: []
       linux_node_config: []
       local_nvme_ssd_block_config: []
       node_group: null

@@ -71,6 +71,12 @@ resource "google_container_cluster" "cluster" {
         enable_integrity_monitoring = true
       }
     }
+    dynamic "workload_metadata_config" {
+      for_each = var.node_config.workload_metadata_config_mode != null ? [""] : []
+      content {
+        mode = var.node_config.workload_metadata_config_mode
+      }
+    }
   }
   # gcfs_config deactivation need the block to be defined so it can't be dynamic
   node_pool_defaults {

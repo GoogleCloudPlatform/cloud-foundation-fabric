@@ -19,6 +19,9 @@ set -e
 SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
 TFDOC_CMD="${SCRIPT_DIR}/tfdoc.py"
 CHECKDOC_CMD="${SCRIPT_DIR}/check_documentation.py"
+if [ -z "$PYTHON" ]; then
+	PYTHON=python
+fi
 
 for file in "$@"; do
 	if [ -d "${file}" ]; then
@@ -30,4 +33,4 @@ for file in "$@"; do
 		echo "${dir}"
 	fi
 
-done | sort | uniq | xargs -I {} /bin/sh -c "echo python \"${TFDOC_CMD}\" {} ; python \"${TFDOC_CMD}\" {} ; echo python \"${CHECKDOC_CMD}\" {} ; python \"${CHECKDOC_CMD}\" {}"
+done | sort | uniq | while read -r line; do /bin/sh -c "echo ${PYTHON} \"${TFDOC_CMD}\" \"$line\" ; ${PYTHON} \"${TFDOC_CMD}\" \"$line\" ; echo ${PYTHON} \"${CHECKDOC_CMD}\" \"$line\" ; ${PYTHON} \"${CHECKDOC_CMD}\" \"$line\""; done
