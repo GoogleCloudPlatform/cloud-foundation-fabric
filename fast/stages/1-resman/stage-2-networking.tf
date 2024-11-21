@@ -83,10 +83,10 @@ module "net-folder" {
     },
     # project factory service accounts
     (var.fast_stage_2.project_factory.enabled) != true ? {} : {
-      (var.custom_roles["service_project_network_admin"]) = [
+      (local.custom_roles["service_project_network_admin"]) = [
         module.pf-sa-rw[0].iam_email
       ]
-      (var.custom_roles["project_iam_viewer"]) = [
+      (local.custom_roles["project_iam_viewer"]) = [
         module.pf-sa-ro[0].iam_email
       ]
       "roles/compute.networkViewer" = [
@@ -208,7 +208,7 @@ module "net-sa-ro" {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+    (var.automation.outputs_bucket) = [local.custom_roles["storage_viewer"]]
   }
 }
 
