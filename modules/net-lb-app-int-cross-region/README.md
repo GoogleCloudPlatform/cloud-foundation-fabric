@@ -556,6 +556,67 @@ module "ilb-l7" {
 # tftest modules=1 resources=7
 ```
 
+### SSL Certificates
+
+Similarly to health checks, SSL certificates can also be created by the module. In this example we are using private key and certificate resources so that the example test only depends on Terraform providers, but in real use those can be replaced by external files.
+
+```hcl
+resource "tls_private_key" "default" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "default" {
+  private_key_pem = tls_private_key.default.private_key_pem
+  subject {
+    common_name  = "example.com"
+    organization = "ACME Examples, Inc"
+  }
+  validity_period_hours = 720
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int-cross-region"
+  name       = "ilb-test"
+  project_id = var.project_id
+
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-ew1"
+        }, {
+        group = "projects/myprj/zones/europe-west4-a/instanceGroups/my-ig-ew4"
+      }]
+      health_checks = ["projects/myprj/global/healthChecks/custom"]
+    }
+  }
+  health_check_configs = {}
+  protocol = "HTTPS"
+  ssl_certificates = {
+    create_configs = {
+      default = {
+        # certificate and key could also be read via file() from external files
+        certificate = tls_self_signed_cert.default.cert_pem
+        private_key = tls_private_key.default.private_key_pem
+      }
+    }
+  }
+  vpc_config = {
+    network = var.vpc.self_link
+    subnetworks = {
+      europe-west1 = var.subnet1.self_link
+      europe-west4 = var.subnet2.self_link
+    }
+  }
+}
+# tftest modules=1 resources=8
+```
+
 ### Complex example
 
 This example mixes group and NEG backends, and shows how to set HTTPS for specific backends.
