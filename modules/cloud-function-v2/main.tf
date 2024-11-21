@@ -56,10 +56,10 @@ resource "google_vpc_access_connector" "connector" {
   region         = var.region
   ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
   network        = var.vpc_connector_config.network
-  min_instances  = var.vpc_connector_config.min_instances
-  max_instances  = var.vpc_connector_config.max_instances
-  min_throughput = var.vpc_connector_config.min_throughput
-  max_throughput = var.vpc_connector_config.max_throughput
+  max_instances  = try(var.vpc_connector_config.instances.max, null)
+  min_instances  = try(var.vpc_connector_config.instances.min, null)
+  max_throughput = try(var.vpc_connector_config.throughput.max, null)
+  min_throughput = try(var.vpc_connector_config.throughput.min, null)
 }
 
 resource "google_cloudfunctions2_function" "function" {
