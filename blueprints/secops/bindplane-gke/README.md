@@ -53,6 +53,10 @@ See the example test at the end of this README.md as starting point - just
 copy it to `terraform.tfvars` and edit the latter. See the variables
 documentation below.
 
+> **Warning**  
+>
+> BindPlane secrets (such as license and admin password) specified as variables within this Terraform configuration will be stored in plain text within the Terraform state file.
+
 #### Step 3: Prepare the providers in the root module
 
 Setup terraform providers in the root module to deal with kubernetes resources as follows:
@@ -104,16 +108,16 @@ Access the management console leveraging credentials bootstrapped via terraform 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [bindplane_secrets](variables.tf#L26) | Bindplane secrets. | <code title="object&#40;&#123;&#10;  license         &#61; string&#10;  user            &#61; optional&#40;string, &#34;admin&#34;&#41;&#10;  password        &#61; optional&#40;string, null&#41;&#10;  secret_key      &#61; string&#10;  sessions_secret &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [network_config](variables.tf#L58) | Shared VPC network configurations to use for GKE cluster. | <code title="object&#40;&#123;&#10;  host_project                  &#61; optional&#40;string&#41;&#10;  network_self_link             &#61; string&#10;  subnet_self_link              &#61; string&#10;  ip_range_gke_master           &#61; string&#10;  secondary_pod_range_name      &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;  secondary_services_range_name &#61; optional&#40;string, &#34;services&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [prefix](variables.tf#L80) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L99) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L104) | GCP region. | <code>string</code> | ✓ |  |
+| [bindplane_secrets](variables.tf#L26) | Bindplane secrets. | <code title="object&#40;&#123;&#10;  license         &#61; string&#10;  user            &#61; optional&#40;string, &#34;admin&#34;&#41;&#10;  password        &#61; optional&#40;string, null&#41;&#10;  sessions_secret &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [network_config](variables.tf#L57) | Shared VPC network configurations to use for GKE cluster. | <code title="object&#40;&#123;&#10;  host_project                  &#61; optional&#40;string&#41;&#10;  network_self_link             &#61; string&#10;  subnet_self_link              &#61; string&#10;  ip_range_gke_master           &#61; string&#10;  secondary_pod_range_name      &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;  secondary_services_range_name &#61; optional&#40;string, &#34;services&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [prefix](variables.tf#L79) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L98) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L103) | GCP region. | <code>string</code> | ✓ |  |
 | [bindplane_config](variables.tf#L17) | Bindplane config. | <code title="object&#40;&#123;&#10;  tls_certificate_cer &#61; optional&#40;string, null&#41;&#10;  tls_certificate_key &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cluster_config](variables.tf#L37) | GKE cluster configuration. | <code title="object&#40;&#123;&#10;  cluster_name &#61; optional&#40;string, &#34;bindplane-op&#34;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    rfc-1918-10-8 &#61; &#34;10.0.0.0&#47;8&#34;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dns_config](variables.tf#L48) | DNS config. | <code title="object&#40;&#123;&#10;  bootstrap_private_zone &#61; optional&#40;bool, false&#41;&#10;  domain                 &#61; optional&#40;string, &#34;example.com&#34;&#41;&#10;  hostname               &#61; optional&#40;string, &#34;bindplane&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [postgresql_config](variables.tf#L70) | Cloud SQL postgresql config. | <code title="object&#40;&#123;&#10;  availability_type &#61; optional&#40;string, &#34;REGIONAL&#34;&#41;&#10;  database_version  &#61; optional&#40;string, &#34;POSTGRES_13&#34;&#41;&#10;  tier              &#61; optional&#40;string, &#34;db-g1-small&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_create](variables.tf#L90) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [cluster_config](variables.tf#L36) | GKE cluster configuration. | <code title="object&#40;&#123;&#10;  cluster_name &#61; optional&#40;string, &#34;bindplane-op&#34;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    rfc-1918-10-8 &#61; &#34;10.0.0.0&#47;8&#34;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [dns_config](variables.tf#L47) | DNS config. | <code title="object&#40;&#123;&#10;  bootstrap_private_zone &#61; optional&#40;bool, false&#41;&#10;  domain                 &#61; optional&#40;string, &#34;example.com&#34;&#41;&#10;  hostname               &#61; optional&#40;string, &#34;bindplane&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [postgresql_config](variables.tf#L69) | Cloud SQL postgresql config. | <code title="object&#40;&#123;&#10;  availability_type &#61; optional&#40;string, &#34;REGIONAL&#34;&#41;&#10;  database_version  &#61; optional&#40;string, &#34;POSTGRES_13&#34;&#41;&#10;  tier              &#61; optional&#40;string, &#34;db-g1-small&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_create](variables.tf#L89) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
