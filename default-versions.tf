@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # Fabric release: v36.0.0
+# run tests on release, do not commit
 
 terraform {
   required_version = ">= 1.7.4"
