@@ -3,10 +3,13 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2024-10-30 14:20:58+00:00 to: None since: v35.0.0 -->
+## [Unreleased]
+
+## [35.1.0] - 2024-11-22
 
 ### BLUEPRINTS
 
+- [[#2706](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2706)] Added min_instances, max_instances, min_throughput and max_throughtpu… ([apichick](https://github.com/apichick)) <!-- 2024-11-21 08:05:12+00:00 -->
 - [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
 - [[#2705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2705)] Added outputs to apigee-x-foundations blueprint (PSC NEGs) ([apichick](https://github.com/apichick)) <!-- 2024-11-18 07:36:49+00:00 -->
 - [[#2704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2704)] Added outputs to apigee-x-foundations blueprint (instances and lbs) ([apichick](https://github.com/apichick)) <!-- 2024-11-17 16:28:30+00:00 -->
@@ -25,6 +28,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2726](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2726)] enable_private_path_for_google_cloud_services added to CloudSQL ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-11-22 13:08:34+00:00 -->
+- [[#2727](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2727)] Fix typo on maintenance config ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-22 09:35:45+00:00 -->
+- [[#2706](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2706)] Added min_instances, max_instances, min_throughput and max_throughtpu… ([apichick](https://github.com/apichick)) <!-- 2024-11-21 08:05:12+00:00 -->
+- [[#2719](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2719)] Allow factory files to be empty ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-21 07:41:24+00:00 -->
+- [[#2723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2723)] Fix not setting user defined password ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-20 09:55:00+00:00 -->
+- [[#2716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2716)] Add support for workload_metadata_config in Standard GKE clusters ([Tirthankar17](https://github.com/Tirthankar17)) <!-- 2024-11-20 09:36:10+00:00 -->
+- [[#2720](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2720)] Add location to cert-manager issuance config and fix issuance config reference ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-19 12:27:11+00:00 -->
 - [[#2715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2715)] Allow setting GCS location default/override in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-11-18 16:45:52+00:00 -->
 - [[#2689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2689)] add GPU options to compute-vm module ([ooshrioo](https://github.com/ooshrioo)) <!-- 2024-11-18 15:40:38+00:00 -->
 - [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
@@ -51,6 +61,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2717](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2717)] Change tfdoc pre-commit hook script to use while read ([rosmo](https://github.com/rosmo)) <!-- 2024-11-19 08:01:15+00:00 -->
 - [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
 
 ## [35.0.0] - 2024-10-30
@@ -2582,7 +2593,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...HEAD
+[35.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...v35.1.0
 [35.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.1.0...v35.0.0
 [34.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...v34.1.0
 [34.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...v34.0.0
