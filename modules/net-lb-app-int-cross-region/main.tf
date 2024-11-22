@@ -57,6 +57,7 @@ locals {
     coalesce(var.ssl_certificates.certificate_ids, []),
     [for k, v in google_compute_ssl_certificate.default : v.id]
   )
+  certificate_manager_certs = try(var.https_proxy_config.certificate_manager_certificates, null)
 }
 
 resource "google_compute_global_forwarding_rule" "forwarding_rules" {
@@ -109,7 +110,7 @@ resource "google_compute_target_https_proxy" "default" {
   name                             = var.name
   description                      = var.description
   ssl_certificates                 = length(local.proxy_ssl_certificates) > 0 ? local.proxy_ssl_certificates : null
-  certificate_manager_certificates = length(var.https_proxy_config.certificate_manager_certificates) > 0 ? var.https_proxy_config.certificate_manager_certificates : null
+  certificate_manager_certificates = local.certificate_manager_certs
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_url_map.default.id
