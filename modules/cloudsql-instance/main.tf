@@ -183,9 +183,10 @@ resource "google_sql_database_instance" "replicas" {
     activation_policy = var.activation_policy
 
     ip_configuration {
-      ipv4_enabled       = var.network_config.connectivity.public_ipv4
-      private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
-      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
+      ipv4_enabled                                  = var.network_config.connectivity.public_ipv4
+      private_network                               = try(var.network_config.connectivity.psa_config.private_network, null)
+      allocated_ip_range                            = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
+      enable_private_path_for_google_cloud_services = var.network_config.connectivity.enable_private_path_for_services
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
