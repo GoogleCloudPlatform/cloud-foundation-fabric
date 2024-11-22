@@ -131,10 +131,10 @@ resource "google_alloydb_cluster" "primary" {
       maintenance_windows {
         day = var.maintenance_config.day
         start_time {
-          hours   = var.maintenance_config.start_times.hours
-          minutes = var.maintenance_config.start_times.minutes
-          seconds = var.maintenance_config.start_times.seconds
-          nanos   = var.maintenance_config.start_times.nanos
+          hours   = var.maintenance_config.start_time.hours
+          minutes = var.maintenance_config.start_time.minutes
+          seconds = var.maintenance_config.start_time.seconds
+          nanos   = var.maintenance_config.start_time.nanos
         }
       }
     }
@@ -308,10 +308,10 @@ resource "google_alloydb_cluster" "secondary" {
       maintenance_windows {
         day = var.maintenance_config.day
         start_time {
-          hours   = var.maintenance_config.start_times.hours
-          minutes = var.maintenance_config.start_times.minutes
-          seconds = var.maintenance_config.start_times.seconds
-          nanos   = var.maintenance_config.start_times.nanos
+          hours   = var.maintenance_config.start_time.hours
+          minutes = var.maintenance_config.start_time.minutes
+          seconds = var.maintenance_config.start_time.seconds
+          nanos   = var.maintenance_config.start_time.nanos
         }
       }
     }
