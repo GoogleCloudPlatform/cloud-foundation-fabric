@@ -73,7 +73,7 @@ resource "google_sql_database_instance" "primary" {
       private_network                               = try(var.network_config.connectivity.psa_config.private_network, null)
       allocated_ip_range                            = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
       ssl_mode                                      = var.ssl.ssl_mode
-      enable_private_path_for_google_cloud_services = var.network_config.connectivity.enable_private_path_for_google_cloud_services
+      enable_private_path_for_google_cloud_services = var.network_config.connectivity.enable_private_path_for_services
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network

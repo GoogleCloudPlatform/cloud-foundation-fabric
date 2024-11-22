@@ -194,8 +194,8 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects                 = optional(list(string))
-      enable_private_path_for_google_cloud_services = optional(bool, false)
+      psc_allowed_consumer_projects    = optional(list(string))
+      enable_private_path_for_services = optional(bool, false)
     })
   })
   validation {
