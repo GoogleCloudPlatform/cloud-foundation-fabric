@@ -14,9 +14,6 @@
 
 terraform {
   required_providers {
-    restful = {
-      source = "magodo/restful"
-    }
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"

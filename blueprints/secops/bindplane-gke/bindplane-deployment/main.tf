@@ -40,7 +40,6 @@ resource "kubernetes_secret" "bindplane_secret" {
   data = {
     username        = var.bindplane_secrets.user
     password        = local.bindplane_password
-    secret_key      = var.bindplane_secrets.secret_key
     sessions_secret = var.bindplane_secrets.sessions_secret
     license         = var.bindplane_secrets.license
   }

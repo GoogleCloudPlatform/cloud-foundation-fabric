@@ -29,11 +29,6 @@ config:
   # NOTE: server_url maps to bindplane's network.remoteURL option.
   server_url: https://${hostname}
 
-
-# Enables mutli account, allowing you to create
-# multiple Tenants within the same BindPlane instance.
-multiAccount: true
-
 # Fixed number of pods. BindPlane CPU usage is bursty, using
 # a pod autoscaler can be tricky. Generally a fixed number
 # of pods is recommended.

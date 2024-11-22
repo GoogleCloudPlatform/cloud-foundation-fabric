@@ -29,7 +29,6 @@ variable "bindplane_secrets" {
     license         = string
     user            = optional(string, "admin")
     password        = optional(string, null)
-    secret_key      = string
     sessions_secret = string
   })
 }
