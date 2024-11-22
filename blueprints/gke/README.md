@@ -20,7 +20,7 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ### Multitenant GKE fleet
 
-<a href="./multitenant-fleet/" title="GKE multitenant fleet"><img src="./multitenant-fleet/diagram.png" align="left" width="280px"></a> This [blueprint](./multitenant-fleet/) allows simple centralized management of similar sets of GKE clusters and their nodepools in a single project, and optional fleet management via GKE Hub templated configurations.
+<a href="../../fast/stages/3-gke-dev/" title="GKE multitenant fleet"><img src="../../fast/stages/3-gke-dev/diagram.png" align="left" width="280px"></a> This [blueprint](../../fast/stages/3-gke-dev/) allows simple centralized management of similar sets of GKE clusters and their nodepools in a single project, and optional fleet management via GKE Hub templated configurations.
 
 <br clear="left">
 

@@ -15,7 +15,4 @@
 module: fast/stages/1-resman
 
 tests:
-  checklist:
-    extra_files:
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-data.json
   simple:

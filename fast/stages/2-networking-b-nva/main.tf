@@ -17,6 +17,37 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  env_tag_values = {
+    for k, v in var.environments : k => var.tag_values["environment/${v.tag_name}"]
+  }
+  has_env_folders = var.folder_ids.networking-dev != null
+  iam_delegated = join(",", formatlist("'%s'", [
+    "roles/composer.sharedVpcAgent",
+    "roles/compute.networkUser",
+    "roles/compute.networkViewer",
+    "roles/container.hostServiceAgentUser",
+    "roles/multiclusterservicediscovery.serviceAgent",
+    "roles/vpcaccess.user",
+  ]))
+  iam_delegated_principals = try(
+    var.stage_config["networking"].iam_delegated_principals, {}
+  )
+  iam_viewer_principals = try(
+    var.stage_config["networking"].iam_viewer_principals, {}
+  )
+  # select the NVA ILB as next hop for spoke VPC routing depending on net mode
+  nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
+    primary = (
+      var.network_mode == "simple"
+      ? local._simple_nva_lb.primary
+      : local._regional_nva_lb.primary
+    )
+    secondary = (
+      var.network_mode == "simple"
+      ? local._simple_nva_lb.secondary
+      : local._regional_nva_lb.secondary
+    )
+  }
   nva_zones = ["b", "c"]
   # combine all regions from variables and subnets
   regions = distinct(concat(
@@ -26,25 +57,11 @@ locals {
     values(module.dmz-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
   ))
-  service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) :
-    k => "serviceAccount:${v}" if v != null
-  }
-  stage3_sas_delegated_grants = [
-    "roles/composer.sharedVpcAgent",
-    "roles/compute.networkUser",
-    "roles/compute.networkViewer",
-    "roles/container.hostServiceAgentUser",
-    "roles/multiclusterservicediscovery.serviceAgent",
-    "roles/vpcaccess.user",
-  ]
 }
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Networking"
-  folder_create = var.folder_ids.networking == null
+  folder_create = false
   id            = var.folder_ids.networking
   contacts = (
     var.essential_contacts == null

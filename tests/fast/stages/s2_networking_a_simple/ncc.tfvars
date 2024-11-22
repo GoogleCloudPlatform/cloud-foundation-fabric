@@ -5,16 +5,29 @@ billing_account = {
   id = "000000-111111-222222"
 }
 custom_roles = {
+  project_iam_viewer            = "organizations/123456789012/roles/bar"
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
   resolvers      = ["10.10.10.10"]
   enable_logging = true
 }
-enable_cloud_nat   = true
+enable_cloud_nat = true
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
+}
 essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
-  networking      = null
+  networking      = "folders/12345"
   networking-dev  = null
   networking-prod = null
 }
@@ -38,4 +51,8 @@ service_accounts = {
 }
 spoke_configs = {
   ncc_configs = {}
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }

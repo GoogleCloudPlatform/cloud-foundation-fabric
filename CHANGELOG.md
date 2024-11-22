@@ -3,7 +3,38 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased]
+## [Unreleased] <!-- from: 2024-10-30 14:20:58+00:00 to: None since: v35.0.0 -->
+
+## [36.0.0] - 2024-11-22
+
+### BLUEPRINTS
+
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### FAST
+
+- [[#2714](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2714)] Remove stale resman validation ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 16:00:06+00:00 -->
+- [[#2707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2707)] Expose `factories_config` for resman top level folders ([juliocc](https://github.com/juliocc)) <!-- 2024-11-17 22:54:56+00:00 -->
+- [[#2701](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2701)] Allow disabling network security stage ([juliocc](https://github.com/juliocc)) <!-- 2024-11-17 09:04:18+00:00 -->
+- [[#2697](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2697)] Remove REGIONAL/MULTI_REGIONAL buckets from FAST ([juliocc](https://github.com/juliocc)) <!-- 2024-11-16 10:14:47+00:00 -->
+- [[#2693](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2693)] Unify usage of top level folders short_name ([juliocc](https://github.com/juliocc)) <!-- 2024-11-15 12:56:46+00:00 -->
+- [[#2694](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2694)] Make project iam viewer name consistent with GCP naming ([juliocc](https://github.com/juliocc)) <!-- 2024-11-15 10:48:37+00:00 -->
+- [[#2688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2688)] Streamline environments variable across stages ([ludoo](https://github.com/ludoo)) <!-- 2024-11-15 09:22:18+00:00 -->
+- [[#2685](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2685)] Add missing billing roles to project factory ro SA in stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 10:41:30+00:00 -->
+- [[#2683](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2683)] Add missing roles to project factory ro SA in stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 09:25:51+00:00 -->
+- [[#2656](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2656)] Fix permadiff in bootstrap IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-11-01 14:56:07+00:00 -->
+- [[#2652](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2652)] Final fixes for v36.0.0-rc1 ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 16:47:11+00:00 -->
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] **incompatible change:** Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### MODULES
+
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### TOOLS
+
+- [[#2688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2688)] Streamline environments variable across stages ([ludoo](https://github.com/ludoo)) <!-- 2024-11-15 09:22:18+00:00 -->
+- [[#2660](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2660)] Refactor changelog for the new release process ([ludoo](https://github.com/ludoo)) <!-- 2024-11-11 10:59:45+00:00 -->
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
 
 ## [35.1.0] - 2024-11-22
 
@@ -58,11 +89,6 @@ All notable changes to this project will be documented in this file.
 - [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
 - [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
 - [[#2653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2653)] Add required enabled field introduced in Terraform version 5.41.0 ([jacobmammoliti](https://github.com/jacobmammoliti)) <!-- 2024-11-01 07:01:14+00:00 -->
-
-### TOOLS
-
-- [[#2717](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2717)] Change tfdoc pre-commit hook script to use while read ([rosmo](https://github.com/rosmo)) <!-- 2024-11-19 08:01:15+00:00 -->
-- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
 
 ## [35.0.0] - 2024-10-30
 <!-- None < 2024-09-05 10:07:19+00:00 -->
@@ -2593,7 +2619,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.0...HEAD
+[36.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...v36.0.0
 [35.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...v35.1.0
 [35.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.1.0...v35.0.0
 [34.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...v34.1.0
