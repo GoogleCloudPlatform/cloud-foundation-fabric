@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2024-10-30 14:20:58+00:00 to: None since: v35.0.0 -->
+## [Unreleased] <!-- from: 2024-11-22 15:04:14+00:00 to: None since: v36.0.0 -->
+
+### FAST
+
+- [[#2731](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2731)] Add missing role to FAST stage 0 org-level delegated IAM grants ([ludoo](https://github.com/ludoo)) <!-- 2024-11-23 06:58:13+00:00 -->
+
+### TOOLS
+
+- [[#2730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2730)] Run tests and linting when pushing to master or fast-dev ([juliocc](https://github.com/juliocc)) <!-- 2024-11-22 19:21:38+00:00 -->
 
 ## [36.0.0] - 2024-11-22
 
