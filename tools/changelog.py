@@ -160,14 +160,15 @@ def format_release(pull_groups, release_as, release_to, release_from, date_to,
   return '\n'.join(buffer)
 
 
-def get_pulls(token, date_from, date_to, merged_to):
+def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
   'Get and normalize pull requests from the Github API.'
+  exclude_pulls = exclude_pulls
   url = 'pulls?state=closed&sort=updated&direction=desc&per_page=100'
   page = 1
   lookbehinds = 0
   while True:
     pulls = fetch(token, f'{url}&page={page}')
-    unmerged = 0
+    excluded, unmerged = 0, 0
     for r in pulls:
       pull_id = r['number']
       merged_at = r['merged_at']
@@ -177,13 +178,17 @@ def get_pulls(token, date_from, date_to, merged_to):
       pull = PullRequest(pull_id, r['base']['ref'], r['user']['login'],
                          r['title'], iso8601.parse_date(merged_at),
                          [l['name'].lower() for l in r['labels']])
+      if pull.id in exclude_pulls:
+        excluded += 1
+        continue
       if pull.base not in merged_to or pull.merged_at <= date_from:
         unmerged += 1
         continue
       if date_to and pull.merged_at >= date_to:
         continue
+      print(pull.id, exclude_pulls)
       yield pull
-    if len(pulls) < 100:
+    if (len(pulls) + excluded) < 100:
       break
     elif unmerged == 100:
       if lookbehinds >= 1:
@@ -280,6 +285,8 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
 
 
 @click.command
+@click.option('--exclude-pull', required=False, multiple=True, type=int,
+              help='Exclude specific PR numbers.')
 @click.option('--merged-to', required=False, default=('master',), multiple=True,
               help='Only include PRs merged to these branches.')
 @click.option('--release-as', required=False, default=None,
@@ -299,7 +306,7 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
               help='Print information about the running operations')
 @click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
-def main(token, changelog_file='CHANGELOG.md', merged_to=None, release_as=None,
+def main(token, changelog_file='CHANGELOG.md', exclude_pull=None, merged_to=None, release_as=None,
          release_from=None, release_to=None, write=False, verbose=False):
   logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)
   if release_as is not None and release_to is not None:
@@ -309,7 +316,7 @@ def main(token, changelog_file='CHANGELOG.md', merged_to=None, release_as=None,
     logging.info(f'release date from: {date_from}')
     date_to = None if not release_to else get_release_date(token, release_to)
     logging.info(f'release date to: {date_to}')
-    pulls = list(get_pulls(token, date_from, date_to, merged_to or ('master',)))
+    pulls = list(get_pulls(token, date_from, date_to, merged_to or ('master',), exclude_pull))
     logging.info(f'number of pulls: {len(pulls)}')
     pull_groups = group_pulls(pulls)
     rel_changes = format_release(pull_groups, release_as, release_to,
