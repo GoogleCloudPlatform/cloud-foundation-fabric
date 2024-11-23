@@ -162,6 +162,7 @@ module "organization" {
                 "roles/resourcemanager.organizationViewer"
               ]))
               , join(",", formatlist("'%s'", [
+                module.organization.custom_role_id["billing_viewer"],
                 module.organization.custom_role_id["network_firewall_policies_admin"],
                 module.organization.custom_role_id["ngfw_enterprise_admin"],
                 module.organization.custom_role_id["ngfw_enterprise_viewer"],
