@@ -306,8 +306,9 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
               help='Print information about the running operations')
 @click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
-def main(token, changelog_file='CHANGELOG.md', exclude_pull=None, merged_to=None, release_as=None,
-         release_from=None, release_to=None, write=False, verbose=False):
+def main(token, changelog_file='CHANGELOG.md', exclude_pull=None,
+         merged_to=None, release_as=None, release_from=None, release_to=None,
+         write=False, verbose=False):
   logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)
   if release_as is not None and release_to is not None:
     raise SystemExit('Only one of `release_as` and `release_to` can be used.')
@@ -316,7 +317,9 @@ def main(token, changelog_file='CHANGELOG.md', exclude_pull=None, merged_to=None
     logging.info(f'release date from: {date_from}')
     date_to = None if not release_to else get_release_date(token, release_to)
     logging.info(f'release date to: {date_to}')
-    pulls = list(get_pulls(token, date_from, date_to, merged_to or ('master',), exclude_pull))
+    pulls = list(
+        get_pulls(token, date_from, date_to, merged_to or ('master',),
+                  exclude_pull))
     logging.info(f'number of pulls: {len(pulls)}')
     pull_groups = group_pulls(pulls)
     rel_changes = format_release(pull_groups, release_as, release_to,
