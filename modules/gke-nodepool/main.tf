@@ -68,7 +68,6 @@ resource "google_service_account" "service_account" {
     ? split("@", var.service_account.email)[0]
     : "tf-gke-${var.name}"
   )
-  # display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
   display_name = local.service_account_display_name
 }
 
