@@ -31,5 +31,5 @@ output "id" {
 
 output "service_attachment" {
   description = "ID of the service attachment resource, if created."
-  value       = var.service_attachment == null ? "" : google_compute_service_attachment.default[0].id
+  value       = try(google_compute_service_attachment.default[0].id, null)
 }
