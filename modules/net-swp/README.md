@@ -9,25 +9,13 @@ A [Proxy-only subnet](https://cloud.google.com/load-balancing/docs/proxy-only-su
 
 When deploying SWP, the required ad-hoc [Cloud Router](https://cloud.google.com/network-connectivity/docs/router) is also created.
 
-<!--
-sessionMatcher: "source.matchServiceAccount('SERVICE_ACCOUNT') && host() == 'example.com'"
-
-session_matcher:source.matchServiceAccount('%s') && host() == 'example.com'
-matcher_args:
-  session:
-    - service_account:foo
-    - service_account:foo@bar
-
-sessionMatcher: "source.matchTag('TAG_VALUE') && host() == 'example.com'"
-sessionMatcher: "inUrlList(host(), 'projects/PROJECT_ID/locations/REGION/urlLists/URL_LIST_NAME')"
--->
-
 <!-- BEGIN TOC -->
 - [Minimal Secure Web Proxy](#minimal-secure-web-proxy)
 - [PSC service attachments](#psc-service-attachments)
 - [Secure Web Proxy with rules](#secure-web-proxy-with-rules)
 - [Secure Web Proxy with TLS inspection](#secure-web-proxy-with-tls-inspection)
 - [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Minimal Secure Web Proxy
@@ -303,4 +291,13 @@ module "secure-web-proxy" {
 | [service_attachment](variables.tf#L117) | PSC service attachment configuration. | <code title="object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [tls_inspection_config](variables.tf#L137) | TLS inspection configuration. | <code title="object&#40;&#123;&#10;  create_config &#61; optional&#40;object&#40;&#123;&#10;    ca_pool               &#61; optional&#40;string, null&#41;&#10;    description           &#61; optional&#40;string, null&#41;&#10;    exclude_public_ca_set &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, null&#41;&#10;  id &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [url_lists](variables.tf#L158) | URL lists. | <code title="map&#40;object&#40;&#123;&#10;  values      &#61; list&#40;string&#41;&#10;  description &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [gateway](outputs.tf#L17) | The gateway resource. |  |
+| [gateway_security_policy](outputs.tf#L22) | The gateway security policy resource. |  |
+| [id](outputs.tf#L27) | ID of the gateway resource. |  |
+| [service_attachment](outputs.tf#L32) | ID of the service attachment resource, if created. |  |
 <!-- END TFDOC -->
