@@ -30,6 +30,7 @@ values:
     description: Managed by Terraform.
     effective_labels:
       example: value
+      goog-terraform-provisioned: 'true'
     labels:
       example: value
     location: europe-west4
@@ -38,14 +39,15 @@ values:
     ports:
     - 443
     project: my-project
-    scope: ''
+    routing_mode: null
+    scope: null
     server_tls_policy: null
     subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
     terraform_labels:
       example: value
+      goog-terraform-provisioned: 'true'
     timeouts: null
     type: SECURE_WEB_GATEWAY
-
 counts:
   google_network_security_gateway_security_policy: 1
   google_network_services_gateway: 1

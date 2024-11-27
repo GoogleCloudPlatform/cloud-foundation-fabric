@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# file: tests/modules/net_swp/examples/rules.yaml
 
 values:
   module.secure-web-proxy.google_network_security_gateway_security_policy.default:
@@ -22,51 +20,6 @@ values:
     project: my-project
     timeouts: null
     tls_inspection_policy: null
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["host-0"]:
-    application_matcher: null
-    basic_profile: DENY
-    description: Managed by Terraform.
-    enabled: true
-    gateway_security_policy: secure-web-proxy
-    location: europe-west4
-    name: host-0
-    priority: 1000
-    project: my-project
-    session_matcher: host() == 'google.com'
-    timeouts: null
-    tls_inspection_enabled: null
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["secure-tag-0"]:
-    application_matcher: null
-    basic_profile: ALLOW
-    description: Managed by Terraform.
-    enabled: true
-    gateway_security_policy: secure-web-proxy
-    location: europe-west4
-    name: secure-tag-0
-    priority: 1001
-    project: my-project
-    session_matcher: '        source.matchTag(''tagValues/281484836404786'') && host()
-      == ''example.com''
-
-      '
-    timeouts: null
-    tls_inspection_enabled: null
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["secure-tag-1"]:
-    application_matcher: null
-    basic_profile: ALLOW
-    description: Managed by Terraform.
-    enabled: true
-    gateway_security_policy: secure-web-proxy
-    location: europe-west4
-    name: secure-tag-1
-    priority: 1002
-    project: my-project
-    session_matcher: '        source.matchTag(''tagValues/281484836404786'') && host()
-      != ''google.com''
-
-      '
-    timeouts: null
-    tls_inspection_enabled: null
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["service-account-0"]:
     application_matcher: null
     basic_profile: ALLOW
@@ -75,12 +28,9 @@ values:
     gateway_security_policy: secure-web-proxy
     location: europe-west4
     name: service-account-0
-    priority: 1003
+    priority: 1001
     project: my-project
-    session_matcher: '        source.matchServiceAccount(''foo@my-prj.iam.gserviceaccount.com'')
-      && host() == ''example.com''
-
-      '
+    session_matcher: source.matchServiceAccount('foo@my-prj.iam.gserviceaccount.com')
     timeouts: null
     tls_inspection_enabled: null
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["url-list-0"]:
@@ -91,33 +41,21 @@ values:
     gateway_security_policy: secure-web-proxy
     location: europe-west4
     name: url-list-0
-    priority: 1004
+    priority: 1000
     project: my-project
-    session_matcher: "        inUrlList(\n          host(),\n          'projects/my-project/locations/europe-west4/urlLists/my-url-list'\n\
-      \        )\n"
     timeouts: null
     tls_inspection_enabled: null
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["url-list-1"]:
-    application_matcher: null
-    basic_profile: ALLOW
-    description: Managed by Terraform.
-    enabled: true
-    gateway_security_policy: secure-web-proxy
+  module.secure-web-proxy.google_network_security_url_lists.default["list-0"]:
+    description: URL list 0
     location: europe-west4
-    name: url-list-1
-    priority: 1005
-    project: my-project
-    session_matcher: inUrlList(host(), 'projects/my-project/locations/europe-west4/urlLists/default')
-    timeouts: null
-    tls_inspection_enabled: null
-  module.secure-web-proxy.google_network_security_url_lists.default["default"]:
-    description: Managed by Terraform.
-    location: europe-west4
-    name: default
+    name: list-0
     project: my-project
     timeouts: null
     values:
-    - example.org
+    - www.example.com
+    - about.example.com
+    - '*.google.com'
+    - github.com/example-org/*
   module.secure-web-proxy.google_network_services_gateway.default:
     addresses:
     - 10.142.68.3
@@ -149,10 +87,8 @@ values:
 
 counts:
   google_network_security_gateway_security_policy: 1
-  google_network_security_gateway_security_policy_rule: 6
+  google_network_security_gateway_security_policy_rule: 2
   google_network_security_url_lists: 1
   google_network_services_gateway: 1
   modules: 1
-  resources: 9
-
-outputs: {}
+  resources: 5
