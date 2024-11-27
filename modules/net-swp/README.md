@@ -14,6 +14,7 @@ When deploying SWP, the required ad-hoc [Cloud Router](https://cloud.google.com/
 - [PSC service attachments](#psc-service-attachments)
 - [Secure Web Proxy with rules](#secure-web-proxy-with-rules)
 - [Secure Web Proxy with TLS inspection](#secure-web-proxy-with-tls-inspection)
+- [Factories](#factories)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -272,6 +273,74 @@ module "secure-web-proxy" {
 }
 # tftest modules=1 resources=3 inventory=tls-no-ip.yaml
 ```
+
+## Factories
+
+URL lists and policies rules can also be defined via YAML-based factories, similarly to several other modules. Data coming from factories is internally merged with variables data, with factories having precedence in case duplicate keys are present in both.
+
+```hcl
+module "secure-web-proxy" {
+  source     = "./fabric/modules/net-swp"
+  project_id = "my-project"
+  region     = "europe-west4"
+  name       = "secure-web-proxy"
+  network    = "projects/my-project/global/networks/my-network"
+  subnetwork = "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
+  certificates = [
+    "projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"
+  ]
+  factories_config = {
+    policy_rules = "data/policy-rules"
+    url_lists    = "data/url-lists"
+  }
+  gateway_config = {
+    addresses = ["10.142.68.3"]
+    ports     = [80, 443]
+    labels = {
+      example = "value"
+    }
+  }
+  policy_rules_contexts = {
+    service_accounts = {
+      foo = "foo@my-prj.iam.gserviceaccount.com"
+    }
+  }
+}
+# tftest modules=1 resources=5 files=0,1,2 inventory=factories.yaml
+```
+
+URL list definitions:
+
+```yaml
+description: URL list 0
+values:
+  - www.example.com
+  - about.example.com
+  - "*.google.com"
+  - "github.com/example-org/*"
+# tftest-file id=0 path=data/url-lists/list-0.yaml schema=url-list.schema.json
+```
+
+Policy rule definitions:
+
+```yaml
+priority: 1000
+session_matcher: "inUrlList(host(), '%s')"
+matcher_args:
+  session:
+    - url_list:list-0
+# tftest-file id=1 path=data/policy-rules/url-list-0.yaml schema=policy-rule.schema.json
+```
+
+```yaml
+priority: 1001
+session_matcher: "source.matchServiceAccount('%s')"
+matcher_args:
+  session:
+    - service_account:foo
+# tftest-file id=2 path=data/policy-rules/service-account-0.yaml schema=policy-rule.schema.json
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

@@ -22,7 +22,12 @@ locals {
       "${local._url_lists_path}/${f}"
     ))
   }
-  url_lists = merge(var.url_lists, local._url_lists)
+  url_lists = merge(var.url_lists, {
+    for k, v in local._url_lists : k => {
+      description = lookup(v, "description", null)
+      values      = lookup(v, "values", [])
+    }
+  })
 }
 
 moved {

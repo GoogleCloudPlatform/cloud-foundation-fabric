@@ -23,7 +23,7 @@ locals {
     ))
   }
   policy_rules_args = {
-    for k, v in var.policy_rules : k => {
+    for k, v in local.policy_rules : k => {
       application = [
         for vv in v.matcher_args.application :
         zipmap(["context", "value"], split(":", vv))
@@ -46,9 +46,10 @@ locals {
       priority            = v.priority
       allow               = lookup(v, "allow", true)
       description         = lookup(v, "description", null)
-      enable              = lookup(v, "enable", true)
+      enabled             = lookup(v, "enable", true)
       application_matcher = lookup(v, "application_matcher", null)
       session_matcher     = lookup(v, "session_matcher", null)
+      tls_inspect         = lookup(v, "tls_inspect", null)
       matcher_args = {
         application = try(v.matcher_args.application, [])
         session     = try(v.matcher_args.session, [])
