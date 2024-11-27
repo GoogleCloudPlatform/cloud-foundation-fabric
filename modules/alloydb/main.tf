@@ -351,7 +351,7 @@ resource "google_alloydb_instance" "secondary" {
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
-  database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
+  database_flags    = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? var.flags : null
   display_name      = coalesce(var.cross_region_replication.secondary_instance_name, local.secondary_instance_name)
   gce_zone          = local.is_regional ? null : var.gce_zone
   instance_id       = local.secondary_instance_name
@@ -374,7 +374,7 @@ resource "google_alloydb_instance" "secondary" {
   dynamic "machine_config" {
     for_each = var.machine_config != null || var.cross_region_replication.secondary_machine_config != null ? [""] : []
     content {
-      cpu_count = coalesce(try(var.machine_config.cpu_count, null), try(var.cross_region_replication.secondary_machine_config.cpu_count, null))
+      cpu_count = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), try(var.machine_config.cpu_count, null))
     }
   }
 

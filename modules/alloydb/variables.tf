@@ -304,6 +304,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "project_number" {
+  description = "The project number of the project where this instances will be created. Only used for testing purposes."
+  type        = string
+  default     = null
+}
+
 variable "query_insights_config" {
   description = "Query insights config."
   type = object({

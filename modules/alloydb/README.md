@@ -55,9 +55,10 @@ module "vpc" {
 }
 
 module "alloydb" {
-  source       = "./fabric/modules/alloydb"
-  project_id   = module.project.project_id
-  cluster_name = "db"
+  source         = "./fabric/modules/alloydb"
+  project_id     = module.project.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
   network_config = {
     psa_config = {
       network = module.vpc.id
@@ -73,11 +74,12 @@ module "alloydb" {
 
 ```hcl
 module "alloydb" {
-  source        = "./fabric/modules/alloydb"
-  project_id    = var.project_id
-  cluster_name  = "db"
-  location      = var.region
-  instance_name = "db"
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  location       = var.region
+  instance_name  = "db"
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -91,18 +93,23 @@ module "alloydb" {
 # tftest modules=1 resources=4 inventory=cross_region_replication.yaml e2e
 ```
 
-In a cross-region replication scenario (like in the previous example) this module also supports [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
+In a cross-region replication scenario (like in the previous example) this module also supports
+
+- [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
+
+- [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
 
 
 ### PSC instance
 
 ```hcl
 module "alloydb" {
-  source        = "./fabric/modules/alloydb"
-  project_id    = var.project_id
-  cluster_name  = "db"
-  location      = var.region
-  instance_name = "db"
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  location       = var.region
+  instance_name  = "db"
   network_config = {
     psc_config = { allowed_consumer_projects = [var.project_number] }
   }
@@ -114,11 +121,12 @@ module "alloydb" {
 
 ```hcl
 module "alloydb" {
-  source        = "./fabric/modules/alloydb"
-  project_id    = var.project_id
-  cluster_name  = "primary"
-  location      = var.region
-  instance_name = "primary"
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "primary"
+  location       = var.region
+  instance_name  = "primary"
   flags = {
     "alloydb.enable_pgaudit"            = "on"
     "alloydb.iam_authentication"        = "on"
@@ -196,11 +204,12 @@ module "vpc" {
 
 
 module "alloydb" {
-  source        = "./fabric/modules/alloydb"
-  project_id    = module.project.project_id
-  cluster_name  = "primary"
-  location      = var.region
-  instance_name = "primary"
+  source         = "./fabric/modules/alloydb"
+  project_id     = module.project.project_id
+  project_number = var.project_number
+  cluster_name   = "primary"
+  location       = var.region
+  instance_name  = "primary"
   network_config = {
     psa_config = {
       network = module.vpc.id
@@ -235,11 +244,12 @@ module "org" {
 }
 
 module "alloydb" {
-  source        = "./fabric/modules/alloydb"
-  project_id    = var.project_id
-  cluster_name  = "primary"
-  location      = var.region
-  instance_name = "primary"
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "primary"
+  location       = var.region
+  instance_name  = "primary"
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -279,9 +289,10 @@ module "alloydb" {
 | [machine_config](variables.tf#L208) | AlloyDB machine config. | <code title="object&#40;&#123;&#10;  cpu_count &#61; optional&#40;number, 2&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  cpu_count &#61; 2&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [maintenance_config](variables.tf#L219) | Set maintenance window configuration. | <code title="object&#40;&#123;&#10;  enabled &#61; optional&#40;bool, false&#41;&#10;  day     &#61; optional&#40;string, &#34;SUNDAY&#34;&#41;&#10;  start_time &#61; optional&#40;object&#40;&#123;&#10;    hours   &#61; optional&#40;number, 23&#41;&#10;    minutes &#61; optional&#40;number, 0&#41;&#10;    seconds &#61; optional&#40;number, 0&#41;&#10;    nanos   &#61; optional&#40;number, 0&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled &#61; false&#10;  day     &#61; &#34;SUNDAY&#34;&#10;  start_time &#61; &#123;&#10;    hours   &#61; 23&#10;    minutes &#61; 0&#10;    seconds &#61; 0&#10;    nanos   &#61; 0&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [prefix](variables.tf#L292) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [query_insights_config](variables.tf#L307) | Query insights config. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, true&#41;&#10;  record_client_address   &#61; optional&#40;bool, true&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  query_string_length     &#61; 1024&#10;  record_application_tags &#61; true&#10;  record_client_address   &#61; true&#10;  query_plans_per_minute  &#61; 5&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [tag_bindings](variables.tf#L323) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L330) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#34;alloydbsuperuser&#34;&#93;&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [project_number](variables.tf#L307) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
+| [query_insights_config](variables.tf#L313) | Query insights config. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, true&#41;&#10;  record_client_address   &#61; optional&#40;bool, true&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  query_string_length     &#61; 1024&#10;  record_application_tags &#61; true&#10;  record_client_address   &#61; true&#10;  query_plans_per_minute  &#61; 5&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [tag_bindings](variables.tf#L329) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [users](variables.tf#L336) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#34;alloydbsuperuser&#34;&#93;&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
