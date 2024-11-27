@@ -21,7 +21,6 @@ values:
     project: project-id
     region: europe-west8
   module.vpc1-nat.google_compute_router_nat.nat:
-    drain_nat_ips: null
     enable_dynamic_port_allocation: true
     enable_endpoint_independent_mapping: false
     icmp_idle_timeout_sec: 30
@@ -30,7 +29,6 @@ values:
         filter: ALL
     name: vpc1-nat
     nat_ip_allocate_option: null
-    nat_ips: null
     project: project-id
     region: europe-west8
     router: vpc1-nat-nat

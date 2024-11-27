@@ -5,16 +5,29 @@ billing_account = {
   id = "000000-111111-222222"
 }
 custom_roles = {
+  project_iam_viewer            = "organizations/123456789012/roles/bar"
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
   resolvers      = ["10.10.10.10"]
   enable_logging = true
 }
-enable_cloud_nat   = true
+enable_cloud_nat = true
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
+}
 essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
-  networking      = null
+  networking      = "folders/12345"
   networking-dev  = null
   networking-prod = null
 }
@@ -36,6 +49,35 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast2"
+stage_config = {
+  networking = {
+    iam_delegated_principals = {
+      dev = [
+        "serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-dev-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+      prod = [
+        "serviceAccount:fast2-prod-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-prod-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+    }
+    iam_viewer_principals = {
+      dev = [
+        "serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+      prod = [
+        "serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+    }
+    short_name = "net"
+  }
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
+}
 # spoke_configs defaults to peering
 vpn_onprem_primary_config = {
   peer_external_gateways = {

@@ -15,29 +15,17 @@
  */
 
 # tfdoc:file:description Production spoke VPC and related resources.
-locals {
-  _simple_nva_lb = {
-    primary   = (var.network_mode == "simple" ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""] : null)
-    secondary = (var.network_mode == "simple" ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
-  }
-  _regional_nva_lb = {
-    primary   = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["primary"].forwarding_rule_addresses[""] : null)
-    secondary = (var.network_mode == "regional_vpc" ? module.ilb-regional-nva-landing["secondary"].forwarding_rule_addresses[""] : null)
-  }
-  # On the basis of the network modes selects the NVA internal load balancer as next hop for spoke VPC routing
-  nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
-    primary   = (var.network_mode == "simple" ? local._simple_nva_lb.primary : local._regional_nva_lb.primary)
-    secondary = (var.network_mode == "simple" ? local._simple_nva_lb.secondary : local._regional_nva_lb.secondary)
-  }
-}
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
-  parent          = var.folder_ids.networking-prod
-  prefix          = var.prefix
-  services = concat([
+  parent = coalesce(
+    var.folder_ids.networking-prod,
+    var.folder_ids.networking
+  )
+  prefix = var.prefix
+  services = [
     "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -47,36 +35,33 @@ module "prod-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-    ]
-  )
+  ]
   shared_vpc_host_config = {
     enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
+  # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
-    "roles/dns.admin" = compact([
-      try(local.service_accounts.gke-prod, null),
-    ])
+    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["prod"], [])
   }
-  # allow specific service accounts to assign a set of roles
-  iam_bindings = {
-    sa_delegated_grants = {
-      role = "roles/resourcemanager.projectIamAdmin"
-      members = compact([
-        try(local.service_accounts.data-platform-prod, null),
-        try(local.service_accounts.project-factory, null),
-        try(local.service_accounts.project-factory-prod, null),
-        try(local.service_accounts.gke-prod, null),
-      ])
-      condition = {
-        title       = "prod_stage3_sa_delegated_grants"
-        description = "Production host project delegated grants."
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
-        )
+  iam_bindings = (
+    lookup(local.iam_delegated_principals, "prod", null) == null ? {} : {
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_delegated_principals["prod"], [])
+        condition = {
+          title       = "prod_stage3_sa_delegated_grants"
+          description = "${var.environments["prod"].name} host project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
       }
     }
+  )
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["prod"]
   }
 }
 

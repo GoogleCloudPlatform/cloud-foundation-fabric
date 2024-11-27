@@ -194,7 +194,8 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects = optional(list(string))
+      psc_allowed_consumer_projects    = optional(list(string))
+      enable_private_path_for_services = optional(bool, false)
     })
   })
   validation {
@@ -230,7 +231,8 @@ variable "replicas" {
     region              = string
     encryption_key_name = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "root_password" {

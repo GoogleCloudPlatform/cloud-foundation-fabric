@@ -202,9 +202,10 @@ variable "revision" {
     vpc_access = optional(object({
       connector = optional(string)
       egress    = optional(string)
+      network   = optional(string)
       subnet    = optional(string)
       tags      = optional(list(string))
-    }))
+    }), {})
     timeout = optional(string)
   })
   default  = {}
@@ -215,6 +216,12 @@ variable "revision" {
       ["ALL_TRAFFIC", "PRIVATE_RANGES_ONLY"], var.revision.vpc_access.egress)
     )
     error_message = "Egress should be one of ALL_TRAFFIC, PRIVATE_RANGES_ONLY."
+  }
+  validation {
+    condition = (
+      var.revision.vpc_access.network == null || (var.revision.vpc_access.network != null && var.revision.vpc_access.subnet != null)
+    )
+    error_message = "When providing vpc_access.network provide also vpc_access.subnet."
   }
 }
 

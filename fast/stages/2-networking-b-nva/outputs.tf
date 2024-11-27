@@ -26,14 +26,14 @@ locals {
     prod-spoke-0 = module.prod-spoke-project.number
   }
   subnet_self_links = merge({
-    prod-dmz     = module.dmz-vpc.subnet_self_links
-    prod-landing = module.landing-vpc.subnet_self_links
-    dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
-    prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
+    prod-dmz     = module.dmz-vpc.subnet_ids
+    prod-landing = module.landing-vpc.subnet_ids
+    dev-spoke-0  = module.dev-spoke-vpc.subnet_ids
+    prod-spoke-0 = module.prod-spoke-vpc.subnet_ids
     },
     (var.network_mode == "regional_vpc") ? {
-      regional-vpc-primary-0   = module.regional-primary-vpc[0].subnet_self_links
-      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].subnet_self_links
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].subnet_ids
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].subnet_ids
     } : {}
   )
   subnet_proxy_only_self_links = {
@@ -74,14 +74,14 @@ locals {
   }
   vpc_self_links = merge(
     {
-      prod-landing = module.landing-vpc.self_link
-      prod-dmz     = module.dmz-vpc.self_link
-      dev-spoke-0  = module.dev-spoke-vpc.self_link
-      prod-spoke-0 = module.prod-spoke-vpc.self_link
+      prod-landing = module.landing-vpc.id
+      prod-dmz     = module.dmz-vpc.id
+      dev-spoke-0  = module.dev-spoke-vpc.id
+      prod-spoke-0 = module.prod-spoke-vpc.id
     },
     (var.network_mode == "regional_vpc") ? {
-      regional-vpc-primary-0   = module.regional-primary-vpc[0].self_link
-      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].self_link
+      regional-vpc-primary-0   = module.regional-primary-vpc[0].id
+      regional-vpc-secondary-0 = module.regional-secondary-vpc[0].id
     } : {}
   )
 }

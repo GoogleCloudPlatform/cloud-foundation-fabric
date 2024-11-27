@@ -49,7 +49,7 @@ locals {
       for k, v in local._data.egress_policies : k => {
         from = merge({
           identity_type = null
-          identities    = null
+          identities    = []
         }, try(v.from, {}))
         to = {
           operations = [
@@ -69,7 +69,7 @@ locals {
         from = merge({
           access_levels = []
           identity_type = null
-          identities    = null
+          identities    = []
           resources     = []
         }, try(v.from, {}))
         to = {

@@ -37,33 +37,39 @@ variable "billing_account" {
   }
 }
 
-variable "fast_features" {
-  # tfdoc:variable:source 0-0-bootstrap
-  description = "Selective control for top-level FAST features."
+variable "custom_roles" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
   type = object({
-    gcve = optional(bool, false)
+    project_iam_viewer = string
   })
-  default  = {}
+  default = null
+}
+
+variable "environments" {
+  # tfdoc:variable:source 0-globals
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    tag_name   = string
+    is_default = optional(bool, false)
+  }))
   nullable = false
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
 }
 
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format."
   type = object({
     networking      = string
-    networking-dev  = string
-    networking-prod = string
-  })
-}
-
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
+    networking-dev  = optional(string)
+    networking-prod = optional(string)
   })
 }
 
@@ -77,18 +83,23 @@ variable "prefix" {
   }
 }
 
-variable "service_accounts" {
+variable "stage_config" {
   # tfdoc:variable:source 1-resman
-  description = "Automation service accounts in name => email format."
+  description = "FAST stage configuration."
   type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    gke-dev              = string
-    gke-prod             = string
-    project-factory      = string
-    project-factory-dev  = string
-    project-factory-prod = string
+    networking = optional(object({
+      short_name               = optional(string)
+      iam_delegated_principals = optional(map(list(string)), {})
+      iam_viewer_principals    = optional(map(list(string)), {})
+    }), {})
   })
-  default = null
+  default  = {}
+  nullable = false
 }
 
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Root-level tag values."
+  type        = map(string)
+  default     = {}
+}

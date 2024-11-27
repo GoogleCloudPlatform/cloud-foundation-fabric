@@ -32,17 +32,6 @@ variable "automation" {
       principal_branch = string
       principal_repo   = string
     }))
-    cicd_backends = object({
-      terraform = object({
-        organization = string
-        workspaces = map(object({
-          tags    = list(string)
-          name    = string
-          project = string
-        }))
-        hostname = string
-      })
-    })
     service_accounts = object({
       resman   = string
       resman-r = string
@@ -67,14 +56,12 @@ variable "custom_roles" {
   type = object({
     gcve_network_admin              = string
     network_firewall_policies_admin = string
-    # TODO: remove after v34.0.0
-    network_firewall_policies_viewer = optional(string)
-    ngfw_enterprise_admin            = optional(string)
-    ngfw_enterprise_viewer           = optional(string)
-    organization_admin_viewer        = string
-    service_project_network_admin    = string
-    storage_viewer                   = string
-    tenant_network_admin             = string
+    ngfw_enterprise_admin           = optional(string)
+    ngfw_enterprise_viewer          = optional(string)
+    organization_admin_viewer       = string
+    service_project_network_admin   = string
+    storage_viewer                  = string
+    tenant_network_admin            = string
   })
   default = null
 }

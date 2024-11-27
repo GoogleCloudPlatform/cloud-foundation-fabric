@@ -20,55 +20,49 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
-  parent          = var.folder_ids.networking-dev
-  prefix          = var.prefix
-  services = concat(
-    [
-      "container.googleapis.com",
-      "compute.googleapis.com",
-      "dns.googleapis.com",
-      "iap.googleapis.com",
-      "networkmanagement.googleapis.com",
-      "networksecurity.googleapis.com",
-      "servicenetworking.googleapis.com",
-      "stackdriver.googleapis.com",
-      "vpcaccess.googleapis.com"
-    ],
-    (
-      var.fast_features.gcve
-      ? ["vmwareengine.googleapis.com"]
-      : []
-    )
+  parent = coalesce(
+    var.folder_ids.networking-dev,
+    var.folder_ids.networking
   )
+  prefix = var.prefix
+  services = [
+    "container.googleapis.com",
+    "compute.googleapis.com",
+    "dns.googleapis.com",
+    "iap.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "networksecurity.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "stackdriver.googleapis.com",
+    "vpcaccess.googleapis.com",
+    "vmwareengine.googleapis.com"
+  ]
   shared_vpc_host_config = {
     enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
+  # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
-    "roles/dns.admin" = compact([
-      try(local.service_accounts.gke-dev, null),
-    ])
+    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
   }
-  # allow specific service accounts to assign a set of roles
-  iam_bindings = {
-    sa_delegated_grants = {
-      role = "roles/resourcemanager.projectIamAdmin"
-      members = compact([
-        try(local.service_accounts.data-platform-dev, null),
-        try(local.service_accounts.project-factory, null),
-        try(local.service_accounts.project-factory-dev, null),
-        try(local.service_accounts.project-factory-prod, null),
-        try(local.service_accounts.gke-dev, null),
-      ])
-      condition = {
-        title       = "dev_stage3_sa_delegated_grants"
-        description = "Development host project delegated grants."
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
-        )
+  iam_bindings = (
+    lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_delegated_principals["dev"], [])
+        condition = {
+          title       = "dev_stage3_sa_delegated_grants"
+          description = "${var.environments["dev"].name} host project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
       }
     }
+  )
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["dev"]
   }
 }
 

@@ -96,7 +96,6 @@ values:
     - dns_authorizations: null
       domains:
       - mydomain.mycompany.org
-      issuance_config: my-issuance-config
     name: my-certificate-1
     project: project-id
     scope: null

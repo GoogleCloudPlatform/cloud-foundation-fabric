@@ -29,6 +29,7 @@ resource "google_storage_bucket" "bucket" {
   uniform_bucket_level_access = var.uniform_bucket_level_access
   labels                      = var.labels
   default_event_based_hold    = var.default_event_based_hold
+  enable_object_retention     = var.enable_object_retention
   requester_pays              = var.requester_pays
   public_access_prevention    = var.public_access_prevention
   rpo                         = var.rpo
@@ -70,6 +71,14 @@ resource "google_storage_bucket" "bucket" {
 
     content {
       default_kms_key_name = var.encryption_key
+    }
+  }
+
+  dynamic "hierarchical_namespace" {
+    for_each = var.enable_hierarchical_namespace == null ? [] : [""]
+
+    content {
+      enabled = var.enable_hierarchical_namespace
     }
   }
 

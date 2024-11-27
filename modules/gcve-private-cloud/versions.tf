@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v35.0.0
+# Fabric release: v36.0.1
 
 terraform {
   required_version = ">= 1.7.4"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 6.1.0, < 7.0.0" # tftest
+      version = ">= 6.11.2, < 7.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 6.1.0, < 7.0.0" # tftest
+      version = ">= 6.11.2, < 7.0.0" # tftest
     }
   }
 }

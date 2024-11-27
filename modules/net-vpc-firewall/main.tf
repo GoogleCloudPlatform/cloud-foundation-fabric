@@ -24,8 +24,8 @@ locals {
   # decode rule files and account for optional attributes
   _factory_rule_list = flatten([
     for f in local._factory_rule_files : [
-      for direction, ruleset in yamldecode(file(f)) : [
-        for name, rule in ruleset : {
+      for direction, ruleset in coalesce(yamldecode(file(f)), tomap({})) : [
+        for name, rule in coalesce(ruleset, tomap({})) : {
           name                 = name
           deny                 = try(rule.deny, false)
           rules                = try(rule.rules, [{ protocol = "all", ports = null }])

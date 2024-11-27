@@ -28,7 +28,6 @@ values:
       advanced_machine_features: []
       availability_type: ZONAL
       collation: null
-      data_cache_config: []
       database_flags: []
       deletion_protection_enabled: false
       deny_maintenance_period: []
@@ -40,7 +39,7 @@ values:
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
-        enable_private_path_for_google_cloud_services: null
+        enable_private_path_for_google_cloud_services: false
         ipv4_enabled: false
         psc_config: []
       maintenance_window: []

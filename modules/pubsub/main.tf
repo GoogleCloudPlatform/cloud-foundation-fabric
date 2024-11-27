@@ -80,8 +80,16 @@ resource "google_pubsub_subscription" "default" {
   dynamic "retry_policy" {
     for_each = each.value.retry_policy == null ? [] : [""]
     content {
-      maximum_backoff = each.value.retry_policy.maximum_backoff != null ? "${each.value.retry_policy.maximum_backoff}s" : null
-      minimum_backoff = each.value.retry_policy.minimum_backoff != null ? "${each.value.retry_policy.minimum_backoff}s" : null
+      maximum_backoff = (
+        each.value.retry_policy.maximum_backoff != null
+        ? "${each.value.retry_policy.maximum_backoff}s"
+        : null
+      )
+      minimum_backoff = (
+        each.value.retry_policy.minimum_backoff != null
+        ? "${each.value.retry_policy.minimum_backoff}s"
+        : null
+      )
     }
   }
 
@@ -103,11 +111,12 @@ resource "google_pubsub_subscription" "default" {
   dynamic "bigquery_config" {
     for_each = each.value.bigquery == null ? [] : [""]
     content {
-      table               = each.value.bigquery.table
-      use_table_schema    = each.value.bigquery.use_table_schema
-      use_topic_schema    = each.value.bigquery.use_topic_schema
-      write_metadata      = each.value.bigquery.write_metadata
-      drop_unknown_fields = each.value.bigquery.drop_unknown_fields
+      table                 = each.value.bigquery.table
+      use_table_schema      = each.value.bigquery.use_table_schema
+      use_topic_schema      = each.value.bigquery.use_topic_schema
+      write_metadata        = each.value.bigquery.write_metadata
+      drop_unknown_fields   = each.value.bigquery.drop_unknown_fields
+      service_account_email = each.value.bigquery.service_account_email
     }
   }
 

@@ -17,6 +17,11 @@ on:
   pull_request:
     branches:
       - master
+      - fast-dev
+  push:
+    branches:
+      - master
+      - fast-dev
 
 jobs:
   linting:

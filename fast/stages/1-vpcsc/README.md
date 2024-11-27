@@ -91,27 +91,39 @@ It's of course possible to run this stage in isolation, but that's outside the s
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be get from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder or GCS output bucket. The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be get from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder or GCS output bucket. The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '1-vpcsc'
+# File linking commands for vpc service controls stage
 
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/1-vpcsc-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/1-vpcsc.auto.tfvars ./
 ```
 
 ```bash
 # the outputs bucket name is in the stage 0 outputs and tfvars file
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-security'
+# File linking commands for vpc service controls stage
 
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+# provider file
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-vpcsc-providers.tf ./
+
+# input files from other stages
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/1-vpcsc.auto.tfvars ./
 ```
 
 ### Impersonating the automation service account
@@ -274,7 +286,7 @@ Some references that might be useful in setting up this stage:
 
 - [VPC SC CSCC requirements](https://cloud.google.com/security-command-center/docs/troubleshooting).
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-vpcsc-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

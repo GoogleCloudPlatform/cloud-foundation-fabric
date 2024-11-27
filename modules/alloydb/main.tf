@@ -43,7 +43,7 @@ resource "google_alloydb_cluster" "primary" {
   project          = var.project_id
   annotations      = var.annotations
   cluster_id       = local.primary_cluster_name
-  cluster_type     = "PRIMARY"
+  cluster_type     = var.cross_region_replication.switchover_mode ? "SECONDARY" : "PRIMARY"
   database_version = var.database_version
   deletion_policy  = var.deletion_policy
   display_name     = coalesce(var.cluster_display_name, local.primary_cluster_name)
@@ -131,10 +131,10 @@ resource "google_alloydb_cluster" "primary" {
       maintenance_windows {
         day = var.maintenance_config.day
         start_time {
-          hours   = var.maintenance_config.start_times.hours
-          minutes = var.maintenance_config.start_times.minutes
-          seconds = var.maintenance_config.start_times.seconds
-          nanos   = var.maintenance_config.start_times.nanos
+          hours   = var.maintenance_config.start_time.hours
+          minutes = var.maintenance_config.start_time.minutes
+          seconds = var.maintenance_config.start_time.seconds
+          nanos   = var.maintenance_config.start_time.nanos
         }
       }
     }
@@ -142,6 +142,13 @@ resource "google_alloydb_cluster" "primary" {
 
   psc_config {
     psc_enabled = var.network_config.psc_config != null ? true : null
+  }
+
+  dynamic "secondary_config" {
+    for_each = var.cross_region_replication.switchover_mode ? [""] : []
+    content {
+      primary_cluster_name = "projects/${var.project_id}/locations/${var.cross_region_replication.region}/clusters/${local.secondary_cluster_name}"
+    }
   }
 
   # waiting to fix this issue https://github.com/hashicorp/terraform-provider-google/issues/14944
@@ -161,7 +168,7 @@ resource "google_alloydb_instance" "primary" {
   database_flags    = var.flags
   display_name      = coalesce(var.display_name, local.primary_instance_name)
   instance_id       = local.primary_instance_name
-  instance_type     = "PRIMARY"
+  instance_type     = var.cross_region_replication.switchover_mode ? "SECONDARY" : "PRIMARY"
   gce_zone          = local.is_regional ? null : var.gce_zone
   labels            = var.labels
 
@@ -228,7 +235,7 @@ resource "google_alloydb_cluster" "secondary" {
   project          = var.project_id
   annotations      = var.annotations
   cluster_id       = local.secondary_cluster_name
-  cluster_type     = var.cross_region_replication.promote_secondary ? "PRIMARY" : "SECONDARY"
+  cluster_type     = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? "PRIMARY" : "SECONDARY"
   database_version = var.database_version
   deletion_policy  = "FORCE"
   display_name     = coalesce(var.cross_region_replication.secondary_cluster_display_name, local.secondary_cluster_name)
@@ -302,24 +309,16 @@ resource "google_alloydb_cluster" "secondary" {
     }
   }
 
-  dynamic "initial_user" {
-    for_each = var.initial_user != null ? [""] : []
-    content {
-      user     = var.initial_user.user
-      password = var.initial_user.password
-    }
-  }
-
   dynamic "maintenance_update_policy" {
     for_each = var.maintenance_config.enabled ? [""] : []
     content {
       maintenance_windows {
         day = var.maintenance_config.day
         start_time {
-          hours   = var.maintenance_config.start_times.hours
-          minutes = var.maintenance_config.start_times.minutes
-          seconds = var.maintenance_config.start_times.seconds
-          nanos   = var.maintenance_config.start_times.nanos
+          hours   = var.maintenance_config.start_time.hours
+          minutes = var.maintenance_config.start_time.minutes
+          seconds = var.maintenance_config.start_time.seconds
+          nanos   = var.maintenance_config.start_time.nanos
         }
       }
     }
@@ -330,7 +329,7 @@ resource "google_alloydb_cluster" "secondary" {
   }
 
   dynamic "secondary_config" {
-    for_each = var.cross_region_replication.promote_secondary ? [] : [""]
+    for_each = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? [] : [""]
     content {
       primary_cluster_name = google_alloydb_cluster.primary.id
     }
@@ -352,7 +351,7 @@ resource "google_alloydb_instance" "secondary" {
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
-  database_flags    = var.cross_region_replication.promote_secondary ? var.flags : null
+  database_flags    = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? var.flags : null
   display_name      = coalesce(var.cross_region_replication.secondary_instance_name, local.secondary_instance_name)
   gce_zone          = local.is_regional ? null : var.gce_zone
   instance_id       = local.secondary_instance_name
@@ -373,9 +372,9 @@ resource "google_alloydb_instance" "secondary" {
   }
 
   dynamic "machine_config" {
-    for_each = var.machine_config != null ? [""] : []
+    for_each = var.machine_config != null || var.cross_region_replication.secondary_machine_config != null ? [""] : []
     content {
-      cpu_count = var.machine_config.cpu_count
+      cpu_count = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), try(var.machine_config.cpu_count, null))
     }
   }
 
