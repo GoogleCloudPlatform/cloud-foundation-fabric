@@ -18,7 +18,7 @@ locals {
   _policy_rules_path = try(pathexpand(var.factories_config.policy_rules), null)
   _policy_rules = {
     for f in try(fileset(local._policy_rules_path, "**/*.yaml"), []) :
-    trimsuffix(f, ".yaml") => yamldecode(file(
+    basename(trimsuffix(f, ".yaml")) => yamldecode(file(
       "${local._policy_rules_path}/${f}"
     ))
   }
