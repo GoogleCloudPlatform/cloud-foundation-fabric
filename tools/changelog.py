@@ -186,7 +186,6 @@ def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
         continue
       if date_to and pull.merged_at >= date_to:
         continue
-      print(pull.id, exclude_pulls)
       yield pull
     if (len(pulls) + excluded) < 100:
       break
