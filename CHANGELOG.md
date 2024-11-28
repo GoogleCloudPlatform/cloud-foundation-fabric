@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 ### MODULES
 
 - [[#2734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2734)] Allow override of GKE Nodepool SA Display Name ([robrankin](https://github.com/robrankin)) <!-- 2024-11-28 06:47:17+00:00 -->
-- [[#2738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2738)] manage switchover ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-27 15:57:33+00:00 -->
+- [[#2738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2738)] Support switchover in alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-27 15:57:33+00:00 -->
 - [[#2739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2739)] Add basename to SWP policy rules factory ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-27 14:42:33+00:00 -->
 - [[#2737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2737)] **incompatible change:** SWP module refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-11-27 12:54:59+00:00 -->
 
