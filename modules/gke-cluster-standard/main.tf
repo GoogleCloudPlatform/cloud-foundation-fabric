@@ -483,6 +483,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.pod_security_policy
     }
   }
+  dynamic "secret_manager_config" {
+    for_each = var.enable_features.secret_manager_config != null ? [""] : []
+    content {
+      enabled = var.enable_features.secret_manager_config
+    }
+  }
   dynamic "security_posture_config" {
     for_each = var.enable_features.security_posture_config != null ? [""] : []
     content {
