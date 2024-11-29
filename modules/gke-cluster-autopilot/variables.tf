@@ -77,11 +77,12 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    gateway_api         = optional(bool, false)
-    groups_for_rbac     = optional(string)
-    l4_ilb_subsetting   = optional(bool, false)
-    mesh_certificates   = optional(bool)
-    pod_security_policy = optional(bool, false)
+    gateway_api           = optional(bool, false)
+    groups_for_rbac       = optional(string)
+    l4_ilb_subsetting     = optional(bool, false)
+    mesh_certificates     = optional(bool)
+    pod_security_policy   = optional(bool, false)
+    secret_manager_config = optional(bool)
     security_posture_config = optional(object({
       mode               = string
       vulnerability_mode = string
