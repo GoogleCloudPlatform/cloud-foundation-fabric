@@ -3,7 +3,19 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased]
+## [Unreleased] <!-- from: 2024-11-23 11:24:55+00:00 to: None since: v36.0.1 -->
+
+### FAST
+
+- [[#2733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2733)] **incompatible change:** Updating yaml naming in prod subnet folder to match other lifecycles ([mtndrew404](https://github.com/mtndrew404)) <!-- 2024-11-26 06:40:22+00:00 -->
+
+### MODULES
+
+- [[#2741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2741)] Add support for secret manager config to gke cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2024-11-29 08:24:18+00:00 -->
+- [[#2734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2734)] Allow override of GKE Nodepool SA Display Name ([robrankin](https://github.com/robrankin)) <!-- 2024-11-28 06:47:17+00:00 -->
+- [[#2738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2738)] Support switchover in alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-27 15:57:33+00:00 -->
+- [[#2739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2739)] Add basename to SWP policy rules factory ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-27 14:42:33+00:00 -->
+- [[#2737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2737)] **incompatible change:** SWP module refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-11-27 12:54:59+00:00 -->
 
 ## [36.0.1] - 2024-11-23
 

@@ -206,6 +206,7 @@ variable "service_account" {
     create       = optional(bool, false)
     email        = optional(string)
     oauth_scopes = optional(list(string))
+    display_name = optional(string)
   })
   default  = {}
   nullable = false
