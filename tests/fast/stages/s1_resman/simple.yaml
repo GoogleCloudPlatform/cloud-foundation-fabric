@@ -224,7 +224,6 @@ values:
   module.net-folder[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
-    parent: organizations/123456789012
     timeouts: null
   ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
   : condition: []
@@ -1778,23 +1777,23 @@ values:
     role: roles/storage.objectAdmin
 
 counts:
-  google_folder: 13
+  google_folder: 14
   google_folder_iam_binding: 75
   google_org_policy_policy: 2
   google_organization_iam_member: 19
-  google_project_iam_member: 26
-  google_service_account: 26
-  google_service_account_iam_binding: 26
-  google_storage_bucket: 12
-  google_storage_bucket_iam_binding: 24
-  google_storage_bucket_iam_member: 26
-  google_storage_bucket_object: 25
-  google_tags_tag_binding: 13
+  google_project_iam_member: 27
+  google_service_account: 27
+  google_service_account_iam_binding: 27
+  google_storage_bucket: 13
+  google_storage_bucket_iam_binding: 26
+  google_storage_bucket_iam_member: 27
+  google_storage_bucket_object: 26
+  google_tags_tag_binding: 14
   google_tags_tag_key: 2
-  google_tags_tag_value: 12
+  google_tags_tag_value: 13
   google_tags_tag_value_iam_binding: 4
-  modules: 52
-  resources: 305
+  modules: 55
+  resources: 316
 
 outputs:
   cicd_repositories:
