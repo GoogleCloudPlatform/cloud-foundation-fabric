@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "api_alerts" {
+  description = "Enable default API alerts for the project."
+  type = object({
+    enabled = optional(bool, false)
+    email   = optional(string, null)
+  })
+  default = {}
+}
+
 variable "auto_create_network" {
   description = "Whether to create the default network for the project."
   type        = bool
@@ -313,13 +322,4 @@ variable "vpc_sc" {
     is_dry_run        = optional(bool, false)
   })
   default = null
-}
-
-variable "api_alerts" {
-  description = "Enable default API alerts for the project, when API alerts are required for compliance reasons"
-  type = object({
-    enabled = optional(bool, false)
-    email   = optional(string, null)
-  })
-  default = {}
 }
