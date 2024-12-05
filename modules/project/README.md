@@ -29,9 +29,7 @@ This module implements the creation and management of one GCP project including 
 - [VPC Service Controls](#vpc-service-controls)
 - [Project Related Outputs](#project-related-outputs)
   - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
-- [Files](#files)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [tftest inventory=data.yaml e2e](#tftest-inventorydatayaml-e2e)
 <!-- END TOC -->
 
 ## Basic Project Creation
@@ -1357,6 +1355,38 @@ module "bucket" {
   parent      = var.project_id
   id          = "${var.prefix}-bucket"
 }
+
+## API Alerts
+There are events within Google Cloud that should be monitored and alerted on to ensure that you are aware of any potential security issues.
+These actions are typically seen in cases of security breaches, or potential security breaches, although they can be genuine actions that are not security related, but are still important to monitor.
+These events are typically
+- Owner Role Assignment/Changes
+- Audit Logging Configuration Changes
+- Custom Roles Creation/editing/deletion
+- VPC Network Firewall Rule Changes
+- VPC Network Route Changes
+- VPC Network Changes
+- Cloud Storage IAM Permission Changes
+- SQL Instances Configuration Changes
+Although you may not use the services listed above, such as SQL, it is still important to monitor these events for compliance purposes
+To enable these alerts by default on all projects created, it is recommended to default the variable `enable_default_api_alerts` within `variables.tf` to true, 
+You will also need to set the `default_api_alerts_email` variable to the email address that will receive these alerts
+You can alternatively enable these alerts on a per-project basis by setting the variable `enable_api_alerts` to true on the module, along with the `default_api_alerts_email` variable
+```terraform
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "stackdriver.googleapis.com"
+  ]
+  enable_api_alerts = true
+  default_api_alerts_email = "monitoring@company.com"
+}
+```
+
 # tftest inventory=data.yaml e2e
 ```
 
@@ -1366,6 +1396,7 @@ module "bucket" {
 
 | name | description | resources |
 |---|---|---|
+| [api_metrics_alerts.tf](./api_metrics_alerts.tf) | None | <code>google_logging_metric</code> · <code>google_monitoring_alert_policy</code> · <code>google_monitoring_notification_channel</code> |
 | [cmek.tf](./cmek.tf) | Service Agent IAM Bindings for CMEK | <code>google_kms_crypto_key_iam_member</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_project_iam_binding</code> · <code>google_project_iam_custom_role</code> · <code>google_project_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
@@ -1393,9 +1424,11 @@ module "bucket" {
 | [compute_metadata](variables.tf#L29) | Optional compute metadata key/values. Only usable if compute API has been enabled. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [contacts](variables.tf#L36) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables.tf#L43) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [default_api_alerts_email](variables.tf#L323) | Email address to receive default API alerts | <code>string</code> |  | <code>null</code> |
 | [default_service_account](variables.tf#L50) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
 | [deletion_policy](variables.tf#L64) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
 | [descriptive_name](variables.tf#L75) | Name of the project name. Used for project name instead of `name` variable. | <code>string</code> |  | <code>null</code> |
+| [enable_default_api_alerts](variables.tf#L318) | Enable default API alerts for the project, when API alerts are required for compliance reasons | <code>bool</code> |  | <code>false</code> |
 | [factories_config](variables.tf#L81) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  custom_roles &#61; optional&#40;string&#41;&#10;  org_policies &#61; optional&#40;string&#41;&#10;  quotas       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

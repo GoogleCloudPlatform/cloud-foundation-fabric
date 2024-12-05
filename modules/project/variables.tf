@@ -314,3 +314,14 @@ variable "vpc_sc" {
   })
   default = null
 }
+
+variable "enable_default_api_alerts" {
+  description = "Enable default API alerts for the project, when API alerts are required for compliance reasons"
+  type        = bool
+  default     = false
+}
+variable "default_api_alerts_email" {
+  description = "Email address to receive default API alerts"
+  type        = string
+  default     = null
+}
