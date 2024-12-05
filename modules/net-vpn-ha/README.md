@@ -76,7 +76,7 @@ module "vpn-2" {
     }
   }
 }
-# tftest modules=2 resources=18 inventory=gcp-to-gcp.yaml
+# tftest modules=2 resources=22 inventory=gcp-to-gcp.yaml
 ```
 
 Note: When using the `for_each` meta-argument you might experience a Cycle Error due to the multiple `net-vpn-ha` modules referencing each other. To fix this you can create the [google_compute_ha_vpn_gateway](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ha_vpn_gateway) resources separately and reference them in the `net-vpn-ha` module via the `vpn_gateway` and `peer_gcp_gateway` variables.
@@ -146,7 +146,7 @@ module "vpn_ha" {
     }
   }
 }
-# tftest modules=1 resources=10 inventory=gcp-to-onprem.yaml
+# tftest modules=1 resources=12 inventory=gcp-to-onprem.yaml
 ```
 
 ### IPv6 (dual-stack)
@@ -200,8 +200,11 @@ module "vpn_ha" {
     stack_type = "IPV4_IPV6"
   }
 }
-# tftest modules=1 resources=10 intentory=ipv6.yaml
+# tftest modules=1 resources=12 intentory=ipv6.yaml
 ```
+
+You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

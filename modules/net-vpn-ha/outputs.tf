@@ -39,14 +39,25 @@ output "id" {
   )
 }
 
+output "md5_keys" {
+  description = "BGP tunnels MD5 keys."
+  value = {
+    for k, v in var.tunnels
+    : k => coalesce(md5_authentication_key.value.key, local.md5_key)
+  }
+}
+
 output "name" {
-  description = "VPN gateway name (only if auto-created). ."
+  description = "VPN gateway name (only if auto-created)."
   value       = one(google_compute_ha_vpn_gateway.ha_gateway[*].name)
 }
 
-output "random_secret" {
-  description = "Generated secret."
-  value       = local.secret
+output "shared_secrets" {
+  description = "IPSEC tunnels shared secrets."
+  value = {
+    for k, v in var.tunnels
+    : k => coalesce(each.value.shared_secret, local.secret)
+  }
 }
 
 output "router" {
