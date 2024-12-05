@@ -1,10 +1,10 @@
 resource "google_monitoring_notification_channel" "email" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   display_name = "Default Email Notification"
   type         = "email"
   labels = {
-    email_address = var.default_api_alerts_email
+    email_address = var.api_alerts.email
   }
 }
 
@@ -12,7 +12,7 @@ resource "google_monitoring_notification_channel" "email" {
 # Route Changes Metric and Policy
 #
 resource "google_logging_metric" "route_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "resource.type=\"gce_route\" AND (protoPayload.methodName:\"compute.routes.delete\" OR protoPayload.methodName:\"compute.routes.insert\")"
   name        = "network-route-config-changes"
@@ -24,7 +24,7 @@ resource "google_logging_metric" "route_changes" {
 }
 
 resource "google_monitoring_alert_policy" "route_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "Network Route Changes"
@@ -56,7 +56,7 @@ resource "google_monitoring_alert_policy" "route_changes" {
 # Firewall Changes Metric and Policy
 #
 resource "google_logging_metric" "firewall_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "resource.type=\"gce_firewall_rule\" AND (protoPayload.methodName:\"compute.firewalls.insert\" OR protoPayload.methodName:\"compute.firewalls.patch\" OR protoPayload.methodName:\"compute.firewalls.delete\")"
   name        = "network-firewall-config-changes"
@@ -68,7 +68,7 @@ resource "google_logging_metric" "firewall_changes" {
 }
 
 resource "google_monitoring_alert_policy" "firewall_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "VPC Network Firewalls Changes"
@@ -100,7 +100,7 @@ resource "google_monitoring_alert_policy" "firewall_changes" {
 # VPC Changes Metric and Policy
 #
 resource "google_logging_metric" "vpc_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "resource.type=\"gce_network\" AND (protoPayload.methodName:\"compute.networks.insert\" OR protoPayload.methodName:\"compute.networks.patch\" OR protoPayload.methodName:\"compute.networks.delete\" OR protoPayload.methodName:\"compute.networks.removePeering\" OR protoPayload.methodName:\"compute.networks.addPeering\")"
   name        = "vpc-network-config-changes"
@@ -112,7 +112,7 @@ resource "google_logging_metric" "vpc_changes" {
 }
 
 resource "google_monitoring_alert_policy" "vpc_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "VPC Network Changes"
@@ -144,7 +144,7 @@ resource "google_monitoring_alert_policy" "vpc_changes" {
 # CloudSQL Changes
 #
 resource "google_logging_metric" "cloudsql_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "protoPayload.methodName=\"cloudsql.instances.update\" OR protoPayload.methodName=\"cloudsql.instances.create\" OR protoPayload.methodName=\"cloudsql.instances.delete\""
   name        = "cloudsql-changes"
@@ -156,7 +156,7 @@ resource "google_logging_metric" "cloudsql_changes" {
 }
 
 resource "google_monitoring_alert_policy" "cloudsql_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "CloudSQL Changes"
@@ -188,7 +188,7 @@ resource "google_monitoring_alert_policy" "cloudsql_changes" {
 # Cloud Storage IAM Changes
 #
 resource "google_logging_metric" "cloudstorage_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "resource.type=gcs_bucket AND protoPayload.methodName=\"storage.setIamPermissions\""
   name        = "cloudstorage-changes"
@@ -200,7 +200,7 @@ resource "google_logging_metric" "cloudstorage_changes" {
 }
 
 resource "google_monitoring_alert_policy" "cloudstorage_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "CloudStorage IAM Changes"
@@ -232,7 +232,7 @@ resource "google_monitoring_alert_policy" "cloudstorage_changes" {
 # Custom Role IAM Changes
 #
 resource "google_logging_metric" "customrole_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "resource.type=\"iam_role\" AND (protoPayload.methodName=\"google.iam.admin.v1.CreateRole\" OR protoPayload.methodName=\"google.iam.admin.v1.DeleteRole\" OR protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\")"
   name        = "customrole-changes"
@@ -244,7 +244,7 @@ resource "google_logging_metric" "customrole_changes" {
 }
 
 resource "google_monitoring_alert_policy" "customrole_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "IAM Custom Role Changes"
@@ -276,7 +276,7 @@ resource "google_monitoring_alert_policy" "customrole_changes" {
 # Audit Configuration Changes
 #
 resource "google_logging_metric" "audit_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "protoPayload.methodName=\"SetIamPolicy\" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*"
   name        = "audit-changes"
@@ -288,7 +288,7 @@ resource "google_logging_metric" "audit_changes" {
 }
 
 resource "google_monitoring_alert_policy" "audit_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "Audit Configuration Changes"
@@ -320,7 +320,7 @@ resource "google_monitoring_alert_policy" "audit_changes" {
 # IAM Owner Configuration Changes
 #
 resource "google_logging_metric" "owner_changes" {
-  count       = var.enable_default_api_alerts ? 1 : 0
+  count       = var.api_alerts.enabled ? 1 : 0
   project     = local.project.project_id
   filter      = "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND (ProjectOwnership OR projectOwnerInvitee) OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"REMOVE\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\") OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\")"
   name        = "iam-owner-changes"
@@ -332,7 +332,7 @@ resource "google_logging_metric" "owner_changes" {
 }
 
 resource "google_monitoring_alert_policy" "owner_changes" {
-  count        = var.enable_default_api_alerts ? 1 : 0
+  count        = var.api_alerts.enabled ? 1 : 0
   project      = local.project.project_id
   combiner     = "OR"
   display_name = "Owner IAM Configuration Changes"

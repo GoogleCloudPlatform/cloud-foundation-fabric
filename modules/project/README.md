@@ -1376,11 +1376,12 @@ These events are typically
 - SQL Instances Configuration Changes
 
 
-Although you may not use the services listed above, such as SQL, it is still important to monitor these events for compliance purposes 
+Although you may not use the services listed above, such as SQL, it is still important to monitor these events for compliance purposes
 
-To enable these alerts by default on all projects created, it is recommended to default the variable `enable_default_api_alerts` within `variables.tf` to true, You will also need to set the `default_api_alerts_email` variable to the email address that will receive these alerts
+To enable these alerts by default on all projects created, it is recommended to default the variable `api_slerts` within `variables.tf` to true, along with adding a default email address.
 
 You can alternatively enable these alerts on a per-project basis by setting the variable `enable_api_alerts` to true on the module, along with the `default_api_alerts_email` variable
+
 ```terraform
 module "project" {
   source          = "./fabric/modules/project"
@@ -1391,8 +1392,10 @@ module "project" {
   services = [
     "stackdriver.googleapis.com"
   ]
-  enable_api_alerts = true
-  default_api_alerts_email = "monitoring@company.com"
+  api_alerts = {
+    enable_api_alerts        = true
+    default_api_alerts_email = "monitoring@company.com"
+  }
 }
 ```
 
