@@ -29,7 +29,10 @@ This module implements the creation and management of one GCP project including 
 - [VPC Service Controls](#vpc-service-controls)
 - [Project Related Outputs](#project-related-outputs)
   - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
-- [tftest inventory=data.yaml e2e](#tftest-inventorydatayaml-e2e)
+- [API Alerts](#api-alerts)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Basic Project Creation
@@ -1356,6 +1359,9 @@ module "bucket" {
   id          = "${var.prefix}-bucket"
 }
 
+# tftest inventory=data.yaml e2e
+```
+
 ## API Alerts
 There are events within Google Cloud that should be monitored and alerted on to ensure that you are aware of any potential security issues.
 These actions are typically seen in cases of security breaches, or potential security breaches, although they can be genuine actions that are not security related, but are still important to monitor.
@@ -1368,9 +1374,12 @@ These events are typically
 - VPC Network Changes
 - Cloud Storage IAM Permission Changes
 - SQL Instances Configuration Changes
-Although you may not use the services listed above, such as SQL, it is still important to monitor these events for compliance purposes
-To enable these alerts by default on all projects created, it is recommended to default the variable `enable_default_api_alerts` within `variables.tf` to true, 
-You will also need to set the `default_api_alerts_email` variable to the email address that will receive these alerts
+
+
+Although you may not use the services listed above, such as SQL, it is still important to monitor these events for compliance purposes 
+
+To enable these alerts by default on all projects created, it is recommended to default the variable `enable_default_api_alerts` within `variables.tf` to true, You will also need to set the `default_api_alerts_email` variable to the email address that will receive these alerts
+
 You can alternatively enable these alerts on a per-project basis by setting the variable `enable_api_alerts` to true on the module, along with the `default_api_alerts_email` variable
 ```terraform
 module "project" {
@@ -1385,9 +1394,6 @@ module "project" {
   enable_api_alerts = true
   default_api_alerts_email = "monitoring@company.com"
 }
-```
-
-# tftest inventory=data.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
