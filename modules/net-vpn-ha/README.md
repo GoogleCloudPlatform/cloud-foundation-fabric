@@ -228,12 +228,13 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [gateway](outputs.tf#L30) | VPN gateway resource (only if auto-created). |  |
 | [id](outputs.tf#L35) | Fully qualified VPN gateway id. |  |
 | [md5_keys](outputs.tf#L42) | BGP tunnels MD5 keys. |  |
-| [name](outputs.tf#L56) | VPN gateway name (only if auto-created). |  |
-| [router](outputs.tf#L61) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L66) | Router name. |  |
-| [self_link](outputs.tf#L71) | HA VPN gateway self link. |  |
-| [shared_secrets](outputs.tf#L76) | IPSEC tunnels shared secrets. |  |
-| [tunnel_names](outputs.tf#L84) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L92) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L100) | VPN tunnel resources. |  |
+| [name](outputs.tf#L53) | VPN gateway name (only if auto-created). |  |
+| [random_secret](outputs.tf#L58) | Generated secret. |  |
+| [router](outputs.tf#L63) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L68) | Router name. |  |
+| [self_link](outputs.tf#L73) | HA VPN gateway self link. |  |
+| [shared_secrets](outputs.tf#L78) | IPSEC tunnels shared secrets. |  |
+| [tunnel_names](outputs.tf#L86) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L94) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L102) | VPN tunnel resources. |  |
 <!-- END TFDOC -->
