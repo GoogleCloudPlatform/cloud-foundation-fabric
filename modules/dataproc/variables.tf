@@ -44,6 +44,9 @@ variable "dataproc_config" {
           enable_vtpm                 = bool
           enable_integrity_monitoring = bool
         }))
+        confidential_instance_config = optional(object({
+          enable_confidential_compute = bool
+        }))
       }))
       master_config = optional(object({
         num_instances    = number
