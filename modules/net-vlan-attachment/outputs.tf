@@ -24,6 +24,17 @@ output "id" {
   value       = google_compute_interconnect_attachment.default.id
 }
 
+output "md5_configuration" {
+  description = "MD5 configuration."
+  value = (
+    var.router_config.md5_authentication_key != null
+    ? {
+      name = var.router_config.md5_authentication_key.name
+      key  = coalesce(var.router_config.md5_authentication_key.key, local.secret)
+    } : {}
+  )
+}
+
 output "name" {
   description = "The name of the VLAN attachment created."
   value       = google_compute_interconnect_attachment.default.name
