@@ -1,0 +1,136 @@
+route-changes:
+  description: "Monitor VPC network route configuration changes inside GCP projects"
+  filter: "resource.type=\"gce_route\" AND (protoPayload.methodName:\"compute.routes.delete\" OR protoPayload.methodName:\"compute.routes.insert\")"
+  display_name: "Network Route Changes"
+  metric_descriptor:
+    metric_kind: DELTA
+    value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+    per_series_aligner: ALIGN_MEAN
+    cross_series_reducer: REDUCE_COUNT
+    alignment_period: "600s"
+
+network-firewall-config-changes:
+  description: "Monitor VPC network firewall configuration changes inside GCP projects"
+  filter: "resource.type=\"gce_firewall_rule\" AND (protoPayload.methodName:\"compute.firewalls.insert\" OR protoPayload.methodName:\"compute.firewalls.patch\" OR protoPayload.methodName:\"compute.firewalls.delete\")"
+  display_name: "VPC Network Firewall Changes"
+  metric_descriptor:
+    metric_kind: DELTA
+    value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+vpc-network-config-changes:
+  description: "Monitor VPC network configuration changes inside GCP projects"
+  filter: "resource.type=\"gce_network\" AND (protoPayload.methodName:\"compute.networks.insert\" OR protoPayload.methodName:\"compute.networks.patch\" OR protoPayload.methodName:\"compute.networks.delete\" OR protoPayload.methodName:\"compute.networks.removePeering\" OR protoPayload.methodName:\"compute.networks.addPeering\")"
+  display_name: "VPC Network Changes"
+  metric_descriptor:
+    metric_kind: DELTA
+    value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+cloudsql-changes:
+  description: "Monitor Cloud SQL configuration changes inside GCP projects"
+  filter: "protoPayload.methodName=\"cloudsql.instances.update\" OR protoPayload.methodName=\"cloudsql.instances.create\" OR protoPayload.methodName=\"cloudsql.instances.delete\""
+  display_name: "CloudSQL Changes"
+  metric_descriptor:
+      metric_kind: DELTA
+      value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+cloudstorage-changes:
+  description: "Monitor Cloud Storage configuration changes inside GCP projects"
+  filter: "resource.type=gcs_bucket AND protoPayload.methodName=\"storage.setIamPermissions\""
+  display_name: "CloudStorage IAM Changes"
+  metric_descriptor:
+      metric_kind: DELTA
+      value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+    resource_type: "gcs_bucket"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+customrole-changes:
+  description: "Monitor IAM Custom Role configuration changes inside GCP projects"
+  filter: "resource.type=\"iam_role\" AND (protoPayload.methodName=\"google.iam.admin.v1.CreateRole\" OR protoPayload.methodName=\"google.iam.admin.v1.DeleteRole\" OR protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\")"
+  display_name: "IAM Custom Role Changes"
+  metric_descriptor:
+      metric_kind: DELTA
+      value_type: "INT64"
+  condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+audit-changes:
+  description: "Monitor Audit configuration changes inside GCP projects"
+  filter: "protoPayload.methodName=\"SetIamPolicy\" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*"
+  display_name: "Audit Configuration Changes"
+  metric_descriptor:
+      metric_kind: DELTA
+      value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_MEAN
+      cross_series_reducer: REDUCE_COUNT
+      alignment_period: "600s"
+
+iam-owner-changes:
+  description: "Monitor IAM Owner configuration changes inside GCP projects"
+  filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND (ProjectOwnership OR projectOwnerInvitee) OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"REMOVE\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\") OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\")"
+  display_name: "Owner IAM Configuration Changes"
+  metric_descriptor:
+      metric_kind: DELTA
+      value_type: "INT64"
+  condition_threshold:
+    comparison: COMPARISON_GT
+    duration: "0s"
+  trigger_count: 1
+  combiner: OR
+  aggregations:
+      per_series_aligner: ALIGN_DELTA
+      cross_series_reducer: REDUCE_SUM
+      alignment_period: "600s"

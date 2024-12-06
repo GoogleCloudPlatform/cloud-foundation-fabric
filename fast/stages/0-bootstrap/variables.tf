@@ -133,9 +133,10 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles     = optional(string, "data/custom-roles")
-    org_policies     = optional(string, "data/org-policies")
-    org_policies_iac = optional(string, "data/org-policies-iac")
+    custom_roles           = optional(string, "data/custom-roles")
+    org_policies           = optional(string, "data/org-policies")
+    org_policies_iac       = optional(string, "data/org-policies-iac")
+    logging_metrics_alerts = optional(string, "data/logging-alerts")
   })
   nullable = false
   default  = {}
@@ -341,4 +342,10 @@ variable "workload_identity_providers" {
   #   condition     = var.federated_identity_providers.custom_settings == null
   #   error_message = "Custom settings cannot be null."
   # }
+}
+
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  nullable    = false
 }

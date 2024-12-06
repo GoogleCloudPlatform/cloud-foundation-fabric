@@ -42,8 +42,12 @@ module "log-export-project" {
   parent = coalesce(
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
-  prefix          = local.prefix
-  billing_account = var.billing_account.id
+  factories_config = {
+    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+  }
+  default_alerts_email = var.default_alerts_email
+  prefix               = local.prefix
+  billing_account      = var.billing_account.id
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}
