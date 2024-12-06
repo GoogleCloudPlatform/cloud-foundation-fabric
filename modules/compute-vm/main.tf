@@ -378,7 +378,7 @@ resource "google_compute_instance_template" "default" {
     source_image          = var.boot_disk.initialize_params.image
 
     disk_encryption_key {
-      kms_key_self_link = var.encryption.kms_key_self_link
+      kms_key_self_link = var.encryption != null ? var.encryption.kms_key_self_link : null
     }
   }
 
