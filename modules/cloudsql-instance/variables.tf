@@ -204,6 +204,18 @@ variable "network_config" {
   }
 }
 
+variable "password_validation_policy" {
+  description = "Password validation policy configuration for instances."
+  type = object({
+    change_interval             = number
+    default_complexity          = bool
+    disallow_username_substring = bool
+    min_length                  = number
+    reuse_interval              = number
+    enabled                     = optional(bool, true)
+  })
+  default = null
+}
 
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
