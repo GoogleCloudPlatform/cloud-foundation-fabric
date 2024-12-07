@@ -47,5 +47,5 @@ counts:
   google_tags_tag_binding: 3
   google_vpc_access_connector: 2
   modules: 29
-  random_id: 1
-  resources: 197
+  random_id: 3
+  resources: 199
