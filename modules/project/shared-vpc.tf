@@ -27,9 +27,32 @@ locals {
     for v in local._svpc_agent_config : v
     if contains(local._svpc.service_iam_grants, v.service)
   ]
+  _svpc_subnet_agent_config_prj_filtered = [
+    for v in local._svpc_agent_config : {
+      service = v.service
+      agents = {
+        for agent_name, roles in v.agents :
+        agent_name => compact(
+          [for role in roles : role if role != "roles/compute.networkUser"]
+        )
+      }
+    }
+    if contains(flatten([for subnet, grants in local._svpc.service_subnet_iam_grants : grants]), v.service)
+  ]
+  _svpc_subnet_agent_config_filtered = {
+    for subnet, grants in local._svpc.service_subnet_iam_grants :
+    subnet => distinct(flatten([
+      for grant in grants : [
+        for i in range(length(local._svpc_agent_config)) : [
+          for agent_name, roles in local._svpc_agent_config[i].agents :
+          agent_name if local._svpc_agent_config[i].service == grant && contains(roles, "roles/compute.networkUser")
+        ]
+      ]
+    ]))
+  }
   # normalize the list of service/role tuples
   _svpc_agent_grants = flatten(flatten([
-    for v in local._svpc_agent_config_filtered : [
+    for v in setunion(local._svpc_agent_config_filtered, local._svpc_subnet_agent_config_prj_filtered) : [
       for service, roles in v.agents : [
         for role in roles : { role = role, service = service }
       ]
@@ -56,7 +79,7 @@ locals {
   }
   # normalize the service identity subnet IAM bindings
   _svpc_service_subnet_iam = flatten([
-    for subnet, services in local._svpc.service_agent_subnet_iam : [
+    for subnet, services in merge(local._svpc.service_agent_subnet_iam, tomap(local._svpc_subnet_agent_config_filtered)) : [
       for service in services : [{
         region  = split("/", subnet)[0]
         subnet  = split("/", subnet)[1]

@@ -192,6 +192,7 @@ External substitution are:
 
 - the map of folder ids in `factories_config.context.folder_ids`, used to set top-level folder parents; the `default` key if present is used when no explicit parent has been set in the YAML file
 - the map of IAM principals in `factories_config.context.iam_principals`, used in IAM bindings for folders and projects; the exception is the `iam_by_principals` attribute which uses no interpolation to prevent dynamic cycles
+- the map of subnets from the Shared VPC host project in `factories_config.context.subnets` used in service project configurations for projects
 - the map of tag value ids in `factories_config.context.tag_values` used in tag bindings for folders and projects
 - the map of Shared VPC host project ids in `factories_config.context.vpc_host_projects` used in service project configurations for projects
 
