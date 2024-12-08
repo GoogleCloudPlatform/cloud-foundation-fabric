@@ -97,6 +97,11 @@ resource "google_network_services_gateway" "default" {
   )
   network    = var.network
   subnetwork = var.subnetwork
+  routing_mode = (
+    var.gateway_config.next_hop_routing_mode
+    ? "NEXT_HOP_ROUTING_MODE"
+    : null
+  )
   delete_swg_autogen_router_on_destroy = (
     var.gateway_config.delete_router_on_destroy
   )
