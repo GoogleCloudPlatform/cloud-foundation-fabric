@@ -15,8 +15,6 @@
 # yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
 
 name: Teams
-automation:
-  enable: false
 iam:
   "roles/owner":
     - project-factory
@@ -28,5 +26,13 @@ iam:
     - project-factory
   "service_project_network_admin":
     - project-factory
+  "roles/viewer":
+    - project-factory-r
+  "roles/resourcemanager.folderViewer":
+    - project-factory-r
+  "roles/resourcemanager.tagViewer":
+    - project-factory-r
+# don't create a context tag since this uses the pf tag
+is_fast_context: false
 tag_bindings:
   context: context/project-factory

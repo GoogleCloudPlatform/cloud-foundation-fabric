@@ -18,7 +18,7 @@ locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   is_mysql     = can(regex("^MYSQL", var.database_version))
   is_postgres  = can(regex("^POSTGRES", var.database_version))
-  has_replicas = try(length(var.replicas) > 0, false)
+  has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
 
   // Enable backup if the user asks for it or if the user is deploying
@@ -30,15 +30,15 @@ locals {
     k =>
     local.is_mysql ?
     {
-      name     = try(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
-      host     = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = try(v.type, "BUILT_IN")
+      name     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
+      host     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = coalesce(v.type, "BUILT_IN")
       } : {
       name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
       host     = null
-      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = try(v.type, "BUILT_IN")
+      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = coalesce(v.type, "BUILT_IN")
     }
   }
 
@@ -69,10 +69,11 @@ resource "google_sql_database_instance" "primary" {
     time_zone                   = var.time_zone
 
     ip_configuration {
-      ipv4_enabled       = var.network_config.connectivity.public_ipv4
-      private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
-      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
-      ssl_mode           = var.ssl.ssl_mode
+      ipv4_enabled                                  = var.network_config.connectivity.public_ipv4
+      private_network                               = try(var.network_config.connectivity.psa_config.private_network, null)
+      allocated_ip_range                            = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
+      ssl_mode                                      = var.ssl.ssl_mode
+      enable_private_path_for_google_cloud_services = var.network_config.connectivity.enable_private_path_for_services
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
@@ -182,9 +183,10 @@ resource "google_sql_database_instance" "replicas" {
     activation_policy = var.activation_policy
 
     ip_configuration {
-      ipv4_enabled       = var.network_config.connectivity.public_ipv4
-      private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
-      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
+      ipv4_enabled                                  = var.network_config.connectivity.public_ipv4
+      private_network                               = try(var.network_config.connectivity.psa_config.private_network, null)
+      allocated_ip_range                            = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
+      enable_private_path_for_google_cloud_services = var.network_config.connectivity.enable_private_path_for_services
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network

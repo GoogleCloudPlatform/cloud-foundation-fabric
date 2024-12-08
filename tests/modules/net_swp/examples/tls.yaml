@@ -13,14 +13,19 @@
 # limitations under the License.
 #
 # file: tests/modules/net_swp/examples/tls.yaml
+
 values:
   google_privateca_ca_pool.pool:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     issuance_policy: []
     labels: null
     location: europe-west4
-    name: secure-web-proxy-capool
+    name: swp
     project: my-project
     publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     tier: DEVOPS
     timeouts: null
   google_privateca_ca_pool_iam_member.member:
@@ -28,7 +33,7 @@ values:
     member: serviceAccount:service-123456789@gcp-sa-networksecurity.iam.gserviceaccount.com
     role: roles/privateca.certificateManager
   google_privateca_certificate_authority.ca:
-    certificate_authority_id: secure-web-proxy-ca
+    certificate_authority_id: swp
     config:
     - subject_config:
       - subject:
@@ -73,6 +78,8 @@ values:
         policy_ids: []
     deletion_protection: false
     desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     gcs_bucket: null
     ignore_active_certificates_on_deletion: false
     key_spec:
@@ -82,10 +89,12 @@ values:
     lifetime: 1209600s
     location: europe-west4
     pem_ca_certificate: null
-    pool: secure-web-proxy-capool
+    pool: swp
     project: my-project
     skip_grace_period: false
     subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     type: SELF_SIGNED
   module.secure-web-proxy.google_network_security_gateway_security_policy.default:
@@ -94,13 +103,14 @@ values:
     name: secure-web-proxy
     project: my-project
     timeouts: null
-  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["tls-0"]:
     application_matcher: request.path.contains('generate_204')
     basic_profile: ALLOW
     description: Managed by Terraform.
     enabled: true
+    gateway_security_policy: secure-web-proxy
     location: europe-west4
-    name: custom-rule-1
+    name: tls-0
     priority: 1000
     project: my-project
     session_matcher: host() == 'google.com'
@@ -121,9 +131,11 @@ values:
     addresses:
     - 10.142.68.3
     certificate_urls:
-    - projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert
+    - projects/my-project/locations/europe-west4/certificates/swp
     delete_swg_autogen_router_on_destroy: true
     description: Managed by Terraform.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     location: europe-west4
     name: secure-web-proxy
@@ -131,12 +143,15 @@ values:
     ports:
     - 443
     project: my-project
-    scope: ''
+    routing_mode: null
+    scope: null
     server_tls_policy: null
     subnetwork: projects/my-project/regions/europe-west4/subnetworks/my-subnetwork
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     type: SECURE_WEB_GATEWAY
-  
+
 counts:
   google_network_security_gateway_security_policy: 1
   google_network_services_gateway: 1

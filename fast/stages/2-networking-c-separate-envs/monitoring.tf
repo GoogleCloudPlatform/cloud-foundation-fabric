@@ -29,10 +29,16 @@ resource "google_monitoring_dashboard" "dev-dashboard" {
   for_each       = local.dashboards
   project        = module.dev-spoke-project.project_id
   dashboard_json = file(each.value)
+  lifecycle {
+    ignore_changes = [dashboard_json]
+  }
 }
 
 resource "google_monitoring_dashboard" "prod-dashboard" {
   for_each       = local.dashboards
   project        = module.prod-spoke-project.project_id
   dashboard_json = file(each.value)
+  lifecycle {
+    ignore_changes = [dashboard_json]
+  }
 }

@@ -25,7 +25,7 @@ module "tenant-core-logbucket" {
   for_each      = local.tenants
   parent_type   = "project"
   parent        = var.logging.project_id
-  id            = "tenant-${each.key}-audit"
+  id            = "tn-${each.key}-audit"
   location      = var.locations.logging
   log_analytics = { enable = true }
 }
@@ -36,7 +36,7 @@ module "tenant-core-folder" {
   parent   = local.root_node
   name     = "${each.value.descriptive_name} Core"
   logging_sinks = {
-    "tenant-${each.key}-audit" = {
+    "tn-${each.key}-audit" = {
       destination = module.tenant-core-logbucket[each.key].id
       filter      = <<-FILTER
         log_id("cloudaudit.googleapis.com/activity") OR
@@ -48,6 +48,16 @@ module "tenant-core-folder" {
     }
   }
   org_policies = each.value.cloud_identity == null ? {} : {
+    "essentialcontacts.allowedContactDomains" = {
+      rules = [{
+        allow = {
+          values = formatlist("@%s", compact([
+            var.organization.domain,
+            try(each.value.cloud_identity.domain, null)
+          ]))
+        }
+      }]
+    }
     "iam.allowedPolicyMemberDomains" = {
       rules = [{
         allow = {

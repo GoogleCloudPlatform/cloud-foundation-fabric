@@ -188,15 +188,16 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2         = optional(bool, false)
-    fqdn_network_policy  = optional(bool, false)
-    gateway_api          = optional(bool, false)
-    groups_for_rbac      = optional(string)
-    image_streaming      = optional(bool, false)
-    intranode_visibility = optional(bool, false)
-    l4_ilb_subsetting    = optional(bool, false)
-    mesh_certificates    = optional(bool)
-    pod_security_policy  = optional(bool, false)
+    dataplane_v2          = optional(bool, false)
+    fqdn_network_policy   = optional(bool, false)
+    gateway_api           = optional(bool, false)
+    groups_for_rbac       = optional(string)
+    image_streaming       = optional(bool, false)
+    intranode_visibility  = optional(bool, false)
+    l4_ilb_subsetting     = optional(bool, false)
+    mesh_certificates     = optional(bool)
+    pod_security_policy   = optional(bool, false)
+    secret_manager_config = optional(bool)
     security_posture_config = optional(object({
       mode               = string
       vulnerability_mode = string
@@ -359,14 +360,22 @@ variable "name" {
 variable "node_config" {
   description = "Node-level configuration."
   type = object({
-    boot_disk_kms_key = optional(string)
-    k8s_labels        = optional(map(string))
-    labels            = optional(map(string))
-    service_account   = optional(string)
-    tags              = optional(list(string))
+    boot_disk_kms_key             = optional(string)
+    k8s_labels                    = optional(map(string))
+    labels                        = optional(map(string))
+    service_account               = optional(string)
+    tags                          = optional(list(string))
+    workload_metadata_config_mode = optional(string)
   })
   default  = {}
   nullable = false
+  validation {
+    condition = contains(
+      ["GCE_METADATA", "GKE_METADATA", "null"],
+      coalesce(var.node_config.workload_metadata_config_mode, "null")
+    )
+    error_message = "node_config.workload_metadata_config_mode must be GCE_METADATA or GKE_METADATA."
+  }
 }
 
 variable "node_locations" {

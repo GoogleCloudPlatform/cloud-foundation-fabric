@@ -13,6 +13,7 @@ Typical use cases include large organizations managing a single Cloud subscripti
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
+    - [Organization policy errors](#organization-policy-errors)
 - [Tenant configuration](#tenant-configuration)
   - [Configurations for both simple and FAST tenants](#configurations-for-both-simple-and-fast-tenants)
   - [Configurations for FAST tenants](#configurations-for-fast-tenants)
@@ -90,26 +91,38 @@ The only real prerequisite is having fully deployed the [bootstrap](../0-bootstr
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '1-tenant-factory'
+# File linking commands for tenant factory stage
 
-ln -s ~/fast-config/providers/1-tenant-factory-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/1-resman-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/1-tenant-factory.auto.tfvars ./
 ```
 
 ```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '1-tenant-factory'
+# File linking commands for tenant factory stage
 
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-tenant-factory-providers.tf ./
+# provider file
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-resman-providers.tf ./
+
+# input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/1-tenant-factory.auto.tfvars ./
 ```
 
 ### Impersonating the automation service account
@@ -142,6 +155,12 @@ Once provider and variable values are in place and the correct user is configure
 terraform init
 terraform apply
 ```
+
+#### Organization policy errors
+
+If you get an organization policy error assigning IAM roles or setting essential contacts on tenant-level resources, make sure the tenant configuration contains the right customer id and domain in the `cloud_identity` attributes, and the administrative principals and essential contacts for the tenant belong to the right Cloud Identity.
+
+If both are correct, wait a couple of minutes for the organization policies to be enforced and retry. Remember to also check the organization-level IaC project org policies, which can be customized via the bootstrap stage variables.
 
 ## Tenant configuration
 
@@ -281,7 +300,7 @@ gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-glob
 gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-bootstrap.auto.tfvars.json ./
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:1-tenant-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
@@ -307,15 +326,15 @@ gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-boot
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    audiences        &#61; list&#40;string&#41;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_branch &#61; string&#10;    principal_repo   &#61; string&#10;  &#125;&#41;&#41;&#10;  cicd_backends &#61; object&#40;&#123;&#10;    terraform &#61; object&#40;&#123;&#10;      organization &#61; string&#10;      workspaces &#61; map&#40;object&#40;&#123;&#10;        tags    &#61; list&#40;string&#41;&#10;        name    &#61; string&#10;        project &#61; string&#10;      &#125;&#41;&#41;&#10;      hostname &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    resman   &#61; string&#10;    resman-r &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L53) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [logging](variables-fast.tf#L110) | Logging resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [org_policy_tags](variables-fast.tf#L129) | Organization policy tags. | <code title="object&#40;&#123;&#10;  key_id   &#61; string&#10;  key_name &#61; string&#10;  values   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [organization](variables-fast.tf#L119) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L146) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [custom_roles](variables-fast.tf#L64) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  gcve_network_admin              &#61; string&#10;  network_firewall_policies_admin &#61; string&#10;  network_firewall_policies_viewer &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_admin            &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_viewer           &#61; optional&#40;string&#41;&#10;  organization_admin_viewer        &#61; string&#10;  service_project_network_admin    &#61; string&#10;  storage_viewer                   &#61; string&#10;  tenant_network_admin             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
-| [groups](variables-fast.tf#L82) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code title="object&#40;&#123;&#10;  gcp-billing-admins      &#61; optional&#40;string, &#34;gcp-billing-admins&#34;&#41;&#10;  gcp-devops              &#61; optional&#40;string, &#34;gcp-devops&#34;&#41;&#10;  gcp-network-admins      &#61; optional&#40;string, &#34;gcp-vpc-network-admins&#34;&#41;&#10;  gcp-organization-admins &#61; optional&#40;string, &#34;gcp-organization-admins&#34;&#41;&#10;  gcp-security-admins     &#61; optional&#40;string, &#34;gcp-security-admins&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [locations](variables-fast.tf#L97) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  gcs     &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L19) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    audiences        &#61; list&#40;string&#41;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_branch &#61; string&#10;    principal_repo   &#61; string&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    resman   &#61; string&#10;    resman-r &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [billing_account](variables-fast.tf#L42) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [logging](variables-fast.tf#L97) | Logging resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [org_policy_tags](variables-fast.tf#L116) | Organization policy tags. | <code title="object&#40;&#123;&#10;  key_id   &#61; string&#10;  key_name &#61; string&#10;  values   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [organization](variables-fast.tf#L106) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L133) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [custom_roles](variables-fast.tf#L53) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  gcve_network_admin              &#61; string&#10;  network_firewall_policies_admin &#61; string&#10;  ngfw_enterprise_admin           &#61; optional&#40;string&#41;&#10;  ngfw_enterprise_viewer          &#61; optional&#40;string&#41;&#10;  organization_admin_viewer       &#61; string&#10;  service_project_network_admin   &#61; string&#10;  storage_viewer                  &#61; string&#10;  tenant_network_admin            &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
+| [groups](variables-fast.tf#L69) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code title="object&#40;&#123;&#10;  gcp-billing-admins      &#61; optional&#40;string, &#34;gcp-billing-admins&#34;&#41;&#10;  gcp-devops              &#61; optional&#40;string, &#34;gcp-devops&#34;&#41;&#10;  gcp-network-admins      &#61; optional&#40;string, &#34;gcp-vpc-network-admins&#34;&#41;&#10;  gcp-organization-admins &#61; optional&#40;string, &#34;gcp-organization-admins&#34;&#41;&#10;  gcp-security-admins     &#61; optional&#40;string, &#34;gcp-security-admins&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [locations](variables-fast.tf#L84) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  gcs     &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
 | [outputs_location](variables.tf#L17) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [root_node](variables.tf#L23) | Root folder under which tenants are created, in folders/nnnn format. Defaults to the organization if null. | <code>string</code> |  | <code>null</code> |  |
 | [tag_names](variables.tf#L36) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  tenant &#61; optional&#40;string, &#34;tenant&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -325,5 +344,5 @@ gcloud storage cp gs://{prefix}-{tenant-shortname}-prod-iac-core-0/tfvars/0-boot
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tenants](outputs.tf#L202) | Tenant base configuration. |  |  |
+| [tenants](outputs.tf#L130) | Tenant base configuration. |  |  |
 <!-- END TFDOC -->

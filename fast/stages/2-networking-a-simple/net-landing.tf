@@ -20,22 +20,24 @@ module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-landing-0"
-  parent          = var.folder_ids.networking-prod
-  prefix          = var.prefix
-  services = concat([
+  parent = coalesce(
+    var.folder_ids.networking-prod,
+    var.folder_ids.networking
+  )
+  prefix = var.prefix
+  services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
+    "networkconnectivity.googleapis.com",
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
-    ], (
-    local.spoke_connection == "ncc"
-    ? ["networkconnectivity.googleapis.com"]
-    : []
-    )
-  )
+  ]
   shared_vpc_host_config = {
     enabled = true
+  }
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = local.env_tag_values["prod"]
   }
 }
 

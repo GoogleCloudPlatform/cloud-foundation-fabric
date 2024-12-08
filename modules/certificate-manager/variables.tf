@@ -71,6 +71,7 @@ variable "issuance_configs" {
     key_algorithm              = string
     labels                     = optional(map(string), {})
     lifetime                   = string
+    location                   = optional(string)
     rotation_window_percentage = number
   }))
   default  = {}

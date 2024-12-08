@@ -47,6 +47,11 @@ locals {
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   )
+  service_account_display_name = (
+    var.service_account.display_name != null
+    ? var.service_account.display_name
+    : "Terraform GKE ${var.cluster_name} ${var.name}."
+  )
   taints = merge(var.taints, !local.image.is_win ? {} : {
     "node.kubernetes.io/os" = {
       value  = "windows"
@@ -63,7 +68,7 @@ resource "google_service_account" "service_account" {
     ? split("@", var.service_account.email)[0]
     : "tf-gke-${var.name}"
   )
-  display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
+  display_name = local.service_account_display_name
 }
 
 resource "google_container_node_pool" "nodepool" {

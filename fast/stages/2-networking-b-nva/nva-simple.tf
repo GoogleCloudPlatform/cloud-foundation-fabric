@@ -15,6 +15,18 @@
  */
 
 locals {
+  _simple_nva_lb = {
+    primary = (
+      var.network_mode == "simple"
+      ? module.ilb-nva-landing["primary"].forwarding_rule_addresses[""]
+      : null
+    )
+    secondary = (
+      var.network_mode == "simple"
+      ? module.ilb-nva-landing["secondary"].forwarding_rule_addresses[""]
+      : null
+    )
+  }
   # routing_config should be aligned to the NVA network interfaces - i.e.
   # local.simple_routing_config[0] sets up the first interface, and so on.
   simple_routing_config = [

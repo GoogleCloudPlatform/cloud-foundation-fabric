@@ -16,9 +16,14 @@ name: "Tests"
 on:
   # schedule:
   #   - cron: "45 2 * * *"
+  push:
+    branches:
+      - master
+      - fast-dev
   pull_request:
     branches:
       - master
+      - fast-dev
   workflow_dispatch:
     inputs:
       terraform_version:

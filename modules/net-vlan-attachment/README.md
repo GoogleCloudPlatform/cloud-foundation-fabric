@@ -44,7 +44,7 @@ module "example-va" {
     vlan_tag     = 12345
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=5
 ```
 
 ### Dedicated Interconnect - Single VLAN Attachment (No SLA) - BFD and MD5 Auth
@@ -98,7 +98,60 @@ module "example-va" {
   }
 }
 
-# tftest modules=1 resources=4
+# tftest modules=1 resources=5
+```
+
+If you don't specify the MD5 key, the module will generate a random 12 charachters key for you.
+
+```hcl
+resource "google_compute_router" "interconnect-router" {
+  name    = "interconnect-router"
+  network = "mynet"
+  project = "myproject"
+  region  = "europe-west8"
+  bgp {
+    advertise_mode    = "CUSTOM"
+    asn               = 64514
+    advertised_groups = ["ALL_SUBNETS"]
+    advertised_ip_ranges {
+      range = "10.255.255.0/24"
+    }
+    advertised_ip_ranges {
+      range = "192.168.255.0/24"
+    }
+  }
+}
+
+module "example-va" {
+  source      = "./fabric/modules/net-vlan-attachment"
+  network     = "mynet"
+  project_id  = "myproject"
+  region      = "europe-west8"
+  name        = "vlan-attachment"
+  description = "Example vlan attachment"
+  peer_asn    = "65000"
+  router_config = {
+    create = false
+    name   = google_compute_router.interconnect-router.name
+    bfd = {
+      min_receive_interval        = 1000
+      min_transmit_interval       = 1000
+      multiplier                  = 5
+      session_initialization_mode = "ACTIVE"
+    }
+    md5_authentication_key = {
+      name = "foo"
+    }
+  }
+  dedicated_interconnect_config = {
+    bandwidth    = "BPS_10G"
+    bgp_range    = "169.254.0.0/30"
+    interconnect = "interconnect-a"
+    vlan_tag     = 12345
+  }
+}
+
+# tftest modules=1 resources=5
 ```
 
 ### Partner Interconnect - Single VLAN Attachment (No SLA)
@@ -135,7 +188,7 @@ module "example-va" {
     name   = google_compute_router.interconnect-router.name
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=3
 ```
 
 ### Dedicated Interconnect - Two VLAN Attachments on a single region (99.9% SLA)
@@ -198,7 +251,7 @@ module "example-va-b" {
     vlan_tag     = 1002
   }
 }
-# tftest modules=2 resources=7
+# tftest modules=2 resources=9
 ```
 
 ### Partner Interconnect - Two VLAN Attachments on a single region (99.9% SLA)
@@ -255,7 +308,7 @@ module "example-va-b" {
     edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   }
 }
-# tftest modules=2 resources=3
+# tftest modules=2 resources=5
 ```
 
 ### Dedicated Interconnect - Four VLAN Attachments on two regions (99.99% SLA)
@@ -376,7 +429,7 @@ module "example-va-b-ew12" {
     vlan_tag     = 1004
   }
 }
-# tftest modules=4 resources=14
+# tftest modules=4 resources=18
 ```
 
 ### Partner Interconnect - Four VLAN Attachments on two regions (99.99% SLA)
@@ -485,7 +538,7 @@ module "example-va-b-ew12" {
     edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   }
 }
-# tftest modules=4 resources=6
+# tftest modules=4 resources=10
 ```
 
 ### IPSec for Dedicated Interconnect
@@ -546,7 +599,7 @@ module "example-va-b" {
   }
   vpn_gateways_ip_range = "10.255.255.8/29" # Allows for up to 8 tunnels
 }
-# tftest modules=2 resources=9
+# tftest modules=2 resources=11
 ```
 
 ### IPSec for Partner Interconnect
@@ -585,7 +638,7 @@ module "example-va-b" {
   }
   vpn_gateways_ip_range = "10.255.255.8/29" # Allows for up to 8 tunnels
 }
-# tftest modules=2 resources=6
+# tftest modules=2 resources=8
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -598,7 +651,7 @@ module "example-va-b" {
 | [peer_asn](variables.tf#L74) | The on-premises underlay router ASN. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L79) | The project id where resources are created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L84) | The region where resources are created. | <code>string</code> | ✓ |  |
-| [router_config](variables.tf#L89) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  asn    &#61; optional&#40;number, 65001&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;    name &#61; string&#10;    key  &#61; string&#10;  &#125;&#41;&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string, &#34;router&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L89) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  asn    &#61; optional&#40;number, 65001&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;    name &#61; string&#10;    key  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string, &#34;router&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
 | [dedicated_interconnect_config](variables.tf#L23) | Partner interconnect configuration. | <code title="object&#40;&#123;&#10;  bandwidth    &#61; optional&#40;string, &#34;BPS_10G&#34;&#41;&#10;  bgp_range    &#61; optional&#40;string, &#34;169.254.128.0&#47;29&#34;&#41;&#10;  interconnect &#61; string&#10;  vlan_tag     &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L40) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -612,9 +665,10 @@ module "example-va-b" {
 |---|---|:---:|
 | [attachment](outputs.tf#L17) | VLAN Attachment resource. |  |
 | [id](outputs.tf#L22) | Fully qualified VLAN attachment id. |  |
-| [name](outputs.tf#L27) | The name of the VLAN attachment created. |  |
-| [pairing_key](outputs.tf#L32) | Opaque identifier of an PARTNER attachment used to initiate provisioning with a selected partner. |  |
-| [router](outputs.tf#L37) | Router resource (only if auto-created). |  |
-| [router_interface](outputs.tf#L42) | Router interface created for the VLAN attachment. |  |
-| [router_name](outputs.tf#L47) | Router name. |  |
+| [md5_configuration](outputs.tf#L27) | MD5 configuration. |  |
+| [name](outputs.tf#L38) | The name of the VLAN attachment created. |  |
+| [pairing_key](outputs.tf#L43) | Opaque identifier of an PARTNER attachment used to initiate provisioning with a selected partner. |  |
+| [router](outputs.tf#L48) | Router resource (only if auto-created). |  |
+| [router_interface](outputs.tf#L53) | Router interface created for the VLAN attachment. |  |
+| [router_name](outputs.tf#L58) | Router name. |  |
 <!-- END TFDOC -->

@@ -38,6 +38,11 @@ module "automation-project" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  factories_config = {
+    org_policies = (
+      var.bootstrap_user != null ? null : var.factories_config.org_policies_iac
+    )
+  }
   # human (groups) IAM bindings
   iam_by_principals = {
     (local.principals.gcp-devops) = [
@@ -117,17 +122,20 @@ module "automation-project" {
       role   = "roles/serviceusage.serviceUsageViewer"
     }
   }
-  org_policies = var.bootstrap_user != null ? {} : {
-    "compute.skipDefaultNetworkCreation" = {
-      rules = [{ enforce = true }]
+  org_policies = (
+    var.bootstrap_user != null || var.org_policies_config.iac_policy_member_domains == null
+    ? {}
+    : {
+      "iam.allowedPolicyMemberDomains" = {
+        inherit_from_parent = true
+        rules = [{
+          allow = {
+            values = var.org_policies_config.iac_policy_member_domains
+          }
+        }]
+      }
     }
-    "iam.automaticIamGrantsForDefaultServiceAccounts" = {
-      rules = [{ enforce = true }]
-    }
-    "iam.disableServiceAccountKeyCreation" = {
-      rules = [{ enforce = true }]
-    }
-  }
+  )
   services = concat(
     [
       "accesscontextmanager.googleapis.com",

@@ -4,9 +4,25 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+custom_roles = {
+  project_iam_viewer            = "organizations/123456789012/roles/bar"
+  service_project_network_admin = "organizations/123456789012/roles/foo"
+}
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
+}
 essential_contacts = "gcp-security-admins@fast.example.com"
 folder_ids = {
-  security = null
+  security = "folders/12345678"
 }
 organization = {
   domain      = "fast.example.com"
@@ -33,4 +49,33 @@ service_accounts = {
   project-factory      = "foobar@iam.gserviceaccount.com"
   project-factory-dev  = "foobar@iam.gserviceaccount.com"
   project-factory-prod = "foobar@iam.gserviceaccount.com"
+}
+stage_config = {
+  security = {
+    iam_delegated_principals = {
+      dev = [
+        "serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-dev-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+      prod = [
+        "serviceAccount:fast2-prod-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-prod-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+    }
+    iam_viewer_principals = {
+      dev = [
+        "serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+      prod = [
+        "serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com",
+        "serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+      ]
+    }
+    short_name = "net"
+  }
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }

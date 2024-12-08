@@ -172,6 +172,7 @@ module "cf-healthchecker" {
   vpc_connector_config = {
     ip_cidr_range = "10.132.0.0/28"
     network       = "vpc"
+    instances     = {}
   }
   iam = {
     "roles/cloudfunctions.invoker" = [module.service-account-scheduler.iam_email]

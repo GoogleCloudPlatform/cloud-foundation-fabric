@@ -119,16 +119,24 @@ variable "cross_region_replication" {
   type = object({
     enabled                         = optional(bool, false)
     promote_secondary               = optional(bool, false)
+    switchover_mode                 = optional(bool, false)
     region                          = optional(string, null)
     secondary_cluster_display_name  = optional(string, null)
     secondary_cluster_name          = optional(string, null)
     secondary_instance_display_name = optional(string, null)
     secondary_instance_name         = optional(string, null)
+    secondary_machine_config = optional(object({
+      cpu_count = number
+    }), null)
   })
   default = {}
   validation {
     condition     = !var.cross_region_replication.enabled || var.cross_region_replication.enabled && var.cross_region_replication.region != null
     error_message = "Region must be available when cross region replication is enabled."
+  }
+  validation {
+    condition     = !(var.cross_region_replication.switchover_mode && var.cross_region_replication.promote_secondary)
+    error_message = "Please choose to either promote secondary cluster or align an existing cluster after swtichover."
   }
 }
 
@@ -294,6 +302,12 @@ variable "prefix" {
 variable "project_id" {
   description = "The ID of the project where this instances will be created."
   type        = string
+}
+
+variable "project_number" {
+  description = "The project number of the project where this instances will be created. Only used for testing purposes."
+  type        = string
+  default     = null
 }
 
 variable "query_insights_config" {

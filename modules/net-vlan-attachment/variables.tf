@@ -103,7 +103,7 @@ variable "router_config" {
     }))
     md5_authentication_key = optional(object({
       name = string
-      key  = string
+      key  = optional(string)
     }))
     keepalive = optional(number)
     name      = optional(string, "router")

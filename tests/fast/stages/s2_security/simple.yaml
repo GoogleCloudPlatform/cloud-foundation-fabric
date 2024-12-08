@@ -30,6 +30,7 @@ values:
     timeouts: null
   module.dev-sec-kms["europe"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -38,6 +39,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.dev-sec-kms["europe"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -52,6 +54,7 @@ values:
     timeouts: null
   module.dev-sec-kms["europe-west1"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -60,6 +63,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.dev-sec-kms["europe-west1"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -74,6 +78,7 @@ values:
     timeouts: null
   module.dev-sec-kms["europe-west3"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -82,6 +87,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.dev-sec-kms["europe-west3"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -96,6 +102,7 @@ values:
     timeouts: null
   module.dev-sec-kms["global"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -104,6 +111,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.dev-sec-kms["global"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -122,37 +130,17 @@ values:
     deletion_policy: DELETE
     effective_labels:
       environment: dev
-      team: security
-    folder_id: null
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345678'
     labels:
       environment: dev
-      team: security
     name: fast-dev-sec-core-0
     org_id: null
     project_id: fast-dev-sec-core-0
     terraform_labels:
       environment: dev
-      team: security
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.dev-sec-project.google_project_iam_binding.authoritative["roles/cloudkms.viewer"]:
-    condition: []
-    members:
-    - serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: roles/cloudkms.viewer
-  ? module.dev-sec-project.google_project_iam_member.bindings["kms_restricted_admin.serviceAccount:foobar@iam.gserviceaccount.com"]
-  : condition:
-    - description: Automation service account delegated grants.
-      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/cloudkms.cryptoKeyEncrypterDecrypter'',''roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation''])
-        &&
-
-        resource.type == ''cloudkms.googleapis.com/CryptoKey''
-
-        '
-      title: kms_sa_delegated_grants
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: roles/cloudkms.admin
   module.dev-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
     condition: []
     project: fast-dev-sec-core-0
@@ -231,18 +219,19 @@ values:
     project: fast-dev-sec-core-0
     service: secretmanager.googleapis.com
     timeouts: null
+  module.dev-sec-project.google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/12345
+    timeouts: null
   module.folder.google_essential_contacts_contact.contact["gcp-security-admins@fast.example.com"]:
     email: gcp-security-admins@fast.example.com
     language_tag: en
     notification_category_subscriptions:
     - ALL
-    timeouts: null
-  module.folder.google_folder.folder[0]:
-    display_name: Security
-    parent: organizations/123456789012
+    parent: folders/12345678
     timeouts: null
   module.prod-sec-kms["europe"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -251,6 +240,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.prod-sec-kms["europe"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -265,6 +255,7 @@ values:
     timeouts: null
   module.prod-sec-kms["europe-west1"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -273,6 +264,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.prod-sec-kms["europe-west1"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -287,6 +279,7 @@ values:
     timeouts: null
   module.prod-sec-kms["europe-west3"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -295,6 +288,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.prod-sec-kms["europe-west3"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -309,6 +303,7 @@ values:
     timeouts: null
   module.prod-sec-kms["global"].google_kms_crypto_key.default["compute"]:
     effective_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     labels:
       service: compute
@@ -317,6 +312,7 @@ values:
     rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
+      goog-terraform-provisioned: 'true'
       service: compute
     timeouts: null
   module.prod-sec-kms["global"].google_kms_crypto_key_iam_binding.authoritative["compute.roles/cloudkms.admin"]:
@@ -335,37 +331,17 @@ values:
     deletion_policy: DELETE
     effective_labels:
       environment: prod
-      team: security
-    folder_id: null
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345678'
     labels:
       environment: prod
-      team: security
     name: fast-prod-sec-core-0
     org_id: null
     project_id: fast-prod-sec-core-0
     terraform_labels:
       environment: prod
-      team: security
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.prod-sec-project.google_project_iam_binding.authoritative["roles/cloudkms.viewer"]:
-    condition: []
-    members:
-    - serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: roles/cloudkms.viewer
-  ? module.prod-sec-project.google_project_iam_member.bindings["kms_restricted_admin.serviceAccount:foobar@iam.gserviceaccount.com"]
-  : condition:
-    - description: Automation service account delegated grants.
-      expression: 'api.getAttribute(''iam.googleapis.com/modifiedGrantsByRole'', []).hasOnly([''roles/cloudkms.cryptoKeyEncrypterDecrypter'',''roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation''])
-        &&
-
-        resource.type == ''cloudkms.googleapis.com/CryptoKey''
-
-        '
-      title: kms_sa_delegated_grants
-    member: serviceAccount:foobar@iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: roles/cloudkms.admin
   module.prod-sec-project.google_project_iam_member.service_agents["certificatemanager"]:
     condition: []
     project: fast-prod-sec-core-0
@@ -444,33 +420,21 @@ values:
     project: fast-prod-sec-core-0
     service: secretmanager.googleapis.com
     timeouts: null
+  module.prod-sec-project.google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/12346
+    timeouts: null
 
 counts:
   google_essential_contacts_contact: 1
-  google_folder: 1
   google_kms_crypto_key: 8
   google_kms_crypto_key_iam_binding: 8
   google_kms_key_ring: 8
   google_project: 2
-  google_project_iam_binding: 2
-  google_project_iam_member: 8
+  google_project_iam_binding: 4
+  google_project_iam_member: 6
   google_project_service: 14
   google_project_service_identity: 12
   google_storage_bucket_object: 1
+  google_tags_tag_binding: 2
   modules: 11
-  resources: 65
-
-outputs:
-  cas_configs:
-    dev: {}
-    prod: {}
-  kms_keys: __missing__
-  ngfw_tls_configs:
-    tls_enabled: false
-    tls_ip_ids_by_region:
-      dev: {}
-      prod: {}
-  tfvars: __missing__
-  trust_config_ids:
-    dev: {}
-    prod: {}
+  resources: 66

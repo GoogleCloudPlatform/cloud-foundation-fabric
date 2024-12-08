@@ -71,6 +71,12 @@ resource "google_container_cluster" "cluster" {
         enable_integrity_monitoring = true
       }
     }
+    dynamic "workload_metadata_config" {
+      for_each = var.node_config.workload_metadata_config_mode != null ? [""] : []
+      content {
+        mode = var.node_config.workload_metadata_config_mode
+      }
+    }
   }
   # gcfs_config deactivation need the block to be defined so it can't be dynamic
   node_pool_defaults {
@@ -475,6 +481,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.pod_security_policy ? [""] : []
     content {
       enabled = var.enable_features.pod_security_policy
+    }
+  }
+  dynamic "secret_manager_config" {
+    for_each = var.enable_features.secret_manager_config != null ? [""] : []
+    content {
+      enabled = var.enable_features.secret_manager_config
     }
   }
   dynamic "security_posture_config" {

@@ -253,7 +253,7 @@ module "test" {
   prj_onprem_id = "onprem-project-id"
 }
 
-# tftest modules=15 resources=58
+# tftest modules=15 resources=62
 ```
 
 ```hcl

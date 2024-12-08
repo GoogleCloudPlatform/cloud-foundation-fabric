@@ -29,10 +29,11 @@ module "tenant-vpcsc-policy" {
   }
   iam_bindings_additive = merge(
     {
-      tenant_admins = {
-        role   = "roles/accesscontextmanager.policyAdmin"
-        member = each.value.admin_principal
-      }
+      # uncomment this if tenant admins are allowed by org-level DRS policy
+      # tenant_admins = {
+      #   role   = "roles/accesscontextmanager.policyAdmin"
+      #   member = each.value.admin_principal
+      # }
       tenant_sa = {
         role   = "roles/accesscontextmanager.policyAdmin"
         member = module.tenant-sa[each.key].iam_email

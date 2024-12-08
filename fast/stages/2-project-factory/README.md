@@ -100,34 +100,48 @@ The `data` folder in this stage contains factory files that can be used as examp
 
 As all other FAST stages, the [mechanism](../0-bootstrap/README.md#output-files-and-cross-stage-variables) used to pass variable values and pre-built provider files from one stage to the next is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-../../../stage-links.sh ~/fast-config
+../fast-links.sh ~/fast-config
 
-# copy and paste the following commands for '2-project-factory'
+# File linking commands for project factory (org level) stage
 
-ln -s ~/fast-config/providers/2-project-factory-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
-# optional but recommended
-ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
+# provider file
+ln -s ~/fast-config/fast-test-00/providers/2-project-factory-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+ln -s ~/fast-config/fast-test-00/2-project-factory.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/fast-test-00/2-networking.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/2-security.auto.tfvars.json ./
 ```
 
 ```bash
-../../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
 
-# copy and paste the following commands for '2-project-factory'
+# File linking commands for project factory (org level) stage
 
+# provider file
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-project-factory-providers.tf ./
+
+# input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
-# optional but recommended
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
+
+# conventional place for stage tfvars (manually created)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-project-factory.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-networking.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-security.auto.tfvars.json ./
 ```
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
@@ -324,7 +338,7 @@ This approach leverages the per-environment project factory service accounts and
 
 The approach is not shown here but reasonably easy to implement. The main project factory output file can also be used to set up folder id susbtitution in the per-environment factories.
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-project-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 

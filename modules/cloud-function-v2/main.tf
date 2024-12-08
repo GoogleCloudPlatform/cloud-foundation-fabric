@@ -50,12 +50,16 @@ locals {
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == true ? 1 : 0
-  project       = var.project_id
-  name          = var.vpc_connector.name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
-  network       = var.vpc_connector_config.network
+  count          = try(var.vpc_connector.create, false) == true ? 1 : 0
+  project        = var.project_id
+  name           = var.vpc_connector.name
+  region         = var.region
+  ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
+  network        = var.vpc_connector_config.network
+  max_instances  = try(var.vpc_connector_config.instances.max, null)
+  min_instances  = try(var.vpc_connector_config.instances.min, null)
+  max_throughput = try(var.vpc_connector_config.throughput.max, null)
+  min_throughput = try(var.vpc_connector_config.throughput.min, null)
 }
 
 resource "google_cloudfunctions2_function" "function" {

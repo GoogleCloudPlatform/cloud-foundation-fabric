@@ -26,7 +26,7 @@ locals {
   locations = {
     bq      = var.locations.bq
     gcs     = var.locations.gcs
-    logging = coalesce(try(local.checklist.location, null), var.locations.logging)
+    logging = var.locations.logging
     pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names

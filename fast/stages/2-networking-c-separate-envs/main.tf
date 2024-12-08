@@ -17,28 +17,36 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  env_tag_values = {
+    for k, v in var.environments :
+    k => var.tag_values["environment/${v.tag_name}"]
+  }
+  has_env_folders = var.folder_ids.networking-dev != null
+  iam_delegated = join(",", formatlist("'%s'", [
+    "roles/composer.sharedVpcAgent",
+    "roles/compute.networkUser",
+    "roles/compute.networkViewer",
+    "roles/container.hostServiceAgentUser",
+    "roles/multiclusterservicediscovery.serviceAgent",
+    "roles/vpcaccess.user",
+  ]))
+  iam_delegated_principals = try(
+    var.stage_config["networking"].iam_delegated_principals, {}
+  )
+  iam_viewer_principals = try(
+    var.stage_config["networking"].iam_viewer_principals, {}
+  )
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
     values(module.dev-spoke-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
   ))
-  stage3_sas_delegated_grants = [
-    "roles/composer.sharedVpcAgent",
-    "roles/compute.networkUser",
-    "roles/container.hostServiceAgentUser",
-    "roles/vpcaccess.user",
-  ]
-  service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}" if v != null
-  }
 }
 
 module "folder" {
   source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
-  name          = "Networking"
-  folder_create = var.folder_ids.networking == null
+  folder_create = false
   id            = var.folder_ids.networking
   contacts = (
     var.essential_contacts == null

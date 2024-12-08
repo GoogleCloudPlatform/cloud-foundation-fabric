@@ -30,42 +30,6 @@ variable "bootstrap_user" {
   default     = null
 }
 
-variable "cicd_backends" {
-  description = "CI/CD backend configuration. Leave null to use GCS buckets for state."
-  type = object({
-    terraform = optional(object({
-      organization = string
-      workspaces = map(object({
-        tags    = optional(list(string), null)
-        name    = optional(string, null)
-        project = optional(string, null)
-      }))
-      hostname = optional(string, null)
-    }))
-  })
-  default = null
-  validation {
-    condition = (
-      var.cicd_backends == null ||
-      (
-        length([for k, v in coalesce(var.cicd_backends, {}) : true if v != null]) == 1
-      )
-    )
-    error_message = "cicd_backends must be either null or contain exactly one backend configuration."
-  }
-  validation {
-    condition = (
-      var.cicd_backends == null ||
-      try(var.cicd_backends.terraform, null) == null ||
-      alltrue([
-        for k, v in try(var.cicd_backends.terraform.workspaces, {}) :
-        v.tags != null || v.name != null || v.project != null
-      ])
-    )
-    error_message = "At least one of 'tags', 'name', or 'project' must be defined for each workspace in the 'workspaces' map when 'terraform' is defined."
-  }
-}
-
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
@@ -132,6 +96,7 @@ variable "environments" {
   type = map(object({
     name       = string
     is_default = optional(bool, false)
+    tag_name   = optional(string)
   }))
   nullable = false
   default = {
@@ -149,6 +114,14 @@ variable "environments" {
     ])
     error_message = "At least one environment should be marked as default."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : join(" ", regexall(
+        "[a-zA-Z][a-zA-Z0-9\\s-]+[a-zA-Z0-9]", v.name
+      )) == v.name
+    ])
+    error_message = "Environment names can only contain letters numbers dashes or spaces."
+  }
 }
 
 variable "essential_contacts" {
@@ -160,10 +133,9 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    checklist_data    = optional(string)
-    checklist_org_iam = optional(string)
-    custom_roles      = optional(string, "data/custom-roles")
-    org_policy        = optional(string, "data/org-policies")
+    custom_roles     = optional(string, "data/custom-roles")
+    org_policies     = optional(string, "data/org-policies")
+    org_policies_iac = optional(string, "data/org-policies-iac")
   })
   nullable = false
   default  = {}
@@ -284,6 +256,7 @@ variable "log_sinks" {
 variable "org_policies_config" {
   description = "Organization policies customization."
   type = object({
+    iac_policy_member_domains = optional(list(string))
     constraints = optional(object({
       allowed_essential_contact_domains = optional(list(string), [])
       allowed_policy_member_domains     = optional(list(string), [])

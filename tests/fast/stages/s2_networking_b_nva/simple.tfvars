@@ -5,6 +5,7 @@ billing_account = {
   id = "000000-111111-222222"
 }
 custom_roles = {
+  project_iam_viewer            = "organizations/123456789012/roles/bar"
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
@@ -13,9 +14,21 @@ dns = {
 }
 enable_cloud_nat      = true
 enable_test_instances = true
-essential_contacts    = "gcp-network-admins@fast.example.com"
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    tag_name   = "production"
+  }
+}
+essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
-  networking      = null
+  networking      = "folders/12345"
   networking-dev  = null
   networking-prod = null
 }
@@ -115,4 +128,8 @@ vpn_onprem_secondary_config = {
       vpn_gateway_interface = 1
     }
   }
+}
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }

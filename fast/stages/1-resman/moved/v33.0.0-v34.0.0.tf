@@ -18,42 +18,34 @@ moved {
   from = module.branch-pf-sa[0]
   to   = module.branch-pf-sa
 }
-
 moved {
   from = module.branch-pf-dev-sa[0]
   to   = module.branch-pf-dev-sa
 }
-
 moved {
   from = module.branch-pf-prod-sa[0]
   to   = module.branch-pf-prod-sa
 }
-
 moved {
   from = module.branch-pf-r-sa[0]
   to   = module.branch-pf-r-sa
 }
-
 moved {
   from = module.branch-pf-dev-r-sa[0]
   to   = module.branch-pf-dev-r-sa
 }
-
 moved {
   from = module.branch-pf-prod-r-sa[0]
   to   = module.branch-pf-prod-r-sa
 }
-
 moved {
   from = module.branch-pf-gcs[0]
   to   = module.branch-pf-gcs
 }
-
 moved {
   from = module.branch-pf-dev-gcs[0]
   to   = module.branch-pf-dev-gcs
 }
-
 moved {
   from = module.branch-pf-prod-gcs[0]
   to   = module.branch-pf-prod-gcs
