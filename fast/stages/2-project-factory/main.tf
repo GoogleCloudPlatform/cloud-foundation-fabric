@@ -17,7 +17,8 @@
 # tfdoc:file:description Project factory.
 
 module "projects" {
-  source = "../../../modules/project-factory"
+  source               = "../../../modules/project-factory"
+  default_alerts_email = var.default_alerts_email
   data_defaults = {
     # more defaults are available, check the project factory variables
     billing_account  = var.billing_account.id
@@ -32,6 +33,7 @@ module "projects" {
     prefix = var.prefix
   }
   factories_config = merge(var.factories_config, {
+    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
     context = {
       folder_ids = merge(
         { for k, v in var.folder_ids : k => v if v != null },

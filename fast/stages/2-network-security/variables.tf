@@ -22,6 +22,7 @@ variable "factories_config" {
       dev  = string
       prod = string
     }))
+    logging_metrics_alerts = optional(string, "data/logging-alerts")
   })
   nullable = false
   default = {

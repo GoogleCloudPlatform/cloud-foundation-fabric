@@ -38,6 +38,10 @@ module "automation-project" {
   project_create = false
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
+  factories_config = {
+    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+  }
+  default_alerts_email = var.default_alerts_email
   tags = merge(local.tags, {
     (var.tag_names.context) = {
       description = "Resource management context."
