@@ -91,6 +91,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  nullable    = false
+}
+
 variable "environments" {
   description = "Environment names."
   type = map(object({
@@ -342,10 +348,4 @@ variable "workload_identity_providers" {
   #   condition     = var.federated_identity_providers.custom_settings == null
   #   error_message = "Custom settings cannot be null."
   # }
-}
-
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
-  type        = string
-  nullable    = false
 }

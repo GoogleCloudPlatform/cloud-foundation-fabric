@@ -20,6 +20,10 @@ module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
+  factories_config = {
+    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+  }
+  default_alerts_email = var.default_alerts_email
   parent = coalesce(
     var.folder_ids.networking-prod,
     var.folder_ids.networking

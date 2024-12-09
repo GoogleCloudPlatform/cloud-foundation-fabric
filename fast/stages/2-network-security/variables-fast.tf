@@ -37,6 +37,12 @@ variable "billing_account" {
   }
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  nullable    = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."

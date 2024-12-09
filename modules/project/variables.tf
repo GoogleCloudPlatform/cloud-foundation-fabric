@@ -78,6 +78,12 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
@@ -314,10 +320,4 @@ variable "vpc_sc" {
     is_dry_run        = optional(bool, false)
   })
   default = null
-}
-
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
-  type        = string
-  default     = null
 }

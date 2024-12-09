@@ -109,6 +109,7 @@ locals {
         vpcsc       = module.automation-tf-vpcsc-sa.email
         vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
       }
+      default_alerts_email = var.default_alerts_email
     }
     custom_roles = module.organization.custom_role_id
     logging = {
