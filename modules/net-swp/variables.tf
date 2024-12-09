@@ -43,6 +43,7 @@ variable "gateway_config" {
     addresses                = optional(list(string), [])
     delete_router_on_destroy = optional(bool, true)
     labels                   = optional(map(string), {})
+    next_hop_routing_mode    = optional(bool, false)
     ports                    = optional(list(string), [443])
     scope                    = optional(string)
   })
