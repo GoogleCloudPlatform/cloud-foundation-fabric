@@ -92,6 +92,9 @@ fast_stage_2 = {
         type   = "github"
       }
     }
+    folder_config = {
+      parent_id = "shared"
+    }
   }
   security = {
     cicd_config = {
@@ -140,5 +143,11 @@ top_level_folders = {
       enable = false
     }
     iam_by_principals = {}
+  }
+  shared = {
+    name = "Shared Infrastructure"
+    automation = {
+      enable = false
+    }
   }
 }

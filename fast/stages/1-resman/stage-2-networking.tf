@@ -39,7 +39,7 @@ module "net-folder" {
     var.fast_stage_2.networking.folder_config.parent_id == null
     ? local.root_node
     : try(
-      local.top_level_folder_ids[var.fast_stage_2.networking.folder_config],
+      local.top_level_folder_ids[var.fast_stage_2.networking.folder_config.parent_id],
       var.fast_stage_2.networking.folder_config.parent_id
     )
   )

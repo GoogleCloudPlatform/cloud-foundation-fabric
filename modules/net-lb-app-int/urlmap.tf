@@ -327,6 +327,11 @@ resource "google_compute_region_url_map" "default" {
                 ? match_rules.value.path.value
                 : null
               )
+              path_template_match = (
+                try(match_rules.value.path.type, null) == "template"
+                ? match_rules.value.path.value
+                : null
+              )
               dynamic "header_matches" {
                 for_each = toset(coalesce(match_rules.value.headers, []))
                 iterator = h
@@ -497,8 +502,9 @@ resource "google_compute_region_url_map" "default" {
                   : [route_action.value.url_rewrite]
                 )
                 content {
-                  host_rewrite        = url_rewrite.value.host
-                  path_prefix_rewrite = url_rewrite.value.path_prefix
+                  host_rewrite          = url_rewrite.value.host
+                  path_prefix_rewrite   = url_rewrite.value.path_prefix
+                  path_template_rewrite = url_rewrite.value.path_template
                 }
               }
               dynamic "weighted_backend_services" {

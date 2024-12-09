@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2024-11-23 11:24:55+00:00 to: None since: v36.0.1 -->
 
+### BLUEPRINTS
+
+- [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
+- [[#2749](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2749)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-06 05:54:12+00:00 -->
+- [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
+
 ### FAST
 
+- [[#2744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2744)] Fix parent id lookup for networking and security in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-04 20:08:31+00:00 -->
 - [[#2733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2733)] **incompatible change:** Updating yaml naming in prod subnet folder to match other lifecycles ([mtndrew404](https://github.com/mtndrew404)) <!-- 2024-11-26 06:40:22+00:00 -->
 
 ### MODULES
 
+- [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
+- [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
 - [[#2741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2741)] Add support for secret manager config to gke cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2024-11-29 08:24:18+00:00 -->
 - [[#2734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2734)] Allow override of GKE Nodepool SA Display Name ([robrankin](https://github.com/robrankin)) <!-- 2024-11-28 06:47:17+00:00 -->
 - [[#2738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2738)] Support switchover in alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-27 15:57:33+00:00 -->

@@ -16,6 +16,10 @@
  */
 
 locals {
+  md5_keys = {
+    for k, v in random_id.md5_keys
+    : k => v.b64_url
+  }
   peer_gateways_external = {
     for k, v in var.peer_gateways : k => v.external if v.external != null
   }
@@ -117,7 +121,7 @@ resource "google_compute_router_peer" "bgp_peer" {
     for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
     content {
       name = md5_authentication_key.value.name
-      key  = md5_authentication_key.value.key
+      key  = coalesce(md5_authentication_key.value.key, local.md5_keys[each.key])
     }
   }
   enable_ipv6               = try(each.value.bgp_peer.ipv6, null) == null ? false : true
@@ -159,4 +163,9 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 
 resource "random_id" "secret" {
   byte_length = 8
+}
+
+resource "random_id" "md5_keys" {
+  for_each    = var.tunnels
+  byte_length = 12
 }

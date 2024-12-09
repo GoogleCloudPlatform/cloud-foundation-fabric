@@ -171,5 +171,5 @@ module "test" {
     }
   }
 }
-# tftest modules=5 resources=39
+# tftest modules=5 resources=41
 ```

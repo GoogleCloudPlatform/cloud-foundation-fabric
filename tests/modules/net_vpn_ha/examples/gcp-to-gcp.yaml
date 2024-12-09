@@ -212,5 +212,5 @@ counts:
   google_compute_router_peer: 4
   google_compute_vpn_tunnel: 4
   modules: 2
-  random_id: 2
-  resources: 18
+  random_id: 6
+  resources: 22

@@ -39,8 +39,19 @@ output "id" {
   )
 }
 
+output "md5_keys" {
+  description = "BGP tunnels MD5 keys."
+  value = {
+    for k, v in var.tunnels :
+    k => try(v.bgp_peer.md5_authentication_key, null) == null ? {} : {
+      key  = coalesce(v.bgp_peer.md5_authentication_key.key, local.md5_keys[k])
+      name = v.bgp_peer.md5_authentication_key.name
+    }
+  }
+}
+
 output "name" {
-  description = "VPN gateway name (only if auto-created). ."
+  description = "VPN gateway name (only if auto-created)."
   value       = one(google_compute_ha_vpn_gateway.ha_gateway[*].name)
 }
 
@@ -62,6 +73,14 @@ output "router_name" {
 output "self_link" {
   description = "HA VPN gateway self link."
   value       = local.vpn_gateway
+}
+
+output "shared_secrets" {
+  description = "IPSEC tunnels shared secrets."
+  value = {
+    for k, v in var.tunnels
+    : k => coalesce(v.shared_secret, local.secret)
+  }
 }
 
 output "tunnel_names" {
