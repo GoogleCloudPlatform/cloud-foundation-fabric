@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2752)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-08 09:34:19+00:00 -->
 - [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
 - [[#2749](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2749)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-06 05:54:12+00:00 -->
 - [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
@@ -18,6 +19,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2740)] Add support for password validation policy to cloudsql module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-09 09:44:15+00:00 -->
+- [[#2750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2750)] Add disk encyption key to the google_compute_instance_template - Sovereign support ([rune92](https://github.com/rune92)) <!-- 2024-12-09 09:30:58+00:00 -->
+- [[#2718](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2718)] Add path_template_match and path_template_rewrite support to net-lb-app-ext  ([rosmo](https://github.com/rosmo)) <!-- 2024-12-09 08:32:48+00:00 -->
+- [[#2755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2755)] remove default location in tag value - cloud-run-v2 tags.tf ([Mattible](https://github.com/Mattible)) <!-- 2024-12-09 07:48:23+00:00 -->
+- [[#2751](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2751)] Add support for routing mode to net-swp module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-08 13:26:02+00:00 -->
 - [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
 - [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
 - [[#2741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2741)] Add support for secret manager config to gke cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2024-11-29 08:24:18+00:00 -->
