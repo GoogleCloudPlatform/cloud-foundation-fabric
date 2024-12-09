@@ -185,7 +185,7 @@ resource "google_sql_database_instance" "primary" {
         complexity = (
           var.password_validation_policy.default_complexity == true
           ? "COMPLEXITY_DEFAULT"
-          : "COMPLEXITY_UNSPECIFIED"
+          : null # "COMPLEXITY_UNSPECIFIED" generates a permadiff
         )
         disallow_username_substring = (
           var.password_validation_policy.disallow_username_substring
@@ -193,7 +193,9 @@ resource "google_sql_database_instance" "primary" {
         enable_password_policy = var.password_validation_policy.enabled
         min_length             = var.password_validation_policy.min_length
         password_change_interval = (
-          var.password_validation_policy.change_interval
+          var.password_validation_policy.change_interval == null
+          ? null
+          : "${var.password_validation_policy.change_interval}s"
         )
         reuse_interval = var.password_validation_policy.reuse_interval
       }

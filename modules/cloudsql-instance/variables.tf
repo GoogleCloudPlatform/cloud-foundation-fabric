@@ -207,12 +207,13 @@ variable "network_config" {
 variable "password_validation_policy" {
   description = "Password validation policy configuration for instances."
   type = object({
-    change_interval             = number
-    default_complexity          = bool
-    disallow_username_substring = bool
-    min_length                  = number
-    reuse_interval              = number
-    enabled                     = optional(bool, true)
+    enabled = optional(bool, true)
+    # change interval is only supported for postgresql
+    change_interval             = optional(number)
+    default_complexity          = optional(bool)
+    disallow_username_substring = optional(bool)
+    min_length                  = optional(number)
+    reuse_interval              = optional(number)
   })
   default = null
 }
