@@ -57,8 +57,9 @@ variable "urlmap_config" {
         nanos   = optional(number)
       }))
       url_rewrite = optional(object({
-        host        = optional(string)
-        path_prefix = optional(string)
+        host          = optional(string)
+        path_prefix   = optional(string)
+        path_template = optional(string)
       }))
       weighted_backend_services = optional(map(object({
         weight = number
@@ -154,8 +155,9 @@ variable "urlmap_config" {
             nanos   = optional(number)
           }))
           url_rewrite = optional(object({
-            host        = optional(string)
-            path_prefix = optional(string)
+            host          = optional(string)
+            path_prefix   = optional(string)
+            path_template = optional(string)
           }))
           weighted_backend_services = optional(map(object({
             weight = number
@@ -202,7 +204,7 @@ variable "urlmap_config" {
           headers = optional(list(object({
             name         = string
             invert_match = optional(bool, false)
-            type         = optional(string, "present") # exact, prefix, suffix, regex, present, range
+            type         = optional(string, "present") # exact, prefix, suffix, regex, present, range, template
             value        = optional(string)
             range_value = optional(object({
               end   = string
@@ -261,8 +263,9 @@ variable "urlmap_config" {
             nanos   = optional(number)
           }))
           url_rewrite = optional(object({
-            host        = optional(string)
-            path_prefix = optional(string)
+            host          = optional(string)
+            path_prefix   = optional(string)
+            path_template = optional(string)
           }))
           weighted_backend_services = optional(map(object({
             weight = number
