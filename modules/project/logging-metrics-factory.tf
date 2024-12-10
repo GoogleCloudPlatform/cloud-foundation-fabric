@@ -45,9 +45,8 @@ locals {
 }
 
 resource "google_logging_metric" "default" {
-  for_each = local.metrics
-  project  = "jetstack-joshua-wright"
-  # project     = local.project.project_id
+  for_each    = local.metrics
+  project     = local.project.project_id
   filter      = each.value.filter
   name        = each.value.name
   disabled    = each.value.disabled

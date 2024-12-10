@@ -37,9 +37,8 @@ locals {
 }
 
 resource "google_monitoring_notification_channel" "default" {
-  count   = var.default_alerts_email != null ? 1 : 0
-  project = "jetstack-joshua-wright"
-  # project      = local.project.project_id
+  count        = var.default_alerts_email != null ? 1 : 0
+  project      = local.project.project_id
   display_name = "Default Email Notification"
   type         = "email"
   labels = {
@@ -48,9 +47,8 @@ resource "google_monitoring_notification_channel" "default" {
 }
 
 resource "google_monitoring_notification_channel" "this" {
-  for_each = local.channels
-  project  = "jetstack-joshua-wright"
-  # project      = local.project.project_id
+  for_each     = local.channels
+  project      = local.project.project_id
   enabled      = each.value.enabled
   display_name = each.value.display_name
   type         = each.value.type

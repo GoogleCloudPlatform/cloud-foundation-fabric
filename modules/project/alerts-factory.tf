@@ -44,9 +44,8 @@ locals {
 }
 
 resource "google_monitoring_alert_policy" "default" {
-  for_each = local.alerts
-  project  = "jetstack-joshua-wright"
-  # project      = local.project.project_id
+  for_each     = local.alerts
+  project      = local.project.project_id
   combiner     = each.value.combiner
   display_name = each.value.display_name
   conditions {
