@@ -60,6 +60,12 @@ resource "google_dataproc_cluster" "cluster" {
               enable_integrity_monitoring = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_integrity_monitoring
             }
           }
+          dynamic "confidential_instance_config" {
+            for_each = var.dataproc_config.cluster_config.gce_cluster_config.confidential_instance_config == null ? [] : [""]
+            content {
+              enable_confidential_compute = var.dataproc_config.cluster_config.gce_cluster_config.confidential_instance_config.enable_confidential_compute
+            }
+          }
         }
       }
       dynamic "master_config" {
