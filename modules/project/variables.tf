@@ -47,6 +47,12 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  default     = null
+}
+
 variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"
@@ -74,12 +80,6 @@ variable "deletion_policy" {
 
 variable "descriptive_name" {
   description = "Name of the project name. Used for project name instead of `name` variable."
-  type        = string
-  default     = null
-}
-
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
   type        = string
   default     = null
 }
