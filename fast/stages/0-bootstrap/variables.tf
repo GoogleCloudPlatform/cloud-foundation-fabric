@@ -139,15 +139,16 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles           = optional(string, "data/custom-roles")
-    org_policies           = optional(string, "data/org-policies")
-    org_policies_iac       = optional(string, "data/org-policies-iac")
-    logging_metrics_alerts = optional(string, "data/logging-alerts")
+    custom_roles     = optional(string, "data/custom-roles")
+    org_policies     = optional(string, "data/org-policies")
+    org_policies_iac = optional(string, "data/org-policies-iac")
+    logging_metrics  = optional(string, "data/logging-metrics")
+    channels         = optional(string, "data/channels")
+    alerts           = optional(string, "data/alerts")
   })
   nullable = false
   default  = {}
 }
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."

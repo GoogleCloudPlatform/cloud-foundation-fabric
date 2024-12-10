@@ -41,7 +41,9 @@ module "projects" {
     local.context.folder_ids, each.value.parent, each.value.parent
   )
   factories_config = {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
   }
   default_alerts_email = ""
   prefix               = each.value.prefix

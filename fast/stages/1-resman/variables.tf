@@ -20,10 +20,12 @@
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    org_policies           = optional(string, "data/org-policies")
-    stage_3                = optional(string, "data/stage-3")
-    top_level_folders      = optional(string, "data/top-level-folders")
-    logging_metrics_alerts = optional(string, "data/logging-alerts")
+    org_policies      = optional(string, "data/org-policies")
+    stage_3           = optional(string, "data/stage-3")
+    top_level_folders = optional(string, "data/top-level-folders")
+    logging_metrics   = optional(string, "data/logging-metrics")
+    channels          = optional(string, "data/channels")
+    alerts            = optional(string, "data/alerts")
   })
   nullable = false
   default  = {}

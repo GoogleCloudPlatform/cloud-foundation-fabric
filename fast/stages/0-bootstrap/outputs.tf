@@ -23,7 +23,7 @@ locals {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_providers[v["identity_provider"]].audiences, ""
+          local.cicd_providers[v["identity_provider"]].audiences, "e"
         )
         identity_provider = try(
           local.cicd_providers[v["identity_provider"]].name, ""
@@ -217,8 +217,8 @@ output "tfvars" {
 
 output "tfvars_globals" {
   description = "Terraform Globals variable files for the following stages."
-  sensitive   = true
-  value       = local.tfvars_globals
+  sensitive   = false
+  value       = jsonencode(local.tfvars_globals)
 }
 
 output "workforce_identity_pool" {

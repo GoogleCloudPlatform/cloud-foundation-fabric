@@ -106,9 +106,11 @@ variable "default_alerts_email" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    folders_data_path      = optional(string)
-    projects_data_path     = optional(string)
-    logging_metrics_alerts = optional(string)
+    folders_data_path  = optional(string)
+    projects_data_path = optional(string)
+    logging_metrics    = optional(string)
+    channels           = optional(string)
+    alerts             = optional(string)
     budgets = optional(object({
       billing_account   = string
       budgets_data_path = string

@@ -43,7 +43,9 @@ module "log-export-project" {
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
   factories_config = {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    alerts          = var.factories_config.alerts
+    channels        = var.factories_config.channels
+    logging_metrics = var.factories_config.logging_metrics
   }
   default_alerts_email = var.default_alerts_email
   prefix               = local.prefix

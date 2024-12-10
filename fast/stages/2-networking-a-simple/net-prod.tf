@@ -21,7 +21,9 @@ module "prod-spoke-project" {
   billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
   factories_config = {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
   }
   default_alerts_email = var.default_alerts_email
   parent = coalesce(

@@ -42,7 +42,9 @@ module "billing-export-project" {
   count           = local.billing_mode == "org" ? 1 : 0
   billing_account = var.billing_account.id
   factories_config = {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    alerts          = var.factories_config.alerts
+    channels        = var.factories_config.channels
+    logging_metrics = var.factories_config.logging_metrics
   }
   default_alerts_email = var.default_alerts_email
   name                 = "billing-exp-0"

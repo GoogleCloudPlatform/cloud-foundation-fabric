@@ -22,7 +22,9 @@ variable "factories_config" {
       dev  = string
       prod = string
     }))
-    logging_metrics_alerts = optional(string, "data/logging-alerts")
+    logging_metrics = optional(string, "data/logging-metrics")
+    channels        = optional(string, "data/channels")
+    alerts          = optional(string, "data/alerts")
   })
   nullable = false
   default = {

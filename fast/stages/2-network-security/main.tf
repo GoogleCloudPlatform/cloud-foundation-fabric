@@ -37,7 +37,9 @@ module "ngfw-quota-project" {
     : var.ngfw_enterprise_config.quota_project_id
   )
   factories_config = {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
   }
   default_alerts_email = var.default_alerts_email
   billing_account = (

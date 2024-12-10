@@ -33,7 +33,9 @@ module "projects" {
     prefix = var.prefix
   }
   factories_config = merge(var.factories_config, {
-    logging_metrics_alerts = var.factories_config.logging_metrics_alerts
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
     context = {
       folder_ids = merge(
         { for k, v in var.folder_ids : k => v if v != null },

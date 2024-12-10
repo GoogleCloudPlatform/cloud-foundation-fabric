@@ -1,0 +1,151 @@
+route-changes:
+  display_name: "Network Route Changes"
+  combiner: OR
+  alert_strategy:
+    auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+        count: 1
+      aggregations:
+        per_series_aligner: ALIGN_MEAN
+        cross_series_reducer: REDUCE_COUNT
+        alignment_period: "600s"
+  notification_channels:
+    compliance-default
+
+network-firewall-config-changes:
+  display_name: "VPC Network Firewall Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_MEAN
+          cross_series_reducer: REDUCE_COUNT
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+vpc-network-config-changes:
+  display_name: "VPC Network Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_MEAN
+          cross_series_reducer: REDUCE_COUNT
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+cloudsql-changes:
+  display_name: "CloudSQL Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_MEAN
+          cross_series_reducer: REDUCE_COUNT
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+cloudstorage-changes:
+  display_name: "Cloud Storage Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: "gcs_bucket"
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_MEAN
+          cross_series_reducer: REDUCE_COUNT
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+customrole-changes:
+  display_name: "IAM Custom Role Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+        comparison: COMPARISON_GT
+        duration: "0s"
+        resource_type: global
+        trigger:
+            count: 1
+        aggregations:
+            per_series_aligner: ALIGN_MEAN
+            cross_series_reducer: REDUCE_COUNT
+            alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+audit-changes:
+  display_name: "Audit Configuration Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_MEAN
+          cross_series_reducer: REDUCE_COUNT
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
+
+iam-owner-changes:
+  display_name: "Owner IAM Configuration Changes"
+  combiner: OR
+  alert_strategy:
+      auto_close: 604800s
+  conditions:
+    condition_threshold:
+      comparison: COMPARISON_GT
+      duration: "0s"
+      resource_type: global
+      trigger:
+          count: 1
+      aggregations:
+          per_series_aligner: ALIGN_DELTA
+          cross_series_reducer: REDUCE_SUM
+          alignment_period: "600s"
+  notification_channels:
+      compliance-default
