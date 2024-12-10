@@ -116,6 +116,22 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "control_plane_endpoint_config" {
+  description = "Configure access to the control plane endpoint."
+  type = object({
+    dns_access = optional(bool, true)
+    ip_access = optional(object({
+      disable_google_cloud_access = optional(bool)
+      enable_global_access        = optional(bool, true)
+      # only with private nodes
+      enable_private_endpoint  = optional(bool, true)
+      master_authorized_ranges = optional(map(string), {})
+    }))
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "default_nodepool" {
   description = "Enable default nodepool."
   type = object({
@@ -385,20 +401,6 @@ variable "node_locations" {
   nullable    = false
 }
 
-variable "private_cluster_config" {
-  description = "Private cluster configuration."
-  type = object({
-    enable_private_endpoint = optional(bool)
-    master_global_access    = optional(bool)
-    peering_config = optional(object({
-      export_routes = optional(bool)
-      import_routes = optional(bool)
-      project_id    = optional(string)
-    }))
-  })
-  default = null
-}
-
 variable "project_id" {
   description = "Cluster project id."
   type        = string
@@ -426,9 +428,8 @@ variable "vpc_config" {
       pods     = optional(string)
       services = optional(string)
     }))
-    additional_ranges        = optional(list(string))
-    master_authorized_ranges = optional(map(string))
-    stack_type               = optional(string)
+    additional_ranges = optional(list(string))
+    stack_type        = optional(string)
   })
   nullable = false
 }
