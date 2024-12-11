@@ -1,6 +1,7 @@
 route-changes:
   description: "Monitor VPC network route configuration changes inside GCP projects"
-  filter: "resource.type=\"gce_route\" AND (protoPayload.methodName:\"compute.routes.delete\" OR protoPayload.methodName:\"compute.routes.insert\")"
+  filter: |
+    resource.type="gce_route" AND (protoPayload.methodName:"compute.routes.delete" OR protoPayload.methodName:"compute.routes.insert")
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
