@@ -38,8 +38,8 @@ module "example-va" {
     name   = google_compute_router.interconnect-router.name
   }
   dedicated_interconnect_config = {
+    # cloud router gets 169.254.0.1 peer router gets 169.254.0.2
     bandwidth    = "BPS_10G"
-    # Cloud router gets 169.254.0.1; peer router gets 169.254.0.2.
     bgp_range    = "169.254.0.0/29"
     interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag     = 12345
