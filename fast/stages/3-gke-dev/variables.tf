@@ -17,6 +17,18 @@
 variable "clusters" {
   description = "Clusters configuration. Refer to the gke-cluster module for type details."
   type = map(object({
+    access_config = optional(object({
+      dns_access = optional(bool, true)
+      ip_access = optional(object({
+        authorized_ranges       = optional(map(string), {})
+        disable_public_endpoint = optional(bool, true)
+        private_endpoint_config = optional(object({
+          endpoint_subnetwork = optional(string)
+          global_access       = optional(bool, true)
+        }), {})
+      }), {})
+      private_nodes = optional(bool, true)
+    }), {})
     cluster_autoscaling = optional(any)
     description         = optional(string)
     enable_addons = optional(any, {
@@ -63,9 +75,8 @@ variable "clusters" {
       # Google Cloud Managed Service for Prometheus
       enable_managed_prometheus = optional(bool, true)
     }), {})
-    node_locations         = optional(list(string))
-    private_cluster_config = optional(any)
-    release_channel        = optional(string)
+    node_locations  = optional(list(string))
+    release_channel = optional(string)
     vpc_config = object({
       subnetwork = string
       network    = optional(string)
@@ -77,8 +88,6 @@ variable "clusters" {
         pods     = string
         services = string
       }), { pods = "pods", services = "services" })
-      master_authorized_ranges = optional(map(string))
-      master_ipv4_cidr_block   = optional(string)
     })
   }))
   default  = {}

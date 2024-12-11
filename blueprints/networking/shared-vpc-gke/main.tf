@@ -207,19 +207,16 @@ module "cluster-1" {
   name       = "cluster-1"
   project_id = module.project-svc-gke.project_id
   location   = "${var.region}-b"
+  access_config = {
+    ip_access = {
+      authorized_ranges = { internal-vms = var.ip_ranges.gce }
+    }
+  }
   vpc_config = {
     network    = module.vpc-shared.self_link
     subnetwork = module.vpc-shared.subnet_self_links["${var.region}/gke"]
-    master_authorized_ranges = {
-      internal-vms = var.ip_ranges.gce
-    }
-    master_ipv4_cidr_block = var.private_service_ranges.cluster-1
   }
   max_pods_per_node = 32
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = true
-  }
   labels = {
     environment = "test"
   }
