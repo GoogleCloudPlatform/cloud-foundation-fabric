@@ -84,7 +84,7 @@ variable "tunnels" {
       }))
       md5_authentication_key = optional(object({
         name = string
-        key  = string
+        key  = optional(string)
       }))
       ipv6 = optional(object({
         nexthop_address      = optional(string)

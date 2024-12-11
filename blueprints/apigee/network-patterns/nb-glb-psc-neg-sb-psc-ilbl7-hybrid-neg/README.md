@@ -79,5 +79,5 @@ module "test" {
   onprem_project_id  = "my-onprem-project"
   hostname           = "test.myorg.org"
 }
-# tftest modules=14 resources=80
+# tftest modules=14 resources=84
 ```
