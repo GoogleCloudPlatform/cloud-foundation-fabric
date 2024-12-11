@@ -38,7 +38,6 @@ variable "dataproc_config" {
         node_group_affinity = optional(object({
           node_group_uri = string
         }))
-
         shielded_instance_config = optional(object({
           enable_secure_boot          = bool
           enable_vtpm                 = bool
@@ -138,7 +137,6 @@ variable "dataproc_config" {
         dataproc_metastore_service = string
       }))
     }))
-
     virtual_cluster_config = optional(object({
       staging_bucket = optional(string)
       auxiliary_services_config = optional(object({
@@ -155,7 +153,6 @@ variable "dataproc_config" {
           component_version = map(string)
           properties        = optional(map(string))
         })
-
         gke_cluster_config = object({
           gke_cluster_target = optional(string)
           node_pool_target = optional(object({
@@ -166,7 +163,6 @@ variable "dataproc_config" {
                 min_node_count = optional(number)
                 max_node_count = optional(number)
               }))
-
               config = object({
                 machine_type     = optional(string)
                 preemptible      = optional(bool)
@@ -174,7 +170,6 @@ variable "dataproc_config" {
                 min_cpu_platform = optional(string)
                 spot             = optional(bool)
               })
-
               locations = optional(list(string))
             }))
           }))
