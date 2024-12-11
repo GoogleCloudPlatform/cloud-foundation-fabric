@@ -40,7 +40,7 @@ locals {
       documentation  = null
     }, v)
   }
-  alerts = merge(local._alerts_factory_data, var.logging_metrics)
+  alerts = merge(local._alerts_factory_data, var.alerts)
 }
 
 resource "google_monitoring_alert_policy" "default" {
