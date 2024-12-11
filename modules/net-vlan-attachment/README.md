@@ -38,9 +38,10 @@ module "example-va" {
     name   = google_compute_router.interconnect-router.name
   }
   dedicated_interconnect_config = {
+    # cloud router gets 169.254.0.1 peer router gets 169.254.0.2
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/30"
-    interconnect = "interconnect-a"
+    bgp_range    = "169.254.0.0/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag     = 12345
   }
 }
@@ -92,8 +93,8 @@ module "example-va" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/30"
-    interconnect = "interconnect-a"
+    bgp_range    = "169.254.0.0/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag     = 12345
   }
 }
@@ -226,8 +227,8 @@ module "example-va-a" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/30"
-    interconnect = "interconnect-a"
+    bgp_range    = "169.254.0.0/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag     = 1001
   }
 }
@@ -246,8 +247,8 @@ module "example-va-b" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.4/30"
-    interconnect = "interconnect-b"
+    bgp_range    = "169.254.0.8/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-b"
     vlan_tag     = 1002
   }
 }
@@ -364,7 +365,7 @@ module "example-va-a-ew8" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/30"
+    bgp_range    = "169.254.0.0/29"
     interconnect = "interconnect-a-ew8"
     vlan_tag     = 1001
   }
@@ -384,7 +385,7 @@ module "example-va-b-ew8" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.4/30"
+    bgp_range    = "169.254.0.8/29"
     interconnect = "interconnect-b-ew8"
     vlan_tag     = 1002
   }
@@ -404,7 +405,7 @@ module "example-va-a-ew12" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.1.0/30"
+    bgp_range    = "169.254.1.0/29"
     interconnect = "interconnect-a-ew12"
     vlan_tag     = 1003
   }
@@ -424,7 +425,7 @@ module "example-va-b-ew12" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.1.4/30"
+    bgp_range    = "169.254.1.8/29"
     interconnect = "interconnect-b-ew12"
     vlan_tag     = 1004
   }
@@ -572,8 +573,8 @@ module "example-va-a" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/30"
-    interconnect = "interconnect-a"
+    bgp_range    = "169.254.0.0/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag     = 1001
   }
   vpn_gateways_ip_range = "10.255.255.0/29" # Allows for up to 8 tunnels
@@ -593,8 +594,8 @@ module "example-va-b" {
   }
   dedicated_interconnect_config = {
     bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.4/30"
-    interconnect = "interconnect-b"
+    bgp_range    = "169.254.0.8/29"
+    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-b"
     vlan_tag     = 1002
   }
   vpn_gateways_ip_range = "10.255.255.8/29" # Allows for up to 8 tunnels
