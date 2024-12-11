@@ -76,16 +76,15 @@ module "cluster" {
   deletion_protection = var.cluster_create.deletion_protection
   name                = var.cluster_name
   location            = var.region
-  vpc_config = {
-    network                  = local.cluster_vpc.network
-    subnetwork               = local.cluster_vpc.subnet
-    secondary_range_names    = local.cluster_vpc.secondary_range_names
-    master_authorized_ranges = var.cluster_create.master_authorized_ranges
-    master_ipv4_cidr_block   = var.cluster_create.master_ipv4_cidr_block
+  access_config = {
+    ip_access = {
+      authorized_ranges = var.cluster_create.master_authorized_ranges
+    }
   }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = true
+  vpc_config = {
+    network               = local.cluster_vpc.network
+    subnetwork            = local.cluster_vpc.subnet
+    secondary_range_names = local.cluster_vpc.secondary_range_names
   }
   node_config = {
     service_account = module.cluster-service-account[0].email
