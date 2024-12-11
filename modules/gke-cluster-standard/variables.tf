@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+variable "access_config" {
+  description = "Control plane endpoint and nodes access configurations."
+  type = object({
+    dns_access = optional(bool, true)
+    ip_access = optional(object({
+      authorized_ranges       = optional(map(string), {})
+      disable_public_endpoint = optional(bool, true)
+      private_endpoint_config = optional(object({
+        endpoint_subnetwork = optional(string)
+        global_access       = optional(bool, true)
+      }), {})
+    }), {})
+    private_nodes = optional(bool, true)
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = (
+      try(var.access_config.ip_access.disable_public_endpoint, null) != true ||
+      var.access_config.private_nodes == true
+    )
+    error_message = "Private endpoint can only be enabled with private nodes."
+  }
+}
 
 variable "backup_configs" {
   description = "Configuration for Backup for GKE."
@@ -114,22 +138,6 @@ variable "cluster_autoscaling" {
     )
     error_message = "Upgrade settings can only use blue/green or surge."
   }
-}
-
-variable "control_plane_endpoint_config" {
-  description = "Configure access to the control plane endpoint."
-  type = object({
-    dns_access = optional(bool, true)
-    ip_access = optional(object({
-      disable_google_cloud_access = optional(bool)
-      enable_global_access        = optional(bool, true)
-      # only with private nodes
-      enable_private_endpoint  = optional(bool, true)
-      master_authorized_ranges = optional(map(string), {})
-    }))
-  })
-  nullable = false
-  default  = {}
 }
 
 variable "default_nodepool" {
@@ -415,11 +423,9 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    disable_default_snat       = optional(bool)
-    network                    = string
-    subnetwork                 = string
-    master_ipv4_cidr_block     = optional(string)
-    master_endpoint_subnetwork = optional(string)
+    disable_default_snat = optional(bool)
+    network              = string
+    subnetwork           = string
     secondary_range_blocks = optional(object({
       pods     = string
       services = string
