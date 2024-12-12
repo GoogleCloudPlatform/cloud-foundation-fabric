@@ -14,15 +14,105 @@
 
 values:
   module.cluster-1.google_container_cluster.cluster:
+    addons_config:
+    - cloudrun_config:
+      - disabled: true
+        load_balancer_type: null
+      config_connector_config:
+      - enabled: false
+      gke_backup_agent_config:
+      - enabled: false
+      horizontal_pod_autoscaling:
+      - disabled: false
+      http_load_balancing:
+      - disabled: false
+      kalm_config:
+      - enabled: false
+    allow_net_admin: false
+    binary_authorization: []
+    cluster_autoscaling:
+    - auto_provisioning_defaults:
+      - boot_disk_kms_key: null
+        disk_size: null
+        disk_type: null
+        image_type: null
+        min_cpu_platform: null
+        service_account: default
+        shielded_instance_config: []
+      autoscaling_profile: null
+      resource_limits: []
+    control_plane_endpoints_config:
+    - dns_endpoint_config:
+      - allow_external_traffic: true
+    deletion_protection: true
+    description: null
+    dns_config: []
+    effective_labels:
+      environment: dev
+      goog-terraform-provisioned: 'true'
+    enable_autopilot: true
+    enable_cilium_clusterwide_network_policy: false
+    enable_fqdn_network_policy: false
+    enable_intranode_visibility: true
+    enable_k8s_beta_apis: []
+    enable_kubernetes_alpha: false
+    enable_l4_ilb_subsetting: false
+    enable_legacy_abac: false
+    enable_multi_networking: false
+    enable_shielded_nodes: true
+    enable_tpu: false
+    fleet: []
+    initial_node_count: 1
+    ip_allocation_policy:
+    - additional_pod_ranges_config: []
+      cluster_secondary_range_name: pods
+      services_secondary_range_name: services
+      stack_type: IPV4
+    location: europe-west1
+    logging_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+      - WORKLOADS
+    maintenance_policy:
+    - daily_maintenance_window:
+      - start_time: 03:00
+      maintenance_exclusion: []
+      recurring_window: []
+    master_auth:
+    - client_certificate_config:
+      - issue_client_certificate: false
+    master_authorized_networks_config:
+    - cidr_blocks:
+      - cidr_block: 10.0.0.0/8
+        display_name: internal-vms
+    min_master_version: null
+    monitoring_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+      managed_prometheus:
+      - enabled: true
+    name: cluster-1
+    network: projects/xxx/global/networks/aaa
+    network_policy: []
+    networking_mode: VPC_NATIVE
+    pod_security_policy_config: []
     private_cluster_config:
     - enable_private_endpoint: true
       enable_private_nodes: true
       master_global_access_config:
-      - enabled: false
-      master_ipv4_cidr_block: 192.168.0.0/28
+      - enabled: true
       private_endpoint_subnetwork: null
+    project: myproject
+    release_channel:
+    - channel: REGULAR
+    remove_default_node_pool: null
     resource_labels:
       environment: dev
-
-counts:
-  google_container_cluster: 1
+    resource_usage_export_config: []
+    secret_manager_config: []
+    subnetwork: subnet_self_link
+    terraform_labels:
+      environment: dev
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    user_managed_keys_config: []
