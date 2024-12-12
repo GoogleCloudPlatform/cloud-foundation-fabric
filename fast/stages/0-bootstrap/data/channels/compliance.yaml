@@ -1,0 +1,6 @@
+compliance-default:
+  type: email
+  display_name: "Default Email Notifications"
+  email_address: test@company.com
+  labels:
+    email_address: "fake_email@blahblah.com"

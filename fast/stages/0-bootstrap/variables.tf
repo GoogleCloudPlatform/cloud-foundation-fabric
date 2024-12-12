@@ -91,6 +91,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  nullable    = false
+}
+
 variable "environments" {
   description = "Environment names."
   type = map(object({
@@ -136,11 +142,13 @@ variable "factories_config" {
     custom_roles     = optional(string, "data/custom-roles")
     org_policies     = optional(string, "data/org-policies")
     org_policies_iac = optional(string, "data/org-policies-iac")
+    logging_metrics  = optional(string, "data/logging-metrics")
+    channels         = optional(string, "data/channels")
+    alerts           = optional(string, "data/alerts")
   })
   nullable = false
   default  = {}
 }
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."

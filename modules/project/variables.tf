@@ -47,6 +47,12 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "default_alerts_email" {
+  description = "Default email address for alerting."
+  type        = string
+  default     = null
+}
+
 variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"
@@ -81,9 +87,12 @@ variable "descriptive_name" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    custom_roles = optional(string)
-    org_policies = optional(string)
-    quotas       = optional(string)
+    custom_roles    = optional(string)
+    org_policies    = optional(string)
+    quotas          = optional(string)
+    alerts          = optional(string)
+    channels        = optional(string)
+    logging_metrics = optional(string)
   })
   nullable = false
   default  = {}

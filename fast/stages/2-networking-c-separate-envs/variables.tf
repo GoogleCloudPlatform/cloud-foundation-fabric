@@ -69,6 +69,9 @@ variable "factories_config" {
     data_dir              = optional(string, "data")
     dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
     firewall_policy_name  = optional(string, "net-default")
+    logging_metrics       = optional(string, "data/logging-metrics")
+    channels              = optional(string, "data/channels")
+    alerts                = optional(string, "data/alerts")
   })
   default = {
     data_dir = "data"

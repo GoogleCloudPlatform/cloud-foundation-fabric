@@ -20,6 +20,12 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
+  default_alerts_email = var.default_alerts_email
   parent = coalesce(
     var.folder_ids.networking-dev,
     var.folder_ids.networking

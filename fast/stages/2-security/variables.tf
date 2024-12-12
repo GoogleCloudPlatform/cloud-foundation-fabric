@@ -181,6 +181,16 @@ variable "essential_contacts" {
   default     = null
 }
 
+variable "factories_config" {
+  description = "Configuration for network resource factories."
+  type = object({
+    logging_metrics = optional(string, "data/logging-metrics")
+    channels        = optional(string, "data/channels")
+    alerts          = optional(string, "data/alerts")
+  })
+  nullable = false
+}
+
 variable "kms_keys" {
   description = "KMS keys to create, keyed by name."
   type = map(object({

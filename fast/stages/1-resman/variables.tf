@@ -23,6 +23,9 @@ variable "factories_config" {
     org_policies      = optional(string, "data/org-policies")
     stage_3           = optional(string, "data/stage-3")
     top_level_folders = optional(string, "data/top-level-folders")
+    logging_metrics   = optional(string, "data/logging-metrics")
+    channels          = optional(string, "data/channels")
+    alerts            = optional(string, "data/alerts")
   })
   nullable = false
   default  = {}
