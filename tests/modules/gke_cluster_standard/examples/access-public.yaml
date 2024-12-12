@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,11 +45,7 @@ values:
       - enabled: false
     allow_net_admin: null
     binary_authorization: []
-    control_plane_endpoints_config:
-    - dns_endpoint_config:
-      - allow_external_traffic: true
-    datapath_provider: ADVANCED_DATAPATH
-    default_max_pods_per_node: 110
+    default_max_pods_per_node: 32
     deletion_protection: true
     description: null
     dns_config: []
@@ -58,7 +54,7 @@ values:
       goog-terraform-provisioned: 'true'
     enable_autopilot: null
     enable_cilium_clusterwide_network_policy: false
-    enable_fqdn_network_policy: true
+    enable_fqdn_network_policy: false
     enable_intranode_visibility: false
     enable_k8s_beta_apis: []
     enable_kubernetes_alpha: false
@@ -71,6 +67,8 @@ values:
     initial_node_count: 1
     ip_allocation_policy:
     - additional_pod_ranges_config: []
+      cluster_secondary_range_name: pods
+      services_secondary_range_name: services
       stack_type: IPV4
     location: europe-west1-b
     logging_config:
@@ -85,14 +83,16 @@ values:
     - client_certificate_config:
       - issue_client_certificate: false
     master_authorized_networks_config:
-    - cidr_blocks: []
+    - cidr_blocks:
+      - cidr_block: 8.8.8.8/32
+        display_name: corporate proxy
     min_master_version: null
     monitoring_config:
     - enable_components:
       - SYSTEM_COMPONENTS
       managed_prometheus:
       - enabled: true
-    name: cluster-dataplane-v2
+    name: cluster-1
     network: projects/xxx/global/networks/aaa
     network_policy: []
     node_config:
@@ -126,19 +126,13 @@ values:
         gcfs_config:
         - enabled: false
     pod_security_policy_config: []
-    private_cluster_config:
-    - enable_private_endpoint: true
-      enable_private_nodes: true
-      master_global_access_config:
-      - enabled: true
-      private_endpoint_subnetwork: null
+    private_cluster_config: []
     project: myproject
     remove_default_node_pool: true
     resource_labels:
       environment: dev
     resource_usage_export_config: []
-    secret_manager_config:
-    - enabled: true
+    secret_manager_config: []
     subnetwork: subnet_self_link
     terraform_labels:
       environment: dev
