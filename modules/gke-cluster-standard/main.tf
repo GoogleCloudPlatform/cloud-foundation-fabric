@@ -249,6 +249,14 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
+  dynamic "control_plane_endpoints_config" {
+    for_each = var.access_config.dns_access == true ? [""] : []
+    content {
+      dns_endpoint_config {
+        allow_external_traffic = true
+      }
+    }
+  }
   dynamic "database_encryption" {
     for_each = var.enable_features.database_encryption != null ? [""] : []
     content {
@@ -384,10 +392,10 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "master_authorized_networks_config" {
-    for_each = var.vpc_config.master_authorized_ranges != null ? [""] : []
+    for_each = try(var.access_config.ip_access.authorized_ranges, null) != null ? [""] : []
     content {
       dynamic "cidr_blocks" {
-        for_each = var.vpc_config.master_authorized_ranges
+        for_each = var.access_config.ip_access.authorized_ranges
         iterator = range
         content {
           cidr_block   = range.value
@@ -464,16 +472,21 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "private_cluster_config" {
-    for_each = (
-      var.private_cluster_config != null ? [""] : []
-    )
+    for_each = var.access_config.private_nodes == true ? [""] : []
     content {
-      enable_private_nodes        = true
-      enable_private_endpoint     = var.private_cluster_config.enable_private_endpoint
-      private_endpoint_subnetwork = try(var.vpc_config.master_endpoint_subnetwork, null)
-      master_ipv4_cidr_block      = try(var.vpc_config.master_ipv4_cidr_block, null)
+      enable_private_nodes = true
+      enable_private_endpoint = (
+        var.access_config.ip_access.disable_public_endpoint
+      )
+      private_endpoint_subnetwork = try(
+        var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
+        null
+      )
       master_global_access_config {
-        enabled = var.private_cluster_config.master_global_access
+        enabled = try(
+          var.access_config.ip_access.private_endpoint_config.global_access,
+          null
+        )
       }
     }
   }
@@ -598,21 +611,6 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
 
     }
   }
-}
-
-
-resource "google_compute_network_peering_routes_config" "gke_master" {
-  count = (
-    try(var.private_cluster_config.peering_config, null) != null ? 1 : 0
-  )
-  project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
-  peering = try(
-    google_container_cluster.cluster.private_cluster_config[0].peering_name,
-    null
-  )
-  network              = element(reverse(split("/", var.vpc_config.network)), 0)
-  import_custom_routes = var.private_cluster_config.peering_config.import_routes
-  export_custom_routes = var.private_cluster_config.peering_config.export_routes
 }
 
 resource "google_pubsub_topic" "notifications" {

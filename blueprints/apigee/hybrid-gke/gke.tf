@@ -19,18 +19,19 @@ module "cluster" {
   project_id = module.project.project_id
   name       = "cluster"
   location   = var.region
+  access_config = {
+    ip_access = {
+      authorized_ranges = (
+        var.cluster_network_config.master_authorized_cidr_blocks
+      )
+    }
+  }
   vpc_config = {
-    network                  = module.vpc.self_link
-    subnetwork               = module.vpc.subnet_self_links["${var.region}/subnet-apigee"]
-    secondary_range_names    = {}
-    master_authorized_ranges = var.cluster_network_config.master_authorized_cidr_blocks
-    master_ipv4_cidr_block   = var.cluster_network_config.master_cidr_block
+    network               = module.vpc.self_link
+    subnetwork            = module.vpc.subnet_self_links["${var.region}/subnet-apigee"]
+    secondary_range_names = {}
   }
   max_pods_per_node = 32
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = false
-  }
   enable_features = {
     workload_identity = true
   }

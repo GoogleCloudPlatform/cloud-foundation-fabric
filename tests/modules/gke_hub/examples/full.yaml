@@ -45,11 +45,16 @@ values:
       - enabled: false
     allow_net_admin: null
     binary_authorization: []
+    control_plane_endpoints_config:
+    - dns_endpoint_config:
+      - allow_external_traffic: true
     datapath_provider: ADVANCED_DATAPATH
     default_max_pods_per_node: 110
     deletion_protection: true
     description: null
     dns_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     enable_autopilot: null
     enable_cilium_clusterwide_network_policy: false
     enable_fqdn_network_policy: false
@@ -99,6 +104,7 @@ values:
       host_maintenance_policy: []
       linux_node_config: []
       local_nvme_ssd_block_config: []
+      local_ssd_encryption_mode: null
       node_group: null
       preemptible: false
       reservation_affinity: []
@@ -108,6 +114,7 @@ values:
       secondary_boot_disks: []
       sole_tenant_config: []
       spot: false
+      storage_pools: null
       tags: null
       taint: []
     node_pool_defaults:
@@ -120,29 +127,36 @@ values:
     - enable_private_endpoint: true
       enable_private_nodes: true
       master_global_access_config:
-      - enabled: false
-      master_ipv4_cidr_block: 192.168.0.0/28
+      - enabled: true
       private_endpoint_subnetwork: null
     project: gkehub-test
     remove_default_node_pool: true
     resource_labels: null
     resource_usage_export_config: []
     secret_manager_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
+    user_managed_keys_config: []
     workload_identity_config:
     - workload_pool: gkehub-test.svc.id.goog
   module.hub.google_gke_hub_feature.default["configmanagement"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     fleet_default_member_config: []
     labels: null
     location: global
     name: configmanagement
     project: gkehub-test
     spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.hub.google_gke_hub_feature_membership.default["cluster-1"]:
     configmanagement:
     - config_sync:
-      - git:
+      - enabled: true
+        git:
         - gcp_service_account_email: null
           https_proxy: null
           policy_dir: configsync
@@ -154,6 +168,7 @@ values:
         metrics_gcp_service_account_email: null
         oci: []
         source_format: hierarchy
+        stop_syncing: null
       hierarchy_controller:
       - enable_hierarchical_resource_quota: true
         enable_pod_tree_labels: true
@@ -178,6 +193,8 @@ values:
   module.hub.google_gke_hub_membership.default["cluster-1"]:
     authority: []
     description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     endpoint:
     - gke_cluster:
       - {}
@@ -185,16 +202,23 @@ values:
     location: global
     membership_id: cluster-1
     project: gkehub-test
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.project.google_project.project[0]:
     auto_create_network: false
-    deletion_policy: 'DELETE'
     billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     folder_id: '12345'
     labels: null
     name: gkehub-test
     org_id: null
     project_id: gkehub-test
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.project.google_project_iam_member.service_agents["anthosconfigmanagement"]:
     condition: []
@@ -328,7 +352,9 @@ values:
     private_ip_google_access: true
     project: gkehub-test
     region: europe-west1
+    reserved_internal_range: null
     role: null
+    send_secondary_ip_range_if_empty: true
     timeouts: null
 
 counts:
