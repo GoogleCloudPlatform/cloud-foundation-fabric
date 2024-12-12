@@ -1,3 +1,4 @@
+# skip boilerplate check
 name: Feature Request
 description: Submit a feature request.
 title: "[FR]: "
@@ -6,12 +7,12 @@ body:
   - type: markdown
     attributes:
       value: >
-        Thanks for submitting a feature request! This issue tracker is for 
+        Thanks for submitting a feature request! This issue tracker is for
         [Cloud Foundation Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric).
         Please search the issue tracker to see if there is an existing issue for the feature you are requesting.
 
-        
-        For general questions or discussions, please use the 
+
+        For general questions or discussions, please use the
         [Discussions](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/discussions) tab
   - type: textarea
     id: the-feature-request
