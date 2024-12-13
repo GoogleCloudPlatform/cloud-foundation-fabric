@@ -125,7 +125,7 @@ resource "google_monitoring_alert_policy" "default" {
   notification_channels = [
     try(google_monitoring_notification_channel.this[each.value.notification_channels].id,
     each.value.notification_channels),
-    try(google_monitoring_notification_channel.default[0].id, null)
+    try(google_monitoring_notification_channel.default[0].id, "")
   ]
   dynamic "alert_strategy" {
     for_each = lookup(each.value, "alert_strategy", null)[*]

@@ -1360,8 +1360,211 @@ module "bucket" {
 # tftest inventory=data.yaml e2e
 ```
 
+## Notification Channels
+
+Project Notification Channels can be managed via the `notification_channels` variable
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  notification_channels = {
+    channel-1 = {
+      display_name = "channel-1"
+      enabled      = true
+      type         = "email"
+      labels = {
+        email_address = "hello@company.com"
+        services = [
+          "cloudquotas.googleapis.com",
+          "compute.googleapis.com"
+        ]
+      }
+    }
+  }
+}
+```
+
+## Notification Channels factory
+
+Notification Channels can be also specified via a factory in a similar way to organization policies, policy constraints and custom roles by pointing to a directory containing YAML files where each file defines one or more Notification Channels. The structure of the YAML files is exactly the same as the `notification_channels` variable.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    notification_channels = "data/notification_channels"
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+```
+
+```yaml
+channel-1:
+  display_name: channel-1
+  enabled: true
+  type: email
+  labels:
+    email_address: hello@company.com
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+
+##  Alerts
+
+Project alerts can be managed via the `alerts` variable
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  alerts = {
+    alert-1 = {
+      display_name = "alert-1"
+      enabled      = true
+      conditions = {
+        display_name = "condition-1"
+        condition_threshold = {
+          filter = "metric.type=\"compute.googleapis.com/instance/disk/write_bytes_count\""
+          comparison = "COMPARISON_GT"
+          threshold_value = 100
+          duration = "60s"
+          aggregations = {
+            alignment_period = "60s"
+            per_series_aligner = "ALIGN_RATE"
+          }
+        }
+      }
+      notification_channels = ["projects/${var.project_id}/notificationChannels/${channel_id}"]
+    }
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+```
+
+Notification channels can also reference notification channels created in the same module, just specify the channel name in the `notification_channels` attribute e.g.
+
+```hcl
+notification_channels = ["channel-1"]
+```
+
+## Alerts factory
+
+Alerts can be also specified via a factory in a similar way to organization policies, policy constraints and custom roles by pointing to a directory containing YAML files where each file defines one or more Alerts. The structure of the YAML files is exactly the same as the `Alerts` variable.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    alerts = "data/alerts"
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+```
+
+```yaml
+alert-1:
+  display_name: alert-1
+  enabled: true
+  conditions:
+    display_name: condition-1
+    condition_threshold:
+      filter: metric.type="compute.googleapis.com/instance/disk/write_bytes_count"
+      comparison: COMPARISON_GT
+      threshold_value: 100
+      duration: 60s
+      aggregations:
+        alignment_period: 60s
+        per_series_aligner: ALIGN_RATE
+  notification_channels:
+    - projects/${var.project_id}/notificationChannels/${channel_id}
+```
+##  Logging Metrics
+
+Project Logging Based Metrics  can be managed via the `logging_metrics` variable
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  logging_metrics = {
+      metric-1 = {
+      name = "metric-1"
+      filter = "resource.type=\"gce_instance\""
+      description = "This is a metric"
+      metric_descriptor = {
+          metric_kind = "GAUGE"
+          value_type = "DOUBLE"
+          unit = "ms"
+      }
+      }
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+```
+
+## Logging Metrics factory
+
+Logging Metrics can be also specified via a factory in a similar way to organization policies, policy constraints and custom roles by pointing to a directory containing YAML files where each file defines one or more Logging Metrics. The structure of the YAML files is exactly the same as the `logging_metrics` variable.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    logging_metrics = "data/logging_metrics"
+  }
+  services = [
+    "cloudquotas.googleapis.com",
+    "compute.googleapis.com"
+  ]
+}
+```
+
+```yaml
+metric-1:
+  name: metric-1
+  filter: resource.type="gce_instance"
+  description: This is a metric
+  metric_descriptor:
+    metric_kind: GAUGE
+    value_type: DOUBLE
+    unit: ms
+```
+
+<!-- TFDOC OPTS files:1 -->
+<!-- BEGIN TFDOC -->
+
 ## Files
 
 | name | description | resources |

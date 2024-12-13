@@ -106,17 +106,14 @@ variable "default_alerts_email" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    folders_data_path  = optional(string)
-    projects_data_path = optional(string)
-    logging_metrics    = optional(string)
-    channels           = optional(string)
-    alerts             = optional(string)
+    alerts = optional(string)
     budgets = optional(object({
       billing_account   = string
       budgets_data_path = string
       # TODO: allow defining notification channels via YAML files
       notification_channels = optional(map(any), {})
     }))
+    channels = optional(string)
     context = optional(object({
       # TODO: add KMS keys
       folder_ids        = optional(map(string), {})
@@ -124,6 +121,9 @@ variable "factories_config" {
       tag_values        = optional(map(string), {})
       vpc_host_projects = optional(map(string), {})
     }), {})
+    folders_data_path  = optional(string)
+    projects_data_path = optional(string)
+    logging_metrics    = optional(string)
   })
   nullable = false
 }

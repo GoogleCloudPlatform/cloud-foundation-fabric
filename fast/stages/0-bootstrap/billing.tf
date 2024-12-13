@@ -38,14 +38,9 @@ locals {
 # billing account in same org (IAM is in the organization.tf file)
 
 module "billing-export-project" {
-  source          = "../../../modules/project"
-  count           = local.billing_mode == "org" ? 1 : 0
-  billing_account = var.billing_account.id
-  factories_config = {
-    alerts          = var.factories_config.alerts
-    channels        = var.factories_config.channels
-    logging_metrics = var.factories_config.logging_metrics
-  }
+  source               = "../../../modules/project"
+  count                = local.billing_mode == "org" ? 1 : 0
+  billing_account      = var.billing_account.id
   default_alerts_email = var.default_alerts_email
   name                 = "billing-exp-0"
   parent = coalesce(
@@ -57,6 +52,11 @@ module "billing-export-project" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  factories_config = {
+    alerts          = var.factories_config.alerts
+    channels        = var.factories_config.channels
+    logging_metrics = var.factories_config.logging_metrics
+  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

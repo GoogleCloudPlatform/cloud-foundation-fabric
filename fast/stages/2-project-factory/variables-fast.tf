@@ -30,7 +30,7 @@ variable "billing_account" {
 variable "default_alerts_email" {
   description = "Default email address for alerting."
   type        = string
-  nullable    = false
+  default     = null
 }
 
 variable "folder_ids" {

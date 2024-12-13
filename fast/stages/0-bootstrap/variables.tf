@@ -94,7 +94,7 @@ variable "custom_roles" {
 variable "default_alerts_email" {
   description = "Default email address for alerting."
   type        = string
-  nullable    = false
+  default     = null
 }
 
 variable "environments" {
@@ -139,12 +139,12 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
+    alerts           = optional(string, "data/alerts")
+    channels         = optional(string, "data/channels")
     custom_roles     = optional(string, "data/custom-roles")
+    logging_metrics  = optional(string, "data/logging-metrics")
     org_policies     = optional(string, "data/org-policies")
     org_policies_iac = optional(string, "data/org-policies-iac")
-    logging_metrics  = optional(string, "data/logging-metrics")
-    channels         = optional(string, "data/channels")
-    alerts           = optional(string, "data/alerts")
   })
   nullable = false
   default  = {}

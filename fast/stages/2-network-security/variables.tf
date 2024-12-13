@@ -17,14 +17,14 @@
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    cidrs = optional(string, "data/cidrs.yaml")
+    alerts   = optional(string, "data/alerts")
+    channels = optional(string, "data/channels")
+    cidrs    = optional(string, "data/cidrs.yaml")
     firewall_policy_rules = optional(object({
       dev  = string
       prod = string
     }))
     logging_metrics = optional(string, "data/logging-metrics")
-    channels        = optional(string, "data/channels")
-    alerts          = optional(string, "data/alerts")
   })
   nullable = false
   default = {

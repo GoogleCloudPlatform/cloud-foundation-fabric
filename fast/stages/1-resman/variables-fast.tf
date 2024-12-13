@@ -71,7 +71,7 @@ variable "custom_roles" {
 variable "default_alerts_email" {
   description = "Default email address for alerting."
   type        = string
-  nullable    = false
+  default     = null
 }
 
 variable "environments" {

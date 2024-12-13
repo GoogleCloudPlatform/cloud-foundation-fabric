@@ -184,9 +184,9 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    logging_metrics = optional(string, "data/logging-metrics")
-    channels        = optional(string, "data/channels")
     alerts          = optional(string, "data/alerts")
+    channels        = optional(string, "data/channels")
+    logging_metrics = optional(string, "data/logging-metrics")
   })
   nullable = false
 }

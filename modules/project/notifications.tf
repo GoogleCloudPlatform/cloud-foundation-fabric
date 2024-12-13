@@ -33,7 +33,7 @@ locals {
       description      = null
     }, v)
   }
-  channels = merge(local._channels_factory_data, var.channels)
+  channels = merge(local._channels_factory_data, var.notification_channels)
 }
 
 resource "google_monitoring_notification_channel" "default" {
