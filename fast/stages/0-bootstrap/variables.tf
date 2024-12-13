@@ -17,11 +17,22 @@
 variable "billing_account" {
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`."
   type = object({
-    id           = string
+    id = string
+    force_create = optional(object({
+      dataset = optional(bool, false)
+      project = optional(bool, false)
+    }), {})
     is_org_level = optional(bool, true)
     no_iam       = optional(bool, false)
   })
   nullable = false
+  validation {
+    condition = (
+      var.billing_account.force_create.dataset != true ||
+      var.billing_account.force_create.project == true
+    )
+    error_message = "Forced dataset creation also needs project creation."
+  }
 }
 
 variable "bootstrap_user" {
