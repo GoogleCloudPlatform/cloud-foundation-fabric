@@ -230,6 +230,8 @@ variable "log_sinks" {
   nullable = false
   default = {
     audit-logs = {
+      # activity logs include Google Workspace / Cloud Identity logs
+      # exclude them via additional filter stanza if needed
       filter = <<-FILTER
         log_id("cloudaudit.googleapis.com/activity") OR
         log_id("cloudaudit.googleapis.com/system_event") OR
@@ -257,7 +259,8 @@ variable "log_sinks" {
     }
     workspace-audit-logs = {
       filter = <<-FILTER
-        log_id("cloudaudit.googleapis.com/data_access") AND
+        protoPayload.serviceName="admin.googleapis.com" OR
+        protoPayload.serviceName="cloudidentity.googleapis.com" OR
         protoPayload.serviceName="login.googleapis.com"
       FILTER
       type   = "logging"
