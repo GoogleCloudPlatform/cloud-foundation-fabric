@@ -111,6 +111,11 @@ locals {
       }
       default_alerts_email = var.default_alerts_email
     }
+    billing = {
+      dataset        = try(module.billing-export-dataset[0].id, null)
+      project_id     = try(module.billing-export-project[0].project_id, null)
+      project_number = try(module.billing-export-project[0].number, null)
+    }
     custom_roles = module.organization.custom_role_id
     logging = {
       project_id        = module.log-export-project.project_id

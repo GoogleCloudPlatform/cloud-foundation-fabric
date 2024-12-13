@@ -38,11 +38,12 @@ locals {
 # billing account in same org (IAM is in the organization.tf file)
 
 module "billing-export-project" {
-  source               = "../../../modules/project"
-  count                = local.billing_mode == "org" ? 1 : 0
-  billing_account      = var.billing_account.id
-  default_alerts_email = var.default_alerts_email
-  name                 = "billing-exp-0"
+  source = "../../../modules/project"
+  count = (
+    local.billing_mode == "org" || var.billing_account.force_create.project == true ? 1 : 0
+  )
+  billing_account = var.billing_account.id
+  name            = "billing-exp-0"
   parent = coalesce(
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
@@ -52,6 +53,7 @@ module "billing-export-project" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  default_alerts_email = var.default_alerts_email
   factories_config = {
     alerts          = var.factories_config.alerts
     channels        = var.factories_config.channels
@@ -72,8 +74,10 @@ module "billing-export-project" {
 }
 
 module "billing-export-dataset" {
-  source        = "../../../modules/bigquery-dataset"
-  count         = local.billing_mode == "org" ? 1 : 0
+  source = "../../../modules/bigquery-dataset"
+  count = (
+    local.billing_mode == "org" || var.billing_account.force_create.dataset == true ? 1 : 0
+  )
   project_id    = module.billing-export-project[0].project_id
   id            = "billing_export"
   friendly_name = "Billing export."

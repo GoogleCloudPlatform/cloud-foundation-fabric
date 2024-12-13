@@ -1,0 +1,92 @@
+# skip boilerplate check
+name: Bug report
+description: Create a report to help us improve
+body:
+  - type: markdown
+    attributes:
+      value:
+        Thanks for submitting a bug! This issue tracker is for
+        [Cloud Foundation Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric).
+        Please search the issue tracker to see if there is an existing issue for the bug you are reporting.
+
+
+        For general questions or discussions, please use the
+        [Discussions](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/discussions) tab
+
+  - type: checkboxes
+    id: affected-components
+    attributes:
+      label: Affected components
+      options:
+        - label: Fabric modules
+        - label: FAST
+        - label: Blueprints
+        - label: Other
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: the-problem
+    attributes:
+      label: The problem
+      description:
+        Describe the issue you are experiencing. Provide a clear and concise
+        description of what you were trying to do and what happened, along with
+        any error messages you encountered.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Release version
+      description:
+        Output from `git rev-parse --short HEAD`
+    validations:
+      required: true
+
+  - type: input
+    id: tf-version
+    attributes:
+      label: Terraform version
+      description:
+        Output from `terraform -version`
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description:
+        Provide the steps to reproduce the behavior. Please include any relevant terraform code.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description:
+        A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-result
+    attributes:
+      label: Actual behavior
+      description:
+        A clear and concise description of what actually happened.
+        Include any relevant Terraform output and/or error messages
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description:
+         To help us understand the issue, please include any relevant screenshots,
+         Terraform plan/apply output, etc.

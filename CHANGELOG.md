@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
 - [[#2752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2752)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-08 09:34:19+00:00 -->
 - [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
@@ -15,11 +16,15 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2744)] Fix parent id lookup for networking and security in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-04 20:08:31+00:00 -->
 - [[#2733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2733)] **incompatible change:** Updating yaml naming in prod subnet folder to match other lifecycles ([mtndrew404](https://github.com/mtndrew404)) <!-- 2024-11-26 06:40:22+00:00 -->
 
 ### MODULES
 
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
+- [[#2764](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2764)] Ignore ssl certificates if none are passed in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 09:37:37+00:00 -->
+- [[#2757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2757)] Update net-vlan-attachment module readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-11 08:00:28+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
 - [[#2740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2740)] Add support for password validation policy to cloudsql module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-09 09:44:15+00:00 -->
 - [[#2750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2750)] Add disk encyption key to the google_compute_instance_template - Sovereign support ([rune92](https://github.com/rune92)) <!-- 2024-12-09 09:30:58+00:00 -->
