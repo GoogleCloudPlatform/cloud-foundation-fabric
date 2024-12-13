@@ -34,7 +34,7 @@ Folder = collections.namedtuple('Folder', 'id name parent_id')
 
 def _org_id(resource_id):
   if resource_id not in ORG_IDS:
-    ORG_IDS[resource_id] = f'[organization #{len(ORG_IDS)}]'
+    ORG_IDS[resource_id] = f'[org-{len(ORG_IDS)}]'
   return ORG_IDS[resource_id]
 
 
