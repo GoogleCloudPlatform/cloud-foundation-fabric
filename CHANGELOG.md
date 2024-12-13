@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2767)] Fix workspace logs sink in FAST bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 13:22:42+00:00 -->
+- [[#2766](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2766)] Allow optional creation of billing resources in FAST boostrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 11:32:17+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2744)] Fix parent id lookup for networking and security in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-04 20:08:31+00:00 -->
 - [[#2733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2733)] **incompatible change:** Updating yaml naming in prod subnet folder to match other lifecycles ([mtndrew404](https://github.com/mtndrew404)) <!-- 2024-11-26 06:40:22+00:00 -->
@@ -41,6 +43,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2765)] Update issue templates ([juliocc](https://github.com/juliocc)) <!-- 2024-12-12 12:40:47+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
 
 ## [36.0.1] - 2024-11-23
