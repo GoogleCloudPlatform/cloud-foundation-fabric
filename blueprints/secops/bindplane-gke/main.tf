@@ -74,9 +74,16 @@ module "bindplane-cluster" {
     master_ipv4_cidr_block   = var.network_config.ip_range_gke_master
     master_authorized_ranges = var.cluster_config.master_authorized_ranges
   }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = true
+  access_config = {
+    dns_access = false
+    ip_access = {
+      authorized_ranges = {
+        "rfc-1918-10-8" = "10.0.0.0/8"
+      }
+      private_endpoint_config = {
+        global_access = true
+      }
+    }
   }
   enable_features = {
     gateway_api = true
