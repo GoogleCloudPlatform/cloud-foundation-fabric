@@ -429,9 +429,9 @@ counts:
   google_kms_crypto_key: 8
   google_kms_crypto_key_iam_binding: 8
   google_kms_key_ring: 8
-  google_logging_metric: 8
-  google_monitoring_alert_policy: 8
-  google_monitoring_notification_channel: 1
+  google_logging_metric: 16
+  google_monitoring_alert_policy: 16
+  google_monitoring_notification_channel: 2
   google_project: 2
   google_project_iam_binding: 4
   google_project_iam_member: 6
@@ -440,4 +440,4 @@ counts:
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
   modules: 11
-  resources: 66
+  resources: 100
