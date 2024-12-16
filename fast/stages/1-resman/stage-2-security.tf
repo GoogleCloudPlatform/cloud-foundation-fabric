@@ -165,10 +165,12 @@ module "sec-folder-dev" {
 # automation service accounts
 
 module "sec-sa-rw" {
-  source                 = "../../../modules/iam-service-account"
-  count                  = var.fast_stage_2.security.enabled ? 1 : 0
-  project_id             = var.automation.project_id
-  name                   = "prod-resman-${var.fast_stage_2.security.short_name}-0"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.security.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-sec_rw"], {
+    name = var.fast_stage_2.security.short_name
+  })
   display_name           = "Terraform resman security service account."
   prefix                 = var.prefix
   service_account_create = var.root_node == null
@@ -186,10 +188,12 @@ module "sec-sa-rw" {
 }
 
 module "sec-sa-ro" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_stage_2.security.enabled ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "prod-resman-${var.fast_stage_2.security.short_name}-0r"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.security.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-sec_ro"], {
+    name = var.fast_stage_2.security.short_name
+  })
   display_name = "Terraform resman security service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -211,7 +215,9 @@ module "sec-bucket" {
   source     = "../../../modules/gcs"
   count      = var.fast_stage_2.security.enabled ? 1 : 0
   project_id = var.automation.project_id
-  name       = "prod-resman-${var.fast_stage_2.security.short_name}-0"
+  name = templatestring(var.resource_names["gcs-sec"], {
+    name = var.fast_stage_2.security.short_name
+  })
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true
