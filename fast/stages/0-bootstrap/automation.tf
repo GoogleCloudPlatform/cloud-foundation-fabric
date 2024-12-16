@@ -28,11 +28,14 @@ locals {
 module "automation-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "iac-core-0"
+  # name            = lookup(var.resource_names, "projects/automation", "${}iac-core-0")
+  name = lookup(
+    var.resource_names, "project/automation", "${local.default_environment.short_name}-iac-core-0"
+  )
   parent = coalesce(
     var.project_parent_ids.automation, "organizations/${var.organization.id}"
   )
-  prefix = local.prefix
+  prefix = var.prefix
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}
@@ -192,8 +195,10 @@ module "automation-project" {
 module "automation-tf-output-gcs" {
   source     = "../../../modules/gcs"
   project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
+  name = lookup(
+    var.resource_names, "gcs/outputs", "${local.default_environment.short_name}-iac-core-outputs-0"
+  )
+  prefix     = var.prefix
   location   = local.locations.gcs
   versioning = true
   depends_on = [module.organization]
@@ -204,19 +209,23 @@ module "automation-tf-output-gcs" {
 module "automation-tf-bootstrap-gcs" {
   source     = "../../../modules/gcs"
   project_id = module.automation-project.project_id
-  name       = "iac-core-bootstrap-0"
-  prefix     = local.prefix
+  name = lookup(
+    var.resource_names, "gcs/bootstrap", "${local.default_environment.short_name}-iac-core-bootstrap-0"
+  )
+  prefix     = var.prefix
   location   = local.locations.gcs
   versioning = true
   depends_on = [module.organization]
 }
 
 module "automation-tf-bootstrap-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "bootstrap-0"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/bootstrap", "${local.default_environment.short_name}-bootstrap-0"
+  )
   display_name = "Terraform organization bootstrap service account."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -229,11 +238,13 @@ module "automation-tf-bootstrap-sa" {
 }
 
 module "automation-tf-bootstrap-r-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "bootstrap-0r"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/bootstrap-ro", "${local.default_environment.short_name}-bootstrap-0r"
+  )
   display_name = "Terraform organization bootstrap service account (read-only)."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -258,8 +269,10 @@ module "automation-tf-bootstrap-r-sa" {
 module "automation-tf-resman-gcs" {
   source     = "../../../modules/gcs"
   project_id = module.automation-project.project_id
-  name       = "iac-core-resman-0"
-  prefix     = local.prefix
+  name = lookup(
+    var.resource_names, "gcs/resman", "${local.default_environment.short_name}-iac-core-resman-0"
+  )
+  prefix     = var.prefix
   location   = local.locations.gcs
   versioning = true
   iam = {
@@ -270,11 +283,13 @@ module "automation-tf-resman-gcs" {
 }
 
 module "automation-tf-resman-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "resman-0"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/resman", "${local.default_environment.short_name}-resman-0"
+  )
   display_name = "Terraform stage 1 resman service account."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
@@ -297,11 +312,13 @@ module "automation-tf-resman-sa" {
 }
 
 module "automation-tf-resman-r-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "resman-0r"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/resman-ro", "${local.default_environment.short_name}-resman-0r"
+  )
   display_name = "Terraform stage 1 resman service account (read-only)."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
@@ -336,8 +353,10 @@ module "automation-tf-resman-r-sa" {
 module "automation-tf-vpcsc-gcs" {
   source     = "../../../modules/gcs"
   project_id = module.automation-project.project_id
-  name       = "iac-core-vpcsc-0"
-  prefix     = local.prefix
+  name = lookup(
+    var.resource_names, "gcs/vpcsc", "${local.default_environment.short_name}-iac-core-vpcsc-0"
+  )
+  prefix     = var.prefix
   location   = local.locations.gcs
   versioning = true
   iam = {
@@ -348,11 +367,13 @@ module "automation-tf-vpcsc-gcs" {
 }
 
 module "automation-tf-vpcsc-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "vpcsc-0"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/vpcsc", "${local.default_environment.short_name}-vpcsc-0"
+  )
   display_name = "Terraform stage 1 vpcsc service account."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = merge(
@@ -375,11 +396,13 @@ module "automation-tf-vpcsc-sa" {
 }
 
 module "automation-tf-vpcsc-r-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.automation-project.project_id
-  name         = "vpcsc-0r"
+  source     = "../../../modules/iam-service-account"
+  project_id = module.automation-project.project_id
+  name = lookup(
+    var.resource_names, "sa/vpcsc-ro", "${local.default_environment.short_name}-vpcsc-0r"
+  )
   display_name = "Terraform stage 1 vpcsc service account (read-only)."
-  prefix       = local.prefix
+  prefix       = var.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
   iam_bindings_additive = local.cicd_vpcsc_r_sa == "" ? {} : {

@@ -76,12 +76,16 @@ locals {
 # SAs used by CI/CD workflows to impersonate automation SAs
 
 module "automation-tf-cicd-sa" {
-  source       = "../../../modules/iam-service-account"
-  for_each     = local.cicd_repositories
-  project_id   = module.automation-project.project_id
-  name         = "${each.key}-1"
+  source     = "../../../modules/iam-service-account"
+  for_each   = local.cicd_repositories
+  project_id = module.automation-project.project_id
+  name = (
+    lookup(var.resource_names, "sa/cicd_template", null) == null
+    ? "${local.default_environment.short_name}-${each.key}-1"
+    : "${var.resource_names["sa/cicd_template"]}${each.key}-1"
+  )
   display_name = "Terraform CI/CD ${each.key} service account."
-  prefix       = local.prefix
+  prefix       = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
@@ -107,12 +111,16 @@ module "automation-tf-cicd-sa" {
 }
 
 module "automation-tf-cicd-r-sa" {
-  source       = "../../../modules/iam-service-account"
-  for_each     = local.cicd_repositories
-  project_id   = module.automation-project.project_id
-  name         = "${each.key}-1r"
+  source     = "../../../modules/iam-service-account"
+  for_each   = local.cicd_repositories
+  project_id = module.automation-project.project_id
+  name = (
+    lookup(var.resource_names, "sa/cicd_template", null) == null
+    ? "${local.default_environment.short_name}-${each.key}-1r"
+    : "${var.resource_names["sa/cicd_template"]}${each.key}-1r"
+  )
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
-  prefix       = local.prefix
+  prefix       = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(

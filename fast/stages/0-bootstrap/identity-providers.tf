@@ -32,10 +32,12 @@ locals {
 }
 
 resource "google_iam_workforce_pool" "default" {
-  count             = length(local.workforce_identity_providers) > 0 ? 1 : 0
-  parent            = "organizations/${var.organization.id}"
-  location          = "global"
-  workforce_pool_id = "${var.prefix}-bootstrap"
+  count    = length(local.workforce_identity_providers) > 0 ? 1 : 0
+  parent   = "organizations/${var.organization.id}"
+  location = "global"
+  workforce_pool_id = lookup(
+    var.resource_names, "wf/bootstrap", "${var.prefix}-bootstrap"
+  )
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
@@ -46,18 +48,24 @@ resource "google_iam_workforce_pool_provider" "default" {
   disabled            = each.value.disabled
   display_name        = each.value.display_name
   location            = google_iam_workforce_pool.default[0].location
-  provider_id         = "${var.prefix}-bootstrap-${each.key}"
-  workforce_pool_id   = google_iam_workforce_pool.default[0].workforce_pool_id
+  provider_id = (
+    lookup(var.resource_names, "wf/provider_template", null) == null
+    ? "${var.prefix}-bootstrap-${each.key}"
+    : "${var.resource_names["wf/provider_template"]}-${each.key}"
+  )
+  workforce_pool_id = google_iam_workforce_pool.default[0].workforce_pool_id
   saml {
     idp_metadata_xml = each.value.saml.idp_metadata_xml
   }
 }
 
 resource "google_iam_workload_identity_pool" "default" {
-  provider                  = google-beta
-  count                     = length(local.workload_identity_providers) > 0 ? 1 : 0
-  project                   = module.automation-project.project_id
-  workload_identity_pool_id = "${var.prefix}-bootstrap"
+  provider = google-beta
+  count    = length(local.workload_identity_providers) > 0 ? 1 : 0
+  project  = module.automation-project.project_id
+  workload_identity_pool_id = lookup(
+    var.resource_names, "wif/bootstrap", "${var.prefix}-bootstrap"
+  )
 }
 
 resource "google_iam_workload_identity_pool_provider" "default" {
@@ -67,9 +75,13 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default[0].workload_identity_pool_id
   )
-  workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
-  attribute_condition                = each.value.attribute_condition
-  attribute_mapping                  = each.value.attribute_mapping
+  workload_identity_pool_provider_id = (
+    lookup(var.resource_names, "wif/provider_template", null) == null
+    ? "${var.prefix}-bootstrap-${each.key}"
+    : "${var.resource_names["wif/provider_template"]}-${each.key}"
+  )
+  attribute_condition = each.value.attribute_condition
+  attribute_mapping   = each.value.attribute_mapping
   oidc {
     # Setting an empty list configures allowed_audiences to the url of the provider
     allowed_audiences = each.value.custom_settings.audiences

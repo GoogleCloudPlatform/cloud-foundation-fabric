@@ -103,10 +103,11 @@ variable "custom_roles" {
 }
 
 variable "environments" {
-  description = "Environment names."
+  description = "Environment names. When not defined, short name is set to the key and tag name to lower(name)."
   type = map(object({
     name       = string
     is_default = optional(bool, false)
+    short_name = optional(string)
     tag_name   = optional(string)
   }))
   nullable = false
@@ -319,6 +320,13 @@ variable "project_parent_ids" {
   })
   default  = {}
   nullable = false
+}
+
+variable "resource_names" {
+  description = "Resource names overrides for specific resources. Check the code to determine which overrides are supported."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "workforce_identity_providers" {
