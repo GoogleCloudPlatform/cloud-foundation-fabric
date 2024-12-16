@@ -40,6 +40,4 @@ locals {
     logging = var.locations.logging
     pubsub  = var.locations.pubsub
   }
-  # naming: environment used in most resource names
-  prefix = join("-", compact([var.prefix, local.default_environment.short_name]))
 }
