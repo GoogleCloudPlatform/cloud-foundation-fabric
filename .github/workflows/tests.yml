@@ -39,7 +39,7 @@ env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TFTEST_COPY: 1
   DEFAULT_TERRAFORM_FLAVOUR: terraform
-  DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.7.4' }}
+  DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.10.2' }}
   DEFAULT_TOFU_VERSION: "1.7.2"
 
 jobs:
