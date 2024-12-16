@@ -29,7 +29,7 @@ on:
       terraform_version:
         description: "Use '1.5.7' to test last MPLv2 Terraform version"
         required: true
-        default: 1.7.4
+        default: 1.10.2
         type: string
 
 env:
