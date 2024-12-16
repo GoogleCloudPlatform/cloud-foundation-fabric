@@ -38,11 +38,11 @@ locals {
 
 module "log-export-project" {
   source = "../../../modules/project"
-  name   = "audit-logs-0"
+  name   = var.resource_names["project-logs"]
   parent = coalesce(
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
-  prefix          = local.prefix
+  prefix          = var.prefix
   billing_account = var.billing_account.id
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
@@ -69,7 +69,7 @@ module "log-export-dataset" {
   source        = "../../../modules/bigquery-dataset"
   count         = contains(local.log_types, "bigquery") ? 1 : 0
   project_id    = module.log-export-project.project_id
-  id            = "logs"
+  id            = var.resource_names["bq-logs"]
   friendly_name = "Audit logs export."
   location      = local.locations.bq
 }
@@ -78,8 +78,8 @@ module "log-export-gcs" {
   source     = "../../../modules/gcs"
   count      = contains(local.log_types, "storage") ? 1 : 0
   project_id = module.log-export-project.project_id
-  name       = "logs"
-  prefix     = local.prefix
+  name       = var.resource_names["gcs-logs"]
+  prefix     = var.prefix
   location   = local.locations.gcs
 }
 
@@ -91,7 +91,6 @@ module "log-export-logbucket" {
   id            = each.key
   location      = local.locations.logging
   log_analytics = { enable = true }
-
   # org-level logging settings ready before we create any logging buckets
   depends_on = [module.organization-logging]
 }
@@ -100,6 +99,8 @@ module "log-export-pubsub" {
   source     = "../../../modules/pubsub"
   for_each   = toset([for k, v in var.log_sinks : k if v.type == "pubsub"])
   project_id = module.log-export-project.project_id
-  name       = each.key
-  regions    = local.locations.pubsub
+  name = templatestring(
+    var.resource_names["pubsub-logs_template"], { key = each.key }
+  )
+  regions = local.locations.pubsub
 }
