@@ -79,10 +79,8 @@ module "automation-tf-cicd-sa" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = module.automation-project.project_id
-  name = (
-    lookup(var.resource_names, "sa/cicd_template", null) == null
-    ? "${local.default_environment.short_name}-${each.key}-1"
-    : "${var.resource_names["sa/cicd_template"]}${each.key}-1"
+  name = templatestring(
+    var.resource_names["sa-cicd_template"], { key = each.key }
   )
   display_name = "Terraform CI/CD ${each.key} service account."
   prefix       = var.prefix
@@ -114,10 +112,8 @@ module "automation-tf-cicd-r-sa" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = module.automation-project.project_id
-  name = (
-    lookup(var.resource_names, "sa/cicd_template", null) == null
-    ? "${local.default_environment.short_name}-${each.key}-1r"
-    : "${var.resource_names["sa/cicd_template"]}${each.key}-1r"
+  name = templatestring(
+    var.resource_names["sa-cicd_template_ro"], { key = each.key }
   )
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = var.prefix

@@ -43,9 +43,7 @@ module "billing-export-project" {
     local.billing_mode == "org" || var.billing_account.force_create.project == true ? 1 : 0
   )
   billing_account = var.billing_account.id
-  name = lookup(
-    var.resource_names, "project/billing", "${local.default_environment.short_name}-billing-exp-0"
-  )
+  name            = var.resource_names["project-billing"]
   parent = coalesce(
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
@@ -75,7 +73,7 @@ module "billing-export-dataset" {
     local.billing_mode == "org" || var.billing_account.force_create.dataset == true ? 1 : 0
   )
   project_id    = module.billing-export-project[0].project_id
-  id            = lookup(var.resource_names, "bq/billing", "billing_export")
+  id            = var.resource_names["bq-billing"]
   friendly_name = "Billing export."
   location      = local.locations.bq
 }
