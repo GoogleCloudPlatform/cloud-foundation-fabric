@@ -14,8 +14,6 @@
 
 name: "Tests"
 on:
-  # schedule:
-  #   - cron: "45 2 * * *"
   push:
     branches:
       - master
