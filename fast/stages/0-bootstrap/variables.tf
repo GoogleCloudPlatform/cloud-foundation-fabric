@@ -323,7 +323,7 @@ variable "project_parent_ids" {
 }
 
 variable "resource_names" {
-  description = "Resource names overrides for specific resources. Check the code to determine which overrides are supported."
+  description = "Resource names overrides for specific resources. Prefix is always set via code, except where noted in the variable type."
   type = object({
     bq-billing           = optional(string, "billing_export")
     bq-logs              = optional(string, "logs")
