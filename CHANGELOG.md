@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
 - [[#2752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2752)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-08 09:34:19+00:00 -->
@@ -16,6 +17,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2767)] Fix workspace logs sink in FAST bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 13:22:42+00:00 -->
 - [[#2766](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2766)] Allow optional creation of billing resources in FAST boostrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 11:32:17+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
@@ -24,6 +27,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2764](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2764)] Ignore ssl certificates if none are passed in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 09:37:37+00:00 -->
 - [[#2757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2757)] Update net-vlan-attachment module readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-11 08:00:28+00:00 -->
@@ -43,6 +47,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2765)] Update issue templates ([juliocc](https://github.com/juliocc)) <!-- 2024-12-12 12:40:47+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
 
