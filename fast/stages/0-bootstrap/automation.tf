@@ -28,7 +28,6 @@ locals {
 module "automation-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  # name            = lookup(var.resource_names, "projects/automation", "${}iac-core-0")
   name = lookup(
     var.resource_names, "project/automation", "${local.default_environment.short_name}-iac-core-0"
   )
