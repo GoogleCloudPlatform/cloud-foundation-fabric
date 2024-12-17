@@ -1802,7 +1802,6 @@ outputs:
       repository:
         branch: main
         name: test/00-networking
-        parent_id: null
         type: github
     security:
       provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-gitlab-ludomagno
