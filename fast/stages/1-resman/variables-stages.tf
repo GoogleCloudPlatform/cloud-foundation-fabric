@@ -23,10 +23,9 @@ variable "fast_stage_2" {
       cicd_config = optional(object({
         identity_provider = string
         repository = object({
-          name      = string
-          branch    = optional(string)
-          parent_id = optional(string)
-          type      = optional(string, "github")
+          name   = string
+          branch = optional(string)
+          type   = optional(string, "github")
         })
       }))
       folder_config = optional(object({
@@ -42,10 +41,9 @@ variable "fast_stage_2" {
       cicd_config = optional(object({
         identity_provider = string
         repository = object({
-          name      = string
-          branch    = optional(string)
-          parent_id = optional(string)
-          type      = optional(string, "github")
+          name   = string
+          branch = optional(string)
+          type   = optional(string, "github")
         })
       }))
     }), {})
