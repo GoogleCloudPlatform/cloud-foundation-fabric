@@ -56,6 +56,12 @@ repos:
     files: (versions.tf|^default-versions.tf)$
     pass_filenames: false
     entry: /usr/bin/find . -type f -name 'versions.tf' -exec cp default-versions.tf {} \;
+  - id: versions_tofu
+    name: Align OpenTofu provider versions
+    language: script
+    files: (versions.tofu|^default-versions.tofu)$
+    pass_filenames: false
+    entry: /usr/bin/find . -type f -name 'versions.tofu' -exec cp default-versions.tofu {} \;
   - id: validate_metadata
     name: Validate blueprints metadata
     language: system
