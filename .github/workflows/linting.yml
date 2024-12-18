@@ -39,12 +39,12 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.7.4
+          terraform_version: 1.10.2
 
       - uses: terraform-linters/setup-tflint@v4
         name: Setup TFLint
         with:
-          tflint_version: v0.50.3
+          tflint_version: v0.54.0
 
       - name: Init TFLint
         run: |
@@ -105,6 +105,18 @@ jobs:
       - name: Check modules versions
         id: versions
         run: |
-          OUTPUT=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;)
-          echo "${OUTPUT}"
-          [[ -z "${OUTPUT}" ]]
+          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;)
+          if [[ -n "${OUTPUT_TF}" ]] ; then
+            echo "Terraform versions.tf:"
+            echo "${OUTPUT_TF}"
+          fi
+          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -ub default-versions.tofu {} \;)
+          if [[ -n "${OUTPUT_TOFU}" ]] ; then
+            echo "Terraform versions.tofu:"
+            echo "${OUTPUT_TOFU}"
+          fi
+          grep -v required_version default-versions.tf > /tmp/versions.tf
+          grep -v required_version default-versions.tofu > /tmp/versions.tofu
+          diff -rub /tmp/versions.tf /tmp/versions.tofu
+          DIFF_EC=$?
+          [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]

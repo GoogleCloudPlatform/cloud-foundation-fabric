@@ -14,8 +14,6 @@
 
 name: "Tests"
 on:
-  # schedule:
-  #   - cron: "45 2 * * *"
   push:
     branches:
       - master
@@ -29,7 +27,7 @@ on:
       terraform_version:
         description: "Use '1.5.7' to test last MPLv2 Terraform version"
         required: true
-        default: 1.7.4
+        default: 1.10.2
         type: string
 
 env:
@@ -39,8 +37,8 @@ env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TFTEST_COPY: 1
   DEFAULT_TERRAFORM_FLAVOUR: terraform
-  DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.7.4' }}
-  DEFAULT_TOFU_VERSION: "1.7.2"
+  DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.10.2' }}
+  DEFAULT_TOFU_VERSION: "1.8.0"
 
 jobs:
   compute-matrix:

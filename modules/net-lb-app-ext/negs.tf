@@ -130,6 +130,10 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   psc_target_service    = each.value.psc.target_service
   network               = each.value.psc.network
   subnetwork            = each.value.psc.subnetwork
+  lifecycle {
+    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
+    ignore_changes = [psc_data]
+  }
 }
 
 resource "google_compute_region_network_endpoint_group" "serverless" {

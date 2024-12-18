@@ -59,7 +59,9 @@ module "cicd-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = var.automation.project_id
-  name       = "resman-${each.value.short_name}-1"
+  name = templatestring(var.resource_names["sa-cicd_rw"], {
+    name = each.value.short_name
+  })
   display_name = (
     "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account."
   )
@@ -92,7 +94,9 @@ module "cicd-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
   project_id = var.automation.project_id
-  name       = "resman-${each.value.short_name}-1r"
+  name = templatestring(var.resource_names["sa-cicd_ro"], {
+    name = each.value.short_name
+  })
   display_name = (
     "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account (read-only)."
   )
