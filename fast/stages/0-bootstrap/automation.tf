@@ -38,6 +38,7 @@ module "automation-project" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  default_alerts_email = var.default_alerts_email
   factories_config = {
     org_policies = (
       var.bootstrap_user != null ? null : var.factories_config.org_policies_iac
@@ -46,7 +47,6 @@ module "automation-project" {
     channels        = var.factories_config.channels
     alerts          = var.factories_config.alerts
   }
-  default_alerts_email = var.default_alerts_email
   # human (groups) IAM bindings
   iam_by_principals = {
     (local.principals.gcp-devops) = [

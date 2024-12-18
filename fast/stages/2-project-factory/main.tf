@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 # tfdoc:file:description Project factory.
 
 module "projects" {
-  source               = "../../../modules/project-factory"
-  default_alerts_email = var.default_alerts_email
+  source = "../../../modules/project-factory"
   data_defaults = {
     # more defaults are available, check the project factory variables
     billing_account  = var.billing_account.id
@@ -32,6 +31,7 @@ module "projects" {
   data_overrides = {
     prefix = var.prefix
   }
+  default_alerts_email = var.default_alerts_email
   factories_config = merge(var.factories_config, {
     logging_metrics = var.factories_config.logging_metrics
     channels        = var.factories_config.channels

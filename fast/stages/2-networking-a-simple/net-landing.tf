@@ -24,7 +24,13 @@ module "landing-project" {
     var.folder_ids.networking-prod,
     var.folder_ids.networking
   )
-  prefix = var.prefix
+  prefix               = var.prefix
+  default_alerts_email = var.default_alerts_email
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -33,12 +39,6 @@ module "landing-project" {
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  factories_config = {
-    logging_metrics = var.factories_config.logging_metrics
-    channels        = var.factories_config.channels
-    alerts          = var.factories_config.alerts
-  }
-  default_alerts_email = var.default_alerts_email
   shared_vpc_host_config = {
     enabled = true
   }

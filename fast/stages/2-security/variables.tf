@@ -189,6 +189,7 @@ variable "factories_config" {
     logging_metrics = optional(string, "data/logging-metrics")
   })
   nullable = false
+  default  = {}
 }
 
 variable "kms_keys" {

@@ -24,19 +24,19 @@ locals {
 module "dev-sec-project" {
   source = "../../../modules/project"
   name   = "dev-sec-core-0"
+  parent = coalesce(
+    var.folder_ids.security-dev, var.folder_ids.security
+  )
+  prefix               = var.prefix
+  billing_account      = var.billing_account.id
+  default_alerts_email = var.default_alerts_email
   factories_config = {
     logging_metrics = var.factories_config.logging_metrics
     channels        = var.factories_config.channels
     alerts          = var.factories_config.alerts
   }
-  default_alerts_email = var.default_alerts_email
-  parent = coalesce(
-    var.folder_ids.security-dev, var.folder_ids.security
-  )
-  prefix          = var.prefix
-  billing_account = var.billing_account.id
-  labels          = { environment = "dev" }
-  services        = local.project_services
+  labels   = { environment = "dev" }
+  services = local.project_services
   tag_bindings = local.has_env_folders ? {} : {
     environment = local.env_tag_values["dev"]
   }
