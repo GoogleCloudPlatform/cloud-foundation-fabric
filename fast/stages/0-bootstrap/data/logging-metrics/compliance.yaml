@@ -15,56 +15,98 @@
 route-changes:
   description: "Monitor VPC network route configuration changes inside GCP projects"
   filter: |
-    resource.type="gce_route" AND (protoPayload.methodName:"compute.routes.delete" OR protoPayload.methodName:"compute.routes.insert")
+    resource.type="gce_route"
+      AND (
+        protoPayload.methodName="compute.routes.delete"
+        OR protoPayload.methodName="compute.routes.insert"
+      )
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 network-firewall-config-changes:
   description: "Monitor VPC network firewall configuration changes inside GCP projects"
-  filter: "resource.type=\"gce_firewall_rule\" AND (protoPayload.methodName:\"compute.firewalls.delete\" OR protoPayload.methodName:\"compute.firewalls.insert\")"
+  filter: |
+    resource.type="gce_firewall_rule"
+      AND (
+        protoPayload.methodName="compute.firewalls.delete"
+        OR protoPayload.methodName="compute.firewalls.insert"
+      )
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 vpc-network-config-changes:
   description: "Monitor VPC network configuration changes inside GCP projects"
-  filter: "resource.type=\"gce_network\" AND (protoPayload.methodName:\"compute.networks.insert\" OR protoPayload.methodName:\"compute.networks.patch\" OR protoPayload.methodName:\"compute.networks.delete\" OR protoPayload.methodName:\"compute.networks.removePeering\" OR protoPayload.methodName:\"compute.networks.addPeering\")"
+  filter: |
+    resource.type="gce_network"
+      AND (
+        protoPayload.methodName="compute.networks.insert"
+        OR protoPayload.methodName="compute.networks.patch"
+        OR protoPayload.methodName="compute.networks.delete"
+        OR protoPayload.methodName="compute.networks.removePeering"
+        OR protoPayload.methodName="compute.networks.addPeering"
+      )
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 cloudsql-changes:
   description: "Monitor CloudSQL configuration changes inside GCP projects"
-  filter: "protoPayload.methodName=\"cloudsql.instances.update\" OR protoPayload.methodName=\"cloudsql.instances.create\" OR protoPayload.methodName=\"cloudsql.instances.delete\""
+  filter: |
+    protoPayload.methodName="cloudsql.instances.update"
+    OR protoPayload.methodName="cloudsql.instances.create"
+    OR protoPayload.methodName="cloudsql.instances.delete"
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 cloudstorage-changes:
   description: "Monitor Cloud Storage configuration changes inside GCP projects"
-  filter: "resource.type=gcs_bucket AND protoPayload.methodName=\"storage.setIamPermissions\""
+  filter: |
+    resource.type="gcs_bucket"
+      AND protoPayload.methodName="storage.setIamPermissions"
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 customrole-changes:
   description: "Monitor IAM Custom Role configuration changes inside GCP projects"
-  filter: "resource.type=\"iam_role\" AND (protoPayload.methodName=\"google.iam.admin.v1.CreateRole\" OR protoPayload.methodName=\"google.iam.admin.v1.DeleteRole\" OR protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\")"
+  filter: |
+    resource.type="iam_role"
+      AND (
+        protoPayload.methodName="google.iam.admin.v1.CreateRole"
+        OR protoPayload.methodName="google.iam.admin.v1.DeleteRole"
+        OR protoPayload.methodName="google.iam.admin.v1.UpdateRole"
+      )
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 audit-changes:
   description: "Monitor Audit configuration changes inside GCP projects"
-  filter: "protoPayload.methodName=\"SetIamPolicy\" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*"
+  filter: |
+    protoPayload.methodName="SetIamPolicy"
+    AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
 
 iam-owner-changes:
   description: "Monitor IAM Owner configuration changes inside GCP projects"
-  filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND (ProjectOwnership OR projectOwnerInvitee) OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"REMOVE\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\") OR (protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\" AND protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\")"
+  filter: |
+    (
+      protoPayload.serviceName="cloudresourcemanager.googleapis.com"
+      AND (ProjectOwnership OR projectOwnerInvitee)
+    )
+    OR (
+      protoPayload.serviceData.policyDelta.bindingDeltas.action="REMOVE"
+      AND protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+    )
+    OR (
+      protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD"
+      AND protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+    )
   metric_descriptor:
     metric_kind: DELTA
     value_type: "INT64"
