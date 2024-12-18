@@ -26,12 +26,13 @@ variable "data_defaults" {
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project             = string
-      network_users            = optional(list(string), [])
-      service_agent_iam        = optional(map(list(string)), {})
-      service_agent_subnet_iam = optional(map(list(string)), {})
-      service_iam_grants       = optional(list(string), [])
-      network_subnet_users     = optional(map(list(string)), {})
+      host_project              = string
+      network_users             = optional(list(string), [])
+      service_agent_iam         = optional(map(list(string)), {})
+      service_agent_subnet_iam  = optional(map(list(string)), {})
+      service_iam_grants        = optional(list(string), [])
+      service_subnet_iam_grants = optional(map(list(string)), {})
+      network_subnet_users      = optional(map(list(string)), {})
     }), { host_project = null })
     storage_location = optional(string)
     tag_bindings     = optional(map(string), {})
@@ -112,6 +113,7 @@ variable "factories_config" {
       # TODO: add KMS keys
       folder_ids        = optional(map(string), {})
       iam_principals    = optional(map(string), {})
+      subnets           = optional(map(string), {})
       tag_values        = optional(map(string), {})
       vpc_host_projects = optional(map(string), {})
     }), {})
