@@ -108,6 +108,7 @@ module "cluster" {
     enable_api_server_metrics         = true
     enable_controller_manager_metrics = true
     enable_scheduler_metrics          = true
+    enable_cadvisor_metrics           = true
   }
   logging_config = {
     enable_api_server_logs         = true

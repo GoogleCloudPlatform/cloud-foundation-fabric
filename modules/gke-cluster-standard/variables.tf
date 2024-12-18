@@ -316,6 +316,7 @@ variable "monitoring_config" {
     enable_pod_metrics         = optional(bool, false)
     enable_statefulset_metrics = optional(bool, false)
     enable_storage_metrics     = optional(bool, false)
+    enable_cadvisor_metrics    = optional(bool, false)
     # Google Cloud Managed Service for Prometheus
     enable_managed_prometheus = optional(bool, true)
     advanced_datapath_observability = optional(object({
@@ -336,6 +337,7 @@ variable "monitoring_config" {
       var.monitoring_config.enable_pod_metrics,
       var.monitoring_config.enable_statefulset_metrics,
       var.monitoring_config.enable_storage_metrics,
+      var.monitoring_config.enable_cadvisor_metrics,
     ]) ? var.monitoring_config.enable_system_metrics : true
     error_message = "System metrics are the minimum required component for enabling metrics collection."
   }
@@ -347,6 +349,7 @@ variable "monitoring_config" {
       var.monitoring_config.enable_pod_metrics,
       var.monitoring_config.enable_statefulset_metrics,
       var.monitoring_config.enable_storage_metrics,
+      var.monitoring_config.enable_cadvisor_metrics,
     ]) ? var.monitoring_config.enable_managed_prometheus : true
     error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
   }

@@ -174,6 +174,7 @@ variable "monitoring_config" {
     enable_pod_metrics         = optional(bool, false)
     enable_statefulset_metrics = optional(bool, false)
     enable_storage_metrics     = optional(bool, false)
+    enable_cadvisor_metrics    = optional(bool, false)
     # Google Cloud Managed Service for Prometheus. Autopilot clusters version >= 1.25 must have this on.
     enable_managed_prometheus = optional(bool, true)
   })
@@ -187,6 +188,7 @@ variable "monitoring_config" {
       var.monitoring_config.enable_pod_metrics,
       var.monitoring_config.enable_statefulset_metrics,
       var.monitoring_config.enable_storage_metrics,
+      var.monitoring_config.enable_cadvisor_metrics,
     ]) ? var.monitoring_config.enable_managed_prometheus : true
     error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
   }

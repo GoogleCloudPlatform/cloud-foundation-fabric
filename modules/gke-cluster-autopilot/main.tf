@@ -233,6 +233,7 @@ resource "google_container_cluster" "cluster" {
       var.monitoring_config.enable_pod_metrics ? "POD" : null,
       var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
       var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
+      var.monitoring_config.enable_cadvisor_metrics ? "CADVISOR" : null,
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
