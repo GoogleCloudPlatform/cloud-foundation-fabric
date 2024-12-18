@@ -145,9 +145,12 @@ tests/fast/stages/s2_project_factory/tftest.yaml values:
 counts:
   google_compute_shared_vpc_service_project: 4
   google_folder: 6
+  google_logging_metric: 32
+  google_monitoring_alert_policy: 32
+  google_monitoring_notification_channel: 8
   google_project: 4
   google_project_iam_member: 4
   google_project_service: 4
   google_tags_tag_binding: 4
   modules: 11
-  resources: 26
+  resources: 98

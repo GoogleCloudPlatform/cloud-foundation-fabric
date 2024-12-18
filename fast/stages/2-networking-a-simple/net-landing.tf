@@ -33,6 +33,12 @@ module "landing-project" {
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
+  default_alerts_email = var.default_alerts_email
   shared_vpc_host_config = {
     enabled = true
   }

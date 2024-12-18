@@ -25,6 +25,12 @@ module "prod-spoke-project" {
     var.folder_ids.networking
   )
   prefix = var.prefix
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
+  default_alerts_email = var.default_alerts_email
   services = [
     "container.googleapis.com",
     "compute.googleapis.com",

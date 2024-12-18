@@ -377,7 +377,7 @@ counts:
   google_folder: 5
   google_folder_iam_binding: 1
   google_kms_crypto_key_iam_member: 1
-  google_monitoring_notification_channel: 1
+  google_monitoring_notification_channel: 4
   google_project: 3
   google_project_iam_binding: 2
   google_project_iam_member: 14
@@ -389,4 +389,4 @@ counts:
   google_storage_project_service_account: 3
   google_tags_tag_binding: 1
   modules: 15
-  resources: 56
+  resources: 59

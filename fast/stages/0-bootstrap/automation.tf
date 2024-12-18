@@ -42,7 +42,11 @@ module "automation-project" {
     org_policies = (
       var.bootstrap_user != null ? null : var.factories_config.org_policies_iac
     )
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
   }
+  default_alerts_email = var.default_alerts_email
   # human (groups) IAM bindings
   iam_by_principals = {
     (local.principals.gcp-devops) = [

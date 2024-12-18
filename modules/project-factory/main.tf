@@ -40,13 +40,19 @@ module "projects" {
   parent = lookup(
     local.context.folder_ids, each.value.parent, each.value.parent
   )
-  prefix              = each.value.prefix
-  auto_create_network = try(each.value.auto_create_network, false)
-  compute_metadata    = try(each.value.compute_metadata, {})
+  default_alerts_email = ""
+  prefix               = each.value.prefix
+  auto_create_network  = try(each.value.auto_create_network, false)
+  compute_metadata     = try(each.value.compute_metadata, {})
   # TODO: concat lists for each key
   contacts = merge(
     each.value.contacts, var.data_merges.contacts
   )
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
   iam = {

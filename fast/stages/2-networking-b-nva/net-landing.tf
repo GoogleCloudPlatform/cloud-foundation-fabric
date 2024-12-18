@@ -25,6 +25,12 @@ module "landing-project" {
     var.folder_ids.networking
   )
   prefix = var.prefix
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
+  default_alerts_email = var.default_alerts_email
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

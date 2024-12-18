@@ -40,6 +40,7 @@ kms_keys = {
     rotation_period = null
   }
 }
+factories_config = {}
 service_accounts = {
   security             = "foobar@iam.gserviceaccount.com"
   data-platform-dev    = "foobar@iam.gserviceaccount.com"
