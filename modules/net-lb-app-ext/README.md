@@ -386,7 +386,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          group        = "myneg-b"
+          group          = "myneg-b"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -420,7 +420,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          group        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -460,7 +460,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          group        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -775,14 +775,14 @@ module "glb-0" {
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        group        = "neg-zone-c"
+        group          = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
         balancing_mode = "RATE"
-        group        = "neg-hello"
+        group          = "neg-hello"
         max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
