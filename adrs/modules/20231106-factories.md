@@ -5,7 +5,7 @@
 
 ## Status
 
-Under discussion.
+Accepted and implemented.
 
 ## Context
 

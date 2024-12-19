@@ -1,6 +1,6 @@
 # IP ranges for network stages
 
-**authors:** [Ludo](https://github.com/ludoo), [Roberto](https://github.com/drebes), [Julio](https://github.com/jccb) \
+**authors:** [Ludo](https://github.com/ludoo), [Roberto](https://github.com/drebes), [Julio](https://github.com/juliocc) \
 **date:** Sept 20, 2023
 
 ## Status
