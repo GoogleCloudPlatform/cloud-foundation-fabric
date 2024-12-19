@@ -41,7 +41,7 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy configuration."
   type = object({
-    certificate_manager_certificates = optional(list(string), [])
+    certificate_manager_certificates = optional(list(string))
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
   })
