@@ -47,8 +47,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
     }
   }
@@ -91,8 +91,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTP"
     }
@@ -125,8 +125,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTPS"
     }
@@ -198,7 +198,7 @@ module "ralb-test-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-b.group.id },
       ]
       protocol = "HTTP"
     }
@@ -235,7 +235,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -262,7 +262,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       health_checks = ["projects/${var.project_id}/regions/${var.region}/healthChecks/custom"]
     }
@@ -288,7 +288,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "default-b" }
+        { group = "default-b" }
       ]
     }
   }
@@ -361,7 +361,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.win-mig.group_manager.instance_group }
+        { group = module.win-mig.group_manager.instance_group }
       ]
     }
   }
@@ -465,7 +465,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -498,7 +498,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -537,7 +537,7 @@ module "ralb-0" {
 
       backends = [
         {
-          backend = "neg-0"
+          group = "neg-0"
         }
       ]
       health_checks = []
@@ -566,12 +566,12 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = module.compute-vm-group-c.group.id
+        group = module.compute-vm-group-c.group.id
       }]
     }
   }
@@ -610,8 +610,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "group-zone-b" },
-        { backend = "group-zone-c" },
+        { group = "group-zone-b" },
+        { group = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
