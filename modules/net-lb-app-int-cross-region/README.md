@@ -18,6 +18,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Serverless NEG creation](#serverless-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
   - [URL Map](#url-map)
+  - [SSL Certificates](#ssl-certificates)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Recipes](#recipes)
@@ -798,7 +799,7 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 | [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_backend_service</code> |
 | [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
 | [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_health_check</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_global_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_global_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_ssl_certificate</code> · <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [urlmap.tf](./urlmap.tf) | URL map resources. | <code>google_compute_url_map</code> |
 | [variables-backend-service.tf](./variables-backend-service.tf) | Backend services variables. |  |
