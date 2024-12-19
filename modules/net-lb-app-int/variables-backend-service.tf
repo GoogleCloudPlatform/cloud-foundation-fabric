@@ -36,6 +36,11 @@ variable "backend_service_configs" {
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
       failover        = optional(bool, false)
+      max_connections = optional(object({
+        per_endpoint = optional(number)
+        per_group    = optional(number)
+        per_instance = optional(number)
+      }))
       max_rate = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
