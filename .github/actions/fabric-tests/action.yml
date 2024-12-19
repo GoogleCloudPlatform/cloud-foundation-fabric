@@ -43,7 +43,7 @@ runs:
         terraform_version: ${{ inputs.TERRAFORM_VERSION }}
         terraform_wrapper: false
 
-    - uses: opentofu/setup-opentofu@v1
+    - uses: opentofu/setup-opentofu@v1.0.4
       if: ${{ inputs.TERRAFORM_FLAVOUR == 'tofu' }}
       with:
         tofu_version: ${{ inputs.TERRAFORM_VERSION }}
