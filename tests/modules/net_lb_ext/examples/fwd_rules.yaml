@@ -216,7 +216,6 @@ values:
     description: Terraform managed.
     enable_cdn: null
     failover_policy: []
-    iap: []
     load_balancing_scheme: EXTERNAL
     locality_lb_policy: null
     name: nlb-test
