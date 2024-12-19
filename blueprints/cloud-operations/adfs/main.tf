@@ -104,7 +104,7 @@ module "glb" {
   protocol   = "HTTPS"
   backend_service_configs = {
     default = {
-      backends        = [{ backend = module.server.group.id }]
+      backends        = [{ group = module.server.group.id }]
       log_sample_rate = 1
       protocol        = "HTTPS"
     }

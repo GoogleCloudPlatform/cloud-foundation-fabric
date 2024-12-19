@@ -68,7 +68,7 @@ module "glb" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-a" }
+        { group = "neg-a" }
       ]
       health_checks   = []
       protocol        = "HTTPS"
@@ -76,7 +76,7 @@ module "glb" {
     }
     other = {
       backends = [
-        { backend = "neg-b" }
+        { group = "neg-b" }
       ]
       health_checks   = []
       protocol        = "HTTPS"

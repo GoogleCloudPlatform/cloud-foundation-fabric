@@ -72,7 +72,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec      = each.value.timeout_sec
 
   dynamic "backend" {
-    for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
+    for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE

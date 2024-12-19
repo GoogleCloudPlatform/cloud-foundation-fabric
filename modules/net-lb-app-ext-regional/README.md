@@ -386,7 +386,7 @@ module "ralb-0" {
     default = {
       backends = [
         {
-          backend        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -428,7 +428,7 @@ module "ralb-0" {
     default = {
       backends = [
         {
-          backend        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -617,14 +617,14 @@ module "ralb-0" {
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-zone-c"
+        group          = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-hello"
+        group          = "neg-hello"
         max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
