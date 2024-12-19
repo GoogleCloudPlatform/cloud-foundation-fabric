@@ -34,8 +34,7 @@ variable "backend_service_configs" {
     session_affinity                = optional(string)
     timeout_sec                     = optional(number)
     backends = list(object({
-      # group renamed to backend
-      backend         = string
+      group           = string
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
