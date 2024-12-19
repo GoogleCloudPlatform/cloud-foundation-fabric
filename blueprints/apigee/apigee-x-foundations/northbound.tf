@@ -66,7 +66,7 @@ module "ext_lb" {
   use_classic_version = false
   backend_service_configs = {
     default = {
-      backends          = [for k, v in local.ext_instances : { backend = google_compute_region_network_endpoint_group.psc_negs[k].id }]
+      backends          = [for k, v in local.ext_instances : { group = google_compute_region_network_endpoint_group.psc_negs[k].id }]
       protocol          = "HTTPS"
       health_checks     = []
       outlier_detection = var.ext_lb_config.outlier_detection

@@ -22,7 +22,7 @@ module "glb" {
   use_classic_version = false
   backend_service_configs = {
     default = {
-      backends      = [{ backend = "neg-0" }]
+      backends      = [{ group = "neg-0" }]
       protocol      = "HTTPS"
       health_checks = []
     }

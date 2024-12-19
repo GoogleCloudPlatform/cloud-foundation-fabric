@@ -75,7 +75,7 @@ module "glb" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
       port_name     = "http"

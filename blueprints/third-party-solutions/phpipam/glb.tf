@@ -57,7 +57,7 @@ module "glb" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "phpipam" }
+        { group = "phpipam" }
       ]
       health_checks = []
       port_name     = "http"

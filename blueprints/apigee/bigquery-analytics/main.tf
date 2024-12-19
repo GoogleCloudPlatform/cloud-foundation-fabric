@@ -95,7 +95,7 @@ module "glb" {
   use_classic_version = false
   backend_service_configs = {
     default = {
-      backends      = [for k, v in var.instances : { backend = k }]
+      backends      = [for k, v in var.instances : { group = k }]
       protocol      = "HTTPS"
       health_checks = []
     }

@@ -198,8 +198,8 @@ module "glb" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.mig_ew1.group_manager.instance_group },
-        { backend = module.mig_ue1.group_manager.instance_group }
+        { group = module.mig_ew1.group_manager.instance_group },
+        { group = module.mig_ue1.group_manager.instance_group }
       ]
       log_sample_rate = 1
       security_policy = try(google_compute_security_policy.policy[0].name, null)

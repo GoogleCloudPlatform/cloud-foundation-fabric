@@ -24,12 +24,12 @@ module "hybrid-glb" {
     default = {
       backends = [
         {
-          backend        = "neg-primary"
+          group          = "neg-primary"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 100 }
         },
         {
-          backend        = "neg-secondary"
+          group          = "neg-secondary"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 100 }
         }
