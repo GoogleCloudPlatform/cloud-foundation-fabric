@@ -111,7 +111,7 @@ resource "google_compute_target_https_proxy" "default" {
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_url_map.default.id
-  ssl_certificates                 = length(local.proxy_ssl_certificates) > 0 ? local.proxy_ssl_certificates : null
+  ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
   certificate_manager_certificates = try(var.https_proxy_config.certificate_manager_certificates, null)
 }
 
