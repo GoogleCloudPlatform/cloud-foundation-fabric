@@ -56,7 +56,8 @@ variable "logging_sinks" {
     exclusions           = optional(map(string), {})
     filter               = optional(string)
     iam                  = optional(bool, true)
-    include_children     = optional(bool, true)
+    include_children     = each.value.include_children
+    intercept_children   = each.value.intercept_children
     type                 = string
   }))
   default  = {}
