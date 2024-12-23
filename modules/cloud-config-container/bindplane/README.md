@@ -43,9 +43,9 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-bindplane" {
-  source             = "./fabric/modules/cloud-config-container/bindplane"
-  bindplane_license  = "XXXXXXXXX"
-  password           = "secret"
+  source            = "./fabric/modules/cloud-config-container/bindplane"
+  bindplane_license = "XXXXXXXXX"
+  password          = "secret"
 }
 
 module "bindplane" {
