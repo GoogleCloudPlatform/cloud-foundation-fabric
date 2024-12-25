@@ -31,6 +31,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2784](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2784)] Fix validation message in cas module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-25 07:25:07+00:00 -->
+- [[#2783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2783)] Update net-lb-app-ext security_settings variables ([wenzizone](https://github.com/wenzizone)) <!-- 2024-12-25 06:52:31+00:00 -->
+- [[#2781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2781)] Fix bindplane cos module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-23 09:37:09+00:00 -->
 - [[#2780](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2780)] Fix handling of SSL certificates in external load balancer modules ([rodriguezsergio](https://github.com/rodriguezsergio)) <!-- 2024-12-21 10:26:29+00:00 -->
 - [[#2776](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2776)] Add support for log views and log scopes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-18 17:29:45+00:00 -->
 - [[#2772](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2772)] Fix for perma-diff when using PSC NEGs. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 13:28:48+00:00 -->
