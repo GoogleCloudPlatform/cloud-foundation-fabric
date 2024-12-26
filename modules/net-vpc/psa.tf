@@ -68,6 +68,7 @@ resource "google_service_networking_connection" "psa_connection" {
   service                 = each.key
   reserved_peering_ranges = formatlist("${each.value.key}%s", keys(each.value.ranges))
   deletion_policy         = each.value.deletion_policy
+  depends_on              = [google_compute_global_address.psa_ranges]
 }
 
 resource "google_compute_network_peering_routes_config" "psa_routes" {
