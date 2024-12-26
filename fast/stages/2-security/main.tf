@@ -15,10 +15,6 @@
  */
 
 locals {
-  env_tag_values = {
-    for k, v in var.environments :
-    k => var.tag_values["environment/${v.tag_name}"]
-  }
   has_env_folders = var.folder_ids.security-dev != null
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/cloudkms.cryptoKeyEncrypterDecrypter"
@@ -29,19 +25,6 @@ locals {
   iam_viewer_principals = try(
     var.stage_config["security"].iam_viewer_principals, {}
   )
-  # list of locations with keys
-  kms_locations = distinct(flatten([
-    for k, v in var.kms_keys : v.locations
-  ]))
-  # map { location -> { key_name -> key_details } }
-  kms_locations_keys = {
-    for loc in local.kms_locations :
-    loc => {
-      for k, v in var.kms_keys :
-      k => v
-      if contains(v.locations, loc)
-    }
-  }
   project_services = [
     "certificatemanager.googleapis.com",
     "cloudkms.googleapis.com",
@@ -61,5 +44,43 @@ module "folder" {
     var.essential_contacts == null
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
+  )
+}
+
+module "project" {
+  source   = "../../../modules/project"
+  for_each = var.environments
+  name     = "{each.key}-sec-core-0"
+  parent = coalesce(
+    var.folder_ids["security-${each.key}"], var.folder_ids.security
+  )
+  prefix          = var.prefix
+  billing_account = var.billing_account.id
+  labels          = { environment = each.key }
+  services        = local.project_services
+  tag_bindings = local.has_env_folders ? {} : {
+    environment = var.tag_values["environment/${each.value.tag_name}"]
+  }
+  # optionally delegate a fixed set of IAM roles to selected principals
+  iam = {
+    (var.custom_roles.project_iam_viewer) = try(
+      local.iam_viewer_principals[each.key], []
+    )
+  }
+  iam_bindings = (
+    lookup(local.iam_delegated_principals, each.key, null) == null ? {} : {
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_delegated_principals[each.key], [])
+        condition = {
+          title       = "${each.key}_stage3_sa_delegated_grants"
+          description = "${var.environments[each.key].name} project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
+      }
+    }
   )
 }
