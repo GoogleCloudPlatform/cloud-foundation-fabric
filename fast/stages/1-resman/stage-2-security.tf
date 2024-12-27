@@ -15,10 +15,7 @@
  */
 
 locals {
-  sec_use_env_folders = (
-    var.fast_stage_2.security.enabled &&
-    var.fast_stage_2.security.folder_config.create_env_folders
-  )
+  # filter and normalize stage 3 roles applied to this stage's top-level folder
   sec_s3_iam = !var.fast_stage_2.security.enabled ? {} : {
     for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
       v.sa == "rw"
@@ -27,6 +24,10 @@ locals {
     )...
     if v.s2 == "security"
   }
+  sec_use_env_folders = (
+    var.fast_stage_2.security.enabled &&
+    var.fast_stage_2.security.folder_config.create_env_folders
+  )
 }
 
 # top-level folder
@@ -116,47 +117,14 @@ module "sec-folder" {
 
 # optional per-environment folders
 
-module "sec-folder-prod" {
-  source = "../../../modules/folder"
-  count  = local.sec_use_env_folders ? 1 : 0
-  parent = module.sec-folder[0].id
-  name   = var.environments["prod"].name
-  iam = {
-    # stage 3s service accounts
-    for role, attrs in local.sec_s3_iam.prod : role => [
-      for v in attrs : (
-        v.sa == "ro"
-        ? module.stage3-sa-ro[v.s3].iam_email
-        : module.stage3-sa-rw[v.s3].iam_email
-      )
-    ]
-  }
+module "sec-folder-envs" {
+  source   = "../../../modules/folder"
+  for_each = local.sec_use_env_folders ? var.environments : {}
+  parent   = module.sec-folder[0].id
+  name     = each.value.name
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environments["prod"].tag_name}"].id,
-      null
-    )
-  }
-}
-
-module "sec-folder-dev" {
-  source = "../../../modules/folder"
-  count  = local.sec_use_env_folders ? 1 : 0
-  parent = module.sec-folder[0].id
-  name   = var.environments["dev"].name
-  iam = {
-    # stage 3s service accounts
-    for role, attrs in local.sec_s3_iam.dev : role => [
-      for v in attrs : (
-        v.sa == "ro"
-        ? module.stage3-sa-ro[v.s3].iam_email
-        : module.stage3-sa-rw[v.s3].iam_email
-      )
-    ]
-  }
-  tag_bindings = {
-    environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environments["dev"].tag_name}"].id,
+      local.tag_values["${var.tag_names.environment}/${each.value.tag_name}"].id,
       null
     )
   }
