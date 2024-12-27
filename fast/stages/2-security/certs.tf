@@ -58,7 +58,7 @@ module "cas" {
   location          = each.value.location
 }
 
-resource "google_certificate_manager_trust_config" "dev_trust_configs" {
+resource "google_certificate_manager_trust_config" "default" {
   for_each    = { for k in local.trust_configs : k.key => k }
   name        = each.value.name
   project     = module.project[each.value.environment].project_id

@@ -35,7 +35,7 @@ locals {
       for k in local._output_kms_keys : k.key => k.id
     }
     trust_configs = {
-      for k, v in google_certificate_manager_trust_config.dev_trust_configs :
+      for k, v in google_certificate_manager_trust_config.default :
       k => v.id
     }
   }
