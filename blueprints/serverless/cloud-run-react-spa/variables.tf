@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "backend" {
+  type = object({
+    function_name   = optional(string, "my-react-app-backend")
+    service_account = optional(string, "my-react-app-backend")
+  })
+  description = "Backend settings"
+  default     = {}
+}
+
 variable "bucket" {
   type = object({
     name          = optional(string, "my-react-app")
@@ -19,15 +28,6 @@ variable "bucket" {
     build_name    = optional(string, "my-react-app-build") # Build bucket for CF v2
   })
   description = "Bucket settings for hosting the SPA"
-  default     = {}
-}
-
-variable "backend" {
-  type = object({
-    function_name   = optional(string, "my-react-app-backend")
-    service_account = optional(string, "my-react-app-backend")
-  })
-  description = "Backend settings"
   default     = {}
 }
 
@@ -49,11 +49,6 @@ variable "nginx_image" {
   default     = "gcr.io/cloud-marketplace/google/nginx1:1.26"
 }
 
-variable "project_id" {
-  type        = string
-  description = "Google Cloud project ID"
-}
-
 variable "project_create" {
   description = "Parameters for the creation of a new project."
   type = object({
@@ -61,6 +56,11 @@ variable "project_create" {
     parent             = string
   })
   default = null
+}
+
+variable "project_id" {
+  type        = string
+  description = "Google Cloud project ID"
 }
 
 variable "region" {
