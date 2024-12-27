@@ -288,8 +288,8 @@ terraform apply
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L76) | WIF configuration for CI/CD repositories. |  |  |
-| [folder_ids](outputs.tf#L88) | Folder ids. |  |  |
-| [providers](outputs.tf#L94) | Terraform provider files for this stage and dependent stages. | ✓ |  |
-| [tfvars](outputs.tf#L101) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L74) | WIF configuration for CI/CD repositories. |  |  |
+| [folder_ids](outputs.tf#L86) | Folder ids. |  |  |
+| [providers](outputs.tf#L92) | Terraform provider files for this stage and dependent stages. | ✓ |  |
+| [tfvars](outputs.tf#L99) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

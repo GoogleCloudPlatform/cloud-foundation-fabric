@@ -26,7 +26,7 @@ locals {
         environment = k
         key         = "${v.short_name}-${l}"
         location    = l
-        name        = v.short_name
+        name        = "${v.short_name}-${l}"
       }
     ]
   ])
