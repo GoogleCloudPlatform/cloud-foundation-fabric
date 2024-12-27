@@ -89,6 +89,6 @@ your `terraform.tfvars`.
 
 | name | description | sensitive |
 |---|---|:---:|
-| [global_lb](outputs.tf#L15) | Global load balancer address |  |
-| [regional_lb](outputs.tf#L20) | Regional load balancer address |  |
+| [global_lb](outputs.tf#L15) | Global load balancer address. |  |
+| [regional_lb](outputs.tf#L20) | Regional load balancer address. |  |
 <!-- END TFDOC -->

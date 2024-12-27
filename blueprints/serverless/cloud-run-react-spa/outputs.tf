@@ -14,10 +14,10 @@
 
 output "global_lb" {
   value       = var.global_lb ? format("http://%s", module.xlb[""].address) : null
-  description = "Global load balancer address"
+  description = "Global load balancer address."
 }
 
 output "regional_lb" {
   value       = var.regional_lb ? format("http://%s", module.xlb-regional[""].address) : null
-  description = "Regional load balancer address"
+  description = "Regional load balancer address."
 }
