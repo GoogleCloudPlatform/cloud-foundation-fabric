@@ -12,11 +12,13 @@ environments = {
   dev = {
     is_default = false
     name       = "Development"
+    short_name = "dev"
     tag_name   = "development"
   }
   prod = {
     is_default = true
     name       = "Production"
+    short_name = "prod"
     tag_name   = "production"
   }
 }

@@ -13,81 +13,6 @@
 # limitations under the License.
 
 values:
-  google_storage_bucket_object.providers["1-resman-folder-sandbox"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/1-resman-folder-sandbox-providers.tf
-  google_storage_bucket_object.providers["1-resman-folder-tenants"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/1-resman-folder-tenants-providers.tf
-  google_storage_bucket_object.providers["2-network-security"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-network-security-providers.tf
-  google_storage_bucket_object.providers["2-network-security-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-network-security-r-providers.tf
-  google_storage_bucket_object.providers["2-networking"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-networking-providers.tf
-  google_storage_bucket_object.providers["2-networking-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-networking-r-providers.tf
-  google_storage_bucket_object.providers["2-project-factory"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-project-factory-providers.tf
-  google_storage_bucket_object.providers["2-project-factory-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-project-factory-r-providers.tf
-  google_storage_bucket_object.providers["2-security"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-security-providers.tf
-  google_storage_bucket_object.providers["2-security-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/2-security-r-providers.tf
-  google_storage_bucket_object.providers["3-gcve-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-dev-providers.tf
-  google_storage_bucket_object.providers["3-gcve-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-gcve-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-prod-providers.tf
-  google_storage_bucket_object.providers["3-gcve-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gcve-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-gke-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-dev-providers.tf
-  google_storage_bucket_object.providers["3-gke-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-gke-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-prod-providers.tf
-  google_storage_bucket_object.providers["3-gke-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-gke-prod-r-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-dev"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-dev-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-dev-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-dev-r-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-prod"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-prod-providers.tf
-  google_storage_bucket_object.providers["3-project-factory-prod-r"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: providers/3-project-factory-prod-r-providers.tf
-  google_storage_bucket_object.tfvars:
-    bucket: fast2-prod-iac-core-outputs
-    name: tfvars/1-resman.auto.tfvars.json
-  google_storage_bucket_object.workflows["networking"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: workflows/networking-workflow.yaml
-  google_storage_bucket_object.workflows["security"]:
-    bucket: fast2-prod-iac-core-outputs
-    name: workflows/security-workflow.yaml
   module.cicd-sa-ro["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
     condition: []
     project: fast2-prod-automation
@@ -98,6 +23,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-net prod service account (read-only).
+    email: fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-ro["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -119,6 +46,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-sec prod service account (read-only).
+    email: fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -140,6 +69,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-net prod service account.
+    email: fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-rw["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -161,6 +92,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-sec prod service account.
+    email: fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -182,6 +115,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -209,21 +143,24 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.net-folder-dev[0].google_folder.folder[0]:
+  module.net-folder-envs["dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
     timeouts: null
-  module.net-folder-dev[0].google_tags_tag_binding.binding["environment"]:
+  module.net-folder-envs["dev"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
-  module.net-folder-prod[0].google_folder.folder[0]:
+  module.net-folder-envs["prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
     timeouts: null
-  module.net-folder-prod[0].google_tags_tag_binding.binding["environment"]:
+  module.net-folder-envs["prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.net-folder[0].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
+    tags: null
     timeouts: null
   ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
   : condition: []
@@ -403,6 +340,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman networking service account (read-only).
+    email: fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.net-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -424,6 +363,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman networking service account.
+    email: fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.net-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -445,6 +386,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -482,6 +424,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman network security main service account (read-only).
+    email: fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.nsec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -502,6 +446,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman network security main service account.
+    email: fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.nsec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -716,6 +662,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -753,6 +700,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project factory main service account (read-only).
+    email: fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.pf-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -773,6 +722,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project factory main service account.
+    email: fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.pf-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -793,6 +744,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -824,6 +776,7 @@ values:
     deletion_protection: false
     display_name: Security
     parent: organizations/123456789012
+    tags: null
     timeouts: null
   module.sec-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/projectIamViewer"]:
     condition: []
@@ -905,6 +858,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman security service account (read-only).
+    email: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.sec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -926,6 +881,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman security service account.
+    email: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.sec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -947,6 +904,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -984,6 +942,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1021,6 +980,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1058,6 +1018,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1095,6 +1056,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1132,6 +1094,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1162,6 +1125,7 @@ values:
   module.stage3-folder["gcve-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
     timeouts: null
   module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
@@ -1203,6 +1167,7 @@ values:
   module.stage3-folder["gcve-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
     timeouts: null
   module.stage3-folder["gcve-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
@@ -1244,6 +1209,7 @@ values:
   module.stage3-folder["gke-dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
+    tags: null
     timeouts: null
   module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
@@ -1285,6 +1251,7 @@ values:
   module.stage3-folder["gke-prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
+    tags: null
     timeouts: null
   module.stage3-folder["gke-prod"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
@@ -1333,6 +1300,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-dev service account (read-only).
+    email: fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1353,6 +1322,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-prod service account (read-only).
+    email: fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gcve-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1373,6 +1344,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-dev service account (read-only).
+    email: fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1393,6 +1366,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-prod service account (read-only).
+    email: fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gke-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1413,6 +1388,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-dev service account (read-only).
+    email: fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-ro["project-factory-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1433,6 +1410,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-prod service account (read-only).
+    email: fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-ro["project-factory-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1453,6 +1432,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-dev service account.
+    email: fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1473,6 +1454,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-prod service account.
+    email: fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gcve-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1493,6 +1476,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-dev service account.
+    email: fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1513,6 +1498,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-prod service account.
+    email: fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gke-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1533,6 +1520,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-dev service account.
+    email: fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-rw["project-factory-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1553,6 +1542,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-prod service account.
+    email: fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-rw["project-factory-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1573,6 +1564,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1610,6 +1602,7 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1641,6 +1634,7 @@ values:
     deletion_protection: false
     display_name: GCVE
     parent: organizations/123456789012
+    tags: null
     timeouts: null
   module.top-level-folder["gcve"].google_tags_tag_binding.binding["context"]:
     timeouts: null
@@ -1648,6 +1642,7 @@ values:
     deletion_protection: false
     display_name: GKE
     parent: organizations/123456789012
+    tags: null
     timeouts: null
   module.top-level-folder["gke"].google_tags_tag_binding.binding["context"]:
     timeouts: null
@@ -1655,36 +1650,13 @@ values:
     deletion_protection: false
     display_name: Sandbox
     parent: organizations/123456789012
-  module.top-level-folder["sandbox"].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
-    dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: 'TRUE'
-        condition: []
-        deny_all: null
-        enforce: null
-        values: []
-    timeouts: null
-  module.top-level-folder["sandbox"].google_org_policy_policy.default["sql.restrictPublicIp"]:
-    dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        values: []
-    timeouts: null
-  module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
+    tags: null
     timeouts: null
   module.top-level-folder["teams"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Teams
     parent: organizations/123456789012
+    tags: null
     timeouts: null
   ? module.top-level-folder["teams"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
   : condition: []
@@ -1732,6 +1704,7 @@ values:
     deletion_protection: false
     display_name: Tenants
     parent: organizations/123456789012
+    tags: null
     timeouts: null
   module.top-level-folder["tenants"].google_tags_tag_binding.binding["context"]:
     timeouts: null
@@ -1745,6 +1718,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman sandbox folder service account.
+    email: fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.top-level-sa["sandbox"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1765,6 +1740,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman tenants folder service account.
+    email: fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.top-level-sa["tenants"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1811,3 +1788,4 @@ outputs:
         type: gitlab
   folder_ids: __missing__
   tfvars: __missing__
+
