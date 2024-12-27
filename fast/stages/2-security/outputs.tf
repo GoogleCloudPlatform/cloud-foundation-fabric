@@ -18,7 +18,7 @@ locals {
   _output_kms_keys = flatten([
     for k, v in module.kms : [
       for name, id in v.key_ids : {
-        key = "{k}-${name}-${location}"
+        key = "${name}-${k}"
         id  = id
       }
     ]

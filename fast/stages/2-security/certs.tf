@@ -18,12 +18,12 @@
 
 locals {
   cas = flatten([
-    for k, v in var.cas_configs : [
+    for k, v in var.certificate_authorities : [
       for e in coalesce(v.environments, keys(var.environments)) : merge(v, {
         environment = e
         key         = "${e}-${k}"
         name        = k
-        netsec_iam  = contains(var.ngfw_tls_configs.keys.dev.cas, k)
+        netsec_iam  = contains(var.trust_configs.keys.dev.cas, k)
       })
     ]
   ])
@@ -40,7 +40,7 @@ locals {
 
 module "cas" {
   source         = "../../../modules/certificate-authority-service"
-  for_each       = { for k in local.cas : v.key => v }
+  for_each       = { for k in local.cas : k.key => k }
   project_id     = module.project[each.value.environment].project_id
   ca_configs     = each.value.ca_configs
   ca_pool_config = each.value.ca_pool_config
@@ -50,7 +50,7 @@ module "cas" {
     each.value.iam_bindings_additive,
     !each.value.netsec_iam ? {} : {
       nsec_agent = {
-        member = module.dev-sec-project.service_agents["networksecurity"].iam_email
+        member = module.project[each.value.environment].service_agents["networksecurity"].iam_email
         role   = "roles/privateca.certificateManager"
       }
   })
@@ -59,7 +59,7 @@ module "cas" {
 }
 
 resource "google_certificate_manager_trust_config" "dev_trust_configs" {
-  for_each    = { for k in local.trust_configs : v.key => v }
+  for_each    = { for k in local.trust_configs : k.key => k }
   name        = each.value.name
   project     = module.project[each.value.environment].project_id
   description = each.value.description

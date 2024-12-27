@@ -50,7 +50,7 @@ module "folder" {
 module "project" {
   source   = "../../../modules/project"
   for_each = var.environments
-  name     = "{each.key}-sec-core-0"
+  name     = "${each.value.short_name}-sec-core-0"
   parent = coalesce(
     var.folder_ids["security-${each.key}"], var.folder_ids.security
   )

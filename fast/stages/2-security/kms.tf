@@ -24,15 +24,15 @@ locals {
     for k, v in var.environments : [
       for l in local._kms_locations : {
         environment = k
-        key         = "${k}-${l}"
+        key         = "${v.short_name}-${l}"
         location    = l
-        name        = "${v.short_name}-{l}"
+        name        = v.short_name
       }
     ]
   ])
   # list of locations with keys
   # map { location -> { key_name -> key_details } }
-  kms_locations_keys = {
+  kms_keys = {
     for loc in local._kms_locations :
     loc => {
       for k, v in var.kms_keys : k => v if contains(v.locations, loc)
@@ -48,5 +48,5 @@ module "kms" {
     location = each.value.location
     name     = each.value.name
   }
-  keys = local.kms_locations_keys[each.value.location]
+  keys = local.kms_keys[each.value.location]
 }
