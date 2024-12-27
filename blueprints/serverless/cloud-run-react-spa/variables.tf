@@ -17,7 +17,7 @@ variable "backend" {
     function_name   = optional(string, "my-react-app-backend")
     service_account = optional(string, "my-react-app-backend")
   })
-  description = "Backend settings"
+  description = "Backend settings."
   default     = {}
 }
 
@@ -27,25 +27,25 @@ variable "bucket" {
     random_suffix = optional(bool, true)
     build_name    = optional(string, "my-react-app-build") # Build bucket for CF v2
   })
-  description = "Bucket settings for hosting the SPA"
+  description = "Bucket settings for hosting the SPA."
   default     = {}
 }
 
 variable "global_lb" {
   type        = bool
-  description = "Deploy a global load balancer"
+  description = "Deploy a global application load balancer."
   default     = true
 }
 
 variable "lb_name" {
   type        = string
-  description = "Application Load Balancer name"
+  description = "Application Load Balancer name."
   default     = "my-react-app"
 }
 
 variable "nginx_image" {
   type        = string
-  description = "Nginx image to use for regional load balancer"
+  description = "Nginx image to use for regional load balancer."
   default     = "gcr.io/cloud-marketplace/google/nginx1:1.26"
 }
 
@@ -60,17 +60,17 @@ variable "project_create" {
 
 variable "project_id" {
   type        = string
-  description = "Google Cloud project ID"
+  description = "Google Cloud project ID."
 }
 
 variable "region" {
   type        = string
-  description = "Region where to deploy the function and resources"
+  description = "Region where to deploy the function and resources."
 }
 
 variable "regional_lb" {
   type        = bool
-  description = "Deploy a regional load balancer"
+  description = "Deploy a regional application load balancer."
   default     = false
 }
 
@@ -84,7 +84,7 @@ variable "vpc_config" {
     proxy_only_subnet_cidr = optional(string, "172.20.30.0/24")
     create                 = optional(bool, true)
   })
-  description = "Settings for VPC (required when deploying a Regional XLB)"
+  description = "Settings for VPC (required when deploying a Regional LB)."
   default = {
     network               = "my-react-app-vpc"
     subnetwork            = "my-react-app-vpc-subnet"
