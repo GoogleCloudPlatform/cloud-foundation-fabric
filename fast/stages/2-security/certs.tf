@@ -23,7 +23,6 @@ locals {
         environment = e
         key         = "${e}-${k}"
         name        = k
-        netsec_iam  = contains(var.trust_configs.keys.dev.cas, k)
       })
     ]
   ])
@@ -46,13 +45,13 @@ module "cas" {
   ca_pool_config = each.value.ca_pool_config
   iam            = each.value.iam
   iam_bindings   = each.value.iam_bindings
-  iam_bindings_additive = merge(
-    each.value.iam_bindings_additive,
-    !each.value.netsec_iam ? {} : {
-      nsec_agent = {
-        member = module.project[each.value.environment].service_agents["networksecurity"].iam_email
-        role   = "roles/privateca.certificateManager"
-      }
+  iam_bindings_additive = merge(each.value.iam_bindings_additive, {
+    nsec_agent = {
+      member = (
+        module.project[each.value.environment].service_agents["networksecurity"].iam_email
+      )
+      role = "roles/privateca.certificateManager"
+    }
   })
   iam_by_principals = each.value.iam_by_principals
   location          = each.value.location
@@ -67,7 +66,7 @@ resource "google_certificate_manager_trust_config" "default" {
   dynamic "allowlisted_certificates" {
     for_each = each.value.allowlisted_certificates
     content {
-      pem_certificate = file(allowlisted_certificates.value)
+      pem_certificate = file(pathexpand(allowlisted_certificates.value))
     }
   }
   dynamic "trust_stores" {
@@ -76,13 +75,13 @@ resource "google_certificate_manager_trust_config" "default" {
       dynamic "intermediate_cas" {
         for_each = trust_stores.value.intermediate_cas
         content {
-          pem_certificate = file(intermediate_cas.value)
+          pem_certificate = file(pathexpand(intermediate_cas.value))
         }
       }
       dynamic "trust_anchors" {
         for_each = trust_stores.value.trust_anchors
         content {
-          pem_certificate = file(trust_anchors.value)
+          pem_certificate = file(pathexpand(trust_anchors.value))
         }
       }
     }
