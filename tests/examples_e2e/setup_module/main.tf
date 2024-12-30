@@ -221,7 +221,7 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_project_service_identity" "jit_si" {
-  for_each   = local.jit_services)
+  for_each   = local.jit_services
   provider   = google-beta
   project    = google_project.project.project_id
   service    = each.key
