@@ -210,6 +210,7 @@ resource "google_service_networking_connection" "psa_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.psa_ranges.name]
   deletion_policy         = "ABANDON"
+  depends_on              = [google_project_iam_binding.agents]
 }
 
 ### END OF PSA
