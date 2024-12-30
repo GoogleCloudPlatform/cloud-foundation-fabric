@@ -230,13 +230,13 @@ resource "google_project_service_identity" "jit_si" {
 
 resource "google_project_iam_binding" "agents" {
   for_each = {
-    for k, v local.jit_services: k=>v if v != null
+    for k, v in local.jit_services : k => v if v != null
   }
   members = [
     google_project_service_identity.jit_si[each.key].member
   ]
-  project    = google_project.project.project_id
-  role       = each.value
+  project = google_project.project.project_id
+  role    = each.value
 }
 
 
