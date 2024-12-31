@@ -23,7 +23,7 @@ locals {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_providers[v["identity_provider"]].audiences, "e"
+          local.cicd_providers[v["identity_provider"]].audiences, ""
         )
         identity_provider = try(
           local.cicd_providers[v["identity_provider"]].name, ""
