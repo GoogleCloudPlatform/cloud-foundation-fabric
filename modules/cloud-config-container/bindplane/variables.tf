@@ -26,6 +26,11 @@ variable "bindplane_config" {
   nullable = false
 }
 
+variable "bindplane_license" {
+  description = "BindPlane server license."
+  type        = string
+}
+
 variable "cloud_config" {
   description = "Cloud config template path. If null default will be used."
   type        = string

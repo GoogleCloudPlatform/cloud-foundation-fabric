@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,17 @@ locals {
       for name, sink in var.logging_sinks :
       name => sink if sink.iam && sink.type == type
     }
+  }
+
+  log_scopes = {
+    for k, v in var.log_scopes :
+    k => merge(v, {
+      # process all resource_names to allow bare project ids
+      resource_names = [
+        for r in v.resource_names :
+        startswith(r, "projects/") ? r : "projects/${r}"
+      ]
+    })
   }
 }
 
@@ -131,4 +142,13 @@ resource "google_logging_project_exclusion" "logging-exclusion" {
   project     = local.project.project_id
   description = "${each.key} (Terraform-managed)."
   filter      = each.value
+}
+
+resource "google_logging_log_scope" "log-scopes" {
+  for_each       = local.log_scopes
+  parent         = "projects/${local.project.project_id}"
+  location       = "global"
+  name           = each.key
+  resource_names = each.value.resource_names
+  description    = each.value.description
 }

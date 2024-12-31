@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased] <!-- from: 2024-11-23 11:24:55+00:00 to: None since: v36.0.1 -->
+- [[#2777](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2777)] Document `tag_bindings` definition as `map(string)` ([juliocc](https://github.com/juliocc)) <!-- 2024-12-19 13:47:32+00:00 -->
 
 ### BLUEPRINTS
 
+- [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
@@ -17,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2774)] [FAST] Remove unused stage 1 CICD variables ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-17 16:26:02+00:00 -->
 - [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2767)] Fix workspace logs sink in FAST bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 13:22:42+00:00 -->
@@ -27,6 +31,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2784](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2784)] Fix validation message in cas module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-25 07:25:07+00:00 -->
+- [[#2783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2783)] Update net-lb-app-ext security_settings variables ([wenzizone](https://github.com/wenzizone)) <!-- 2024-12-25 06:52:31+00:00 -->
+- [[#2781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2781)] Fix bindplane cos module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-23 09:37:09+00:00 -->
+- [[#2780](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2780)] Fix handling of SSL certificates in external load balancer modules ([rodriguezsergio](https://github.com/rodriguezsergio)) <!-- 2024-12-21 10:26:29+00:00 -->
+- [[#2776](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2776)] Add support for log views and log scopes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-18 17:29:45+00:00 -->
+- [[#2772](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2772)] Fix for perma-diff when using PSC NEGs. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 13:28:48+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
 - [[#2764](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2764)] Ignore ssl certificates if none are passed in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 09:37:37+00:00 -->
@@ -47,6 +58,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2778)] Fix failing tests for OpenTofu ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-20 09:19:01+00:00 -->
+- [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
 - [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
 - [[#2765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2765)] Update issue templates ([juliocc](https://github.com/juliocc)) <!-- 2024-12-12 12:40:47+00:00 -->

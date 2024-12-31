@@ -1,0 +1,42 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bucket.google_logging_log_view.views["myview"]:
+    description: null
+    filter: LOG_ID("stdout")
+    location: global
+    name: myview
+    timeouts: null
+  module.bucket.google_logging_log_view_iam_binding.authoritative["myview.roles/logging.viewAccessor"]:
+    condition: []
+    location: global
+    members:
+    - user:user@example.com
+    name: myview
+    role: roles/logging.viewAccessor
+  module.bucket.google_logging_project_bucket_config.bucket[0]:
+    bucket_id: mybucket
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: project-id
+    retention_days: 30
+
+counts:
+  google_logging_log_view: 1
+  google_logging_log_view_iam_binding: 1
+  google_logging_project_bucket_config: 1
