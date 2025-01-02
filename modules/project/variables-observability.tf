@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,17 +220,17 @@ variable "logging_metrics" {
 variable "notification_channels" {
   description = "Logging metrics alerts configuration."
   type = map(object({
+    type         = string
     description  = optional(string)
     display_name = optional(string)
-    labels       = optional(map(string))
-    type         = string
-    user_labels  = optional(map(string))
     enabled      = optional(bool)
-    sensitive_labels = optional(list(object({
+    labels       = optional(map(string))
+    sensitive_labels = optional(object({
       auth_token  = optional(string)
       password    = optional(string)
       service_key = optional(string)
-    })))
+    }))
+    user_labels = optional(map(string))
   }))
   nullable = false
   default  = {}

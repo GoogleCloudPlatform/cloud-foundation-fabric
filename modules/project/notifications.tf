@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,34 +19,27 @@ locals {
     for f in try(fileset(var.factories_config.channels, "*.yaml"), []) :
     yamldecode(file("${var.factories_config.channels}/${f}"))
   ]...)
+  # TODO: do we want to allow multiple channels in a single file?
   _channels_factory_data = {
     for k, v in local._channels_factory_data_raw :
-    k => merge({
-      name             = k
-      type             = null
-      email_address    = null
-      display_name     = null
-      labels           = {}
-      sensitive_labels = []
-      user_labels      = {}
-      enabled          = null
-      description      = null
-    }, v)
+    k => {
+      type         = v.type
+      description  = try(v.description, null)
+      display_name = try(v.display_name, null)
+      enabled      = null
+      labels       = try(v.labels, null)
+      sensitive_labels = !can(v.sensitive_labels) ? null : {
+        auth_token  = try(v.sensitive_labels.auth_token, null)
+        password    = try(v.sensitive_labels.password, null)
+        service_key = try(v.sensitive_labels.service_key, null)
+      }
+      user_labels = try(v.user_labels, null)
+    }
   }
   channels = merge(local._channels_factory_data, var.notification_channels)
 }
 
-resource "google_monitoring_notification_channel" "default" {
-  count        = var.default_alerts_email != null ? 1 : 0
-  project      = local.project.project_id
-  display_name = "Default Email Notification"
-  type         = "email"
-  labels = {
-    email_address = var.default_alerts_email
-  }
-}
-
-resource "google_monitoring_notification_channel" "this" {
+resource "google_monitoring_notification_channel" "channels" {
   for_each     = local.channels
   project      = local.project.project_id
   enabled      = each.value.enabled
@@ -56,11 +49,11 @@ resource "google_monitoring_notification_channel" "this" {
   user_labels  = each.value.user_labels
   description  = each.value.description
   dynamic "sensitive_labels" {
-    for_each = lookup(each.value, "sensitive_labels", null)[*]
+    for_each = each.value.sensitive_labels[*]
     content {
-      auth_token  = try(each.value.sensitive_labels.auth_token, null)
-      password    = try(each.value.sensitive_labels.password, null)
-      service_key = try(each.value.sensitive_labels.service_key, null)
+      auth_token  = sensitive_labels.value.auth_token
+      password    = sensitive_labels.value.password
+      service_key = sensitive_labels.value.service_key
     }
   }
 }
