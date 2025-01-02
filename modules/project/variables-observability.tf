@@ -147,74 +147,40 @@ variable "alerts" {
 variable "logging_metrics" {
   description = "Logging metrics alerts configuration."
   type = map(object({
-    bucket_name      = optional(string)
-    disabled         = optional(bool)
-    description      = optional(string)
-    filter           = string
-    label_extractors = optional(map(string))
-    labels = list(object({
-      key         = string
-      description = optional(string)
-      value_type  = optional(string)
-    }))
-    metric_descriptor = optional(map(object({
-      metric_kind = string
-      value_type  = string
-      labels = list(object({
-        key         = string
-        description = optional(string)
-        value_type  = optional(string)
-      }))
-      name            = optional(string)
-      value_extractor = optional(string)
-      unit            = optional(string)
-    })))
+    filter      = string
+    bucket_name = optional(string)
     bucket_options = optional(object({
-      linear_buckets = optional(object({
-        num_finite_buckets = number
-        width              = number
-        offset             = number
+      explicit_buckets = optional(object({
+        bounds = list(number)
       }))
       exponential_buckets = optional(object({
         num_finite_buckets = number
         growth_factor      = number
         scale              = number
       }))
-      explicit_buckets = object({
-        bounds = list(number)
-      })
+      linear_buckets = optional(object({
+        num_finite_buckets = number
+        width              = number
+        offset             = number
+      }))
     }))
+    description      = optional(string)
+    disabled         = optional(bool)
+    label_extractors = optional(map(string))
+    metric_descriptor = optional(object({
+      metric_kind  = string
+      value_type   = string
+      display_name = optional(string)
+      labels = optional(map(object({
+        description = optional(string)
+        value_type  = optional(string)
+      })), {})
+      unit = optional(string)
+    }))
+    value_extractor = optional(string)
   }))
   nullable = false
   default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_metrics :
-      contains(["INT64", "DOUBLE", "DISTRIBUTION"], v.metric_descriptor.unit)
-    ])
-    error_message = "metric_descriptor.unit must be one of 'INT64', 'DOUBLE', 'DISTRIBUTION'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_metrics :
-      contains(["BOOL", "INT64", "DOUBLE", "STRING", "DISTRIBUTION", "MONEY"], v.metric_descriptor.value_type)
-    ])
-    error_message = "metric_descriptor.unit must be one of 'BOOL', 'INT64', 'DOUBLE', 'STRING', 'DISTRIBUTION', 'MONEY'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_metrics :
-      contains(["DELTA", "GAUGE", "CUMULATIVE"], v.metric_descriptor.metric_kind)
-    ])
-    error_message = "metric_descriptor.unit must be one of 'DELTA', 'GAUGE', 'CUMULATIVE'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_metrics :
-      contains(["BOOL", "INT64", "STRING"], v.labels.value_type)
-    ])
-    error_message = "metric_descriptor.unit must be one of 'BOOL', 'INT64', 'STRING'."
-  }
 }
 
 variable "notification_channels" {
