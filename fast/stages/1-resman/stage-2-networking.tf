@@ -172,10 +172,12 @@ module "net-folder-dev" {
 # automation service accounts
 
 module "net-sa-rw" {
-  source                 = "../../../modules/iam-service-account"
-  count                  = var.fast_stage_2.networking.enabled ? 1 : 0
-  project_id             = var.automation.project_id
-  name                   = "prod-resman-${var.fast_stage_2.networking.short_name}-0"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.networking.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-net_rw"], {
+    name = var.fast_stage_2.networking.short_name
+  })
   display_name           = "Terraform resman networking service account."
   prefix                 = var.prefix
   service_account_create = var.root_node == null
@@ -193,10 +195,12 @@ module "net-sa-rw" {
 }
 
 module "net-sa-ro" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_stage_2.networking.enabled ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "prod-resman-${var.fast_stage_2.networking.short_name}-0r"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.networking.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-net_ro"], {
+    name = var.fast_stage_2.networking.short_name
+  })
   display_name = "Terraform resman networking service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -218,7 +222,9 @@ module "net-bucket" {
   source     = "../../../modules/gcs"
   count      = var.fast_stage_2.networking.enabled ? 1 : 0
   project_id = var.automation.project_id
-  name       = "prod-resman-${var.fast_stage_2.networking.short_name}-0"
+  name = templatestring(var.resource_names["gcs-net"], {
+    name = var.fast_stage_2.networking.short_name
+  })
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

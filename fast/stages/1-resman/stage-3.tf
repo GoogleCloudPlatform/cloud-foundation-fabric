@@ -156,7 +156,9 @@ module "stage3-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage3
   project_id = var.automation.project_id
-  name       = "resman-${each.value.short_name}-0"
+  name = templatestring(var.resource_names["sa-stage3_rw"], {
+    name = each.value.short_name
+  })
   display_name = (
     "Terraform resman ${each.key} service account."
   )
@@ -178,7 +180,9 @@ module "stage3-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage3
   project_id = var.automation.project_id
-  name       = "resman-${each.value.short_name}-0r"
+  name = templatestring(var.resource_names["sa-stage3_ro"], {
+    name = each.value.short_name
+  })
   display_name = (
     "Terraform resman ${each.key} service account (read-only)."
   )
@@ -202,7 +206,9 @@ module "stage3-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.stage3
   project_id = var.automation.project_id
-  name       = "resman-${each.value.short_name}-0"
+  name = templatestring(var.resource_names["gcs-stage3"], {
+    name = each.value.short_name
+  })
   prefix     = "${var.prefix}-${each.value.environment}"
   location   = var.locations.gcs
   versioning = true

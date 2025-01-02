@@ -1,0 +1,28 @@
+{
+  "locals": {
+    "jit_services": {
+      "alloydb.googleapis.com": "roles/alloydb.serviceAgent",
+      "apigee.googleapis.com": "roles/apigee.serviceAgent",
+      "artifactregistry.googleapis.com": "roles/artifactregistry.serviceAgent",
+      "assuredworkloads.googleapis.com": "roles/assuredworkloads.serviceAgent",
+      "dns.googleapis.com": "roles/dns.serviceAgent",
+      "dataplex.googleapis.com": "roles/dataplex.serviceAgent",
+      "pubsub.googleapis.com": "roles/pubsub.serviceAgent",
+      "sqladmin.googleapis.com": "roles/cloudsql.serviceAgent",
+      "dataform.googleapis.com": "roles/dataform.serviceAgent",
+      "eventarc.googleapis.com": "roles/eventarc.serviceAgent",
+      "cloudkms.googleapis.com": null,
+      "dataproc.googleapis.com": "roles/dataproc.serviceAgent",
+      "cloudfunctions.googleapis.com": "roles/cloudfunctions.serviceAgent",
+      "run.googleapis.com": "roles/run.serviceAgent",
+      "iap.googleapis.com": null,
+      "container.googleapis.com": "roles/container.serviceAgent",
+      "looker.googleapis.com": "roles/looker.serviceAgent",
+      "monitoring.googleapis.com": "roles/monitoring.notificationServiceAgent",
+      "networkconnectivity.googleapis.com": "roles/networkconnectivity.serviceAgent",
+      "secretmanager.googleapis.com": null,
+      "vpcaccess.googleapis.com": "roles/vpcaccess.serviceAgent",
+      "servicenetworking.googleapis.com": "roles/servicenetworking.serviceAgent"
+    }
+  }
+}

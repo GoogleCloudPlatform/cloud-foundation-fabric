@@ -3,19 +3,18 @@
 This module offers a way to create and manage Google Kubernetes Engine (GKE) [Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview). With its sensible default settings based on best practices and authors' experience as Google Cloud practitioners, the module accommodates for many common use cases out-of-the-box, without having to rely on verbose configuration.
 
 <!-- BEGIN TOC -->
-- [Examples](#examples)
-  - [GKE Autopilot cluster](#gke-autopilot-cluster)
-  - [Cloud DNS](#cloud-dns)
-  - [Logging configuration](#logging-configuration)
-  - [Monitoring configuration](#monitoring-configuration)
-  - [Backup for GKE](#backup-for-gke)
+- [GKE Autopilot cluster](#gke-autopilot-cluster)
+- [Cloud DNS](#cloud-dns)
+- [Logging configuration](#logging-configuration)
+- [Monitoring configuration](#monitoring-configuration)
+- [Backup for GKE](#backup-for-gke)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-## Examples
+For an explanation of cluster access configurations, please refer to the [GKE cluster standard](../gke-cluster-standard/README.md) module.
 
-### GKE Autopilot cluster
+## GKE Autopilot cluster
 
 This example shows how to [create a GKE cluster in Autopilot mode](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster).
 
@@ -25,6 +24,13 @@ module "cluster-1" {
   project_id = "myproject"
   name       = "cluster-1"
   location   = "europe-west1"
+  access_config = {
+    ip_access = {
+      authorized_ranges = {
+        internal-vms = "10.0.0.0/8"
+      }
+    }
+  }
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -32,14 +38,6 @@ module "cluster-1" {
       pods     = "pods"
       services = "services"
     }
-    master_authorized_ranges = {
-      internal-vms = "10.0.0.0/8"
-    }
-    master_ipv4_cidr_block = "192.168.0.0/28"
-  }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = false
   }
   labels = {
     environment = "dev"
@@ -48,7 +46,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=basic.yaml
 ```
 
-### Cloud DNS
+## Cloud DNS
 
 > [!WARNING]
 > [Cloud DNS is the only DNS provider for Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/service-discovery#cloud_dns) running version `1.25.9-gke.400` and later, and version `1.26.4-gke.500` and later. It is [pre-configured](https://cloud.google.com/kubernetes-engine/docs/resources/autopilot-standard-feature-comparison#feature-comparison) for those clusters. The following example *only* applies to Autopilot clusters running *earlier* versions.
@@ -77,12 +75,12 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=dns.yaml
 ```
 
-### Logging configuration
+## Logging configuration
 
 > [!NOTE]
 > System and workload logs collection is pre-configured for Autopilot clusters and cannot be disabled.
 
-This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default. 
+This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default.
 
 ```hcl
 module "cluster-1" {
@@ -104,7 +102,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=logging-config.yaml
 ```
 
-### Monitoring configuration
+## Monitoring configuration
 
 > [!NOTE]
 > [System metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-system-metrics) collection is pre-configured for Autopilot clusters and cannot be disabled.
@@ -164,15 +162,15 @@ module "cluster-1" {
 
 The *control plane metrics* and *kube state metrics* collection can be configured in a single `monitoring_config` block.
 
-### Backup for GKE
+## Backup for GKE
 
 > [!NOTE]
 > Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
 
 [Backup for GKE](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) is a service for backing up and restoring workloads in GKE clusters. It has two components:
 
-* A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
-* A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
+- A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
+- A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
 
 Backup for GKE is supported in GKE Autopilot clusters with [some restrictions](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/about-autopilot).
 
@@ -226,18 +224,20 @@ module "cluster-1" {
 | [private_cluster_config](variables.tf#L228) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [release_channel](variables.tf#L247) | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\". | <code>string</code> |  | <code>&#34;REGULAR&#34;</code> |
 
+
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
 | [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
-| [endpoint](outputs.tf#L29) | Cluster endpoint. |  |
-| [id](outputs.tf#L34) | Fully qualified cluster ID. |  |
-| [location](outputs.tf#L39) | Cluster location. |  |
-| [master_version](outputs.tf#L44) | Master version. |  |
-| [name](outputs.tf#L49) | Cluster name. |  |
-| [notifications](outputs.tf#L54) | GKE Pub/Sub notifications topic. |  |
-| [self_link](outputs.tf#L59) | Cluster self link. | ✓ |
-| [workload_identity_pool](outputs.tf#L65) | Workload identity pool. |  |
+| [dns_endpoint](outputs.tf#L29) | Control plane DNS endpoint. |  |
+| [endpoint](outputs.tf#L37) | Cluster endpoint. |  |
+| [id](outputs.tf#L42) | Fully qualified cluster ID. |  |
+| [location](outputs.tf#L47) | Cluster location. |  |
+| [master_version](outputs.tf#L52) | Master version. |  |
+| [name](outputs.tf#L57) | Cluster name. |  |
+| [notifications](outputs.tf#L62) | GKE Pub/Sub notifications topic. |  |
+| [self_link](outputs.tf#L67) | Cluster self link. | ✓ |
+| [workload_identity_pool](outputs.tf#L73) | Workload identity pool. |  |
 <!-- END TFDOC -->

@@ -38,14 +38,16 @@ locals {
 # billing account in same org (IAM is in the organization.tf file)
 
 module "billing-export-project" {
-  source          = "../../../modules/project"
-  count           = local.billing_mode == "org" ? 1 : 0
+  source = "../../../modules/project"
+  count = (
+    local.billing_mode == "org" || var.billing_account.force_create.project == true ? 1 : 0
+  )
   billing_account = var.billing_account.id
-  name            = "billing-exp-0"
+  name            = var.resource_names["project-billing"]
   parent = coalesce(
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
-  prefix = local.prefix
+  prefix = var.prefix
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}
@@ -66,10 +68,12 @@ module "billing-export-project" {
 }
 
 module "billing-export-dataset" {
-  source        = "../../../modules/bigquery-dataset"
-  count         = local.billing_mode == "org" ? 1 : 0
+  source = "../../../modules/bigquery-dataset"
+  count = (
+    local.billing_mode == "org" || var.billing_account.force_create.dataset == true ? 1 : 0
+  )
   project_id    = module.billing-export-project[0].project_id
-  id            = "billing_export"
+  id            = var.resource_names["bq-billing"]
   friendly_name = "Billing export."
   location      = local.locations.bq
 }

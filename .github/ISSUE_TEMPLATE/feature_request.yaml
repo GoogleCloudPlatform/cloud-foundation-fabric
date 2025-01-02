@@ -1,0 +1,38 @@
+# skip boilerplate check
+name: Feature Request
+description: Submit a feature request.
+title: "[FR]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for submitting a feature request! This issue tracker is for
+        [Cloud Foundation Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric).
+        Please search the issue tracker to see if there is an existing issue for the feature you are requesting.
+
+
+        For general questions or discussions, please use the
+        [Discussions](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/discussions) tab
+  - type: textarea
+    id: the-feature-request
+    attributes:
+      label: The feature request
+      description:
+        Write a clear and concise description of what the feature or problem is.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: Share how this will benefit Fabric and its users.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description:
+        Please include any other context, like screenshots or mockups, if
+        applicable.

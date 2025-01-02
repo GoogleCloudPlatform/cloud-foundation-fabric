@@ -6,25 +6,31 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [St
 > This module should be used together with the [`gke-nodepool`](../gke-nodepool/) module because the default node pool is deleted upon cluster creation by default.
 
 <!-- BEGIN TOC -->
-- [Example](#example)
-  - [GKE Standard cluster](#gke-standard-cluster)
-  - [Enable Dataplane V2](#enable-dataplane-v2)
-  - [Managing GKE logs](#managing-gke-logs)
-  - [Monitoring configuration](#monitoring-configuration)
-  - [Disable GKE logs or metrics collection](#disable-gke-logs-or-metrics-collection)
-  - [Cloud DNS](#cloud-dns)
-  - [Backup for GKE](#backup-for-gke)
-  - [Automatic creation of new secondary ranges](#automatic-creation-of-new-secondary-ranges)
-  - [Node auto-provisioning with GPUs and TPUs](#node-auto-provisioning-with-gpus-and-tpus)
+- [Cluster access configurations](#cluster-access-configurations)
+  - [Private cluster with DNS endpoint enabled](#private-cluster-with-dns-endpoint-enabled)
+  - [Public cluster](#public-cluster)
+- [Regional cluster](#regional-cluster)
+- [Enable Dataplane V2](#enable-dataplane-v2)
+- [Managing GKE logs](#managing-gke-logs)
+- [Monitoring configuration](#monitoring-configuration)
+- [Disable GKE logs or metrics collection](#disable-gke-logs-or-metrics-collection)
+- [Cloud DNS](#cloud-dns)
+- [Backup for GKE](#backup-for-gke)
+- [Automatic creation of new secondary ranges](#automatic-creation-of-new-secondary-ranges)
+- [Node auto-provisioning with GPUs and TPUs](#node-auto-provisioning-with-gpus-and-tpus)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-## Example
+## Cluster access configurations
 
-### GKE Standard cluster
+The `access_config` variable can be used to configure access to the control plane, and nodes public access. The following examples illustrate different possible configurations.
 
-This example shows how to [create a zonal GKE cluster in Standard mode](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster).
+### Private cluster with DNS endpoint enabled
+
+The default module configuration creates a cluster with private nodes, no public endpoint, and access via the DNS endpoint enabled. The default variable configuration is shown in comments.
+
+Master authorized ranges can be set via the `access_config.ip_access.authorized_ranges` attribute.
 
 ```hcl
 module "cluster-1" {
@@ -32,6 +38,20 @@ module "cluster-1" {
   project_id = "myproject"
   name       = "cluster-1"
   location   = "europe-west1-b"
+  # access_config can be omitted if master authorized ranges are not needed
+  access_config = {
+    # dns_access = true
+    ip_access = {
+      authorized_ranges = {
+        internal-vms = "10.0.0.0/8"
+      }
+      # disable_public_endpoint = true
+      # private_endpoint_config = {
+      #   global_access = true
+      # }
+    }
+    # private_nodes = true
+  }
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -39,24 +59,86 @@ module "cluster-1" {
       pods     = "pods"
       services = "services"
     }
-    master_authorized_ranges = {
-      internal-vms = "10.0.0.0/8"
-    }
-    master_ipv4_cidr_block = "192.168.0.0/28"
   }
   max_pods_per_node = 32
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = false
-  }
   labels = {
     environment = "dev"
   }
 }
-# tftest modules=1 resources=1 inventory=basic.yaml
+# tftest modules=1 resources=1 inventory=access-private.yaml
 ```
 
-### Enable Dataplane V2
+### Public cluster
+
+To configure a public cluster, turn off `access_config.ip_access.disable_public_endpoint`. Nodes can be left as private or made public if needed, like in the example below. DNS endpoint is turned off here as it's probably redundant for a public cluster.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  access_config = {
+    dns_access = false
+    ip_access = {
+      authorized_ranges = {
+        "corporate proxy" = "8.8.8.8/32"
+      }
+      disable_public_endpoint = false
+    }
+    private_nodes = false
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_names = {
+      pods     = "pods"
+      services = "services"
+    }
+  }
+  max_pods_per_node = 32
+  labels = {
+    environment = "dev"
+  }
+}
+# tftest modules=1 resources=1 inventory=access-public.yaml
+```
+
+## Regional cluster
+
+Regional clusters are created by setting `location` to a GCP region and then configuring `node_locations`, as shown in the example below.
+
+```hcl
+module "cluster-1" {
+  source         = "./fabric/modules/gke-cluster-standard"
+  project_id     = "myproject"
+  name           = "cluster-1"
+  location       = "europe-west1"
+  node_locations = ["europe-west1-b"]
+  access_config = {
+    ip_access = {
+      authorized_ranges = {
+        internal-vms = "10.0.0.0/8"
+      }
+    }
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_names = {
+      pods     = "pods"
+      services = "services"
+    }
+  }
+  max_pods_per_node = 32
+  labels = {
+    environment = "dev"
+  }
+}
+# tftest modules=1 resources=1 inventory=regional.yaml
+```
+
+## Enable Dataplane V2
 
 This example shows how to [create a zonal GKE Cluster with Dataplane V2 enabled](https://cloud.google.com/kubernetes-engine/docs/how-to/dataplane-v2).
 
@@ -70,14 +152,6 @@ module "cluster-1" {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
     secondary_range_names = {} # use default names "pods" and "services"
-    master_authorized_ranges = {
-      internal-vms = "10.0.0.0/8"
-    }
-    master_ipv4_cidr_block = "192.168.0.0/28"
-  }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = false
   }
   enable_features = {
     dataplane_v2          = true
@@ -89,10 +163,10 @@ module "cluster-1" {
     environment = "dev"
   }
 }
-# tftest modules=1 resources=1 inventory=dataplane-v2.yaml
+# tftest modules=1 resources=1
 ```
 
-### Managing GKE logs
+## Managing GKE logs
 
 This example shows you how to [control which logs are sent from your GKE cluster to Cloud Logging](https://cloud.google.com/stackdriver/docs/solutions/gke/installing).
 
@@ -119,7 +193,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=logging-config-enable-all.yaml
 ```
 
-### Monitoring configuration
+## Monitoring configuration
 
 This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). These metrics are optional and are not collected by default.
 
@@ -174,7 +248,7 @@ module "cluster-1" {
 
 The *control plane metrics* and *kube state metrics* collection can be configured in a single `monitoring_config` block.
 
-### Disable GKE logs or metrics collection
+## Disable GKE logs or metrics collection
 
 > [!WARNING]
 > If you've disabled Cloud Logging or Cloud Monitoring, GKE customer support
@@ -222,7 +296,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=monitoring-config-disable-all.yaml
 ```
 
-### Cloud DNS
+## Cloud DNS
 
 This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns) for GKE Standard clusters.
 
@@ -248,7 +322,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=dns.yaml
 ```
 
-### Backup for GKE
+## Backup for GKE
 
 > [!NOTE]
 > Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
@@ -287,7 +361,7 @@ module "cluster-1" {
 # tftest modules=1 resources=2 inventory=backup.yaml
 ```
 
-### Automatic creation of new secondary ranges
+## Automatic creation of new secondary ranges
 
 You can use `var.vpc_config.secondary_range_blocks` to let GKE create new secondary ranges for the cluster. The example below reserves an available /14 block for pods and a /20 for services.
 
@@ -309,7 +383,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1
 ```
 
-### Node auto-provisioning with GPUs and TPUs
+## Node auto-provisioning with GPUs and TPUs
 
 You can use `var.cluster_autoscaling` block to configure node auto-provisioning for the GKE cluster. The example below configures limits for CPU, memory, GPUs and TPUs.
 
@@ -377,18 +451,20 @@ module "cluster-1" {
 | [private_cluster_config](variables.tf#L391) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [release_channel](variables.tf#L410) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
 
+
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
-| [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
-| [endpoint](outputs.tf#L29) | Cluster endpoint. |  |
-| [id](outputs.tf#L34) | FUlly qualified cluster id. |  |
-| [location](outputs.tf#L39) | Cluster location. |  |
-| [master_version](outputs.tf#L44) | Master version. |  |
-| [name](outputs.tf#L49) | Cluster name. |  |
-| [notifications](outputs.tf#L54) | GKE PubSub notifications topic. |  |
-| [self_link](outputs.tf#L59) | Cluster self link. | ✓ |
-| [workload_identity_pool](outputs.tf#L65) | Workload identity pool. |  |
+| [cluster](outputs.tf#L25) | Cluster resource. | ✓ |
+| [dns_endpoint](outputs.tf#L31) | Control plane DNS endpoint. |  |
+| [endpoint](outputs.tf#L39) | Cluster endpoint. |  |
+| [id](outputs.tf#L44) | FUlly qualified cluster id. |  |
+| [location](outputs.tf#L49) | Cluster location. |  |
+| [master_version](outputs.tf#L54) | Master version. |  |
+| [name](outputs.tf#L59) | Cluster name. |  |
+| [notifications](outputs.tf#L64) | GKE PubSub notifications topic. |  |
+| [self_link](outputs.tf#L69) | Cluster self link. | ✓ |
+| [workload_identity_pool](outputs.tf#L75) | Workload identity pool. |  |
 <!-- END TFDOC -->

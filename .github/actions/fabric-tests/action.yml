@@ -72,7 +72,7 @@ runs:
       shell: bash
       run: |
         for f in $(find . -name versions.tf); do
-          sed -i -e 's/>=\(.*# tftest\)/=\1/g' -e 's/required_version = .*$/required_version = ">= ${{ inputs.TERRAFORM_VERSION }}"/g' $f;
+          sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
         done
     - name: Install Python Dependencies
       shell: bash

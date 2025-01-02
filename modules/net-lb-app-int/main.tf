@@ -113,7 +113,7 @@ resource "google_compute_region_target_https_proxy" "default" {
   region                           = var.region
   name                             = var.name
   description                      = var.description
-  ssl_certificates                 = local.proxy_ssl_certificates
+  ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_region_url_map.default.id
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
@@ -215,6 +215,11 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   psc_target_service    = each.value.psc.target_service
   network               = each.value.psc.network
   subnetwork            = each.value.psc.subnetwork
+  lifecycle {
+    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
+    ignore_changes = [psc_data]
+  }
+
 }
 
 locals {
