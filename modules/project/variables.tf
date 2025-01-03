@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,6 @@ variable "custom_roles" {
   type        = map(list(string))
   default     = {}
   nullable    = false
-}
-
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
-  type        = string
-  default     = null
 }
 
 variable "default_service_account" {

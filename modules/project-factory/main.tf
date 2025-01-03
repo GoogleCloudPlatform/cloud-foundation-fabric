@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,9 @@ module "projects" {
   parent = lookup(
     local.context.folder_ids, each.value.parent, each.value.parent
   )
-  default_alerts_email = ""
-  prefix               = each.value.prefix
-  auto_create_network  = try(each.value.auto_create_network, false)
-  compute_metadata     = try(each.value.compute_metadata, {})
+  prefix              = each.value.prefix
+  auto_create_network = try(each.value.auto_create_network, false)
+  compute_metadata    = try(each.value.compute_metadata, {})
   # TODO: concat lists for each key
   contacts = merge(
     each.value.contacts, var.data_merges.contacts
