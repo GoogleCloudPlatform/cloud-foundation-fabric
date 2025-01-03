@@ -16,10 +16,9 @@
 
 locals {
   _channels_factory_data_raw = merge([
-    for f in try(fileset(var.factories_config.notification_channels, "*.yaml"), []) :
-    yamldecode(file("${var.factories_config.notification_channels}/${f}"))
+    for k in local.observability_factory_data_raw :
+    lookup(k, "notification_channels", {})
   ]...)
-  # TODO: do we want to allow multiple channels in a single file?
   _channels_factory_data = {
     for k, v in local._channels_factory_data_raw :
     k => {

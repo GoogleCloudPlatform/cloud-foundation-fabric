@@ -30,9 +30,8 @@ This module implements the creation and management of one GCP project including 
 - [VPC Service Controls](#vpc-service-controls)
 - [Project Related Outputs](#project-related-outputs)
   - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
-- [Notification Channels](#notification-channels)
-- [Alerts](#alerts)
-- [Logging Metrics](#logging-metrics)
+- [Observability](#observability)
+- [Observability factory](#observability-factory)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1404,45 +1403,9 @@ module "bucket" {
 # tftest inventory=data.yaml e2e
 ```
 
-## Notification Channels
+## Observability
 
-You can manage project notification channels using the `notification_channels` variable or define them using a factory with `factories_config.notification_channels`.  Each YAML file should define one or more notification channels using the same structure as the `notification_channels` variable.
-
-```hcl
-module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project"
-  billing_account = var.billing_account_id
-  parent          = var.folder_id
-  prefix          = var.prefix
-  notification_channels = {
-    channel-1 = {
-      display_name = "channel-1"
-      type         = "email"
-      labels = {
-        email_address = "hello@example.com"
-      }
-    }
-  }
-  factories_config = {
-    notification_channels = "data/notification-channels"
-  }
-}
-# tftest modules=1 resources=3 files=channel-1
-```
-
-```yaml
-# tftest-file id=channel-1 path=data/notification-channels/channel-1.yaml schema=notification-channels.schema.json
-channel-1-from-yaml:
-  display_name: channel-1
-  type: email
-  labels:
-    email_address: hello2@example.com
-```
-
-##  Alerts
-Project alerts can be managed via the `alerts` variable. Notice that alerts can reference notificatin either using thei fully qualified ID or channels using the channel key specified in the `notification_channels` variable (or the key in the YAML file if using a factory).
-You can also define alerts  using a factory with `factories_config.alerts`.  Each YAML file should define one or more notification channels using the same structure as the `alerts` variable.
+Alerting policies, log-based metrics, and notification channels are managed by the `alerts`, `logging_metrics`, and `notification_channels` variables, respectively.
 
 ```hcl
 module "project" {
@@ -1474,53 +1437,6 @@ module "project" {
       }]
     }
   }
-  notification_channels = {
-    my-channel = {
-      display_name = "My Channel"
-      type         = "email"
-      labels = {
-        email_address = "hello@example.com"
-      }
-    }
-  }
-  factories_config = {
-    alerts = "data/alerts"
-  }
-}
-# tftest modules=1 resources=4 files=alerts-1
-```
-
-```yaml
-# tftest-file id=alerts-1 path=data/alerts/channel-1.yaml schema=alerts.schema.json
-alert-2:
-  display_name: My Alert Policy
-  combiner: OR
-  conditions:
-    - display_name: test condition
-      condition_threshold:
-        filter: |
-          metric.type="compute.googleapis.com/instance/disk/write_bytes_count" AND resource.type="gce_instance"
-        duration: 60s
-        comparison: COMPARISON_GT
-        aggregations:
-          alignment_period: 60s
-          per_series_aligner: ALIGN_RATE
-  user_labels:
-    foo: bar
-```
-
-##  Logging Metrics
-
-You can manage project log-based metrics using the `logging_metrics` variable or define them using a factory with `factories_config.logging_metrics`.  Each YAML file should define one or more log-based metric using the same structure as the `logging_metrics` variable.
-
-Project log-based metrics  can be managed via the `logging_metrics` variable
-```hcl
-module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project"
-  billing_account = var.billing_account_id
-  parent          = var.folder_id
-  prefix          = var.prefix
   logging_metrics = {
     metric-1 = {
       name        = "metric-1"
@@ -1532,60 +1448,103 @@ module "project" {
         unit        = "ms"
       }
     }
-    metric2 = {
-      filter = "resource.type=gae_app AND severity>=ERROR"
-      metric_descriptor = {
-        metric_kind = "DELTA"
-        value_type  = "INT64"
-        labels = [
-          {
-            key         = "mass"
-            value_type  = "STRING"
-            description = "amount of matter"
-          }
-        ]
-      }
-      label_extractors = {
-        "mass" = "EXTRACT(jsonPayload.request)"
+  }
+  notification_channels = {
+    my-channel = {
+      display_name = "My Channel"
+      type         = "email"
+      labels = {
+        email_address = "hello@example.com"
       }
     }
   }
 }
-# tftest modules=1 resources=4 files=metrics-1
+# tftest modules=1 resources=4
+```
+
+# Observability factory
+
+Observability variables are exposed through a factory enabled by setting `var.factories_config.observability`. YAML files configure observability resources using top-level keys: `alerts`, `logging_metrics`, and `notification_channels`, which correspond to the respective variables. All top-level keys are optional, and their structure mirrors their corresponding variable's structure.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  factories_config = {
+    observability = "data/observability"
+    context = {
+      notification_channels = {
+        common-channel = "projects/other-project/notificationChannels/1234567890"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5 files=observability
 ```
 
 ```yaml
-# tftest-file id=metrics-1 path=data/notification-channels/metrics-1.yaml schema=logging-metrics.schema.json
-factory-metric-1:
-  filter: "resource.type=gae_app AND severity>=ERROR"
-  metric_descriptor:
-    metric_kind: DELTA
-    value_type: INT64
-  disabled: true
+# tftest-file id=observability path=data/observability/observability.yaml schema=observability.schema.json
+logging_metrics:
+  factory-metric-1:
+    filter: "resource.type=gae_app AND severity>=ERROR"
+    metric_descriptor:
+      metric_kind: DELTA
+      value_type: INT64
+    disabled: true
 
-factory-metric-2:
-  filter: resource.type=gae_app AND severity>=ERROR
-  metric_descriptor:
-    metric_kind: DELTA
-    value_type: DISTRIBUTION
-    unit: "1"
+  factory-metric-2:
+    filter: resource.type=gae_app AND severity>=ERROR
+    metric_descriptor:
+      metric_kind: DELTA
+      value_type: DISTRIBUTION
+      unit: "1"
+      labels:
+        - key: mass
+          value_type: STRING
+          description: amount of matter
+        - key: sku
+          value_type: INT64
+          description: Identifying number for item
+      display_name: My metric
+    value_extractor: EXTRACT(jsonPayload.request)
+    label_extractors:
+      mass: EXTRACT(jsonPayload.request)
+      sku: EXTRACT(jsonPayload.id)
+    bucket_options:
+      linear_buckets:
+        num_finite_buckets: 3
+        width: 1
+        offset: 1
+
+notification_channels:
+  channel-1:
+    display_name: channel-1
+    type: email
     labels:
-      - key: mass
-        value_type: STRING
-        description: amount of matter
-      - key: sku
-        value_type: INT64
-        description: Identifying number for item
-    display_name: My metric
-  value_extractor: EXTRACT(jsonPayload.request)
-  label_extractors:
-    mass: EXTRACT(jsonPayload.request)
-    sku: EXTRACT(jsonPayload.id)
-  bucket_options:
-    linear_buckets:
-      num_finite_buckets: 3
-      width: 1
-      offset: 1
+      email_address: hello2@example.com
+
+alerts:
+  alert-1:
+    display_name: My Alert Policy
+    combiner: OR
+    notification_channels:
+      - channel-1
+      - common-channel
+    conditions:
+      - display_name: test condition
+        condition_threshold:
+          filter: |
+            metric.type="compute.googleapis.com/instance/disk/write_bytes_count" AND resource.type="gce_instance"
+          duration: 60s
+          comparison: COMPARISON_GT
+          aggregations:
+            alignment_period: 60s
+            per_series_aligner: ALIGN_RATE
+    user_labels:
+      foo: bar
 ```
 
 
@@ -1620,7 +1579,7 @@ factory-metric-2:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L108) | Project name and id suffix. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L109) | Project name and id suffix. | <code>string</code> | ✓ |  |
 | [alerts](variables-observability.tf#L17) | Monitoring alerts. | <code title="map&#40;object&#40;&#123;&#10;  combiner              &#61; string&#10;  display_name          &#61; optional&#40;string&#41;&#10;  enabled               &#61; optional&#40;bool&#41;&#10;  notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  severity              &#61; optional&#40;string&#41;&#10;  user_labels           &#61; optional&#40;map&#40;string&#41;&#41;&#10;  alert_strategy &#61; optional&#40;object&#40;&#123;&#10;    auto_close           &#61; optional&#40;string&#41;&#10;    notification_prompts &#61; optional&#40;string&#41;&#10;    notification_rate_limit &#61; optional&#40;object&#40;&#123;&#10;      period &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    notification_channel_strategy &#61; optional&#40;object&#40;&#123;&#10;      notification_channel_names &#61; optional&#40;list&#40;string&#41;&#41;&#10;      renotify_interval          &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  conditions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    display_name &#61; string&#10;    condition_absent &#61; optional&#40;object&#40;&#123;&#10;      duration &#61; string&#10;      filter   &#61; optional&#40;string&#41;&#10;      aggregations &#61; optional&#40;object&#40;&#123;&#10;        per_series_aligner   &#61; optional&#40;string&#41;&#10;        group_by_fields      &#61; optional&#40;list&#40;string&#41;&#41;&#10;        cross_series_reducer &#61; optional&#40;string&#41;&#10;        alignment_period     &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      trigger &#61; optional&#40;object&#40;&#123;&#10;        count   &#61; optional&#40;number&#41;&#10;        percent &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    condition_matched_log &#61; optional&#40;object&#40;&#123;&#10;      filter           &#61; string&#10;      label_extractors &#61; optional&#40;map&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    condition_monitoring_query_language &#61; optional&#40;object&#40;&#123;&#10;      duration                &#61; string&#10;      query                   &#61; string&#10;      evaluation_missing_data &#61; optional&#40;string&#41;&#10;      trigger &#61; optional&#40;object&#40;&#123;&#10;        count   &#61; optional&#40;number&#41;&#10;        percent &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    condition_prometheus_query_language &#61; optional&#40;object&#40;&#123;&#10;      query                     &#61; string&#10;      alert_rule                &#61; optional&#40;string&#41;&#10;      disable_metric_validation &#61; optional&#40;bool&#41;&#10;      duration                  &#61; optional&#40;string&#41;&#10;      evaluation_interval       &#61; optional&#40;string&#41;&#10;      labels                    &#61; optional&#40;map&#40;string&#41;&#41;&#10;      rule_group                &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    condition_threshold &#61; optional&#40;object&#40;&#123;&#10;      comparison              &#61; string&#10;      duration                &#61; string&#10;      denominator_filter      &#61; optional&#40;string&#41;&#10;      evaluation_missing_data &#61; optional&#40;string&#41;&#10;      filter                  &#61; optional&#40;string&#41;&#10;      threshold_value         &#61; optional&#40;number&#41;&#10;      aggregations &#61; optional&#40;object&#40;&#123;&#10;        per_series_aligner   &#61; optional&#40;string&#41;&#10;        group_by_fields      &#61; optional&#40;list&#40;string&#41;&#41;&#10;        cross_series_reducer &#61; optional&#40;string&#41;&#10;        alignment_period     &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      denominator_aggregations &#61; optional&#40;object&#40;&#123;&#10;        per_series_aligner   &#61; optional&#40;string&#41;&#10;        group_by_fields      &#61; optional&#40;list&#40;string&#41;&#41;&#10;        cross_series_reducer &#61; optional&#40;string&#41;&#10;        alignment_period     &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      forecast_options &#61; optional&#40;object&#40;&#123;&#10;        forecast_horizon &#61; string&#10;      &#125;&#41;&#41;&#10;      trigger &#61; optional&#40;object&#40;&#123;&#10;        count   &#61; optional&#40;number&#41;&#10;        percent &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  documentation &#61; optional&#40;object&#40;&#123;&#10;    content   &#61; optional&#40;string&#41;&#10;    mime_type &#61; optional&#40;string&#41;&#10;    subject   &#61; optional&#40;string&#41;&#10;    links &#61; optional&#40;list&#40;object&#40;&#123;&#10;      display_name &#61; optional&#40;string&#41;&#10;      url          &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [auto_create_network](variables.tf#L17) | Whether to create the default network for the project. | <code>bool</code> |  | <code>false</code> |
 | [billing_account](variables.tf#L23) | Billing account id. | <code>string</code> |  | <code>null</code> |
@@ -1630,13 +1589,13 @@ factory-metric-2:
 | [default_service_account](variables.tf#L50) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
 | [deletion_policy](variables.tf#L64) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
 | [descriptive_name](variables.tf#L75) | Name of the project name. Used for project name instead of `name` variable. | <code>string</code> |  | <code>null</code> |
-| [factories_config](variables.tf#L81) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  alerts                &#61; optional&#40;string&#41;&#10;  notification_channels &#61; optional&#40;string&#41;&#10;  custom_roles          &#61; optional&#40;string&#41;&#10;  logging_metrics       &#61; optional&#40;string&#41;&#10;  org_policies          &#61; optional&#40;string&#41;&#10;  quotas                &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L81) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  custom_roles  &#61; optional&#40;string&#41;&#10;  observability &#61; optional&#40;string&#41;&#10;  org_policies  &#61; optional&#40;string&#41;&#10;  quotas        &#61; optional&#40;string&#41;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L54) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L95) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lien_reason](variables.tf#L102) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L96) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lien_reason](variables.tf#L103) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
 | [log_scopes](variables-observability.tf#L117) | Log scopes under this project. | <code title="map&#40;object&#40;&#123;&#10;  description    &#61; optional&#40;string&#41;&#10;  resource_names &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_data_access](variables-observability.tf#L127) | Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-observability.tf#L142) | Logging exclusions for this project in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1645,21 +1604,21 @@ factory-metric-2:
 | [metric_scopes](variables-observability.tf#L220) | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  id      &#61; optional&#40;string&#41;&#10;  network &#61; string &#35; project_id&#47;vpc_name&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L227) | Monitoring notification channels. | <code title="map&#40;object&#40;&#123;&#10;  type         &#61; string&#10;  description  &#61; optional&#40;string&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  enabled      &#61; optional&#40;bool&#41;&#10;  labels       &#61; optional&#40;map&#40;string&#41;&#41;&#10;  user_labels  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  sensitive_labels &#61; optional&#40;object&#40;&#123;&#10;    auth_token  &#61; optional&#40;string&#41;&#10;    password    &#61; optional&#40;string&#41;&#10;    service_key &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L113) | Organization policies applied to this project keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L140) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
-| [prefix](variables.tf#L150) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [project_create](variables.tf#L160) | Create project. When set to false, uses a data source to reference existing project. | <code>bool</code> |  | <code>true</code> |
+| [org_policies](variables.tf#L114) | Organization policies applied to this project keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent](variables.tf#L141) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [prefix](variables.tf#L151) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [project_create](variables.tf#L161) | Create project. When set to false, uses a data source to reference existing project. | <code>bool</code> |  | <code>true</code> |
 | [quotas](variables-quotas.tf#L17) | Service quota configuration. | <code title="map&#40;object&#40;&#123;&#10;  service              &#61; string&#10;  quota_id             &#61; string&#10;  preferred_value      &#61; number&#10;  dimensions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  justification        &#61; optional&#40;string&#41;&#10;  contact_email        &#61; optional&#40;string&#41;&#10;  annotations          &#61; optional&#40;map&#40;string&#41;&#41;&#10;  ignore_safety_checks &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L166) | Automatic service agent configuration options. | <code title="object&#40;&#123;&#10;  create_primary_agents &#61; optional&#40;bool, true&#41;&#10;  grant_default_roles   &#61; optional&#40;bool, true&#41;&#10;  services_enabled      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_config](variables.tf#L177) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_encryption_key_ids](variables.tf#L189) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L196) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shared_vpc_host_config](variables.tf#L202) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L211) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project             &#61; string&#10;  network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L239) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L167) | Automatic service agent configuration options. | <code title="object&#40;&#123;&#10;  create_primary_agents &#61; optional&#40;bool, true&#41;&#10;  grant_default_roles   &#61; optional&#40;bool, true&#41;&#10;  services_enabled      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_config](variables.tf#L178) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_encryption_key_ids](variables.tf#L190) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L197) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shared_vpc_host_config](variables.tf#L203) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L212) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project             &#61; string&#10;  network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L240) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
 | [tag_bindings](variables-tags.tf#L81) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L88) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  id &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpc_sc](variables.tf#L251) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name    &#61; string&#10;  perimeter_bridges &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  is_dry_run        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_sc](variables.tf#L252) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name    &#61; string&#10;  perimeter_bridges &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  is_dry_run        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

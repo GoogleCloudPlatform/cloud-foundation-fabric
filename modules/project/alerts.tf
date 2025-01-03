@@ -16,8 +16,8 @@
 
 locals {
   _alerts_factory_data_raw = merge([
-    for f in try(fileset(var.factories_config.alerts, "*.yaml"), []) :
-    yamldecode(file("${var.factories_config.alerts}/${f}"))
+    for k in local.observability_factory_data_raw :
+    lookup(k, "alerts", {})
   ]...)
   _alerts_factory_data = {
     for k, v in local._alerts_factory_data_raw :
@@ -137,7 +137,14 @@ resource "google_monitoring_alert_policy" "alerts" {
   enabled      = each.value.enabled
   notification_channels = [
     for x in each.value.notification_channels :
-    lookup(local._notification_channel_names, x, x)
+    try(
+      # first try to get a channel created by this module
+      google_monitoring_notification_channel.channels[x].name,
+      # otherwise check the context
+      var.factories_config.context.notification_channels[x],
+      # if nothing else, use the provided channel as is
+      x
+    )
   ]
   severity    = each.value.severity
   user_labels = each.value.user_labels

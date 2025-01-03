@@ -16,10 +16,9 @@
 
 locals {
   _logging_metrics_factory_data_raw = merge([
-    for f in try(fileset(var.factories_config.logging_metrics, "*.yaml"), []) :
-    yamldecode(file("${var.factories_config.logging_metrics}/${f}"))
+    for k in local.observability_factory_data_raw :
+    lookup(k, "logging_metrics", {})
   ]...)
-  # TODO: do we want to allow multiple metrics in a single file?
   _logging_metrics_factory_data = {
     for k, v in local._logging_metrics_factory_data_raw :
     k => {

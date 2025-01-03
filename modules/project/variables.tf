@@ -81,12 +81,13 @@ variable "descriptive_name" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    alerts                = optional(string)
-    notification_channels = optional(string)
-    custom_roles          = optional(string)
-    logging_metrics       = optional(string)
-    org_policies          = optional(string)
-    quotas                = optional(string)
+    custom_roles  = optional(string)
+    observability = optional(string)
+    org_policies  = optional(string)
+    quotas        = optional(string)
+    context = optional(object({
+      notification_channels = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
