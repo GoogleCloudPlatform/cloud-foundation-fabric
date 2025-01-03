@@ -136,13 +136,12 @@ def trigger_export(export_date: str, export_start_datetime: str,
   backstory_credentials = service_account.Credentials.from_service_account_file(
       SECOPS_SOURCE_SA_KEY_SECRET_PATH, scopes=SCOPES)
   secops_utils = SecOpsUtils(backstory_credentials)
-  previous_day = utils.get_previous_day(export_date) if export_date else None
 
   export_ids = []
   try:
     if log_types is None:
       export_response = secops_utils.create_data_export(
-          project=GCP_PROJECT_ID, export_date=previous_day,
+          project=GCP_PROJECT_ID, export_date=export_date,
           export_start_datetime=export_start_datetime,
           export_end_datetime=export_end_datetime)
       LOGGER.info(export_response)
@@ -152,7 +151,7 @@ def trigger_export(export_date: str, export_start_datetime: str,
     else:
       for log_type in log_types:
         export_response = secops_utils.create_data_export(
-            project=GCP_PROJECT_ID, export_date=previous_day,
+            project=GCP_PROJECT_ID, export_date=export_date,
             export_start_datetime=export_start_datetime,
             export_end_datetime=export_end_datetime, log_type=log_type)
         LOGGER.info(export_response)
