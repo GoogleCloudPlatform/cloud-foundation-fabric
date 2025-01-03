@@ -117,8 +117,12 @@ variable "alerts" {
 variable "logging_metrics" {
   description = "Logging metrics alerts configuration."
   type = map(object({
-    filter      = string
-    bucket_name = optional(string)
+    filter           = string
+    bucket_name      = optional(string)
+    description      = optional(string)
+    disabled         = optional(bool)
+    label_extractors = optional(map(string))
+    value_extractor  = optional(string)
     bucket_options = optional(object({
       explicit_buckets = optional(object({
         bounds = list(number)
@@ -134,20 +138,16 @@ variable "logging_metrics" {
         offset             = number
       }))
     }))
-    description      = optional(string)
-    disabled         = optional(bool)
-    label_extractors = optional(map(string))
     metric_descriptor = optional(object({
       metric_kind  = string
       value_type   = string
       display_name = optional(string)
+      unit         = optional(string)
       labels = optional(map(object({
         description = optional(string)
         value_type  = optional(string)
       })), {})
-      unit = optional(string)
     }))
-    value_extractor = optional(string)
   }))
   nullable = false
   default  = {}
@@ -161,12 +161,12 @@ variable "notification_channels" {
     display_name = optional(string)
     enabled      = optional(bool)
     labels       = optional(map(string))
+    user_labels  = optional(map(string))
     sensitive_labels = optional(object({
       auth_token  = optional(string)
       password    = optional(string)
       service_key = optional(string)
     }))
-    user_labels = optional(map(string))
   }))
   nullable = false
   default  = {}

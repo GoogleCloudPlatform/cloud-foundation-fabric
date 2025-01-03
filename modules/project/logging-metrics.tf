@@ -23,8 +23,12 @@ locals {
   _logging_metrics_factory_data = {
     for k, v in local._logging_metrics_factory_data_raw :
     k => {
-      filter      = v.filter
-      bucket_name = try(v.bucket_name, null)
+      filter           = v.filter
+      bucket_name      = try(v.bucket_name, null)
+      description      = try(v.description, null)
+      disabled         = try(v.disabled, null)
+      label_extractors = try(v.label_extractors, null)
+      value_extractor  = try(v.value_extractor, null)
       bucket_options = !can(v.bucket_options) ? null : {
         explicit_buckets = !can(v.bucket_options.explicit_buckets) ? null : {
           bounds = v.bucket_options.explicit_buckets.bounds
@@ -40,13 +44,11 @@ locals {
           offset             = v.bucket_options.linear_buckets.offset
         }
       }
-      description      = try(v.description, null)
-      disabled         = try(v.disabled, null)
-      label_extractors = try(v.label_extractors, null)
       metric_descriptor = !can(v.metric_descriptor) ? null : {
         metric_kind  = v.metric_descriptor.metric_kind
         value_type   = v.metric_descriptor.value_type
         display_name = try(v.metric_descriptor.display_name, null)
+        unit         = try(v.metric_descriptor.unit, null)
         labels = !can(v.metric_descriptor.labels) ? {} : {
           for kk, vv in v.metric_descriptor.labels :
           kk => {
@@ -54,9 +56,7 @@ locals {
             value_type  = try(vv.value_type, null)
           }
         }
-        unit = try(v.metric_descriptor.unit, null)
       }
-      value_extractor = try(v.value_extractor, null)
     }
   }
   metrics = merge(local._logging_metrics_factory_data, var.logging_metrics)
