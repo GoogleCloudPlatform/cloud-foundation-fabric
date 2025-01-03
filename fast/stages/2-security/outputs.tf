@@ -24,7 +24,7 @@ locals {
     ]
   ])
   tfvars = {
-    cas_configs = {
+    certificate_authorities = {
       for k, v in module.cas : k => {
         ca_pool_id = v.ca_pool_id
         ca_ids     = v.ca_ids
@@ -33,10 +33,6 @@ locals {
     }
     kms_keys = {
       for k in local._output_kms_keys : k.key => k.id
-    }
-    trust_configs = {
-      for k, v in google_certificate_manager_trust_config.default :
-      k => v.id
     }
   }
 }
@@ -54,9 +50,9 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
-output "cas_configs" {
+output "certificate_authorities" {
   description = "Certificate Authority Service configurations."
-  value       = local.tfvars.cas_configs
+  value       = local.tfvars.certificate_authorities
 }
 
 output "kms_keys" {
@@ -68,9 +64,4 @@ output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
-}
-
-output "trust_config_ids" {
-  description = "Certificate Manager trust-config ids."
-  value       = local.tfvars.trust_configs
 }
