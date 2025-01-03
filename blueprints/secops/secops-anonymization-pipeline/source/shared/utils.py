@@ -67,12 +67,6 @@ def format_date_time_range(date_input):
   return formatted_start, formatted_end
 
 
-def get_previous_day(date_input):
-  date_obj = datetime.strptime(date_input, "%Y-%m-%d")
-  previous_day = date_obj + timedelta(days=-1)
-  return previous_day.strftime("%Y-%m-%d")
-
-
 def list_anonymized_folders(bucket_name, folder_name):
   """Lists all folders (prefixes) within a specified folder in a GCS bucket.
 
