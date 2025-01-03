@@ -114,6 +114,38 @@ variable "alerts" {
   default  = {}
 }
 
+variable "log_scopes" {
+  description = "Log scopes under this project."
+  type = map(object({
+    description    = optional(string)
+    resource_names = list(string)
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "logging_data_access" {
+  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
+  type        = map(map(list(string)))
+  nullable    = false
+  default     = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.logging_data_access : [
+        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
+      ]
+    ]))
+    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
+  }
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
 variable "logging_metrics" {
   description = "Logging metrics alerts configuration."
   type = map(object({
@@ -148,57 +180,6 @@ variable "logging_metrics" {
         value_type  = optional(string)
       })), {})
     }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "notification_channels" {
-  description = "Logging metrics alerts configuration."
-  type = map(object({
-    type         = string
-    description  = optional(string)
-    display_name = optional(string)
-    enabled      = optional(bool)
-    labels       = optional(map(string))
-    user_labels  = optional(map(string))
-    sensitive_labels = optional(object({
-      auth_token  = optional(string)
-      password    = optional(string)
-      service_key = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "logging_data_access" {
-  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.logging_data_access : [
-        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
-      ]
-    ]))
-    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
-  }
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "log_scopes" {
-  description = "Log scopes under this project."
-  type = map(object({
-    description    = optional(string)
-    resource_names = list(string)
   }))
   nullable = false
   default  = {}
@@ -240,4 +221,23 @@ variable "metric_scopes" {
   type        = list(string)
   default     = []
   nullable    = false
+}
+
+variable "notification_channels" {
+  description = "Logging metrics alerts configuration."
+  type = map(object({
+    type         = string
+    description  = optional(string)
+    display_name = optional(string)
+    enabled      = optional(bool)
+    labels       = optional(map(string))
+    user_labels  = optional(map(string))
+    sensitive_labels = optional(object({
+      auth_token  = optional(string)
+      password    = optional(string)
+      service_key = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
