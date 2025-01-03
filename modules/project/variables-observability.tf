@@ -17,6 +17,12 @@
 variable "alerts" {
   description = "Logging metrics alerts configuration."
   type = map(object({
+    combiner              = string
+    display_name          = optional(string)
+    enabled               = optional(bool)
+    notification_channels = optional(list(string))
+    severity              = optional(string)
+    user_labels           = optional(map(string))
     alert_strategy = optional(object({
       auto_close           = optional(string)
       notification_prompts = optional(string)
@@ -28,67 +34,72 @@ variable "alerts" {
         renotify_interval          = optional(string)
       }))
     }))
-    combiner = string
-    conditions = object({
-      condition_matched_log = optional(object({
-        filter           = string
-        label_extractors = optional(map(string))
-      }))
-      condition_monitoring_query_language = optional(object({
-        query    = string
+    conditions = optional(list(object({
+      display_name = string
+      condition_absent = optional(object({
         duration = string
-        trigger = optional(object({
-          count   = optional(number)
-          percent = optional(number)
-        }))
-        display_name            = string
-        evaluation_missing_data = optional(string)
-      }))
-      condition_threshold = optional(object({
+        filter   = optional(string)
         aggregations = optional(object({
           per_series_aligner   = optional(string)
           group_by_fields      = optional(list(string))
           cross_series_reducer = optional(string)
           alignment_period     = optional(string)
         }))
-        comparison         = string
-        denominator_filter = optional(string)
+        trigger = optional(object({
+          count   = optional(number)
+          percent = optional(number)
+        }))
+      }))
+      condition_matched_log = optional(object({
+        filter           = string
+        label_extractors = optional(map(string))
+      }))
+      condition_monitoring_query_language = optional(object({
+        duration                = string
+        query                   = string
+        evaluation_missing_data = optional(string)
+        trigger = optional(object({
+          count   = optional(number)
+          percent = optional(number)
+        }))
+      }))
+      condition_prometheus_query_language = optional(object({
+        query                     = string
+        alert_rule                = optional(string)
+        disable_metric_validation = optional(bool)
+        duration                  = optional(string)
+        evaluation_interval       = optional(string)
+        labels                    = optional(map(string))
+        rule_group                = optional(string)
+      }))
+      condition_threshold = optional(object({
+        comparison              = string
+        duration                = string
+        denominator_filter      = optional(string)
+        evaluation_missing_data = optional(string)
+        filter                  = optional(string)
+        threshold_value         = optional(number)
+        aggregations = optional(object({
+          per_series_aligner   = optional(string)
+          group_by_fields      = optional(list(string))
+          cross_series_reducer = optional(string)
+          alignment_period     = optional(string)
+        }))
         denominator_aggregations = optional(object({
           per_series_aligner   = optional(string)
           group_by_fields      = optional(list(string))
           cross_series_reducer = optional(string)
           alignment_period     = optional(string)
         }))
-        duration                = string
-        evaluation_missing_data = optional(string)
         forecast_options = optional(object({
           forecast_horizon = string
         }))
-        filter          = optional(string)
-        threshold_value = optional(number)
-        resource_type   = optional(string)
         trigger = optional(object({
           count   = optional(number)
           percent = optional(number)
         }))
       }))
-      condition_absent = optional(object({
-        aggregations = optional(object({
-          per_series_aligner   = optional(string)
-          group_by_fields      = optional(list(string))
-          cross_series_reducer = optional(string)
-          alignment_period     = optional(string)
-        }))
-        duration = string
-        filter   = optional(string)
-        trigger = optional(object({
-          count   = optional(number)
-          percent = optional(number)
-        }))
-      }))
-    })
-    description  = optional(string)
-    display_name = optional(string)
+    })), [])
     documentation = optional(object({
       content   = optional(string)
       mime_type = optional(string)
@@ -98,50 +109,9 @@ variable "alerts" {
         url          = optional(string)
       })))
     }))
-    filter                = string
-    name                  = string
-    notification_channels = optional(list(string))
-    trigger_count         = optional(number)
   }))
   nullable = false
   default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.alerts :
-      contains(["AND", "OR", "AND_WITH_MATCHING_RESOURCE"], v.combiner)
-    ])
-    error_message = "Combiner must be one of 'AND', 'OR', 'AND_WITH_MATCHING_RESOURCE'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.alerts :
-      contains(["ALIGN_NONE", "ALIGN_DELTA", "ALIGN_RATE", "ALIGN_INTERPOLATE", "ALIGN_NEXT_OLDER", "ALIGN_MIN", "ALIGN_MAX",
-        "ALIGN_MEAN", "ALIGN_COUNT", "ALIGN_SUM", "ALIGN_STDDEV", "ALIGN_COUNT_TRUE", "ALIGN_COUNT_FALSE", "ALIGN_COUNT_FALSE",
-      "ALIGN_PERCENTILE_99", "ALIGN_PERCENTILE_95", "ALIGN_PERCENTILE_50", "ALIGN_PERCENTILE_05", "ALIGN_PERCENT_CHANGE"], v.aggregations.per_series_aligner)
-    ])
-    error_message = "Aggregation: Per Series Aligner must be one of 'ALIGN_NONE', 'ALIGN_DELTA', 'ALIGN_RATE', 'ALIGN_INTERPOLATE', 'ALIGN_NEXT_OLDER', 'ALIGN_MIN', 'ALIGN_MAX','ALIGN_MEAN', 'ALIGN_COUNT', 'ALIGN_SUM', 'ALIGN_STDDEV', 'ALIGN_COUNT_TRUE', 'ALIGN_COUNT_FALSE', 'ALIGN_COUNT_FALSE', 'ALIGN_PERCENTILE_99', 'ALIGN_PERCENTILE_95', 'ALIGN_PERCENTILE_50', 'ALIGN_PERCENTILE_05', 'ALIGN_PERCENT_CHANGE'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.alerts :
-      contains(["EVALUATION_MISSING_DATA_INACTIVE", "EVALUATION_MISSING_DATA_ACTIVE", "EVALUATION_MISSING_DATA_NO_OP"], v.conditions.condition_monitoring_query_language.evaluation_missing_data)
-    ])
-    error_message = "conditions.condition_monitoring_query_language.evaluation_missing_data must be one of 'EVALUATION_MISSING_DATA_INACTIVE', 'EVALUATION_MISSING_DATA_ACTIVE', 'EVALUATION_MISSING_DATA_NO_OP'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.alerts :
-      contains(["COMPARISON_GT", "COMPARISON_GE", "COMPARISON_LT", "COMPARISON_LE", "COMPARISON_EQ", "COMPARISON_NE"], v.conditions.condition_threshold.comparison)
-    ])
-    error_message = "conditions.condition_threshold.comparison must be one of 'COMPARISON_GT', 'COMPARISON_GE', 'COMPARISON_LT', 'COMPARISON_LE', 'COMPARISON_EQ', 'COMPARISON_NE'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.alerts :
-      contains(["EVALUATION_MISSING_DATA_INACTIVE", "EVALUATION_MISSING_DATA_ACTIVE", "EVALUATION_MISSING_DATA_NO_OP"], v.conditions.condition_threshold.evaluation_missing_data)
-    ])
-    error_message = "conditions.condition_monitoring_query_language.evaluation_missing_data must be one of 'EVALUATION_MISSING_DATA_INACTIVE', 'EVALUATION_MISSING_DATA_ACTIVE', 'EVALUATION_MISSING_DATA_NO_OP'."
-  }
 }
 
 variable "logging_metrics" {
