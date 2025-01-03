@@ -14,42 +14,51 @@
  * limitations under the License.
  */
 
-variable "factories_config" {
-  description = "Configuration for network resource factories."
-  type = object({
-    cidrs = optional(string, "data/cidrs.yaml")
-    firewall_policy_rules = optional(object({
-      dev  = string
-      prod = string
-    }))
-  })
-  nullable = false
-  default = {
-    firewall_policy_rules = {
-      dev  = "data/firewall-policy-rules/dev"
-      prod = "data/firewall-policy-rules/prod"
-    }
-  }
-}
-
-variable "ngfw_enterprise_config" {
-  description = "NGFW Enterprise configuration."
-  type = object({
-    endpoint_zones   = list(string)
-    quota_project_id = optional(string, null)
-  })
-  nullable = false
-  default = {
-    endpoint_zones = [
-      "europe-west1-b",
-      "europe-west1-c",
-      "europe-west1-d"
-    ]
-  }
-}
-
 variable "outputs_location" {
   description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
+}
+
+variable "security_profile_groups" {
+  description = "Security profile groups for Layer 7 inspection. Null environment list means all environments."
+  type = map(object({
+    description  = optional(string)
+    environments = optional(list(string))
+    threat_prevention_profile = optional(object({
+      severity_overrides = optional(map(object({
+        action   = string
+        severity = string
+      })))
+      threat_overrides = optional(map(object({
+        action    = string
+        threat_id = string
+      })))
+    }), {})
+  }))
+  nullable = false
+  default = {
+    ngfw-default = {}
+  }
+  validation {
+    condition = alltrue(flatten([
+      for _, v in var.security_profile_groups : [
+        for _, sv in coalesce(v.threat_prevention_profile.severity_overrides, {}) : (
+          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action) &&
+          contains(["CRITICAL", "HIGH", "INFORMATIONAL", "LOW", "MEDIUM"], sv.severity)
+        )
+      ]
+    ]))
+    error_message = "Incorrect severity override token."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for _, v in var.security_profile_groups : [
+        for _, sv in coalesce(v.threat_prevention_profile.threat_overrides, {}) : (
+          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action)
+        )
+      ]
+    ]))
+    error_message = "Incorrect threat override token."
+  }
 }

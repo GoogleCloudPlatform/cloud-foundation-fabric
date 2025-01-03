@@ -37,6 +37,24 @@ variable "billing_account" {
   }
 }
 
+variable "environments" {
+  # tfdoc:variable:source 0-globals
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    short_name = string
+    tag_name   = string
+    is_default = optional(bool, false)
+  }))
+  nullable = false
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -50,33 +68,10 @@ variable "folder_ids" {
 
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
-  type = object({
-    dev-spoke-0  = optional(string)
-    prod-spoke-0 = optional(string)
-  })
-  nullable = false
-  default  = {}
-}
-
-variable "ngfw_tls_configs" {
-  # tfdoc:variable:source 2-security
-  description = "The NGFW Enterprise TLS configurations."
-  type = object({
-    tls_enabled = optional(bool, false)
-    tls_ip_ids_by_region = optional(object({
-      dev  = optional(map(string), {})
-      prod = optional(map(string), {})
-    }))
-  })
-  nullable = false
-  default = {
-    tls_enabled = false
-    tls_ip_ids_by_region = {
-      dev  = {}
-      prod = {}
-    }
-  }
+  description = "Shared VPC host project name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "organization" {
@@ -97,14 +92,4 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 12
     error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   }
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0  = string
-    prod-spoke-0 = string
-  })
-  nullable = false
 }

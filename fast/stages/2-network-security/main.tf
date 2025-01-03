@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,55 +14,55 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Next-Generation Firewall Enterprise configuration.
-
 locals {
-  create_quota_project = (
-    var.ngfw_enterprise_config.quota_project_id == null
-    ? true
-    : false
-  )
-  vpc_ids = {
-    for k, v in var.vpc_self_links
-    : k => replace(v, "https://www.googleapis.com/compute/v1/", "")
+  security_profile_groups = flatten([
+    for k, v in var.security_profile_groups : [
+      for ek in coalesce(v.environments, keys(var.environments)) : merge(v, {
+        environment = ek
+        key         = "${ek}-${k}"
+        name        = "${var.environments[ek].short_name}-${k}"
+        has_profile = (
+          v.threat_prevention_profile.severity_overrides != null ||
+          v.threat_prevention_profile.threat_overrides != null
+        )
+      })
+    ]
+  ])
+}
+
+resource "google_network_security_security_profile" "default" {
+  for_each    = { for v in local.security_profile_groups : v.key => v }
+  name        = each.value.name
+  description = each.value.description
+  parent      = "organizations/${var.organization.id}"
+  location    = "global"
+  type        = "THREAT_PREVENTION"
+  dynamic "threat_prevention_profile" {
+    for_each = toset(each.value.has_profile ? [""] : [])
+    content {
+      dynamic "severity_overrides" {
+        for_each = coalesce(each.value.threat_prevention_profile.severity_overrides, {})
+        content {
+          action   = severity_overrides.value.action
+          severity = severity_overrides.value.severity
+        }
+      }
+      dynamic "threat_overrides" {
+        for_each = coalesce(each.value.threat_prevention_profile.threat_overrides, {})
+        content {
+          action    = threat_overrides.value.action
+          threat_id = threat_overrides.value.threat_id
+        }
+      }
+    }
   }
 }
 
-# Dedicated quota project for ngfw enterprise endpoints
-module "ngfw-quota-project" {
-  source = "../../../modules/project"
-  name = (
-    local.create_quota_project
-    ? "net-ngfw-0"
-    : var.ngfw_enterprise_config.quota_project_id
-  )
-  billing_account = (
-    local.create_quota_project
-    ? var.billing_account.id
-    : null
-  )
-  parent = (
-    local.create_quota_project
-    ? var.folder_ids.networking
-    : null
-  )
-  prefix = (
-    local.create_quota_project
-    ? var.prefix
-    : null
-  )
-  project_create = (
-    local.create_quota_project
-    ? true
-    : false
-  )
-  services = ["networksecurity.googleapis.com"]
-}
-
-resource "google_network_security_firewall_endpoint" "firewall_endpoint" {
-  for_each           = toset(var.ngfw_enterprise_config.endpoint_zones)
-  name               = "${var.prefix}-ngfw-endpoint-${each.key}"
-  parent             = "organizations/${var.organization.id}"
-  location           = each.value
-  billing_project_id = module.ngfw-quota-project.id
+resource "google_network_security_security_profile_group" "default" {
+  for_each                  = { for v in local.security_profile_groups : v.key => v }
+  name                      = each.value.name
+  description               = each.value.description
+  parent                    = "organizations/${var.organization.id}"
+  location                  = "global"
+  threat_prevention_profile = google_network_security_security_profile.default[each.key].id
 }
