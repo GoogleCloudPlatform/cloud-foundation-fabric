@@ -25,7 +25,7 @@ locals {
       combiner              = v.combiner
       display_name          = try(v.display_name, null)
       enabled               = try(v.enabled, null)
-      notification_channels = try(v.notification_channels, null)
+      notification_channels = try(v.notification_channels, [])
       severity              = try(v.severity, null)
       user_labels           = try(v.user_labels, null)
       alert_strategy = !can(v.alert_strategy) ? null : {
@@ -121,6 +121,10 @@ locals {
       }
     }
   }
+  _notification_channel_names = {
+    for k, v in google_monitoring_notification_channel.channels :
+    k => v.name
+  }
   alerts = merge(local._alerts_factory_data, var.alerts)
 }
 
@@ -128,12 +132,15 @@ resource "google_monitoring_alert_policy" "alerts" {
   for_each = local.alerts
   project  = local.project.project_id
 
-  combiner              = each.value.combiner
-  display_name          = each.value.display_name
-  enabled               = each.value.enabled
-  notification_channels = each.value.notification_channels
-  severity              = each.value.severity
-  user_labels           = each.value.user_labels
+  combiner     = each.value.combiner
+  display_name = each.value.display_name
+  enabled      = each.value.enabled
+  notification_channels = [
+    for x in each.value.notification_channels :
+    lookup(local._notification_channel_names, x, x)
+  ]
+  severity    = each.value.severity
+  user_labels = each.value.user_labels
 
   dynamic "alert_strategy" {
     for_each = each.value.alert_strategy[*]

@@ -15,12 +15,12 @@
  */
 
 variable "alerts" {
-  description = "Logging metrics alerts configuration."
+  description = "Monitoring alerts."
   type = map(object({
     combiner              = string
     display_name          = optional(string)
     enabled               = optional(bool)
-    notification_channels = optional(list(string))
+    notification_channels = optional(list(string), [])
     severity              = optional(string)
     user_labels           = optional(map(string))
     alert_strategy = optional(object({
@@ -147,7 +147,7 @@ variable "logging_exclusions" {
 }
 
 variable "logging_metrics" {
-  description = "Logging metrics alerts configuration."
+  description = "Log-based metrics."
   type = map(object({
     filter           = string
     bucket_name      = optional(string)
@@ -175,10 +175,11 @@ variable "logging_metrics" {
       value_type   = string
       display_name = optional(string)
       unit         = optional(string)
-      labels = optional(map(object({
+      labels = optional(list(object({
+        key         = string
         description = optional(string)
         value_type  = optional(string)
-      })), {})
+      })), [])
     }))
   }))
   nullable = false
@@ -224,7 +225,7 @@ variable "metric_scopes" {
 }
 
 variable "notification_channels" {
-  description = "Logging metrics alerts configuration."
+  description = "Monitoring notification channels."
   type = map(object({
     type         = string
     description  = optional(string)

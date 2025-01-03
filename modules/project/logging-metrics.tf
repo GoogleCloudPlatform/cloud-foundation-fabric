@@ -49,13 +49,14 @@ locals {
         value_type   = v.metric_descriptor.value_type
         display_name = try(v.metric_descriptor.display_name, null)
         unit         = try(v.metric_descriptor.unit, null)
-        labels = !can(v.metric_descriptor.labels) ? {} : {
-          for kk, vv in v.metric_descriptor.labels :
-          kk => {
+        labels = !can(v.metric_descriptor.labels) ? [] : [
+          for vv in v.metric_descriptor.labels :
+          {
+            key         = vv.key
             description = try(vv.description, null)
             value_type  = try(vv.value_type, null)
           }
-        }
+        ]
       }
     }
   }
@@ -110,7 +111,7 @@ resource "google_logging_metric" "metrics" {
       dynamic "labels" {
         for_each = metric_descriptor.value.labels
         content {
-          key         = labels.key
+          key         = labels.value.key
           description = labels.value.description
           value_type  = labels.value.value_type
         }
