@@ -65,9 +65,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      v.intercept_children == false || v.type == "project"
+      v.intercept_children == false || (v.intercept_children == true && v.include_children == true && v.type == "project")
     ])
-    error_message = "The 'intercept_children' flag can only be set to true if the 'type' is 'project'."
+    error_message = "if 'intercept_children' = true' then 'include_children' also needs to be true when the logging_sink 'type' is 'project'."
   }
   validation {
     condition = alltrue([
