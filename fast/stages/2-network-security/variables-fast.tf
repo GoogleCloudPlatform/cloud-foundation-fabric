@@ -93,3 +93,11 @@ variable "prefix" {
     error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   }
 }
+
+variable "regions" {
+  # tfdoc:variable:source 2-networking
+  description = "Region definitions."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}

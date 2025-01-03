@@ -62,3 +62,38 @@ variable "security_profile_groups" {
     error_message = "Incorrect threat override token."
   }
 }
+
+variable "trust_configs" {
+  description = "Certificate Manager trust configurations for TLS inspection policies. Project id and region can reference keys in the relevant FAST variables."
+  type = map(object({
+    location                 = string
+    project_id               = string
+    description              = optional(string)
+    allowlisted_certificates = optional(map(string))
+    trust_stores = optional(map(object({
+      intermediate_cas = optional(map(string))
+      trust_anchors    = optional(map(string))
+    })))
+  }))
+  nullable = false
+  default = {
+    # dev-ngfw-default = {
+    #   location   = "primary"
+    #   project_id = "dev-spoke-0"
+    # }
+    # prod-ngfw-default = {
+    #   location   = "primary"
+    #   project_id = "prod-spoke-0"
+    # }
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.trust_configs : (
+        v.allowlisted_certificates != null ||
+        try(v.trust_stores.intermediate_cas, null) != null ||
+        try(v.trust_stores.trust_anchors, null) != null
+      )
+    ])
+    error_message = "a trust configuration needs at least one set of allowlisted certificates, or a valid trust store."
+  }
+}
