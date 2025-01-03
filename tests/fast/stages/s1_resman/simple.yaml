@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -162,11 +162,6 @@ values:
     display_name: Networking
     tags: null
     timeouts: null
-  ? module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/networkFirewallPoliciesAdmin"]
-  : condition: []
-    members:
-    - serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: organizations/123456789012/roles/networkFirewallPoliciesAdmin
   module.net-folder[0].google_folder_iam_binding.authoritative["organizations/123456789012/roles/projectIamViewer"]:
     condition: []
     members:
@@ -182,11 +177,6 @@ values:
     members:
     - serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/compute.networkViewer
-  module.net-folder[0].google_folder_iam_binding.authoritative["roles/compute.orgFirewallPolicyUser"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/compute.orgFirewallPolicyUser
   module.net-folder[0].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -376,88 +366,6 @@ values:
     bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  module.nsec-bucket[0].google_storage_bucket.bucket:
-    autoclass: []
-    cors: []
-    custom_placement_config: []
-    default_event_based_hold: null
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    enable_object_retention: null
-    encryption: []
-    force_destroy: false
-    hierarchical_namespace: []
-    labels: null
-    lifecycle_rule: []
-    location: EU
-    logging: []
-    name: fast2-resman-nsec-0
-    project: fast2-prod-automation
-    requester_pays: null
-    retention_policy: []
-    storage_class: STANDARD
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-    uniform_bucket_level_access: true
-    versioning:
-    - enabled: true
-  module.nsec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
-    bucket: fast2-resman-nsec-0
-    condition: []
-    members:
-    - serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/storage.objectAdmin
-  module.nsec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
-    bucket: fast2-resman-nsec-0
-    condition: []
-    members:
-    - serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
-    role: roles/storage.objectViewer
-  ? module.nsec-sa-ro[0].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
-  : condition: []
-    project: fast2-prod-automation
-    role: roles/serviceusage.serviceUsageConsumer
-  module.nsec-sa-ro[0].google_service_account.service_account[0]:
-    account_id: fast2-resman-nsec-0r
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform resman network security main service account (read-only).
-    email: fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
-    member: serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
-    project: fast2-prod-automation
-    timeouts: null
-  module.nsec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
-    members: null
-    role: roles/iam.serviceAccountTokenCreator
-  ? module.nsec-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
-  : bucket: fast2-prod-iac-core-outputs
-    condition: []
-    role: organizations/123456789012/roles/storageViewer
-  ? module.nsec-sa-rw[0].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
-  : condition: []
-    project: fast2-prod-automation
-    role: roles/serviceusage.serviceUsageConsumer
-  module.nsec-sa-rw[0].google_service_account.service_account[0]:
-    account_id: fast2-resman-nsec-0
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform resman network security main service account.
-    email: fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    project: fast2-prod-automation
-    timeouts: null
-  module.nsec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
-    members: null
-    role: roles/iam.serviceAccountTokenCreator
-  ? module.nsec-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
-  : bucket: fast2-prod-iac-core-outputs
-    condition: []
-    role: roles/storage.objectAdmin
   module.organization[0].google_organization_iam_member.bindings["gcve-dev"]:
     condition: []
     member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
@@ -493,36 +401,31 @@ values:
     member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/billing.user
-  module.organization[0].google_organization_iam_member.bindings["sa_net_fw_policy_admin"]:
+  module.organization[0].google_organization_iam_member.bindings["sa_net_net_ro_ngfw_enterprise_viewer"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseViewer
+  module.organization[0].google_organization_iam_member.bindings["sa_net_ro_fw_policy_user"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyUser
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_fw_policy_admin"]:
     condition: []
     member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/compute.orgFirewallPolicyAdmin
-  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_fw_policy_user"]:
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_ngfw_enterprise_admin"]:
     condition: []
-    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/compute.orgFirewallPolicyUser
-  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_ngfw_enterprise_admin"]:
-    condition: []
-    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: organizations/123456789012/roles/ngfwEnterpriseAdmin
-  module.organization[0].google_organization_iam_member.bindings["sa_net_nsec_ro_ngfw_enterprise_viewer"]:
-    condition: []
-    member: serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: organizations/123456789012/roles/ngfwEnterpriseViewer
-  module.organization[0].google_organization_iam_member.bindings["sa_net_xpn_admin"]:
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_xpn_admin"]:
     condition: []
     member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/compute.xpnAdmin
-  module.organization[0].google_organization_iam_member.bindings["sa_nsec_fw_policy_admin"]:
-    condition: []
-    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/compute.orgFirewallPolicyAdmin
   module.organization[0].google_organization_iam_member.bindings["sa_pf_billing"]:
     condition: []
     member: serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
@@ -584,10 +487,6 @@ values:
     description: Managed by the Terraform organization module.
     short_name: gke
     timeouts: null
-  module.organization[0].google_tags_tag_value.default["context/network-security"]:
-    description: Managed by the Terraform organization module.
-    short_name: network-security
-    timeouts: null
   module.organization[0].google_tags_tag_value.default["context/networking"]:
     description: Managed by the Terraform organization module.
     short_name: networking
@@ -607,6 +506,10 @@ values:
   module.organization[0].google_tags_tag_value.default["context/security"]:
     description: Managed by the Terraform organization module.
     short_name: security
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/shared"]:
+    description: Managed by the Terraform organization module.
+    short_name: shared
     timeouts: null
   module.organization[0].google_tags_tag_value.default["context/tenants"]:
     description: Managed by the Terraform organization module.
@@ -1592,6 +1495,44 @@ values:
     members:
     - serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
+  module.top-level-bucket["shared"].google_storage_bucket.bucket:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-shared-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.top-level-bucket["shared"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-shared-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.top-level-bucket["shared"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-shared-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
   module.top-level-bucket["tenants"].google_storage_bucket.bucket:
     autoclass: []
     cors: []
@@ -1651,6 +1592,42 @@ values:
     display_name: Sandbox
     parent: organizations/123456789012
     tags: null
+    timeouts: null
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["sql.restrictPublicIp"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["shared"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Shared Infrastructure
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["shared"].google_tags_tag_binding.binding["context"]:
     timeouts: null
   module.top-level-folder["teams"].google_folder.folder[0]:
     deletion_protection: false
@@ -1730,6 +1707,28 @@ values:
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
+  ? module.top-level-sa["shared"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.top-level-sa["shared"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-shared-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman shared folder service account.
+    email: fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.top-level-sa["shared"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.top-level-sa["shared"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
   ? module.top-level-sa["tenants"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
   : condition: []
     project: fast2-prod-automation
@@ -1755,22 +1754,22 @@ values:
 
 counts:
   google_folder: 14
-  google_folder_iam_binding: 75
+  google_folder_iam_binding: 73
   google_org_policy_policy: 2
-  google_organization_iam_member: 19
-  google_project_iam_member: 27
-  google_service_account: 27
-  google_service_account_iam_binding: 27
-  google_storage_bucket: 13
-  google_storage_bucket_iam_binding: 26
-  google_storage_bucket_iam_member: 27
+  google_organization_iam_member: 18
+  google_project_iam_member: 25
+  google_service_account: 25
+  google_service_account_iam_binding: 25
+  google_storage_bucket: 12
+  google_storage_bucket_iam_binding: 24
+  google_storage_bucket_iam_member: 25
   google_storage_bucket_object: 26
   google_tags_tag_binding: 14
   google_tags_tag_key: 2
-  google_tags_tag_value: 13
+  google_tags_tag_value: 12
   google_tags_tag_value_iam_binding: 4
-  modules: 55
-  resources: 316
+  modules: 52
+  resources: 301
 
 outputs:
   cicd_repositories:
@@ -1787,5 +1786,329 @@ outputs:
         name: test/00-security
         type: gitlab
   folder_ids: __missing__
+  providers:
+    1-resman-folder-sandbox: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-dev-resman-sbox-0\"\n    impersonate_service_account\
+      \ = \"fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for sandbox\n"
+    1-resman-folder-shared: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-shared-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for shared\n"
+    1-resman-folder-tenants: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-tenants-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for tenants\n"
+    2-network-security: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-net-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n    prefix = \"netsec\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
+      \ = \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-network-security-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-net-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-networking: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-net-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-networking-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the\
+      \ Apache License, Version 2.0 (the \"License\");\n * you may not use this file\
+      \ except in compliance with the License.\n * You may obtain a copy of the License\
+      \ at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless\
+      \ required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-net-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-project-factory: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the\
+      \ Apache License, Version 2.0 (the \"License\");\n * you may not use this file\
+      \ except in compliance with the License.\n * You may obtain a copy of the License\
+      \ at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless\
+      \ required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-resman-pf-0\"\n    impersonate_service_account = \"\
+      fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\n  }\n}\n\
+      provider \"google\" {\n  impersonate_service_account = \"fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-project-factory-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-resman-pf-0\"\n    impersonate_service_account = \"\
+      fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\n  }\n}\n\
+      provider \"google\" {\n  impersonate_service_account = \"fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-security: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-sec-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    2-security-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-sec-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for networking\n"
+    3-gcve-dev: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-dev-resman-gcve-0\"\n    impersonate_service_account =\
+      \ \"fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gcve-dev\n"
+    3-gcve-dev-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-dev-resman-gcve-0\"\n    impersonate_service_account =\
+      \ \"fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gcve-dev\n"
+    3-gcve-prod: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-gcve-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gcve-prod\n"
+    3-gcve-prod-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-gcve-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gcve-prod\n"
+    3-gke-dev: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-dev-resman-gke-0\"\n    impersonate_service_account = \"\
+      fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gke-dev\n"
+    3-gke-dev-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-dev-resman-gke-0\"\n    impersonate_service_account = \"\
+      fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gke-dev\n"
+    3-gke-prod: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-gke-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gke-prod\n"
+    3-gke-prod-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"fast2-prod-resman-gke-0\"\n    impersonate_service_account =\
+      \ \"fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for gke-prod\n"
+    3-project-factory-dev: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-dev-resman-pf-0\"\n    impersonate_service_account\
+      \ = \"fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\n\
+      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for project-factory-dev\n"
+    3-project-factory-dev-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-dev-resman-pf-0\"\n    impersonate_service_account\
+      \ = \"fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for project-factory-dev\n"
+    3-project-factory-prod: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
+      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
+      \ file except in compliance with the License.\n * You may obtain a copy of the\
+      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
+      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
+      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
+      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
+      \ for the specific language governing permissions and\n * limitations under\
+      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
+      \              = \"fast2-prod-resman-pf-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for project-factory-prod\n"
+    3-project-factory-prod-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed\
+      \ under the Apache License, Version 2.0 (the \"License\");\n * you may not use\
+      \ this file except in compliance with the License.\n * You may obtain a copy\
+      \ of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n\
+      \ *\n * Unless required by applicable law or agreed to in writing, software\n\
+      \ * distributed under the License is distributed on an \"AS IS\" BASIS,\n *\
+      \ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
+      \ * See the License for the specific language governing permissions and\n *\
+      \ limitations under the License.\n */\n\nterraform {\n  backend \"gcs\" {\n\
+      \    bucket                      = \"fast2-prod-resman-pf-0\"\n    impersonate_service_account\
+      \ = \"fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com\"\
+      \n}\n\n# end provider.tf for project-factory-prod\n"
   tfvars: __missing__
 

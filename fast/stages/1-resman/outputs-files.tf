@@ -28,12 +28,14 @@ locals {
         }
       }
     },
-    var.fast_stage_2["network_security"].enabled != true ? {} : {
+    var.fast_stage_2["networking"].enabled != true ? {} : {
+      # duplicating this block works around inconsistent result type errors
       network_security = {
-        bucket = module.nsec-bucket[0].name
+        bucket        = module.net-bucket[0].name
+        backend_extra = "prefix = \"netsec\""
         sa = {
-          apply = module.nsec-sa-rw[0].email
-          plan  = module.nsec-sa-ro[0].email
+          apply = module.net-sa-rw[0].email
+          plan  = module.net-sa-ro[0].email
         }
       }
     },
@@ -118,7 +120,7 @@ locals {
     {
       for k, v in local._stage2_outputs_attrs :
       "2-${replace(k, "_", "-")}" => templatefile(local._tpl_providers, {
-        backend_extra = null
+        backend_extra = lookup(v, "backend_extra", null)
         bucket        = v.bucket
         name          = "networking"
         sa            = v.sa.apply
