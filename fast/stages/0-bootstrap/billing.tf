@@ -47,12 +47,18 @@ module "billing-export-project" {
   parent = coalesce(
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
-  prefix = var.prefix
+  prefix               = var.prefix
+  default_alerts_email = var.default_alerts_email
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
+  factories_config = {
+    alerts          = var.factories_config.alerts
+    channels        = var.factories_config.channels
+    logging_metrics = var.factories_config.logging_metrics
+  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

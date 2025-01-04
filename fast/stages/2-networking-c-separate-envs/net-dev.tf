@@ -24,7 +24,13 @@ module "dev-spoke-project" {
     var.folder_ids.networking-dev,
     var.folder_ids.networking
   )
-  prefix = var.prefix
+  prefix               = var.prefix
+  default_alerts_email = var.default_alerts_email
+  factories_config = {
+    logging_metrics = var.factories_config.logging_metrics
+    channels        = var.factories_config.channels
+    alerts          = var.factories_config.alerts
+  }
   services = [
     "container.googleapis.com",
     "compute.googleapis.com",

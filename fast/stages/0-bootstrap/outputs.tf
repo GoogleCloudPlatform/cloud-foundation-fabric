@@ -109,6 +109,7 @@ locals {
         vpcsc       = module.automation-tf-vpcsc-sa.email
         vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
       }
+      default_alerts_email = var.default_alerts_email
     }
     billing = {
       dataset        = try(module.billing-export-dataset[0].id, null)
@@ -222,8 +223,8 @@ output "tfvars" {
 
 output "tfvars_globals" {
   description = "Terraform Globals variable files for the following stages."
-  sensitive   = true
-  value       = local.tfvars_globals
+  sensitive   = false
+  value       = jsonencode(local.tfvars_globals)
 }
 
 output "workforce_identity_pool" {
