@@ -24,11 +24,11 @@ locals {
     ]
   ])
   tfvars = {
-    certificate_authorities = {
+    certificate_authority_pools = {
       for k, v in module.cas : k => {
-        ca_pool_id = v.ca_pool_id
-        ca_ids     = v.ca_ids
-        location   = v.ca_pool.location
+        ca_ids   = v.ca_ids
+        id       = v.ca_pool_id
+        location = v.ca_pool.location
       }
     }
     kms_keys = {
@@ -50,9 +50,9 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
-output "certificate_authorities" {
-  description = "Certificate Authority Service configurations."
-  value       = local.tfvars.certificate_authorities
+output "certificate_authority_pools" {
+  description = "Certificate Authority Service pools and CAs."
+  value       = local.tfvars.certificate_authority_pools
 }
 
 output "kms_keys" {

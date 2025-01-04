@@ -286,7 +286,7 @@ tls_inspection = {
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [certs.tf](./certs.tf) | Per-environment certificate resources. | <code>certificate-authority-service</code> |  |
+| [cas.tf](./cas.tf) | Per-environment certificate resources. | <code>certificate-authority-service</code> |  |
 | [kms.tf](./kms.tf) | Per-environment KMS. |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>folder</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
@@ -314,7 +314,7 @@ tls_inspection = {
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [certificate_authorities](outputs.tf#L53) | Certificate Authority Service configurations. |  |  |
+| [certificate_authority_pools](outputs.tf#L53) | Certificate Authority Service pools and CAs. |  |  |
 | [kms_keys](outputs.tf#L58) | KMS key ids. |  |  |
 | [tfvars](outputs.tf#L63) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

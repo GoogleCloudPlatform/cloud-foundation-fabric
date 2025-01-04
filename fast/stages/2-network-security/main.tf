@@ -14,3 +14,11 @@
  * limitations under the License.
  */
 
+module "project" {
+  source         = "../../../modules/project"
+  name           = var.project_id
+  project_create = false
+  services = [
+    "networksecurity.googleapis.com"
+  ]
+}

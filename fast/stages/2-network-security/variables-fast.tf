@@ -24,54 +24,16 @@ variable "automation" {
   })
 }
 
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
-
-variable "environments" {
-  # tfdoc:variable:source 0-globals
-  description = "Environment names."
+variable "certificate_authority_pools" {
+  # tfdoc:variable:source 2-security
+  description = "Certificate authority pools."
   type = map(object({
-    name       = string
-    short_name = string
-    tag_name   = string
-    is_default = optional(bool, false)
+    id       = string
+    ca_ids   = map(string)
+    location = string
   }))
   nullable = false
-  validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
-  }
-}
-
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type = object({
-    networking      = string
-    networking-dev  = string
-    networking-prod = string
-  })
-  nullable = false
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 2-networking
-  description = "Shared VPC host project name => id mappings."
-  type        = map(string)
-  nullable    = false
-  default     = {}
+  default  = {}
 }
 
 variable "organization" {
@@ -84,19 +46,9 @@ variable "organization" {
   })
 }
 
-variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
-  type        = string
-  validation {
-    condition     = try(length(var.prefix), 0) < 12
-    error_message = "Use a maximum of 9 chars for organizations, and 11 chars for tenants."
-  }
-}
-
-variable "regions" {
+variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
-  description = "Region definitions."
+  description = "VPC network self links."
   type        = map(string)
   nullable    = false
   default     = {}

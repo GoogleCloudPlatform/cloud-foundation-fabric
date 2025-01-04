@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-locals {
-  security_profile_groups = flatten([
-    for k, v in var.security_profile_groups : [
-      for ek in coalesce(v.environments, keys(var.environments)) : merge(v, {
-        environment = ek
-        key         = "${ek}-${k}"
-        name        = "${var.environments[ek].short_name}-${k}"
-        has_profile = (
-          v.threat_prevention_profile.severity_overrides != null ||
-          v.threat_prevention_profile.threat_overrides != null
-        )
-      })
-    ]
-  ])
-}
+# tfdoc:file:description Organization-level network security profiles.
 
 resource "google_network_security_security_profile" "default" {
-  for_each    = { for v in local.security_profile_groups : v.key => v }
-  name        = each.value.name
+  for_each    = var.security_profiles
+  name        = each.key
   description = each.value.description
   parent      = "organizations/${var.organization.id}"
   location    = "global"
@@ -59,8 +45,8 @@ resource "google_network_security_security_profile" "default" {
 }
 
 resource "google_network_security_security_profile_group" "default" {
-  for_each                  = { for v in local.security_profile_groups : v.key => v }
-  name                      = each.value.name
+  for_each                  = var.security_profiles
+  name                      = each.key
   description               = each.value.description
   parent                    = "organizations/${var.organization.id}"
   location                  = "global"

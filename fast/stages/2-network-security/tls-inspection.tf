@@ -14,42 +14,43 @@
  * limitations under the License.
  */
 
-locals {
-  tls_projects = distinct([
-    for k, v in var.trust_configs : {
-      key   = v.project_id
-      value = lookup(var.host_project_ids, v.project_id, null)
-    } if lookup(var.host_project_ids, v.project_id, null) != null
-  ])
+# tfdoc:file:description TLS inspection policies and supporting resources.
+
+local {
+  ca_pool_ids = merge(
+    { for k, v in var.certificate_authority_pools : k => v.id },
+    { for k, v in module.cas : k => v.id }
+  )
+  trust_config_ids = {
+    for k, v in google_certificate_manager_trust_config.default : k => v.id
+  }
 }
 
-module "tls-project" {
-  source         = "../../../modules/project"
-  for_each       = { for v in local.tls_projects : v.key => v.value }
-  name           = each.value
-  project_create = false
-  services = [
-    "certificatemanager.googleapis.com"
-  ]
+module "cas" {
+  source                = "../../../modules/certificate-authority-service"
+  for_each              = var.certificate_authorities
+  project_id            = var.project_id
+  ca_configs            = each.value.ca_configs
+  ca_pool_config        = each.value.ca_pool_config
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_by_principals     = each.value.iam_by_principals
+  location              = each.value.location
 }
 
 resource "google_certificate_manager_trust_config" "default" {
-  for_each = var.trust_configs
-  project = try(
-    module.tls-project[each.value.project_id].project_id,
-    each.value.project_id
-  )
+  for_each    = var.trust_configs
+  project     = var.project_id
   name        = each.key
   description = each.value.description
-  location    = lookup(var.regions, each.value.location, each.value.location)
-
+  location    = each.value.location
   dynamic "allowlisted_certificates" {
     for_each = each.value.allowlisted_certificates
     content {
       pem_certificate = file(allowlisted_certificates.value)
     }
   }
-
   dynamic "trust_stores" {
     for_each = each.value.trust_stores
     content {
@@ -67,4 +68,21 @@ resource "google_certificate_manager_trust_config" "default" {
       }
     }
   }
+}
+
+resource "google_network_security_tls_inspection_policy" "default" {
+  for_each              = var.tls_inspection_policies
+  project               = var.project_id
+  name                  = each.key
+  location              = each.value.location
+  exclude_public_ca_set = each.value.exclude_public_ca_set
+  ca_pool = lookup(
+    local.ca_pool_ids, each.value.ca_pool_id, each.value.ca_pool_id
+  )
+  trust_config = lookup(
+    local.trust_config_ids, each.value.trust_config, each.value.trust_config
+  )
+  custom_features = each.value.tls.custom_features
+  feature_profile = each.value.tls.feature_profile
+  min_tls_version = each.value.tls.min_version
 }
