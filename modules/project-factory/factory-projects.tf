@@ -48,6 +48,16 @@ locals {
   }
   projects = {
     for k, v in local._projects : lookup(v, "name", k) => merge(v, {
+      billing_account = try(coalesce(
+        var.data_overrides.billing_account,
+        try(v.billing_account, null),
+        var.data_defaults.billing_account
+      ), null)
+      contacts = coalesce(
+        var.data_overrides.contacts,
+        try(v.contacts, null),
+        var.data_defaults.contacts
+      )
       factories_config = {
         custom_roles = try(
           coalesce(
@@ -79,18 +89,6 @@ locals {
           ),
         null)
       }
-
-
-      billing_account = try(coalesce(
-        var.data_overrides.billing_account,
-        try(v.billing_account, null),
-        var.data_defaults.billing_account
-      ), null)
-      contacts = coalesce(
-        var.data_overrides.contacts,
-        try(v.contacts, null),
-        var.data_defaults.contacts
-      )
       labels = coalesce(
         try(v.labels, null),
         var.data_defaults.labels
