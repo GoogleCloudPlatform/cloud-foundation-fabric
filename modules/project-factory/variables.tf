@@ -17,8 +17,14 @@
 variable "data_defaults" {
   description = "Optional default values used when corresponding project data from files are missing."
   type = object({
-    billing_account            = optional(string)
-    contacts                   = optional(map(list(string)), {})
+    billing_account = optional(string)
+    contacts        = optional(map(list(string)), {})
+    factories_config = optional(object({
+      custom_roles  = optional(string)
+      observability = optional(string)
+      org_policies  = optional(string)
+      quotas        = optional(string)
+    }), {})
     labels                     = optional(map(string), {})
     metric_scopes              = optional(list(string), [])
     parent                     = optional(string)
@@ -73,8 +79,14 @@ variable "data_merges" {
 variable "data_overrides" {
   description = "Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`."
   type = object({
-    billing_account            = optional(string)
-    contacts                   = optional(map(list(string)))
+    billing_account = optional(string)
+    contacts        = optional(map(list(string)))
+    factories_config = optional(object({
+      custom_roles  = optional(string)
+      observability = optional(string)
+      org_policies  = optional(string)
+      quotas        = optional(string)
+    }), {})
     parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)))
@@ -100,24 +112,22 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    alerts = optional(string)
     budgets = optional(object({
       billing_account   = string
       budgets_data_path = string
       # TODO: allow defining notification channels via YAML files
       notification_channels = optional(map(any), {})
     }))
-    channels = optional(string)
     context = optional(object({
       # TODO: add KMS keys
-      folder_ids        = optional(map(string), {})
-      iam_principals    = optional(map(string), {})
-      tag_values        = optional(map(string), {})
-      vpc_host_projects = optional(map(string), {})
+      folder_ids            = optional(map(string), {})
+      iam_principals        = optional(map(string), {})
+      tag_values            = optional(map(string), {})
+      vpc_host_projects     = optional(map(string), {})
+      notification_channels = optional(map(string), {})
     }), {})
     folders_data_path  = optional(string)
     projects_data_path = optional(string)
-    logging_metrics    = optional(string)
   })
   nullable = false
 }
