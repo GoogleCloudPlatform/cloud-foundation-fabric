@@ -1624,20 +1624,23 @@ alerts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_role_id](outputs.tf#L17) | Map of custom role IDs created in the project. |  |
-| [custom_roles](outputs.tf#L27) | Map of custom roles resources created in the project. |  |
-| [default_service_accounts](outputs.tf#L33) | Emails of the default service accounts for this project. |  |
-| [id](outputs.tf#L41) | Project id. |  |
-| [name](outputs.tf#L59) | Project name. |  |
-| [network_tag_keys](outputs.tf#L71) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L80) | Tag value resources. |  |
-| [number](outputs.tf#L88) | Project number. |  |
-| [project_id](outputs.tf#L106) | Project id. |  |
-| [quota_configs](outputs.tf#L124) | Quota configurations. |  |
-| [quotas](outputs.tf#L135) | Quota resources. |  |
-| [service_agents](outputs.tf#L140) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L149) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L158) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L165) | Tag key resources. |  |
-| [tag_values](outputs.tf#L174) | Tag value resources. |  |
+| [alert_ids](outputs.tf#L17) | Monitoring alert IDs. |  |
+| [custom_role_id](outputs.tf#L25) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L35) | Map of custom roles resources created in the project. |  |
+| [default_service_accounts](outputs.tf#L40) | Emails of the default service accounts for this project. |  |
+| [id](outputs.tf#L48) | Project id. |  |
+| [name](outputs.tf#L66) | Project name. |  |
+| [network_tag_keys](outputs.tf#L78) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L87) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L95) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L103) | Full notification channel objects. |  |
+| [number](outputs.tf#L108) | Project number. |  |
+| [project_id](outputs.tf#L126) | Project id. |  |
+| [quota_configs](outputs.tf#L144) | Quota configurations. |  |
+| [quotas](outputs.tf#L155) | Quota resources. |  |
+| [service_agents](outputs.tf#L160) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L169) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L178) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L185) | Tag key resources. |  |
+| [tag_values](outputs.tf#L194) | Tag value resources. |  |
 <!-- END TFDOC -->
