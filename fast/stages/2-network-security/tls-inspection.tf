@@ -29,7 +29,7 @@ locals {
 module "cas" {
   source         = "../../../modules/certificate-authority-service"
   for_each       = var.certificate_authorities
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   ca_configs     = each.value.ca_configs
   ca_pool_config = each.value.ca_pool_config
   iam            = each.value.iam
@@ -46,7 +46,7 @@ module "cas" {
 
 resource "google_certificate_manager_trust_config" "default" {
   for_each    = var.trust_configs
-  project     = var.project_id
+  project     = module.project.project_id
   name        = each.key
   description = each.value.description
   location    = each.value.location
@@ -77,7 +77,7 @@ resource "google_certificate_manager_trust_config" "default" {
 
 resource "google_network_security_tls_inspection_policy" "default" {
   for_each              = var.tls_inspection_policies
-  project               = var.project_id
+  project               = module.project.project_id
   name                  = each.key
   location              = each.value.location
   exclude_public_ca_set = each.value.exclude_public_ca_set

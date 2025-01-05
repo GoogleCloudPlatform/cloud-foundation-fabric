@@ -22,7 +22,7 @@ locals {
       for z in coalesce(v.zones, var.ngfw_config.endpoint_zones) : merge(v, {
         key        = "${z}-${k}"
         location   = z
-        project_id = regex("projects/([^/]+)/", v.vpc_id)
+        project_id = regex("projects/([^/]+)/", v.vpc_id)[0]
       })
     ]
   ])
@@ -37,13 +37,13 @@ resource "google_network_security_firewall_endpoint" "default" {
   name               = var.ngfw_config.name
   parent             = "organizations/${var.organization.id}"
   location           = each.key
-  billing_project_id = var.project_id
+  billing_project_id = module.project.project_id
 }
 
 resource "google_network_security_firewall_endpoint_association" "default" {
   for_each = { for k in local.ngfw_associations : k.key => k }
   name     = "${var.ngfw_config.name}-${each.value.key}"
-  parent   = "projects/${var.project_id}"
+  parent   = "projects/${each.value.project_id}"
   location = each.value.location
   network = replace(
     each.value.vpc_id, "https://www.googleapis.com/compute/v1/", ""
