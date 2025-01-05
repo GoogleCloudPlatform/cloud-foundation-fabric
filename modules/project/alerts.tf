@@ -121,10 +121,6 @@ locals {
       }
     }
   }
-  _notification_channel_names = {
-    for k, v in google_monitoring_notification_channel.channels :
-    k => v.name
-  }
   alerts = merge(local._alerts_factory_data, var.alerts)
 }
 
