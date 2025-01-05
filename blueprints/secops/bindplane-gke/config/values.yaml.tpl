@@ -34,6 +34,13 @@ config:
 # of pods is recommended.
 replicas: 2
 
+image:
+  # -- Image name to be used. Defaults to `ghcr.io/observiq/bindplane-ee`.
+  name: ""
+  # Overrides the image tag whose default is {{ .Chart.AppVersion }}
+  # -- Image tag to use. Defaults to the version defined in the Chart's release.
+  tag: ${tag}
+
 resources:
   # Allow cpu bursting by leaving limits.cpu unset
   requests:
