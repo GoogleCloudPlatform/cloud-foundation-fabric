@@ -40,7 +40,7 @@ With this approach
 
 The code then becomes really simple to use, read and evolve since it's essentially decoupled from the main stages except for a handful of FAST interface variables.
 
-Add-on stages should live in a separate folder from stages, and once we finally manage to reafctor networking into a simple stage, we go back to having a clear progression for main stages that should make it easier for users to get to grips with FAST's complexity:
+Add-on stages should live in a separate folder from stages, and once we finally manage to reafctor networking into a simple stage, we go back to having a clear progression for main stages that should make it easier for users to get to grips with FAST's complexity. We might also want to scrap the plugins folder, and replace with a short document explaining the pattern.
 
 ```bash
 fast
