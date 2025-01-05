@@ -1,6 +1,6 @@
 # Add-on stages
 
-**authors:** [Ludo](https://github.com/ludoo)
+**authors:** [Ludo](https://github.com/ludoo) \ 
 **date:** Jan 5, 2025
 
 ## Status
