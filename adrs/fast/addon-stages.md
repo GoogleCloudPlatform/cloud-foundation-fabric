@@ -30,7 +30,7 @@ The proposal is to adopt a completely different approach, where large optional f
 
 This is what the network security stage looks like, once refactored according this proposal:
 
-![image](https://github.com/user-attachments/assets/ef1b0d0f-0924-46d4-b52a-5f29809cd2d0)
+![image](https://github.com/user-attachments/assets/fead1c9f-5d23-481f-b2fd-8da44edfa54b)
 
 With this approach
 
