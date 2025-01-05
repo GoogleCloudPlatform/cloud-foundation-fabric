@@ -16,15 +16,27 @@
 
 # tfdoc:file:description Organization-level network security profiles.
 
+locals {
+  security_profiles = {
+    for k, v in var.security_profiles : k => merge(v, {
+      has_profiles = (
+        v.threat_prevention_profile.severity_overrides != null ||
+        v.threat_prevention_profile.threat_overrides != null
+      )
+    })
+  }
+}
+
 resource "google_network_security_security_profile" "default" {
-  for_each    = var.security_profiles
+  for_each    = local.security_profiles
   name        = each.key
   description = each.value.description
   parent      = "organizations/${var.organization.id}"
   location    = "global"
   type        = "THREAT_PREVENTION"
   dynamic "threat_prevention_profile" {
-    for_each = toset(each.value.has_profile ? [""] : [])
+    for_each = each.value.has_profiles ? [""] : []
+    iterator = profiles
     content {
       dynamic "severity_overrides" {
         for_each = coalesce(each.value.threat_prevention_profile.severity_overrides, {})

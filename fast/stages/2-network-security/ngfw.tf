@@ -19,7 +19,7 @@
 locals {
   ngfw_associations = flatten([
     for k, v in var.ngfw_config.zones : [
-      for kk, vv in v.network_associations : merge(vv, {
+      for kk, vv in var.ngfw_config.network_associations : merge(vv, {
         key        = "${k}-${kk}"
         location   = v
         project_id = regex("projects/([^/]+)/", vv.vpc_id)
@@ -42,10 +42,12 @@ resource "google_network_security_firewall_endpoint" "default" {
 
 resource "google_network_security_firewall_endpoint_association" "default" {
   for_each = { for k in local.ngfw_associations : k.key => k }
-  name     = "${var.ngfw_config.name.name}-${each.value.key}"
-  parent   = "projects/${each.value.project_id}"
+  name     = "${var.ngfw_config.name}-${each.value.key}"
+  parent   = "projects/${var.project_id}"
   location = each.value.location
-  network  = each.value.vpc_id
+  network = replace(
+    each.value.vpc_id, "https://www.googleapis.com/compute/v1/", ""
+  )
   firewall_endpoint = (
     google_network_security_firewall_endpoint.default[each.value.location].id
   )

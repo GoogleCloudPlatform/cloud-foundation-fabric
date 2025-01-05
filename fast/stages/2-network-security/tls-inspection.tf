@@ -16,10 +16,10 @@
 
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
-local {
+locals {
   ca_pool_ids = merge(
     { for k, v in var.certificate_authority_pools : k => v.id },
-    { for k, v in module.cas : k => v.id }
+    { for k, v in module.cas : k => v.ca_pool_id }
   )
   trust_config_ids = {
     for k, v in google_certificate_manager_trust_config.default : k => v.id
@@ -82,7 +82,7 @@ resource "google_network_security_tls_inspection_policy" "default" {
   trust_config = lookup(
     local.trust_config_ids, each.value.trust_config, each.value.trust_config
   )
-  custom_features = each.value.tls.custom_features
-  feature_profile = each.value.tls.feature_profile
-  min_tls_version = each.value.tls.min_version
+  custom_tls_features = each.value.tls.custom_features
+  tls_feature_profile = each.value.tls.feature_profile
+  min_tls_version     = each.value.tls.min_version
 }

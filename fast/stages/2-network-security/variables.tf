@@ -137,7 +137,7 @@ variable "security_profiles" {
   }
   validation {
     condition = alltrue(flatten([
-      for _, v in var.security_profile_groups : [
+      for _, v in var.security_profiles : [
         for _, sv in coalesce(v.threat_prevention_profile.severity_overrides, {}) : (
           contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action) &&
           contains(["CRITICAL", "HIGH", "INFORMATIONAL", "LOW", "MEDIUM"], sv.severity)
@@ -148,7 +148,7 @@ variable "security_profiles" {
   }
   validation {
     condition = alltrue(flatten([
-      for _, v in var.security_profile_groups : [
+      for _, v in var.security_profiles : [
         for _, sv in coalesce(v.threat_prevention_profile.threat_overrides, {}) : (
           contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action)
         )
@@ -177,7 +177,7 @@ variable "tls_inspection_policies" {
     condition = alltrue([
       for k, v in var.tls_inspection_policies : v.tls.min_version == null || contains(
         ["TLS_VERSION_UNSPECIFIED", "TLS_1_0", "TLS_1_1", "TLS_1_2", "TLS_1_3"],
-        coalesce(v.tls.min_version, "")
+        coalesce(v.tls.min_version, "-")
       )
     ])
     error_message = "Invalid min TLS version."
@@ -186,7 +186,7 @@ variable "tls_inspection_policies" {
     condition = alltrue([
       for k, v in var.tls_inspection_policies : v.tls.feature_profile == null || contains(
         ["PROFILE_UNSPECIFIED", "PROFILE_COMPATIBLE", "PROFILE_MODERN", "PROFILE_RESTRICTED", "PROFILE_CUSTOM"],
-        coalesce(v.tls.feature_profile, "")
+        coalesce(v.tls.feature_profile, "-")
       )
     ])
     error_message = "Invalid TLS feature profile."
