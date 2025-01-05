@@ -19,6 +19,9 @@ module "project" {
   name           = var.project_id
   project_create = false
   services = [
-    "networksecurity.googleapis.com"
+    "certificatemanager.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "networksecurity.googleapis.com",
+    "privateca.googleapis.com"
   ]
 }

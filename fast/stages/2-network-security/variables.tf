@@ -93,12 +93,13 @@ variable "certificate_authorities" {
 variable "ngfw_config" {
   description = "Configuration for NGFW Enterprise endpoints. Billing project defaults to the automation project. Network and TLS inspection policy ids support interpolation."
   type = object({
-    zones = list(string)
-    name  = optional(string, "ngfw-0")
+    endpoint_zones = list(string)
+    name           = optional(string, "ngfw-0")
     network_associations = optional(map(object({
       vpc_id                = string
       disabled              = optional(bool)
       tls_inspection_policy = optional(string)
+      zones                 = optional(list(string))
     })), {})
   })
   nullable = false

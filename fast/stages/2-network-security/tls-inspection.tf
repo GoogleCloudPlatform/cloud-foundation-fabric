@@ -27,16 +27,21 @@ locals {
 }
 
 module "cas" {
-  source                = "../../../modules/certificate-authority-service"
-  for_each              = var.certificate_authorities
-  project_id            = var.project_id
-  ca_configs            = each.value.ca_configs
-  ca_pool_config        = each.value.ca_pool_config
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_by_principals     = each.value.iam_by_principals
-  location              = each.value.location
+  source         = "../../../modules/certificate-authority-service"
+  for_each       = var.certificate_authorities
+  project_id     = var.project_id
+  ca_configs     = each.value.ca_configs
+  ca_pool_config = each.value.ca_pool_config
+  iam            = each.value.iam
+  iam_bindings   = each.value.iam_bindings
+  iam_bindings_additive = merge(each.value.iam_bindings_additive, {
+    nsec_agent = {
+      member = module.project.service_agents["networksecurity"].iam_email
+      role   = "roles/privateca.certificateManager"
+    }
+  })
+  iam_by_principals = each.value.iam_by_principals
+  location          = each.value.location
 }
 
 resource "google_certificate_manager_trust_config" "default" {
