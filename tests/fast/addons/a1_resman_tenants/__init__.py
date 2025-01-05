@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,18 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-counts:
-  google_compute_network_firewall_policy: 2
-  google_compute_network_firewall_policy_association: 2
-  google_compute_network_firewall_policy_rule: 4
-  google_network_security_firewall_endpoint: 3
-  google_network_security_firewall_endpoint_association: 6
-  google_network_security_security_profile: 2
-  google_network_security_security_profile_group: 2
-  google_project: 1
-  google_project_service: 1
-  google_project_service_identity: 1
-  google_storage_bucket_object: 1
-  modules: 3
-  resources: 25

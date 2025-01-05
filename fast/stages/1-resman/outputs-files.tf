@@ -30,7 +30,7 @@ locals {
     },
     var.fast_stage_2["networking"].enabled != true ? {} : {
       # duplicating this block works around inconsistent result type errors
-      network_security = {
+      networking_ngfw = {
         bucket        = module.net-bucket[0].name
         backend_extra = "prefix = \"netsec\""
         sa = {

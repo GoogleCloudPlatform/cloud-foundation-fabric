@@ -67,13 +67,13 @@ locals {
       name          = "resman"
       sa            = module.automation-tf-resman-r-sa.email
     })
-    "1-tenant-factory" = templatefile(local._tpl_providers, {
+    "1-resman-tenants" = templatefile(local._tpl_providers, {
       backend_extra = "prefix = \"tenant-factory\""
       bucket        = module.automation-tf-resman-gcs.name
       name          = "tenant-factory"
       sa            = module.automation-tf-resman-sa.email
     })
-    "1-tenant-factory-r" = templatefile(local._tpl_providers, {
+    "1-resman-tenants-r" = templatefile(local._tpl_providers, {
       backend_extra = "prefix = \"tenant-factory\""
       bucket        = module.automation-tf-resman-gcs.name
       name          = "tenant-factory"
