@@ -17,7 +17,7 @@ This is how the current netsec stage looks like from a resource perspective:
 
 ![image](https://github.com/user-attachments/assets/c9778cd8-8dd4-4f7c-b74b-c5d8ad7e7d30)
 
-Furthermore, the stage also tries to do "too much" adopting a design that statically maps its resources onto all FAST environments and networks, resulting in code that is really hard to adapt for real life use cases and impossible to keep forward compatible, as changes are extensive and spread out across three stages.
+Furthermore, the stage also tries to do "too much", by behaving as a full stage and adopting a design that statically maps its resources onto all FAST environments and networks. This results in code that is really hard to adapt for real life use cases and impossible to keep forward compatible, as changes are extensive and spread out across three stages.
 
 ## Proposal
 
