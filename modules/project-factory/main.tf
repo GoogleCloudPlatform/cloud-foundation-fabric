@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ module "projects" {
     local.context.folder_ids, each.value.parent, each.value.parent
   )
   prefix              = each.value.prefix
+  alerts              = try(each.value.alerts, null)
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})
   # TODO: concat lists for each key
@@ -49,6 +50,15 @@ module "projects" {
   )
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
+  factories_config = {
+    custom_roles  = each.value.factories_config.custom_roles
+    observability = each.value.factories_config.observability
+    org_policies  = each.value.factories_config.org_policies
+    quotas        = each.value.factories_config.quotas
+    context = {
+      notification_channels = var.factories_config.context.notification_channels
+    }
+  }
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
@@ -93,13 +103,16 @@ module "projects" {
     each.value.labels, var.data_merges.labels
   )
   lien_reason         = try(each.value.lien_reason, null)
+  log_scopes          = try(each.value.log_scopes, null)
   logging_data_access = try(each.value.logging_data_access, {})
   logging_exclusions  = try(each.value.logging_exclusions, {})
+  logging_metrics     = try(each.value.logging_metrics, null)
   logging_sinks       = try(each.value.logging_sinks, {})
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
-  org_policies = each.value.org_policies
+  notification_channels = try(each.value.notification_channels, null)
+  org_policies          = each.value.org_policies
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,
     var.data_merges.service_encryption_key_ids

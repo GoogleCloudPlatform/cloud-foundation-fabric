@@ -1,0 +1,514 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Observability Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "alerts": {
+      "$ref": "#/$defs/alerts"
+    },
+    "logging_metrics": {
+      "$ref": "#/$defs/logging_metrics"
+    },
+    "notification_channels": {
+      "$ref": "#/$defs/notification_channels"
+    }
+  },
+  "$defs": {
+    "alerts": {
+      "title": "Alerts",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "combiner": {
+              "type": "string"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "notification_channels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "severity": {
+              "type": "string"
+            },
+            "user_labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "alert_strategy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "auto_close": {
+                  "type": "string"
+                },
+                "notification_prompts": {
+                  "type": "string"
+                },
+                "notification_rate_limit": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "period": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "notification_channel_strategy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "notification_channel_names": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "renotify_interval": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              }
+            },
+            "documentation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "mime_type": {
+                  "type": "string"
+                },
+                "subject": {
+                  "type": "string"
+                },
+                "links": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "display_name": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": [
+            "combiner"
+          ]
+        }
+      }
+    },
+    "logging_metrics": {
+      "title": "Logging Metrics",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "filter": {
+              "type": "string"
+            },
+            "bucket_name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "disabled": {
+              "type": "boolean"
+            },
+            "label_extractors": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "value_extractor": {
+              "type": "string"
+            },
+            "bucket_options": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "explicit_buckets": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "bounds": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                },
+                "exponential_buckets": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "num_finite_buckets": {
+                      "type": "number"
+                    },
+                    "growth_factor": {
+                      "type": "number"
+                    },
+                    "scale": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "linear_buckets": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "num_finite_buckets": {
+                      "type": "number"
+                    },
+                    "width": {
+                      "type": "number"
+                    },
+                    "offset": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            },
+            "metric_descriptor": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "metric_kind": {
+                  "type": "string"
+                },
+                "value_type": {
+                  "type": "string"
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "labels": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "value_type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "key"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "metric_kind",
+                "value_type"
+              ]
+            }
+          },
+          "required": [
+            "filter"
+          ]
+        }
+      }
+    },
+    "notification_channels": {
+      "title": "Notification Channels",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "user_labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "sensitive_labels": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "auth_token": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "service_key": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "condition_absent": {
+          "$ref": "#/$defs/absent_condition"
+        },
+        "condition_matched_log": {
+          "$ref": "#/$defs/matched_log_condition"
+        },
+        "condition_monitoring_query_language": {
+          "$ref": "#/$defs/monitoring_query_condition"
+        },
+        "condition_prometheus_query_language": {
+          "$ref": "#/$defs/prometheus_query_condition"
+        },
+        "condition_threshold": {
+          "$ref": "#/$defs/threshold_condition"
+        }
+      },
+      "required": [
+        "display_name"
+      ]
+    },
+    "absent_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "duration": {
+          "type": "string"
+        },
+        "filter": {
+          "type": "string"
+        },
+        "aggregations": {
+          "$ref": "#/$defs/aggregations"
+        },
+        "trigger": {
+          "$ref": "#/$defs/trigger"
+        }
+      },
+      "required": [
+        "duration"
+      ]
+    },
+    "matched_log_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "filter": {
+          "type": "string"
+        },
+        "label_extractors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "filter"
+      ]
+    },
+    "monitoring_query_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "duration": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "evaluation_missing_data": {
+          "type": "string"
+        },
+        "trigger": {
+          "$ref": "#/$defs/trigger"
+        }
+      },
+      "required": [
+        "duration",
+        "query"
+      ]
+    },
+    "prometheus_query_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "alert_rule": {
+          "type": "string"
+        },
+        "disable_metric_validation": {
+          "type": "boolean"
+        },
+        "duration": {
+          "type": "string"
+        },
+        "evaluation_interval": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "rule_group": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    },
+    "threshold_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparison": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "string"
+        },
+        "denominator_filter": {
+          "type": "string"
+        },
+        "evaluation_missing_data": {
+          "type": "string"
+        },
+        "filter": {
+          "type": "string"
+        },
+        "threshold_value": {
+          "type": "number"
+        },
+        "aggregations": {
+          "$ref": "#/$defs/aggregations"
+        },
+        "denominator_aggregations": {
+          "$ref": "#/$defs/aggregations"
+        },
+        "forecast_options": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "forecast_horizon": {
+              "type": "string"
+            }
+          }
+        },
+        "trigger": {
+          "$ref": "#/$defs/trigger"
+        }
+      },
+      "required": [
+        "comparison",
+        "duration"
+      ]
+    },
+    "aggregations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "per_series_aligner": {
+          "type": "string"
+        },
+        "group_by_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cross_series_reducer": {
+          "type": "string"
+        },
+        "alignment_period": {
+          "type": "string"
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "number"
+        },
+        "percent": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

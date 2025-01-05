@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,9 +81,13 @@ variable "descriptive_name" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    custom_roles = optional(string)
-    org_policies = optional(string)
-    quotas       = optional(string)
+    custom_roles  = optional(string)
+    observability = optional(string)
+    org_policies  = optional(string)
+    quotas        = optional(string)
+    context = optional(object({
+      notification_channels = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
