@@ -56,13 +56,7 @@ module "ngfw-quota-project" {
     ? true
     : false
   )
-  factories_config = {
-    logging_metrics = var.factories_config.logging_metrics
-    channels        = var.factories_config.channels
-    alerts          = var.factories_config.alerts
-  }
-  default_alerts_email = var.default_alerts_email
-  services             = ["networksecurity.googleapis.com"]
+  services = ["networksecurity.googleapis.com"]
 }
 
 resource "google_network_security_firewall_endpoint" "firewall_endpoint" {

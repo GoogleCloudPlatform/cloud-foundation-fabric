@@ -49,12 +49,6 @@ module "log-export-project" {
     ? {}
     : { (var.essential_contacts) = ["ALL"] }
   )
-  default_alerts_email = var.default_alerts_email
-  factories_config = {
-    alerts          = var.factories_config.alerts
-    channels        = var.factories_config.channels
-    logging_metrics = var.factories_config.logging_metrics
-  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

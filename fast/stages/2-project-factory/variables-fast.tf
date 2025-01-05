@@ -27,12 +27,6 @@ variable "billing_account" {
   }
 }
 
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
-  type        = string
-  default     = null
-}
-
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders created in the resource management stage."

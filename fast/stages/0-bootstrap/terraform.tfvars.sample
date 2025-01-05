@@ -23,5 +23,3 @@ outputs_location = "~/fast-config"
 
 # use something unique and no longer than 9 characters
 prefix = "abcd"
-
-default_alerts_email = "support@company.com"

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,7 @@ module "projects" {
   data_overrides = {
     prefix = var.prefix
   }
-  default_alerts_email = var.default_alerts_email
   factories_config = merge(var.factories_config, {
-    logging_metrics = var.factories_config.logging_metrics
-    channels        = var.factories_config.channels
-    alerts          = var.factories_config.alerts
     context = {
       folder_ids = merge(
         { for k, v in var.folder_ids : k => v if v != null },

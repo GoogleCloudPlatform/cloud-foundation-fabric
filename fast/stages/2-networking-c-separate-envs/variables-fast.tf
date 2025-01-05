@@ -46,12 +46,6 @@ variable "custom_roles" {
   default = null
 }
 
-variable "default_alerts_email" {
-  description = "Default email address for alerting."
-  type        = string
-  default     = null
-}
-
 variable "environments" {
   # tfdoc:variable:source 0-globals
   description = "Environment names."

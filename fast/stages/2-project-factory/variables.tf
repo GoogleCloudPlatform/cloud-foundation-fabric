@@ -17,7 +17,8 @@
 variable "factories_config" {
   description = "Configuration for YAML-based factories."
   type = object({
-    alerts = optional(string, "data/alerts")
+    folders_data_path  = optional(string, "data/hierarchy")
+    projects_data_path = optional(string, "data/projects")
     budgets = optional(object({
       billing_account       = string
       budgets_data_path     = optional(string, "data/budgets")
@@ -30,10 +31,6 @@ variable "factories_config" {
       tag_values        = optional(map(string), {})
       vpc_host_projects = optional(map(string), {})
     }), {})
-    channels           = optional(string, "data/channels")
-    folders_data_path  = optional(string, "data/hierarchy")
-    logging_metrics    = optional(string, "data/logging-metrics")
-    projects_data_path = optional(string, "data/projects")
   })
   nullable = false
   default  = {}
