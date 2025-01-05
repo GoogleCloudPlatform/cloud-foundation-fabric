@@ -16,12 +16,9 @@ counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
   google_essential_contacts_contact: 3
-  google_logging_metric: 24
   google_logging_organization_settings: 1
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
-  google_monitoring_alert_policy: 24
-  google_monitoring_notification_channel: 3
   google_org_policy_policy: 24
   google_organization_iam_binding: 27
   google_organization_iam_custom_role: 13
@@ -44,7 +41,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 10
   modules: 20
-  resources: 286
+  resources: 235
 
 outputs:
   automation: __missing__

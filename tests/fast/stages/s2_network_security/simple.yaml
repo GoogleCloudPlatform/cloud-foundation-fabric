@@ -16,9 +16,6 @@ counts:
   google_compute_network_firewall_policy: 2
   google_compute_network_firewall_policy_association: 2
   google_compute_network_firewall_policy_rule: 4
-  google_logging_metric: 8
-  google_monitoring_alert_policy: 8
-  google_monitoring_notification_channel: 1
   google_network_security_firewall_endpoint: 3
   google_network_security_firewall_endpoint_association: 6
   google_network_security_security_profile: 2
@@ -28,4 +25,4 @@ counts:
   google_project_service_identity: 1
   google_storage_bucket_object: 1
   modules: 3
-  resources: 42
+  resources: 25
