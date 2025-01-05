@@ -1,11 +1,11 @@
 # Add-on stages
 
-**authors:** [Ludo](https://github.com/ludoo)  
+**authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)  
 **date:** Jan 5, 2025
 
 ## Status
 
-Under discussion
+Under implementation
 
 ## Context
 
@@ -44,6 +44,9 @@ Add-on stages should live in a separate folder from stages, and once we finally 
 
 ```bash
 fast
+├── addons
+    ├── 1-tenant-factory
+    └── 2-network-security
 ├── assets
 │   └── templates
 ├── extras
@@ -51,9 +54,6 @@ fast
 │   └── 0-cicd-gitlab
 ├── plugins
 │   └── 2-networking-serverless-connector
-└── stage-addons
-    ├── 1-tenant-factory
-    └── 2-network-security
 └── stages
     ├── 0-bootstrap
     ├── 1-resman
