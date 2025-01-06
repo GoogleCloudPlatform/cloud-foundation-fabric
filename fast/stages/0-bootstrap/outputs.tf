@@ -38,7 +38,10 @@ locals {
           apply = local.cicd_workflow_providers[k]
           plan  = local.cicd_workflow_providers["${k}_r"]
         }
-        tf_var_files = local.cicd_workflow_var_files[k]
+        tf_var_files = k == "bootstrap" ? [] : [
+          "0-bootstrap.auto.tfvars.json",
+          "0-globals.auto.tfvars.json"
+        ]
       }
     )
   }
@@ -108,6 +111,11 @@ locals {
         resman-r    = module.automation-tf-resman-r-sa.email
         vpcsc       = module.automation-tf-vpcsc-sa.email
         vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
+      }
+      state_buckets = {
+        bootstrap = module.automation-tf-bootstrap-gcs.name
+        resman    = module.automation-tf-resman-gcs.name
+        vpcsc     = module.automation-tf-vpcsc-gcs.name
       }
     }
     billing = {

@@ -33,7 +33,14 @@ variable "automation" {
       principal_repo   = string
     }))
     service_accounts = object({
+      resman   = string
       resman-r = string
+      vpcsc    = string
+      vpcsc-r  = string
+    })
+    state_buckets = object({
+      resman = string
+      vpcsc  = string
     })
   })
   nullable = false

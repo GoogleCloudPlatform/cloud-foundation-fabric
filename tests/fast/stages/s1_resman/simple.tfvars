@@ -105,9 +105,6 @@ fast_stage_2 = {
       }
     }
   }
-  network_security = {
-    enabled = true
-  }
 }
 tags = {
   context = {
@@ -138,16 +135,10 @@ tags = {
 }
 top_level_folders = {
   tenants = {
-    name = "Tenants"
-    automation = {
-      enable = false
-    }
+    name              = "Tenants"
     iam_by_principals = {}
   }
   shared = {
     name = "Shared Infrastructure"
-    automation = {
-      enable = false
-    }
   }
 }

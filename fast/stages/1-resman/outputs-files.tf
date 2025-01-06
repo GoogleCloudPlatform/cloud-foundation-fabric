@@ -17,96 +17,6 @@
 # tfdoc:file:description Output files persistence to local filesystem.
 
 locals {
-  # output file definitions for enabled stage 2s
-  _stage2_outputs_attrs = merge(
-    var.fast_stage_2["networking"].enabled != true ? {} : {
-      networking = {
-        bucket = module.net-bucket[0].name
-        sa = {
-          apply = module.net-sa-rw[0].email
-          plan  = module.net-sa-ro[0].email
-        }
-      }
-    },
-    var.fast_stage_2["networking"].enabled != true ? {} : {
-      # duplicating this block works around inconsistent result type errors
-      networking_ngfw = {
-        bucket        = module.net-bucket[0].name
-        backend_extra = "prefix = \"netsec\""
-        sa = {
-          apply = module.net-sa-rw[0].email
-          plan  = module.net-sa-ro[0].email
-        }
-      }
-    },
-    var.fast_stage_2["project_factory"].enabled != true ? {} : {
-      project_factory = {
-        bucket = module.pf-bucket[0].name
-        sa = {
-          apply = module.pf-sa-rw[0].email
-          plan  = module.pf-sa-ro[0].email
-        }
-      }
-    },
-    var.fast_stage_2["security"].enabled != true ? {} : {
-      security = {
-        bucket = module.sec-bucket[0].name
-        sa = {
-          apply = module.sec-sa-rw[0].email
-          plan  = module.sec-sa-ro[0].email
-        }
-      }
-    }
-  )
-  # CI/CD workflow definitions for enabled stages
-  _cicd_workflow_attrs = merge(
-    # stage 2s
-    {
-      for k, v in local._stage2_outputs_attrs : k => {
-        audiences = try(
-          local.identity_providers[local.cicd_repositories[k].identity_provider].audiences, null
-        )
-        identity_provider = try(
-          local.identity_providers[local.cicd_repositories[k].identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        service_accounts = {
-          apply = try(module.cicd-sa-rw[k].email, "")
-          plan  = try(module.cicd-sa-ro[k].email, "")
-        }
-        repository = local.cicd_repositories[k].repository
-        stage_name = k
-        tf_providers_files = {
-          apply = "2-${replace(k, "_", "-")}-providers.tf"
-          plan  = "2-${replace(k, "_", "-")}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_files.stage_2
-      } if lookup(local.cicd_repositories, k, null) != null
-    },
-    # stage 3
-    {
-      for k, v in local.cicd_repositories : "${v.lvl}-${k}" => {
-        audiences = try(
-          local.identity_providers[v.identity_provider].audiences, null
-        )
-        identity_provider = try(
-          local.identity_providers[v.identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        repository     = v.repository
-        service_accounts = {
-          apply = module.cicd-sa-rw[0].email
-          plan  = module.cicd-sa-ro[0].email
-        }
-        stage_name = v.short_name
-        tf_providers_files = {
-          apply = "${v.lvl}-${k}-providers.tf"
-          plan  = "${v.lvl}-${k}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_files.stage_3
-      } if v.lvl == 3
-    }
-  )
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   cicd_workflows = {
     for k, v in local._cicd_workflow_attrs : k => templatefile(
@@ -116,22 +26,41 @@ locals {
   outputs_location = try(pathexpand(var.outputs_location), "")
   # render provider files from template
   providers = merge(
+    # stage 1 addons
+    {
+      for k, v in local._stage1_output_attrs :
+      "1-${k}" => templatefile(local._tpl_providers, {
+        backend_extra = lookup(v, "backend_extra", null)
+        bucket        = v.bucket
+        name          = k
+        sa            = v.sa.apply
+      })
+    },
+    {
+      for k, v in local._stage1_output_attrs :
+      "1-${k}-r" => templatefile(local._tpl_providers, {
+        backend_extra = lookup(v, "backend_extra", null)
+        bucket        = v.bucket
+        name          = k
+        sa            = v.sa.plan
+      })
+    },
     # stage 2
     {
       for k, v in local._stage2_outputs_attrs :
       "2-${replace(k, "_", "-")}" => templatefile(local._tpl_providers, {
         backend_extra = lookup(v, "backend_extra", null)
         bucket        = v.bucket
-        name          = "networking"
+        name          = k
         sa            = v.sa.apply
       })
     },
     {
       for k, v in local._stage2_outputs_attrs :
       "2-${replace(k, "_", "-")}-r" => templatefile(local._tpl_providers, {
-        backend_extra = null
+        backend_extra = lookup(v, "backend_extra", null)
         bucket        = v.bucket
-        name          = "networking"
+        name          = k
         sa            = v.sa.plan
       })
     },

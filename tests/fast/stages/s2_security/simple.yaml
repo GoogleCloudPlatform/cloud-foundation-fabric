@@ -493,7 +493,7 @@ counts:
   resources: 58
 
 outputs:
-  certificate_authorities: __missing__
+  certificate_authority_pools: __missing__
   kms_keys: __missing__
   tfvars: __missing__
 

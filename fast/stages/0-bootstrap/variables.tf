@@ -56,7 +56,7 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
-    tenants = optional(object({
+    resman_tenants = optional(object({
       name              = string
       type              = string
       branch            = optional(string)
