@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+output "foo" { value = keys(local.cicd_workflows) }
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   # render CI/CD workflow templates
   cicd_workflows = {
-    for k, v in local.cicd_repositories : k => templatefile(
+    for k, v in local.cicd_repositories : "${v.level}-${k}" => templatefile(
       "${path.module}/templates/workflow-${v.repository.type}.yaml", {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_providers[v["identity_provider"]].audiences, ""
+          local.cicd_providers[v.identity_provider].audiences, ""
         )
         identity_provider = try(
-          local.cicd_providers[v["identity_provider"]].name, ""
+          local.cicd_providers[v.identity_provider].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_accounts = {

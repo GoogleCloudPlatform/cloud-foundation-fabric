@@ -17,7 +17,7 @@ cicd_config = {
   }
 }
 fast_addon = {
-  tenants = {
+  resman-tenants = {
     parent_stage = "1-resman"
     cicd_config = {
       identity_provider = "gh-test"

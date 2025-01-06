@@ -35,15 +35,15 @@ locals {
     # stages
     {
       for k, v in var.cicd_config : k => merge(v, {
-        is_addon = false
-        stage    = k
+        level = k == "bootstrap" ? 0 : 1
+        stage = k
       }) if v != null
     },
     # addons
     {
       for k, v in var.fast_addon : k => merge(v.cicd_config, {
-        is_addon = true
-        stage    = substr(v.parent_stage, 2, -1)
+        level = 1
+        stage = substr(v.parent_stage, 2, -1)
       }) if v.cicd_config != null
     }
   )
@@ -55,12 +55,12 @@ locals {
   }
   cicd_workflow_providers = merge(
     {
-      for k, _ in local.cicd_repositories :
-      k => format("%s-${k}-providers.tf", k == "bootstrap" ? "0" : "1")
+      for k, v in local.cicd_repositories :
+      k => "${v.level}-${k}-providers.tf"
     },
     {
-      for k, _ in local.cicd_repositories :
-      "${k}-r" => format("%s-${k}-r-providers.tf", k == "bootstrap" ? "0" : "1")
+      for k, v in local.cicd_repositories :
+      "${k}-r" => "${v.level}-${k}-r-providers.tf"
     }
   )
 }
