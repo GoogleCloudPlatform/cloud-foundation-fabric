@@ -14,12 +14,13 @@
 # limitations under the License.
 
 module: fast/stages/0-bootstrap
-
+common_tfvars:
+  - common.tfvars
 tests:
   simple:
     inventory:
       - simple.yaml
       - simple_projects.yaml
       - simple_sas.yaml
-
   iam_by_principals:
+  cicd:
