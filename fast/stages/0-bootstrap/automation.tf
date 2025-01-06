@@ -335,6 +335,12 @@ module "automation-tf-vpcsc-sa" {
       module.automation-tf-cicd-sa[k].iam_email if v.stage == "vpcsc"
     ]
   }
+  iam_bindings_additive = {
+    security_admins = {
+      member = local.principals["gcp-security-admins"]
+      role   = "roles/iam.serviceAccountTokenCreator"
+    }
+  }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
   }
