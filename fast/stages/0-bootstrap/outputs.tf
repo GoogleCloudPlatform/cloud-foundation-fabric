@@ -30,13 +30,13 @@ locals {
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_accounts = {
-          apply = try(module.automation-tf-cicd-sa[v.stage].email, "")
-          plan  = try(module.automation-tf-cicd-r-sa[v.stage].email, "")
+          apply = try(module.automation-tf-cicd-sa[k].email, "")
+          plan  = try(module.automation-tf-cicd-r-sa[k].email, "")
         }
         stage_name = k
         tf_providers_files = {
           apply = local.cicd_workflow_providers[k]
-          plan  = local.cicd_workflow_providers["${k}_r"]
+          plan  = local.cicd_workflow_providers["${k}-r"]
         }
         tf_var_files = k == "bootstrap" ? [] : [
           "0-bootstrap.auto.tfvars.json",
