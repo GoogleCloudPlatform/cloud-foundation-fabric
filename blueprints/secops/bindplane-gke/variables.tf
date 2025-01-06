@@ -17,6 +17,7 @@
 variable "bindplane_config" {
   description = "Bindplane config."
   type = object({
+    image_tag           = optional(string, "")
     tls_certificate_cer = optional(string, null)
     tls_certificate_key = optional(string, null)
   })
