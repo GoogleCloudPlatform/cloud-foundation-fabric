@@ -19,7 +19,7 @@ locals {
   # render CI/CD workflow templates
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.type}.yaml", {
+      "${path.module}/templates/workflow-${v.repository.type}.yaml", {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
@@ -30,8 +30,8 @@ locals {
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_accounts = {
-          apply = try(module.automation-tf-cicd-sa[k].email, "")
-          plan  = try(module.automation-tf-cicd-r-sa[k].email, "")
+          apply = try(module.automation-tf-cicd-sa[v.stage].email, "")
+          plan  = try(module.automation-tf-cicd-r-sa[v.stage].email, "")
         }
         stage_name = k
         tf_providers_files = {
@@ -44,56 +44,6 @@ locals {
         ]
       }
     )
-  }
-  providers = {
-    "0-bootstrap" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-bootstrap-gcs.name
-      name          = "bootstrap"
-      sa            = module.automation-tf-bootstrap-sa.email
-    })
-    "0-bootstrap-r" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-bootstrap-gcs.name
-      name          = "bootstrap"
-      sa            = module.automation-tf-bootstrap-r-sa.email
-    })
-    "1-resman" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "resman"
-      sa            = module.automation-tf-resman-sa.email
-    })
-    "1-resman-r" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "resman"
-      sa            = module.automation-tf-resman-r-sa.email
-    })
-    "1-resman-tenants" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"tenant-factory\""
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "tenant-factory"
-      sa            = module.automation-tf-resman-sa.email
-    })
-    "1-resman-tenants-r" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"tenant-factory\""
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "tenant-factory"
-      sa            = module.automation-tf-resman-r-sa.email
-    })
-    "1-vpcsc" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"vpcsc\""
-      bucket        = module.automation-tf-vpcsc-gcs.name
-      name          = "vpcsc"
-      sa            = module.automation-tf-vpcsc-sa.email
-    })
-    "1-vpcsc-r" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"vpcsc\""
-      bucket        = module.automation-tf-vpcsc-gcs.name
-      name          = "vpcsc"
-      sa            = module.automation-tf-vpcsc-r-sa.email
-    })
   }
   tfvars = {
     automation = {
@@ -111,11 +61,6 @@ locals {
         resman-r    = module.automation-tf-resman-r-sa.email
         vpcsc       = module.automation-tf-vpcsc-sa.email
         vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
-      }
-      state_buckets = {
-        bootstrap = module.automation-tf-bootstrap-gcs.name
-        resman    = module.automation-tf-resman-gcs.name
-        vpcsc     = module.automation-tf-vpcsc-gcs.name
       }
     }
     billing = {
@@ -178,8 +123,8 @@ output "cicd_repositories" {
   description = "CI/CD repository configurations."
   value = {
     for k, v in local.cicd_repositories : k => {
-      branch          = v.branch
-      name            = v.name
+      branch          = v.repository.branch
+      name            = v.repository.name
       provider        = try(local.cicd_providers[v.identity_provider].name, null)
       service_account = try(module.automation-tf-cicd-sa[k].email, null)
     }
