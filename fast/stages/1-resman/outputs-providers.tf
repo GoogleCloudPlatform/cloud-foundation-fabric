@@ -17,17 +17,6 @@
 # tfdoc:file:description Locals for provider output files.
 
 locals {
-  # output file definitions for stage 1 addons
-  _stage1_output_attrs = {
-    for k, v in local.stage_addons : "${v.stage.name}-${k}" => {
-      bucket        = var.automation.state_buckets[v.stage.name]
-      backend_extra = "prefix = \"addons/${k}\""
-      sa = {
-        apply = var.automation.service_accounts[v.stage.name]
-        plan  = var.automation.service_accounts["${v.stage.name}-r"]
-      }
-    } if v.stage.level == "1" && contains(["resman", "vpcsc"], v.stage.name)
-  }
   # output file definitions for enabled stage 2s
   _stage2_outputs_attrs = merge(
     var.fast_stage_2["networking"].enabled != true ? {} : {
@@ -66,7 +55,7 @@ locals {
           apply = module.net-sa-rw[0].email
           plan  = module.net-sa-ro[0].email
         }
-      } if v.stage.level == "2" && v.stage.name == "networking"
+      } if v.parent_stage == "2-networking"
     },
     var.fast_stage_2["project_factory"].enabled != true ? {} : {
       for k, v in local.stage_addons : "pf-${k}" => {
@@ -76,7 +65,7 @@ locals {
           apply = module.pf-sa-rw[0].email
           plan  = module.pf-sa-ro[0].email
         }
-      } if v.stage.level == "2" && v.stage.name == "project-factory"
+      } if v.parent_stage == "2-project-factory"
     },
     var.fast_stage_2["security"].enabled != true ? {} : {
       for k, v in local.stage_addons : "security-${k}" => {
@@ -86,56 +75,58 @@ locals {
           apply = module.sec-sa-rw[0].email
           plan  = module.sec-sa-ro[0].email
         }
-      } if v.stage.level == "2" && v.stage.name == "security"
-    },
+      } if v.parent_stage == "2-security"
+    }
   )
-  # CI/CD workflow definitions for enabled stages
-  _cicd_workflow_attrs = merge(
-    # stage 2s
+  # render provider files from template
+  providers = merge(
+    # stage 2
     {
-      for k, v in local._stage2_outputs_attrs : k => {
-        audiences = try(
-          local.identity_providers[local.cicd_repositories[k].identity_provider].audiences, null
-        )
-        identity_provider = try(
-          local.identity_providers[local.cicd_repositories[k].identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        service_accounts = {
-          apply = try(module.cicd-sa-rw[k].email, "")
-          plan  = try(module.cicd-sa-ro[k].email, "")
-        }
-        repository = local.cicd_repositories[k].repository
-        stage_name = k
-        tf_providers_files = {
-          apply = "2-${replace(k, "_", "-")}-providers.tf"
-          plan  = "2-${replace(k, "_", "-")}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_files.stage_2
-      } if lookup(local.cicd_repositories, k, null) != null
+      for k, v in local._stage2_outputs_attrs :
+      "2-${replace(k, "_", "-")}" => templatefile(local._tpl_providers, {
+        backend_extra = lookup(v, "backend_extra", null)
+        bucket        = v.bucket
+        name          = k
+        sa            = v.sa.apply
+      })
+    },
+    {
+      for k, v in local._stage2_outputs_attrs :
+      "2-${replace(k, "_", "-")}-r" => templatefile(local._tpl_providers, {
+        backend_extra = lookup(v, "backend_extra", null)
+        bucket        = v.bucket
+        name          = k
+        sa            = v.sa.plan
+      })
     },
     # stage 3
     {
-      for k, v in local.cicd_repositories : "${v.lvl}-${k}" => {
-        audiences = try(
-          local.identity_providers[v.identity_provider].audiences, null
-        )
-        identity_provider = try(
-          local.identity_providers[v.identity_provider].name, null
-        )
-        outputs_bucket = var.automation.outputs_bucket
-        repository     = v.repository
-        service_accounts = {
-          apply = module.cicd-sa-rw[0].email
-          plan  = module.cicd-sa-ro[0].email
-        }
-        stage_name = v.short_name
-        tf_providers_files = {
-          apply = "${v.lvl}-${k}-providers.tf"
-          plan  = "${v.lvl}-${k}-r-providers.tf"
-        }
-        tf_var_files = local.cicd_workflow_files.stage_3
-      } if v.lvl == 3
-    }
+      for k, v in local.stage3 :
+      "3-${k}" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.stage3-bucket[k].name
+        name          = k
+        sa            = module.stage3-sa-rw[k].email
+      })
+    },
+    {
+      for k, v in local.stage3 :
+      "3-${k}-r" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.stage3-bucket[k].name
+        name          = k
+        sa            = module.stage3-sa-ro[k].email
+      })
+    },
+    # top-level folders
+    {
+      for k, v in module.top-level-sa :
+      "1-resman-folder-${k}" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.top-level-bucket[k].name
+        name          = k
+        sa            = v.email
+      })
+    },
   )
 }

@@ -14,30 +14,6 @@
  * limitations under the License.
  */
 
-variable "fast_addon" {
-  description = "FAST addons configurations. Keys are used as short names for the add-on resources."
-  type = map(object({
-    parent_stage = string
-    cicd_config = optional(object({
-      identity_provider = string
-      repository = object({
-        name   = string
-        branch = optional(string)
-        type   = optional(string, "github")
-      })
-    }))
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.fast_addon :
-      length(regexall("^[0-9]-[a-z]+", v.parent_stage)) > 0
-    ])
-    error_message = "Parent stage should map to a valid stage name like '1-resman'."
-  }
-}
-
 variable "fast_stage_2" {
   description = "FAST stages 2 configurations."
   type = object({

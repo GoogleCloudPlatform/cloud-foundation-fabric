@@ -35,12 +35,6 @@ variable "automation" {
     service_accounts = object({
       resman   = string
       resman-r = string
-      vpcsc    = string
-      vpcsc-r  = string
-    })
-    state_buckets = object({
-      resman = string
-      vpcsc  = string
     })
   })
   nullable = false
@@ -80,6 +74,7 @@ variable "environments" {
   description = "Environment names."
   type = map(object({
     name       = string
+    short_name = string
     tag_name   = string
     is_default = optional(bool, false)
   }))

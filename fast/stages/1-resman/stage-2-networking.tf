@@ -154,9 +154,10 @@ module "net-sa-rw" {
   prefix                 = var.prefix
   service_account_create = var.root_node == null
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-rw["networking"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-rw[k].iam_email if v.stage == "networking"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
@@ -176,9 +177,10 @@ module "net-sa-ro" {
   display_name = "Terraform resman networking service account (read-only)."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-ro["networking"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-ro[k].iam_email if v.stage == "networking"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]

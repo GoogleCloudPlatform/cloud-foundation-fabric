@@ -17,83 +17,8 @@
 # tfdoc:file:description Output files persistence to local filesystem.
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
-  cicd_workflows = {
-    for k, v in local._cicd_workflow_attrs : k => templatefile(
-      "${path.module}/templates/workflow-${v.repository.type}.yaml", v
-    )
-  }
+  _tpl_providers   = "${path.module}/templates/providers.tf.tpl"
   outputs_location = try(pathexpand(var.outputs_location), "")
-  # render provider files from template
-  providers = merge(
-    # stage 1 addons
-    {
-      for k, v in local._stage1_output_attrs :
-      "1-${k}" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
-        name          = k
-        sa            = v.sa.apply
-      })
-    },
-    {
-      for k, v in local._stage1_output_attrs :
-      "1-${k}-r" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
-        name          = k
-        sa            = v.sa.plan
-      })
-    },
-    # stage 2
-    {
-      for k, v in local._stage2_outputs_attrs :
-      "2-${replace(k, "_", "-")}" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
-        name          = k
-        sa            = v.sa.apply
-      })
-    },
-    {
-      for k, v in local._stage2_outputs_attrs :
-      "2-${replace(k, "_", "-")}-r" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
-        name          = k
-        sa            = v.sa.plan
-      })
-    },
-    # stage 3
-    {
-      for k, v in local.stage3 :
-      "3-${k}" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.stage3-bucket[k].name
-        name          = k
-        sa            = module.stage3-sa-rw[k].email
-      })
-    },
-    {
-      for k, v in local.stage3 :
-      "3-${k}-r" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.stage3-bucket[k].name
-        name          = k
-        sa            = module.stage3-sa-ro[k].email
-      })
-    },
-    # top-level folders
-    {
-      for k, v in module.top-level-sa :
-      "1-resman-folder-${k}" => templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.top-level-bucket[k].name
-        name          = k
-        sa            = v.email
-      })
-    },
-  )
 }
 
 resource "local_file" "providers" {

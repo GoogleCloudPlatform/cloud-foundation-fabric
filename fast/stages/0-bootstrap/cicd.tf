@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Workload Identity Federation configurations for CI/CD.
+# tfdoc:file:description CI/CD locals and resources.
 
 locals {
-  cicd_providers = {
-    for k, v in google_iam_workload_identity_pool_provider.default :
-    k => {
-      audiences = concat(
-        v.oidc[0].allowed_audiences,
-        ["https://iam.googleapis.com/${v.name}"]
-      )
-      issuer           = local.workload_identity_providers[k].issuer
-      issuer_uri       = try(v.oidc[0].issuer_uri, null)
-      name             = v.name
-      principal_branch = local.workload_identity_providers[k].principal_branch
-      principal_repo   = local.workload_identity_providers[k].principal_repo
-    }
-  }
   _cicd_configs = merge(
     # stages
     {
@@ -47,6 +33,20 @@ locals {
       }) if v.cicd_config != null
     }
   )
+  cicd_providers = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => {
+      audiences = concat(
+        v.oidc[0].allowed_audiences,
+        ["https://iam.googleapis.com/${v.name}"]
+      )
+      issuer           = local.workload_identity_providers[k].issuer
+      issuer_uri       = try(v.oidc[0].issuer_uri, null)
+      name             = v.name
+      principal_branch = local.workload_identity_providers[k].principal_branch
+      principal_repo   = local.workload_identity_providers[k].principal_repo
+    }
+  }
   cicd_repositories = {
     for k, v in local._cicd_configs : k => v if(
       contains(keys(local.workload_identity_providers), v.identity_provider) &&
