@@ -42,12 +42,13 @@ Navigate to http://localhost:3001 to access the Bindplane console, the following
 This example will create a `cloud-config` that uses the module's defaults, creating a simple bindplane server with default (latest) docker image versions and setting localhost as remote url (suited only for local development).
 
 ```hcl
-module "cos-nginx" {
-  source   = "./fabric/modules/cloud-config-container/bindplane"
-  password = "secret"
+module "cos-bindplane" {
+  source            = "./fabric/modules/cloud-config-container/bindplane"
+  bindplane_license = "XXXXXXXXX"
+  password          = "secret"
 }
 
-module "vm-nginx-tls" {
+module "bindplane" {
   source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
   zone       = "europe-west8-b"
@@ -57,7 +58,7 @@ module "vm-nginx-tls" {
     subnetwork = "gce"
   }]
   metadata = {
-    user-data              = module.cos-nginx.cloud_config
+    user-data              = module.cos-bindplane.cloud_config
     google-logging-enabled = true
   }
   boot_disk = {
@@ -71,21 +72,21 @@ module "vm-nginx-tls" {
 }
 # tftest modules=2 resources=2
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [password](variables.tf#L63) | Default admin user password. | <code>string</code> | ✓ |  |
+| [bindplane_license](variables.tf#L29) | BindPlane server license. | <code>string</code> | ✓ |  |
+| [password](variables.tf#L68) | Default admin user password. | <code>string</code> | ✓ |  |
 | [bindplane_config](variables.tf#L17) | Bindplane configurations. | <code title="object&#40;&#123;&#10;  remote_url                      &#61; optional&#40;string, &#34;localhost&#34;&#41;&#10;  bindplane_server_image          &#61; optional&#40;string, &#34;us-central1-docker.pkg.dev&#47;observiq-containers&#47;bindplane&#47;bindplane-ee:latest&#34;&#41;&#10;  bindplane_transform_agent_image &#61; optional&#40;string, &#34;us-central1-docker.pkg.dev&#47;observiq-containers&#47;bindplane&#47;bindplane-transform-agent:latest&#34;&#41;&#10;  bindplane_prometheus_image      &#61; optional&#40;string, &#34;us-central1-docker.pkg.dev&#47;observiq-containers&#47;bindplane&#47;bindplane-prometheus:1.56.0&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cloud_config](variables.tf#L29) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
-| [config_variables](variables.tf#L35) | Additional variables used to render the cloud-config and Nginx templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| [file_defaults](variables.tf#L41) | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [files](variables.tf#L53) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [runcmd_post](variables.tf#L68) | Extra commands to run after starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [runcmd_pre](variables.tf#L74) | Extra commands to run before starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [users](variables.tf#L80) | List of additional usernames to be created. | <code title="list&#40;object&#40;&#123;&#10;  username &#61; string,&#10;  uid      &#61; number,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [cloud_config](variables.tf#L34) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
+| [config_variables](variables.tf#L40) | Additional variables used to render the cloud-config and Nginx templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| [file_defaults](variables.tf#L46) | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [files](variables.tf#L58) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [runcmd_post](variables.tf#L73) | Extra commands to run after starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [runcmd_pre](variables.tf#L79) | Extra commands to run before starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [users](variables.tf#L85) | List of additional usernames to be created. | <code title="list&#40;object&#40;&#123;&#10;  username &#61; string,&#10;  uid      &#61; number,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;&#93;">&#91;&#8230;&#93;</code> |
 
 ## Outputs
 

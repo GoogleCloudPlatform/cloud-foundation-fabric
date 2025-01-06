@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,9 +81,13 @@ variable "descriptive_name" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    custom_roles = optional(string)
-    org_policies = optional(string)
-    quotas       = optional(string)
+    custom_roles  = optional(string)
+    observability = optional(string)
+    org_policies  = optional(string)
+    quotas        = optional(string)
+    context = optional(object({
+      notification_channels = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -100,66 +104,6 @@ variable "lien_reason" {
   description = "If non-empty, creates a project lien with this description."
   type        = string
   default     = null
-}
-
-variable "logging_data_access" {
-  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.logging_data_access : [
-        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
-      ]
-    ]))
-    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
-  }
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for this project."
-  type = map(object({
-    bq_partitioned_table = optional(bool, false)
-    description          = optional(string)
-    destination          = string
-    disabled             = optional(bool, false)
-    exclusions           = optional(map(string), {})
-    filter               = optional(string)
-    iam                  = optional(bool, true)
-    type                 = string
-    unique_writer        = optional(bool, true)
-  }))
-  default  = {}
-  nullable = false
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
-    ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      v.bq_partitioned_table != true || v.type == "bigquery"
-    ])
-    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
-  }
-}
-
-variable "metric_scopes" {
-  description = "List of projects that will act as metric scopes for this project."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "name" {

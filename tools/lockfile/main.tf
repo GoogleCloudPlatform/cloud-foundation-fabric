@@ -23,3 +23,4 @@ resource "random_pet" "default" {}
 resource "time_static" "default" {}
 resource "tls_private_key" "default" {}
 resource "vsphere_role" "default" {}
+resource "kubernetes_secret" "default" {}

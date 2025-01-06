@@ -787,6 +787,13 @@
   role: null
   is_primary: false
   aliases: []
+- name: gcp-ri-contactcenterinsights
+  display_name: Contact Center Insights Resource Identity (prod)
+  api: contactcenterinsights.googleapis.com
+  identity: service-%s@gcp-ri-contactcenterinsights.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: container-analysis
   display_name: Container Analysis Service Agent
   api: containeranalysis.googleapis.com
@@ -967,6 +974,13 @@
   api: firebaseapphosting.googleapis.com
   identity: service-%s@gcp-sa-firebaseapphosting.iam.gserviceaccount.com
   role: roles/firebaseapphosting.serviceAgent
+  is_primary: true
+  aliases: []
+- name: crashlytics
+  display_name: Firebase Crashlytics Service Agent
+  api: firebasecrashlytics.googleapis.com
+  identity: service-%s@gcp-sa-crashlytics.iam.gserviceaccount.com
+  role: roles/firebasecrashlytics.serviceAgent
   is_primary: true
   aliases: []
 - name: firebasedataconnect
@@ -1173,13 +1187,6 @@
   role: null
   is_primary: false
   aliases: []
-- name: chronicle-spanner
-  display_name: Internal Chronicle Spanner Service Account
-  api: chronicle.googleapis.com
-  identity: service-%s@gcp-sa-chronicle-spanner.iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
 - name: fs-spanner
   display_name: Internal Cloud Firestore Spanner Service Agent
   api: firestore.googleapis.com
@@ -1349,6 +1356,13 @@
   api: privateca.googleapis.com
   identity: service-%s@gcp-sa-privateca.iam.gserviceaccount.com
   role: null
+  is_primary: true
+  aliases: []
+- name: progrollout
+  display_name: Progressive Rollout Service Agent
+  api: progressiverollout.googleapis.com
+  identity: service-%s@gcp-sa-progrollout.iam.gserviceaccount.com
+  role: roles/progressiverollout.serviceAgent
   is_primary: true
   aliases: []
 - name: pubsublite
@@ -1572,7 +1586,7 @@
   display_name: Vertex AI Online Prediction Service Agent
   api: aiplatform.googleapis.com
   identity: service-%s@gcp-sa-vertex-op.iam.gserviceaccount.com
-  role: null
+  role: roles/aiplatform.onlinePredictionServiceAgent
   is_primary: false
   aliases: []
 - name: vertex-tune

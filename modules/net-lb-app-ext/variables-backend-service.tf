@@ -121,8 +121,8 @@ variable "backend_service_configs" {
       }))
     }))
     security_settings = optional(object({
-      client_tls_policy = string
-      subject_alt_names = list(string)
+      client_tls_policy = optional(string)
+      subject_alt_names = optional(list(string))
       aws_v4_authentication = optional(object({
         access_key_id      = optional(string)
         access_key         = optional(string)

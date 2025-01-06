@@ -22,7 +22,7 @@ locals {
   )
   cluster_sa = (
     local._cluster_sa == "default"
-    ? module.project.service_accounts.default.compute
+    ? module.project.default_service_accounts.compute
     : local._cluster_sa
   )
   cluster_sa_roles = [
