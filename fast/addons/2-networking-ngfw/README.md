@@ -1,14 +1,8 @@
-# Network Security
+# NGFW Enterprise Networking Add-on
 
-This stage enables NGFW Enterprise in the dev `dev` and `prod` VPCs. This includes:
+This add-on includes all configurations and resources required to activate [Cloud Next Generation Firewall](https://cloud.google.com/firewall/docs/about-firewalls), and associate its endpoints to an arbitrary number of VPC networks.
 
-- security profiles
-- security profile groups
-- NGFW endpoints
-- NGFW endpoint associations
-- global network firewall policies and some recommended firewall policy rules
-
-The following diagram is a high level reference of the resources created and managed here (excludes projects and VPCs):
+This diagram shows the resources used by this add-on, and their relationships with its networking parent stage.
 
 <p align="center">
   <img src="diagram.png" alt="Network security NGFW diagram">
@@ -30,69 +24,56 @@ The following diagram is a high level reference of the resources created and man
 
 ## Design overview and choices
 
-- We create one security profile (and security profile group) per environment in the spoke VPCs only. That's usually where inspection is needed, as it's where workloads run.
-- By default, we create NGFW Enterprise endpoints in three zones in the default, primary region (europe-west1). You can adapt this, depending on where your workloads run, using the dedicated variable.
-- We install default firewall policy rules in each spoke, so that we allow and inspect all traffic going to the Internet and we allow egress towards RFC-1918 addresses. In ingress, you'll need to add your own rules. We provided some examples that need to be adapted to your topology (number of regions, subnets).
-- We use global network firewall policies, as legacy VPC firewall rules are not compatible with NGFW Enterprise. These policies coexist with the legacy VPC firewall rules that we create in the netwroking stage.
-- For your convenience, firewall policy rules leverage factories, so that you can define firewall policy rules using yaml files. The path of these files is configurable. Look in the [Customization](#customizations) section for more details.
-- NGFW Enterprise endpoints are org-level resources that need to reference a quota project for billing purposes. By default, we create a dedicated `xxx-net-ngfw-0` quota project. Anyway, you can choose to leverage an existing project. Look in the [Customization](#customizations) section for more details.
-- Firewall endpoint associations in this stage can reference TLS inspection policies created in the [2-security stage](../2-security/README.md). More info in the customization section of this document.
-- While TLS inspection policies are created in the [2-security stage](../2-security/README.md), FAST still allows the service accounts of this stage and the `gcp-network-admins` group to create and manage them anywhere in the organization.
+This add-on is intentionally self-contained to allow directly using it to implement different designs, via a single instance or multiple instances.
+
+All project-level resources in this stage with the exception of VPC associations are created in the same project, so that dependencies and IAM configurations are kept as simple as possible, and everything is within the same span of control.
+
+The controlling project is usually one of those already created and managed by the networking stage: the landing host project, or a shared environment project if that exists. Alternatively, a dedicated project can be created and used here provided the necessary IAM and organization policies configurations are also defined.
 
 ## How to run this stage
 
-This stage is meant to be executed after any [networking](../2-networking-a-simple) stage has run and it leverages dedicated automation service accounts and a bucket created in the [resman](../1-resman) stage.
+Once the main networking stage has been configured and applied, the following configuration is added the the resource management `fast_addon` variable to create the add-on provider files, and its optional CI/CD resources if those are also required. The add-on name (`networking-ngfw`) is customizable, in case the add-on needs to be run multiple times for example to create different sets of endpoints and NGFW configurations per environment.
 
-It's to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap and resman stages for the roles needed.
-
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+```hcl
+fast_addon = {
+  networking-ngfw = {
+    parent_stage = "2-networking"
+    # cicd_config = {
+    #   identity_provider = "github-test"
+    #   repository = {
+    #     name   = "test/ngfw"
+    #     type   = "github"
+    #     branch = "main"
+    #   }
+    # }
+  }
+}
+```
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../stages/0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
-
-```bash
-../fast-links.sh ~/fast-config
-
-# File linking commands for network securoty (optional) stage
-
-# provider file
-ln -s ~/fast-config/fast-test-00/providers/2-network-security-providers.tf ./
-
-# input files from other stages
-ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/tfvars/1-resman.auto.tfvars.json ./
-
-# conventional place for stage tfvars (manually created)
-ln -s ~/fast-config/fast-test-00/2-network-security.auto.tfvars ./
-
-# optional files
-ln -s ~/fast-config/fast-test-00/2-networking.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/2-security.auto.tfvars.json ./
-```
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following example uses local files but GCS behaves identically.
 
 ```bash
-../fast-links.sh gs://xxx-prod-iac-core-outputs-0
-
-# File linking commands for network securoty (optional) stage
+../../stages/fast-links.sh ~/fast-config
+# File linking commands for NGFW Enterprise networking add-on stage
 
 # provider file
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-network-security-providers.tf ./
+ln -s ~/fast-config/providers/2-networking-ngfw-providers.tf ./
 
 # input files from other stages
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-network-security.auto.tfvars ./
+ln -s ~/fast-config/2-networking-ngfw.auto.tfvars ./
 
 # optional files
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-networking.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-security.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
 ```
 
 ### Impersonating the automation service account
@@ -107,12 +88,96 @@ Variables in this stage -- like most other FAST stages -- are broadly divided in
 - variables which refer to resources managed by previous stages, which are prepopulated here via the `0-bootstrap.auto.tfvars.json`, `1-resman.auto.tfvars.json` and `2-networking.auto.tfvars.json` files linked or copied above
 - and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
 
-The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
+The first two sets are defined in the `variables-fast.tf` file, the latter set in the `variables.tf` file. The full list of variables can be found in the [Variables](#variables) table at the bottom of this document.
 
-Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
+Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../../stages/0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
 
 ```tfvars
 outputs_location = "~/fast-config"
+```
+
+Once output files are in place, define your addon configuration in a tfvars file. This is an example of configuring this addon, with optional variable attributes filled in for illustration purposes.
+
+```hcl
+certificate_authorities = {
+  # if CA pools defined in the security stage are used this is optional
+  ngfw-0 = {
+    location = "europe-west8"
+    ca_configs = {
+      ca-0 = {
+        deletion_protection = false
+        subject = {
+          common_name  = "example.org"
+          organization = "Test Organization"
+        }
+      }
+    }
+    ca_pool_config = {
+      authz_nsec_sa = true
+      name          = "ca-pool-0"
+    }
+  }
+}
+ngfw_config = {
+  name           = "ngfw-0"
+  endpoint_zones = ["europe-west8-b"]
+  network_associations = {
+    prod = {
+      # VPC ids defined in the network stage can be referred to via short name
+      # vpc_id              = "prod-spoke-0"
+      vpc_id                = "projects/xxx-prod-net-spoke-0/global/networks/prod-spoke-0"
+      tls_inspection_policy = "ngfw-0"
+    }
+  }
+}
+outputs_location = "~/fast-config"
+project_id       = "xxx-prod-net-landing-0"
+security_profiles = {
+  ngfw-0 = {
+    # these are optional and shown here for convenience
+    threat_prevention_profile = {
+      severity_overrides = {
+        informational-allow = {
+          action   = "ALLOW"
+          severity = "INFORMATIONAL"
+        }
+      }
+      threat_overrides = {
+        allow-280647 = {
+          action    = "ALLOW"
+          threat_id = "280647"
+        }
+      }
+    }
+  }
+}
+tls_inspection_policies = {
+  ngfw-0 = {
+    # reference the pool defined above, or an external one
+    # CA pools defined in the security stage can be referred to via short name
+    ca_pool_id   = "ngfw-0"
+    location     = "europe-west8"
+    trust_config = "ngfw-0"
+  }
+}
+trust_configs = {
+  ngfw-0 = {
+    location = "europe-west8"
+    allowlisted_certificates = {
+      server-0 = "~/fast-config/data/2-networking-ngfw/server-0.cert.pem"
+    }
+    trust_stores = {
+      ludo-joonix = {
+        intermediate_cas = {
+          issuing-ca-1 = "~/fast-config/data/2-networking-ngfw/intermediate.cert.pem"
+        }
+        trust_anchors = {
+          root-ca-1 = "~/fast-config/data/2-networking-ngfw/ca.cert.pem"
+        }
+      }
+    }
+  }
+}
 ```
 
 ### Running the stage
@@ -124,41 +189,9 @@ terraform init
 terraform apply
 ```
 
-## Customizations
+### Using add-on resources from the networking stage
 
-You can optionally customize a few options adding a `terraform.tfvars` file to this stage.
-
-### Firewall policy rules factories
-
-By default, firewall policy rules yaml files are contained in the `data` folder within this module. Anyway, you can customize this location.
-
-### NGFW Enterprise configuration
-
-You can decide the zones where to deploy the NGFW Enterprise endpoints. These are set by default to `europe-west1-b`, `europe-west1-c` and `europe-west1-d`.
-
-```tfvars
-ngfw_enterprise_config = {
-  endpoint_zones = [
-    "us-east4-a",
-    "us-east4-b",
-    "australia-southeast1-b",
-    "australia-southeast1-c"
-  ]
-}
-```
-
-Instead of creating a dedicated NGFW Enterprise billing/quota project, you can choose to leverage an existing project. These can even be one of your existing networking projects.
-You'll need to make sure your network security service account can activate the `networksecurity.googleapis.com` on that project (for example, assigning the `roles/serviceusage.serviceUsageAdmin` role).
-
-```tfvars
-ngfw_enterprise_config = {
-  quota_project_id = "your-quota-project-id"
-}
-```
-
-You can optionally enable TLS inspection in stage [2-security](../2-security/README.md).
-Ingesting outputs from [stage 2-security](../2-security/README.md), this stage will configure TLS inspection in NGFW Enterprise and will reference the CAs and the trust-configs you created in [stage 2-security](../2-security/README.md).
-Make sure the CAs and the trusted configs created for NGFW Enterprise in the [2-security stage](../2-security/README.md) match the region where you defined your zonal firewall endpoints.
+Security profiles group defined here are exported via output variable file, and can be consumed in the firewall policies defined in the networking stage.
 
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-network-security-providers.tf -->
 <!-- BEGIN TFDOC -->

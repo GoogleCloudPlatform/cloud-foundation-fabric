@@ -61,6 +61,7 @@ locals {
       })
     },
     # stage 1 addons
+    # TODO: use ${parent_stage}-${key} for the addon file output names
     {
       for k, v in var.fast_addon :
       "${v.parent_stage}-${k}" => templatefile(local._tpl_providers, {

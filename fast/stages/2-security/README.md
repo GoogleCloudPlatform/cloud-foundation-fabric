@@ -50,19 +50,7 @@ IAM roles on keys can be configured at the logical level for all locations where
 
 ### Certificate Authority Service (CAS)
 
-With this stage you can leverage Certificate Authority Services (CAS) and create as many CAs you need for each environments. To create custom CAS, you can use the `cas_configs` variable. The variable comes with some defaults, useful for demos: in each environment, specifying the CA `location` should be enough for most of your test scenarios.
-
-### Trust Configs
-
-The stage lets you also create Certificate Manager trust configs. With trust configs you can trust whole CAs or specific server certificates, when you use them with other services, such as NGFW Enterprise. You can create additional trust configs for each environment with the `trust_configs` variable. At a very minimum, each trust config needs a `location` (the region) and either a `trust_stores` block or an `allowed_certificates` block.
-
-### NGFW Enterprise and TLS inspection support
-
-We deploy NGFW Enterprise in the [network security stage](../2-network-security/README.md). If you require TLS inspection, NGFW needs to interact with CAS and -optionally- Certificate Manager trust-configs. These components bind to firewall endpoint associations (created in the network security stage) with zonal TLS inspection policies.
-Using this module, you can define CAS configurations and trust-configs for NGFW Enterprise. You can create them using the `cas_configs` and `trust_configs` variables. Anyway, these will need to use specific keys (defined in `ngfw_tls_configs.keys`), so that FAST knows which configurations to use for NGFW Enterprise.
-You can then enable TLS inspection and customize its behavior for NGFW Enterprise, using the `ngfw_tls_configs.tls_inspection` variable. FAST will create the TLS inspection policies for you in the regions where you defined your CAs for NGFW Enterprise.
-When you create your CAs and trust-configs for NGFW Enterprise, make sure their region matches the zones where you will define your firewall endpoints.
-You can read more about NGFW configurations in the [Customizations section](#customizations) of this document.
+With this stage you can leverage Certificate Authority Services (CAS) and create as many CAs you need for each environments. To create custom CAS, you can use the `certificate_authorities` variable.
 
 ## How to run this stage
 

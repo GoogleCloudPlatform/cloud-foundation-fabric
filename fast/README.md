@@ -38,9 +38,11 @@ FAST uses YAML-based factories to deploy subnets and firewall rules and, as its 
 
 One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the bootstrap stage](./stages/0-bootstrap/README.md#cicd) for more details. We also provide separate [optional small stages](./extras/) to help you configure your CI/CD provider.
 
+<!-- TODO: move CI/CD documentation to its own file -->
+
 ### Multitenant organizations
 
-FAST has built-in support for multitenancy implemented in [an optional stage 1](./stages/1-tenant-factory/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
+FAST has built-in support for multitenancy implemented in [an add-on stage](./addons/1-resman-tenants/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
 
 The following diagram is a high-level overview of stages used with multitenancy.
 

@@ -636,6 +636,10 @@ The remaining configuration is manual, as it regards the repositories themselves
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
     - for Source Repositories, place it in `.cloudbuild/workflow.yaml`
 
+### Add-ons
+
+FAST defines a simple mechanism to extend stage functionality via the use of [add-ons](../../addons/). Configuration for stage 1 add-ons happens here via the `fast_addon` variable. Refer to the add-ons documentation for more details on their use.
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:0-bootstrap-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files

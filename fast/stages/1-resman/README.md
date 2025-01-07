@@ -150,7 +150,9 @@ tags = {
 
 ### Multitenancy
 
-Multitenancy is supported via a [separate stage](../1-tenant-factory/), which is entirely optional and can be applied after resource management has been deployed. For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../2-project-factory/) support for folder and project management.
+Multitenancy is supported via an [add-on](../../addons/1-resman-tenants/) which is entirely optional, and is be applied after resource management has been deployed. The add-on needs to be enabled before use via the `fast_addon` variable in the bootstrap stage.
+
+For simpler use cases that do not require complex organization-level multitenancy, [top-level folders](#top-level-folders) can be used in combination with the [project factory stage](../2-project-factory/) support for folder and project management.
 
 ### Workload Identity Federation and CI/CD
 

@@ -46,6 +46,7 @@ locals {
         }
       }
     },
+    # TODO: use ${parent_stage}-${key} for the addon file output names
     # addons, conditions are repeated to prevent inconsistent result type error
     var.fast_stage_2["networking"].enabled != true ? {} : {
       for k, v in local.stage_addons : "networking-${k}" => {

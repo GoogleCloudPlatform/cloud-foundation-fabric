@@ -1,6 +1,6 @@
-# Tenant Factory
+# Tenant Factory Resource Manager Add-on
 
-This optional stage implements multitenancy, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a measure of central control.
+This add-on implements multitenancy on top of the resource management stage, where a limited number of tenants need a high degree of autonomy over their slice of the shared organization, while still being subject to a measure of central control.
 
 Typical use cases include large organizations managing a single Cloud subscription for multiple semi-independent entities (governments, state-wide associations), multinational groups with different local subsidiaries, or even business units who own their cloud presence while still consuming centralized resources or services.
 
@@ -83,13 +83,13 @@ Once a FAST-enabled tenant is created, the admin principal for the tenant has ac
 
 ## How to run this stage
 
-This stage uses a similar configuration to the [resource management](../1-resman/README.md) stage, with the only differences being the backend used, and the configuration of the specific variables that drive tenant creation.
+This stage is designed as an add-on to the [resource management](../../stages/1-resman/README.md) stage, and reuses its IaC resources and IAM configurations.
 
-The only real prerequisite is having fully deployed the [bootstrap](../0-bootstrap) stage, but there's no need to run [resource management](../1-resman/) before creating tenants unless a top-level "Tenants" folder is needed (and even that can be created by hand removing the dependency on stage 1).
+Once the bootstrap and resource management stages are applied, configure the bootstrap stage `fast_addon` variable to enable this stage, as explained in the [add-ons documentation](../README.md).
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../stages/0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -145,7 +145,7 @@ Note that the `outputs_location` variable is disabled by default, if you want ou
 outputs_location = "~/fast-config"
 ```
 
-For additional details on output files and how they are used, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables).
+For additional details on output files and how they are used, refer to the [bootstrap stage documentation](../../stages/0-bootstrap/README.md#output-files-and-cross-stage-variables).
 
 ### Running the stage
 
@@ -218,7 +218,7 @@ tenant_configs = {
 
 FAST compatibility is enabled for a tenant by defining the `fast_config` attribute in their configuration, in addition to the attributes outlined above.
 
-The `fast_config` attributes control the FAST bootstrap emulation for a tenant, and behave in a similar way to the corresponding variables that control the [bootstrap stage](../0-bootstrap/README.md#variables). They are all optional, and their behaviour is explained in the bootstrap stage documentation.
+The `fast_config` attributes control the FAST bootstrap emulation for a tenant, and behave in a similar way to the corresponding variables that control the [bootstrap stage](../../stages/0-bootstrap/README.md#variables). They are all optional, and their behaviour is explained in the bootstrap stage documentation.
 
 This is an example of two FAST-enabled tenants:
 
