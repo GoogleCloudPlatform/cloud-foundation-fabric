@@ -16,11 +16,5 @@ module: fast/stages/2-networking-b-nva
 
 tests:
   simple:
-    extra_files:
-      - ../../plugins/2-networking-serverless-connector/*.tf
   ncc-ra:
-    extra_files:
-      - ../../plugins/2-networking-serverless-connector/*.tf
   regional:
-    extra_files:
-      - ../../plugins/2-networking-serverless-connector/*.tf
