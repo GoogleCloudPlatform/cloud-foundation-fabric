@@ -21,7 +21,7 @@ resource "local_file" "providers-simple" {
     for k, v in local.tenants : k => local.tenant_data[k]
   }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/tenant-${each.key}.tf"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/${var.names.output_files_prefix}-${each.key}.tf"
   content = templatefile(local._tpl_providers, {
     backend_extra = null
     bucket        = each.value.gcs_bucket
@@ -35,21 +35,21 @@ resource "local_file" "tfvars-simple" {
     for k, v in local.tenants : k => local.tenant_data[k]
   }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/tenant-${each.key}.auto.tfvars.json"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/${var.names.output_files_prefix}-${each.key}.auto.tfvars.json"
   content         = jsonencode(each.value)
 }
 
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.tenant_providers
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/providers/1-resman-providers.tf"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/${var.names.output_files_prefix}/${each.key}/providers/1-resman-providers.tf"
   content         = try(each.value, null)
 }
 
 resource "local_file" "providers-r" {
   for_each        = var.outputs_location == null ? {} : local.tenant_providers_r
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/providers/1-resman-r-providers.tf"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/${var.names.output_files_prefix}/${each.key}/providers/1-resman-r-providers.tf"
   content         = try(each.value, null)
 }
 
@@ -59,20 +59,20 @@ resource "local_file" "tfvars" {
     for k, v in local.tenant_tfvars : k => v if var.outputs_location != null
   }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/tfvars/0-bootstrap.auto.tfvars.json"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/${var.names.output_files_prefix}/${each.key}/tfvars/0-bootstrap.auto.tfvars.json"
   content         = jsonencode(each.value)
 }
 
 resource "local_file" "tfvars_globals" {
   for_each        = var.outputs_location == null ? {} : local.tenant_globals
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/tfvars/0-globals.auto.tfvars.json"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/${var.names.output_files_prefix}/${each.key}/tfvars/0-globals.auto.tfvars.json"
   content         = jsonencode(each.value)
 }
 
 resource "local_file" "workflows" {
   for_each        = var.outputs_location == null ? {} : local.tenant_cicd_workflows
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tenants/${each.key}/workflows/1-resman-workflow.yaml"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/${var.names.output_files_prefix}/${each.key}/workflows/1-resman-workflow.yaml"
   content         = try(each.value, null)
 }

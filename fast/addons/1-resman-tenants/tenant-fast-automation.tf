@@ -26,7 +26,7 @@ locals {
   }
   fast_tenants = {
     for k, v in local._fast_tenants : k => merge(v, {
-      stage_0_prefix = "${v.prefix}-prod"
+      stage_0_prefix = "${v.prefix}-${local.default_environment.short_name}"
       principals = {
         for gk, gv in v.groups : gk => (
           can(regex("^[a-zA-Z]+:", gv))

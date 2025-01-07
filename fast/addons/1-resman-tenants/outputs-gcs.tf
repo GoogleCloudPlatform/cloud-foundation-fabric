@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "providers-simple" {
     for k, v in local.tenants : k => local.tenant_data[k]
   }
   bucket = var.automation.outputs_bucket
-  name   = "providers/tenant-${each.key}.tf"
+  name   = "providers/${var.names.output_files_prefix}-${each.key}.tf"
   content = templatefile(local._tpl_providers, {
     backend_extra = null
     bucket        = each.value.gcs_bucket
@@ -35,7 +35,7 @@ resource "google_storage_bucket_object" "tfvars-simple" {
     for k, v in local.tenants : k => local.tenant_data[k]
   }
   bucket  = var.automation.outputs_bucket
-  name    = "tfvars/tenant-${each.key}.auto.tfvars.json"
+  name    = "tfvars/${var.names.output_files_prefix}-${each.key}.auto.tfvars.json"
   content = jsonencode(each.value)
 }
 

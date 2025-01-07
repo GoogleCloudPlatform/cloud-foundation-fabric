@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+# TODO: backport names variable from resman stage
+variable "names" {
+  description = "Configuration for names used for resources and output files."
+  type = object({
+    output_files_prefix = optional(string, "2-resman-tenants")
+    resource_short_name = optional(string, "tn")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "outputs_location" {
   description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
   type        = string

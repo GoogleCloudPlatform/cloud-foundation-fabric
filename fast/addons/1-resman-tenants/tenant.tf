@@ -97,7 +97,7 @@ module "tenant-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.tenants
   project_id   = var.automation.project_id
-  name         = "tn-${each.key}-0"
+  name         = "${var.names.resource_short_name}-${each.key}-0"
   display_name = "Terraform tenant ${each.key} service account."
   prefix       = var.prefix
   iam = {
@@ -114,7 +114,7 @@ module "tenant-gcs" {
   source     = "../../../modules/gcs"
   for_each   = local.tenants
   project_id = var.automation.project_id
-  name       = "tn-${each.key}-0"
+  name       = "${var.names.resource_short_name}-${each.key}-0"
   prefix     = var.prefix
   location   = each.value.locations.gcs
   versioning = true

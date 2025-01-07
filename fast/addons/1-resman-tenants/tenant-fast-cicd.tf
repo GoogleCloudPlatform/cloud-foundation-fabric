@@ -131,7 +131,7 @@ module "automation-tf-cicd-r-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.cicd_repositories
   project_id   = var.automation.project_id
-  name         = "tenant-${each.key}-1r"
+  name         = "${each.key}-1r"
   display_name = "Terraform CI/CD ${each.key} service account (read-only)."
   prefix       = var.prefix
   iam = {

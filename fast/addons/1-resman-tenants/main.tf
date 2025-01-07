@@ -15,6 +15,9 @@
  */
 
 locals {
+  default_environment = [
+    for k, v in var.environments : v if v.is_default == true
+  ][0]
   tenants = {
     for k, v in var.tenant_configs : k => merge(v, {
       billing_account = merge(v.billing_account, {

@@ -90,6 +90,15 @@ variable "certificate_authorities" {
   default  = {}
 }
 
+variable "names" {
+  description = "Configuration for names used for output files."
+  type = object({
+    output_files_prefix = optional(string, "2-networking-ngfw")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "ngfw_config" {
   description = "Configuration for NGFW Enterprise endpoints. Billing project defaults to the automation project. Network and TLS inspection policy ids support interpolation."
   type = object({

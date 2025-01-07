@@ -25,7 +25,7 @@ module "tenant-core-logbucket" {
   for_each      = local.tenants
   parent_type   = "project"
   parent        = var.logging.project_id
-  id            = "tn-${each.key}-audit"
+  id            = "${var.names.resource_short_name}-${each.key}-audit"
   location      = var.locations.logging
   log_analytics = { enable = true }
 }
@@ -36,7 +36,7 @@ module "tenant-core-folder" {
   parent   = local.root_node
   name     = "${each.value.descriptive_name} Core"
   logging_sinks = {
-    "tn-${each.key}-audit" = {
+    "${var.names.resource_short_name}-${each.key}-audit" = {
       destination = module.tenant-core-logbucket[each.key].id
       filter      = <<-FILTER
         log_id("cloudaudit.googleapis.com/activity") OR

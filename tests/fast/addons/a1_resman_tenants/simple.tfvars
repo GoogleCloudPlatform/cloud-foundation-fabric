@@ -23,6 +23,20 @@ custom_roles = {
   storage_viewer                  = "organizations/123456789012/roles/storageViewer"
   tenant_network_admin            = "organizations/123456789012/roles/tenantNetworkAdmin"
 }
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    short_name = "dev"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    short_name = "prod"
+    tag_name   = "production"
+  }
+}
 groups = {
   gcp-billing-admins      = "gcp-billing-admins",
   gcp-devops              = "gcp-devops",
