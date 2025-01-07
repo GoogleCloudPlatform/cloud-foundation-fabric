@@ -229,6 +229,7 @@ module "organization" {
             expression = (
               "resource.matchTag('${local.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')"
             )
+            title = "allow-all"
           }
         },
       ]
@@ -249,6 +250,7 @@ module "organization" {
             expression = (
               "resource.matchTag('${local.org_policies_tag_name}', 'allowed-policy-member-domains-all')"
             )
+            title = "allow-all"
           }
         },
       ]
