@@ -16,6 +16,22 @@
 
 # tfdoc:file:description Production spoke VPC and related resources.
 
+locals {
+  # streamline VPC configuration conditionals for modules by moving them here
+  prod_cfg = {
+    cloudnat    = var.vpc_configs.landing.cloudnat.enable == true
+    dns_logging = var.vpc_configs.prod.dns.enable_logging == true
+    dns_policy  = var.vpc_configs.prod.dns.create_inbound_policy == true
+    fw_classic  = var.vpc_configs.prod.firewall.use_classic == true
+    fw_order = (
+      var.vpc_configs.prod.firewall.policy_has_priority == true
+      ? "BEFORE_CLASSIC_FIREWALL"
+      : "AFTER_CLASSIC_FIREWALL"
+    )
+    fw_policy = var.vpc_configs.prod.firewall.create_policy == true
+  }
+}
+
 module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -67,19 +83,21 @@ module "prod-spoke-project" {
 }
 
 module "prod-spoke-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.prod-spoke-project.project_id
-  name       = "prod-spoke-0"
-  mtu        = 1500
-  dns_policy = {
-    logging = var.dns.enable_logging
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.prod-spoke-project.project_id
+  name                            = "prod-spoke-0"
+  mtu                             = 1500
+  delete_default_routes_on_create = true
+  dns_policy = !local.prod_cfg.dns_policy ? {} : {
+    inbound = true
+    logging = local.prod_cfg.dns_logging
   }
   factories_config = {
     context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.data_dir}/subnets/prod"
   }
-  psa_configs                     = var.psa_ranges.prod
-  delete_default_routes_on_create = true
+  firewall_policy_enforcement_order = local.prod_cfg.fw_order
+  psa_configs                       = var.psa_ranges.prod
   routes = {
     default = {
       dest_range    = "0.0.0.0/0"
@@ -92,6 +110,7 @@ module "prod-spoke-vpc" {
 
 module "prod-spoke-firewall" {
   source     = "../../../modules/net-vpc-firewall"
+  count      = local.prod_cfg.fw_classic ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   network    = module.prod-spoke-vpc.name
   default_rules_config = {
@@ -103,9 +122,28 @@ module "prod-spoke-firewall" {
   }
 }
 
+module "prod-firewall-policy" {
+  source    = "../../../modules/net-firewall-policy"
+  count     = local.prod_cfg.fw_policy ? 1 : 0
+  name      = "prod-spoke-0"
+  parent_id = module.prod-spoke-project.project_id
+  region    = "global"
+  attachments = {
+    prod-spoke-0 = module.prod-spoke-vpc.id
+  }
+  # TODO: add context for security groups
+  factories_config = {
+    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
+    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/prod/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/prod/ingress.yaml"
+  }
+}
+
 module "prod-spoke-cloudnat" {
-  source         = "../../../modules/net-cloudnat"
-  for_each       = toset(var.enable_cloud_nat ? values(module.prod-spoke-vpc.subnet_regions) : [])
+  source = "../../../modules/net-cloudnat"
+  for_each = toset(
+    local.prod_cfg.cloudnat ? values(module.prod-spoke-vpc.subnet_regions) : []
+  )
   project_id     = module.prod-spoke-project.project_id
   region         = each.value
   name           = "prod-nat-${local.region_shortnames[each.value]}"
