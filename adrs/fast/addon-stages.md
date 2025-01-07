@@ -47,13 +47,9 @@ fast
 ├── addons
     ├── 1-resman-tenants
     └── 2-networking-ngfw
-├── assets
-│   └── templates
 ├── extras
 │   ├── 0-cicd-github
 │   └── 0-cicd-gitlab
-├── plugins
-│   └── 2-networking-serverless-connector
 └── stages
     ├── 0-bootstrap
     ├── 1-resman
