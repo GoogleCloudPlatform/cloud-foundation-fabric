@@ -16,8 +16,6 @@ The following diagram illustrates the high-level design of resources managed her
 - [Design overview and choices](#design-overview-and-choices)
   - [Cloud KMS](#cloud-kms)
   - [Certificate Authority Service (CAS)](#certificate-authority-service-cas)
-  - [Trust Configs](#trust-configs)
-  - [NGFW Enterprise and TLS inspection support](#ngfw-enterprise-and-tls-inspection-support)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)

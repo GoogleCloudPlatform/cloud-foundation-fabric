@@ -15,9 +15,7 @@ This diagram shows the resources used by this add-on, and their relationships wi
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
-- [Customizations](#customizations)
-  - [Firewall policy rules factories](#firewall-policy-rules-factories)
-  - [NGFW Enterprise configuration](#ngfw-enterprise-configuration)
+  - [Using add-on resources from the networking stage](#using-add-on-resources-from-the-networking-stage)
 - [Files](#files)
 - [Variables](#variables)
 <!-- END TOC -->

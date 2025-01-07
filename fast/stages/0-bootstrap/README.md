@@ -43,6 +43,7 @@ Use the following diagram as a simple high level reference for the following sec
   - [Workload Identity Federation](#workload-identity-federation)
   - [Project folders](#project-folders)
   - [CI/CD repositories](#cicd-repositories)
+  - [Add-ons](#add-ons)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
