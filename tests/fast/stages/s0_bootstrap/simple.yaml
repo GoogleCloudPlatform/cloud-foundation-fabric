@@ -25,21 +25,6 @@ values:
     - ALL
     parent: projects/fast-prod-iac-core-0
     timeouts: null
-  module.automation-project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
-    dry_run_spec: []
-    name: projects/fast-prod-iac-core-0/policies/compute.skipDefaultNetworkCreation
-    parent: projects/fast-prod-iac-core-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.automation-project.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
     dry_run_spec: []
     name: projects/fast-prod-iac-core-0/policies/iam.automaticIamGrantsForDefaultServiceAccounts
@@ -985,21 +970,6 @@ values:
   module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.setNewProjectDefaultToZonalDNSOnly
-    parent: organizations/123456789012
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
-    dry_run_spec: []
-    name: organizations/123456789012/policies/compute.skipDefaultNetworkCreation
     parent: organizations/123456789012
     spec:
     - inherit_from_parent: null

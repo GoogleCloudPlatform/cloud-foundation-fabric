@@ -64,15 +64,15 @@ trust_configs = {
   ngfw-0 = {
     location = "europe-west8"
     allowlisted_certificates = {
-      server-0 = "example.com.cert.pem"
+      # server-0 = "example.com.cert.pem"
     }
     trust_stores = {
       ludo-joonix = {
         intermediate_cas = {
-          issuing-ca-1 = "intermediate.cert.pem"
+          # issuing-ca-1 = "intermediate.cert.pem"
         }
         trust_anchors = {
-          root-ca-1 = "ca.cert.pem"
+          # root-ca-1 = "ca.cert.pem"
         }
       }
     }

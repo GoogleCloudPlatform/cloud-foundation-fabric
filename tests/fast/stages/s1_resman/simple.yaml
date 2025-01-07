@@ -1517,19 +1517,6 @@ values:
     parent: organizations/123456789012
     tags: null
     timeouts: null
-  module.top-level-folder["sandbox"].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
-    dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: 'TRUE'
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
   module.top-level-folder["sandbox"].google_org_policy_policy.default["sql.restrictPublicIp"]:
     dry_run_spec: []
     spec:

@@ -16,7 +16,3 @@ module: fast/addons/2-networking-ngfw/
 
 tests:
   simple:
-    extra_files:
-      - ../../../tests/fast/addons/a2_networking_ngfw/data/ca.cert.pem
-      - ../../../tests/fast/addons/a2_networking_ngfw/data/example.com.cert.pem
-      - ../../../tests/fast/addons/a2_networking_ngfw/data/intermediate.cert.pem
