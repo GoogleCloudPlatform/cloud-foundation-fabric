@@ -3,6 +3,20 @@
 billing_account = {
   id = "000000-111111-222222"
 }
+environments = {
+  dev = {
+    is_default = false
+    name       = "Development"
+    short_name = "dev"
+    tag_name   = "development"
+  }
+  prod = {
+    is_default = true
+    name       = "Production"
+    short_name = "prod"
+    tag_name   = "production"
+  }
+}
 groups = {
   gcp-billing-admins      = "gcp-billing-admins",
   gcp-devops              = "gcp-devops",
@@ -48,6 +62,7 @@ automation = {
   project_id     = "fast2-prod-automation"
   project_number = 123456
   service_accounts = {
+    resman   = "fast2-prod-resman-0@fast2-prod-iac-core-0.iam.gserviceaccount.com"
     resman-r = "fast2-prod-resman-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
   }
 }
@@ -64,24 +79,17 @@ custom_roles = {
   service_project_network_admin   = "organizations/123456789012/roles/xpnServiceAdmin"
   storage_viewer                  = "organizations/123456789012/roles/storageViewer"
 }
-environments = {
-  dev = {
-    is_default = false
-    name       = "Development"
-    tag_name   = "development"
-  }
-  prod = {
-    is_default = true
-    name       = "Production"
-    tag_name   = "production"
-  }
-}
 logging = {
   project_id = "fast-prod-log-audit-0"
 }
 
 # stage variables
 
+fast_addon = {
+  ngfw = {
+    parent_stage = "2-networking"
+  }
+}
 fast_stage_2 = {
   networking = {
     cicd_config = {
