@@ -38,7 +38,7 @@ module "cas" {
     each.value.iam_bindings_additive,
     var._fast_debug.skip_datasources == true ? {} : {
       nsec_agent = {
-        member = module.project.service_agents["networksecurity"].iam_email
+        member = module.project[0].service_agents["networksecurity"].iam_email
         role   = "roles/privateca.certificateManager"
       }
     }
