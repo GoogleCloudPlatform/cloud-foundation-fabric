@@ -237,5 +237,6 @@ counts:
   google_project_iam_member: 2
   google_project_service: 4
   google_project_service_identity: 4
+  google_storage_bucket_object: 1
   modules: 2
-  resources: 19
+  resources: 20

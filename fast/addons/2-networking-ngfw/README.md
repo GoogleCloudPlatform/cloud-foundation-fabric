@@ -168,6 +168,7 @@ Make sure the CAs and the trusted configs created for NGFW Enterprise in the [2-
 |---|---|---|---|
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>project</code> |  |
 | [ngfw.tf](./ngfw.tf) | NGFW Enteprise resources. |  | <code>google_network_security_firewall_endpoint</code> · <code>google_network_security_firewall_endpoint_association</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [security-profiles.tf](./security-profiles.tf) | Organization-level network security profiles. |  | <code>google_network_security_security_profile</code> · <code>google_network_security_security_profile_group</code> |
 | [tls-inspection.tf](./tls-inspection.tf) | TLS inspection policies and supporting resources. | <code>certificate-authority-service</code> | <code>google_certificate_manager_trust_config</code> · <code>google_network_security_tls_inspection_policy</code> |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
