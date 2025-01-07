@@ -5,7 +5,7 @@
 
 ## Status
 
-Under implementation
+Under implementation in [#2800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2800)
 
 ## Context
 
@@ -66,6 +66,12 @@ fast
     ├── 3-gcve-dev
     └── 3-gke-dev
 ```
+
+An add-on stage:
+
+- reuses its "parent stage" IaC resources and leverages their existing IAM
+- uses a generated backend file that adds a prefix to the parent GCS backend
+- optionally defines a CI/CD configuration that creates dedicated WIF/service accounts/workflow configurations and resources, that allow impersonating the "parent stage" service accounts from a separate repository
 
 ## Decision
 
