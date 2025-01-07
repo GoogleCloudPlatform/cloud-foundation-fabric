@@ -45,8 +45,8 @@ Add-on stages should live in a separate folder from stages, and once we finally 
 ```bash
 fast
 ├── addons
-    ├── 1-tenant-factory
-    └── 2-network-security
+    ├── 1-resman-tenants
+    └── 2-networking-ngfw
 ├── assets
 │   └── templates
 ├── extras
@@ -75,7 +75,7 @@ An add-on stage:
 
 ## Decision
 
-TBD
+Implement the proposal.
 
 ## Consequences
 
