@@ -16,6 +16,15 @@
 
 # tfdoc:file:description FAST stage interface.
 
+variable "_fast_debug" {
+  description = "Internal FAST variable used for testing and debugging. Do not use."
+  type = object({
+    skip_datasources = optional(bool, false)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
@@ -53,3 +62,4 @@ variable "vpc_self_links" {
   nullable    = false
   default     = {}
 }
+

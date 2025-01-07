@@ -20,11 +20,7 @@ counts:
   google_network_security_security_profile_group: 1
   google_network_security_tls_inspection_policy: 1
   google_privateca_ca_pool: 1
-  google_privateca_ca_pool_iam_member: 1
   google_privateca_certificate_authority: 1
-  google_project_iam_member: 2
-  google_project_service: 4
-  google_project_service_identity: 4
   google_storage_bucket_object: 1
-  modules: 2
-  resources: 20
+  modules: 1
+  resources: 9

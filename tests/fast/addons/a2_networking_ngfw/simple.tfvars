@@ -1,3 +1,6 @@
+_fast_debug = {
+  skip_datasources = true
+}
 automation = {
   outputs_bucket = "test"
 }
@@ -24,7 +27,7 @@ ngfw_config = {
   endpoint_zones = ["europe-west8-b"]
   network_associations = {
     prod = {
-      vpc_id                = "projects/test-prod-net-spoke-0/global/networks/prod-spoke-0"
+      vpc_id                = "projects/xxx-prod-net-spoke-0/global/networks/prod-spoke-0"
       tls_inspection_policy = "ngfw-0"
     }
   }
@@ -34,7 +37,7 @@ organization = {
   id          = 123456789012
   customer_id = "C00000000"
 }
-project_id = "ldj-prod-net-landing-0"
+project_id = "xxx-prod-net-landing-0"
 security_profiles = {
   ngfw-0 = {
     threat_prevention_profile = {
@@ -64,15 +67,15 @@ trust_configs = {
   ngfw-0 = {
     location = "europe-west8"
     allowlisted_certificates = {
-      # server-0 = "example.com.cert.pem"
+      server-0 = "../../../tests/fast/addons/a2_networking_ngfw/data/example.com.cert.pem"
     }
     trust_stores = {
       ludo-joonix = {
         intermediate_cas = {
-          # issuing-ca-1 = "intermediate.cert.pem"
+          issuing-ca-1 = "../../../tests/fast/addons/a2_networking_ngfw/data/intermediate.cert.pem"
         }
         trust_anchors = {
-          # root-ca-1 = "ca.cert.pem"
+          root-ca-1 = "../../../tests/fast/addons/a2_networking_ngfw/data/ca.cert.pem"
         }
       }
     }

@@ -29,24 +29,27 @@ locals {
 module "cas" {
   source         = "../../../modules/certificate-authority-service"
   for_each       = var.certificate_authorities
-  project_id     = module.project.project_id
+  project_id     = local.project_id
   ca_configs     = each.value.ca_configs
   ca_pool_config = each.value.ca_pool_config
   iam            = each.value.iam
   iam_bindings   = each.value.iam_bindings
-  iam_bindings_additive = merge(each.value.iam_bindings_additive, {
-    nsec_agent = {
-      member = module.project.service_agents["networksecurity"].iam_email
-      role   = "roles/privateca.certificateManager"
+  iam_bindings_additive = merge(
+    each.value.iam_bindings_additive,
+    var._fast_debug.skip_datasources == true ? {} : {
+      nsec_agent = {
+        member = module.project.service_agents["networksecurity"].iam_email
+        role   = "roles/privateca.certificateManager"
+      }
     }
-  })
+  )
   iam_by_principals = each.value.iam_by_principals
   location          = each.value.location
 }
 
 resource "google_certificate_manager_trust_config" "default" {
   for_each    = var.trust_configs
-  project     = module.project.project_id
+  project     = local.project_id
   name        = each.key
   description = each.value.description
   location    = each.value.location
@@ -77,7 +80,7 @@ resource "google_certificate_manager_trust_config" "default" {
 
 resource "google_network_security_tls_inspection_policy" "default" {
   for_each              = var.tls_inspection_policies
-  project               = module.project.project_id
+  project               = local.project_id
   name                  = each.key
   location              = each.value.location
   exclude_public_ca_set = each.value.exclude_public_ca_set

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+locals {
+  project_id = try(module.project[0].project_id, var.project_id)
+}
+
 module "project" {
   source         = "../../../modules/project"
+  count          = var._fast_debug.skip_datasources == true ? 0 : 1
   name           = var.project_id
   project_create = false
   services = [

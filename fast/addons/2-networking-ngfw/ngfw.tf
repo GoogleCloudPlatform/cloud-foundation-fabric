@@ -37,7 +37,7 @@ resource "google_network_security_firewall_endpoint" "default" {
   name               = var.ngfw_config.name
   parent             = "organizations/${var.organization.id}"
   location           = each.key
-  billing_project_id = module.project.project_id
+  billing_project_id = local.project_id
 }
 
 resource "google_network_security_firewall_endpoint_association" "default" {
