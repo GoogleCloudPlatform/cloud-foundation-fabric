@@ -48,18 +48,10 @@ variable "create_test_instances" {
 variable "dns" {
   description = "DNS configuration."
   type = object({
-    enable_logging = optional(bool, true)
-    resolvers      = optional(list(string), [])
+    resolvers = optional(list(string), [])
   })
   default  = {}
   nullable = false
-}
-
-variable "enable_cloud_nat" {
-  description = "Deploy Cloud NAT."
-  type        = bool
-  default     = false
-  nullable    = false
 }
 
 variable "essential_contacts" {
@@ -153,6 +145,83 @@ variable "regions" {
     primary   = "europe-west1"
     secondary = "europe-west4"
   }
+}
+
+variable "vpc_configs" {
+  description = "Optional VPC network configurations."
+  type = object({
+    dev = optional(object({
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+    dmz = optional(object({
+      cloudnat = optional(object({
+        enable = optional(bool, false)
+      }), {})
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+    landing = optional(object({
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+    prod = optional(object({
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+    regional_primary = optional(object({
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+    regional_secondary = optional(object({
+      dns = optional(object({
+        create_inbound_policy = optional(bool, true)
+        enable_logging        = optional(bool, true)
+      }), {})
+      firewall = optional(object({
+        create_policy       = optional(bool, false)
+        policy_has_priority = optional(bool, false)
+        use_classic         = optional(bool, true)
+      }), {})
+    }), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "vpn_onprem_primary_config" {

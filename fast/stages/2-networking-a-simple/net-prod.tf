@@ -19,7 +19,7 @@
 locals {
   # streamline VPC configuration conditionals for modules by moving them here
   prod_cfg = {
-    cloudnat    = var.vpc_configs.landing.cloudnat.enable == true
+    cloudnat    = var.vpc_configs.prod.cloudnat.enable == true
     dns_logging = var.vpc_configs.prod.dns.enable_logging == true
     dns_policy  = var.vpc_configs.prod.dns.create_inbound_policy == true
     fw_classic  = var.vpc_configs.prod.firewall.use_classic == true
