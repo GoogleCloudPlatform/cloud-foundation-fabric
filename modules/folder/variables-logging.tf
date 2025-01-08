@@ -57,10 +57,18 @@ variable "logging_sinks" {
     filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
+    intercept_children   = optional(bool, false)
     type                 = string
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      v.intercept_children || (v.include_children && v.type == "project")
+    ])
+    error_message = "'type' must be set to 'project' if 'intercept_children' is 'true'."
+  }
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
