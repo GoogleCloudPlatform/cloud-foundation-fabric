@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,5 +25,11 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 6.13.0, < 7.0.0" # tftest
     }
+  }
+  provider_meta "google" {
+    module_name = "tofu:modules/net-vlan-attachment:v36.0.1"
+  }
+  provider_meta "google-beta" {
+    module_name = "tofu:modules/net-vlan-attachment:v36.0.1"
   }
 }
