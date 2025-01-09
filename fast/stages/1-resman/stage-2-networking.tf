@@ -15,7 +15,7 @@
  */
 
 locals {
-  # normalize IAM bindings for stage 3 service accounts
+  # filter and normalize stage 3 roles applied to this stage's top-level folder
   net_s3_iam = !var.fast_stage_2.networking.enabled ? {} : {
     for v in local.stage3_iam_in_stage2 : "${v.role}:${v.env}" => (
       v.sa == "rw"
@@ -143,27 +143,14 @@ module "net-folder" {
 
 # optional per-environment folders
 
-module "net-folder-prod" {
-  source = "../../../modules/folder"
-  count  = local.net_use_env_folders ? 1 : 0
-  parent = module.net-folder[0].id
-  name   = var.environments["prod"].name
+module "net-folder-envs" {
+  source   = "../../../modules/folder"
+  for_each = local.net_use_env_folders ? var.environments : {}
+  parent   = module.net-folder[0].id
+  name     = each.value.name
   tag_bindings = {
     environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environments["prod"].tag_name}"].id,
-      null
-    )
-  }
-}
-
-module "net-folder-dev" {
-  source = "../../../modules/folder"
-  count  = local.net_use_env_folders ? 1 : 0
-  parent = module.net-folder[0].id
-  name   = var.environments["dev"].name
-  tag_bindings = {
-    environment = try(
-      local.tag_values["${var.tag_names.environment}/${var.environments["dev"].tag_name}"].id,
+      local.tag_values["${var.tag_names.environment}/${each.value.tag_name}"].id,
       null
     )
   }
