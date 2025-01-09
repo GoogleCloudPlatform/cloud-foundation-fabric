@@ -115,7 +115,7 @@ jobs:
             echo "Terraform versions.tofu:"
             echo "${OUTPUT_TOFU}"
           fi
-          egrep -v (required_version|module_name) default-versions.tf > /tmp/versions.tf
-          egrep -v (required_version|module_name) default-versions.tofu > /tmp/versions.tofu
+          egrep -v "(required_version|module_name)" default-versions.tf > /tmp/versions.tf
+          egrep -v "(required_version|module_name)" default-versions.tofu > /tmp/versions.tofu
           DIFF_EC=$?
           [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]
