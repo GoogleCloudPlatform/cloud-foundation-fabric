@@ -68,7 +68,7 @@ module "regional-primary-vpc" {
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/regional-pri"
+    subnets_folder = "${var.factories_config.subnets}/regional-pri"
   }
   routes = {
     default = {
@@ -94,8 +94,8 @@ module "regional-primary-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/regional-pri"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/regional-pri"
   }
 }
 
@@ -110,9 +110,9 @@ module "regional-primary-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/regional-primary/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/regional-primary/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-primary/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/regional-primary/ingress.yaml"
   }
 }
 
@@ -132,7 +132,7 @@ module "regional-secondary-vpc" {
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/regional-sec"
+    subnets_folder = "${var.factories_config.subnets}/regional-sec"
   }
   routes = {
     default = {
@@ -158,8 +158,8 @@ module "regional-secondary-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/regional-sec"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/regional-sec"
   }
 }
 
@@ -174,8 +174,8 @@ module "regional-secondary-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/regional-secondary/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/regional-secondary/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-secondary/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/regional-secondary/ingress.yaml"
   }
 }

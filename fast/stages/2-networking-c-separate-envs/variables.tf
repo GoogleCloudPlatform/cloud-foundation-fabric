@@ -58,22 +58,22 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    data_dir              = optional(string, "data")
-    dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
-    firewall_policy_name  = optional(string, "net-default")
+    dashboards       = optional(string, "data/dashboards")
+    dns_policy_rules = optional(string, "data/dns-policy-rules.yaml")
+    firewall = optional(object({
+      cidr_file     = optional(string, "data/cidrs.yaml")
+      classic_rules = optional(string, "data/firewall-rules")
+      hierarchical = optional(object({
+        egress_rules  = optional(string, "data/hierarchical-egress-rules.yaml")
+        ingress_rules = optional(string, "data/hierarchical-ingress-rules.yaml")
+        policy_name   = optional(string, "net-default")
+      }), {})
+      policy_rules = optional(string, "data/firewall-policies")
+    }), {})
+    subnets = optional(string, "data/subnets")
   })
-  default = {
-    data_dir = "data"
-  }
+  default  = {}
   nullable = false
-  validation {
-    condition     = var.factories_config.data_dir != null
-    error_message = "Data folder needs to be non-null."
-  }
-  validation {
-    condition     = var.factories_config.firewall_policy_name != null
-    error_message = "Firewall policy name needs to be non-null."
-  }
 }
 
 variable "outputs_location" {

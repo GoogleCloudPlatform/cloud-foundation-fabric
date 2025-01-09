@@ -83,7 +83,7 @@ module "dmz-vpc" {
   create_googleapis_routes = null
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
+    subnets_folder = "${var.factories_config.subnets}/dmz"
   }
   delete_default_routes_on_create   = true
   firewall_policy_enforcement_order = local.dmz_cfg.fw_order
@@ -123,8 +123,8 @@ module "dmz-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dmz"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/dmz"
   }
 }
 
@@ -139,9 +139,9 @@ module "dmz-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/dmz/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/dmz/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/dmz/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/dmz/ingress.yaml"
   }
 }
 
@@ -183,7 +183,7 @@ module "landing-vpc" {
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
+    subnets_folder = "${var.factories_config.subnets}/landing"
   }
   firewall_policy_enforcement_order = local.landing_cfg.fw_order
   # Set explicit routes for googleapis in case the default route is deleted
@@ -202,8 +202,8 @@ module "landing-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/landing"
   }
 }
 
@@ -218,8 +218,8 @@ module "landing-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/landing/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/landing/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/landing/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/landing/ingress.yaml"
   }
 }
