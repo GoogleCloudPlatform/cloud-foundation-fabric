@@ -78,7 +78,7 @@ module "landing-vpc" {
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
+    subnets_folder = "${var.factories_config.subnets}/landing"
   }
   firewall_policy_enforcement_order = local.landing_cfg.fw_order
   routes = {
@@ -100,8 +100,8 @@ module "landing-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/landing"
   }
 }
 
@@ -116,9 +116,9 @@ module "landing-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/landing/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/landing/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/landing/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/landing/ingress.yaml"
   }
 }
 
