@@ -20,7 +20,7 @@ counts:
   google_compute_firewall_policy_rule: 4
   google_compute_ha_vpn_gateway: 2
   google_compute_network: 2
-  google_compute_route: 4
+  google_compute_route: 6
   google_compute_router: 4
   google_compute_router_interface: 4
   google_compute_router_nat: 2
