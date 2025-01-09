@@ -70,7 +70,7 @@ module "landing-vpc" {
   source                          = "../../../modules/net-vpc"
   project_id                      = module.landing-project.project_id
   name                            = "prod-landing-0"
-  mtu                             = 1500
+  mtu                             = var.vpc_configs.landing.mtu
   delete_default_routes_on_create = true
   dns_policy = !local.landing_cfg.dns_policy ? {} : {
     inbound = true

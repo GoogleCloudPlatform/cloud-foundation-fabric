@@ -84,7 +84,7 @@ module "dev-spoke-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.dev-spoke-project.project_id
   name       = "dev-spoke-0"
-  mtu        = 1500
+  mtu        = var.vpc_configs.dev.mtu
   dns_policy = !local.dev_cfg.dns_policy ? {} : {
     inbound = true
     logging = local.dev_cfg.dns_logging

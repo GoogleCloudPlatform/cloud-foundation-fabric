@@ -86,7 +86,7 @@ module "prod-spoke-vpc" {
   source                          = "../../../modules/net-vpc"
   project_id                      = module.prod-spoke-project.project_id
   name                            = "prod-spoke-0"
-  mtu                             = 1500
+  mtu                             = var.vpc_configs.prod.mtu
   delete_default_routes_on_create = true
   dns_policy = !local.prod_cfg.dns_policy ? {} : {
     inbound = true

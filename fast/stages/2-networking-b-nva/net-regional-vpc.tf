@@ -61,7 +61,7 @@ module "regional-primary-vpc" {
   name                              = "prod-regional-primary-0"
   delete_default_routes_on_create   = true
   firewall_policy_enforcement_order = local.regpri_cfg.fw_order
-  mtu                               = 1500
+  mtu                               = var.vpc_configs.regional_primary.mtu
   dns_policy = !local.regpri_cfg.dns_policy ? {} : {
     inbound = true
     logging = local.regpri_cfg.dns_logging
@@ -125,7 +125,7 @@ module "regional-secondary-vpc" {
   name                              = "prod-regional-secondary-0"
   delete_default_routes_on_create   = true
   firewall_policy_enforcement_order = local.regsec_cfg.fw_order
-  mtu                               = 1500
+  mtu                               = var.vpc_configs.regional_secondary.mtu
   dns_policy = !local.regsec_cfg.dns_policy ? {} : {
     inbound = true
     logging = local.regsec_cfg.dns_logging

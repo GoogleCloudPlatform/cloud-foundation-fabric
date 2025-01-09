@@ -116,6 +116,7 @@ variable "vpc_configs" {
   description = "Optional VPC network configurations."
   type = object({
     dev = optional(object({
+      mtu = optional(number, 1500)
       cloudnat = optional(object({
         enable = optional(bool, false)
       }), {})
@@ -130,6 +131,7 @@ variable "vpc_configs" {
       }), {})
     }), {})
     prod = optional(object({
+      mtu = optional(number, 1500)
       cloudnat = optional(object({
         enable = optional(bool, false)
       }), {})
