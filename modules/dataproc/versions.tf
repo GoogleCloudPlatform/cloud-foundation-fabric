@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "tf:modules/dataproc:v36.0.1"
+    module_name = "fabric:tf:modules/dataproc:v36.0.1"
   }
   provider_meta "google-beta" {
-    module_name = "tf:modules/dataproc:v36.0.1"
+    module_name = "fabric:tf:modules/dataproc:v36.0.1"
   }
 }

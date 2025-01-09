@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "tofu:modules/dns-response-policy:v36.0.1"
+    module_name = "fabric:tofu:modules/dns-response-policy:v36.0.1"
   }
   provider_meta "google-beta" {
-    module_name = "tofu:modules/dns-response-policy:v36.0.1"
+    module_name = "fabric:tofu:modules/dns-response-policy:v36.0.1"
   }
 }

@@ -36,10 +36,10 @@ terraform {{
     }}
   }}
   provider_meta "google" {{
-    module_name = "{engine}:{path}:{fabric_release}"
+    module_name = "fabric:{engine}:{path}:{fabric_release}"
   }}
   provider_meta "google-beta" {{
-    module_name = "{engine}:{path}:{fabric_release}"
+    module_name = "fabric:{engine}:{path}:{fabric_release}"
   }}
 }}
 """

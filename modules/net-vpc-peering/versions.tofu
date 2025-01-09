@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "tofu:modules/net-vpc-peering:v36.0.1"
+    module_name = "fabric:tofu:modules/net-vpc-peering:v36.0.1"
   }
   provider_meta "google-beta" {
-    module_name = "tofu:modules/net-vpc-peering:v36.0.1"
+    module_name = "fabric:tofu:modules/net-vpc-peering:v36.0.1"
   }
 }

@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "tofu:blueprints/gke/patterns/redis-cluster:v36.0.1"
+    module_name = "fabric:tofu:blueprints/gke/patterns/redis-cluster:v36.0.1"
   }
   provider_meta "google-beta" {
-    module_name = "tofu:blueprints/gke/patterns/redis-cluster:v36.0.1"
+    module_name = "fabric:tofu:blueprints/gke/patterns/redis-cluster:v36.0.1"
   }
 }
