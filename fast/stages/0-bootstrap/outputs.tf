@@ -18,15 +18,15 @@ locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   # render CI/CD workflow templates
   cicd_workflows = {
-    for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.type}.yaml", {
+    for k, v in local.cicd_repositories : "${v.level}-${k}" => templatefile(
+      "${path.module}/templates/workflow-${v.repository.type}.yaml", {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_providers[v["identity_provider"]].audiences, ""
+          local.cicd_providers[v.identity_provider].audiences, []
         )
         identity_provider = try(
-          local.cicd_providers[v["identity_provider"]].name, ""
+          local.cicd_providers[v.identity_provider].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_accounts = {
@@ -36,61 +36,14 @@ locals {
         stage_name = k
         tf_providers_files = {
           apply = local.cicd_workflow_providers[k]
-          plan  = local.cicd_workflow_providers["${k}_r"]
+          plan  = local.cicd_workflow_providers["${k}-r"]
         }
-        tf_var_files = local.cicd_workflow_var_files[k]
+        tf_var_files = k == "bootstrap" ? [] : [
+          "0-bootstrap.auto.tfvars.json",
+          "0-globals.auto.tfvars.json"
+        ]
       }
     )
-  }
-  providers = {
-    "0-bootstrap" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-bootstrap-gcs.name
-      name          = "bootstrap"
-      sa            = module.automation-tf-bootstrap-sa.email
-    })
-    "0-bootstrap-r" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-bootstrap-gcs.name
-      name          = "bootstrap"
-      sa            = module.automation-tf-bootstrap-r-sa.email
-    })
-    "1-resman" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "resman"
-      sa            = module.automation-tf-resman-sa.email
-    })
-    "1-resman-r" = templatefile(local._tpl_providers, {
-      backend_extra = null
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "resman"
-      sa            = module.automation-tf-resman-r-sa.email
-    })
-    "1-tenant-factory" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"tenant-factory\""
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "tenant-factory"
-      sa            = module.automation-tf-resman-sa.email
-    })
-    "1-tenant-factory-r" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"tenant-factory\""
-      bucket        = module.automation-tf-resman-gcs.name
-      name          = "tenant-factory"
-      sa            = module.automation-tf-resman-r-sa.email
-    })
-    "1-vpcsc" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"vpcsc\""
-      bucket        = module.automation-tf-vpcsc-gcs.name
-      name          = "vpcsc"
-      sa            = module.automation-tf-vpcsc-sa.email
-    })
-    "1-vpcsc-r" = templatefile(local._tpl_providers, {
-      backend_extra = "prefix = \"vpcsc\""
-      bucket        = module.automation-tf-vpcsc-gcs.name
-      name          = "vpcsc"
-      sa            = module.automation-tf-vpcsc-r-sa.email
-    })
   }
   tfvars = {
     automation = {
@@ -170,8 +123,8 @@ output "cicd_repositories" {
   description = "CI/CD repository configurations."
   value = {
     for k, v in local.cicd_repositories : k => {
-      branch          = v.branch
-      name            = v.name
+      branch          = v.repository.branch
+      name            = v.repository.name
       provider        = try(local.cicd_providers[v.identity_provider].name, null)
       service_account = try(module.automation-tf-cicd-sa[k].email, null)
     }

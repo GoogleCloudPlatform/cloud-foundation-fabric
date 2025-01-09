@@ -57,21 +57,6 @@ module "net-folder" {
       "roles/resourcemanager.folderViewer"   = [module.net-sa-ro[0].iam_email]
       "roles/resourcemanager.tagViewer"      = [module.net-sa-ro[0].iam_email]
     },
-    # network security stage 2 service accounts
-    var.fast_stage_2.network_security.enabled != true ? {} : {
-      "roles/serviceusage.serviceUsageAdmin" = [
-        module.nsec-sa-rw[0].iam_email
-      ]
-      (var.custom_roles["network_firewall_policies_admin"]) = [
-        module.nsec-sa-rw[0].iam_email
-      ]
-      "roles/compute.orgFirewallPolicyUser" = [
-        module.nsec-sa-ro[0].iam_email
-      ]
-      "roles/serviceusage.serviceUsageConsumer" = [
-        module.nsec-sa-ro[0].iam_email
-      ]
-    },
     # security stage 2 service accounts
     var.fast_stage_2.security.enabled != true ? {} : {
       "roles/serviceusage.serviceUsageAdmin" = [
@@ -169,9 +154,10 @@ module "net-sa-rw" {
   prefix                 = var.prefix
   service_account_create = var.root_node == null
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-rw["networking"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-rw[k].iam_email if v.stage == "networking"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
@@ -191,9 +177,10 @@ module "net-sa-ro" {
   display_name = "Terraform resman networking service account (read-only)."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-ro["networking"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-ro[k].iam_email if v.stage == "networking"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
