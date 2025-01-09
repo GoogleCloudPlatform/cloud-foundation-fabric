@@ -105,12 +105,12 @@ jobs:
       - name: Check modules versions
         id: versions
         run: |
-          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \; | grep -v '^[+-][[:space:]]*module_name')
+          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;)
           if [[ -n "${OUTPUT_TF}" ]] ; then
             echo "Terraform versions.tf:"
             echo "${OUTPUT_TF}"
           fi
-          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -ub default-versions.tofu {} \; | grep -v '^[+-][[:space:]]*module_name')
+          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tofu {} \;)
           if [[ -n "${OUTPUT_TOFU}" ]] ; then
             echo "Terraform versions.tofu:"
             echo "${OUTPUT_TOFU}"
