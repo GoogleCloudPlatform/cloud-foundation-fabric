@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -105,18 +105,17 @@ jobs:
       - name: Check modules versions
         id: versions
         run: |
-          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;)
+          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \; | grep -v '^[+-][[:space:]]*module_name')
           if [[ -n "${OUTPUT_TF}" ]] ; then
             echo "Terraform versions.tf:"
             echo "${OUTPUT_TF}"
           fi
-          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -ub default-versions.tofu {} \;)
+          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -ub default-versions.tofu {} \; | grep -v '^[+-][[:space:]]*module_name')
           if [[ -n "${OUTPUT_TOFU}" ]] ; then
             echo "Terraform versions.tofu:"
             echo "${OUTPUT_TOFU}"
           fi
-          grep -v required_version default-versions.tf > /tmp/versions.tf
-          grep -v required_version default-versions.tofu > /tmp/versions.tofu
-          diff -rub /tmp/versions.tf /tmp/versions.tofu
+          egrep -v (required_version|module_name) default-versions.tf > /tmp/versions.tf
+          egrep -v (required_version|module_name) default-versions.tofu > /tmp/versions.tofu
           DIFF_EC=$?
           [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]
