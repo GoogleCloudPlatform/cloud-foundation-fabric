@@ -64,7 +64,8 @@ module "firewall-policy-default" {
   name      = var.factories_config.firewall.hierarchical.policy_name
   parent_id = module.folder.id
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = var.factories_config.firewall.hierarchical.egress_rules
+    ingress_rules_file_path = var.factories_config.firewall.hierarchical.ingress_rules
   }
 }
