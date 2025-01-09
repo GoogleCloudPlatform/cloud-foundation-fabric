@@ -94,7 +94,7 @@ module "dev-spoke-vpc" {
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
+    subnets_folder = "${var.factories_config.subnets}/dev"
   }
   firewall_policy_enforcement_order = local.dev_cfg.fw_order
   psa_configs                       = var.psa_ranges.dev
@@ -122,8 +122,8 @@ module "dev-spoke-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/dev"
   }
 }
 
@@ -138,9 +138,9 @@ module "dev-firewall-policy" {
   }
   # TODO: add context for security groups
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    egress_rules_file_path  = "${var.factories_config.data_dir}/firewall-policies/dev/egress.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/firewall-policies/dev/ingress.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/dev/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/dev/ingress.yaml"
   }
 }
 
