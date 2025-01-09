@@ -15,9 +15,14 @@
  */
 
 variable "certificate_authorities" {
-  description = "Certificate Authority Service CAs. If environments is null the CA is created in all environments."
+  description = "Certificate Authority Service pool and CAs. If environments is null identical pools and CAs are created in all environments."
   type = map(object({
-    environments = optional(list(string))
+    location              = string
+    environments          = optional(list(string))
+    iam                   = optional(map(list(string)), {})
+    iam_bindings          = optional(map(any), {})
+    iam_bindings_additive = optional(map(any), {})
+    iam_by_principals     = optional(map(list(string)), {})
     ca_configs = map(object({
       deletion_protection                    = optional(string, true)
       type                                   = optional(string, "SELF_SIGNED")
@@ -49,19 +54,22 @@ variable "certificate_authorities" {
         server_auth        = optional(bool, true)
         time_stamping      = optional(bool, false)
       }), {})
-      subject = optional(object({
-        common_name         = string
-        organization        = string
-        country_code        = optional(string)
-        locality            = optional(string)
-        organizational_unit = optional(string)
-        postal_code         = optional(string)
-        province            = optional(string)
-        street_address      = optional(string)
-        }), {
-        common_name  = "test.example.com"
-        organization = "Test Example"
-      })
+      subject = optional(
+        object({
+          common_name         = string
+          organization        = string
+          country_code        = optional(string)
+          locality            = optional(string)
+          organizational_unit = optional(string)
+          postal_code         = optional(string)
+          province            = optional(string)
+          street_address      = optional(string)
+        }),
+        {
+          common_name  = "test.example.com"
+          organization = "Test Example"
+        }
+      )
       subject_alt_name = optional(object({
         dns_names       = optional(list(string), null)
         email_addresses = optional(list(string), null)
@@ -78,11 +86,6 @@ variable "certificate_authorities" {
       name       = optional(string, null)
       tier       = optional(string, "DEVOPS")
     })
-    location              = string
-    iam                   = optional(map(list(string)), {})
-    iam_bindings          = optional(map(any), {})
-    iam_bindings_additive = optional(map(any), {})
-    iam_by_principals     = optional(map(list(string)), {})
   }))
   nullable = false
   default  = {}
@@ -132,51 +135,8 @@ variable "kms_keys" {
   nullable = false
 }
 
-# move to netsec
-# variable "tls_inspection_policies" {
-#   description = "The CAS and trust configurations key names to be used for NGFW Enterprise."
-#   type = object({
-#     keys = optional(object({
-#       dev = optional(object({
-#         cas           = optional(list(string), ["ngfw-dev-cas-0"])
-#         trust_configs = optional(list(string), ["ngfw-dev-tc-0"])
-#       }), {})
-#       prod = optional(object({
-#         cas           = optional(list(string), ["ngfw-prod-cas-0"])
-#         trust_configs = optional(list(string), ["ngfw-prod-tc-0"])
-#       }), {})
-#     }), {})
-#     tls_inspection = optional(object({
-#       enabled               = optional(bool, false)
-#       exclude_public_ca_set = optional(bool, false)
-#       min_tls_version       = optional(string, "TLS_1_0")
-#     }), {})
-#   })
-#   nullable = false
-#   default = {
-#     dev  = {}
-#     prod = {}
-#   }
-# }
-
 variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
-}
-
-variable "trust_configs" {
-  description = "The Certificate Manager trust configs.  If environments is null the trust config is created in all environments."
-  type = map(object({
-    location                 = string
-    description              = optional(string)
-    environments             = optional(list(string))
-    allowlisted_certificates = optional(map(string), {})
-    trust_stores = optional(map(object({
-      intermediate_cas = optional(map(string), {})
-      trust_anchors    = optional(map(string), {})
-    })), {})
-  }))
-  nullable = false
-  default  = {}
 }

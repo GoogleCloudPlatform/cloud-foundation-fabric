@@ -28,8 +28,8 @@ locals {
   project_services = [
     "certificatemanager.googleapis.com",
     "cloudkms.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "networksecurity.googleapis.com",
+    # "networkmanagement.googleapis.com",
+    # "networksecurity.googleapis.com",
     "privateca.googleapis.com",
     "secretmanager.googleapis.com",
     "stackdriver.googleapis.com"

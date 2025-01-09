@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,21 +13,84 @@
 # limitations under the License.
 
 values:
-  google_storage_bucket_object.tfvars:
-    bucket: test
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    detect_md5hash: different hash
-    event_based_hold: null
-    metadata: null
-    name: tfvars/2-security.auto.tfvars.json
-    retention: []
-    source: null
-    temporary_hold: null
+  module.cas["prod-ngfw-0"].google_privateca_ca_pool.ca_pool[0]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    issuance_policy: []
+    labels: null
+    location: europe-west8
+    name: ca-pool-0
+    project: fast-prod-sec-core-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
     timeouts: null
+  module.cas["prod-ngfw-0"].google_privateca_certificate_authority.cas["ca-0"]:
+    certificate_authority_id: ca-0
+    config:
+    - subject_config:
+      - subject:
+        - common_name: fast.example.com
+          country_code: null
+          locality: null
+          organization: FAST Test
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_protection: false
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west8
+    pem_ca_certificate: null
+    pool: ca-pool-0
+    project: fast-prod-sec-core-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
   module.folder.google_essential_contacts_contact.contact["gcp-security-admins@fast.example.com"]:
     email: gcp-security-admins@fast.example.com
     language_tag: en
@@ -227,257 +290,26 @@ values:
     name: prod-global
     project: fast-prod-sec-core-0
     timeouts: null
-  module.project["dev"].google_project.project[0]:
-    auto_create_network: false
-    billing_account: 000000-111111-222222
-    deletion_policy: DELETE
-    effective_labels:
-      environment: dev
-      goog-terraform-provisioned: 'true'
-    folder_id: '12345678'
-    labels:
-      environment: dev
-    name: fast-dev-sec-core-0
-    org_id: null
-    project_id: fast-dev-sec-core-0
-    tags: null
-    terraform_labels:
-      environment: dev
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-  module.project["dev"].google_project_iam_binding.authoritative["organizations/123456789012/roles/bar"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: organizations/123456789012/roles/bar
-  module.project["dev"].google_project_iam_binding.bindings["sa_delegated_grants"]:
-    condition:
-    - description: Development project delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])
-      title: dev_stage3_sa_delegated_grants
-    members:
-    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast2-dev-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-dev-sec-core-0
-    role: roles/resourcemanager.projectIamAdmin
-  module.project["dev"].google_project_iam_member.service_agents["certificatemanager"]:
-    condition: []
-    project: fast-dev-sec-core-0
-    role: roles/certificatemanager.serviceAgent
-  module.project["dev"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: fast-dev-sec-core-0
-    role: roles/cloudkms.serviceAgent
-  module.project["dev"].google_project_iam_member.service_agents["networkmanagement"]:
-    condition: []
-    project: fast-dev-sec-core-0
-    role: roles/networkmanagement.serviceAgent
-  module.project["dev"].google_project_service.project_services["certificatemanager.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: certificatemanager.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["cloudkms.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: cloudkms.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["networkmanagement.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: networkmanagement.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["networksecurity.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: networksecurity.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["privateca.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: privateca.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["secretmanager.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: secretmanager.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service.project_services["stackdriver.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-dev-sec-core-0
-    service: stackdriver.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["certificatemanager.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: certificatemanager.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["cloudkms.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: cloudkms.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: networkmanagement.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["networksecurity.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: networksecurity.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["privateca.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: privateca.googleapis.com
-    timeouts: null
-  module.project["dev"].google_project_service_identity.default["secretmanager.googleapis.com"]:
-    project: fast-dev-sec-core-0
-    service: secretmanager.googleapis.com
-    timeouts: null
-  module.project["dev"].google_tags_tag_binding.binding["environment"]:
-    tag_value: tagValues/12345
-    timeouts: null
-  module.project["prod"].google_project.project[0]:
-    auto_create_network: false
-    billing_account: 000000-111111-222222
-    deletion_policy: DELETE
-    effective_labels:
-      environment: prod
-      goog-terraform-provisioned: 'true'
-    folder_id: '12345678'
-    labels:
-      environment: prod
-    name: fast-prod-sec-core-0
-    org_id: null
-    project_id: fast-prod-sec-core-0
-    tags: null
-    terraform_labels:
-      environment: prod
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-  module.project["prod"].google_project_iam_binding.authoritative["organizations/123456789012/roles/bar"]:
-    condition: []
-    members:
-    - serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: organizations/123456789012/roles/bar
-  module.project["prod"].google_project_iam_binding.bindings["sa_delegated_grants"]:
-    condition:
-    - description: Production project delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])
-      title: prod_stage3_sa_delegated_grants
-    members:
-    - serviceAccount:fast2-prod-resman-gcve-0@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-sec-core-0
-    role: roles/resourcemanager.projectIamAdmin
-  module.project["prod"].google_project_iam_member.service_agents["certificatemanager"]:
-    condition: []
-    project: fast-prod-sec-core-0
-    role: roles/certificatemanager.serviceAgent
-  module.project["prod"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: fast-prod-sec-core-0
-    role: roles/cloudkms.serviceAgent
-  module.project["prod"].google_project_iam_member.service_agents["networkmanagement"]:
-    condition: []
-    project: fast-prod-sec-core-0
-    role: roles/networkmanagement.serviceAgent
-  module.project["prod"].google_project_service.project_services["certificatemanager.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: certificatemanager.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["cloudkms.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: cloudkms.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["networkmanagement.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: networkmanagement.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["networksecurity.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: networksecurity.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["privateca.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: privateca.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["secretmanager.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: secretmanager.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service.project_services["stackdriver.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-sec-core-0
-    service: stackdriver.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["certificatemanager.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: certificatemanager.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["cloudkms.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: cloudkms.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: networkmanagement.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["networksecurity.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: networksecurity.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["privateca.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: privateca.googleapis.com
-    timeouts: null
-  module.project["prod"].google_project_service_identity.default["secretmanager.googleapis.com"]:
-    project: fast-prod-sec-core-0
-    service: secretmanager.googleapis.com
-    timeouts: null
-  module.project["prod"].google_tags_tag_binding.binding["environment"]:
-    tag_value: tagValues/12346
-    timeouts: null
 
 counts:
   google_essential_contacts_contact: 1
   google_kms_crypto_key: 8
   google_kms_crypto_key_iam_binding: 8
   google_kms_key_ring: 8
+  google_privateca_ca_pool: 1
+  google_privateca_certificate_authority: 1
   google_project: 2
   google_project_iam_binding: 4
-  google_project_iam_member: 6
-  google_project_service: 14
-  google_project_service_identity: 12
+  google_project_iam_member: 4
+  google_project_service: 10
+  google_project_service_identity: 8
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
-  modules: 11
-  resources: 66
+  modules: 12
+  resources: 58
 
 outputs:
-  cas_configs: {}
+  certificate_authority_pools: __missing__
   kms_keys: __missing__
   tfvars: __missing__
-  trust_config_ids: {}
 
