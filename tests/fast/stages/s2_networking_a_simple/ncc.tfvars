@@ -9,10 +9,8 @@ custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
-  resolvers      = ["10.10.10.10"]
-  enable_logging = true
+  resolvers = ["10.10.10.10"]
 }
-enable_cloud_nat = true
 environments = {
   dev = {
     is_default = false
@@ -55,4 +53,21 @@ spoke_configs = {
 tag_values = {
   "environment/development" = "tagValues/12345"
   "environment/production"  = "tagValues/12346"
+}
+vpc_configs = {
+  dev = {
+    cloudnat = {
+      enable = true
+    }
+  }
+  landing = {
+    cloudnat = {
+      enable = true
+    }
+  }
+  prod = {
+    cloudnat = {
+      enable = true
+    }
+  }
 }
