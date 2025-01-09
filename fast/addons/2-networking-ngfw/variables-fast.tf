@@ -46,7 +46,7 @@ variable "certificate_authority_pools" {
 }
 
 variable "organization" {
-  # tfdoc:variable:source 00-globals
+  # tfdoc:variable:source 0-globals
   description = "Organization details."
   type = object({
     domain      = string
