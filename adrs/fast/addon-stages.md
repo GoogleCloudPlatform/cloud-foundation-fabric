@@ -5,7 +5,7 @@
 
 ## Status
 
-Under implementation
+Under implementation in [#2800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2800)
 
 ## Context
 
@@ -45,15 +45,11 @@ Add-on stages should live in a separate folder from stages, and once we finally 
 ```bash
 fast
 ├── addons
-    ├── 1-tenant-factory
-    └── 2-network-security
-├── assets
-│   └── templates
+    ├── 1-resman-tenants
+    └── 2-networking-ngfw
 ├── extras
 │   ├── 0-cicd-github
 │   └── 0-cicd-gitlab
-├── plugins
-│   └── 2-networking-serverless-connector
 └── stages
     ├── 0-bootstrap
     ├── 1-resman
@@ -67,9 +63,15 @@ fast
     └── 3-gke-dev
 ```
 
+An add-on stage:
+
+- reuses its "parent stage" IaC resources and leverages their existing IAM
+- uses a generated backend file that adds a prefix to the parent GCS backend
+- optionally defines a CI/CD configuration that creates dedicated WIF/service accounts/workflow configurations and resources, that allow impersonating the "parent stage" service accounts from a separate repository
+
 ## Decision
 
-TBD
+Implement the proposal.
 
 ## Consequences
 
