@@ -123,7 +123,7 @@ resource "google_compute_router_peer" "default" {
   peer_ip_address           = split("/", google_compute_interconnect_attachment.default.customer_router_ip_address)[0]
   peer_asn                  = var.peer_asn
   interface                 = google_compute_router_interface.default[0].name
-  advertised_route_priority = 100
+  advertised_route_priority = var.dedicated_interconnect_config.bgp_priority
   advertise_mode            = "CUSTOM"
 
   dynamic "advertised_ip_ranges" {
