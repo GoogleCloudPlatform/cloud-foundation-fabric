@@ -120,6 +120,7 @@ module "landing-firewall-policy" {
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/landing/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/landing/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }
 
 module "landing-nat-primary" {

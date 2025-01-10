@@ -114,6 +114,7 @@ module "regional-primary-firewall-policy" {
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-primary/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/regional-primary/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }
 
 # Regional Secondary VPC
@@ -178,4 +179,5 @@ module "regional-secondary-firewall-policy" {
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-secondary/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/regional-secondary/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }

@@ -137,6 +137,7 @@ module "prod-firewall-policy" {
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/prod/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/prod/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }
 
 module "prod-spoke-cloudnat" {
