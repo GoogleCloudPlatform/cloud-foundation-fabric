@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2808)] Bump golang.org/x/net from 0.23.0 to 0.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-01-10 15:48:39+00:00 -->
 - [[#2807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2807)] Bump golang.org/x/net from 0.23.0 to 0.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-01-09 14:02:26+00:00 -->
 - [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
 - [[#2796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2796)] Add docker image tag to bindplane config variable ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-01-03 15:52:51+00:00 -->
