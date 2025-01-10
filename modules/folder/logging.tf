@@ -57,14 +57,15 @@ resource "google_folder_iam_audit_config" "default" {
 }
 
 resource "google_logging_folder_sink" "sink" {
-  for_each         = local.logging_sinks
-  name             = each.key
-  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
-  folder           = local.folder_id
-  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
-  filter           = each.value.filter
-  include_children = each.value.include_children
-  disabled         = each.value.disabled
+  for_each           = local.logging_sinks
+  name               = each.key
+  description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  folder             = local.folder_id
+  destination        = "${each.value.type}.googleapis.com/${each.value.destination}"
+  filter             = each.value.filter
+  include_children   = each.value.include_children
+  intercept_children = each.value.intercept_children
+  disabled           = each.value.disabled
 
   dynamic "bigquery_options" {
     for_each = each.value.type == "bigquery" ? [""] : []

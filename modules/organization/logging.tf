@@ -56,14 +56,15 @@ resource "google_organization_iam_audit_config" "default" {
 }
 
 resource "google_logging_organization_sink" "sink" {
-  for_each         = local.logging_sinks
-  name             = each.key
-  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
-  org_id           = local.organization_id_numeric
-  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
-  filter           = each.value.filter
-  include_children = each.value.include_children
-  disabled         = each.value.disabled
+  for_each           = local.logging_sinks
+  name               = each.key
+  description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  org_id             = local.organization_id_numeric
+  destination        = "${each.value.type}.googleapis.com/${each.value.destination}"
+  filter             = each.value.filter
+  include_children   = each.value.include_children
+  intercept_children = each.value.intercept_children
+  disabled           = each.value.disabled
 
   dynamic "bigquery_options" {
     for_each = each.value.type == "bigquery" ? [""] : []

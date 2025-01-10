@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,18 @@ variable "logging_sinks" {
     filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
+    intercept_children   = optional(bool, false)
     type                 = string
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      !v.intercept_children || (v.include_children && v.type == "project")
+    ])
+    error_message = "'type' must be set to 'project' if 'intercept_children' is 'true'."
+  }
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
