@@ -3,7 +3,10 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2024-11-23 11:24:55+00:00 to: None since: v36.0.1 -->
+## [Unreleased]
+
+## [36.1.0] - 2025-01-10
+
 - [[#2777](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2777)] Document `tag_bindings` definition as `map(string)` ([juliocc](https://github.com/juliocc)) <!-- 2024-12-19 13:47:32+00:00 -->
 
 ### BLUEPRINTS
@@ -2707,7 +2710,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.1...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...HEAD
+[36.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.1...v36.1.0
 [36.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.0...v36.0.1
 [36.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...v36.0.0
 [35.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...v35.1.0
