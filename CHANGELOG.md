@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2807)] Bump golang.org/x/net from 0.23.0 to 0.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-01-09 14:02:26+00:00 -->
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2796)] Add docker image tag to bindplane config variable ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-01-03 15:52:51+00:00 -->
+- [[#2792](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2792)] fix non-empty plan after apply for vertex mlops ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-31 16:27:47+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
+- [[#2790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2790)] Fix cycle in the autopilot-cluster blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-29 19:30:59+00:00 -->
 - [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
 - [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
@@ -20,6 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2798)] ADR proposal for FAST add-on stages ([ludoo](https://github.com/ludoo)) <!-- 2025-01-05 15:02:47+00:00 -->
 - [[#2774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2774)] [FAST] Remove unused stage 1 CICD variables ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-17 16:26:02+00:00 -->
 - [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
 - [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
@@ -31,6 +38,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2799](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2799)] Add intercepting sinks to the organization and folder modules ([rshokati2](https://github.com/rshokati2)) <!-- 2025-01-10 10:36:08+00:00 -->
+- [[#2806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2806)] ASN should be optional in router_config variable as it is not necessa… ([apichick](https://github.com/apichick)) <!-- 2025-01-09 14:46:43+00:00 -->
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2802)] Added BGP priority variable for dedicated interconnect because it was… ([apichick](https://github.com/apichick)) <!-- 2025-01-07 17:07:55+00:00 -->
+- [[#2758](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2758)] Add Alerts, Logging, Channels Factories ([joshw123](https://github.com/joshw123)) <!-- 2025-01-05 19:49:21+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
+- [[#2786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2786)] Make PSA connection more robust ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-26 15:37:25+00:00 -->
 - [[#2784](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2784)] Fix validation message in cas module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-25 07:25:07+00:00 -->
 - [[#2783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2783)] Update net-lb-app-ext security_settings variables ([wenzizone](https://github.com/wenzizone)) <!-- 2024-12-25 06:52:31+00:00 -->
 - [[#2781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2781)] Fix bindplane cos module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-23 09:37:09+00:00 -->
@@ -58,6 +72,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
 - [[#2778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2778)] Fix failing tests for OpenTofu ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-20 09:19:01+00:00 -->
 - [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
 - [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
