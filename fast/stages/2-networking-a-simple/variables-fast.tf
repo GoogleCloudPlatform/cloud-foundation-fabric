@@ -83,6 +83,14 @@ variable "prefix" {
   }
 }
 
+variable "security_profile_groups" {
+  # tfdoc:variable:source 2-networking-ngfw
+  description = "Security profile group ids used for policy rule substitutions."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "stage_config" {
   # tfdoc:variable:source 1-resman
   description = "FAST stage configuration."

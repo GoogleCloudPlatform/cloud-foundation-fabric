@@ -136,12 +136,12 @@ module "prod-firewall-policy" {
   attachments = {
     prod-spoke-0 = module.prod-spoke-vpc.id
   }
-  # TODO: add context for security groups
   factories_config = {
     cidr_file_path          = var.factories_config.firewall.cidr_file
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/prod/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/prod/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }
 
 module "prod-spoke-cloudnat" {

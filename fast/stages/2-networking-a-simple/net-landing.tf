@@ -114,12 +114,12 @@ module "landing-firewall-policy" {
   attachments = {
     landing-0 = module.landing-vpc.id
   }
-  # TODO: add context for security groups
   factories_config = {
     cidr_file_path          = var.factories_config.firewall.cidr_file
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/landing/egress.yaml"
     ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/landing/ingress.yaml"
   }
+  security_profile_group_ids = var.security_profile_groups
 }
 
 module "landing-nat-primary" {
