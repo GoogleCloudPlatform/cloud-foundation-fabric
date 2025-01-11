@@ -108,7 +108,6 @@ module "regional-primary-firewall-policy" {
   attachments = {
     regional-primary-0 = module.regional-primary-vpc[0].id
   }
-  # TODO: add context for security groups
   factories_config = {
     cidr_file_path          = var.factories_config.firewall.cidr_file
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-primary/egress.yaml"
@@ -173,7 +172,6 @@ module "regional-secondary-firewall-policy" {
   attachments = {
     regional-secondary-0 = module.regional-secondary-vpc[0].id
   }
-  # TODO: add context for security groups
   factories_config = {
     cidr_file_path          = var.factories_config.firewall.cidr_file
     egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/regional-secondary/egress.yaml"
