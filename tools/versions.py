@@ -67,11 +67,11 @@ def process_file(file_path, context):
 
 
 @click.command()
-@click.option("--fabric-release", help="Override provider max version")
-@click.option("--provider-min-version", help="Override provider min version")
-@click.option("--provider-max-version", help="Override provider max version")
-@click.option("--tf-version", help="Override terraform version")
-@click.option("--tofu-version", help="Override opentofu version")
+@click.option("--fabric-release", help="Override Fabric release version")
+@click.option("--provider-min-version", help="Override GCP provider min version")
+@click.option("--provider-max-version", help="Override GCP provider max version")
+@click.option("--tf-version", help="Override Terraform version")
+@click.option("--tofu-version", help="Override OpenTofu version")
 @click.option("--write-defaults/--no-write-defaults", default=False,
               help="Also rewrite default-versions.t*f*")
 def main(write_defaults, **kwargs):
