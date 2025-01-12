@@ -46,15 +46,12 @@ terraform {{
 
 
 def extract_variables(template, interpolated_string):
-  # Escape doubled curly brackets in the template
-  escaped_template = template.replace("{{", "{{{{").replace("}}", "}}}}")
-
   # Find all variable names in the escaped template
-  variable_names = re.findall(r'\{(.*?)\}', escaped_template)
+  variable_names = re.findall(r'\{(.*?)\}', template)
 
   # Create a regular expression pattern to match the interpolated string within the template
-  pattern = re.sub(r'\{(.*?)\}', r'(.*?)', escaped_template)
-  pattern = pattern.replace("{{{{", "{").replace("}}}}", "}")
+  pattern = re.sub(r'\{(.*?)\}', r'(.*?)', template)
+  pattern = pattern.replace("{{", "{").replace("}}", "}")
   pattern = r'.*?' + pattern + r'.*?'
 
   # Extract the values using the pattern
