@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_files.apply}
   TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
-  TF_VERSION: 1.7.4
+  TF_VERSION: 1.10.2
 
 jobs:
   fast-pr:
     # Skip PRs which are closed without being merged.
     if: >-
-      github.event.action == 'closed' && 
+      github.event.action == 'closed' &&
       github.event.pull_request.merged == true ||
       github.event.action == 'opened' ||
       github.event.action == 'synchronize'

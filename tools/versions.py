@@ -46,15 +46,12 @@ terraform {{
 
 
 def extract_variables(template, interpolated_string):
-  # Escape doubled curly brackets in the template
-  escaped_template = template.replace("{{", "{{{{").replace("}}", "}}}}")
-
   # Find all variable names in the escaped template
-  variable_names = re.findall(r'\{(.*?)\}', escaped_template)
+  variable_names = re.findall(r'\{(.*?)\}', template)
 
   # Create a regular expression pattern to match the interpolated string within the template
-  pattern = re.sub(r'\{(.*?)\}', r'(.*?)', escaped_template)
-  pattern = pattern.replace("{{{{", "{").replace("}}}}", "}")
+  pattern = re.sub(r'\{(.*?)\}', r'(.*?)', template)
+  pattern = pattern.replace("{{", "{").replace("}}", "}")
   pattern = r'.*?' + pattern + r'.*?'
 
   # Extract the values using the pattern
@@ -70,11 +67,13 @@ def process_file(file_path, context):
 
 
 @click.command()
-@click.option("--fabric-release", help="Override provider max version")
-@click.option("--provider-min-version", help="Override provider min version")
-@click.option("--provider-max-version", help="Override provider max version")
-@click.option("--tf-version", help="Override terraform version")
-@click.option("--tofu-version", help="Override opentofu version")
+@click.option("--fabric-release", help="Override Fabric release version")
+@click.option("--provider-min-version",
+              help="Override GCP provider min version")
+@click.option("--provider-max-version",
+              help="Override GCP provider max version")
+@click.option("--tf-version", help="Override Terraform version")
+@click.option("--tofu-version", help="Override OpenTofu version")
 @click.option("--write-defaults/--no-write-defaults", default=False,
               help="Also rewrite default-versions.t*f*")
 def main(write_defaults, **kwargs):
