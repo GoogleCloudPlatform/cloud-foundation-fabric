@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+variable "base_name" {
+  description = "Base name appended to each swp configuration name to create resource names."
+  type        = string
+  nullable    = false
+  default     = "swp-0"
+}
+
 variable "certificate_authorities" {
   description = "Certificate Authority Service pool and CAs created in the add-on project."
   type = map(object({
     location              = string
+    project_id            = string
     iam                   = optional(map(list(string)), {})
     iam_bindings          = optional(map(any), {})
     iam_bindings_additive = optional(map(any), {})
@@ -90,28 +98,14 @@ variable "certificate_authorities" {
   default  = {}
 }
 
-variable "names" {
-  description = "Configuration for names used for output files."
+variable "factories_config" {
+  description = "Base paths which are joined to swp config names to derive paths to folders with YAML resource description data files."
   type = object({
-    output_files_prefix = optional(string, "2-networking-ngfw")
+    policy_rules_base = optional(string)
+    url_lists_base    = optional(string)
   })
   nullable = false
   default  = {}
-}
-
-variable "ngfw_config" {
-  description = "Configuration for NGFW Enterprise endpoints. Billing project defaults to the automation project. Network and TLS inspection policy ids support interpolation."
-  type = object({
-    endpoint_zones = list(string)
-    name           = optional(string, "ngfw-0")
-    network_associations = optional(map(object({
-      vpc_id                = string
-      disabled              = optional(bool)
-      tls_inspection_policy = optional(string)
-      zones                 = optional(list(string))
-    })), {})
-  })
-  nullable = false
 }
 
 variable "outputs_location" {
@@ -120,61 +114,61 @@ variable "outputs_location" {
   default     = null
 }
 
-variable "project_id" {
-  description = "Project where the network security resources will be created."
-  type        = string
-  nullable    = false
+variable "policy_rules_contexts" {
+  description = "Replacement contexts for policy rules matcher arguments."
+  type = object({
+    secure_tags      = optional(map(string), {})
+    service_accounts = optional(map(string), {})
+    url_lists        = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
 }
 
-variable "security_profiles" {
-  description = "Security profile groups for Layer 7 inspection. Null environment list means all environments."
+variable "swp_configs" {
+  description = "Secure Web Proxy configuration, one per project-region."
   type = map(object({
-    description = optional(string)
-    threat_prevention_profile = optional(object({
-      severity_overrides = optional(map(object({
-        action   = string
-        severity = string
-      })))
-      threat_overrides = optional(map(object({
-        action    = string
-        threat_id = string
-      })))
+    project_id    = string
+    region        = string
+    network_id    = string
+    subnetwork_id = string
+    certificates  = optional(list(string), [])
+    gateway_config = optional(object({
+      addresses                = optional(list(string), [])
+      delete_router_on_destroy = optional(bool, true)
+      labels                   = optional(map(string), {})
+      next_hop_routing_mode    = optional(bool, false)
+      ports                    = optional(list(string), [443])
+      scope                    = optional(string)
     }), {})
+    service_attachment = optional(object({
+      nat_subnets           = list(string)
+      automatic_connection  = optional(bool, false)
+      consumer_accept_lists = optional(map(string), {})
+      consumer_reject_lists = optional(list(string))
+      description           = optional(string)
+      domain_name           = optional(string)
+      enable_proxy_protocol = optional(bool, false)
+      reconcile_connections = optional(bool)
+    }))
+    tls_inspection_config = optional(object({
+      create_config = optional(object({
+        ca_pool               = optional(string, null)
+        description           = optional(string, null)
+        exclude_public_ca_set = optional(bool, false)
+      }), null)
+      id = optional(string, null)
+    }))
   }))
   nullable = false
-  default = {
-    ngfw-default = {}
-  }
-  validation {
-    condition = alltrue(flatten([
-      for _, v in var.security_profiles : [
-        for _, sv in coalesce(v.threat_prevention_profile.severity_overrides, {}) : (
-          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action) &&
-          contains(["CRITICAL", "HIGH", "INFORMATIONAL", "LOW", "MEDIUM"], sv.severity)
-        )
-      ]
-    ]))
-    error_message = "Incorrect severity override token."
-  }
-  validation {
-    condition = alltrue(flatten([
-      for _, v in var.security_profiles : [
-        for _, sv in coalesce(v.threat_prevention_profile.threat_overrides, {}) : (
-          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action)
-        )
-      ]
-    ]))
-    error_message = "Incorrect threat override token."
-  }
+  default  = {}
 }
 
 variable "tls_inspection_policies" {
   description = "TLS inspection policies configuration. CA pools, trust configs and host project ids support interpolation."
   type = map(object({
     ca_pool_id            = string
-    location              = string
     exclude_public_ca_set = optional(bool)
-    trust_config          = optional(string)
     tls = optional(object({
       custom_features = optional(list(string))
       feature_profile = optional(string)
@@ -207,39 +201,5 @@ variable "tls_inspection_policies" {
       v.tls.custom_features == null || v.tls.feature_profile == "PROFILE_CUSTOM"
     ])
     error_message = "TLS custom features can only be used with custom profile."
-  }
-}
-
-variable "trust_configs" {
-  description = "Certificate Manager trust configurations for TLS inspection policies. Project ids and region can reference keys in the relevant FAST variables."
-  type = map(object({
-    location                 = string
-    description              = optional(string)
-    allowlisted_certificates = optional(map(string))
-    trust_stores = optional(map(object({
-      intermediate_cas = optional(map(string))
-      trust_anchors    = optional(map(string))
-    })))
-  }))
-  nullable = false
-  default = {
-    # dev-ngfw-default = {
-    #   location   = "primary"
-    #   project_id = "dev-spoke-0"
-    # }
-    # prod-ngfw-default = {
-    #   location   = "primary"
-    #   project_id = "prod-spoke-0"
-    # }
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.trust_configs : (
-        v.allowlisted_certificates != null ||
-        try(v.trust_stores.intermediate_cas, null) != null ||
-        try(v.trust_stores.trust_anchors, null) != null
-      )
-    ])
-    error_message = "A trust configuration needs at least one set of allowlisted certificates, or a valid trust store."
   }
 }
