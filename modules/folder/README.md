@@ -331,12 +331,13 @@ module "folder" {
   name   = "Folder name"
   logging_data_access = {
     allServices = {
-      # logs for principals listed here will be excluded
-      ADMIN_READ = ["group:${var.group_email}"]
+      ADMIN_READ = {
+        exempted_members = ["group:${var.group_email}"]
+      }
     }
     "storage.googleapis.com" = {
-      DATA_READ  = []
-      DATA_WRITE = []
+      DATA_READ  = {}
+      DATA_WRITE = {}
     }
   }
 }
