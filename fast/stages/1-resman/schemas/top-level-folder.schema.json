@@ -85,10 +85,16 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(?:DATA_READ|DATA_WRITE|ADMIN_READ)$": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "@"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "@"
+                  }
+                }
               }
             }
           }
