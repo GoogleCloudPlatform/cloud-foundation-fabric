@@ -1,13 +1,14 @@
 # Refactor IAM interface
 
 **authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)
-**last modified:** February 12, 2024
+**last modified:** January 14, 2025
 
 ## Status
 
 - Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
 - Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
 - Extended by [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064).
+- Extended by #2805 and #2814 to include `iam_by_principals_additive`
 
 ## Context
 
@@ -20,6 +21,7 @@ We currently support, with uneven coverage across modules:
 - legacy additive `iam_additive` in `ROLE => [PRINCIPALS]` format which breaks for dynamic values
 - legacy additive `iam_additive_members` in `PRINCIPAL => [ROLES]` format which breaks for dynamic values
 - new additive `iam_members` in `KEY => {role: ROLE, member: MEMBER, condition: CONDITION}` format which works with dynamic values and supports conditions
+- new additive `iam_by_principals_additive` in `PRINCIPAL => [ROLES]` format
 - policy authoritative `iam_policy`
 - specific support for third party resource bindings in the service account module
 
@@ -122,7 +124,7 @@ The **proposal** is to remove the IAM policy variable and resources, as its cove
 
 ```hcl
 variable "iam_by_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -132,6 +134,20 @@ variable "iam_by_principals" {
 
 See #2064 and [this ADR](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/ludo/iam-changes/fast/docs/0-domainless-iam.md) for more details.
 
+### IAM by Principals Additive
+> [!NOTE]
+> This section was added on 2025-01-14
+
+#2805 and #2814 introduced an additive version of `iam_by_principals`. The new variable format is shown below
+
+```hcl
+variable "iam_by_principals_additive" {
+  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+```
 
 ## Decision
 
@@ -202,8 +218,15 @@ variable "iam_bindings_additive" {
   nullable = false
 }
 
+variable "iam_by_principals_additive" {
+  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "iam_by_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -228,6 +251,19 @@ locals {
       try(local._iam_principals[role], [])
     )
   }
+  iam_bindings_additive = merge(
+    var.iam_bindings_additive,
+    [
+      for principal, roles in var.iam_by_principals_additive : {
+        for role in roles :
+        "iam-bpa:${principal}-${role}" => {
+          member    = principal
+          role      = role
+          condition = null
+        }
+      }
+    ]...
+  )
 }
 resource "google_RESOURCE_TYPE_iam_binding" "authoritative" {
   for_each = local.iam
@@ -253,7 +289,7 @@ resource "google_RESOURCE_TYPE_iam_binding" "bindings" {
 }
 
 resource "google_RESOURCE_TYPE_iam_member" "bindings" {
-  for_each = var.iam_bindings_additive
+  for_each = local.iam_bindings_additive
   role     = each.value.role
   member   = each.value.member
   // add extra attributes (e.g. resource id)

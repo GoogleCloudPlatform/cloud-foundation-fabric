@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,13 @@ variable "top_level_folders" {
       policy = string
     }))
     # TODO: remember to document this, and how to use the same value in other folders
-    is_fast_context     = optional(bool, true)
-    logging_data_access = optional(map(map(list(string))), {})
-    logging_exclusions  = optional(map(string), {})
+    is_fast_context = optional(bool, true)
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })), {})
+    logging_exclusions = optional(map(string), {})
     logging_settings = optional(object({
       disable_default_sink = optional(bool)
       storage_location     = optional(string)
