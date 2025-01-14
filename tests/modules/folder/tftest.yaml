@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project
+module: modules/folder
 
 common_tfvars:
   - common.tfvars
 
 tests:
-  prefix:
-  no_prefix:
-  parent_folder:
-  parent_org:
-  no_parent:
-  service_encryption_keys:
-  org_policies_list:
-  org_policies_boolean:
   iam_by_principals_additive:
