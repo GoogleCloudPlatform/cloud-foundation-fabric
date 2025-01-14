@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,19 @@ locals {
       try(local._iam_principals[role], [])
     )
   }
+  iam_bindings_additive = merge(
+    var.iam_bindings_additive,
+    [
+      for principal, roles in var.iam_by_principals_additive : {
+        for role in roles :
+        "iam-bpa:${principal}-${role}" => {
+          member    = principal
+          role      = role
+          condition = null
+        }
+      }
+    ]...
+  )
 }
 
 # we use a different key for custom roles to allow referring to the role alias
@@ -110,7 +123,7 @@ resource "google_project_iam_binding" "bindings" {
 }
 
 resource "google_project_iam_member" "bindings" {
-  for_each = var.iam_bindings_additive
+  for_each = local.iam_bindings_additive
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member
