@@ -51,7 +51,11 @@ variable "data_defaults" {
       perimeter_bridges = optional(list(string), [])
       is_dry_run        = optional(bool, false)
     }))
-    logging_data_access = optional(map(map(list(string))), {})
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })), {})
   })
   nullable = false
   default  = {}
@@ -103,7 +107,11 @@ variable "data_overrides" {
       perimeter_bridges = optional(list(string), [])
       is_dry_run        = optional(bool, false)
     }))
-    logging_data_access = optional(map(map(list(string))), {})
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })), {})
   })
   nullable = false
   default  = {}

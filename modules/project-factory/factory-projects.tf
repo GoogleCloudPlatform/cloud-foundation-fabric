@@ -159,6 +159,8 @@ locals {
       )
       logging_data_access = coalesce(
         var.data_overrides.logging_data_access
+        try(v.logging_data_access),
+        var.data_defaults.logging_data_access
       )
       # non-project resources
       service_accounts = try(v.service_accounts, {})
