@@ -124,7 +124,7 @@ The **proposal** is to remove the IAM policy variable and resources, as its cove
 
 ```hcl
 variable "iam_by_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -142,7 +142,7 @@ See #2064 and [this ADR](https://github.com/GoogleCloudPlatform/cloud-foundation
 
 ```hcl
 variable "iam_by_principals_additive" {
-  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam_bindings_additive` variable."
+  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -219,14 +219,14 @@ variable "iam_bindings_additive" {
 }
 
 variable "iam_by_principals_additive" {
-  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam_bindings_additive` variable."
+  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_by_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false

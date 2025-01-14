@@ -52,14 +52,14 @@ variable "iam_bindings_additive" {
 }
 
 variable "iam_by_principals_additive" {
-  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam_bindings_additive` variable."
+  description = "Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_by_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
