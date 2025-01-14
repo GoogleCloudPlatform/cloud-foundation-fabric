@@ -68,7 +68,7 @@ module "landing-dns-policy-googleapis" {
   project_id = module.landing-project.project_id
   name       = "googleapis"
   factories_config = {
-    rules = var.factories_config.dns_policy_rules_file
+    rules = var.factories_config.dns_policy_rules
   }
   networks = {
     landing = module.landing-vpc.self_link

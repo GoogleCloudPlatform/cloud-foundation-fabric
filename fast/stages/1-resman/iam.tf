@@ -21,31 +21,24 @@ locals {
   iam_bindings_additive = merge(
     # stage 2 networking
     !var.fast_stage_2.networking.enabled ? {} : {
-      sa_net_fw_policy_admin = {
+      sa_net_rw_fw_policy_admin = {
         member = module.net-sa-rw[0].iam_email
         role   = "roles/compute.orgFirewallPolicyAdmin"
       }
-      sa_net_xpn_admin = {
+      sa_net_rw_ngfw_enterprise_admin = {
+        member = module.net-sa-rw[0].iam_email
+        role   = var.custom_roles["ngfw_enterprise_admin"],
+      }
+      sa_net_rw_xpn_admin = {
         member = module.net-sa-rw[0].iam_email
         role   = "roles/compute.xpnAdmin"
       }
-    },
-    # stage 2 network security
-    !var.fast_stage_2.network_security.enabled ? {} : {
-      sa_nsec_fw_policy_admin = {
-        member = module.nsec-sa-rw[0].iam_email
-        role   = "roles/compute.orgFirewallPolicyAdmin"
-      }
-      sa_net_nsec_ngfw_enterprise_admin = {
-        member = module.nsec-sa-rw[0].iam_email
-        role   = var.custom_roles["ngfw_enterprise_admin"],
-      }
-      sa_net_nsec_fw_policy_user = {
-        member = module.nsec-sa-rw[0].iam_email
+      sa_net_ro_fw_policy_user = {
+        member = module.net-sa-ro[0].iam_email
         role   = "roles/compute.orgFirewallPolicyUser"
       }
-      sa_net_nsec_ro_ngfw_enterprise_viewer = {
-        member = module.nsec-sa-ro[0].iam_email
+      sa_net_net_ro_ngfw_enterprise_viewer = {
+        member = module.net-sa-ro[0].iam_email
         role   = var.custom_roles["ngfw_enterprise_viewer"],
       }
     },

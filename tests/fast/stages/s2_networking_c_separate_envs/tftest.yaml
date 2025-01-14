@@ -16,5 +16,3 @@ module: fast/stages/2-networking-c-separate-envs
 
 tests:
   simple:
-    extra_files:
-      - ../../plugins/2-networking-serverless-connector/*.tf

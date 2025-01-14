@@ -15,11 +15,6 @@
  */
 
 locals {
-  # leaving this here to document how to get self identity in a stage
-  # automation_resman_sa = try(
-  #   data.google_client_openid_userinfo.provider_identity[0].email, null
-  # )
-  # tag values use descriptive names
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
@@ -35,6 +30,14 @@ locals {
     ? "organizations/${var.organization.id}"
     : var.root_node
   )
+  # normalize parent stages
+  stage_addons = {
+    for k, v in var.fast_addon : k => merge(v, {
+      short_name = k
+      stage      = regex("^(?P<level>[0-9])-(?P<name>.*?)$", v.parent_stage)
+    })
+  }
+  # combined list of stage service accounts
   stage_service_accounts = merge(
     !var.fast_stage_2.networking.enabled ? {} : {
       networking   = module.net-sa-rw[0].email
@@ -72,6 +75,10 @@ locals {
   top_level_service_accounts = {
     for k, v in module.top-level-sa : k => try(v.email)
   }
+  # leaving this here to document how to get self identity in a stage
+  # automation_resman_sa = try(
+  #   data.google_client_openid_userinfo.provider_identity[0].email, null
+  # )
 }
 
 # data "google_client_openid_userinfo" "provider_identity" {

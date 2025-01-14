@@ -9,10 +9,8 @@ custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
-  resolvers      = ["10.10.10.10"]
-  enable_logging = true
+  resolvers = ["10.10.10.10"]
 }
-enable_cloud_nat      = true
 enable_test_instances = true
 environments = {
   dev = {
@@ -36,6 +34,12 @@ groups = {
   gcp-network-admins = "gcp-vpc-network-admins"
 }
 network_mode = "regional_vpc"
+organization = {
+  domain      = "fast.example.com"
+  id          = 123456789012
+  customer_id = "C00000000"
+}
+prefix = "fast2"
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"
@@ -45,12 +49,17 @@ service_accounts = {
   project-factory-dev  = "string"
   project-factory-prod = "string"
 }
-organization = {
-  domain      = "fast.example.com"
-  id          = 123456789012
-  customer_id = "C00000000"
+tag_values = {
+  "environment/development" = "tagValues/12345"
+  "environment/production"  = "tagValues/12346"
 }
-prefix = "fast2"
+vpc_configs = {
+  dmz = {
+    cloudnat = {
+      enable = true
+    }
+  }
+}
 vpn_onprem_primary_config = {
   peer_external_gateways = {
     default = {
@@ -128,8 +137,4 @@ vpn_onprem_secondary_config = {
       vpn_gateway_interface = 1
     }
   }
-}
-tag_values = {
-  "environment/development" = "tagValues/12345"
-  "environment/production"  = "tagValues/12346"
 }

@@ -55,6 +55,7 @@ locals {
   tfvars = {
     host_project_ids             = local.host_project_ids
     host_project_numbers         = local.host_project_numbers
+    regions                      = var.regions
     subnet_self_links            = local.subnet_self_links
     subnet_proxy_only_self_links = local.subnet_proxy_only_self_links
     subnet_psc_self_links        = local.subnet_psc_self_links
