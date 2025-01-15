@@ -19,11 +19,10 @@ values:
     condition: []
     instance_name: webserver
     members:
-    - group:admin@example.com
-    - group:webserver@example.com
+    - group:organization-admins@example.org
     project: project-id
     role: roles/compute.instanceAdmin
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

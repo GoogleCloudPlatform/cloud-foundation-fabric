@@ -12,6 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.instance.google_compute_disk.disks["disk-1"]:
+    name: schedule-test-disk-1
+    project: project-id
+    size: 10
+    type: pd-balanced
+    zone: europe-west8-b
+  module.instance.google_compute_disk_resource_policy_attachment.attached["disk-1-boot"]:
+    disk: schedule-test-disk-1
+    name: schedule-test-boot
+    project: project-id
+    timeouts: null
+    zone: europe-west8-b
+  module.instance.google_compute_disk_resource_policy_attachment.boot["boot"]:
+    disk: schedule-test
+    name: schedule-test-boot
+    project: project-id
+    zone: europe-west8-b
+  module.instance.google_compute_instance.default[0]:
+    attached_disk:
+    - device_name: disk-1
+      disk_encryption_key_raw: null
+      mode: READ_WRITE
+      source: schedule-test-disk-1
+    boot_disk:
+    - initialize_params:
+      - image: projects/cos-cloud/global/images/family/cos-stable
+  module.instance.google_compute_resource_policy.snapshot["boot"]:
+    description: Schedule policy boot for schedule-test.
+    name: schedule-test-boot
+    project: project-id
+    region: europe-west8
+    snapshot_schedule_policy:
+    - schedule:
+      - daily_schedule:
+        - days_in_cycle: 1
+          start_time: 03:00
+        hourly_schedule: []
+        weekly_schedule: []
+      snapshot_properties: []
+
 counts:
   google_compute_disk: 1
   google_compute_disk_resource_policy_attachment: 2

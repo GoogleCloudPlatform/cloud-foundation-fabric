@@ -20,7 +20,7 @@ values:
     - type: UEFI_COMPATIBLE
     - type: VIRTIO_SCSI_MULTIQUEUE
     name: my-image
-    project: my-project
+    project: project-id
     source_image: https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18
   module.vm-with-gvnic.google_compute_instance.default[0]:
     name: test
@@ -32,8 +32,8 @@ values:
       nic_type: GVNIC
       queue_count: null
       subnetwork: subnet_self_link
-    project: my-project
-    zone: europe-west1-b
+    project: project-id
+    zone: europe-west8-b
 
 counts:
   google_compute_image: 1
