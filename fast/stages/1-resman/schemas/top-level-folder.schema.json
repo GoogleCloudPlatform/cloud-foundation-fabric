@@ -260,7 +260,8 @@
         "^(?:roles/|[a-z_]+)": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
           }
         }
       }
@@ -276,7 +277,8 @@
             "members": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
               }
             },
             "role": {
@@ -315,7 +317,8 @@
           "additionalProperties": false,
           "properties": {
             "member": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
             },
             "role": {
               "type": "string",

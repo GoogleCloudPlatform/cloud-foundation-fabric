@@ -19,9 +19,9 @@ automation:
   environment_name: dev
   short_name: sbox
 # You can create role bindings referring to the automation service account by
-# referring to it using the folder key, per the example below
+# referring to it using `self` keyword, per the example below
 iam: 
   "roles/owner":
-    - sandbox
+    - self
 factories_config:
   org_policies: data/org-policies/sandbox

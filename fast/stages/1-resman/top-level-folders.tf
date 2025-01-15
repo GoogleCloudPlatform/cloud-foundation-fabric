@@ -87,27 +87,23 @@ module "top-level-folder" {
     for role, members in each.value.iam :
     lookup(var.custom_roles, role, role) => [
       for member in members : lookup(
-        merge(each.value.automation == null ? {} : {
-          (each.key) = module.top-level-sa[each.key].iam_email
-        }, local.top_level_sa),
-      member, member)
+        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), member, member
+      )
     ]
   }
   iam_bindings = {
     for k, v in each.value.iam_bindings : k => merge(v, {
       member = lookup(
-        merge(each.value.automation == null ? {} : {
-          (each.key) = module.top-level-sa[each.key].iam_email
-      }, local.top_level_sa), v.member, v.member)
+        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), v.member, v.member
+      )
       role = lookup(var.custom_roles, v.role, v.role)
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
       member = lookup(
-        merge(each.value.automation == null ? {} : {
-          (each.key) = module.top-level-sa[each.key].iam_email
-      }, local.top_level_sa), v.member, v.member)
+        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), v.member, v.member
+      )
       role = lookup(var.custom_roles, v.role, v.role)
     })
   }
