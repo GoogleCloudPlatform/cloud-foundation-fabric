@@ -18,9 +18,9 @@ values:
     name: ilb-test
     named_port: []
     network: projects/xxx/global/networks/aaa
-    project: my-project
+    project: project-id
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

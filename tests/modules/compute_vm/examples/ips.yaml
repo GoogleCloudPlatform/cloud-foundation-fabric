@@ -25,8 +25,8 @@ values:
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
-    project: my-project
-    zone: europe-west1-b
+    project: project-id
+    zone: europe-west8-b
   module.vm-internal-ip.google_compute_instance.default[0]:
     name: vm-internal-ip
     network_interface:
@@ -38,8 +38,8 @@ values:
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
-    project: my-project
-    zone: europe-west1-b
+    project: project-id
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 2

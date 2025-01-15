@@ -62,18 +62,18 @@ values:
       provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - email: sa-0@myproj.iam.gserviceaccount.com
+    - email: fixture-service-account@project-id.iam.gserviceaccount.com
       scopes:
       - https://www.googleapis.com/auth/cloud-platform
       - https://www.googleapis.com/auth/userinfo.email
     shielded_instance_config: []
     tags: null
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1
-  modules: 1
-  resources: 1
+  modules: 2
+  resources: 2
 
 outputs: {}

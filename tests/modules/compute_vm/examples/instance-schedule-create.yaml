@@ -13,6 +13,10 @@
 # limitations under the License.
 
 values:
+  module.sole-tenancy.google_compute_instance.default[0]:
+    boot_disk:
+    - initialize_params:
+      - image: projects/cos-cloud/global/images/family/cos-stable
   module.instance.google_compute_resource_policy.schedule[0]:
     description: Schedule policy for schedule-test.
     instance_schedule_policy:
@@ -24,7 +28,7 @@ values:
       vm_stop_schedule:
       - schedule: 0 17 * * *
     name: schedule-test
-    region: europe-west1
+    region: europe-west8
 
 counts:
   google_compute_instance: 1
