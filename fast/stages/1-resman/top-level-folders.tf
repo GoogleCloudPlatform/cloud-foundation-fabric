@@ -86,19 +86,29 @@ module "top-level-folder" {
   iam = {
     for role, members in each.value.iam :
     lookup(var.custom_roles, role, role) => [
-      for member in members : lookup(local.top_level_sa, member, member)
+      for member in members : lookup(
+        merge(each.value.automation == null ? {} : {
+          (each.key) = module.top-level-sa[each.key].iam_email
+        }, local.top_level_sa),
+      member, member)
     ]
   }
   iam_bindings = {
     for k, v in each.value.iam_bindings : k => merge(v, {
-      member = lookup(local.top_level_sa, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      member = lookup(
+        merge(each.value.automation == null ? {} : {
+          (each.key) = module.top-level-sa[each.key].iam_email
+      }, local.top_level_sa), v.member, v.member)
+      role = lookup(var.custom_roles, v.role, v.role)
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
-      member = lookup(local.top_level_sa, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      member = lookup(
+        merge(each.value.automation == null ? {} : {
+          (each.key) = module.top-level-sa[each.key].iam_email
+      }, local.top_level_sa), v.member, v.member)
+      role = lookup(var.custom_roles, v.role, v.role)
     })
   }
   # we don't replace here to avoid dynamic values in keys
