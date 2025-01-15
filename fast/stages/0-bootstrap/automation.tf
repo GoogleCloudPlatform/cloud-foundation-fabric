@@ -328,18 +328,15 @@ module "automation-tf-vpcsc-sa" {
   name         = var.resource_names["sa-vpcsc"]
   display_name = "Terraform stage 1 vpcsc service account."
   prefix       = var.prefix
-  # allow SA used by CI/CD workflow to impersonate this SA
+  # allow security group and SA used by CI/CD workflow to impersonate this SA
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = [
-      for k, v in local.cicd_repositories :
-      module.automation-tf-cicd-sa[k].iam_email if v.stage == "vpcsc"
-    ]
-  }
-  iam_bindings_additive = {
-    security_admins = {
-      member = local.principals["gcp-security-admins"]
-      role   = "roles/iam.serviceAccountTokenCreator"
-    }
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      [local.principals["gcp-security-admins"]],
+      [
+        for k, v in local.cicd_repositories :
+        module.automation-tf-cicd-sa[k].iam_email if v.stage == "vpcsc"
+      ]
+    )
   }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]

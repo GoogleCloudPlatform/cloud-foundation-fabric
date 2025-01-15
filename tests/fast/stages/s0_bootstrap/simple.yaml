@@ -31,7 +31,6 @@ counts:
   google_project_service_identity: 7
   google_service_account: 6
   google_service_account_iam_binding: 6
-  google_service_account_iam_member: 1
   google_storage_bucket: 4
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_iam_member: 6
@@ -41,7 +40,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 235
+  resources: 234
 
 outputs:
   automation: __missing__
