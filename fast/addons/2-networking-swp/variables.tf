@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-variable "base_name" {
-  description = "Base name appended to each swp configuration name to create resource names."
-  type        = string
-  nullable    = false
-  default     = "swp-0"
-}
-
-variable "certificate_authorities" {
-  description = "Certificate Authority Service pool and CAs created in the add-on project."
+variable "certificate_authority" {
+  description = "Optional Certificate Authority Service pool and CA used by SWP."
   type = map(object({
     location              = string
-    project_id            = string
     iam                   = optional(map(list(string)), {})
     iam_bindings          = optional(map(any), {})
     iam_bindings_additive = optional(map(any), {})
@@ -94,18 +86,24 @@ variable "certificate_authorities" {
       tier       = optional(string, "DEVOPS")
     })
   }))
+  default = null
+}
+
+variable "factories_config" {
+  description = "SWP factories configuration paths."
+  type = object({
+    policy_rules = optional(string, "data/policy-rules")
+    url_lists    = optional(string, "data/url-lists")
+  })
   nullable = false
   default  = {}
 }
 
-variable "factories_config" {
-  description = "Base paths which are joined to swp config names to derive paths to folders with YAML resource description data files."
-  type = object({
-    policy_rules_base = optional(string)
-    url_lists_base    = optional(string)
-  })
-  nullable = false
-  default  = {}
+variable "name" {
+  description = "Name used for resource names."
+  type        = string
+  nullable    = false
+  default     = "swp-0"
 }
 
 variable "outputs_location" {
@@ -126,13 +124,13 @@ variable "policy_rules_contexts" {
 }
 
 variable "swp_configs" {
-  description = "Secure Web Proxy configuration, one per project-region."
+  description = "Secure Web Proxy configuration, one per region."
   type = map(object({
-    project_id    = string
-    region        = string
-    network_id    = string
-    subnetwork_id = string
-    certificates  = optional(list(string), [])
+    region                = string
+    network_id            = string
+    subnetwork_id         = string
+    certificates          = optional(list(string), [])
+    tls_inspection_policy = optional(string, null)
     gateway_config = optional(object({
       addresses                = optional(list(string), [])
       delete_router_on_destroy = optional(bool, true)
@@ -151,55 +149,52 @@ variable "swp_configs" {
       enable_proxy_protocol = optional(bool, false)
       reconcile_connections = optional(bool)
     }))
-    tls_inspection_config = optional(object({
-      create_config = optional(object({
-        ca_pool               = optional(string, null)
-        description           = optional(string, null)
-        exclude_public_ca_set = optional(bool, false)
-      }), null)
-      id = optional(string, null)
-    }))
   }))
   nullable = false
   default  = {}
 }
 
-variable "tls_inspection_policies" {
-  description = "TLS inspection policies configuration. CA pools, trust configs and host project ids support interpolation."
-  type = map(object({
+variable "tls_inspection_policy" {
+  description = "TLS inspection policy configuration. CA pools support interpolation."
+  type = object({
     ca_pool_id            = string
+    location              = string
     exclude_public_ca_set = optional(bool)
     tls = optional(object({
       custom_features = optional(list(string))
       feature_profile = optional(string)
       min_version     = optional(string)
-    }), {})
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.tls_inspection_policies : v.tls.min_version == null || contains(
-        ["TLS_VERSION_UNSPECIFIED", "TLS_1_0", "TLS_1_1", "TLS_1_2", "TLS_1_3"],
-        coalesce(v.tls.min_version, "-")
-      )
-    ])
-    error_message = "Invalid min TLS version."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.tls_inspection_policies : v.tls.feature_profile == null || contains(
-        ["PROFILE_UNSPECIFIED", "PROFILE_COMPATIBLE", "PROFILE_MODERN", "PROFILE_RESTRICTED", "PROFILE_CUSTOM"],
-        coalesce(v.tls.feature_profile, "-")
-      )
-    ])
-    error_message = "Invalid TLS feature profile."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.tls_inspection_policies :
-      v.tls.custom_features == null || v.tls.feature_profile == "PROFILE_CUSTOM"
-    ])
-    error_message = "TLS custom features can only be used with custom profile."
-  }
+    }))
+  })
+  default = null
+  # validation {
+  #   condition = (
+  #     var.tls_inspection_policy == null ||
+
+  #   )
+
+  #   alltrue([
+  #     for k, v in var.tls_inspection_policies : v.tls.min_version == null || contains(
+  #       ["TLS_VERSION_UNSPECIFIED", "TLS_1_0", "TLS_1_1", "TLS_1_2", "TLS_1_3"],
+  #       coalesce(v.tls.min_version, "-")
+  #     )
+  #   ])
+  #   error_message = "Invalid min TLS version."
+  # }
+  # validation {
+  #   condition = alltrue([
+  #     for k, v in var.tls_inspection_policies : v.tls.feature_profile == null || contains(
+  #       ["PROFILE_UNSPECIFIED", "PROFILE_COMPATIBLE", "PROFILE_MODERN", "PROFILE_RESTRICTED", "PROFILE_CUSTOM"],
+  #       coalesce(v.tls.feature_profile, "-")
+  #     )
+  #   ])
+  #   error_message = "Invalid TLS feature profile."
+  # }
+  # validation {
+  #   condition = alltrue([
+  #     for k, v in var.tls_inspection_policies :
+  #     v.tls.custom_features == null || v.tls.feature_profile == "PROFILE_CUSTOM"
+  #   ])
+  #   error_message = "TLS custom features can only be used with custom profile."
+  # }
 }

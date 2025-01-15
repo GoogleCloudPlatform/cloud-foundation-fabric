@@ -18,8 +18,17 @@ locals {
   ca_projects = toset([
     for k, v in var.certificate_authorities : v.project_id
   ])
+  swp_configs = {
+    for k, v in var.swp_configs : k => merge(v, {
+      network_id = lookup(var.vpc_self_links, v.network_id, v.network_id)
+      project_id = lookup(var.host_project_ids, v.project_id, v.project_id)
+      subnetwork_id = try(
+        var.subnet_self_links[v.project_id][v.subnetwork_id], v.subnetwork_id
+      )
+    })
+  }
   swp_projects = toset([
-    for k, v in var.swp_configs : v.project_id
+    for k, v in local.swp_configs : v.project_id
   ])
 }
 
@@ -47,7 +56,7 @@ module "projects-swp" {
 
 module "swp" {
   source       = "../../../modules/net-swp"
-  for_each     = var.swp_configs
+  for_each     = local.swp_configs
   project_id   = module.projects-swp[each.value.project_id].project_id
   region       = each.value.region
   name         = "${each.key}-${var.base_name}"
@@ -61,17 +70,9 @@ module "swp" {
   gateway_config        = each.value.gateway_config
   policy_rules_contexts = var.policy_rules_contexts
   service_attachment    = each.value.service_attachment
-  tls_inspection_config = (
-    each.value.tls_inspection_config == null
-    ? null
-    : (
-      each.value.tls_inspection_config.id != null
-      # TODO: interpolate from FAST variables
-      ? each.value.tls_inspection_config.id
-      : try(
-        google_network_security_tls_inspection_policy.default[each.key].id,
-        null
-      )
-    )
+  tls_inspection_config = lookup(
+    local.tls_inspection_policy_ids,
+    each.value.tls_inspection_policy,
+    each.value.tls_inspection_policy
   )
 }

@@ -17,23 +17,17 @@
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
 locals {
-  # extract SWP project ids for each CA internally created by SWP configurations
-  _swp_cas = {
-    for k, v in var.swp_configs :
-    try(v.tls_inspection_config.create_config.ca_pool, null) => v.project_id...
+  ca_pool_ids = {
+    for k, v in module.cas : k => v.id
   }
-  # determine which CAs are actually referenced from SWP configurations
-  ca_active = {
-    for k, v in var.certificate_authorities : k => merge(v, {
-      swp_projects = toset(distinct(lookup(local._swp_cas, k, [])))
-    }) if lookup(local._swp_cas, k, null) != null
+  tls_inspection_policy_ids = {
+    for k, v in google_network_security_tls_inspection_policy.default : k => v.id
   }
-  ca_pool_ids = { for k, v in var.certificate_authority_pools : k => v.id }
 }
 
 module "cas" {
   source         = "../../../modules/certificate-authority-service"
-  for_each       = local.ca_active
+  for_each       = var.certificate_authorities
   project_id     = module.projects-cas[each.value.project_id].project_id
   location       = each.value.location
   ca_configs     = each.value.ca_configs
@@ -43,8 +37,8 @@ module "cas" {
   iam_bindings_additive = merge(
     each.value.iam_bindings_additive,
     var._fast_debug.skip_datasources == true ? {} : {
-      for p in each.value.swp_projects : "nsec_${p}" => {
-        member = module.projects-swp[p].service_agents["networksecurity"].iam_email
+      nsec_certificate_manager = {
+        member = module.project.service_agents["networksecurity"].iam_email
         role   = "roles/privateca.certificateManager"
       }
     }
@@ -59,7 +53,7 @@ resource "google_network_security_tls_inspection_policy" "default" {
   }
   project               = module.projects-swp[each.value.project_id].project_id
   name                  = "${each.key}-${var.base_name}"
-  location              = each.value.region
+  location              = each.value.location
   exclude_public_ca_set = each.value.exclude_public_ca_set
   ca_pool               = lookup(local.ca_pool_ids, each.value.ca_pool, each.value.ca_pool)
   custom_tls_features   = each.value.tls.custom_features

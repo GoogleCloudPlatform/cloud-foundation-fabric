@@ -45,10 +45,26 @@ variable "certificate_authority_pools" {
   default  = {}
 }
 
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Shared VPC host project ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "service_accounts" {
   # tfdoc:variable:source 1-resman
   description = "FAST service accounts, populated in policy contexts."
   type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "subnet_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "VPC subnetwork self links."
+  type        = map(map(string))
   nullable    = false
   default     = {}
 }
