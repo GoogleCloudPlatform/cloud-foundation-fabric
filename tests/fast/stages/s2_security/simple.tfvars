@@ -4,6 +4,25 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+certificate_authorities = {
+  ngfw-0 = {
+    environments = ["prod"]
+    ca_configs = {
+      ca-0 = {
+        deletion_protection = false
+        subject = {
+          common_name  = "fast.example.com"
+          organization = "FAST Test"
+        }
+      }
+    }
+    ca_pool_config = {
+      authz_nsec_sa = true
+      name          = "ca-pool-0"
+    }
+    location = "europe-west8"
+  }
+}
 custom_roles = {
   project_iam_viewer            = "organizations/123456789012/roles/bar"
   service_project_network_admin = "organizations/123456789012/roles/foo"
@@ -12,11 +31,13 @@ environments = {
   dev = {
     is_default = false
     name       = "Development"
+    short_name = "dev"
     tag_name   = "development"
   }
   prod = {
     is_default = true
     name       = "Production"
+    short_name = "prod"
     tag_name   = "production"
   }
 }

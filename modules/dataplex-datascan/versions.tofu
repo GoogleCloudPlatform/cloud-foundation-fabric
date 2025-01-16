@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v36.1.0
+# Fabric release: v37.0.0-rc1
 
 terraform {
   required_version = ">= 1.8.0"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tofu:modules/dataplex-datascan:v36.1.0"
+    module_name = "fabric:tofu:modules/dataplex-datascan:v37.0.0-rc1"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tofu:modules/dataplex-datascan:v36.1.0"
+    module_name = "fabric:tofu:modules/dataplex-datascan:v37.0.0-rc1"
   }
 }

@@ -16,6 +16,22 @@
 
 # tfdoc:file:description Dev spoke VPC and related resources.
 
+locals {
+  # streamline VPC configuration conditionals for modules by moving them here
+  dev_cfg = {
+    cloudnat    = var.vpc_configs.dev.cloudnat.enable == true
+    dns_logging = var.vpc_configs.dev.dns.enable_logging == true
+    dns_policy  = var.vpc_configs.dev.dns.create_inbound_policy == true
+    fw_classic  = var.vpc_configs.dev.firewall.use_classic == true
+    fw_order = (
+      var.vpc_configs.dev.firewall.policy_has_priority == true
+      ? "BEFORE_CLASSIC_FIREWALL"
+      : "AFTER_CLASSIC_FIREWALL"
+    )
+    fw_policy = var.vpc_configs.dev.firewall.create_policy == true
+  }
+}
+
 module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -67,24 +83,26 @@ module "dev-spoke-project" {
 }
 
 module "dev-spoke-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.dev-spoke-project.project_id
-  name       = "dev-spoke-0"
-  mtu        = 1500
-  dns_policy = {
-    logging = var.dns.enable_logging
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.dev-spoke-project.project_id
+  name                            = "dev-spoke-0"
+  mtu                             = var.vpc_configs.dev.mtu
+  delete_default_routes_on_create = true
+  dns_policy = !local.dev_cfg.dns_policy ? {} : {
+    inbound = true
+    logging = local.dev_cfg.dns_logging
   }
   factories_config = {
     context        = { regions = var.regions }
-    subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
+    subnets_folder = "${var.factories_config.subnets}/dev"
   }
-  psa_configs = var.psa_ranges.dev
+  firewall_policy_enforcement_order = local.dev_cfg.fw_order
+  psa_configs                       = var.psa_ranges.dev
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true
     restricted = true
   }
-  delete_default_routes_on_create = true
   routes = {
     default = {
       dest_range    = "0.0.0.0/0"
@@ -97,20 +115,40 @@ module "dev-spoke-vpc" {
 
 module "dev-spoke-firewall" {
   source     = "../../../modules/net-vpc-firewall"
+  count      = local.dev_cfg.fw_classic ? 1 : 0
   project_id = module.dev-spoke-project.project_id
   network    = module.dev-spoke-vpc.name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
+    cidr_tpl_file = var.factories_config.firewall.cidr_file
+    rules_folder  = "${var.factories_config.firewall.classic_rules}/dev"
   }
 }
 
+module "dev-firewall-policy" {
+  source    = "../../../modules/net-firewall-policy"
+  count     = local.dev_cfg.fw_policy ? 1 : 0
+  name      = "dev-spoke-0"
+  parent_id = module.dev-spoke-project.project_id
+  region    = "global"
+  attachments = {
+    dev-spoke-0 = module.dev-spoke-vpc.id
+  }
+  factories_config = {
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = "${var.factories_config.firewall.policy_rules}/dev/egress.yaml"
+    ingress_rules_file_path = "${var.factories_config.firewall.policy_rules}/dev/ingress.yaml"
+  }
+  security_profile_group_ids = var.security_profile_groups
+}
+
 module "dev-spoke-cloudnat" {
-  source         = "../../../modules/net-cloudnat"
-  for_each       = toset(var.enable_cloud_nat ? values(module.dev-spoke-vpc.subnet_regions) : [])
+  source = "../../../modules/net-cloudnat"
+  for_each = toset(
+    local.dev_cfg.cloudnat ? values(module.dev-spoke-vpc.subnet_regions) : []
+  )
   project_id     = module.dev-spoke-project.project_id
   region         = each.value
   name           = "dev-nat-${local.region_shortnames[each.value]}"
