@@ -86,25 +86,25 @@ module "top-level-folder" {
   iam = {
     for role, members in each.value.iam :
     lookup(var.custom_roles, role, role) => [
-      for member in members : lookup(
-        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), member, member
-      )
+      for member in members : (each.value.automation != null && member == "self")
+      ? module.top-level-sa[each.key].iam_email
+      : lookup(local.top_level_sa, member, member)
     ]
   }
   iam_bindings = {
-    for k, v in each.value.iam_bindings : k => merge(v, {
-      member = lookup(
-        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), v.member, v.member
-      )
+    for k, v in each.value.iam_bindings : k => {
+      members = [
+        for member in v.members : (each.value.automation != null && member == "self")
+        ? module.top-level-sa[each.key].iam_email
+        : lookup(local.top_level_sa, member, member)
+      ]
       role = lookup(var.custom_roles, v.role, v.role)
-    })
+    }
   }
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
-      member = lookup(
-        merge(each.value.automation == null ? {} : { self = module.top-level-sa[each.key].iam_email }, local.top_level_sa), v.member, v.member
-      )
-      role = lookup(var.custom_roles, v.role, v.role)
+      member = (each.value.automation != null && v.member == "self") ? module.top-level-sa[each.key].iam_email : lookup(local.top_level_sa, v.member, v.member)
+      role   = lookup(var.custom_roles, v.role, v.role)
     })
   }
   # we don't replace here to avoid dynamic values in keys
