@@ -143,7 +143,7 @@ terraform apply
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>net-swp</code> · <code>project</code> |  |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [tls-inspection.tf](./tls-inspection.tf) | TLS inspection policies and supporting resources. | <code>certificate-authority-service</code> | <code>google_network_security_tls_inspection_policy</code> |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
@@ -174,8 +174,9 @@ terraform apply
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [gateway_security_policies](outputs.tf#L22) | The gateway security policy resources. |  |  |
-| [gateways](outputs.tf#L17) | The gateway resources. |  |  |
-| [ids](outputs.tf#L27) | Gateway IDs. |  |  |
-| [service_attachments](outputs.tf#L32) | Service attachment IDs. |  |  |
+| [cas_pool_ids](outputs.tf#L34) | Certificate Authority Service pool ids. |  |  |
+| [gateway_security_policies](outputs.tf#L44) | The gateway security policy resources. |  |  |
+| [gateways](outputs.tf#L39) | The gateway resources. |  |  |
+| [ids](outputs.tf#L49) | Gateway IDs. |  |  |
+| [service_attachments](outputs.tf#L54) | Service attachment IDs. |  |  |
 <!-- END TFDOC -->

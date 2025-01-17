@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
+locals {
+  tfvars = {
+    swp_cas_pool_ids = {
+      for k, v in module.cas : k => v.ca_pool_id
+    }
+    swp_gateway_ids = {
+      for k, v in module.swp : k => v.id
+    }
+    swp_gateway_security_policy_ids = {
+      for k, v in module.swp : k => v.gateway_security_policy
+    }
+    swp_service_attachment_ids = {
+      for k, v in module.swp : k => v.service_attachment
+    }
+  }
+}
+
 output "cas_pool_ids" {
   description = "Certificate Authority Service pool ids."
-  value       = local.cas_pool_ids
+  value       = local.tfvars.swp_cas_pool_ids
 }
 
 output "gateways" {
@@ -26,17 +43,17 @@ output "gateways" {
 
 output "gateway_security_policies" {
   description = "The gateway security policy resources."
-  value       = { for k, v in module.swp : k => v.gateway_security_policy }
+  value       = local.tfvars.swp_gateway_security_policy_ids
 }
 
 output "ids" {
   description = "Gateway IDs."
-  value       = { for k, v in module.swp : k => v.id }
+  value       = local.tfvars.swp_gateway_ids
 }
 
 output "service_attachments" {
   description = "Service attachment IDs."
-  value       = { for k, v in module.swp : k => v.service_attachment }
+  value       = local.tfvars.swp_service_attachment_ids
 }
 
 resource "local_file" "tfvars" {

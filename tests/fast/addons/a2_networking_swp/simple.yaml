@@ -18,5 +18,6 @@ counts:
   google_network_services_gateway: 1
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
+  google_storage_bucket_object: 1
   modules: 2
-  resources: 5
+  resources: 6
