@@ -36,14 +36,14 @@ output "cas_pool_ids" {
   value       = local.tfvars.swp_cas_pool_ids
 }
 
-output "gateways" {
-  description = "The gateway resources."
-  value       = { for k, v in module.swp : k => v.gateway }
-}
-
 output "gateway_security_policies" {
   description = "The gateway security policy resources."
   value       = local.tfvars.swp_gateway_security_policy_ids
+}
+
+output "gateways" {
+  description = "The gateway resources."
+  value       = { for k, v in module.swp : k => v.gateway }
 }
 
 output "ids" {

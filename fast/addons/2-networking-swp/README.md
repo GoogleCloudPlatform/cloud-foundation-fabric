@@ -174,8 +174,8 @@ terraform apply
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
 | [cas_pool_ids](outputs.tf#L34) | Certificate Authority Service pool ids. |  |  |
-| [gateway_security_policies](outputs.tf#L44) | The gateway security policy resources. |  |  |
-| [gateways](outputs.tf#L39) | The gateway resources. |  |  |
+| [gateway_security_policies](outputs.tf#L39) | The gateway security policy resources. |  |  |
+| [gateways](outputs.tf#L44) | The gateway resources. |  |  |
 | [ids](outputs.tf#L49) | Gateway IDs. |  |  |
 | [service_attachments](outputs.tf#L54) | Service attachment IDs. |  |  |
 <!-- END TFDOC -->
