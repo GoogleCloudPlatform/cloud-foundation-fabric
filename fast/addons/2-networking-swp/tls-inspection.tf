@@ -16,12 +16,6 @@
 
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
-locals {
-  cas_pool_ids = {
-    for k, v in module.cas : k => v.ca_pool_id
-  }
-}
-
 module "cas" {
   source     = "../../../modules/certificate-authority-service"
   for_each   = var.certificate_authority == null ? {} : local.regions
