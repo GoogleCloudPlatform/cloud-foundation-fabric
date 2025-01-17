@@ -63,7 +63,7 @@ resource "google_network_security_tls_inspection_policy" "default" {
   exclude_public_ca_set = var.tls_inspection_policy.exclude_public_ca_set
   ca_pool = (
     var.tls_inspection_policy.ca_pool_id == null
-    ? try(module.cas[each.key].id, null)
+    ? module.cas[each.key].ca_pool_id
     : var.tls_inspection_policy.ca_pool_id
   )
   custom_tls_features = try(var.tls_inspection_policy.tls.custom_features, null)

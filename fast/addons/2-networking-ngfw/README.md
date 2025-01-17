@@ -191,7 +191,7 @@ terraform apply
 
 Security profiles group defined here are exported via output variable file, and can be consumed in the firewall policies defined in the networking stage.
 
-<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-network-security-providers.tf -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-ngfw-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
