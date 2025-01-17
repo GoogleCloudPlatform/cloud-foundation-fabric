@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "cas_pool_ids" {
+  description = "Certificate Authority Service pool ids."
+  value       = local.cas_pool_ids
+}
+
 output "gateways" {
   description = "The gateway resources."
   value       = { for k, v in module.swp : k => v.gateway }
@@ -32,4 +37,17 @@ output "ids" {
 output "service_attachments" {
   description = "Service attachment IDs."
   value       = { for k, v in module.swp : k => v.service_attachment }
+}
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/2-networking-${var.name}.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/2-networking-${var.name}.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
 }

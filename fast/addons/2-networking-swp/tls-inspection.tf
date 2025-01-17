@@ -20,10 +20,6 @@ locals {
   cas_pool_ids = {
     for k, v in module.cas : k => v.ca_pool_id
   }
-  tls_policy_ids = {
-    for k, v in google_network_security_tls_inspection_policy.default :
-    k => v.id
-  }
 }
 
 module "cas" {
