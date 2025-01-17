@@ -17,25 +17,25 @@
 output "ca_ids" {
   description = "The CA ids."
   value = {
-    for k, v in google_privateca_certificate_authority.cas
+    for k, v in google_privateca_certificate_authority.default
     : k => v.id
   }
 }
 
 output "ca_pool" {
   description = "The CA pool."
-  value       = try(google_privateca_ca_pool.ca_pool[0], null)
+  value       = try(google_privateca_ca_pool.default[0], null)
 }
 
 output "ca_pool_id" {
   description = "The CA pool id."
-  value       = local.ca_pool_id
+  value       = local.pool_id
 }
 
 output "cas" {
   description = "The CAs."
   value = {
-    for k, v in google_privateca_certificate_authority.cas
+    for k, v in google_privateca_certificate_authority.default
     : k => v
   }
 }
