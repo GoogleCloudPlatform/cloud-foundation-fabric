@@ -17,8 +17,9 @@ certificate_authorities = {
       }
     }
     ca_pool_config = {
-      authz_nsec_sa = true
-      name          = "ca-pool-0"
+      create_pool = {
+        name = "ca-pool-0"
+      }
     }
     location = "europe-west8"
   }

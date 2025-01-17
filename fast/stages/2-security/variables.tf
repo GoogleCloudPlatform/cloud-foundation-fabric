@@ -82,9 +82,13 @@ variable "certificate_authorities" {
       }), null)
     }))
     ca_pool_config = object({
-      ca_pool_id = optional(string, null)
-      name       = optional(string, null)
-      tier       = optional(string, "DEVOPS")
+      create_pool = optional(object({
+        name = string
+        tier = optional(string, "DEVOPS")
+      }))
+      use_pool = optional(object({
+        id = string
+      }))
     })
   }))
   nullable = false
