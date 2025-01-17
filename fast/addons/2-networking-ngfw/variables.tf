@@ -15,7 +15,7 @@
  */
 
 variable "certificate_authorities" {
-  description = "Certificate Authority Service pool and CAs created in the add-on project."
+  description = "Certificate Authority Service pool and CAs. If host project ids is null identical pools and CAs are created in every host project."
   type = map(object({
     location              = string
     iam                   = optional(map(list(string)), {})
@@ -80,15 +80,11 @@ variable "certificate_authorities" {
         pem_issuer_certificates = optional(list(string))
       }), null)
     }))
-    ca_pool_config = optional(object({
-      create_pool = optional(object({
-        name = optional(string)
-        tier = optional(string, "DEVOPS")
-      }))
-      use_pool = optional(object({
-        id = string
-      }))
-    }))
+    ca_pool_config = object({
+      ca_pool_id = optional(string, null)
+      name       = optional(string, null)
+      tier       = optional(string, "DEVOPS")
+    })
   }))
   nullable = false
   default  = {}
@@ -244,6 +240,6 @@ variable "trust_configs" {
         try(v.trust_stores.trust_anchors, null) != null
       )
     ])
-    error_message = "A trust configuration needs at least one set of allowlisted certificates, or a valid trust store."
+    error_message = "a trust configuration needs at least one set of allowlisted certificates, or a valid trust store."
   }
 }

@@ -25,17 +25,16 @@ locals {
     for k, v in google_certificate_manager_trust_config.default : k => v.id
   }
 }
-output "foo" { value = var.certificate_authorities }
+
 module "cas" {
   source     = "../../../modules/certificate-authority-service"
   for_each   = var.certificate_authorities
   project_id = local.project_id
   ca_configs = each.value.ca_configs
   ca_pool_config = (
-    # each.value.ca_pool_config != null
-    # ? each.value.ca_pool_config
-    # : {
-    {
+    each.value.ca_pool_config != null
+    ? each.value.ca_pool_config
+    : {
       create_pool = {
         name = each.key
       }

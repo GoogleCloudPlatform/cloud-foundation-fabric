@@ -17,46 +17,56 @@
 # tfdoc:file:description TLS inspection policies and supporting resources.
 
 locals {
-  ca_pool_ids = {
-    for k, v in module.cas : k => v.id
+  cas_pool_ids = {
+    for k, v in module.cas : k => v.ca_pool_id
   }
-  tls_inspection_policy_ids = {
-    for k, v in google_network_security_tls_inspection_policy.default : k => v.id
+  tls_policy_ids = {
+    for k, v in google_network_security_tls_inspection_policy.default :
+    k => v.id
   }
 }
 
 module "cas" {
-  source         = "../../../modules/certificate-authority-service"
-  for_each       = var.certificate_authorities
-  project_id     = module.projects-cas[each.value.project_id].project_id
-  location       = each.value.location
-  ca_configs     = each.value.ca_configs
-  ca_pool_config = each.value.ca_pool_config
-  iam            = each.value.iam
-  iam_bindings   = each.value.iam_bindings
-  iam_bindings_additive = merge(
-    each.value.iam_bindings_additive,
-    var._fast_debug.skip_datasources == true ? {} : {
-      nsec_certificate_manager = {
-        member = module.project.service_agents["networksecurity"].iam_email
-        role   = "roles/privateca.certificateManager"
+  source     = "../../../modules/certificate-authority-service"
+  for_each   = var.certificate_authority == null ? {} : local.regions
+  project_id = local.project_id
+  location   = each.value
+  ca_configs = var.certificate_authority.ca_configs
+  ca_pool_config = (
+    var.certificate_authority.ca_pool_config != null
+    ? var.certificate_authority.ca_pool_config
+    : {
+      create_pool = {
+        name = "${var.name}-${each.key}"
       }
     }
   )
-  iam_by_principals = each.value.iam_by_principals
+  iam               = var.certificate_authority.iam
+  iam_by_principals = var.certificate_authority.iam_by_principals
+  iam_bindings      = var.certificate_authority.iam_bindings
+  iam_bindings_additive = merge(
+    var.certificate_authority.iam_bindings_additive,
+    var._fast_debug.skip_datasources == true ? {} : {
+      # nsec_certificate_manager = {
+      #   member = module.project[0].service_agents["networksecurity"].iam_email
+      #   role   = "roles/privateca.certificateManager"
+      # }
+    }
+  )
 }
 
 resource "google_network_security_tls_inspection_policy" "default" {
-  for_each = {
-    for k, v in var.swp_configs : k => v
-    if try(v.tls_inspection_config.create_config, null) != null
-  }
-  project               = module.projects-swp[each.value.project_id].project_id
-  name                  = "${each.key}-${var.base_name}"
-  location              = each.value.location
-  exclude_public_ca_set = each.value.exclude_public_ca_set
-  ca_pool               = lookup(local.ca_pool_ids, each.value.ca_pool, each.value.ca_pool)
-  custom_tls_features   = each.value.tls.custom_features
-  tls_feature_profile   = each.value.tls.feature_profile
-  min_tls_version       = each.value.tls.min_version
+  for_each              = var.tls_inspection_policy == null ? {} : local.regions
+  project               = local.project_id
+  name                  = "${var.name}-${each.key}"
+  location              = each.value
+  exclude_public_ca_set = var.tls_inspection_policy.exclude_public_ca_set
+  ca_pool = (
+    var.tls_inspection_policy.ca_pool_id == null
+    ? try(module.cas[each.key].id, null)
+    : var.tls_inspection_policy.ca_pool_id
+  )
+  custom_tls_features = try(var.tls_inspection_policy.tls.custom_features, null)
+  tls_feature_profile = try(var.tls_inspection_policy.tls.feature_profile, null)
+  min_tls_version     = try(var.tls_inspection_policy.tls.min_version, null)
 }

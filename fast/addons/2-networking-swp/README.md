@@ -1,11 +1,11 @@
-# NGFW Enterprise Networking Add-on
+# Secure Web Proxy Add-on
 
-This add-on includes all configurations and resources required to activate [Cloud Next Generation Firewall](https://cloud.google.com/firewall/docs/about-firewalls), and associate its endpoints to an arbitrary number of VPC networks.
+This add-on allows creating an arbitrary number of [Secure Web Proxy (SWP)](https://cloud.google.com/secure-web-proxy/docs/overview), including resources required to enable TLS inspection.
 
 This diagram shows the resources used by this add-on, and their relationships with its networking parent stage.
 
 <p align="center">
-  <img src="diagram.png" alt="Network security NGFW diagram">
+  <img src="diagram.png" alt="SWP add-on diagram">
 </p>
 
 <!-- BEGIN TOC -->
@@ -24,22 +24,22 @@ This diagram shows the resources used by this add-on, and their relationships wi
 
 This add-on is intentionally self-contained to allow directly using it to implement different designs, via a single instance or multiple instances.
 
-All project-level resources in this stage with the exception of VPC associations are created in the same project, so that dependencies and IAM configurations are kept as simple as possible, and everything is within the same span of control.
+All project-level resources in this stage are created in the same project, so that dependencies and IAM configurations are kept as simple as possible, and everything is within the same span of control.
 
 The controlling project is usually one of those already created and managed by the networking stage: the landing host project, or a shared environment project if that exists. Alternatively, a dedicated project can be created and used here provided the necessary IAM and organization policies configurations are also defined.
 
 ## How to run this stage
 
-Once the main networking stage has been configured and applied, the following configuration is added the the resource management `fast_addon` variable to create the add-on provider files, and its optional CI/CD resources if those are also required. The add-on name (`networking-ngfw`) is customizable, in case the add-on needs to be run multiple times for example to create different sets of endpoints and NGFW configurations per environment.
+Once the main networking stage has been configured and applied, the following configuration is added the the resource management `fast_addon` variable to create the add-on provider files, and its optional CI/CD resources if those are also required. The add-on name (`networking-swp`) is customizable, in case the add-on needs to be run multiple times to create gateways in different projects.
 
 ```hcl
 fast_addon = {
-  networking-ngfw = {
+  networking-swp = {
     parent_stage = "2-networking"
     # cicd_config = {
     #   identity_provider = "github-test"
     #   repository = {
-    #     name   = "test/ngfw"
+    #     name   = "test/swp"
     #     type   = "github"
     #     branch = "main"
     #   }
@@ -56,10 +56,10 @@ The commands to link or copy the provider and terraform variable files can be ea
 
 ```bash
 ../../stages/fast-links.sh ~/fast-config
-# File linking commands for NGFW Enterprise networking add-on stage
+# File linking commands for Secure Web Proxy networking add-on
 
 # provider file
-ln -s ~/fast-config/providers/2-networking-ngfw-providers.tf ./
+ln -s ~/fast-config/providers/2-networking-swp-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
@@ -68,7 +68,7 @@ ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
-ln -s ~/fast-config/2-networking-ngfw.auto.tfvars ./
+ln -s ~/fast-config/2-networking-swp.auto.tfvars ./
 
 # optional files
 ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
@@ -97,84 +97,26 @@ outputs_location = "~/fast-config"
 Once output files are in place, define your addon configuration in a tfvars file. This is an example of configuring this addon, with optional variable attributes filled in for illustration purposes.
 
 ```hcl
-certificate_authorities = {
-  # if CA pools defined in the security stage are used this is optional
-  ngfw-0 = {
-    location = "europe-west8"
-    ca_configs = {
-      ca-0 = {
-        deletion_protection = false
-        subject = {
-          common_name  = "example.org"
-          organization = "Test Organization"
-        }
+certificate_authority = {
+  # if a CA pool defined in the security stage is used this is optional
+  ca_configs = {
+    ca-0 = {
+      deletion_protection = false
+      subject = {
+        common_name  = "example.org"
+        organization = "Test Organization"
       }
-    }
-    ca_pool_config = {
-      authz_nsec_sa = true
-      name          = "ca-pool-0"
-    }
-  }
-}
-ngfw_config = {
-  name           = "ngfw-0"
-  endpoint_zones = ["europe-west8-b"]
-  network_associations = {
-    prod = {
-      # VPC ids defined in the network stage can be referred to via short name
-      # vpc_id              = "prod-spoke-0"
-      vpc_id                = "projects/xxx-prod-net-spoke-0/global/networks/prod-spoke-0"
-      tls_inspection_policy = "ngfw-0"
     }
   }
 }
 outputs_location = "~/fast-config"
 project_id       = "xxx-prod-net-landing-0"
-security_profiles = {
-  ngfw-0 = {
-    # these are optional and shown here for convenience
-    threat_prevention_profile = {
-      severity_overrides = {
-        informational-allow = {
-          action   = "ALLOW"
-          severity = "INFORMATIONAL"
-        }
-      }
-      threat_overrides = {
-        allow-280647 = {
-          action    = "ALLOW"
-          threat_id = "280647"
-        }
-      }
-    }
-  }
-}
-tls_inspection_policies = {
-  ngfw-0 = {
-    # reference the pool defined above, or an external one
-    # CA pools defined in the security stage can be referred to via short name
-    ca_pool_id   = "ngfw-0"
-    location     = "europe-west8"
-    trust_config = "ngfw-0"
-  }
-}
-trust_configs = {
-  ngfw-0 = {
-    location = "europe-west8"
-    allowlisted_certificates = {
-      server-0 = "~/fast-config/data/2-networking-ngfw/server-0.cert.pem"
-    }
-    trust_stores = {
-      ludo-joonix = {
-        intermediate_cas = {
-          issuing-ca-1 = "~/fast-config/data/2-networking-ngfw/intermediate.cert.pem"
-        }
-        trust_anchors = {
-          root-ca-1 = "~/fast-config/data/2-networking-ngfw/ca.cert.pem"
-        }
-      }
-    }
-  }
+swp_configs = {}
+tls_inspection_policy = {
+  # the CA pool defined above is implicitly used when present
+  # ca_pool_id   = "ca-0"
+  location     = "europe-west8"
+  trust_config = "ngfw-0"
 }
 ```
 

@@ -14,3 +14,22 @@
  * limitations under the License.
  */
 
+output "gateways" {
+  description = "The gateway resources."
+  value       = { for k, v in module.swp : k => v.gateway }
+}
+
+output "gateway_security_policies" {
+  description = "The gateway security policy resources."
+  value       = { for k, v in module.swp : k => v.gateway_security_policy }
+}
+
+output "ids" {
+  description = "Gateway IDs."
+  value       = { for k, v in module.swp : k => v.id }
+}
+
+output "service_attachments" {
+  description = "Service attachment IDs."
+  value       = { for k, v in module.swp : k => v.service_attachment }
+}

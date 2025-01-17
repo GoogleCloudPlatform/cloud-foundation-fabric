@@ -15,64 +15,77 @@
  */
 
 locals {
-  ca_projects = toset([
-    for k, v in var.certificate_authorities : v.project_id
-  ])
-  swp_configs = {
-    for k, v in var.swp_configs : k => merge(v, {
-      network_id = lookup(var.vpc_self_links, v.network_id, v.network_id)
-      project_id = lookup(var.host_project_ids, v.project_id, v.project_id)
-      subnetwork_id = try(
-        var.subnet_self_links[v.project_id][v.subnetwork_id], v.subnetwork_id
-      )
-    })
+  project_id = try(module.project[0].project_id, var.project_id)
+  regions = {
+    for k, v in var.locations : k => lookup(var.regions, v, v)
   }
-  swp_projects = toset([
-    for k, v in local.swp_configs : v.project_id
+  swp_configs = flatten([
+    for r_k, r_v in local.regions : [
+      for k, v in var.swp_configs : merge(v, {
+        name             = "${var.name}-${k}-${r_k}"
+        region           = r_v
+        region_shortname = r_k
+      })
+    ]
   ])
 }
 
-module "projects-cas" {
+module "project" {
   source         = "../../../modules/project"
-  for_each       = local.ca_projects
-  name           = each.key
+  count          = var._fast_debug.skip_datasources == true ? 0 : 1
+  name           = var.project_id
   project_create = false
-  services = [
+  service_agents_config = {
+    services_enabled = [
+      "networksecurity.googleapis.com"
+    ]
+  }
+  services = var.enable_services != true ? [] : [
     "privateca.googleapis.com"
   ]
 }
 
-module "projects-swp" {
-  source         = "../../../modules/project"
-  for_each       = local.swp_projects
-  name           = each.key
-  project_create = false
-  services = [
-    "certificatemanager.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "networksecurity.googleapis.com",
-  ]
-}
-
 module "swp" {
-  source       = "../../../modules/net-swp"
-  for_each     = local.swp_configs
-  project_id   = module.projects-swp[each.value.project_id].project_id
-  region       = each.value.region
-  name         = "${each.key}-${var.base_name}"
-  network      = each.value.network_id
-  subnetwork   = each.value.subnetwork_id
+  source     = "../../../modules/net-swp"
+  for_each   = { for k in local.swp_configs : k.name => k }
+  project_id = local.project_id
+  region     = each.value.region
+  name       = each.key
+  network = lookup(
+    var.vpc_self_links,
+    each.value.network_id,
+    each.value.network_id
+  )
+  subnetwork = lookup(
+    lookup(var.subnet_self_links, each.value.network_id, {}),
+    "${each.value.region}/${each.value.subnetwork_id}",
+    each.value.subnetwork_id
+  )
   certificates = each.value.certificates
   factories_config = {
-    policy_rules = "${var.factories_config.policy_rules_base}/${each.key}"
-    url_lists    = "${var.factories_config.url_lists_base}/${each.key}"
+    policy_rules = "${var.factories_config.policy_rules}/${each.key}"
+    url_lists    = "${var.factories_config.url_lists}/${each.key}"
   }
   gateway_config        = each.value.gateway_config
   policy_rules_contexts = var.policy_rules_contexts
-  service_attachment    = each.value.service_attachment
-  tls_inspection_config = lookup(
-    local.tls_inspection_policy_ids,
-    each.value.tls_inspection_policy,
-    each.value.tls_inspection_policy
+  service_attachment = (
+    each.value.service_attachment == null
+    ? null
+    : merge(each.value.service_attachment, {
+      nat_subnets = [
+        for n in each.value.service_attachment.nat_subnets :
+        lookup(var.subnet_self_links, "${each.value.region}/${n}", n)
+      ]
+    })
   )
+  tls_inspection_config = {
+    id = (
+      each.value.tls_inspection_policy_id != null
+      ? each.value.tls_inspection_policy_id
+      : try(
+        google_network_security_tls_inspection_policy.default[each.value.region].id,
+        null
+      )
+    )
+  }
 }
