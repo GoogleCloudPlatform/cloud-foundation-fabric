@@ -33,6 +33,18 @@ variable "automation" {
   })
 }
 
+variable "certificate_authority_pools" {
+  # tfdoc:variable:source 2-security
+  description = "Certificate authority pools."
+  type = map(object({
+    id       = string
+    ca_ids   = map(string)
+    location = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-globals
   description = "Organization details."
