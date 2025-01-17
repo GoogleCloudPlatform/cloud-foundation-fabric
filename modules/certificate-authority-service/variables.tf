@@ -114,7 +114,7 @@ variable "ca_configs" {
 }
 
 variable "ca_pool_config" {
-  description = "The CA pool config. Either use_pool or create_pool need to be used."
+  description = "The CA pool config. Either use_pool or create_pool need to be used. Use pool takes precedence if both are defined."
   type = object({
     create_pool = optional(object({
       name = string
@@ -133,7 +133,7 @@ variable "ca_pool_config" {
     error_message = "Either create pool name or use pool id need to be provided."
   }
   validation {
-    condition = var.ca_pool_config.use_pool != null || contains(
+    condition = var.ca_pool_config.create_pool == null || contains(
       ["DEVOPS", "ENTERPRISE"], try(var.ca_pool_config.create_pool.tier, "-")
     )
     error_message = "Tier for pool creation can only be 'DEVOPS' or 'ENTERPRISE'."

@@ -23,7 +23,8 @@ locals {
 }
 
 resource "google_privateca_ca_pool" "default" {
-  count    = var.ca_pool_config.create_pool != null ? 1 : 0
+  # setting existing pool id overrides creation
+  count    = try(var.ca_pool_config.use_pool.id, null) != null ? 0 : 1
   name     = var.ca_pool_config.create_pool.name
   project  = var.project_id
   location = var.location
