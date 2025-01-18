@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v37.0.0-rc1
+# Fabric release: v37.0.0-rc2
 
 terraform {
   required_version = ">= 1.8.0"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tofu:path:v37.0.0-rc1"
+    module_name = "fabric:tofu:path:v37.0.0-rc2"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tofu:path:v37.0.0-rc1"
+    module_name = "fabric:tofu:path:v37.0.0-rc2"
   }
 }
