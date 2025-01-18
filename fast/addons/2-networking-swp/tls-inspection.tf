@@ -37,10 +37,10 @@ module "cas" {
   iam_bindings_additive = merge(
     var.certificate_authority.iam_bindings_additive,
     var._fast_debug.skip_datasources == true ? {} : {
-      # nsec_certificate_manager = {
-      #   member = module.project[0].service_agents["networksecurity"].iam_email
-      #   role   = "roles/privateca.certificateManager"
-      # }
+      nsec_certificate_manager = {
+        member = module.project[0].service_agents["networksecurity"].iam_email
+        role   = "roles/privateca.certificateManager"
+      }
     }
   )
 }
