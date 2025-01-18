@@ -24,7 +24,7 @@ output "ca_ids" {
 
 output "ca_pool" {
   description = "The CA pool."
-  value       = one(google_privateca_ca_pool.default[0])
+  value       = one(google_privateca_ca_pool.default)
 }
 
 output "ca_pool_id" {
