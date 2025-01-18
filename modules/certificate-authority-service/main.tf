@@ -22,6 +22,11 @@ locals {
   pool_name = reverse(split("/", local.pool_id))[0]
 }
 
+moved {
+  from = google_privateca_ca_pool.ca_pool
+  to   = google_privateca_ca_pool.default
+}
+
 resource "google_privateca_ca_pool" "default" {
   # setting existing pool id overrides creation
   count    = try(var.ca_pool_config.use_pool.id, null) != null ? 0 : 1
@@ -29,6 +34,11 @@ resource "google_privateca_ca_pool" "default" {
   project  = var.project_id
   location = var.location
   tier     = var.ca_pool_config.create_pool.tier
+}
+
+moved {
+  from = google_privateca_certificate_authority.cas
+  to   = google_privateca_certificate_authority.default
 }
 
 resource "google_privateca_certificate_authority" "default" {
