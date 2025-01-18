@@ -15,7 +15,7 @@
 values:
   module.instance.google_compute_instance.default[0]:
     resource_policies:
-    - projects/my-project/regions/europe-west1/resourcePolicies/test
+    - projects/project-id/regions/europe-west8/resourcePolicies/test
 
 counts:
   google_compute_instance: 1

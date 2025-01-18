@@ -27,7 +27,7 @@ values:
       on_host_maintenance: TERMINATE
       preemptible: true
       provisioning_model: SPOT
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

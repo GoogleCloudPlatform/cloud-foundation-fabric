@@ -18,13 +18,13 @@ values:
     - enable_confidential_compute: true
     name_prefix: confidential-template-
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.vm-confidential-example.google_compute_instance.default[0]:
     confidential_instance_config:
     - enable_confidential_compute: true
     name: confidential-vm
     project: project-id
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

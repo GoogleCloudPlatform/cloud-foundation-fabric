@@ -19,7 +19,7 @@ values:
     size: 20
     snapshot: snapshot-2
     type: pd-ssd
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.vm-disk-options-example.google_compute_instance.default[0]:
     attached_disk:
     - device_name: data2
@@ -41,14 +41,14 @@ values:
     description: Managed by the compute-vm Terraform module.
     name: test
     project: project-id
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.vm-disk-options-example.google_compute_region_disk.disks["data1"]:
     name: test-data1
     project: project-id
-    region: europe-west1
+    region: europe-west8
     replica_zones:
-    - europe-west1-b
-    - europe-west1-c
+    - europe-west8-b
+    - europe-west8-c
     size: 10
     type: pd-balanced
 

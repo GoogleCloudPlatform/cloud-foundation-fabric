@@ -40,6 +40,7 @@ In both modes, an optional service account can be created and assigned to either
   - [Sole Tenancy](#sole-tenancy)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ### Instance using defaults
@@ -50,14 +51,14 @@ The simplest example leverages defaults for the boot disk image and size, and us
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
 }
-# tftest modules=1 resources=1 inventory=defaults.yaml
+# tftest modules=1 resources=1 inventory=defaults.yaml e2e
 ```
 
 ### Service account management
@@ -77,14 +78,14 @@ Scopes for custom service accounts are set by default to `cloud-platform` and `u
 module "vm-managed-sa-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test1"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
 }
-# tftest modules=1 resources=1 inventory=sa-default.yaml
+# tftest inventory=sa-default.yaml e2e
 ```
 
 #### Custom service account
@@ -93,17 +94,17 @@ module "vm-managed-sa-example" {
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   service_account = {
-    email = "sa-0@myproj.iam.gserviceaccount.com"
+    email = module.iam-service-account.email
   }
 }
-# tftest modules=1 resources=1 inventory=sa-custom.yaml
+# tftest inventory=sa-custom.yaml fixtures=fixtures/iam-service-account.tf e2e
 ```
 
 #### Custom service account, auto created
@@ -112,7 +113,7 @@ module "vm-managed-sa-example2" {
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -122,7 +123,7 @@ module "vm-managed-sa-example2" {
     auto_create = true
   }
 }
-# tftest modules=1 resources=2 inventory=sa-managed.yaml
+# tftest inventory=sa-managed.yaml e2e
 ```
 
 #### No service account
@@ -131,7 +132,7 @@ module "vm-managed-sa-example2" {
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -139,7 +140,7 @@ module "vm-managed-sa-example2" {
   }]
   service_account = null
 }
-# tftest modules=1 resources=1 inventory=sa-none.yaml
+# tftest inventory=sa-none.yaml e2e
 ```
 
 ### Disk management
@@ -218,7 +219,7 @@ The `attached_disks` variable exposes an `option` attribute that can be used to 
 module "vm-disk-options-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -232,7 +233,7 @@ module "vm-disk-options-example" {
       source      = "image-1"
       options = {
         auto_delete  = false
-        replica_zone = "europe-west1-c"
+        replica_zone = "${var.region}-c"
       }
     },
     {
@@ -250,20 +251,20 @@ module "vm-disk-options-example" {
     auto_create = true
   }
 }
-# tftest modules=1 resources=4 inventory=disk-options.yaml
+# tftest inventory=disk-options.yaml
 ```
 
 #### Boot disk as an independent resource
 
 To create the boot disk as an independent resources instead of as part of the instance creation flow, set `boot_disk.use_independent_disk` to `true` and optionally configure `boot_disk.initialize_params`.
 
-This will create the boot disk as its own resource and attach it to the instance, allowing to recreate the instance from Terraform while preserving the boot.
+This will create the boot disk as its own resource and attach it to the instance, allowing to recreate the instance from Terraform while preserving the boot disk.
 
 ```hcl
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   boot_disk = {
     initialize_params    = {}
@@ -277,7 +278,7 @@ module "simple-vm-example" {
     auto_create = true
   }
 }
-# tftest modules=1 resources=3 inventory=independent-boot-disk.yaml
+# tftest inventory=independent-boot-disk.yaml e2e
 ```
 
 ### Network interfaces
@@ -289,8 +290,8 @@ By default VNs are create with an automatically assigned IP addresses, but you c
 ```hcl
 module "vm-internal-ip" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "vm-internal-ip"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -301,8 +302,8 @@ module "vm-internal-ip" {
 
 module "vm-external-ip" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "vm-external-ip"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -311,38 +312,39 @@ module "vm-external-ip" {
     addresses  = { external = "8.8.8.8" }
   }]
 }
-# tftest modules=2 resources=2 inventory=ips.yaml
+# tftest inventory=ips.yaml
 ```
 
 #### Using Alias IPs
 
-This example shows how to add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM.
+This example shows how to add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM. `alias_ips` is a map of subnetwork additional range name into IP address.
 
 ```hcl
 module "vm-with-alias-ips" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     alias_ips = {
-      alias1 = "10.16.0.10/32"
+      services = "100.71.1.123/32"
     }
   }]
 }
-# tftest modules=1 resources=1 inventory=alias-ips.yaml
+# tftest inventory=alias-ips.yaml e2e
 ```
 
 #### Using gVNIC
 
 This example shows how to enable [gVNIC](https://cloud.google.com/compute/docs/networking/using-gvnic) on your VM by customizing a `cos` image. Given that gVNIC needs to be enabled as an instance configuration and as a guest os configuration, you'll need to supply a bootable disk with `guest_os_features=GVNIC`. `SEV_CAPABLE`, `UEFI_COMPATIBLE` and `VIRTIO_SCSI_MULTIQUEUE` are enabled implicitly in the `cos`, `rhel`, `centos` and other images.
 
-```hcl
+Note: most recent Google-provided images do enable `GVNIC` and no custom image is necessary.
 
+```hcl
 resource "google_compute_image" "cos-gvnic" {
-  project      = "my-project"
+  project      = var.project_id
   name         = "my-image"
   source_image = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18"
 
@@ -362,8 +364,8 @@ resource "google_compute_image" "cos-gvnic" {
 
 module "vm-with-gvnic" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "test"
   boot_disk = {
     initialize_params = {
@@ -380,7 +382,7 @@ module "vm-with-gvnic" {
     auto_create = true
   }
 }
-# tftest modules=1 resources=3 inventory=gvnic.yaml
+# tftest inventory=gvnic.yaml
 ```
 
 #### PSC interfaces
@@ -392,29 +394,29 @@ module "vm-with-gvnic" {
 # create the network attachment from a service project
 module "net-attachment" {
   source     = "./fabric/modules/net-address"
-  project_id = "prj-svc"
+  project_id = var.project_id
   network_attachments = {
     svc-0 = {
-      subnet_self_link      = "projects/prj-host/regions/europe-west8/subnetworks/gce"
-      producer_accept_lists = ["my-vm-project"]
+      subnet_self_link      = module.vpc.subnet_self_links["${var.region}/ipv6-internal"]
+      producer_accept_lists = [var.project_id]
     }
   }
 }
 
 module "vm-psc-interface" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-vm-project"
-  zone       = "europe-west8-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "vm-internal-ip"
   network_interfaces = [{
-    network    = "internal"
-    subnetwork = "internal"
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
   }]
   network_attached_interfaces = [
     module.net-attachment.network_attachment_ids["svc-0"]
   ]
 }
-# tftest modules=2 resources=2
+# tftest fixtures=fixtures/net-vpc-ipv6.tf e2e
 ```
 
 ### Metadata
@@ -425,7 +427,7 @@ You can define labels and custom metadata values. Metadata can be leveraged, for
 module "vm-metadata-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "nginx-server"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -446,7 +448,7 @@ module "vm-metadata-example" {
     auto_create = true
   }
 }
-# tftest modules=1 resources=2 inventory=metadata.yaml
+# tftest inventory=metadata.yaml e2e
 ```
 
 ### IAM
@@ -457,7 +459,7 @@ Like most modules, you can assign IAM roles to the instance using the `iam` vari
 module "vm-iam-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "webserver"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -465,12 +467,11 @@ module "vm-iam-example" {
   }]
   iam = {
     "roles/compute.instanceAdmin" = [
-      "group:webserver@example.com",
-      "group:admin@example.com"
+      "group:${var.group_email}",
     ]
   }
 }
-# tftest modules=1 resources=2 inventory=iam.yaml
+# tftest inventory=iam.yaml e2e
 
 ```
 
@@ -482,7 +483,7 @@ module "vm-iam-example" {
 module "spot-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   options = {
     spot               = true
@@ -493,7 +494,7 @@ module "spot-vm-example" {
     subnetwork = var.subnet.self_link
   }]
 }
-# tftest modules=1 resources=1 inventory=spot.yaml
+# tftest inventory=spot.yaml e2e
 ```
 
 ### Confidential compute
@@ -504,30 +505,41 @@ You can enable confidential compute with the `confidential_compute` variable, wh
 module "vm-confidential-example" {
   source               = "./fabric/modules/compute-vm"
   project_id           = var.project_id
-  zone                 = "europe-west1-b"
+  zone                 = "${var.region}-b"
   name                 = "confidential-vm"
   confidential_compute = true
+  instance_type        = "n2d-standard-2"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-12"
+    }
+  }
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-
 }
 
 module "template-confidential-example" {
   source               = "./fabric/modules/compute-vm"
   project_id           = var.project_id
-  zone                 = "europe-west1-b"
+  zone                 = "${var.region}-b"
   name                 = "confidential-template"
   confidential_compute = true
   create_template      = true
+  instance_type        = "n2d-standard-2"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-12"
+    }
+  }
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
 }
 
-# tftest modules=2 resources=2 inventory=confidential.yaml
+# tftest inventory=confidential.yaml e2e
 ```
 
 ### Disk encryption with Cloud KMS
@@ -609,8 +621,8 @@ This example shows how to use the module to manage an instance template that def
 ```hcl
 module "cos-test" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -628,11 +640,11 @@ module "cos-test" {
     }
   ]
   service_account = {
-    email = "vm-default@my-project.iam.gserviceaccount.com"
+    email = module.iam-service-account.email
   }
   create_template = true
 }
-# tftest modules=1 resources=1 inventory=template.yaml
+# tftest inventory=template.yaml  fixtures=fixtures/iam-service-account.tf e2e
 ```
 
 ### Instance group
@@ -646,15 +658,17 @@ locals {
 
 module "instance-group" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "ilb-test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   service_account = {
     email  = var.service_account.email
@@ -665,49 +679,66 @@ module "instance-group" {
   }
   group = { named_ports = {} }
 }
-# tftest modules=1 resources=2 inventory=group.yaml
+# tftest inventory=group.yaml e2e
 ```
 
 ### Instance Schedule
 
-Instance start and stop schedules can be defined via an existing or auto-created resource policy.
+Instance start and stop schedules can be defined via an existing or auto-created resource policy. This functionality requires [additional permissions on Compute Engine Service Agent](https://cloud.google.com/compute/docs/instances/schedule-instance-start-stop#service_agent_required_roles)
 
 To use an existing policy pass its id to the `instance_schedule` variable:
 
 ```hcl
 module "instance" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "schedule-test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   instance_schedule = {
-    resource_policy_id = "projects/my-project/regions/europe-west1/resourcePolicies/test"
+    resource_policy_id = "projects/${var.project_id}/regions/${var.region}/resourcePolicies/test"
   }
 }
-# tftest modules=1 resources=1 inventory=instance-schedule-id.yaml
+# tftest inventory=instance-schedule-id.yaml
 ```
 
 To create a new policy set its configuration in the `instance_schedule` variable. When removing the policy follow a two-step process by first setting `active = false` in the schedule configuration, which will unattach the policy, then removing the variable so the policy is destroyed.
 
 ```hcl
+module "project" {
+  source         = "./fabric/modules/project"
+  name           = var.project_id
+  project_create = false
+  services = ["compute.googleapis.com"]
+  iam_bindings_additive = {
+    compute-admin-service-agent = {
+      member = module.project.service_agents["compute"].iam_email
+      role   = "roles/compute.instanceAdmin.v1"
+    }
+  }
+}
+
 module "instance" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = module.project.project_id
+  zone       = "${var.region}-b"
   name       = "schedule-test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   instance_schedule = {
     create_config = {
@@ -716,7 +747,7 @@ module "instance" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=instance-schedule-create.yaml
+# tftest inventory=instance-schedule-create.yaml e2e skip
 ```
 
 ### Snapshot Schedules
@@ -726,22 +757,24 @@ Snapshot policies can be attached to disks with optional creation managed by the
 ```hcl
 module "instance" {
   source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "europe-west1-b"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
   name       = "schedule-test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    image             = "projects/cos-cloud/global/images/family/cos-stable"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
     snapshot_schedule = ["boot"]
   }
   attached_disks = [
     {
       name              = "disk-1"
       size              = 10
-      snapshot_schedule = ["generic-vm"]
+      snapshot_schedule = ["boot"]
     }
   ]
   snapshot_schedules = {
@@ -755,7 +788,7 @@ module "instance" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=snapshot-schedule-create.yaml
+# tftest inventory=snapshot-schedule-create.yaml e2e
 ```
 
 ### Resource Manager Tags (non-firewall)
@@ -777,7 +810,7 @@ This is an example of setting tag bindings:
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -787,7 +820,7 @@ module "simple-vm-example" {
     "tagKeys/1234567890" = "tagValues/7890123456"
   }
 }
-# tftest modules=1 resources=1 inventory=tag-bindings.yaml
+# tftest inventory=tag-bindings.yaml
 ```
 
 ### Resource Manager Tags (firewall)
@@ -800,7 +833,7 @@ This is an example of setting both types of tag bindings:
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -814,7 +847,7 @@ module "simple-vm-example" {
     "tagKeys/5678901234" = "tagValues/3456789012"
   }
 }
-# tftest modules=1 resources=1 inventory=tag-bindings.yaml
+# tftest inventory=tag-bindings.yaml
 ```
 
 ### Sole Tenancy
@@ -823,10 +856,11 @@ You can add node affinities (and anti-affinity) configurations to allocate the V
 
 ```hcl
 module "sole-tenancy" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = var.project_id
-  zone       = "europe-west1-b"
-  name       = "test"
+  source        = "./fabric/modules/compute-vm"
+  project_id    = var.project_id
+  zone          = "${var.region}-b"
+  instance_type = "n1-standard-1"
+  name          = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -843,7 +877,7 @@ module "sole-tenancy" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=sole-tenancy.yaml
+# tftest inventory=sole-tenancy.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -898,4 +932,9 @@ module "sole-tenancy" {
 | [service_account_iam_email](outputs.tf#L73) | Service account email. |  |
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
+
+## Fixtures
+
+- [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
+- [net-vpc-ipv6.tf](../../tests/fixtures/net-vpc-ipv6.tf)
 <!-- END TFDOC -->

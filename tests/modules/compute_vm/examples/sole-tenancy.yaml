@@ -34,7 +34,7 @@ values:
     enable_display: false
     hostname: null
     labels: null
-    machine_type: f1-micro
+    machine_type: n1-standard-1
     metadata: null
     metadata_startup_script: null
     name: test
@@ -79,7 +79,7 @@ values:
     shielded_instance_config: []
     tags: null
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

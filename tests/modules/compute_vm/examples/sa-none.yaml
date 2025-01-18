@@ -65,7 +65,7 @@ values:
     shielded_instance_config: []
     tags: null
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1
