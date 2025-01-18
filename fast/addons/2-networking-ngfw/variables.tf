@@ -94,6 +94,13 @@ variable "certificate_authorities" {
   default  = {}
 }
 
+variable "enable_services" {
+  description = "Configure project by enabling services required for this add-on."
+  type        = bool
+  nullable    = false
+  default     = true
+}
+
 variable "names" {
   description = "Configuration for names used for output files."
   type = object({
