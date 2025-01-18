@@ -27,13 +27,21 @@ locals {
 }
 
 module "cas" {
-  source         = "../../../modules/certificate-authority-service"
-  for_each       = var.certificate_authorities
-  project_id     = local.project_id
-  ca_configs     = each.value.ca_configs
-  ca_pool_config = each.value.ca_pool_config
-  iam            = each.value.iam
-  iam_bindings   = each.value.iam_bindings
+  source     = "../../../modules/certificate-authority-service"
+  for_each   = var.certificate_authorities
+  project_id = local.project_id
+  ca_configs = each.value.ca_configs
+  ca_pool_config = (
+    each.value.ca_pool_config != null
+    ? each.value.ca_pool_config
+    : {
+      create_pool = {
+        name = each.key
+      }
+    }
+  )
+  iam          = each.value.iam
+  iam_bindings = each.value.iam_bindings
   iam_bindings_additive = merge(
     each.value.iam_bindings_additive,
     var._fast_debug.skip_datasources == true ? {} : {

@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,24 +13,11 @@
 # limitations under the License.
 
 counts:
-  google_essential_contacts_contact: 1
-  google_kms_crypto_key: 8
-  google_kms_crypto_key_iam_binding: 8
-  google_kms_key_ring: 8
+  google_network_security_gateway_security_policy: 1
+  google_network_security_tls_inspection_policy: 1
+  google_network_services_gateway: 1
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
-  google_project: 2
-  google_project_iam_binding: 4
-  google_project_iam_member: 4
-  google_project_service: 10
-  google_project_service_identity: 8
   google_storage_bucket_object: 1
-  google_tags_tag_binding: 2
-  modules: 12
-  resources: 58
-
-outputs:
-  certificate_authority_pools: __missing__
-  kms_keys: __missing__
-  tfvars: __missing__
-
+  modules: 2
+  resources: 6
