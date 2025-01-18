@@ -80,11 +80,15 @@ variable "certificate_authorities" {
         pem_issuer_certificates = optional(list(string))
       }), null)
     }))
-    ca_pool_config = object({
-      ca_pool_id = optional(string, null)
-      name       = optional(string, null)
-      tier       = optional(string, "DEVOPS")
-    })
+    ca_pool_config = optional(object({
+      create_pool = optional(object({
+        name = optional(string)
+        tier = optional(string, "DEVOPS")
+      }))
+      use_pool = optional(object({
+        id = string
+      }))
+    }))
   }))
   nullable = false
   default  = {}
