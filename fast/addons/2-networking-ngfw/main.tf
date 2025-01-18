@@ -15,15 +15,23 @@
  */
 
 locals {
+  aliased_project_id = lookup(
+    var.host_project_ids, var.project_id, var.project_id
+  )
   project_id = try(module.project[0].project_id, var.project_id)
 }
 
 module "project" {
   source         = "../../../modules/project"
   count          = var._fast_debug.skip_datasources == true ? 0 : 1
-  name           = var.project_id
+  name           = local.aliased_project_id
   project_create = false
-  services = [
+  service_agents_config = {
+    services_enabled = [
+      "networksecurity.googleapis.com"
+    ]
+  }
+  services = var.enable_services != true ? [] : [
     "certificatemanager.googleapis.com",
     "networkmanagement.googleapis.com",
     "networksecurity.googleapis.com",

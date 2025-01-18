@@ -45,6 +45,14 @@ variable "certificate_authority_pools" {
   default  = {}
 }
 
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Networking stage host project id aliases."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-globals
   description = "Organization details."
