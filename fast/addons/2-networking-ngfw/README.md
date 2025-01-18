@@ -110,10 +110,6 @@ certificate_authorities = {
         }
       }
     }
-    ca_pool_config = {
-      authz_nsec_sa = true
-      name          = "ca-pool-0"
-    }
   }
 }
 ngfw_config = {
