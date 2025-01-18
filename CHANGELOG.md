@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2819)] modules/compute-vm end-to-end tests and fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2025-01-16 09:54:52+00:00 -->
 - [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
 - [[#2814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2814)] Add `iam_by_principals_additive` to project, organization and folder modules ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 12:32:20+00:00 -->
 
