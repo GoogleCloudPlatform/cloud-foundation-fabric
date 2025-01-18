@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-01-18 07:38:32+00:00 to: None since: v37.0.0-rc2 -->
 
+## [37.0.0-rc2] - 2025-01-18
+
 ### FAST
 
 - [[#2831](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2831)] Allow networking stage to be disabled ([juliocc](https://github.com/juliocc)) <!-- 2025-01-22 06:45:23+00:00 -->
