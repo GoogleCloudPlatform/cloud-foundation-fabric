@@ -91,8 +91,12 @@ module "top-level-folder" {
   }
   iam_bindings = {
     for k, v in each.value.iam_bindings : k => merge(v, {
-      member = lookup(local.top_level_sa, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      role = lookup(var.custom_roles, v.role, v.role)
+      members = [
+        for item in v.members :
+        lookup(local.top_level_sa, item, item)
+      ]
+      condition = try(v.condition, null)
     })
   }
   iam_bindings_additive = {
