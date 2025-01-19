@@ -17,6 +17,10 @@
 # tfdoc:file:description FAST context locals
 
 locals {
+  # extract the map of all subnet ids and their networks
+  _subnet_ids = {
+    for k, v in local._all_instances : v.subnet_id => v.network_id...
+  }
   # extract attributes from subnet ids
   _subnet_attrs = {
     for k, v in local._subnet_ids : k => merge(
@@ -31,11 +35,7 @@ locals {
       }
     )
   }
-  # extract the map of all subnet ids and their networks
-  _subnet_ids = {
-    for k, v in local._all_instances : v.subnet_id => v.network_id...
-  }
-  # recompose subnet ids trying context substitutions
+  # recompose subnet ids checking for context substitutions
   _subnets = {
     for k, v in local._subnet_attrs : k => merge(v, v.region_alias == null ? {} : {
       id = try(replace(v.id, v.region, v.region_alias))
