@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,12 @@ variable "autoclass" {
   description = "Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false."
   type        = bool
   default     = null
+}
+
+variable "bucket_create" {
+  description = "Create bucket. When set to false, uses a data source to reference existing project."
+  type        = bool
+  default     = true
 }
 
 variable "cors" {
@@ -168,7 +174,11 @@ variable "lifecycle_rules" {
 variable "location" {
   description = "Bucket location."
   type        = string
-  # default     = "EU"
+  default     = null
+  validation {
+    condition     = ((var.bucket_create == true) == (var.location != null))
+    error_message = "Bucket location is required if and only if bucket_create is true."
+  }
 }
 
 variable "logging_config" {
