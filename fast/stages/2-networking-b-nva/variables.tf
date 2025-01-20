@@ -39,12 +39,6 @@ variable "alert_config" {
   }
 }
 
-variable "create_test_instances" {
-  description = "Enables the creation of test VMs in each VPC, useful to test and troubleshoot connectivity."
-  type        = bool
-  default     = false
-}
-
 variable "dns" {
   description = "DNS configuration."
   type = object({

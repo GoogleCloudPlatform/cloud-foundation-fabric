@@ -136,7 +136,7 @@ terraform init
 terraform apply
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-swp.tf -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-networking-swp-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
