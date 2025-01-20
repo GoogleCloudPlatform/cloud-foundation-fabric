@@ -16,7 +16,7 @@
 
 output "bucket" {
   description = "Bucket resource."
-  value       = google_storage_bucket.bucket
+  value       = one(google_storage_bucket.bucket)
 }
 
 # We add `id` as an alias to `name` to simplify log sink handling.
