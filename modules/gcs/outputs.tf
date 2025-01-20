@@ -27,7 +27,7 @@ output "bucket" {
 
 output "id" {
   description = "Fully qualified bucket id."
-  value       = "${local.prefix}${lower(var.name)}"
+  value       = local._name
   depends_on = [
     google_storage_bucket.bucket,
     google_storage_bucket_iam_binding.bindings,
@@ -38,7 +38,7 @@ output "id" {
 
 output "name" {
   description = "Bucket name."
-  value       = "${local.prefix}${lower(var.name)}"
+  value       = local._name
   depends_on = [
     google_storage_bucket.bucket,
     google_storage_bucket_iam_binding.bindings,

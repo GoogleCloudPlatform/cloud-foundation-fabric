@@ -15,6 +15,7 @@
  */
 
 locals {
+  _name        = "${local.prefix}${lower(var.name)}"
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
   topic_create = try(var.notification_config.create_topic, null) != null
@@ -25,9 +26,9 @@ locals {
       url  = try(google_storage_bucket.bucket[0].url, null)
     }
     : {
-      name = "${local.prefix}${lower(var.name)}"
-      id   = "${local.prefix}${lower(var.name)}"
-      url  = "gs://${local.prefix}${lower(var.name)}"
+      name = local._name
+      id   = local._name
+      url  = "gs://${local._name}"
     }
   )
 }
@@ -39,7 +40,7 @@ moved {
 
 resource "google_storage_bucket" "bucket" {
   count                       = var.bucket_create ? 1 : 0
-  name                        = "${local.prefix}${lower(var.name)}"
+  name                        = local._name
   project                     = var.project_id
   location                    = var.location
   storage_class               = var.storage_class
