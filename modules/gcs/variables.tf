@@ -21,7 +21,7 @@ variable "autoclass" {
 }
 
 variable "bucket_create" {
-  description = "Create bucket. When set to false, uses a data source to reference existing project."
+  description = "Create bucket."
   type        = bool
   default     = true
 }
