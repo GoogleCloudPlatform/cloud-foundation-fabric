@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@ values:
   google_storage_bucket_object.providers["1-resman-folder-sandbox"]:
     bucket: fast2-prod-iac-core-outputs
     name: providers/1-resman-folder-sandbox-providers.tf
+  google_storage_bucket_object.providers["1-resman-folder-shared"]:
+    bucket: fast2-prod-iac-core-outputs
+    name: providers/1-resman-folder-shared-providers.tf
   google_storage_bucket_object.providers["1-resman-folder-tenants"]:
     bucket: fast2-prod-iac-core-outputs
     name: providers/1-resman-folder-tenants-providers.tf
@@ -98,6 +101,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-net prod service account (read-only).
+    email: fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-ro["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -119,6 +124,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-sec prod service account (read-only).
+    email: fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -140,6 +147,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-net prod service account.
+    email: fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-rw["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -161,6 +170,8 @@ values:
     description: null
     disabled: false
     display_name: CI/CD 2-sec prod service account.
+    email: fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.cicd-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
@@ -172,7 +183,7 @@ values:
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectViewer
-  module.net-bucket[0].google_storage_bucket.bucket:
+  module.net-bucket[0].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -403,6 +414,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman networking service account (read-only).
+    email: fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.net-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -424,6 +437,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman networking service account.
+    email: fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.net-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -435,7 +450,7 @@ values:
     bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  module.nsec-bucket[0].google_storage_bucket.bucket:
+  module.nsec-bucket[0].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -482,6 +497,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman network security main service account (read-only).
+    email: fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-nsec-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.nsec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -502,6 +519,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman network security main service account.
+    email: fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-nsec-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.nsec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -662,6 +681,10 @@ values:
     description: Managed by the Terraform organization module.
     short_name: security
     timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/shared"]:
+    description: Managed by the Terraform organization module.
+    short_name: shared
+    timeouts: null
   module.organization[0].google_tags_tag_value.default["context/tenants"]:
     description: Managed by the Terraform organization module.
     short_name: tenants
@@ -706,7 +729,7 @@ values:
     - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     - serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
-  module.pf-bucket[0].google_storage_bucket.bucket:
+  module.pf-bucket[0].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -753,6 +776,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project factory main service account (read-only).
+    email: fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.pf-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -773,6 +798,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project factory main service account.
+    email: fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.pf-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -783,7 +810,7 @@ values:
     bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  module.sec-bucket[0].google_storage_bucket.bucket:
+  module.sec-bucket[0].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -905,6 +932,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman security service account (read-only).
+    email: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.sec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -926,6 +955,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman security service account.
+    email: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.sec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -937,7 +968,7 @@ values:
     bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  module.stage3-bucket["gcve-dev"].google_storage_bucket.bucket:
+  module.stage3-bucket["gcve-dev"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -974,7 +1005,7 @@ values:
     members:
     - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["gcve-prod"].google_storage_bucket.bucket:
+  module.stage3-bucket["gcve-prod"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1011,7 +1042,7 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["gke-dev"].google_storage_bucket.bucket:
+  module.stage3-bucket["gke-dev"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1048,7 +1079,7 @@ values:
     members:
     - serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["gke-prod"].google_storage_bucket.bucket:
+  module.stage3-bucket["gke-prod"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1085,7 +1116,7 @@ values:
     members:
     - serviceAccount:fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["project-factory-dev"].google_storage_bucket.bucket:
+  module.stage3-bucket["project-factory-dev"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1122,7 +1153,7 @@ values:
     members:
     - serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.stage3-bucket["project-factory-prod"].google_storage_bucket.bucket:
+  module.stage3-bucket["project-factory-prod"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1333,6 +1364,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-dev service account (read-only).
+    email: fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1353,6 +1386,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-prod service account (read-only).
+    email: fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gcve-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1373,6 +1408,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-dev service account (read-only).
+    email: fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1393,6 +1430,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-prod service account (read-only).
+    email: fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-ro["gke-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1413,6 +1452,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-dev service account (read-only).
+    email: fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-ro["project-factory-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1433,6 +1474,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-prod service account (read-only).
+    email: fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-ro["project-factory-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1453,6 +1496,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-dev service account.
+    email: fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1473,6 +1518,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gcve-prod service account.
+    email: fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gcve-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1493,6 +1540,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-dev service account.
+    email: fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1513,6 +1562,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman gke-prod service account.
+    email: fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.stage3-sa-rw["gke-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1533,6 +1584,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-dev service account.
+    email: fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-rw["project-factory-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1553,6 +1606,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman project-factory-prod service account.
+    email: fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   ? module.stage3-sa-rw["project-factory-prod"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1563,7 +1618,7 @@ values:
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
-  module.top-level-bucket["sandbox"].google_storage_bucket.bucket:
+  module.top-level-bucket["sandbox"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1600,7 +1655,7 @@ values:
     members:
     - serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.top-level-bucket["tenants"].google_storage_bucket.bucket:
+  module.top-level-bucket["shared"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -1610,6 +1665,45 @@ values:
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-shared-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.top-level-bucket["shared"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-shared-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.top-level-bucket["shared"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-shared-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.top-level-bucket["tenants"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -1681,6 +1775,14 @@ values:
     timeouts: null
   module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
     timeouts: null
+  module.top-level-folder["shared"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Shared Infrastructure
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["shared"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
   module.top-level-folder["teams"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Teams
@@ -1745,6 +1847,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman sandbox folder service account.
+    email: fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.top-level-sa["sandbox"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
@@ -1752,6 +1856,28 @@ values:
     members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.top-level-sa["sandbox"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.top-level-sa["shared"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.top-level-sa["shared"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-shared-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman shared folder service account.
+    email: fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-shared-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.top-level-sa["shared"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.top-level-sa["shared"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
   : bucket: fast2-prod-iac-core-outputs
     condition: []
     role: roles/storage.objectAdmin
@@ -1765,6 +1891,8 @@ values:
     description: null
     disabled: false
     display_name: Terraform resman tenants folder service account.
+    email: fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-tenants-0@fast2-prod-automation.iam.gserviceaccount.com
     project: fast2-prod-automation
     timeouts: null
   module.top-level-sa["tenants"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
