@@ -38,7 +38,7 @@ locals {
   # recompose subnet ids checking for context substitutions
   _subnets = {
     for k, v in local._subnet_attrs : k => merge(v, v.region_alias == null ? {} : {
-      id = try(replace(v.id, v.region, v.region_alias))
+      id     = try(replace(v.id, v.region, v.region_alias))
       region = coalesce(v.region_alias, v.region)
     })
   }
