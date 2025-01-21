@@ -349,7 +349,6 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 | [net-prod.tf](./net-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-firewall-policy</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
-| [test-resources.tf](./test-resources.tf) | Temporary instances for testing | <code>compute-vm</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | FAST stage interface. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |

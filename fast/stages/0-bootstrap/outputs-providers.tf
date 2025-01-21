@@ -66,16 +66,9 @@ locals {
       "${v.parent_stage}-${k}" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         name          = "${v.parent_stage}-${k}"
-        bucket = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-gcs.name
-          : module.automation-tf-vpcsc-gcs.name
-        )
-        sa = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-sa.name
-          : module.automation-tf-vpcsc-sa.name
-        )
+
+        bucket        = local._parent_stage_resources[v.parent_stage].bucket
+        sa            = local._parent_stage_resources[v.parent_stage].sa
       })
     },
     {
@@ -83,16 +76,8 @@ locals {
       "${v.parent_stage}-${k}-r" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         name          = "${v.parent_stage}-${k}"
-        bucket = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-gcs.name
-          : module.automation-tf-vpcsc-gcs.name
-        )
-        sa = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-r-sa.name
-          : module.automation-tf-vpcsc-r-sa.name
-        )
+        bucket        = local._parent_stage_resources[v.parent_stage].bucket
+        sa            = local._parent_stage_resources[v.parent_stage].sa_r
       })
     }
   )

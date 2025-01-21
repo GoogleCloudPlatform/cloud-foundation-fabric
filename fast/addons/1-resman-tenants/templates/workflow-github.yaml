@@ -36,7 +36,7 @@ jobs:
   fast-pr:
     # Skip PRs which are closed without being merged.
     if: >-
-      github.event.action == 'closed' && 
+      github.event.action == 'closed' &&
       github.event.pull_request.merged == true ||
       github.event.action == 'opened' ||
       github.event.action == 'synchronize'

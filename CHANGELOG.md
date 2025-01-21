@@ -3,29 +3,28 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-01-10 16:03:21+00:00 to: None since: v36.1.0 -->
+## [Unreleased] <!-- from: 2024-11-22 15:04:14+00:00 to: None since: v36.0.0 -->
 
-### BLUEPRINTS
-
-- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
+## [37.0.0-rc2] - 2025-01-18
 
 ## [37.0.0-rc2] - 2025-01-18
 
 ### FAST
 
-- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
-- [[#2812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2812)] Simplify versions tf and update FAST workflows ([juliocc](https://github.com/juliocc)) <!-- 2025-01-12 20:39:01+00:00 -->
+- [[#2821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2821)] FAST SWP networking add-on, refactor CAS module interface ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 07:12:41+00:00 -->
+- [[#2818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2818)] Top level folder factory support for automation SA IAM ([sruffilli](https://github.com/sruffilli)) <!-- 2025-01-16 09:33:00+00:00 -->
+- [[#2817](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2817)] Fix permadiff in stage 0 vpc-sc service account, add schemas to hierarchical policy YAML files ([ludoo](https://github.com/ludoo)) <!-- 2025-01-15 09:47:04+00:00 -->
+- [[#2815](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2815)] [FAST] Add missing permission to ngfwEnterprise org ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-01-14 08:40:58+00:00 -->
+- [[#2813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2813)] feat: restructure how var files are provided to workflow templates ([Liam-Johnston](https://github.com/Liam-Johnston)) <!-- 2025-01-14 06:29:38+00:00 -->
+- [[#2810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2810)] Small fixes and improvements to FAST netsec/net ([ludoo](https://github.com/ludoo)) <!-- 2025-01-11 12:48:45+00:00 -->
+- [[#2800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2800)] Implement FAST stage add-ons, refactor netsec as add-on ([ludoo](https://github.com/ludoo)) <!-- 2025-01-09 18:14:12+00:00 -->
+- [[#2801](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2801)] Add optional support for fw policies via new vpc_configs variable, refactor factories variable in net stages ([ludoo](https://github.com/ludoo)) <!-- 2025-01-09 16:14:56+00:00 -->
+- [[#2787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2787)] Leverage environments for folder and project creation in FAST resman and security ([ludoo](https://github.com/ludoo)) <!-- 2024-12-27 20:03:31+00:00 -->
 
 ### MODULES
 
-- [[#2819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2819)] modules/compute-vm end-to-end tests and fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2025-01-16 09:54:52+00:00 -->
-- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
-- [[#2814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2814)] Add `iam_by_principals_additive` to project, organization and folder modules ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 12:32:20+00:00 -->
-
-### TOOLS
-
-- [[#2814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2814)] Add `iam_by_principals_additive` to project, organization and folder modules ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 12:32:20+00:00 -->
-- [[#2812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2812)] Simplify versions tf and update FAST workflows ([juliocc](https://github.com/juliocc)) <!-- 2025-01-12 20:39:01+00:00 -->
+- [[#2821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2821)] **incompatible change:** FAST SWP networking add-on, refactor CAS module interface ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 07:12:41+00:00 -->
+- [[#2820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2820)] **incompatible change:** Do not create service agent resources in project module for services not explicitly enabled ([ludoo](https://github.com/ludoo)) <!-- 2025-01-17 15:55:41+00:00 -->
 
 ## [36.1.0] - 2025-01-10
 
