@@ -38,7 +38,8 @@ locals {
   # recompose subnet ids checking for context substitutions
   _subnets = {
     for k, v in local._subnet_attrs : k => merge(v, v.region_alias == null ? {} : {
-      id = try(replace(v.id, v.region, v.region_alias))
+      id     = try(replace(v.id, v.region, v.region_alias))
+      region = coalesce(v.region_alias, v.region)
     })
   }
   # derive product of instances and zones and expand instance contexts
@@ -52,7 +53,7 @@ locals {
           var.subnet_self_links[v.network_id][local._subnets[v.subnet_id].id],
           v.subnet_id
         )
-        zone = "${local._subnets[v.subnet_id].region}-${z}"
+        zone = "${local._subnets[v.subnet_id].region_alias}-${z}"
       })
     ]
   ])
