@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,21 +17,21 @@
 name: Teams
 iam:
   "roles/owner":
-    - project-factory
+    - project-factory-pf
   "roles/resourcemanager.folderAdmin":
-    - project-factory
+    - project-factory-pf
   "roles/resourcemanager.projectCreator":
-    - project-factory
+    - project-factory-pf
   "roles/resourcemanager.tagUser":
-    - project-factory
+    - project-factory-pf
   "service_project_network_admin":
-    - project-factory
+    - project-factory-pf
   "roles/viewer":
-    - project-factory-r
+    - project-factory-pf-r
   "roles/resourcemanager.folderViewer":
-    - project-factory-r
+    - project-factory-pf-r
   "roles/resourcemanager.tagViewer":
-    - project-factory-r
+    - project-factory-pf-r
 # don't create a context tag since this uses the pf tag
 is_fast_context: false
 tag_bindings:

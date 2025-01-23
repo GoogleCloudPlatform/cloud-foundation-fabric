@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ variable "fast_stage_2" {
     }), {})
     project_factory = optional(object({
       enabled    = optional(bool, true)
-      short_name = optional(string, "pf")
+      short_name = optional(list(string), ["pf"])
       cicd_config = optional(object({
         identity_provider = string
         repository = object({

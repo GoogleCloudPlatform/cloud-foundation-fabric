@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,8 @@ locals {
       security   = module.sec-sa-rw[0].email
       security-r = module.sec-sa-ro[0].email
     },
-    !var.fast_stage_2.project_factory.enabled ? {} : {
-      project-factory   = module.pf-sa-rw[0].email
-      project-factory-r = module.pf-sa-ro[0].email
-    },
+    { for k, v in module.pf-sa-rw : "project-factory-${k}" => module.pf-sa-rw[k].email },
+    { for k, v in module.pf-sa-ro : "project-factory-${k}-r" => module.pf-sa-ro[k].email },
     { for k, v in local.stage3 : k => module.stage3-sa-rw[k].email },
     { for k, v in local.stage3 : "${k}-r" => module.stage3-sa-ro[k].email },
   )

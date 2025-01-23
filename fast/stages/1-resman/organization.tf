@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,13 +52,13 @@ locals {
         {
           "roles/resourcemanager.tagUser" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
+            [for _, v in values(module.pf-sa-rw) : v.iam_email],
             !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
             !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
+            [for v in values(module.pf-sa-ro) : v.iam_email],
             !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
             !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],
           ))
