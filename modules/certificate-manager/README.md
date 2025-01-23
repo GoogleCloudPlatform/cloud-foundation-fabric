@@ -258,6 +258,7 @@ module "certificate-manager" {
 |---|---|:---:|
 | [certificate_ids](outputs.tf#L17) | Certificate ids. |  |
 | [certificates](outputs.tf#L22) | Certificates. |  |
-| [map](outputs.tf#L27) | Map. |  |
-| [map_id](outputs.tf#L32) | Map id. |  |
+| [dns_authorizations](outputs.tf#L27) | DNS authorizations. |  |
+| [map](outputs.tf#L32) | Map. |  |
+| [map_id](outputs.tf#L37) | Map id. |  |
 <!-- END TFDOC -->
