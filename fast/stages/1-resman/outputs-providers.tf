@@ -28,15 +28,16 @@ locals {
         }
       }
     },
-    var.fast_stage_2["project_factory"].enabled != true ? {} : {
-      project_factory = {
-        bucket = module.pf-bucket[0].name
-        sa = {
-          apply = module.pf-sa-rw[0].email
-          plan  = module.pf-sa-ro[0].email
+    merge([
+      for k in keys(module.pf-sa-rw) : {
+        "project_factory_${k}" = {
+          bucket = module.pf-bucket[k].name
+          sa = {
+            apply = module.pf-sa-rw[k].email
+            plan  = module.pf-sa-ro[k].email
+          }
         }
-      }
-    },
+    }]...),
     var.fast_stage_2["security"].enabled != true ? {} : {
       security = {
         bucket = module.sec-bucket[0].name
@@ -59,14 +60,14 @@ locals {
       } if v.parent_stage == "2-networking"
     },
     var.fast_stage_2["project_factory"].enabled != true ? {} : {
-      for k, v in local.stage_addons : "pf-${k}" => {
-        bucket        = module.pf-bucket[0].name
+      for k, v in local.stage_addons : "project-factory-${k}" => {
+        bucket        = module.pf-bucket[trimprefix(v.parent_stage, "2-project-factory-")].name
         backend_extra = "prefix = \"addons/${k}\""
         sa = {
-          apply = module.pf-sa-rw[0].email
-          plan  = module.pf-sa-ro[0].email
+          apply = module.pf-sa-rw[trimprefix(v.parent_stage, "2-project-factory-")].email
+          plan  = module.pf-sa-ro[trimprefix(v.parent_stage, "2-project-factory-")].email
         }
-      } if v.parent_stage == "2-project-factory"
+      } if startswith(v.parent_stage, "2-project-factory")
     },
     var.fast_stage_2["security"].enabled != true ? {} : {
       for k, v in local.stage_addons : "security-${k}" => {

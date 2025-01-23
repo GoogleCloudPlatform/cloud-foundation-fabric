@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+locals {
+  _pf_short_names = (
+    var.fast_stage_2.project_factory.enabled
+    ? toset(var.fast_stage_2.project_factory.short_name)
+    : toset([])
+  )
+}
+
 # automation service accounts
 
 module "pf-sa-rw" {
   source     = "../../../modules/iam-service-account"
-  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  for_each   = local._pf_short_names
   project_id = var.automation.project_id
   name = templatestring(var.resource_names["sa-pf_rw"], {
-    name = var.fast_stage_2.project_factory.short_name
+    name = each.value
   })
   display_name = "Terraform resman project factory main service account."
   prefix       = var.prefix
@@ -41,10 +49,10 @@ module "pf-sa-rw" {
 
 module "pf-sa-ro" {
   source     = "../../../modules/iam-service-account"
-  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  for_each   = local._pf_short_names
   project_id = var.automation.project_id
   name = templatestring(var.resource_names["sa-pf_ro"], {
-    name = var.fast_stage_2.project_factory.short_name
+    name = each.value
   })
   display_name = "Terraform resman project factory main service account (read-only)."
   prefix       = var.prefix
@@ -66,16 +74,16 @@ module "pf-sa-ro" {
 
 module "pf-bucket" {
   source     = "../../../modules/gcs"
-  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  for_each   = local._pf_short_names
   project_id = var.automation.project_id
   name = templatestring(var.resource_names["gcs-pf"], {
-    name = var.fast_stage_2.project_factory.short_name
+    name = each.value
   })
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true
   iam = {
-    "roles/storage.objectAdmin"  = [module.pf-sa-rw[0].iam_email]
-    "roles/storage.objectViewer" = [module.pf-sa-ro[0].iam_email]
+    "roles/storage.objectAdmin"  = [module.pf-sa-rw[each.value].iam_email]
+    "roles/storage.objectViewer" = [module.pf-sa-ro[each.value].iam_email]
   }
 }

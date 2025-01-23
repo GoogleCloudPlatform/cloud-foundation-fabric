@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,19 +50,20 @@ locals {
       }
     },
     # stage 2 project factory
-    var.root_node != null || var.fast_stage_2.project_factory.enabled != true ? {} : {
-      sa_pf_conditional_org_policy = {
-        member = module.pf-sa-rw[0].iam_email
-        role   = "roles/orgpolicy.policyAdmin"
-        condition = {
-          title       = "org_policy_tag_pf_scoped"
-          description = "Org policy tag scoped grant for project factory."
-          expression  = <<-END
+    var.root_node != null || var.fast_stage_2.project_factory.enabled != true ? {} : merge([
+      for k, v in module.pf-sa-rw : {
+        "sa_pf_${k}_conditional_org_policy" = {
+          member = v.iam_email
+          role   = "roles/orgpolicy.policyAdmin"
+          condition = {
+            title       = "org_policy_tag_pf_${k}_scoped"
+            description = "Org policy tag scoped grant for ${k} project factory."
+            expression  = <<-END
             resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
           END
+          }
         }
-      }
-    },
+    }]...),
     # stage 3
     {
       for v in local.stage3_sa_roles_in_org : join("/", values(v)) => {

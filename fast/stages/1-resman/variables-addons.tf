@@ -32,11 +32,14 @@ variable "fast_addon" {
   validation {
     condition = alltrue([
       for k, v in var.fast_addon : contains(
-        ["2-networking", "2-project-factory", "2-security"],
+        concat(
+          ["2-networking", "2-security"],
+          [for s in var.fast_stage_2.project_factory.short_name : "2-project-factory-${s}"]
+        ),
         v.parent_stage
       )
     ])
-    error_message = "Resman-defined addons only support '2-networking', '2-project-factory' and '2-security' stages."
+    error_message = "Resman-defined addons only support '2-networking', '2-project-factory-*' and '2-security' stages."
   }
   validation {
     condition = alltrue([

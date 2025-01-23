@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,4 +32,19 @@ moved {
 moved {
   from = module.sec-folder-prod[0]
   to   = module.sec-folder-envs["prod"]
+}
+
+moved {
+  from = module.pf-sa-rw[0]
+  to   = module.pf-sa-rw["pf"]
+}
+
+moved {
+  from = module.pf-sa-ro[0]
+  to   = module.pf-sa-ro["pf"]
+}
+
+moved {
+  from = module.pf-bucket[0]
+  to   = module.pf-bucket["pf"]
 }

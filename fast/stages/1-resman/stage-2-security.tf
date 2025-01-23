@@ -62,13 +62,13 @@ module "sec-folder" {
     # project factory service accounts
     (var.fast_stage_2.project_factory.enabled) != true ? {} : {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        module.pf-sa-rw[0].iam_email
+        for v in values(module.pf-sa-rw) : v.iam_email
       ]
       (var.custom_roles.project_iam_viewer) = [
-        module.pf-sa-ro[0].iam_email
+        for v in values(module.pf-sa-ro) : v.iam_email
       ]
       "roles/cloudkms.viewer" = [
-        module.pf-sa-ro[0].iam_email
+        for v in values(module.pf-sa-ro) : v.iam_email
       ]
     }
   )
@@ -76,7 +76,7 @@ module "sec-folder" {
     var.fast_stage_2.project_factory.enabled != true ? {} : {
       pf_delegated_grant = {
         role    = "roles/resourcemanager.projectIamAdmin"
-        members = [module.pf-sa-rw[0].iam_email]
+        members = [for v in values(module.pf-sa-rw) : v.iam_email]
         condition = {
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
