@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2024-11-22 15:04:14+00:00 to: None since: v36.0.0 -->
+## [Unreleased] <!-- from: 2025-01-18 07:38:32+00:00 to: None since: v37.0.0-rc2 -->
+
+### FAST
+
+- [[#2831](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2831)] Allow networking stage to be disabled ([juliocc](https://github.com/juliocc)) <!-- 2025-01-22 06:45:23+00:00 -->
+- [[#2828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2828)] Small fix to net test add-on context expansion ([ludoo](https://github.com/ludoo)) <!-- 2025-01-21 10:14:43+00:00 -->
+- [[#2826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2826)] Fix stage 1 addons provider outputs ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 06:55:40+00:00 -->
+- [[#2825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2825)] FAST add-on for networking test resources ([ludoo](https://github.com/ludoo)) <!-- 2025-01-20 08:41:35+00:00 -->
+- [[#2823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2823)] Update service activation in ngfw add-on ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 13:23:23+00:00 -->
 
 ## [37.0.0-rc2] - 2025-01-18
 
