@@ -132,7 +132,3 @@ locals {
     },
   )
 }
-
-output "xxx" {
-  value = local.stage_addons
-}
