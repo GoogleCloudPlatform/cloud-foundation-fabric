@@ -70,8 +70,18 @@ locals {
     }
   }
   # service account expansion for user-specified tag values
+  # service account expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
+      iam = {
+        for rk, rv in v.iam : rk => [
+          for rm in rv : (
+            contains(keys(local.service_accounts), rm)
+            ? "serviceAccount:${local.service_accounts[rm]}"
+            : rm
+          )
+        ]
+      }
       values = {
         for vk, vv in v.values : vk => merge(vv, {
           iam = {
