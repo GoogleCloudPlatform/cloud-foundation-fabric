@@ -56,8 +56,8 @@ locals {
           member = v.iam_email
           role   = "roles/orgpolicy.policyAdmin"
           condition = {
-            title       = "org_policy_tag_pf_scoped"
-            description = "Org policy tag scoped grant for project factory."
+            title       = "org_policy_tag_pf_${k}_scoped"
+            description = "Org policy tag scoped grant for ${k} project factory."
             expression  = <<-END
             resource.matchTag('${local.tag_root}/${var.tag_names.context}', 'project-factory')
           END
