@@ -51,9 +51,9 @@ locals {
     },
     # stage 2 project factory
     var.root_node != null || var.fast_stage_2.project_factory.enabled != true ? {} : merge([
-      for sa in values(module.pf-sa-rw) : {
-        sa_pf_conditional_org_policy = {
-          member = sa.iam_email
+      for k, v in module.pf-sa-rw : {
+        "sa_pf_${k}_conditional_org_policy" = {
+          member = v.iam_email
           role   = "roles/orgpolicy.policyAdmin"
           condition = {
             title       = "org_policy_tag_pf_scoped"

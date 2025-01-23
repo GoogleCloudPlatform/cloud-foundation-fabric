@@ -37,7 +37,7 @@ variable "fast_stage_2" {
     }), {})
     project_factory = optional(object({
       enabled    = optional(bool, true)
-      short_name = optional(list(string), ["pf"])
+      short_name = optional(list(string), ["teams"])
       cicd_config = optional(object({
         identity_provider = string
         repository = object({

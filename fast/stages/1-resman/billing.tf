@@ -34,17 +34,17 @@ locals {
     merge([
       for k in keys(module.pf-sa-rw) : merge(
         {
-          sa_pf_billing = {
+          "sa_pf_${k}_billing" = {
             member = module.pf-sa-rw[k].iam_email
             role   = "roles/billing.user"
           },
-          sa_pf_costs_manager = {
+          "sa_pf_${k}_costs_manager" = {
             member = module.pf-sa-rw[k].iam_email
             role   = "roles/billing.costsManager"
           }
         },
         var.billing_account.is_org_level != true ? {} : {
-          sa_pf_ro_viewer = {
+          "sa_pf_${k}_ro_viewer" = {
             member = module.pf-sa-ro[k].iam_email
             role   = var.custom_roles.billing_viewer
           }

@@ -17,21 +17,21 @@
 name: Teams
 iam:
   "roles/owner":
-    - project-factory-pf
+    - project-factory-teams
   "roles/resourcemanager.folderAdmin":
-    - project-factory-pf
+    - project-factory-teams
   "roles/resourcemanager.projectCreator":
-    - project-factory-pf
+    - project-factory-teams
   "roles/resourcemanager.tagUser":
-    - project-factory-pf
+    - project-factory-teams
   "service_project_network_admin":
-    - project-factory-pf
+    - project-factory-teams
   "roles/viewer":
-    - project-factory-pf-r
+    - project-factory-teams-r
   "roles/resourcemanager.folderViewer":
-    - project-factory-pf-r
+    - project-factory-teams-r
   "roles/resourcemanager.tagViewer":
-    - project-factory-pf-r
+    - project-factory-teams-r
 # don't create a context tag since this uses the pf tag
 is_fast_context: false
 tag_bindings:
