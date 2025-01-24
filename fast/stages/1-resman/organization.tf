@@ -19,8 +19,7 @@
 locals {
   # context tag values for enabled stage 2s (merged in the final map below)
   _context_tag_values_stage2 = {
-    for k, v in var.fast_stage_2 :
-    k => replace(k, "_", "-") if v.enabled
+    for k, v in local.stage2 : k => replace(k, "_", "-")
   }
   # merge all context tag values into a single map
   context_tag_values = merge(
@@ -52,15 +51,11 @@ locals {
         {
           "roles/resourcemanager.tagUser" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
-            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
-            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
+            [for k, v in module.stage2-sa-rw : v.iam_email]
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
-            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
-            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],
+            [for k, v in module.stage2-sa-ro : v.iam_email]
           ))
         }
       )

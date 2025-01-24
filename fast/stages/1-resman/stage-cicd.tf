@@ -20,7 +20,7 @@ locals {
   _cicd_configs = merge(
     # stage 2
     {
-      for k, v in var.fast_stage_2 : k => merge(v.cicd_config, {
+      for k, v in local.stage2 : k => merge(v.cicd_config, {
         env        = "prod"
         level      = 2
         stage      = replace(k, "_", "-")

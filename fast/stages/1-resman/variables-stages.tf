@@ -16,58 +16,89 @@
 
 variable "fast_stage_2" {
   description = "FAST stages 2 configurations."
-  type = object({
-    networking = optional(object({
-      enabled    = optional(bool, true)
-      short_name = optional(string, "net")
-      cicd_config = optional(object({
-        identity_provider = string
-        repository = object({
-          name   = string
-          branch = optional(string)
-          type   = optional(string, "github")
-        })
-      }))
-      folder_config = optional(object({
-        create_env_folders = optional(bool, true)
-        iam_by_principals  = optional(map(list(string)), {})
-        name               = optional(string, "Networking")
-        parent_id          = optional(string)
-      }), {})
+  type = map(object({
+    short_name = optional(string)
+    cicd_config = optional(object({
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
+    }))
+    folder_config = optional(object({
+      name               = string
+      create_env_folders = optional(bool, true)
+      iam                = optional(map(list(string)), {})
+      iam_bindings       = optional(map(list(string)), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
+      org_policies = optional(map(object({
+        inherit_from_parent = optional(bool) # for list policies only.
+        reset               = optional(bool)
+        rules = optional(list(object({
+          allow = optional(object({
+            all    = optional(bool)
+            values = optional(list(string))
+          }))
+          deny = optional(object({
+            all    = optional(bool)
+            values = optional(list(string))
+          }))
+          enforce = optional(bool) # for boolean policies only.
+          condition = optional(object({
+            description = optional(string)
+            expression  = optional(string)
+            location    = optional(string)
+            title       = optional(string)
+          }), {})
+        })), [])
+      })), {})
+      parent_id = optional(string)
+    }))
+    organization_config = optional(object({
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
     }), {})
-    project_factory = optional(object({
-      enabled    = optional(bool, true)
-      short_name = optional(string, "pf")
-      cicd_config = optional(object({
-        identity_provider = string
-        repository = object({
-          name   = string
-          branch = optional(string)
-          type   = optional(string, "github")
-        })
-      }))
-    }), {})
-    security = optional(object({
-      enabled    = optional(bool, true)
-      short_name = optional(string, "sec")
-      cicd_config = optional(object({
-        identity_provider = string
-        repository = object({
-          name   = string
-          branch = optional(string)
-          type   = optional(string, "github")
-        })
-      }))
-      folder_config = optional(object({
-        create_env_folders = optional(bool, false)
-        iam_by_principals  = optional(map(list(string)), {})
-        name               = optional(string, "Security")
-        parent_id          = optional(string)
-      }), {})
-    }), {})
-  })
+  }))
   nullable = false
-  default  = {}
+  default = {
+    networking = {
+      enabled    = true
+      short_name = "net"
+      folder_config = {
+        create_env_folders = true
+        name               = "Networking"
+      }
+    }
+    project_factory = {
+      short_name = "pf"
+    }
+    security = {
+      enabled    = true
+      short_name = "sec"
+      folder_config = {
+        create_env_folders = true
+        name               = "Security"
+      }
+    }
+  }
   validation {
     condition = alltrue([
       for k, v in var.fast_stage_2 :
@@ -107,22 +138,13 @@ variable "fast_stage_3" {
         rw = optional(list(string), [])
       })
     }))
-    stage2_iam = optional(object({
-      networking = optional(object({
-        iam_admin_delegated = optional(bool, false)
-        sa_roles = optional(object({
-          ro = optional(list(string), [])
-          rw = optional(list(string), [])
-        }), {})
+    stage2_iam = optional(map(object({
+      iam_admin_delegated = optional(bool, false)
+      sa_roles = optional(object({
+        ro = optional(list(string), [])
+        rw = optional(list(string), [])
       }), {})
-      security = optional(object({
-        iam_admin_delegated = optional(bool, false)
-        sa_roles = optional(object({
-          ro = optional(list(string), [])
-          rw = optional(list(string), [])
-        }), {})
-      }), {})
-    }), {})
+    })), {})
   }))
   nullable = false
   default  = {}

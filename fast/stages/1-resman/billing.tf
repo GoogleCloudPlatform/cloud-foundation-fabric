@@ -19,36 +19,18 @@
 locals {
   billing_iam = merge(
     # stage 2
-    var.fast_stage_2.networking.enabled != true ? {} : {
-      sa_net_billing = {
-        member = module.net-sa-rw[0].iam_email
+    {
+      for k, v in local.stage2 : "stage2_${k}_billing_user" => {
+        member = module.stage2-sa-rw[k].iam_email
         role   = "roles/billing.user"
       }
     },
-    var.fast_stage_2.security.enabled != true ? {} : {
-      sa_sec_billing = {
-        member = module.sec-sa-rw[0].iam_email
-        role   = "roles/billing.user"
+    {
+      for k, v in local.stage2 : "stage2_${k}_billing_costs_manager" => {
+        member = module.stage2-sa-rw[k].iam_email
+        role   = "roles/billing.costsManager"
       }
     },
-    var.fast_stage_2.project_factory.enabled != true ? {} : merge(
-      {
-        sa_pf_billing = {
-          member = module.pf-sa-rw[0].iam_email
-          role   = "roles/billing.user"
-        },
-        sa_pf_costs_manager = {
-          member = module.pf-sa-rw[0].iam_email
-          role   = "roles/billing.costsManager"
-        }
-      },
-      var.billing_account.is_org_level != true ? {} : {
-        sa_pf_ro_viewer = {
-          member = module.pf-sa-ro[0].iam_email
-          role   = var.custom_roles.billing_viewer
-        }
-      }
-    ),
     # stage 3
     {
       for k, v in local.stage3 : k => {

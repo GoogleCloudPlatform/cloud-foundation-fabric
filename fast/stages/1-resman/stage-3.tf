@@ -57,22 +57,12 @@ locals {
           )
         }
         stage2_iam = {
-          networking = {
-            iam_admin_delegated = try(
-              v.stage2_iam.networking.iam_admin_delegated, false
-            )
+          for s2k, s2v in v.stage2_iam : k => {
+            iam_admin_delegated = try(s2v.iam_admin_delegated, false)
             sa_roles = merge(
-              { ro = [], rw = [] }, try(v.stage2_iam.networking.sa_roles, {})
+              { ro = [], rw = [] }, try(s2v.sa_roles, {})
             )
-          }
-          security = {
-            iam_admin_delegated = try(
-              v.stage2_iam.security.iam_admin_delegated, false
-            )
-            sa_roles = merge(
-              { ro = [], rw = [] }, try(v.stage2_iam.security.sa_roles, {})
-            )
-          }
+          } if lookup(local.stage2, k, null) != null
         }
       }
     },
@@ -162,7 +152,7 @@ module "stage3-sa-rw" {
   display_name = (
     "Terraform resman ${each.key} service account."
   )
-  prefix = "${var.prefix}-${each.value.environment}"
+  prefix = "${var.prefix}-${var.environments[each.value.environment].short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-rw["${each.key}-prod"].iam_email, null)

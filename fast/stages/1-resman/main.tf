@@ -15,6 +15,9 @@
  */
 
 locals {
+  environment_default = [
+    for k, v in var.environments : v if v.is_default
+  ][0]
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
@@ -25,6 +28,9 @@ locals {
       : "group:${v}@${var.organization.domain}"
     )
   }
+  principals_iam = merge(local.principals, {
+    for k, v in local.stage_service_accounts : k => "serviceAccount:${v}"
+  })
   root_node = (
     var.root_node == null
     ? "organizations/${var.organization.id}"
@@ -39,18 +45,8 @@ locals {
   }
   # combined list of stage service accounts
   stage_service_accounts = merge(
-    !var.fast_stage_2.networking.enabled ? {} : {
-      networking   = module.net-sa-rw[0].email
-      networking-r = module.net-sa-ro[0].email
-    },
-    !var.fast_stage_2.security.enabled ? {} : {
-      security   = module.sec-sa-rw[0].email
-      security-r = module.sec-sa-ro[0].email
-    },
-    !var.fast_stage_2.project_factory.enabled ? {} : {
-      project-factory   = module.pf-sa-rw[0].email
-      project-factory-r = module.pf-sa-ro[0].email
-    },
+    { for k, v in local.stage2 : k => module.stage2-sa-rw[k].email },
+    { for k, v in local.stage2 : "${k}-r" => module.stage2-sa-ro[k].email },
     { for k, v in local.stage3 : k => module.stage3-sa-rw[k].email },
     { for k, v in local.stage3 : "${k}-r" => module.stage3-sa-ro[k].email },
   )

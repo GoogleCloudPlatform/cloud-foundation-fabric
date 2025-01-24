@@ -17,14 +17,7 @@
 locals {
   folder_ids = merge(
     # stage 2
-    !var.fast_stage_2.networking.enabled ? {} : merge(
-      { networking = module.net-folder[0].id },
-      { for k, v in module.net-folder-envs : "networking-${k}" => v.id }
-    ),
-    !var.fast_stage_2.security.enabled ? {} : merge(
-      { security = module.sec-folder[0].id },
-      { for k, v in module.sec-folder-envs : "security-${k}" => v.id }
-    ),
+    { for k, v in module.stage2-folder : k => v.id },
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
     # top-level folders
@@ -43,7 +36,7 @@ locals {
         }
       },
       {
-        for k, v in var.fast_stage_2 : k => {
+        for k, v in local.stage2 : k => {
           short_name = v.short_name
           # rw service accounts for stage 3s that need delegated IAM on stage 2s
           iam_delegated_principals = {
