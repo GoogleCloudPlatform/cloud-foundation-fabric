@@ -3,7 +3,19 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
+<<<<<<< HEAD
 ## [Unreleased] <!-- from: 2025-01-18 07:38:32+00:00 to: None since: v37.0.0-rc2 -->
+=======
+## [Unreleased] <!-- from: 2025-01-10 16:03:21+00:00 to: None since: v36.1.0 -->
+
+## [36.2.0] - 2025-01-24
+
+### BLUEPRINTS
+
+- [[#2837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2837)] Update module metadata format and prep v36.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2025-01-24 15:45:17+00:00 -->
+- [[#2827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2827)] Add `bucket_create` to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 22:48:36+00:00 -->
+- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
+>>>>>>> origin/master
 
 ### FAST
 
@@ -29,8 +41,25 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+<<<<<<< HEAD
 - [[#2821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2821)] **incompatible change:** FAST SWP networking add-on, refactor CAS module interface ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 07:12:41+00:00 -->
 - [[#2820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2820)] **incompatible change:** Do not create service agent resources in project module for services not explicitly enabled ([ludoo](https://github.com/ludoo)) <!-- 2025-01-17 15:55:41+00:00 -->
+=======
+- [[#2837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2837)] Update module metadata format and prep v36.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2025-01-24 15:45:17+00:00 -->
+- [[#2833](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2833)] fix(certificate-manager): reference dns_authz by fully qualified id ([frits-v](https://github.com/frits-v)) <!-- 2025-01-22 21:49:12+00:00 -->
+- [[#2827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2827)] Add `bucket_create` to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 22:48:36+00:00 -->
+- [[#2830](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2830)] feat(certificate-manager): add dns_authorizations output ([frits-v](https://github.com/frits-v)) <!-- 2025-01-21 22:14:45+00:00 -->
+- [[#2819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2819)] modules/compute-vm end-to-end tests and fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2025-01-16 09:54:52+00:00 -->
+- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
+- [[#2814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2814)] Add `iam_by_principals_additive` to project, organization and folder modules ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 12:32:20+00:00 -->
+
+### TOOLS
+
+- [[#2837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2837)] Update module metadata format and prep v36.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2025-01-24 15:45:17+00:00 -->
+- [[#2827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2827)] Add `bucket_create` to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 22:48:36+00:00 -->
+- [[#2814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2814)] Add `iam_by_principals_additive` to project, organization and folder modules ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 12:32:20+00:00 -->
+- [[#2812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2812)] Simplify versions tf and update FAST workflows ([juliocc](https://github.com/juliocc)) <!-- 2025-01-12 20:39:01+00:00 -->
+>>>>>>> origin/master
 
 ## [36.1.0] - 2025-01-10
 
@@ -2737,8 +2766,13 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
+<<<<<<< HEAD
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...HEAD
 [37.0.0-rc2]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...v37.0.0-rc2
+=======
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.2.0...HEAD
+[36.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...v36.2.0
+>>>>>>> origin/master
 [36.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.1...v36.1.0
 [36.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.0...v36.0.1
 [36.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...v36.0.0

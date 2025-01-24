@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v37.0.0-rc2
+# Fabric release: v37.0.0
 
 terraform {
   required_version = ">= 1.10.2"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tf:modules/net-lb-int:v37.0.0-rc2"
+    module_name = "google-pso-tool/cloud-foundation-fabric/path:v37.0.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tf:modules/net-lb-int:v37.0.0-rc2"
+    module_name = "google-pso-tool/cloud-foundation-fabric/path:v37.0.0-tf"
   }
 }
