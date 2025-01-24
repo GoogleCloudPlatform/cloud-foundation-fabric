@@ -17,6 +17,18 @@
 # tfdoc:file:description Locals for provider output files.
 
 locals {
+  _parent_stage_resources = {
+    "1-resman" = {
+      bucket = module.automation-tf-resman-gcs.name
+      sa     = module.automation-tf-resman-sa.email
+      sa_r   = module.automation-tf-resman-r-sa.email
+    }
+    "1-vpcsc" = {
+      bucket = module.automation-tf-vpcsc-gcs.name
+      sa     = module.automation-tf-vpcsc-sa.email
+      sa_r   = module.automation-tf-vpcsc-r-sa.email
+    }
+  }
   providers = merge(
     # this stage's providers
     {
