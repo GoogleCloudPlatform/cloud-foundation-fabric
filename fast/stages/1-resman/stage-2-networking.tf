@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,13 +69,13 @@ module "net-folder" {
     # project factory service accounts
     (var.fast_stage_2.project_factory.enabled) != true ? {} : {
       (var.custom_roles.service_project_network_admin) = [
-        module.pf-sa-rw[0].iam_email
+        for v in values(module.pf-sa-rw) : v.iam_email
       ]
       (var.custom_roles.project_iam_viewer) = [
-        module.pf-sa-ro[0].iam_email
+        for v in values(module.pf-sa-ro) : v.iam_email
       ]
       "roles/compute.networkViewer" = [
-        module.pf-sa-ro[0].iam_email
+        for v in values(module.pf-sa-ro) : v.iam_email
       ]
     }
   )
@@ -84,7 +84,7 @@ module "net-folder" {
     var.fast_stage_2.project_factory.enabled != true ? {} : {
       pf_delegated_grant = {
         role    = "roles/resourcemanager.projectIamAdmin"
-        members = [module.pf-sa-rw[0].iam_email]
+        members = [for v in values(module.pf-sa-rw) : v.iam_email]
         condition = {
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
