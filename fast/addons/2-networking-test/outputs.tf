@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-<<<<<<<< HEAD:fast/addons/2-networking-test/outputs.tf
 output "instance_addresses" {
   description = "Instance names and addresses."
   value = {
@@ -36,21 +35,4 @@ output "service_account_emails" {
   value = {
     for k, v in module.service-accounts : k => v.email
   }
-========
-locals {
-  project_id = try(module.project[0].project_id, var.project_id)
-}
-
-module "project" {
-  source         = "../../../modules/project"
-  count          = var._fast_debug.skip_datasources == true ? 0 : 1
-  name           = var.project_id
-  project_create = false
-  services = [
-    "certificatemanager.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "networksecurity.googleapis.com",
-    "privateca.googleapis.com"
-  ]
->>>>>>>> 630e7f40 (Implement FAST stage add-ons, refactor netsec as add-on (#2800)):fast/addons/2-networking-ngfw/main.tf
 }
