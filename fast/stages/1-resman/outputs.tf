@@ -53,7 +53,7 @@ locals {
               if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
             ]
           }
-        } if v.enabled == true
+        }
       }
     )
     folder_ids       = local.folder_ids

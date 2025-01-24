@@ -28,6 +28,7 @@ variable "fast_stage_2" {
     }))
     folder_config = optional(object({
       name               = string
+      parent_id          = optional(string)
       create_env_folders = optional(bool, true)
       iam                = optional(map(list(string)), {})
       iam_bindings       = optional(map(list(string)), {})
@@ -62,7 +63,6 @@ variable "fast_stage_2" {
           }), {})
         })), [])
       })), {})
-      parent_id = optional(string)
     }))
     organization_config = optional(object({
       iam_bindings_additive = optional(map(object({
@@ -78,27 +78,7 @@ variable "fast_stage_2" {
     }), {})
   }))
   nullable = false
-  default = {
-    networking = {
-      enabled    = true
-      short_name = "net"
-      folder_config = {
-        create_env_folders = true
-        name               = "Networking"
-      }
-    }
-    project_factory = {
-      short_name = "pf"
-    }
-    security = {
-      enabled    = true
-      short_name = "sec"
-      folder_config = {
-        create_env_folders = true
-        name               = "Security"
-      }
-    }
-  }
+  default  = {}
   validation {
     condition = alltrue([
       for k, v in var.fast_stage_2 :
@@ -115,7 +95,7 @@ variable "fast_stage_3" {
   description = "FAST stages 3 configurations."
   # key is used for file names and loop keys and is like 'data-platfom-dev'
   type = map(object({
-    short_name  = string
+    short_name  = optional(string)
     environment = optional(string, "dev")
     cicd_config = optional(object({
       identity_provider = string
@@ -126,25 +106,43 @@ variable "fast_stage_3" {
       })
     }))
     folder_config = optional(object({
-      name              = string
+      name         = string
+      parent_id    = optional(string)
+      tag_bindings = optional(map(string), {})
+      iam          = optional(map(list(string)), {})
+      iam_bindings = optional(map(list(string)), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
       iam_by_principals = optional(map(list(string)), {})
-      parent_id         = optional(string)
-      tag_bindings      = optional(map(string), {})
+      org_policies = optional(map(object({
+        inherit_from_parent = optional(bool) # for list policies only.
+        reset               = optional(bool)
+        rules = optional(list(object({
+          allow = optional(object({
+            all    = optional(bool)
+            values = optional(list(string))
+          }))
+          deny = optional(object({
+            all    = optional(bool)
+            values = optional(list(string))
+          }))
+          enforce = optional(bool) # for boolean policies only.
+          condition = optional(object({
+            description = optional(string)
+            expression  = optional(string)
+            location    = optional(string)
+            title       = optional(string)
+          }), {})
+        })), [])
+      })), {})
     }))
-    organization_iam = optional(object({
-      context_tag_value = string
-      sa_roles = object({
-        ro = optional(list(string), [])
-        rw = optional(list(string), [])
-      })
-    }))
-    stage2_iam = optional(map(object({
-      iam_admin_delegated = optional(bool, false)
-      sa_roles = optional(object({
-        ro = optional(list(string), [])
-        rw = optional(list(string), [])
-      }), {})
-    })), {})
   }))
   nullable = false
   default  = {}

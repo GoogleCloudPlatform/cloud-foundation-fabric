@@ -14,11 +14,11 @@
 
 # yaml-language-server: $schema=../../schemas/fast-stage2.schema.json
 
-short_name: net
+short_name: sec
 folder_config:
-  name: Networking
+  name: Security
   iam_by_principals:
-    gcp-network-admins:
+    gcp-security-admins:
       - roles/editor
   iam:
     roles/logging.admin:
@@ -29,8 +29,6 @@ folder_config:
       - rw
     roles/resourcemanager.projectCreator:
       - rw
-    roles/compute.xpnAdmin:
-      - rw
     roles/resourcemanager.tagUser:
       - rw
     roles/viewer:
@@ -40,10 +38,10 @@ folder_config:
     roles/resourcemanager.tagViewer:
       - ro
     # project factory roles
-    roles/compute.networkViewer:
-      - project-factory-ro
-    service_project_network_admin:
+    roles/cloudkms.cryptoKeyEncrypterDecrypter:
       - project-factory-rw
+    roles/cloudkms.viewer:
+      - project-factory-ro
     project_iam_viewer:
       - project-factory-ro
   # project factory delegated IAM grant
@@ -56,24 +54,11 @@ folder_config:
         title: Project factory delegated IAM grant.
         expression: |
           api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
-            'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
-            'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
+            'roles/cloudkms.cryptoKeyEncrypterDecrypter'
           ])
-    # conditional grants for stage 3s are documented in each stage 3 doc
+    # TODO: optional conditional grant for stage 3s
 organization_config:
   iam_bindings_additive:
-    sa_net_rw_fw_policy_admin:
+    sa_sec_cloudasset:
       member: rw
-      role: roles/compute.orgFirewallPolicyAdmin
-    sa_net_rw_ngfw_enterprise_admin:
-      member: rw
-      role: ngfw_enterprise_admin
-    sa_net_rw_xpn_admin:
-      member: rw
-      role: roles/compute.xpnAdmin
-    sa_net_ro_fw_policy_user:
-      member: ro
-      role: roles/compute.orgFirewallPolicyUser
-    sa_net_ro_ngfw_enterprise_viewer:
-      member: ro
-      role: ngfw_enterprise_viewer
+      role: roles/cloudasset.viewer

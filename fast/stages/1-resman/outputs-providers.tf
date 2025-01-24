@@ -17,88 +17,45 @@
 # tfdoc:file:description Locals for provider output files.
 
 locals {
-  # output file definitions for enabled stage 2s
-  _stage2_outputs_attrs = merge(
-    var.fast_stage_2["networking"].enabled != true ? {} : {
-      networking = {
-        bucket = module.net-bucket[0].name
-        sa = {
-          apply = module.net-sa-rw[0].email
-          plan  = module.net-sa-ro[0].email
-        }
-      }
-    },
-    var.fast_stage_2["project_factory"].enabled != true ? {} : {
-      project_factory = {
-        bucket = module.pf-bucket[0].name
-        sa = {
-          apply = module.pf-sa-rw[0].email
-          plan  = module.pf-sa-ro[0].email
-        }
-      }
-    },
-    var.fast_stage_2["security"].enabled != true ? {} : {
-      security = {
-        bucket = module.sec-bucket[0].name
-        sa = {
-          apply = module.sec-sa-rw[0].email
-          plan  = module.sec-sa-ro[0].email
-        }
-      }
-    },
-    # TODO: use ${parent_stage}-${key} for the addon file output names
-    # addons, conditions are repeated to prevent inconsistent result type error
-    var.fast_stage_2["networking"].enabled != true ? {} : {
-      for k, v in local.stage_addons : "networking-${k}" => {
-        bucket        = module.net-bucket[0].name
-        backend_extra = "prefix = \"addons/${k}\""
-        sa = {
-          apply = module.net-sa-rw[0].email
-          plan  = module.net-sa-ro[0].email
-        }
-      } if v.parent_stage == "2-networking"
-    },
-    var.fast_stage_2["project_factory"].enabled != true ? {} : {
-      for k, v in local.stage_addons : "pf-${k}" => {
-        bucket        = module.pf-bucket[0].name
-        backend_extra = "prefix = \"addons/${k}\""
-        sa = {
-          apply = module.pf-sa-rw[0].email
-          plan  = module.pf-sa-ro[0].email
-        }
-      } if v.parent_stage == "2-project-factory"
-    },
-    var.fast_stage_2["security"].enabled != true ? {} : {
-      for k, v in local.stage_addons : "security-${k}" => {
-        bucket        = module.sec-bucket[0].name
-        backend_extra = "prefix = \"addons/${k}\""
-        sa = {
-          apply = module.sec-sa-rw[0].email
-          plan  = module.sec-sa-ro[0].email
-        }
-      } if v.parent_stage == "2-security"
-    }
-  )
   # render provider files from template
   providers = merge(
     # stage 2
     {
-      for k, v in local._stage2_outputs_attrs :
-      "2-${replace(k, "_", "-")}" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
+      for k, v in local.stage2 :
+      "2-${k}" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.stage2-bucket[k].name
         name          = k
-        sa            = v.sa.apply
+        sa            = module.stage2-sa-rw[k].email
       })
     },
     {
-      for k, v in local._stage2_outputs_attrs :
-      "2-${replace(k, "_", "-")}-r" => templatefile(local._tpl_providers, {
-        backend_extra = lookup(v, "backend_extra", null)
-        bucket        = v.bucket
+      for k, v in local.stage2 :
+      "2-${k}-r" => templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.stage2-bucket[k].name
         name          = k
-        sa            = v.sa.plan
+        sa            = module.stage2-sa-ro[k].email
       })
+    },
+    # stage 2 addons
+    {
+      for k, v in local.stage_addons :
+      "${v.parent_stage}-${v.short_name}" => templatefile(local._tpl_providers, {
+        backend_extra = "prefix = \"addons/${k}\""
+        bucket        = module.stage2-bucket[v.stage.name].name
+        name          = k
+        sa            = module.stage2-sa-rw[v.stage.name].email
+      }) if lookup(local.stage2, v.stage.name, null) != null
+    },
+    {
+      for k, v in local.stage_addons :
+      "${v.parent_stage}-${v.short_name}-r" => templatefile(local._tpl_providers, {
+        backend_extra = "prefix = \"addons/${k}\""
+        bucket        = module.stage2-bucket[v.stage.name].name
+        name          = k
+        sa            = module.stage2-sa-ro[v.stage.name].email
+      }) if lookup(local.stage2, v.stage.name, null) != null
     },
     # stage 3
     {

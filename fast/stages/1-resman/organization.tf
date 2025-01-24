@@ -64,18 +64,22 @@ locals {
       )
     }
   }
-  # service account expansion for user-specified tag values
+  # combine org-level IAM additive from billing and stage 2s
+  iam_bindings_additive = merge(
+    merge([
+      for k, v in local.stage2 :
+      v.organization_config.iam_bindings_additive
+    ]...),
+    local.billing_mode != "org" ? {} : local.billing_iam
+  )
+  # IAM principal expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
         for vk, vv in v.values : vk => merge(vv, {
           iam = {
             for rk, rv in vv.iam : rk => [
-              for rm in rv : (
-                contains(keys(local.service_accounts), rm)
-                ? "serviceAccount:${local.service_accounts[rm]}"
-                : rm
-              )
+              for rm in rv : lookup(local.principals_iam, rm, rm)
             ]
           }
         })
@@ -89,7 +93,13 @@ module "organization" {
   count           = var.root_node == null ? 1 : 0
   organization_id = "organizations/${var.organization.id}"
   # additive bindings leveraging the delegated IAM grant set in stage 0
-  iam_bindings_additive = local.iam_bindings_additive
+  iam_bindings_additive = {
+    for k, v in local.iam_bindings_additive : k => {
+      role      = v.role
+      member    = lookup(local.principals_iam, v.member, v.member)
+      condition = v.condition
+    }
+  }
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {

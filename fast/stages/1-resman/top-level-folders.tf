@@ -88,7 +88,7 @@ module "top-level-folder" {
     lookup(var.custom_roles, role, role) => [
       for member in members : (each.value.automation != null && member == "self")
       ? module.top-level-sa[each.key].iam_email
-      : lookup(local.top_level_sa, member, member)
+      : lookup(local.principals_iam, member, member)
     ]
   }
   iam_bindings = {
@@ -106,7 +106,7 @@ module "top-level-folder" {
       member = (
         each.value.automation != null && v.member == "self"
         ? module.top-level-sa[each.key].iam_email
-        : lookup(local.top_level_sa, v.member, v.member)
+        : lookup(local.principals_iam, v.member, v.member)
       )
       role = lookup(var.custom_roles, v.role, v.role)
     })

@@ -25,18 +25,18 @@ locals {
     fileset(local._stage2_path, "**/*.yaml"),
     []
   )
-  _stage2 = {
+  _stage2_data = {
     for f in local._stage2_files :
     split(".", f)[0] => yamldecode(file(
       "${coalesce(local._stage2_path, "-")}/${f}"
     ))
   }
   # merge stage 3 from factory and variable data
-  stage2 = merge(
+  _stage2 = merge(
     # normalize factory data attributes with defaults and nulls
     {
-      for k, v in local._stage2 : k => {
-        short_name = coalesce(lookup(v, "short_name", null), k)
+      for k, v in local._stage2_data : k => {
+        short_name = lookup(v, "short_name", null)
         cicd_config = lookup(v, "cicd_config", null) == null ? null : {
           identity_provider = v.cicd_config.identity_provider
           repository = merge(v.cicd_config.repository, {
@@ -59,12 +59,64 @@ locals {
           iam_bindings_additive = try(v.organization_config.iam_bindings_additive, {})
           iam_by_principals     = try(v.organization_config.iam_by_principals, {})
         }
-        _iam_sa_names = { ro = "${k}-r", rw = k }
       }
     },
     var.fast_stage_2
   )
-
+  # normalize attributes
+  stage2 = {
+    for k, v in local._stage2 : k => merge(v, {
+      short_name = replace(coalesce(v.short_name, k), "_", "-")
+      folder_config = v.folder_config == null ? null : merge(v.folder_config, {
+        iam = {
+          for kk, vv in v.folder_config.iam : kk => [
+            for m in vv : contains(["ro", "rw"], m) ? "${k}-${m}" : m
+          ]
+        }
+        iam_bindings = {
+          for kk, vv in v.folder_config.iam_bindings :
+          kk => {
+            role = vv.role
+            members = [
+              for m in vv.members : contains(["ro", "rw"], m) ? "${k}-${m}" : m
+            ]
+            condition = vv.condition == null ? null : {
+              title = vv.condition.title
+              expression = templatestring(vv.condition.expression, {
+                organization = var.organization
+                tag_names    = var.tag_names
+              })
+              description = lookup(vv.condition, "description", null)
+            }
+          }
+        }
+        iam_bindings_additive = {
+          for kk, vv in v.folder_config.iam_bindings_additive :
+          kk => {
+            role   = vv.role
+            member = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
+            condition = vv.condition == null ? null : {
+              title = vv.condition.title
+              expression = templatestring(vv.condition.expression, {
+                organization = var.organization
+                tag_names    = var.tag_names
+              })
+              description = lookup(vv.condition, "description", null)
+            }
+          }
+        }
+      })
+      organization_config = merge(v.organization_config, {
+        iam_bindings_additive = {
+          for kk, vv in v.organization_config.iam_bindings_additive : kk => {
+            member    = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
+            role      = vv.role
+            condition = lookup(vv, "condition", null)
+          }
+        }
+      })
+    })
+  }
 }
 
 # top-level folder
@@ -86,29 +138,21 @@ module "stage2-folder" {
   iam = {
     for k, v in each.value.folder_config.iam :
     lookup(var.custom_roles, k, k) => [
-      for m in v : lookup(
-        local.principals_iam, lookup(each.value._iam_sa_names, m, m), m
-      )
+      for m in v : lookup(local.principals_iam, m, m)
     ]
   }
   iam_bindings = {
     for k, v in each.value.folder_config.iam_bindings : k => merge(v, {
       members = [
-        for m in v.members : lookup(
-          local.principals_iam, lookup(each.value._iam_sa_names, m, m), m
-        )
+        for m in v.members : lookup(local.principals_iam, m, m)
       ]
       role = lookup(var.custom_roles, v.role, v.role)
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.folder_config.iam_bindings_additive : k => merge(v, {
-      member = lookup(
-        local.principals_iam, lookup(
-          each.value._iam_sa_names, v.member, v.member
-        ), v.member
-      )
-      role = lookup(var.custom_roles, v.role, v.role)
+      member = lookup(local.principals_iam, v.member, v.member)
+      role   = lookup(var.custom_roles, v.role, v.role)
     })
   }
   iam_by_principals = {
@@ -118,7 +162,7 @@ module "stage2-folder" {
     ]
   }
   tag_bindings = {
-    k = local.tag_values["context/${k}"].id
+    context = local.tag_values["context/${each.key}"].id
   }
   depends_on = [module.top-level-folder]
 }

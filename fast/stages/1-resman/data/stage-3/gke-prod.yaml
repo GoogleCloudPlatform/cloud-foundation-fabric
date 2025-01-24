@@ -19,10 +19,3 @@ environment: prod
 folder_config:
   name: Production
   parent_id: gke
-stage2_iam:
-  networking:
-    sa_roles:
-      ro:
-        - roles/dns.reader
-      rw:
-        - roles/dns.admin

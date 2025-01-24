@@ -19,11 +19,3 @@ environment: dev
 folder_config:
   name: Development
   parent_id: gke
-stage2_iam:
-  networking:
-    iam_admin_delegated: true
-    sa_roles:
-      ro:
-        - roles/dns.reader
-      rw:
-        - roles/dns.admin

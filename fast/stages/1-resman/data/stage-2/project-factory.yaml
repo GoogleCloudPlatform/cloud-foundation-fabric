@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
+# yaml-language-server: $schema=../../schemas/fast-stage2.schema.json
 
-short_name: gcve
-environment: dev
-folder_config:
-  name: Development
-  parent_id: gcve
+short_name: pf
+organization_config:
+  iam_bindings_additive:
+    sa_pf_conditional_org_policy:
+      member: rw
+      role: roles/orgpolicy.policyAdmin
+      condition:
+        title: org_policy_tag_pf_scoped
+        description: Org policy tag scoped grant for project factory.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')

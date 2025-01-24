@@ -62,19 +62,6 @@
         "name": {
           "type": "string"
         },
-        "iam_by_principals": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^(?:roles/|[a-z_]+)"
-              }
-            }
-          }
-        },
         "parent_id": {
           "type": "string"
         },
@@ -86,65 +73,201 @@
               "type": "string"
             }
           }
-        }
-      }
-    },
-    "organization_iam": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context_tag_value"
-      ],
-      "properties": {
-        "context_tag_value": {
-          "type": "string"
         },
-        "sa_roles": {
-          "$ref": "#/$defs/sa_roles"
-        }
-      }
-    },
-    "stage2_iam": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "networking": {
-          "$ref": "#/$defs/stage2_iam"
+        "iam": {
+          "$ref": "#/$defs/iam"
         },
-        "security": {
-          "$ref": "#/$defs/stage2_iam"
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "iam_by_principals": {
+          "$ref": "#/$defs/iam_by_principals"
+        },
+        "org_policies": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z]+\\.": {
+              "inherit_from_parent": {
+                "type": "boolean"
+              },
+              "reset": {
+                "type": "boolean"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "allow": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "all": {
+                          "type": "boolean"
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "deny": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "all": {
+                          "type": "boolean"
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "enforce": {
+                      "type": "boolean"
+                    },
+                    "condition": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "type": "string"
+                        },
+                        "expression": {
+                          "type": "string"
+                        },
+                        "location": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
   },
   "$defs": {
-    "sa_roles": {
+    "iam": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "ro": {
+      "patternProperties": {
+        "^(?:roles/|[a-z_]+)": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
-        },
-        "rw": {
-          "type": "array",
-          "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
           }
         }
       }
     },
-    "stage2_iam": {
+    "iam_bindings": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "iam_admin_delegated": {
-          "type": "boolean"
-        },
-        "sa_roles": {
-          "$ref": "#/$defs/sa_roles"
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^roles/"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|[a-z])"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^roles/"
+          }
         }
       }
     }

@@ -29,7 +29,8 @@ locals {
     )
   }
   principals_iam = merge(local.principals, {
-    for k, v in local.stage_service_accounts : k => "serviceAccount:${v}"
+    for k, v in local.stage_service_accounts :
+    replace(k, "_", "-") => "serviceAccount:${v}"
   })
   root_node = (
     var.root_node == null
@@ -45,10 +46,10 @@ locals {
   }
   # combined list of stage service accounts
   stage_service_accounts = merge(
-    { for k, v in local.stage2 : k => module.stage2-sa-rw[k].email },
-    { for k, v in local.stage2 : "${k}-r" => module.stage2-sa-ro[k].email },
-    { for k, v in local.stage3 : k => module.stage3-sa-rw[k].email },
-    { for k, v in local.stage3 : "${k}-r" => module.stage3-sa-ro[k].email },
+    { for k, v in local.stage2 : "${k}-rw" => module.stage2-sa-rw[k].email },
+    { for k, v in local.stage2 : "${k}-ro" => module.stage2-sa-ro[k].email },
+    { for k, v in local.stage3 : "${k}-rw" => module.stage3-sa-rw[k].email },
+    { for k, v in local.stage3 : "${k}-ro" => module.stage3-sa-ro[k].email },
   )
   tag_keys = (
     var.root_node == null
