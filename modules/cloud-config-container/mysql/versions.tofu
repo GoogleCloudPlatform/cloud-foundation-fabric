@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v36.1.0
+# Fabric release: v36.2.0
 
 terraform {
   required_version = ">= 1.9.0"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tofu:modules/cloud-config-container/mysql:v36.1.0"
+    module_name = "google-pso-tool/cloud-foundation-fabric:modules/cloud-config-container/mysql:v36.2.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tofu:modules/cloud-config-container/mysql:v36.1.0"
+    module_name = "google-pso-tool/cloud-foundation-fabric:modules/cloud-config-container/mysql:v36.2.0-tofu"
   }
 }
