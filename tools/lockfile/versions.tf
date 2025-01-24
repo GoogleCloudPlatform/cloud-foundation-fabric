@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric:tools/lockfile:v36.2.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/tools/lockfile:v36.2.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric:tools/lockfile:v36.2.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/tools/lockfile:v36.2.0-tf"
   }
 }

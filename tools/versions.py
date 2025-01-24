@@ -36,10 +36,10 @@ terraform {{
     }}
   }}
   provider_meta "google" {{
-    module_name = "google-pso-tool/cloud-foundation-fabric:{path}:{fabric_release}-{engine}"
+    module_name = "google-pso-tool/cloud-foundation-fabric/{path}:{fabric_release}-{engine}"
   }}
   provider_meta "google-beta" {{
-    module_name = "google-pso-tool/cloud-foundation-fabric:{path}:{fabric_release}-{engine}"
+    module_name = "google-pso-tool/cloud-foundation-fabric/{path}:{fabric_release}-{engine}"
   }}
 }}
 """
