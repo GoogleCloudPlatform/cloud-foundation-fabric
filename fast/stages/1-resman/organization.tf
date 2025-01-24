@@ -70,7 +70,6 @@ locals {
     }
   }
   # service account expansion for user-specified tag values
-  # service account expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       iam = {
