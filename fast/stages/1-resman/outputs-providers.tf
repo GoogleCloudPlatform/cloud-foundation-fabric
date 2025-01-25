@@ -44,7 +44,7 @@ locals {
       "${v.parent_stage}-${v.short_name}" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         bucket        = module.stage2-bucket[v.stage.name].name
-        name          = k
+        name          = "${v.stage.name}-${v.short_name}"
         sa            = module.stage2-sa-rw[v.stage.name].email
       }) if lookup(local.stage2, v.stage.name, null) != null
     },
@@ -53,7 +53,7 @@ locals {
       "${v.parent_stage}-${v.short_name}-r" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         bucket        = module.stage2-bucket[v.stage.name].name
-        name          = k
+        name          = "${v.stage.name}-${v.short_name}"
         sa            = module.stage2-sa-ro[v.stage.name].email
       }) if lookup(local.stage2, v.stage.name, null) != null
     },

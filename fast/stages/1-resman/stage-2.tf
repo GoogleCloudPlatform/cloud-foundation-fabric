@@ -46,6 +46,7 @@ locals {
         }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
           name                  = v.folder_config.name
+          create_env_folders    = try(v.folder_config.create_env_folders, false)
           iam                   = try(v.folder_config.iam, {})
           iam_bindings          = try(v.folder_config.iam_bindings, {})
           iam_bindings_additive = try(v.folder_config.iam_bindings_additive, {})
@@ -80,7 +81,7 @@ locals {
             members = [
               for m in vv.members : contains(["ro", "rw"], m) ? "${k}-${m}" : m
             ]
-            condition = vv.condition == null ? null : {
+            condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
                 organization = var.organization
@@ -95,7 +96,7 @@ locals {
           kk => {
             role   = vv.role
             member = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
-            condition = vv.condition == null ? null : {
+            condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
                 organization = var.organization
@@ -109,9 +110,16 @@ locals {
       organization_config = merge(v.organization_config, {
         iam_bindings_additive = {
           for kk, vv in v.organization_config.iam_bindings_additive : kk => {
-            member    = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
-            role      = vv.role
-            condition = lookup(vv, "condition", null)
+            member = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
+            role   = vv.role
+            condition = lookup(vv, "condition", null) == null ? null : {
+              title = vv.condition.title
+              expression = templatestring(vv.condition.expression, {
+                organization = var.organization
+                tag_names    = var.tag_names
+              })
+              description = lookup(vv.condition, "description", null)
+            }
           }
         }
       })
@@ -182,7 +190,7 @@ module "stage2-folder" {
 
 # optional per-environment folders
 
-module "stage2-folder-envs" {
+module "stage2-folder-env" {
   source   = "../../../modules/folder"
   for_each = { for k in local.stage2_env_folders : k.key => k }
   parent   = module.stage2-folder[each.value.stage].id

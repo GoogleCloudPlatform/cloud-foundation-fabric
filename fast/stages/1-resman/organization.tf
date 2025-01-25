@@ -95,7 +95,7 @@ module "organization" {
   # additive bindings leveraging the delegated IAM grant set in stage 0
   iam_bindings_additive = {
     for k, v in local.iam_bindings_additive : k => {
-      role      = v.role
+      role      = lookup(var.custom_roles, v.role, v.role)
       member    = lookup(local.principals_iam, v.member, v.member)
       condition = v.condition
     }

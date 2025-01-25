@@ -18,6 +18,7 @@ locals {
   folder_ids = merge(
     # stage 2
     { for k, v in module.stage2-folder : k => v.id },
+    { for k, v in module.stage2-folder-env : k => v.id },
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
     # top-level folders

@@ -146,11 +146,13 @@ variable "fast_stage_3" {
   }))
   nullable = false
   default  = {}
-  # TODO: upgrade to cross-variable validation
   validation {
     condition = alltrue([
       for k, v in var.fast_stage_3 :
-      contains(["dev", "prod"], coalesce(v.environment, "-"))
+      contains(
+        [for k, v in var.environments : k],
+        coalesce(v.environment, "-")
+      )
     ])
     error_message = "Invalid environment value."
   }

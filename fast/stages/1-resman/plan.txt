@@ -58,60 +58,6 @@ Terraform will perform the following actions:
       + role               = "roles/billing.costsManager"
     }
 
-  # google_storage_bucket_object.providers["2-networking-ngfw"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "fOy0Yry2Onnn6nefojgx8A==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-ngfw-providers.tf"
-        name                = "providers/2-networking-ngfw-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
-  # google_storage_bucket_object.providers["2-networking-ngfw-r"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "xgk21xV6oGIbKNJ2SLrRHw==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-ngfw-r-providers.tf"
-        name                = "providers/2-networking-ngfw-r-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
-  # google_storage_bucket_object.providers["2-networking-swp"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "qa5j0pUWwsYV/EUEWw+DPA==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-swp-providers.tf"
-        name                = "providers/2-networking-swp-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
-  # google_storage_bucket_object.providers["2-networking-swp-r"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "3JS9gwggaML+7xZtOj54Jw==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-swp-r-providers.tf"
-        name                = "providers/2-networking-swp-r-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
-  # google_storage_bucket_object.providers["2-networking-test"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "KPBEHy0M7Kqq5bFjvzWytg==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-test-providers.tf"
-        name                = "providers/2-networking-test-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
-  # google_storage_bucket_object.providers["2-networking-test-r"] will be updated in-place
-  ~ resource "google_storage_bucket_object" "providers" {
-      ~ content             = (sensitive value)
-      ~ detect_md5hash      = "wFXFsjqODt1K6jdYBQfQQA==" -> "different hash"
-        id                  = "ldj-prod-iac-core-outputs-0-providers/2-networking-test-r-providers.tf"
-        name                = "providers/2-networking-test-r-providers.tf"
-        # (16 unchanged attributes hidden)
-    }
-
   # google_storage_bucket_object.providers["2-project-factory"] will be updated in-place
   ~ resource "google_storage_bucket_object" "providers" {
       ~ content             = (sensitive value)
@@ -182,282 +128,6 @@ Terraform will perform the following actions:
         id                  = "ldj-prod-iac-core-outputs-0-workflows/2-project-factory-workflow.yaml"
         name                = "workflows/2-project-factory-workflow.yaml"
         # (16 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-ngfw"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/ngfw"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-ngfw
-          + # end provider.tf for ngfw
-        EOT
-      ~ content_base64sha256 = "+SMQ8Is3QzbVxX1qjMAnTk6T4eUajflRl9zNMEKEOWE=" -> (known after apply)
-      ~ content_base64sha512 = "+L+zO9HlmPeNcBJ67udY8ToU9JXNCVgdSJWiXlqEDfv5TV5SPy6Bv4rDgcRQYgtU1vOI4UpHKw51hZVpJiiLlg==" -> (known after apply)
-      ~ content_md5          = "7cecb462bcb63a79e7ea779fa23831f0" -> (known after apply)
-      ~ content_sha1         = "eebd6f57f83a3322c52d9830eb884edb8d0e1bc3" -> (known after apply)
-      ~ content_sha256       = "f92310f08b374336d5c57d6a8cc0274e4e93e1e51a8df95197dccd3042843961" -> (known after apply)
-      ~ content_sha512       = "f8bfb33bd1e598f78d70127aeee758f13a14f495cd09581d4895a25e5a840dfbf94d5e523f2e81bf8ac381c450620b54d6f388e14a472b0e7585956926288b96" -> (known after apply)
-      ~ id                   = "eebd6f57f83a3322c52d9830eb884edb8d0e1bc3" -> (known after apply)
-        # (3 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-ngfw-r"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/ngfw"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-ngfw
-          + # end provider.tf for ngfw
-        EOT
-      ~ content_base64sha256 = "2Rcsuc2umbe+GxuKYp3VOoTh4v2bT9pKOZ+ywh0gZI8=" -> (known after apply)
-      ~ content_base64sha512 = "PE8mEl8y62wG4CaMvMzwYYS9mAR1z2tscQgmHFjRPtV+gpSnX3AgwJve8zYQ4/8hfHqsg9sUx7Vqm77iUiDuOw==" -> (known after apply)
-      ~ content_md5          = "c60936d7157aa0621b28d27648bad11f" -> (known after apply)
-      ~ content_sha1         = "9a7fd2a0004405e7e670607727251d7615fdcac3" -> (known after apply)
-      ~ content_sha256       = "d9172cb9cdae99b7be1b1b8a629dd53a84e1e2fd9b4fda4a399fb2c21d20648f" -> (known after apply)
-      ~ content_sha512       = "3c4f26125f32eb6c06e0268cbcccf06184bd980475cf6b6c7108261c58d13ed57e8294a75f7020c09bdef33610e3ff217c7aac83db14c7b56a9bbee25220ee3b" -> (known after apply)
-      ~ id                   = "9a7fd2a0004405e7e670607727251d7615fdcac3" -> (known after apply)
-        # (3 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-swp"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/swp"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-swp
-          + # end provider.tf for swp
-        EOT
-      ~ content_base64sha256 = "ps4dk5LBzRSq6FO++v5WtsFVgbkaWEuVtPTB+70B15w=" -> (known after apply)
-      ~ content_base64sha512 = "fq4eQqgBCZO5qvBV7esWI7VVIsrvRCi/4Q0DXf0b25D5AZviyOcyAXjlilz4o8vHsad/HilH7HfjzKCD7WkffA==" -> (known after apply)
-      ~ content_md5          = "a9ae63d29516c2c615fc45045b0f833c" -> (known after apply)
-      ~ content_sha1         = "bc290ed5101f08c9480891bdecb37427a7ef4368" -> (known after apply)
-      ~ content_sha256       = "a6ce1d9392c1cd14aae853befafe56b6c15581b91a584b95b4f4c1fbbd01d79c" -> (known after apply)
-      ~ content_sha512       = "7eae1e42a8010993b9aaf055edeb1623b55522caef4428bfe10d035dfd1bdb90f9019be2c8e7320178e58a5cf8a3cbc7b1a77f1e2947ec77e3cca083ed691f7c" -> (known after apply)
-      ~ id                   = "bc290ed5101f08c9480891bdecb37427a7ef4368" -> (known after apply)
-        # (3 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-swp-r"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/swp"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-swp
-          + # end provider.tf for swp
-        EOT
-      ~ content_base64sha256 = "nkvpLWXxYm9Qm6Ti9GiUu3EmltRBXVlP3YX3OUoEvw8=" -> (known after apply)
-      ~ content_base64sha512 = "MRGiIv5fZH+bq2v7DdqXUqDZVQTnzPhufQYQEewIOy/F1EpWJPcipwD8x4nOvpXr+b4LX74t9hx0CJ2O23YtJA==" -> (known after apply)
-      ~ content_md5          = "dc94bd83082068c2feef166d3a3e7827" -> (known after apply)
-      ~ content_sha1         = "a71b2a866e2649889e5e89cf3666041292d57fd9" -> (known after apply)
-      ~ content_sha256       = "9e4be92d65f1626f509ba4e2f46894bb712696d4415d594fdd85f7394a04bf0f" -> (known after apply)
-      ~ content_sha512       = "3111a222fe5f647f9bab6bfb0dda9752a0d95504e7ccf86e7d061011ec083b2fc5d44a5624f722a700fcc789cebe95ebf9be0b5fbe2df61c74089d8edb762d24" -> (known after apply)
-      ~ id                   = "a71b2a866e2649889e5e89cf3666041292d57fd9" -> (known after apply)
-        # (3 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-test"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/test"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-test
-          + # end provider.tf for test
-        EOT
-      ~ content_base64sha256 = "d+W7hYHM6+ZXyfYp3Z9cYm8kFG0WcrWy+DdKvZ+PtRc=" -> (known after apply)
-      ~ content_base64sha512 = "v3p35vVjAu9PRd7uTMELwGgUjyET+iBagLn+wF4w50f6n3P9cRlDmkWK6FhVccQFrKkkRM+5fzBA7Bn33xlmpQ==" -> (known after apply)
-      ~ content_md5          = "28f0441f2d0cecaaaae5b163bf35b2b6" -> (known after apply)
-      ~ content_sha1         = "d4185b88f1c196e4ba26d971265a9fb8e2f88fc0" -> (known after apply)
-      ~ content_sha256       = "77e5bb8581ccebe657c9f629dd9f5c626f24146d1672b5b2f8374abd9f8fb517" -> (known after apply)
-      ~ content_sha512       = "bf7a77e6f56302ef4f45deee4cc10bc068148f2113fa205a80b9fec05e30e747fa9f73fd7119439a458ae8585571c405aca92444cfb97f3040ec19f7df1966a5" -> (known after apply)
-      ~ id                   = "d4185b88f1c196e4ba26d971265a9fb8e2f88fc0" -> (known after apply)
-        # (3 unchanged attributes hidden)
-    }
-
-  # local_file.providers["2-networking-test-r"] must be replaced
--/+ resource "local_file" "providers" {
-      ~ content              = <<-EOT # forces replacement
-            /**
-             * Copyright 2022 Google LLC
-             *
-             * Licensed under the Apache License, Version 2.0 (the "License");
-             * you may not use this file except in compliance with the License.
-             * You may obtain a copy of the License at
-             *
-             *      http://www.apache.org/licenses/LICENSE-2.0
-             *
-             * Unless required by applicable law or agreed to in writing, software
-             * distributed under the License is distributed on an "AS IS" BASIS,
-             * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-             * See the License for the specific language governing permissions and
-             * limitations under the License.
-             */
-            
-            terraform {
-              backend "gcs" {
-                bucket                      = "ldj-prod-resman-net-0"
-                impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                prefix = "addons/test"
-              }
-            }
-            provider "google" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            provider "google-beta" {
-              impersonate_service_account = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-            }
-            
-          - # end provider.tf for networking-test
-          + # end provider.tf for test
-        EOT
-      ~ content_base64sha256 = "3uBKtnz9g8eUGfb8tDCgMbcaeq8Ci2wC709+IXV6paU=" -> (known after apply)
-      ~ content_base64sha512 = "CsfA/LkC6IlMlNufIrtwnDYM4RipG6WIeTMADixhuzbu/97lfLt8Y5m5noRgWso0yUzvfPWMK9Ctz/Fm2dhmjQ==" -> (known after apply)
-      ~ content_md5          = "c055c5b23a8e0edd4aea37580507d040" -> (known after apply)
-      ~ content_sha1         = "9815df12ce85845cf3b77eead912e23d4bf1683b" -> (known after apply)
-      ~ content_sha256       = "dee04ab67cfd83c79419f6fcb430a031b71a7aaf028b6c02ef4f7e21757aa5a5" -> (known after apply)
-      ~ content_sha512       = "0ac7c0fcb902e8894c94db9f22bb709c360ce118a91ba5887933000e2c61bb36eeffdee57cbb7c6399b99e84605aca34c94cef7cf58c2bd0adcff166d9d8668d" -> (known after apply)
-      ~ id                   = "9815df12ce85845cf3b77eead912e23d4bf1683b" -> (known after apply)
-        # (3 unchanged attributes hidden)
     }
 
   # local_file.providers["2-project-factory"] must be replaced
@@ -753,93 +423,95 @@ Terraform will perform the following actions:
   # local_file.tfvars["1"] must be replaced
 -/+ resource "local_file" "tfvars" {
       ~ content              = jsonencode(
-            {
-              - folder_ids       = {
-                  - gcve            = "folders/943525717670"
-                  - gcve-dev        = "folders/151431561395"
-                  - gcve-prod       = "folders/121437390158"
-                  - gke             = "folders/219618653183"
-                  - gke-dev         = "folders/39661087317"
-                  - gke-prod        = "folders/810789977048"
-                  - networking      = "folders/843203210689"
+          ~ {
+              ~ folder_ids       = {
                   - networking-dev  = "folders/835049949636"
                   - networking-prod = "folders/572160545943"
-                  - sandbox         = "folders/245438209825"
-                  - security        = "folders/251257116248"
-                  - teams           = "folders/551661226665"
-                  - tenants         = "folders/1030800250254"
+                    # (11 unchanged attributes hidden)
                 }
-              - service_accounts = {
-                  - gcve-dev               = "ldj-dev-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gcve-dev-r             = "ldj-dev-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gcve-prod              = "ldj-prod-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gcve-prod-r            = "ldj-prod-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gke-dev                = "ldj-dev-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gke-dev-r              = "ldj-dev-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gke-prod               = "ldj-prod-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - gke-prod-r             = "ldj-prod-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - networking             = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - networking-r           = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory        = "ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory-dev    = "ldj-dev-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory-dev-r  = "ldj-dev-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory-prod   = "ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory-prod-r = "ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - project-factory-r      = "ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - sandbox                = "ldj-dev-resman-sbox-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - security               = "ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - security-r             = "ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-                  - tenants                = "ldj-prod-resman-tenants-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+              ~ service_accounts = {
+                  - gcve-dev                = "ldj-dev-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gcve-dev-r              = "ldj-dev-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gcve-dev-ro             = "ldj-dev-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gcve-dev-rw             = "ldj-dev-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gcve-prod               = "ldj-prod-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gcve-prod-r             = "ldj-prod-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gcve-prod-ro            = "ldj-prod-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gcve-prod-rw            = "ldj-prod-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gke-dev                 = "ldj-dev-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gke-dev-r               = "ldj-dev-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gke-dev-ro              = "ldj-dev-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gke-dev-rw              = "ldj-dev-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gke-prod                = "ldj-prod-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - gke-prod-r              = "ldj-prod-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gke-prod-ro             = "ldj-prod-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + gke-prod-rw             = "ldj-prod-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - networking              = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - networking-r            = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + networking-ro           = "ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + networking-rw           = "ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory         = "ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory-dev     = "ldj-dev-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory-dev-r   = "ldj-dev-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-dev-ro  = "ldj-dev-resman-pfd-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-dev-rw  = "ldj-dev-resman-pfd-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory-prod    = "ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory-prod-r  = "ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-prod-ro = "ldj-prod-resman-pfp-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-prod-rw = "ldj-prod-resman-pfp-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - project-factory-r       = "ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-ro      = "ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + project-factory-rw      = "ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - security                = "ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  - security-r              = "ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + security-ro             = "ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                  + security-rw             = "ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+                    # (2 unchanged attributes hidden)
                 }
-              - stage_config     = {
-                  - gcve-dev             = {
-                      - environment = "dev"
-                      - short_name  = "gcve"
-                    }
-                  - gcve-prod            = {
-                      - environment = "prod"
-                      - short_name  = "gcve"
-                    }
-                  - gke-dev              = {
-                      - environment = "dev"
-                      - short_name  = "gke"
-                    }
-                  - gke-prod             = {
-                      - environment = "prod"
-                      - short_name  = "gke"
-                    }
-                  - networking           = {
-                      - iam_delegated_principals = {
-                          - dev  = [
+              ~ stage_config     = {
+                  ~ networking           = {
+                      ~ iam_delegated_principals = {
+                          ~ dev  = [
                               - "serviceAccount:ldj-dev-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-dev-resman-gke-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-dev-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
-                          - prod = [
+                          ~ prod = [
                               - "serviceAccount:ldj-prod-resman-gcve-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
                         }
-                      - iam_viewer_principals    = {
-                          - dev  = [
+                      ~ iam_viewer_principals    = {
+                          ~ dev  = [
                               - "serviceAccount:ldj-dev-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-dev-resman-gke-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-dev-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
-                          - prod = [
+                          ~ prod = [
                               - "serviceAccount:ldj-prod-resman-gcve-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                               - "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
                         }
-                      - short_name               = "net"
+                        # (1 unchanged attribute hidden)
                     }
-                  - project-factory-dev  = {
-                      - environment = "dev"
-                      - short_name  = "pf"
+                  + project-factory      = {
+                      + iam_delegated_principals = {
+                          + dev  = []
+                          + prod = []
+                        }
+                      + iam_viewer_principals    = {
+                          + dev  = []
+                          + prod = []
+                        }
+                      + short_name               = "pf"
                     }
-                  - project-factory-prod = {
-                      - environment = "prod"
-                      - short_name  = "pf"
+                  ~ project-factory-dev  = {
+                      ~ short_name  = "pf" -> "pfd"
+                        # (1 unchanged attribute hidden)
+                    }
+                  ~ project-factory-prod = {
+                      ~ short_name  = "pf" -> "pfp"
+                        # (1 unchanged attribute hidden)
                     }
                   - project_factory      = {
                       - iam_delegated_principals = {
@@ -852,51 +524,30 @@ Terraform will perform the following actions:
                         }
                       - short_name               = "pf"
                     }
-                  - security             = {
-                      - iam_delegated_principals = {
-                          - dev  = [
+                  ~ security             = {
+                      ~ iam_delegated_principals = {
+                          ~ dev  = [
                               - "serviceAccount:ldj-dev-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
-                          - prod = [
+                          ~ prod = [
                               - "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
                         }
-                      - iam_viewer_principals    = {
-                          - dev  = [
+                      ~ iam_viewer_principals    = {
+                          ~ dev  = [
                               - "serviceAccount:ldj-dev-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
-                          - prod = [
+                          ~ prod = [
                               - "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
                             ]
                         }
-                      - short_name               = "sec"
+                        # (1 unchanged attribute hidden)
                     }
+                    # (4 unchanged attributes hidden)
                 }
-              - tag_keys         = {
-                  - context         = "tagKeys/123316001138"
-                  - environment     = "tagKeys/534907385149"
-                  - gcs_soft_delete = "tagKeys/281479009308987"
-                }
-              - tag_names        = {
-                  - context     = "context"
-                  - environment = "environment"
-                }
-              - tag_values       = {
-                  - "context/gcve"              = "tagValues/281476934113589"
-                  - "context/gke"               = "tagValues/1084887265324"
-                  - "context/networking"        = "tagValues/1085868865377"
-                  - "context/project-factory"   = "tagValues/281477339751191"
-                  - "context/sandbox"           = "tagValues/918078731612"
-                  - "context/security"          = "tagValues/111937801763"
-                  - "context/tenants"           = "tagValues/281480448315714"
-                  - "environment/development"   = "tagValues/1028757044334"
-                  - "environment/production"    = "tagValues/1067159199641"
-                  - "gcs_soft_delete/allow-0"   = "tagValues/281478899316081"
-                  - "gcs_soft_delete/allow-10"  = "tagValues/281483064391362"
-                  - "gcs_soft_delete/allow-all" = "tagValues/281484261155708"
-                }
-            }
-        ) -> (known after apply) # forces replacement
+                # (3 unchanged attributes hidden)
+            } # forces replacement
+        )
       ~ content_base64sha256 = "sWyYzJcV99MxKRUT/tuy/JocD5oh0kCyEl9FQtgsmFM=" -> (known after apply)
       ~ content_base64sha512 = "e/8sGZ2RXO7xRF3Q9WkuevQAquozGRZXnnh4JKSx0L+q7Di00LuUvnNfNRJZP5NLvt+E/SEW+L53zdzNxO/Pog==" -> (known after apply)
       ~ content_md5          = "2f2ad4f527965048ac19fb2aa4c549ad" -> (known after apply)
@@ -1246,16 +897,6 @@ Terraform will perform the following actions:
       - role   = "roles/storage.objectViewer" -> null
     }
 
-  # module.cicd-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be updated in-place
-  ~ resource "google_service_account_iam_binding" "authoritative" {
-        id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-1r@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.workloadIdentityUser"
-      ~ members            = [
-          - "principalSet://iam.googleapis.com/projects/1067134626166/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/ludomagno/security",
-          + "principalSet://iam.googleapis.com/projects/1067134626166/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/ludomagno/networking",
-        ]
-        # (3 unchanged attributes hidden)
-    }
-
   # module.cicd-sa-rw["project-factory"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be created
   + resource "google_project_iam_member" "project-roles" {
       + etag    = (known after apply)
@@ -1350,7 +991,7 @@ Terraform will perform the following actions:
         id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-1@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.workloadIdentityUser"
       ~ members            = [
           - "principalSet://iam.googleapis.com/projects/1067134626166/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/ludomagno/security",
-          + "principalSet://iam.googleapis.com/projects/1067134626166/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.sub/project_path:ludomagno/networking:ref_type:branch:ref:main",
+          + "principalSet://iam.googleapis.com/projects/1067134626166/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.sub/project_path:ludomagno/security:ref_type:branch:ref:main",
         ]
         # (3 unchanged attributes hidden)
     }
@@ -1371,15 +1012,7 @@ Terraform will perform the following actions:
       + id     = (known after apply)
       + member = "serviceAccount:ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
       + org_id = "366118655033"
-      + role   = "ngfw_enterprise_viewer"
-    }
-
-  # module.organization[0].google_organization_iam_member.bindings["sa_net_rw_ngfw_enterprise_admin"] must be replaced
--/+ resource "google_organization_iam_member" "bindings" {
-      ~ etag   = "BwYqyTpzsMk=" -> (known after apply)
-      ~ id     = "366118655033/organizations/366118655033/roles/ngfwEnterpriseAdmin/serviceAccount:ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
-      ~ role   = "organizations/366118655033/roles/ngfwEnterpriseAdmin" -> "ngfw_enterprise_admin" # forces replacement
-        # (2 unchanged attributes hidden)
+      + role   = "organizations/366118655033/roles/ngfwEnterpriseViewer"
     }
 
   # module.organization[0].google_organization_iam_member.bindings["sa_pf_conditional_org_policy"] must be replaced
@@ -1391,32 +1024,7 @@ Terraform will perform the following actions:
       ~ member = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" # forces replacement
         # (2 unchanged attributes hidden)
 
-      ~ condition {
-          ~ expression  = <<-EOT # forces replacement
-              - resource.matchTag('366118655033/context', 'project-factory')
-              + resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
-            EOT
-            # (2 unchanged attributes hidden)
-        }
-    }
-
-  # module.organization[0].google_organization_iam_member.bindings["sa_sec_asset_viewer"] will be destroyed
-  # (because key ["sa_sec_asset_viewer"] is not in for_each map)
-  - resource "google_organization_iam_member" "bindings" {
-      - etag   = "BwYl1S2ETis=" -> null
-      - id     = "366118655033/roles/cloudasset.viewer/serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - org_id = "366118655033" -> null
-      - role   = "roles/cloudasset.viewer" -> null
-    }
-
-  # module.organization[0].google_organization_iam_member.bindings["sa_sec_cloudasset"] will be created
-  + resource "google_organization_iam_member" "bindings" {
-      + etag   = (known after apply)
-      + id     = (known after apply)
-      + member = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + org_id = "366118655033"
-      + role   = "roles/cloudasset.viewer"
+        # (1 unchanged block hidden)
     }
 
   # module.organization[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagUser"] will be updated in-place
@@ -1465,490 +1073,6 @@ Terraform will perform the following actions:
         # (3 unchanged attributes hidden)
     }
 
-  # module.pf-bucket[0].google_storage_bucket.bucket will be destroyed
-  # (because google_storage_bucket.bucket is not in configuration)
-  - resource "google_storage_bucket" "bucket" {
-      - default_event_based_hold    = false -> null
-      - effective_labels            = {} -> null
-      - enable_object_retention     = false -> null
-      - force_destroy               = false -> null
-      - id                          = "ldj-resman-pf-0" -> null
-      - labels                      = {} -> null
-      - location                    = "EU" -> null
-      - name                        = "ldj-resman-pf-0" -> null
-      - project                     = "ldj-prod-iac-core-0" -> null
-      - project_number              = 1067134626166 -> null
-      - public_access_prevention    = "inherited" -> null
-      - requester_pays              = false -> null
-      - rpo                         = "DEFAULT" -> null
-      - self_link                   = "https://www.googleapis.com/storage/v1/b/ldj-resman-pf-0" -> null
-      - storage_class               = "STANDARD" -> null
-      - terraform_labels            = {} -> null
-      - uniform_bucket_level_access = true -> null
-      - url                         = "gs://ldj-resman-pf-0" -> null
-
-      - soft_delete_policy {
-          - effective_time             = "2024-06-11T11:29:35.401Z" -> null
-          - retention_duration_seconds = 604800 -> null
-        }
-
-      - versioning {
-          - enabled = true -> null
-        }
-    }
-
-  # module.pf-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be destroyed
-  # (because google_storage_bucket_iam_binding.authoritative is not in configuration)
-  - resource "google_storage_bucket_iam_binding" "authoritative" {
-      - bucket  = "b/ldj-resman-pf-0" -> null
-      - etag    = "CAM=" -> null
-      - id      = "b/ldj-resman-pf-0/roles/storage.objectAdmin" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/storage.objectAdmin" -> null
-    }
-
-  # module.pf-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be destroyed
-  # (because google_storage_bucket_iam_binding.authoritative is not in configuration)
-  - resource "google_storage_bucket_iam_binding" "authoritative" {
-      - bucket  = "b/ldj-resman-pf-0" -> null
-      - etag    = "CAM=" -> null
-      - id      = "b/ldj-resman-pf-0/roles/storage.objectViewer" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/storage.objectViewer" -> null
-    }
-
-  # module.pf-sa-ro[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be destroyed
-  # (because google_project_iam_member.project-roles is not in configuration)
-  - resource "google_project_iam_member" "project-roles" {
-      - etag    = "BwYl1aaqnzQ=" -> null
-      - id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project = "ldj-prod-iac-core-0" -> null
-      - role    = "roles/serviceusage.serviceUsageConsumer" -> null
-    }
-
-  # module.pf-sa-ro[0].google_service_account.service_account[0] will be destroyed
-  # (because google_service_account.service_account is not in configuration)
-  - resource "google_service_account" "service_account" {
-      - account_id   = "ldj-resman-pf-0r" -> null
-      - disabled     = false -> null
-      - display_name = "Terraform resman project factory main service account (read-only)." -> null
-      - email        = "ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member       = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project      = "ldj-prod-iac-core-0" -> null
-      - unique_id    = "111757941899489524155" -> null
-        # (1 unchanged attribute hidden)
-    }
-
-  # module.pf-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
-  # (because google_service_account_iam_binding.authoritative is not in configuration)
-  - resource "google_service_account_iam_binding" "authoritative" {
-      - etag               = "BwYqyThjGZM=" -> null
-      - id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> null
-      - members            = [
-          - "serviceAccount:ldj-prod-resman-pf-1r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role               = "roles/iam.serviceAccountTokenCreator" -> null
-      - service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-    }
-
-  # module.pf-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be destroyed
-  # (because google_storage_bucket_iam_member.bucket-roles is not in configuration)
-  - resource "google_storage_bucket_iam_member" "bucket-roles" {
-      - bucket = "b/ldj-prod-iac-core-outputs-0" -> null
-      - etag   = "CIEB" -> null
-      - id     = "b/ldj-prod-iac-core-outputs-0/organizations/366118655033/roles/storageViewer/serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - role   = "organizations/366118655033/roles/storageViewer" -> null
-    }
-
-  # module.pf-sa-rw[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be destroyed
-  # (because google_project_iam_member.project-roles is not in configuration)
-  - resource "google_project_iam_member" "project-roles" {
-      - etag    = "BwYl1aaqnzQ=" -> null
-      - id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project = "ldj-prod-iac-core-0" -> null
-      - role    = "roles/serviceusage.serviceUsageConsumer" -> null
-    }
-
-  # module.pf-sa-rw[0].google_service_account.service_account[0] will be destroyed
-  # (because google_service_account.service_account is not in configuration)
-  - resource "google_service_account" "service_account" {
-      - account_id   = "ldj-resman-pf-0" -> null
-      - disabled     = false -> null
-      - display_name = "Terraform resman project factory main service account." -> null
-      - email        = "ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member       = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project      = "ldj-prod-iac-core-0" -> null
-      - unique_id    = "105558095773911439720" -> null
-        # (1 unchanged attribute hidden)
-    }
-
-  # module.pf-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
-  # (because google_service_account_iam_binding.authoritative is not in configuration)
-  - resource "google_service_account_iam_binding" "authoritative" {
-      - etag               = "BwYqyThge2Q=" -> null
-      - id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> null
-      - members            = [
-          - "serviceAccount:ldj-prod-resman-pf-1@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role               = "roles/iam.serviceAccountTokenCreator" -> null
-      - service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-    }
-
-  # module.pf-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] will be destroyed
-  # (because google_storage_bucket_iam_member.bucket-roles is not in configuration)
-  - resource "google_storage_bucket_iam_member" "bucket-roles" {
-      - bucket = "b/ldj-prod-iac-core-outputs-0" -> null
-      - etag   = "CIEB" -> null
-      - id     = "b/ldj-prod-iac-core-outputs-0/roles/storage.objectAdmin/serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - role   = "roles/storage.objectAdmin" -> null
-    }
-
-  # module.sec-bucket[0].google_storage_bucket.bucket will be destroyed
-  # (because google_storage_bucket.bucket is not in configuration)
-  - resource "google_storage_bucket" "bucket" {
-      - default_event_based_hold    = false -> null
-      - effective_labels            = {} -> null
-      - enable_object_retention     = false -> null
-      - force_destroy               = false -> null
-      - id                          = "ldj-prod-resman-sec-0" -> null
-      - labels                      = {} -> null
-      - location                    = "EU" -> null
-      - name                        = "ldj-prod-resman-sec-0" -> null
-      - project                     = "ldj-prod-iac-core-0" -> null
-      - project_number              = 1067134626166 -> null
-      - public_access_prevention    = "inherited" -> null
-      - requester_pays              = false -> null
-      - rpo                         = "DEFAULT" -> null
-      - self_link                   = "https://www.googleapis.com/storage/v1/b/ldj-prod-resman-sec-0" -> null
-      - storage_class               = "STANDARD" -> null
-      - terraform_labels            = {} -> null
-      - uniform_bucket_level_access = true -> null
-      - url                         = "gs://ldj-prod-resman-sec-0" -> null
-
-      - soft_delete_policy {
-          - effective_time             = "2024-03-01T08:00:00.000Z" -> null
-          - retention_duration_seconds = 604800 -> null
-        }
-
-      - versioning {
-          - enabled = true -> null
-        }
-    }
-
-  # module.sec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be destroyed
-  # (because google_storage_bucket_iam_binding.authoritative is not in configuration)
-  - resource "google_storage_bucket_iam_binding" "authoritative" {
-      - bucket  = "b/ldj-prod-resman-sec-0" -> null
-      - etag    = "CAc=" -> null
-      - id      = "b/ldj-prod-resman-sec-0/roles/storage.objectAdmin" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/storage.objectAdmin" -> null
-    }
-
-  # module.sec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be destroyed
-  # (because google_storage_bucket_iam_binding.authoritative is not in configuration)
-  - resource "google_storage_bucket_iam_binding" "authoritative" {
-      - bucket  = "b/ldj-prod-resman-sec-0" -> null
-      - etag    = "CAc=" -> null
-      - id      = "b/ldj-prod-resman-sec-0/roles/storage.objectViewer" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/storage.objectViewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder.folder[0] will be destroyed
-  # (because google_folder.folder is not in configuration)
-  - resource "google_folder" "folder" {
-      - create_time         = "2023-01-27T15:52:51.597Z" -> null
-      - deletion_protection = false -> null
-      - display_name        = "Security" -> null
-      - folder_id           = "251257116248" -> null
-      - id                  = "folders/251257116248" -> null
-      - lifecycle_state     = "ACTIVE" -> null
-      - name                = "folders/251257116248" -> null
-      - parent              = "organizations/366118655033" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["organizations/366118655033/roles/projectIamViewer"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYpZo9qIoo=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/organizations/366118655033/roles/projectIamViewer" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "organizations/366118655033/roles/projectIamViewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/cloudkms.cryptoKeyEncrypterDecrypter" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/cloudkms.viewer" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/cloudkms.viewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/editor"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/editor" -> null
-      - members = [
-          - "group:gcp-security-admins@ludo.joonix.net",
-        ] -> null
-      - role    = "roles/editor" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/logging.admin"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/logging.admin" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/logging.admin" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/owner"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/owner" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/owner" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.folderAdmin" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.folderAdmin" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.folderViewer" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.folderViewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.projectCreator" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.projectCreator" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.tagUser" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.tagUser" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.tagViewer" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.tagViewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/viewer"] will be destroyed
-  # (because google_folder_iam_binding.authoritative is not in configuration)
-  - resource "google_folder_iam_binding" "authoritative" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/viewer" -> null
-      - members = [
-          - "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/viewer" -> null
-    }
-
-  # module.sec-folder[0].google_folder_iam_binding.bindings["pf_delegated_grant"] will be destroyed
-  # (because google_folder_iam_binding.bindings is not in configuration)
-  - resource "google_folder_iam_binding" "bindings" {
-      - etag    = "BwYlyC7iDXM=" -> null
-      - folder  = "folders/251257116248" -> null
-      - id      = "folders/251257116248/roles/resourcemanager.projectIamAdmin/pf_delegated_grant/Project factory delegated grant./api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])" -> null
-      - members = [
-          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role    = "roles/resourcemanager.projectIamAdmin" -> null
-
-      - condition {
-          - description = "Project factory delegated grant." -> null
-          - expression  = "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])" -> null
-          - title       = "pf_delegated_grant" -> null
-        }
-    }
-
-  # module.sec-folder[0].google_tags_tag_binding.binding["context"] will be destroyed
-  # (because google_tags_tag_binding.binding is not in configuration)
-  - resource "google_tags_tag_binding" "binding" {
-      - id        = "tagBindings/%2F%2Fcloudresourcemanager.googleapis.com%2Ffolders%2F251257116248/tagValues/111937801763" -> null
-      - name      = "%2F%2Fcloudresourcemanager.googleapis.com%2Ffolders%2F251257116248/tagValues/111937801763" -> null
-      - parent    = "//cloudresourcemanager.googleapis.com/folders/251257116248" -> null
-      - tag_value = "tagValues/111937801763" -> null
-    }
-
-  # module.sec-sa-ro[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be destroyed
-  # (because google_project_iam_member.project-roles is not in configuration)
-  - resource "google_project_iam_member" "project-roles" {
-      - etag    = "BwYl1aaqnzQ=" -> null
-      - id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project = "ldj-prod-iac-core-0" -> null
-      - role    = "roles/serviceusage.serviceUsageConsumer" -> null
-    }
-
-  # module.sec-sa-ro[0].google_service_account.service_account[0] will be destroyed
-  # (because google_service_account.service_account is not in configuration)
-  - resource "google_service_account" "service_account" {
-      - account_id   = "ldj-prod-resman-sec-0r" -> null
-      - disabled     = false -> null
-      - display_name = "Terraform resman security service account (read-only)." -> null
-      - email        = "ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member       = "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project      = "ldj-prod-iac-core-0" -> null
-      - unique_id    = "115904552227076281660" -> null
-        # (1 unchanged attribute hidden)
-    }
-
-  # module.sec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
-  # (because google_service_account_iam_binding.authoritative is not in configuration)
-  - resource "google_service_account_iam_binding" "authoritative" {
-      - etag               = "BwYMzP1aS5Y=" -> null
-      - id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> null
-      - members            = [
-          - "serviceAccount:ldj-prod-resman-sec-1r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role               = "roles/iam.serviceAccountTokenCreator" -> null
-      - service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-    }
-
-  # module.sec-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be destroyed
-  # (because google_storage_bucket_iam_member.bucket-roles is not in configuration)
-  - resource "google_storage_bucket_iam_member" "bucket-roles" {
-      - bucket = "b/ldj-prod-iac-core-outputs-0" -> null
-      - etag   = "CIEB" -> null
-      - id     = "b/ldj-prod-iac-core-outputs-0/organizations/366118655033/roles/storageViewer/serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member = "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - role   = "organizations/366118655033/roles/storageViewer" -> null
-    }
-
-  # module.sec-sa-rw[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be destroyed
-  # (because google_project_iam_member.project-roles is not in configuration)
-  - resource "google_project_iam_member" "project-roles" {
-      - etag    = "BwYl1aaqnzQ=" -> null
-      - id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member  = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project = "ldj-prod-iac-core-0" -> null
-      - role    = "roles/serviceusage.serviceUsageConsumer" -> null
-    }
-
-  # module.sec-sa-rw[0].google_service_account.service_account[0] will be destroyed
-  # (because google_service_account.service_account is not in configuration)
-  - resource "google_service_account" "service_account" {
-      - account_id   = "ldj-prod-resman-sec-0" -> null
-      - disabled     = false -> null
-      - display_name = "Terraform resman security service account." -> null
-      - email        = "ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member       = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - project      = "ldj-prod-iac-core-0" -> null
-      - unique_id    = "115125049211607788843" -> null
-        # (1 unchanged attribute hidden)
-    }
-
-  # module.sec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
-  # (because google_service_account_iam_binding.authoritative is not in configuration)
-  - resource "google_service_account_iam_binding" "authoritative" {
-      - etag               = "BwYYpJ+1cgc=" -> null
-      - id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> null
-      - members            = [
-          - "serviceAccount:ldj-prod-resman-sec-1@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ] -> null
-      - role               = "roles/iam.serviceAccountTokenCreator" -> null
-      - service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-    }
-
-  # module.sec-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] will be destroyed
-  # (because google_storage_bucket_iam_member.bucket-roles is not in configuration)
-  - resource "google_storage_bucket_iam_member" "bucket-roles" {
-      - bucket = "b/ldj-prod-iac-core-outputs-0" -> null
-      - etag   = "CIEB" -> null
-      - id     = "b/ldj-prod-iac-core-outputs-0/roles/storage.objectAdmin/serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - member = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> null
-      - role   = "roles/storage.objectAdmin" -> null
-    }
-
   # module.net-bucket[0].google_storage_bucket.bucket has moved to module.stage2-bucket["networking"].google_storage_bucket.bucket[0]
     resource "google_storage_bucket" "bucket" {
         id                          = "ldj-prod-resman-net-0"
@@ -1970,108 +1094,84 @@ Terraform will perform the following actions:
         # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-bucket["project-factory"].google_storage_bucket.bucket[0] will be created
-  + resource "google_storage_bucket" "bucket" {
-      + effective_labels            = {
+  # module.stage2-bucket["project-factory"].google_storage_bucket.bucket[0] must be replaced
+  # (moved from module.pf-bucket[0].google_storage_bucket.bucket)
+-/+ resource "google_storage_bucket" "bucket" {
+      - default_event_based_hold    = false -> null
+      ~ effective_labels            = {
           + "goog-terraform-provisioned" = "true"
         }
-      + force_destroy               = false
-      + id                          = (known after apply)
-      + location                    = "EU"
-      + name                        = "ldj-prod-resman-pf-0"
-      + project                     = "ldj-prod-iac-core-0"
-      + project_number              = (known after apply)
-      + public_access_prevention    = (known after apply)
-      + rpo                         = (known after apply)
-      + self_link                   = (known after apply)
-      + storage_class               = "STANDARD"
-      + terraform_labels            = {
+      - enable_object_retention     = false -> null
+      ~ id                          = "ldj-resman-pf-0" -> (known after apply)
+      - labels                      = {} -> null
+      ~ name                        = "ldj-resman-pf-0" -> "ldj-prod-resman-pf-0" # forces replacement
+      ~ project_number              = 1067134626166 -> (known after apply)
+      ~ public_access_prevention    = "inherited" -> (known after apply)
+      - requester_pays              = false -> null
+      ~ rpo                         = "DEFAULT" -> (known after apply)
+      ~ self_link                   = "https://www.googleapis.com/storage/v1/b/ldj-resman-pf-0" -> (known after apply)
+      ~ terraform_labels            = {
           + "goog-terraform-provisioned" = "true"
         }
-      + uniform_bucket_level_access = true
-      + url                         = (known after apply)
+      ~ url                         = "gs://ldj-resman-pf-0" -> (known after apply)
+        # (5 unchanged attributes hidden)
 
-      + soft_delete_policy (known after apply)
-
-      + versioning {
-          + enabled = true
+      ~ soft_delete_policy (known after apply)
+      - soft_delete_policy {
+          - effective_time             = "2024-06-11T11:29:35.401Z" -> null
+          - retention_duration_seconds = 604800 -> null
         }
 
-      + website (known after apply)
+      ~ website (known after apply)
+
+        # (1 unchanged block hidden)
     }
 
-  # module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be created
-  + resource "google_storage_bucket_iam_binding" "authoritative" {
-      + bucket  = "ldj-prod-resman-pf-0"
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] must be replaced
+  # (moved from module.pf-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"])
+-/+ resource "google_storage_bucket_iam_binding" "authoritative" {
+      ~ bucket  = "b/ldj-resman-pf-0" -> "ldj-prod-resman-pf-0" # forces replacement
+      ~ etag    = "CAM=" -> (known after apply)
+      ~ id      = "b/ldj-resman-pf-0/roles/storage.objectAdmin" -> (known after apply)
+      ~ members = [
+          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/storage.objectAdmin"
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be created
-  + resource "google_storage_bucket_iam_binding" "authoritative" {
-      + bucket  = "ldj-prod-resman-pf-0"
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] must be replaced
+  # (moved from module.pf-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"])
+-/+ resource "google_storage_bucket_iam_binding" "authoritative" {
+      ~ bucket  = "b/ldj-resman-pf-0" -> "ldj-prod-resman-pf-0" # forces replacement
+      ~ etag    = "CAM=" -> (known after apply)
+      ~ id      = "b/ldj-resman-pf-0/roles/storage.objectViewer" -> (known after apply)
+      ~ members = [
+          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/storage.objectViewer"
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-bucket["security"].google_storage_bucket.bucket[0] will be created
-  + resource "google_storage_bucket" "bucket" {
-      + effective_labels            = {
-          + "goog-terraform-provisioned" = "true"
-        }
-      + force_destroy               = false
-      + id                          = (known after apply)
-      + location                    = "EU"
-      + name                        = "ldj-prod-resman-sec-0"
-      + project                     = "ldj-prod-iac-core-0"
-      + project_number              = (known after apply)
-      + public_access_prevention    = (known after apply)
-      + rpo                         = (known after apply)
-      + self_link                   = (known after apply)
-      + storage_class               = "STANDARD"
-      + terraform_labels            = {
-          + "goog-terraform-provisioned" = "true"
-        }
-      + uniform_bucket_level_access = true
-      + url                         = (known after apply)
+  # module.sec-bucket[0].google_storage_bucket.bucket has moved to module.stage2-bucket["security"].google_storage_bucket.bucket[0]
+    resource "google_storage_bucket" "bucket" {
+        id                          = "ldj-prod-resman-sec-0"
+        name                        = "ldj-prod-resman-sec-0"
+        # (16 unchanged attributes hidden)
 
-      + soft_delete_policy (known after apply)
-
-      + versioning {
-          + enabled = true
-        }
-
-      + website (known after apply)
+        # (2 unchanged blocks hidden)
     }
 
-  # module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be created
-  + resource "google_storage_bucket_iam_binding" "authoritative" {
-      + bucket  = "ldj-prod-resman-sec-0"
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/storage.objectAdmin"
+  # module.sec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] has moved to module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]
+    resource "google_storage_bucket_iam_binding" "authoritative" {
+        id      = "b/ldj-prod-resman-sec-0/roles/storage.objectAdmin"
+        # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be created
-  + resource "google_storage_bucket_iam_binding" "authoritative" {
-      + bucket  = "ldj-prod-resman-sec-0"
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/storage.objectViewer"
+  # module.sec-bucket[0].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] has moved to module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+    resource "google_storage_bucket_iam_binding" "authoritative" {
+        id      = "b/ldj-prod-resman-sec-0/roles/storage.objectViewer"
+        # (4 unchanged attributes hidden)
     }
 
   # module.net-folder[0].google_folder.folder[0] has moved to module.stage2-folder["networking"].google_folder.folder[0]
@@ -2479,154 +1579,133 @@ Terraform will perform the following actions:
         # (2 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder.folder[0] will be created
-  + resource "google_folder" "folder" {
-      + create_time         = (known after apply)
-      + deletion_protection = false
-      + display_name        = "Security"
-      + folder_id           = (known after apply)
-      + id                  = (known after apply)
-      + lifecycle_state     = (known after apply)
-      + name                = (known after apply)
-      + parent              = "organizations/366118655033"
+  # module.sec-folder[0].google_folder.folder[0] has moved to module.stage2-folder["security"].google_folder.folder[0]
+    resource "google_folder" "folder" {
+        id                  = "folders/251257116248"
+        name                = "folders/251257116248"
+        # (6 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["organizations/366118655033/roles/projectIamViewer"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["organizations/366118655033/roles/projectIamViewer"] will be updated in-place
+  # (moved from module.sec-folder[0].google_folder_iam_binding.authoritative["organizations/366118655033/roles/projectIamViewer"])
+  ~ resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/organizations/366118655033/roles/projectIamViewer"
+      ~ members = [
+          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "organizations/366118655033/roles/projectIamViewer"
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"] will be updated in-place
+  # (moved from module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"])
+  ~ resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/cloudkms.cryptoKeyEncrypterDecrypter"
+      ~ members = [
+          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"] will be updated in-place
+  # (moved from module.sec-folder[0].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"])
+  ~ resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/cloudkms.viewer"
+      ~ members = [
+          - "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/cloudkms.viewer"
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/editor"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "group:gcp-security-admins@ludo.joonix.net",
-        ]
-      + role    = "roles/editor"
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/editor"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/editor"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/editor"
+        # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/logging.admin"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/logging.admin"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/logging.admin"
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/owner"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/owner"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/owner"
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/resourcemanager.folderAdmin"
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/resourcemanager.folderViewer"
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/resourcemanager.projectCreator"
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be updated in-place
+  # (moved from module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"])
+  ~ resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/resourcemanager.tagUser"
+      ~ members = [
+          - "serviceAccount:ldj-prod-resman-net-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/logging.admin"
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/owner"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/owner"
-    }
-
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/resourcemanager.folderAdmin"
-    }
-
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
+  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be updated in-place
+  # (moved from module.sec-folder[0].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"])
+  ~ resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/resourcemanager.tagViewer"
+      ~ members = [
+          - "serviceAccount:ldj-prod-resman-net-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
           + "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
         ]
-      + role    = "roles/resourcemanager.folderViewer"
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/resourcemanager.projectCreator"
+  # module.sec-folder[0].google_folder_iam_binding.authoritative["roles/viewer"] has moved to module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/viewer"]
+    resource "google_folder_iam_binding" "authoritative" {
+        id      = "folders/251257116248/roles/viewer"
+        # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/resourcemanager.tagUser"
-    }
+  # module.stage2-folder["security"].google_folder_iam_binding.bindings["pf_delegated_grant"] will be destroyed
+  # (because key ["pf_delegated_grant"] is not in for_each map)
+  # (moved from module.sec-folder[0].google_folder_iam_binding.bindings["pf_delegated_grant"])
+  - resource "google_folder_iam_binding" "bindings" {
+      - etag    = "BwYlyC7iDXM=" -> null
+      - folder  = "folders/251257116248" -> null
+      - id      = "folders/251257116248/roles/resourcemanager.projectIamAdmin/pf_delegated_grant/Project factory delegated grant./api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])" -> null
+      - members = [
+          - "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
+        ] -> null
+      - role    = "roles/resourcemanager.projectIamAdmin" -> null
 
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/resourcemanager.tagViewer"
-    }
-
-  # module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/viewer"] will be created
-  + resource "google_folder_iam_binding" "authoritative" {
-      + etag    = (known after apply)
-      + folder  = (known after apply)
-      + id      = (known after apply)
-      + members = [
-          + "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
-        ]
-      + role    = "roles/viewer"
+      - condition {
+          - description = "Project factory delegated grant." -> null
+          - expression  = "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter'])" -> null
+          - title       = "pf_delegated_grant" -> null
+        }
     }
 
   # module.stage2-folder["security"].google_folder_iam_binding.bindings["project_factory"] will be created
   + resource "google_folder_iam_binding" "bindings" {
       + etag    = (known after apply)
-      + folder  = (known after apply)
+      + folder  = "folders/251257116248"
       + id      = (known after apply)
       + members = [
           + "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com",
@@ -2643,12 +1722,11 @@ Terraform will perform the following actions:
         }
     }
 
-  # module.stage2-folder["security"].google_tags_tag_binding.binding["context"] will be created
-  + resource "google_tags_tag_binding" "binding" {
-      + id        = (known after apply)
-      + name      = (known after apply)
-      + parent    = (known after apply)
-      + tag_value = "tagValues/111937801763"
+  # module.sec-folder[0].google_tags_tag_binding.binding["context"] has moved to module.stage2-folder["security"].google_tags_tag_binding.binding["context"]
+    resource "google_tags_tag_binding" "binding" {
+        id        = "tagBindings/%2F%2Fcloudresourcemanager.googleapis.com%2Ffolders%2F251257116248/tagValues/111937801763"
+        name      = "%2F%2Fcloudresourcemanager.googleapis.com%2Ffolders%2F251257116248/tagValues/111937801763"
+        # (2 unchanged attributes hidden)
     }
 
   # module.stage2-folder-envs["networking-dev"].google_folder.folder[0] will be destroyed
@@ -2728,82 +1806,77 @@ Terraform will perform the following actions:
         # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["project-factory"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be created
-  + resource "google_project_iam_member" "project-roles" {
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + member  = (known after apply)
-      + project = "ldj-prod-iac-core-0"
-      + role    = "roles/serviceusage.serviceUsageConsumer"
+  # module.stage2-sa-ro["project-factory"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] must be replaced
+  # (moved from module.pf-sa-ro[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"])
+-/+ resource "google_project_iam_member" "project-roles" {
+      ~ etag    = "BwYl1aaqnzQ=" -> (known after apply)
+      ~ id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member  = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (2 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["project-factory"].google_service_account.service_account[0] will be created
-  + resource "google_service_account" "service_account" {
-      + account_id   = "ldj-prod-resman-pf-0r"
-      + disabled     = false
-      + display_name = "Terraform resman project-factory service account (read-only)."
-      + email        = "ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + id           = (known after apply)
-      + member       = "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + name         = (known after apply)
-      + project      = "ldj-prod-iac-core-0"
-      + unique_id    = (known after apply)
+  # module.stage2-sa-ro["project-factory"].google_service_account.service_account[0] must be replaced
+  # (moved from module.pf-sa-ro[0].google_service_account.service_account[0])
+-/+ resource "google_service_account" "service_account" {
+      ~ account_id   = "ldj-resman-pf-0r" -> "ldj-prod-resman-pf-0r" # forces replacement
+      ~ display_name = "Terraform resman project factory main service account (read-only)." -> "Terraform resman project-factory service account (read-only)."
+      ~ email        = "ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> "ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+      ~ id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member       = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> "serviceAccount:ldj-prod-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+      ~ name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ unique_id    = "111757941899489524155" -> (known after apply)
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be created
-  + resource "google_service_account_iam_binding" "authoritative" {
-      + etag               = (known after apply)
-      + id                 = (known after apply)
-      + role               = "roles/iam.serviceAccountTokenCreator"
-      + service_account_id = (known after apply)
+  # module.stage2-sa-ro["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] must be replaced
+  # (moved from module.pf-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"])
+-/+ resource "google_service_account_iam_binding" "authoritative" {
+      ~ etag               = "BwYqyThjGZM=" -> (known after apply)
+      ~ id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> (known after apply)
+      - members            = [
+          - "serviceAccount:ldj-prod-resman-pf-1r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
+        ] -> null
+      ~ service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-sa-ro["project-factory"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be created
-  + resource "google_storage_bucket_iam_member" "bucket-roles" {
-      + bucket = "ldj-prod-iac-core-outputs-0"
-      + etag   = (known after apply)
-      + id     = (known after apply)
-      + member = (known after apply)
-      + role   = "organizations/366118655033/roles/storageViewer"
+  # module.stage2-sa-ro["project-factory"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] must be replaced
+  # (moved from module.pf-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"])
+-/+ resource "google_storage_bucket_iam_member" "bucket-roles" {
+      ~ bucket = "b/ldj-prod-iac-core-outputs-0" -> "ldj-prod-iac-core-outputs-0"
+      ~ etag   = "CIEB" -> (known after apply)
+      ~ id     = "b/ldj-prod-iac-core-outputs-0/organizations/366118655033/roles/storageViewer/serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member = "serviceAccount:ldj-resman-pf-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-sa-ro["security"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be created
-  + resource "google_project_iam_member" "project-roles" {
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + member  = (known after apply)
-      + project = "ldj-prod-iac-core-0"
-      + role    = "roles/serviceusage.serviceUsageConsumer"
+  # module.sec-sa-ro[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] has moved to module.stage2-sa-ro["security"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"]
+    resource "google_project_iam_member" "project-roles" {
+        id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["security"].google_service_account.service_account[0] will be created
-  + resource "google_service_account" "service_account" {
-      + account_id   = "ldj-prod-resman-sec-0r"
-      + disabled     = false
-      + display_name = "Terraform resman security service account (read-only)."
-      + email        = "ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + id           = (known after apply)
-      + member       = "serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + name         = (known after apply)
-      + project      = "ldj-prod-iac-core-0"
-      + unique_id    = (known after apply)
+  # module.sec-sa-ro[0].google_service_account.service_account[0] has moved to module.stage2-sa-ro["security"].google_service_account.service_account[0]
+    resource "google_service_account" "service_account" {
+        id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (8 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be created
-  + resource "google_service_account_iam_binding" "authoritative" {
-      + etag               = (known after apply)
-      + id                 = (known after apply)
-      + role               = "roles/iam.serviceAccountTokenCreator"
-      + service_account_id = (known after apply)
+  # module.stage2-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be updated in-place
+  # (moved from module.sec-sa-ro[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"])
+  ~ resource "google_service_account_iam_binding" "authoritative" {
+        id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator"
+      ~ members            = [
+          - "serviceAccount:ldj-prod-resman-sec-1r@ldj-prod-iac-core-0.iam.gserviceaccount.com",
+        ]
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-ro["security"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be created
-  + resource "google_storage_bucket_iam_member" "bucket-roles" {
-      + bucket = "ldj-prod-iac-core-outputs-0"
-      + etag   = (known after apply)
-      + id     = (known after apply)
-      + member = (known after apply)
-      + role   = "organizations/366118655033/roles/storageViewer"
+  # module.sec-sa-ro[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] has moved to module.stage2-sa-ro["security"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"]
+    resource "google_storage_bucket_iam_member" "bucket-roles" {
+        id     = "b/ldj-prod-iac-core-outputs-0/organizations/366118655033/roles/storageViewer/serviceAccount:ldj-prod-resman-sec-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (4 unchanged attributes hidden)
     }
 
   # module.net-sa-rw[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] has moved to module.stage2-sa-rw["networking"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"]
@@ -2835,82 +1908,77 @@ Terraform will perform the following actions:
         # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["project-factory"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be created
-  + resource "google_project_iam_member" "project-roles" {
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + member  = (known after apply)
-      + project = "ldj-prod-iac-core-0"
-      + role    = "roles/serviceusage.serviceUsageConsumer"
+  # module.stage2-sa-rw["project-factory"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] must be replaced
+  # (moved from module.pf-sa-rw[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"])
+-/+ resource "google_project_iam_member" "project-roles" {
+      ~ etag    = "BwYl1aaqnzQ=" -> (known after apply)
+      ~ id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member  = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (2 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["project-factory"].google_service_account.service_account[0] will be created
-  + resource "google_service_account" "service_account" {
-      + account_id   = "ldj-prod-resman-pf-0"
-      + disabled     = false
-      + display_name = "Terraform resman project-factory service account."
-      + email        = "ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + id           = (known after apply)
-      + member       = "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + name         = (known after apply)
-      + project      = "ldj-prod-iac-core-0"
-      + unique_id    = (known after apply)
+  # module.stage2-sa-rw["project-factory"].google_service_account.service_account[0] must be replaced
+  # (moved from module.pf-sa-rw[0].google_service_account.service_account[0])
+-/+ resource "google_service_account" "service_account" {
+      ~ account_id   = "ldj-resman-pf-0" -> "ldj-prod-resman-pf-0" # forces replacement
+      ~ display_name = "Terraform resman project factory main service account." -> "Terraform resman project-factory service account."
+      ~ email        = "ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> "ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+      ~ id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member       = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> "serviceAccount:ldj-prod-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+      ~ name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ unique_id    = "105558095773911439720" -> (known after apply)
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be created
-  + resource "google_service_account_iam_binding" "authoritative" {
-      + etag               = (known after apply)
-      + id                 = (known after apply)
-      + role               = "roles/iam.serviceAccountTokenCreator"
-      + service_account_id = (known after apply)
+  # module.stage2-sa-rw["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] must be replaced
+  # (moved from module.pf-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"])
+-/+ resource "google_service_account_iam_binding" "authoritative" {
+      ~ etag               = "BwYqyThge2Q=" -> (known after apply)
+      ~ id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator" -> (known after apply)
+      - members            = [
+          - "serviceAccount:ldj-prod-resman-pf-1@ldj-prod-iac-core-0.iam.gserviceaccount.com",
+        ] -> null
+      ~ service_account_id = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-sa-rw["project-factory"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] will be created
-  + resource "google_storage_bucket_iam_member" "bucket-roles" {
-      + bucket = "ldj-prod-iac-core-outputs-0"
-      + etag   = (known after apply)
-      + id     = (known after apply)
-      + member = (known after apply)
-      + role   = "roles/storage.objectAdmin"
+  # module.stage2-sa-rw["project-factory"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] must be replaced
+  # (moved from module.pf-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"])
+-/+ resource "google_storage_bucket_iam_member" "bucket-roles" {
+      ~ bucket = "b/ldj-prod-iac-core-outputs-0" -> "ldj-prod-iac-core-outputs-0"
+      ~ etag   = "CIEB" -> (known after apply)
+      ~ id     = "b/ldj-prod-iac-core-outputs-0/roles/storage.objectAdmin/serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply)
+      ~ member = "serviceAccount:ldj-resman-pf-0@ldj-prod-iac-core-0.iam.gserviceaccount.com" -> (known after apply) # forces replacement
+        # (1 unchanged attribute hidden)
     }
 
-  # module.stage2-sa-rw["security"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] will be created
-  + resource "google_project_iam_member" "project-roles" {
-      + etag    = (known after apply)
-      + id      = (known after apply)
-      + member  = (known after apply)
-      + project = "ldj-prod-iac-core-0"
-      + role    = "roles/serviceusage.serviceUsageConsumer"
+  # module.sec-sa-rw[0].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"] has moved to module.stage2-sa-rw["security"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/serviceusage.serviceUsageConsumer"]
+    resource "google_project_iam_member" "project-roles" {
+        id      = "ldj-prod-iac-core-0/roles/serviceusage.serviceUsageConsumer/serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (4 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["security"].google_service_account.service_account[0] will be created
-  + resource "google_service_account" "service_account" {
-      + account_id   = "ldj-prod-resman-sec-0"
-      + disabled     = false
-      + display_name = "Terraform resman security service account."
-      + email        = "ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + id           = (known after apply)
-      + member       = "serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
-      + name         = (known after apply)
-      + project      = "ldj-prod-iac-core-0"
-      + unique_id    = (known after apply)
+  # module.sec-sa-rw[0].google_service_account.service_account[0] has moved to module.stage2-sa-rw["security"].google_service_account.service_account[0]
+    resource "google_service_account" "service_account" {
+        id           = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        name         = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (8 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be created
-  + resource "google_service_account_iam_binding" "authoritative" {
-      + etag               = (known after apply)
-      + id                 = (known after apply)
-      + role               = "roles/iam.serviceAccountTokenCreator"
-      + service_account_id = (known after apply)
+  # module.stage2-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be updated in-place
+  # (moved from module.sec-sa-rw[0].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"])
+  ~ resource "google_service_account_iam_binding" "authoritative" {
+        id                 = "projects/ldj-prod-iac-core-0/serviceAccounts/ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com/roles/iam.serviceAccountTokenCreator"
+      ~ members            = [
+          - "serviceAccount:ldj-prod-resman-sec-1@ldj-prod-iac-core-0.iam.gserviceaccount.com",
+        ]
+        # (3 unchanged attributes hidden)
     }
 
-  # module.stage2-sa-rw["security"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] will be created
-  + resource "google_storage_bucket_iam_member" "bucket-roles" {
-      + bucket = "ldj-prod-iac-core-outputs-0"
-      + etag   = (known after apply)
-      + id     = (known after apply)
-      + member = (known after apply)
-      + role   = "roles/storage.objectAdmin"
+  # module.sec-sa-rw[0].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"] has moved to module.stage2-sa-rw["security"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectAdmin"]
+    resource "google_storage_bucket_iam_member" "bucket-roles" {
+        id     = "b/ldj-prod-iac-core-outputs-0/roles/storage.objectAdmin/serviceAccount:ldj-prod-resman-sec-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"
+        # (4 unchanged attributes hidden)
     }
 
   # module.stage3-bucket["gcve-dev"].google_storage_bucket.bucket has moved to module.stage3-bucket["gcve-dev"].google_storage_bucket.bucket[0]
@@ -3309,7 +2377,7 @@ Terraform will perform the following actions:
         # (3 unchanged attributes hidden)
     }
 
-Plan: 92 to add, 33 to change, 104 to destroy.
+Plan: 59 to add, 33 to change, 71 to destroy.
 
 Changes to Outputs:
   ~ cicd_repositories = {
@@ -3332,7 +2400,7 @@ Changes to Outputs:
       ~ security        = {
           ~ repository = {
               ~ branch = null -> "main"
-              ~ name   = "ludomagno/security" -> "ludomagno/networking"
+                name   = "ludomagno/security"
                 # (1 unchanged attribute hidden)
             }
             # (1 unchanged attribute hidden)
@@ -3342,8 +2410,7 @@ Changes to Outputs:
   ~ folder_ids        = {
       - networking-dev  = "folders/835049949636"
       - networking-prod = "folders/572160545943"
-      ~ security        = "folders/251257116248" -> (known after apply)
-        # (10 unchanged attributes hidden)
+        # (11 unchanged attributes hidden)
     }
   ~ providers         = (sensitive value)
   ~ tfvars            = (sensitive value)
