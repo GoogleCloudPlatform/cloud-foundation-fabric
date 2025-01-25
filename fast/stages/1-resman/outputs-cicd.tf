@@ -18,31 +18,6 @@
 
 locals {
   # render CI/CD workflow templates
-
-  _stage_2_cicd_workflow_var_files = {
-    security = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    networking = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    network_security = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    project_factory = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json",
-      "2-networking.auto.tfvars.json"
-    ]
-  }
-
   cicd_workflows = {
     for k, v in local.cicd_repositories : "${v.level}-${replace(k, "_", "-")}" => templatefile(
       "${path.module}/templates/workflow-${v.repository.type}.yaml", {
@@ -66,7 +41,11 @@ locals {
         }
         tf_var_files = (
           v.level == 2 ?
-          local._stage_2_cicd_workflow_var_files[k]
+          [
+            "0-bootstrap.auto.tfvars.json",
+            "1-resman.auto.tfvars.json",
+            "0-globals.auto.tfvars.json"
+          ]
           : [
             "0-bootstrap.auto.tfvars.json",
             "0-globals.auto.tfvars.json",

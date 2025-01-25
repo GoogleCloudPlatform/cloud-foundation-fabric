@@ -117,6 +117,19 @@ locals {
       })
     })
   }
+  # environment folder permutations
+  stage2_env_folders = flatten([
+    for k, v in local.stage2 : [
+      for ek, ev in var.environments : {
+        key      = "${k}-${ek}"
+        name     = ev.name
+        stage    = k
+        tag_name = ev.tag_name
+      }
+    ] if try(v.folder_config.create_env_folders, null) == true
+  ])
+  # stage 2 short names used to detect overlap in stage 3s
+  stage2_shortnames = [for k, v in local.stage2 : v.short_name]
 }
 
 # top-level folder
@@ -165,6 +178,21 @@ module "stage2-folder" {
     context = local.tag_values["context/${each.key}"].id
   }
   depends_on = [module.top-level-folder]
+}
+
+# optional per-environment folders
+
+module "stage2-folder-envs" {
+  source   = "../../../modules/folder"
+  for_each = { for k in local.stage2_env_folders : k.key => k }
+  parent   = module.stage2-folder[each.value.stage].id
+  name     = each.value.name
+  tag_bindings = {
+    environment = try(
+      local.tag_values["${var.tag_names.environment}/${each.value.tag_name}"].id,
+      null
+    )
+  }
 }
 
 # automation service accounts

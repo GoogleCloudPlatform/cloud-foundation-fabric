@@ -14,5 +14,5 @@
 
 # yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
-short_name: pf
+short_name: pfp
 environment: prod

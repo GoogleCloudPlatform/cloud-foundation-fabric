@@ -101,6 +101,20 @@ locals {
         }
       })
     })
+    if !contains(
+      local.stage2_shortnames, replace(coalesce(v.short_name, k), "_", "-")
+    )
+  }
+}
+
+check "stage_short_names" {
+  assert {
+    condition = alltrue([
+      for k, v in local._stage3 : !contains(
+        local.stage2_shortnames, replace(coalesce(v.short_name, k), "_", "-")
+      )
+    ])
+    error_message = "Some stage 3 short names overlap stage 2."
   }
 }
 

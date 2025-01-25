@@ -20,13 +20,13 @@ locals {
   billing_iam = merge(
     # stage 2
     {
-      for k, v in local.stage2 : "stage2_${k}_billing_user" => {
+      for k, v in local.stage2 : "sa_${v.short_name}_billing" => {
         member = module.stage2-sa-rw[k].iam_email
         role   = "roles/billing.user"
       }
     },
     {
-      for k, v in local.stage2 : "stage2_${k}_billing_costs_manager" => {
+      for k, v in local.stage2 : "sa_${v.short_name}_costs_manager" => {
         member = module.stage2-sa-rw[k].iam_email
         role   = "roles/billing.costsManager"
       }
