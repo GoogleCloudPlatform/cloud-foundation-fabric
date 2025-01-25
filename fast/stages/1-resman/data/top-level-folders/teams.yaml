@@ -32,6 +32,14 @@ iam:
     - project-factory-teams-r
   "roles/resourcemanager.tagViewer":
     - project-factory-teams-r
+iam_bindings:
+  pf_viewer:
+    role: organization_admin_viewer
+    members:
+      - project-factory-teams-r
+    condition:
+      title: project-factory-only
+      expression: "resource.matchTag(\"12345678/context\", \"project-factory\")"
 # don't create a context tag since this uses the pf tag
 is_fast_context: false
 tag_bindings:
