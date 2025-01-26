@@ -39,21 +39,14 @@ locals {
       {
         for k, v in local.stage2 : k => {
           short_name = v.short_name
-          # rw service accounts for stage 3s that need delegated IAM on stage 2s
-          iam_delegated_principals = {
-            for ek, _ in var.environments : ek => [
-              for sk, sv in local.stage3 :
-              "serviceAccount:${local.stage_service_accounts[sk]}"
-              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
-            ]
-          }
-          iam_viewer_principals = {
-            for ek, _ in var.environments : ek => [
-              for sk, sv in local.stage3 :
-              "serviceAccount:${local.stage_service_accounts["${sk}-r"]}"
-              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
-            ]
-          }
+          iam_admin_delegated = [
+            for m in v.stage3_config.iam_admin_delegated :
+            lookup(local.principals_iam, m, m)
+          ]
+          iam_viewer = [
+            for m in v.stage3_config.iam_viewer :
+            lookup(local.principals_iam, m, m)
+          ]
         }
       }
     )

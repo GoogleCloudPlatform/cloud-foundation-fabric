@@ -56,7 +56,6 @@ folder_config:
           api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
             'roles/cloudkms.cryptoKeyEncrypterDecrypter'
           ])
-    # TODO: optional conditional grant for stage 3s
 organization_config:
   iam_bindings_additive:
     sa_sec_cloudasset:

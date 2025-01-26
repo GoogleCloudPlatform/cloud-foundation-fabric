@@ -17,6 +17,7 @@
 short_name: net
 folder_config:
   name: Networking
+  create_env_folders: true
   iam_by_principals:
     gcp-network-admins:
       - roles/editor
@@ -59,7 +60,38 @@ folder_config:
             'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
             'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
           ])
-    # conditional grants for stage 3s are documented in each stage 3 doc
+  # example conditional grants for stage 3s
+  iam_bindings_additive:
+    # GCVE
+    gcve_dev_net_admin:
+      role: gcve_network_admin
+      member: gcve-dev-rw
+      condition:
+        title: GCVE dev network admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    gcve_dev_net_viewer:
+      role: gcve_network_viewer
+      member: gcve-dev-ro
+      condition:
+        title: GCVE dev network viewer.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # GKE
+    gke_dns_admin:
+      role: roles/dns.admin
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    gke_dns_reader:
+      role: roles/dns.reader
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS reader.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
 organization_config:
   iam_bindings_additive:
     sa_net_rw_fw_policy_admin:
@@ -77,3 +109,9 @@ organization_config:
     sa_net_ro_ngfw_enterprise_viewer:
       member: ro
       role: ngfw_enterprise_viewer
+# example configuration for stage 3s needing environment-level conditional grants
+stage3_config:
+  iam_admin_delegated:
+    - gcve-dev-rw
+  iam_viewer:
+    - gcve-dev-ro

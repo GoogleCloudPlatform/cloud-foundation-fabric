@@ -158,6 +158,26 @@
           "$ref": "#/$defs/iam_by_principals"
         }
       }
+    },
+    "stage3_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam_admin_delegated": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        },
+        "iam_viewer": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -191,7 +211,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|[a-z])"
             },
             "condition": {
               "type": "object",

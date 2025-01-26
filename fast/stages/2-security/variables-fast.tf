@@ -87,9 +87,9 @@ variable "stage_config" {
   description = "FAST stage configuration."
   type = object({
     security = optional(object({
-      short_name               = optional(string)
-      iam_delegated_principals = optional(map(list(string)), {})
-      iam_viewer_principals    = optional(map(list(string)), {})
+      short_name          = optional(string)
+      iam_admin_delegated = optional(map(list(string)), {})
+      iam_viewer          = optional(map(list(string)), {})
     }), {})
   })
   default  = {}

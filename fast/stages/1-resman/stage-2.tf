@@ -60,6 +60,10 @@ locals {
           iam_bindings_additive = try(v.organization_config.iam_bindings_additive, {})
           iam_by_principals     = try(v.organization_config.iam_by_principals, {})
         }
+        stage3_config = {
+          iam_admin_delegated = try(v.stage3_config.iam_admin_delegated, [])
+          iam_viewer          = try(v.stage3_config.iam_viewer, [])
+        }
       }
     },
     var.fast_stage_2
