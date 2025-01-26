@@ -90,6 +90,7 @@ locals {
               expression = templatestring(vv.condition.expression, {
                 organization = var.organization
                 tag_names    = var.tag_names
+                tag_root     = local.tag_root
               })
               description = lookup(vv.condition, "description", null)
             }
@@ -105,6 +106,7 @@ locals {
               expression = templatestring(vv.condition.expression, {
                 organization = var.organization
                 tag_names    = var.tag_names
+                tag_root     = local.tag_root
               })
               description = lookup(vv.condition, "description", null)
             }
@@ -121,6 +123,7 @@ locals {
               expression = templatestring(vv.condition.expression, {
                 organization = var.organization
                 tag_names    = var.tag_names
+                tag_root     = local.tag_root
               })
               description = lookup(vv.condition, "description", null)
             }
