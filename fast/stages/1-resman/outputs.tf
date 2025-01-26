@@ -82,6 +82,11 @@ output "providers" {
   value       = local.providers
 }
 
+output "service_accounts" {
+  description = "Service accounts."
+  value       = local.service_accounts
+}
+
 # ready to use variable values for subsequent stages
 output "tfvars" {
   description = "Terraform variable files for the following stages."

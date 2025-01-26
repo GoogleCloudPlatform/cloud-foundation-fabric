@@ -77,11 +77,7 @@ locals {
     for k, v in var.tags : k => merge(v, {
       iam = {
         for rk, rv in v.iam : rk => [
-          for rm in rv : (
-            contains(keys(local.service_accounts), rm)
-            ? "serviceAccount:${local.service_accounts[rm]}"
-            : rm
-          )
+          for rm in rv : lookup(local.principals_iam, rm, rm)
         ]
       }
       values = {
@@ -106,7 +102,7 @@ module "organization" {
     for k, v in local.iam_bindings_additive : k => {
       role      = lookup(var.custom_roles, v.role, v.role)
       member    = lookup(local.principals_iam, v.member, v.member)
-      condition = v.condition
+      condition = lookup(v, "condition", null)
     }
   }
   # do not assign tagViewer or tagUser roles here on tag keys and values as
