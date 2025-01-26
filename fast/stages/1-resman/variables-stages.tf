@@ -77,8 +77,14 @@ variable "fast_stage_2" {
       iam_by_principals = optional(map(list(string)), {})
     }), {})
     stage3_config = optional(object({
-      iam_admin_delegated = optional(list(string), [])
-      iam_viewer          = optional(list(string), [])
+      iam_admin_delegated = optional(list(object({
+        environment = string
+        principal   = string
+      })), [])
+      iam_viewer = optional(list(object({
+        environment = string
+        principal   = string
+      })), [])
     }), {})
   }))
   nullable = false

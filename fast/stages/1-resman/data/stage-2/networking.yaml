@@ -112,6 +112,8 @@ organization_config:
 # example configuration for stage 3s needing environment-level conditional grants
 stage3_config:
   iam_admin_delegated:
-    - gcve-dev-rw
+    - environment: dev
+      principal: gcve-dev-rw
   iam_viewer:
-    - gcve-dev-ro
+    - environment: dev
+      principal: gcve-dev-ro

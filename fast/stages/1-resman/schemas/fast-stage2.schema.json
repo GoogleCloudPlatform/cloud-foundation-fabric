@@ -166,15 +166,33 @@
         "iam_admin_delegated": {
           "type": "array",
           "items": {
-            "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "environment": {
+                "type": "string"
+              },
+              "principal": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            }
           }
         },
         "iam_viewer": {
           "type": "array",
           "items": {
-            "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "environment": {
+                "type": "string"
+              },
+              "principal": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            }
           }
         }
       }

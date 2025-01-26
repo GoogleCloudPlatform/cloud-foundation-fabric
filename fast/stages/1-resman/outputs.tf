@@ -39,14 +39,18 @@ locals {
       {
         for k, v in local.stage2 : k => {
           short_name = v.short_name
-          iam_admin_delegated = [
-            for m in v.stage3_config.iam_admin_delegated :
-            lookup(local.principals_iam, m, m)
-          ]
-          iam_viewer = [
-            for m in v.stage3_config.iam_viewer :
-            lookup(local.principals_iam, m, m)
-          ]
+          iam_admin_delegated = {
+            for kk in v.stage3_config.iam_admin_delegated :
+            kk.environment => lookup(
+              local.principals_iam, kk.principal, kk.principal
+            )...
+          }
+          iam_viewer = {
+            for kk in v.stage3_config.iam_viewer :
+            kk.environment => lookup(
+              local.principals_iam, kk.principal, kk.principal
+            )...
+          }
         }
       }
     )
