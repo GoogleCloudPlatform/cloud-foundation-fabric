@@ -49,6 +49,7 @@ locals {
           iam_bindings          = try(v.folder_config.iam_bindings, {})
           iam_bindings_additive = try(v.folder_config.iam_bindings_additive, {})
           iam_by_principals     = try(v.folder_config.iam_by_principals, {})
+          org_policies          = try(v.folder_config.org_policies, {})
           parent_id             = try(v.folder_config.parent_id, null)
           tag_bindings          = try(v.folder_config.tag_bindings, {})
         }
@@ -147,6 +148,7 @@ module "stage3-folder" {
 
   }
   iam_by_principals = each.value.folder_config.iam_by_principals
+  org_policies      = each.value.folder_config.org_policies
   tag_bindings = merge(
     {
       environment = local.tag_values["environment/${var.environments[each.value.environment].tag_name}"].id

@@ -31,7 +31,7 @@ locals {
       "${coalesce(local._stage2_path, "-")}/${f}"
     ))
   }
-  # merge stage 3 from factory and variable data
+  # merge stage 2 from factory and variable data
   _stage2 = merge(
     # normalize factory data attributes with defaults and nulls
     {
@@ -189,6 +189,7 @@ module "stage2-folder" {
       for r in v : lookup(var.custom_roles, r, r)
     ]
   }
+  org_policies = each.value.folder_config.org_policies
   tag_bindings = {
     context = local.tag_values["context/${each.key}"].id
   }
