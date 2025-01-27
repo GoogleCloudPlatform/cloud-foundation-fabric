@@ -59,62 +59,60 @@ This stage allows a certain degree of free-form hierarchy design on top of inste
 
 Top-level folders, as indicated by their name, are folders directly attached to the organization that can be freely defined via Terraform variables or factory YAML files. They represent a node in the organization, which can be used to partition the hierarchy via IAM or tag bindings, and to implement separate automation stages via their optional IaC resources.
 
-Top-level folders support the full interface of the [folder module](../../../modules/folder/), and can fit in the FAST design in different ways:
+Top-level folders offer less direct integration into the FAST workflow and machinery, and are meant to solve specific use cases in addition to our standard stage 2 and 3 described in the following section.
+
+The full interface of the [folder module](../../../modules/folder/) is supported for top-level folders, allowing them to fit in the FAST design in different ways:
 
 - as supporting folders for the project factory, by granting high level permissions to its service accounts via IAM and tag bindings (see the ["Teams" example in the data folder](./data/top-level-folders/teams.yaml))
-- as standalone folders to support custom usage, with or without associated IaC resources (see the ["Sandbox" exanple in the data folder](./data/top-level-folders/sandbox.yaml))
+- as standalone folders for custom usage, with or without associated IaC resources (see the ["Sandbox" exanple in the data folder](./data/top-level-folders/sandbox.yaml))
 - as grouping nodes for the environment-specific stage 3 folders (see the ["GCVE" example in the data folder](./data/top-level-folders/gcve.yaml))
-- as a grouping node for stage 2s, for example via a "Shared Services" top-level folder set as the `folder_config.parent_id` attribute for networking and security stages
+- as grouping nodes for stage 2s, for example via a "Shared Services" top-level folder set as the `folder_config.parent_id` attribute for networking and security stages
 
 Top-level folders support context-based expansion for service accounts and organization-level tags, which can be referenced by name (e.g. `project-factory` to refer to the project factory service accounts). This allows writing portable organization-independent YAML that can be shared across different FAST installations.
 
 ### Stage 2
 
-FAST stage 2s implement core infrastructure services shared across the organization. In the FAST design networking, security, network security and the project factory are defined as stage 2.
+FAST stage 2s implement core infrastructure services shared across the organization. In the FAST design networking, security, and the project factory are defined as stage 2. Their interface is sufficiently flexible to allow easy definition of custom stages, which can then be integrated in the framework.
 
 FAST stage 2s are typically managed by dedicated teams, they implement environment separation internally due to the complexity of their designs, and provide resources and specific IAM permissions to other shared services implemented as stage 3s (e.g. Shared VPC networks, IAM delegated grants on host projects/subnets or KMS keys).
 
-The default configuration enables all stage 2s except network security. Each stage can be customized via a set of variable-level attributes:
+The default configuration enables all stage 2s via factory files in the `data/stage-2` folder. Each stage can be customized via a set of variable-level attributes:
 
-- `short_name` defines the name used for the stage IaC buckets and service accounts
-- `cicd_config` turns on CI/CD configuration and generates the workflow file for the stage
-- `folder_config` controls whether environment-level folders are created under the stage main folder (e.g. `Networking/Development`), allows defining additional IAM bindings on the main folder, or changing its name and parent
+- `short_name` defines the name used for the stage IaC resources
+- `cicd_config` optionally configures built-in CI/CD support for the stage
+- `folder_config` controls the name, organization policies, and IAM profile for the stage folder, and allows defining additional environment-level subfolders
+- `organization_config` controls the IAM profile for the stage at the organization level
+- `stage3_config` allows defining signals that are passed on to the stage via output variables, on specific IAM configurations needed by stage 3s
 
-Folder configuration is only available for networking and security stages, as the project factory and network security stages are "folderless", using top-level folders or organization-level resources.
+Each stage creates its own tag value in the `context` key, which can then be used for conditional roles at the organization level (`context/networking`, `context/project-factory` etc.) when needed. The tag value is assigned to the stage's folder, and can be applied to other folders to enable specific functionality, for example to allow the project factory to manage additional top-level folders.
 
-Each stage creates its own tag value in the `context` key, which is used by FAST for conditional roles at the organization level (`context/networking`, `context/project-factory` etc.). The tag value is assigned to the stage's folder, and can be applied to other folders to enable specific functionality, as described further down for the project factory.
-
-Think of stage 2s as "named stages" which have specific ties and privileges on the organization. Due to their complexity and the potential need for custom changes, they are implemented in code via dedicated terraform resources each in a stage file (e.g. `stage2-networking.tf`).
+Think of stage 2s as "named stages" which can define specific IAM configurations on the organization, and are free to define their own environment-level constraints.
 
 ### Stage 3
 
-FAST stage 3s are designed to host shared infrastructure that leverages core services from stage 2 (networking, encryption keys, etc.), has limited access to the organization, and is partitioned (or "cloned") by environment.
+FAST stage 3s are designed to host shared infrastructure that leverages core services from stage 2 (networking, encryption keys, etc.), and is partitioned by environment and subject to environment-level constraints, with no direct access to organization-level IAM configurations.
 
-As shared services they are still managed by dedicated teams, but principals and permissions might differ between environments. Most stage 3s leverage folders (environment-level project factories are the exception), where the stage root folder is created via top-level folders configuration, and the lower level environment folders are part of the stage.
+As shared services they are still managed by dedicated teams, but principals and permissions might differ between environments. Stage 3s typically leverage top-level folders, under which the environment-level folders for the stage are then created.
 
 Configuration can be done either via Terraform variables or factory YAML files. The second option is used by default, providing a set of factory files for top-level folders and stage 3s that mirror the legacy FAST hierarchy implemented via code.
 
-Stage 3 configuration is similar to the stage 2 one described above except for a few differences. Each stage defined in the `fast_stage_3` map:
+Configuration is similar to the stage 2 one described above, save that stage 3:
 
-- can define an arbitrary name in the map key, which is used for the stage's output files and internal context-based substitutions
-- needs to define an environment which is present in the bootstrap `environment_names` definition
-- can define organization-level IAM bindings that are conditional to the stage tag value, or an arbitrary one defined in configuration
-- can define stage 2-level tag bindings that are effective only on the stage 2 resources matching the same environment
+- need to define the environment for which they will be deployed
+- have no way to configure organization-level IAM
 
-> TODO: examples from data, make sure the add IAM for GCVE etc. there
-
-### Project (and hierarchy) factory
+### Project and hierarchy factory
 
 Despite being itself a stage 2 (and potentially one or more environment-specific stage 3), the project factory is an important primitive to shape the lower level resource hierarchy which implements folder and project management.
 
-By default FAST offers a single organization-wide project factory with the following characteristics:
+By default FAST configures a single organization-wide project factory with the following characteristics:
 
 - any top-level folder with the suitable set of roles can be managed as a sub-hierarchy tree by the project factory (see the ["Teams" definition](./data/top-level-folders/teams.yaml) in the data folder)
 - organization policy management on its folders and projects by the project factory only requires binding the `context/project-factory` tag value
 - networking-related project configuration is available by default, the project factory can grant a limited set of roles on network resources, and attach service projects to VPC host projects
 - security-related project configuration is available by default, the project factory can grant the KMS encrypt/decrypt role on centralized KMS key in the security stage
 
-If environment-specific project factories are desirable, they can be configured as stage 3 as the examples in the stage3 data folder show.
+Additional project factories can of course be defined by cloning the default stage 2 configuration, and changing the stage 2 names and folders.
 
 ## Other design considerations
 
