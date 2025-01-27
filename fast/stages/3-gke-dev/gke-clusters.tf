@@ -41,6 +41,7 @@ module "gke-cluster" {
   for_each                 = var.clusters
   name                     = each.key
   project_id               = module.gke-project-0.project_id
+  access_config            = each.value.access_config
   cluster_autoscaling      = each.value.cluster_autoscaling
   description              = each.value.description
   enable_features          = each.value.enable_features
@@ -54,7 +55,6 @@ module "gke-cluster" {
   min_master_version       = each.value.min_master_version
   monitoring_config        = each.value.monitoring_config
   node_locations           = each.value.node_locations
-  private_cluster_config   = each.value.private_cluster_config
   release_channel          = each.value.release_channel
   vpc_config = merge(each.value.vpc_config, {
     network = try(

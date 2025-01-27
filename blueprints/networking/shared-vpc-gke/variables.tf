@@ -75,14 +75,6 @@ variable "prefix" {
   }
 }
 
-variable "private_service_ranges" {
-  description = "Private service IP CIDR ranges."
-  type        = map(string)
-  default = {
-    cluster-1 = "192.168.0.0/28"
-  }
-}
-
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   type        = list(string)

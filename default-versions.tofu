@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cluster-1.google_container_cluster.cluster:
-    private_cluster_config:
-    - enable_private_endpoint: true
-      enable_private_nodes: true
-      master_global_access_config:
-      - enabled: false
-      master_ipv4_cidr_block: 192.168.0.0/28
-      private_endpoint_subnetwork: null
-    remove_default_node_pool: true
-    resource_labels:
-      environment: dev
+# Fabric release: v36.0.1
 
-counts:
-  google_container_cluster: 1
+terraform {
+  required_version = ">= 1.8.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 6.13.0, < 7.0.0" # tftest
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 6.13.0, < 7.0.0" # tftest
+    }
+  }
+}

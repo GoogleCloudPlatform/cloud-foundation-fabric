@@ -1,6 +1,6 @@
 # Versioning Scheme Tied to FAST Releases
 
-**authors:** [Ludo](https://github.com/ludoo),  [Julio](https://github.com/jccb), [Simone](https://github.com/sruffilli) \
+**authors:** [Ludo](https://github.com/ludoo),  [Julio](https://github.com/juliocc), [Simone](https://github.com/sruffilli) \
 **date:** Oct 29, 2024
 **last update**: Oct 30, 2024
 

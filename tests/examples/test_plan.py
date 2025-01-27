@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-import re
+import os
 import shutil
 import subprocess
 import tempfile
@@ -101,8 +101,9 @@ def _test_terraform_example(plan_validator, example):
 
     # TODO(jccb): this should probably be done in check_documentation
     # but we already have all the data here.
+    binary = os.environ.get('TERRAFORM', 'terraform')
     result = subprocess.run(
-        'terraform fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
+        f'{binary} fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
         stdout=subprocess.PIPE, encoding='utf-8')
     assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
 

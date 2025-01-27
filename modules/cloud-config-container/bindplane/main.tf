@@ -21,6 +21,7 @@ locals {
     bindplane_transform_agent_image = var.bindplane_config.bindplane_transform_agent_image
     files                           = local.files
     password                        = var.password
+    license                         = var.bindplane_license
     remote_url                      = var.bindplane_config.remote_url
     runcmd_pre                      = var.runcmd_pre
     runcmd_post                     = var.runcmd_post

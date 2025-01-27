@@ -18,18 +18,17 @@ module "gke-cluster-standard" {
   name                = "cluster"
   location            = "${var.region}-b"
   deletion_protection = false
+  access_config = {
+    ip_access = {
+      authorized_ranges = {
+        internal-vms = "10.0.0.0/8"
+      }
+    }
+  }
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
     secondary_range_names = {} # use default names "pods" and "services"
-    master_authorized_ranges = {
-      internal-vms = "10.0.0.0/8"
-    }
-    master_ipv4_cidr_block = "192.168.0.0/28"
-  }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = false
   }
   enable_features = {
     dataplane_v2        = true

@@ -92,10 +92,6 @@ module "cluster" {
     network                = module.vpc.self_link
     subnetwork             = module.vpc.subnet_self_links["${var.region}/subnet"]
   }
-  private_cluster_config = {
-    enable_private_endpoint = false
-    master_global_access    = false
-  }
   deletion_protection = var.deletion_protection
 }
 

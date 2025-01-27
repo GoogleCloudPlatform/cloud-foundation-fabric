@@ -17,6 +17,8 @@
 from dataclasses import asdict, dataclass
 from itertools import chain
 
+import click
+import json
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -41,6 +43,42 @@ ALIASES = {
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
 
+E2E_SERVICES = [
+    "alloydb.googleapis.com",
+    "analyticshub.googleapis.com",
+    "apigee.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "assuredworkloads.googleapis.com",
+    "bigquery.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "dataform.googleapis.com",
+    "dataplex.googleapis.com",
+    "dataproc.googleapis.com",
+    "dns.googleapis.com",
+    "eventarc.googleapis.com",
+    "iam.googleapis.com",
+    "iap.googleapis.com",
+    "logging.googleapis.com",
+    "looker.googleapis.com",
+    "monitoring.googleapis.com",
+    "networkconnectivity.googleapis.com",
+    "pubsub.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "sqladmin.googleapis.com",
+    "stackdriver.googleapis.com",
+    "storage-component.googleapis.com",
+    "storage.googleapis.com",
+    "vpcaccess.googleapis.com",
+]
+
 PRIMARY_OVERRIDE = {
     'storage-transfer-service': True,
 }
@@ -57,7 +95,9 @@ class Agent:
   aliases: list[str]
 
 
-def main():
+@click.command()
+@click.option('--e2e', is_flag=True, default=False)
+def main(e2e=False):
   page = requests.get(SERVICE_AGENTS_URL).content
   soup = BeautifulSoup(page, 'html.parser')
   agents = []
@@ -115,11 +155,19 @@ def main():
   aliases = set(chain.from_iterable(agent.aliases for agent in agents))
   assert aliases.isdisjoint(names)
 
-  # take the header from the first lines of this file
-  header = open(__file__).readlines()[2:15]
-  print("".join(header))
-  # and print all the agents
-  print(yaml.safe_dump([asdict(a) for a in agents], sort_keys=False))
+  if not e2e:
+    # take the header from the first lines of this file
+    header = open(__file__).readlines()[2:15]
+    print("".join(header))
+    # and print all the agents
+    print(yaml.safe_dump([asdict(a) for a in agents], sort_keys=False))
+  else:
+    jit_services = {}
+    result = {"locals": {"jit_services": jit_services}}
+    for a in agents:
+      if a.is_primary and a.api in E2E_SERVICES:
+        jit_services[a.api] = a.role
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == '__main__':

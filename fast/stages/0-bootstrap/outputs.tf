@@ -110,6 +110,11 @@ locals {
         vpcsc-r     = module.automation-tf-vpcsc-r-sa.email
       }
     }
+    billing = {
+      dataset        = try(module.billing-export-dataset[0].id, null)
+      project_id     = try(module.billing-export-project[0].project_id, null)
+      project_number = try(module.billing-export-project[0].number, null)
+    }
     custom_roles = module.organization.custom_role_id
     logging = {
       project_id        = module.log-export-project.project_id
@@ -137,12 +142,13 @@ locals {
     billing_account = var.billing_account
     groups          = local.principals
     environments = {
-      for k, v in var.environments :
-      k => merge(v, {
-        tag_name = (
-          v.tag_name != null ? v.tag_name : lower(replace(v.name, " ", "-"))
-        )
-      })
+      for k, v in var.environments : k => {
+        is_default = v.is_default
+        key        = k
+        name       = v.name
+        short_name = v.short_name != null ? v.short_name : k
+        tag_name   = v.tag_name != null ? v.tag_name : lower(v.name)
+      }
     }
     locations    = local.locations
     organization = var.organization

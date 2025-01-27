@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+locals {
+  bucket = try(
+    google_logging_project_bucket_config.bucket[0],
+    google_logging_folder_bucket_config.bucket[0],
+    google_logging_organization_bucket_config.bucket[0],
+    google_logging_billing_account_bucket_config.bucket[0],
+  )
+}
 
 resource "google_logging_project_bucket_config" "bucket" {
   count            = var.parent_type == "project" ? 1 : 0
@@ -65,4 +74,19 @@ resource "google_logging_billing_account_bucket_config" "bucket" {
   retention_days  = var.retention
   bucket_id       = var.id
   description     = var.description
+}
+
+resource "google_logging_log_view" "views" {
+  for_each    = var.views
+  name        = each.key
+  bucket      = local.bucket.id
+  description = each.value.description
+  location    = coalesce(each.value.location, var.location)
+  filter      = each.value.filter
+}
+
+resource "google_tags_tag_binding" "binding" {
+  for_each  = var.tag_bindings
+  parent    = "//logging.googleapis.com/${local.bucket.id}"
+  tag_value = each.value
 }

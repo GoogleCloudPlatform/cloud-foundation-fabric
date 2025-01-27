@@ -61,6 +61,11 @@ module "chronicle-forwarder" {
   name                = var.chronicle_forwarder.cluster_name
   location            = var.region
   deletion_protection = false
+  access_config = {
+    ip_access = {
+      authorized_ranges = var.chronicle_forwarder.master_authorized_ranges
+    }
+  }
   vpc_config = {
     network    = var.network_config.network_self_link
     subnetwork = var.network_config.subnet_self_link
@@ -68,12 +73,6 @@ module "chronicle-forwarder" {
       pods     = "pods"
       services = "services"
     }
-    master_ipv4_cidr_block   = var.network_config.ip_range_gke_master
-    master_authorized_ranges = var.chronicle_forwarder.master_authorized_ranges
-  }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_global_access    = true
   }
   enable_features = {
     gateway_api = true

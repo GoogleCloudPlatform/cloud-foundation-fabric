@@ -17,10 +17,12 @@
 # automation service accounts
 
 module "pf-sa-rw" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_stage_2.project_factory.enabled ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "resman-${var.fast_stage_2.project_factory.short_name}-0"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-pf_rw"], {
+    name = var.fast_stage_2.project_factory.short_name
+  })
   display_name = "Terraform resman project factory main service account."
   prefix       = var.prefix
   iam = {
@@ -37,10 +39,12 @@ module "pf-sa-rw" {
 }
 
 module "pf-sa-ro" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_stage_2.project_factory.enabled ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "resman-${var.fast_stage_2.project_factory.short_name}-0r"
+  source     = "../../../modules/iam-service-account"
+  count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
+  project_id = var.automation.project_id
+  name = templatestring(var.resource_names["sa-pf_ro"], {
+    name = var.fast_stage_2.project_factory.short_name
+  })
   display_name = "Terraform resman project factory main service account (read-only)."
   prefix       = var.prefix
   iam = {
@@ -62,7 +66,9 @@ module "pf-bucket" {
   source     = "../../../modules/gcs"
   count      = var.fast_stage_2.project_factory.enabled ? 1 : 0
   project_id = var.automation.project_id
-  name       = "resman-${var.fast_stage_2.project_factory.short_name}-0"
+  name = templatestring(var.resource_names["gcs-pf"], {
+    name = var.fast_stage_2.project_factory.short_name
+  })
   prefix     = var.prefix
   location   = var.locations.gcs
   versioning = true

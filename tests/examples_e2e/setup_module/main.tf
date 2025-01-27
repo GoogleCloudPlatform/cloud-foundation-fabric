@@ -14,15 +14,13 @@
 
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
-  jit_services = [
-    "alloydb.googleapis.com",          # no permissions granted by default
-    "artifactregistry.googleapis.com", # roles/artifactregistry.serviceAgent
-    "pubsub.googleapis.com",           # roles/pubsub.serviceAgent
-    "storage.googleapis.com",          # no permissions granted by default
-    "sqladmin.googleapis.com",         # roles/cloudsql.serviceAgent
-  ]
   services = [
-    # trimmed down list of services, to be extended as needed
+    # trimmed down list of services, to be extended as needed. If you
+    # update this list, make sure to update E2E_SERVICES in
+    # tools/built_service_agents.py and run:
+    #
+    # python tools/build_service_agents.py --e2e > tests/examples_e2e/setup_module/jit.tf.json
+    #
     "alloydb.googleapis.com",
     "analyticshub.googleapis.com",
     "apigee.googleapis.com",
@@ -212,6 +210,7 @@ resource "google_service_networking_connection" "psa_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.psa_ranges.name]
   deletion_policy         = "ABANDON"
+  depends_on              = [google_project_iam_binding.agents]
 }
 
 ### END OF PSA
@@ -223,33 +222,24 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_project_service_identity" "jit_si" {
-  for_each   = toset(local.jit_services)
+  for_each   = local.jit_services
   provider   = google-beta
   project    = google_project.project.project_id
-  service    = each.value
+  service    = each.key
   depends_on = [google_project_service.project_service]
 }
 
-resource "google_project_iam_binding" "cloudsql_agent" {
-  members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-cloud-sql.iam.gserviceaccount.com"]
-  project    = google_project.project.project_id
-  role       = "roles/cloudsql.serviceAgent"
-  depends_on = [google_project_service_identity.jit_si]
+resource "google_project_iam_binding" "agents" {
+  for_each = {
+    for k, v in local.jit_services : k => v if v != null
+  }
+  members = [
+    google_project_service_identity.jit_si[each.key].member
+  ]
+  project = google_project.project.project_id
+  role    = each.value
 }
 
-resource "google_project_iam_binding" "artifactregistry_agent" {
-  members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-artifactregistry.iam.gserviceaccount.com"]
-  project    = google_project.project.project_id
-  role       = "roles/artifactregistry.serviceAgent"
-  depends_on = [google_project_service_identity.jit_si]
-}
-
-resource "google_project_iam_binding" "pubsub_agent" {
-  members    = ["serviceAccount:service-${google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"]
-  project    = google_project.project.project_id
-  role       = "roles/pubsub.serviceAgent"
-  depends_on = [google_project_service_identity.jit_si]
-}
 
 resource "local_file" "terraform_tfvars" {
   filename = "e2e_tests.tfvars"

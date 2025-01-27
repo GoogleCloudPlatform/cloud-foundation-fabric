@@ -47,7 +47,7 @@ write_files:
       volumes:
         bindplane:
         prometheus:
-      
+
       services:
         prometheus:
           container_name: bindplane-prometheus
@@ -57,14 +57,14 @@ write_files:
             - "9090:9090"
           volumes:
             - prometheus:/prometheus
-      
+
         transform:
           container_name: bindplane-transform-agent
           restart: always
           image: ${bindplane_transform_agent_image}
           ports:
             - "4568:4568"
-      
+
         bindplane:
           container_name: bindplane-server
           restart: always
@@ -72,6 +72,7 @@ write_files:
           ports:
             - "3001:3001"
           environment:
+            - BINDPLANE_LICENSE=${license}
             - BINDPLANE_USERNAME=admin
             - BINDPLANE_PASSWORD=${password}
             - BINDPLANE_REMOTE_URL=http://${remote_url}:3001

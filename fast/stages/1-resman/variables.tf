@@ -34,6 +34,31 @@ variable "outputs_location" {
   default     = null
 }
 
+variable "resource_names" {
+  description = "Resource names overrides for specific resources. Stage names are interpolated via `$${name}`. Prefix is always set via code, except where noted in the variable type."
+  type = object({
+    gcs-net      = optional(string, "prod-resman-$${name}-0")
+    gcs-nsec     = optional(string, "resman-$${name}-0")
+    gcs-pf       = optional(string, "resman-$${name}-0")
+    gcs-sec      = optional(string, "prod-resman-$${name}-0")
+    gcs-stage3   = optional(string, "resman-$${name}-0")
+    sa-cicd_ro   = optional(string, "resman-$${name}-1r")
+    sa-cicd_rw   = optional(string, "resman-$${name}-1")
+    sa-net_ro    = optional(string, "prod-resman-$${name}-0r")
+    sa-net_rw    = optional(string, "prod-resman-$${name}-0")
+    sa-pf_ro     = optional(string, "resman-$${name}-0r")
+    sa-pf_rw     = optional(string, "resman-$${name}-0")
+    sa-nsec_ro   = optional(string, "resman-$${name}-0r")
+    sa-nsec_rw   = optional(string, "resman-$${name}-0")
+    sa-sec_ro    = optional(string, "prod-resman-$${name}-0r")
+    sa-sec_rw    = optional(string, "prod-resman-$${name}-0")
+    sa-stage3_ro = optional(string, "resman-$${name}-0r")
+    sa-stage3_rw = optional(string, "resman-$${name}-0")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({

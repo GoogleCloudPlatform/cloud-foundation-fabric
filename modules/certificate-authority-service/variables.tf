@@ -125,7 +125,7 @@ variable "ca_pool_config" {
       var.ca_pool_config.ca_pool_id != null ||
       var.ca_pool_config.name != null
     )
-    error_message = "Tier can only be `DEVOPS` or `ENTERPRISE`."
+    error_message = "Either name or id need to be provided."
   }
   validation {
     condition = (
