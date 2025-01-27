@@ -68,7 +68,7 @@ values:
     shielded_instance_config: []
     tags: null
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.vm-managed-sa-example2.google_service_account.service_account[0]:
     account_id: tf-vm-test2
     description: null

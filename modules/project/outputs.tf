@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "alert_ids" {
+  description = "Monitoring alert IDs."
+  value = {
+    for k, v in google_monitoring_alert_policy.alerts :
+    k => v.id
+  }
+}
 
 output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
@@ -28,7 +36,6 @@ output "custom_roles" {
   description = "Map of custom roles resources created in the project."
   value       = google_project_iam_custom_role.roles
 }
-
 
 output "default_service_accounts" {
   description = "Emails of the default service accounts for this project."
@@ -83,6 +90,19 @@ output "network_tag_values" {
     for k, v in google_tags_tag_value.default :
     k => v if local.tag_values[k].tag_network
   }
+}
+
+output "notification_channel_names" {
+  description = "Notification channel names."
+  value = {
+    for k, v in google_monitoring_notification_channel.channels :
+    k => v.name
+  }
+}
+
+output "notification_channels" {
+  description = "Full notification channel objects."
+  value       = google_monitoring_notification_channel.channels
 }
 
 output "number" {

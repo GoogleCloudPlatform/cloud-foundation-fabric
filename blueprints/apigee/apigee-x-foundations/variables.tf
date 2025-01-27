@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -360,10 +360,14 @@ variable "project_config" {
         description = optional(string)
       }))
     })), {})
-    labels              = optional(map(string), {})
-    lien_reason         = optional(string)
-    logging_data_access = optional(map(map(list(string))), {})
-    log_exclusions      = optional(map(string), {})
+    labels      = optional(map(string), {})
+    lien_reason = optional(string)
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })), {})
+    log_exclusions = optional(map(string), {})
     logging_sinks = optional(map(object({
       bq_partitioned_table = optional(bool)
       description          = optional(string)

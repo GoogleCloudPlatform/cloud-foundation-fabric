@@ -85,10 +85,16 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(?:DATA_READ|DATA_WRITE|ADMIN_READ)$": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "@"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "@"
+                  }
+                }
               }
             }
           }
@@ -255,7 +261,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
           }
         }
       }
@@ -272,7 +278,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
               }
             },
             "role": {
@@ -312,7 +318,7 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc)"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)"
             },
             "role": {
               "type": "string",

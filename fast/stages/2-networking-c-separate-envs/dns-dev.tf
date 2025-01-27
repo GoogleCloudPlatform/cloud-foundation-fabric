@@ -68,7 +68,7 @@ module "dev-dns-policy-googleapis" {
   project_id = module.dev-spoke-project.project_id
   name       = "googleapis"
   factories_config = {
-    rules = var.factories_config.dns_policy_rules_file
+    rules = var.factories_config.dns_policy_rules
   }
   networks = {
     dev = module.dev-spoke-vpc.self_link

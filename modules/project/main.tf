@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@ locals {
   descriptive_name = (
     var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
   )
+  observability_factory_data_raw = [
+    for f in try(fileset(var.factories_config.observability, "*.yaml"), []) :
+    yamldecode(file("${var.factories_config.observability}/${f}"))
+  ]
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"

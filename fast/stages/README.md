@@ -17,6 +17,8 @@ To achieve this, we rely on specific GCP functionality like [delegated role gran
 
 Refer to each stage's documentation for a detailed description of its purpose, the architectural choices made in its design, and how it can be configured and wired together to terraform a whole GCP organization. The following is a brief overview of each stage.
 
+Stages encapsulate core designs and functionality that is common in most type of GCP organization set-ups. Specialized designs or additional configurations that add specific functionality on top of stages to meet very specific use cases are defined via [add-ons](../addons/).
+
 To destroy a previous FAST deployment follow the instructions detailed in [cleanup](CLEANUP.md).
 
 ## Organization (0 and 1)
@@ -32,7 +34,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Multitenancy
 
-Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST compatibility for tenants.
+Implemented as an [add-on stage 1](../addons/1-resman-tenants/), with optional FAST compatibility for tenants.
 
 ## Shared resources (2)
 
@@ -44,7 +46,6 @@ Implemented as an [add-on stage 1](./1-tenant-factory/), with optional FAST comp
   Exports: host project ids and numbers, vpc self links
 - [Project Factory](./2-project-factory/)  
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
-- [Network Security](./2-network-security/) Optional stage that integrates with security and networking stages to manage a centralized [NGFW Enterprise](https://cloud.google.com/firewall/docs/about-firewalls) deployment.
 
 ## Environment-level resources (3)
 

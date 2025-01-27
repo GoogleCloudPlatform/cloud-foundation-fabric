@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,4 +40,4 @@ echo -- Blueprint metadata --
 python3 tools/validate_metadata.py -v blueprints --verbose --failed-only
 
 echo -- Version checks --
-find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;
+find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;

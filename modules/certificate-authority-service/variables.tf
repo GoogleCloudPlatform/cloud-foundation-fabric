@@ -114,27 +114,30 @@ variable "ca_configs" {
 }
 
 variable "ca_pool_config" {
-  description = "The CA pool config. If you pass ca_pool_id, an existing pool is used."
+  description = "The CA pool config. Either use_pool or create_pool need to be used. Use pool takes precedence if both are defined."
   type = object({
-    ca_pool_id = optional(string, null)
-    name       = optional(string, null)
-    tier       = optional(string, "DEVOPS")
+    create_pool = optional(object({
+      name = string
+      tier = optional(string, "DEVOPS")
+    }))
+    use_pool = optional(object({
+      id = string
+    }))
   })
-  validation {
-    condition = (
-      var.ca_pool_config.ca_pool_id != null ||
-      var.ca_pool_config.name != null
-    )
-    error_message = "Either name or id need to be provided."
-  }
-  validation {
-    condition = (
-      var.ca_pool_config.tier == "DEVOPS" ||
-      var.ca_pool_config.tier == "ENTERPRISE"
-    )
-    error_message = "Tier can only be `DEVOPS` or `ENTERPRISE`."
-  }
   nullable = false
+  validation {
+    condition = (
+      try(var.ca_pool_config.create_pool.name, null) != null ||
+      try(var.ca_pool_config.use_pool.id, null) != null
+    )
+    error_message = "Either create pool name or use pool id need to be provided."
+  }
+  validation {
+    condition = var.ca_pool_config.create_pool == null || contains(
+      ["DEVOPS", "ENTERPRISE"], try(var.ca_pool_config.create_pool.tier, "-")
+    )
+    error_message = "Tier for pool creation can only be 'DEVOPS' or 'ENTERPRISE'."
+  }
 }
 
 variable "location" {

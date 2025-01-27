@@ -1,7 +1,8 @@
 # skip boilerplate check
 ---
-# Terraform will be unable to decode this file if it does not contain valid YAML
-# You can retain `---` (start of the document) to indicate an empty document.
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../schemas/firewall-policy-rules.schema.json
 
 # allow-admins:
 #   description: Access from the admin subnet to all subnets

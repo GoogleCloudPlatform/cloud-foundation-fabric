@@ -58,7 +58,7 @@ variable "region" {
 variable "router_config" {
   description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
-    asn    = number
+    asn    = optional(number)
     create = optional(bool, true)
     custom_advertise = optional(object({
       all_subnets = bool

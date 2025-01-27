@@ -15,70 +15,24 @@
  */
 
 locals {
-  _output_kms_keys = concat(
-    flatten([
-      for location, mod in module.dev-sec-kms : [
-        for name, id in mod.key_ids : {
-          key = "dev-${name}:${location}"
-          id  = id
-        }
-      ]
-    ]),
-    flatten([
-      for location, mod in module.prod-sec-kms : [
-        for name, id in mod.key_ids : {
-          key = "prod-${name}:${location}"
-          id  = id
-        }
-      ]
-    ])
-  )
-  cas_configs = {
-    dev = {
-      for k, v in module.dev-cas
-      : k => {
-        ca_pool_id = v.ca_pool_id
-        ca_ids     = v.ca_ids
-        location   = v.ca_pool.location
+  _output_kms_keys = flatten([
+    for k, v in module.kms : [
+      for name, id in v.key_ids : {
+        key = "${name}-${k}"
+        id  = id
       }
-    }
-    prod = {
-      for k, v in module.prod-cas
-      : k => {
-        ca_pool_id = v.ca_pool_id
-        ca_ids     = v.ca_ids
-        location   = v.ca_pool.location
-      }
-    }
-  }
-  ngfw_tls_configs = {
-    tls_enabled = var.ngfw_tls_configs.tls_inspection.enabled
-    tls_ip_ids_by_region = {
-      dev = {
-        for k, v in google_network_security_tls_inspection_policy.ngfw_dev_tls_ips
-        : v.location => v.id
-      }
-      prod = {
-        for k, v in google_network_security_tls_inspection_policy.ngfw_prod_tls_ips
-        : v.location => v.id
-      }
-    }
-  }
-  output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
+    ]
+  ])
   tfvars = {
-    cas_configs      = local.cas_configs
-    kms_keys         = local.output_kms_keys
-    ngfw_tls_configs = local.ngfw_tls_configs
-    trust_config_ids = local.trust_config_ids
-  }
-  trust_config_ids = {
-    dev = {
-      for k, v in google_certificate_manager_trust_config.dev_trust_configs
-      : k => v.id
+    certificate_authority_pools = {
+      for k, v in module.cas : k => {
+        ca_ids   = v.ca_ids
+        id       = v.ca_pool_id
+        location = v.ca_pool.location
+      }
     }
-    prod = {
-      for k, v in google_certificate_manager_trust_config.prod_trust_configs
-      : k => v.id
+    kms_keys = {
+      for k in local._output_kms_keys : k.key => k.id
     }
   }
 }
@@ -96,28 +50,18 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
-output "cas_configs" {
-  description = "Certificate Authority Service configurations."
-  value       = local.cas_configs
+output "certificate_authority_pools" {
+  description = "Certificate Authority Service pools and CAs."
+  value       = local.tfvars.certificate_authority_pools
 }
 
 output "kms_keys" {
   description = "KMS key ids."
-  value       = local.output_kms_keys
-}
-
-output "ngfw_tls_configs" {
-  description = "The NGFW Enterprise configurations."
-  value       = local.ngfw_tls_configs
+  value       = local.tfvars.kms_keys
 }
 
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
-}
-
-output "trust_config_ids" {
-  description = "Certificate Manager trust-config ids."
-  value       = local.trust_config_ids
 }

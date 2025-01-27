@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v36.0.1
+# Fabric release: v37.1.0
 
 terraform {
-  required_version = ">= 1.8.0"
+  required_version = ">= 1.9.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -25,5 +25,11 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 6.13.0, < 7.0.0" # tftest
     }
+  }
+  provider_meta "google" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/artifact-registry:v37.1.0-tofu"
+  }
+  provider_meta "google-beta" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/artifact-registry:v37.1.0-tofu"
   }
 }

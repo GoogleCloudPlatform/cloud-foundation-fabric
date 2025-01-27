@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,125 @@
  * limitations under the License.
  */
 
+variable "alerts" {
+  description = "Monitoring alerts."
+  type = map(object({
+    combiner              = string
+    display_name          = optional(string)
+    enabled               = optional(bool)
+    notification_channels = optional(list(string), [])
+    severity              = optional(string)
+    user_labels           = optional(map(string))
+    alert_strategy = optional(object({
+      auto_close           = optional(string)
+      notification_prompts = optional(string)
+      notification_rate_limit = optional(object({
+        period = optional(string)
+      }))
+      notification_channel_strategy = optional(object({
+        notification_channel_names = optional(list(string))
+        renotify_interval          = optional(string)
+      }))
+    }))
+    conditions = optional(list(object({
+      display_name = string
+      condition_absent = optional(object({
+        duration = string
+        filter   = optional(string)
+        aggregations = optional(object({
+          per_series_aligner   = optional(string)
+          group_by_fields      = optional(list(string))
+          cross_series_reducer = optional(string)
+          alignment_period     = optional(string)
+        }))
+        trigger = optional(object({
+          count   = optional(number)
+          percent = optional(number)
+        }))
+      }))
+      condition_matched_log = optional(object({
+        filter           = string
+        label_extractors = optional(map(string))
+      }))
+      condition_monitoring_query_language = optional(object({
+        duration                = string
+        query                   = string
+        evaluation_missing_data = optional(string)
+        trigger = optional(object({
+          count   = optional(number)
+          percent = optional(number)
+        }))
+      }))
+      condition_prometheus_query_language = optional(object({
+        query                     = string
+        alert_rule                = optional(string)
+        disable_metric_validation = optional(bool)
+        duration                  = optional(string)
+        evaluation_interval       = optional(string)
+        labels                    = optional(map(string))
+        rule_group                = optional(string)
+      }))
+      condition_threshold = optional(object({
+        comparison              = string
+        duration                = string
+        denominator_filter      = optional(string)
+        evaluation_missing_data = optional(string)
+        filter                  = optional(string)
+        threshold_value         = optional(number)
+        aggregations = optional(object({
+          per_series_aligner   = optional(string)
+          group_by_fields      = optional(list(string))
+          cross_series_reducer = optional(string)
+          alignment_period     = optional(string)
+        }))
+        denominator_aggregations = optional(object({
+          per_series_aligner   = optional(string)
+          group_by_fields      = optional(list(string))
+          cross_series_reducer = optional(string)
+          alignment_period     = optional(string)
+        }))
+        forecast_options = optional(object({
+          forecast_horizon = string
+        }))
+        trigger = optional(object({
+          count   = optional(number)
+          percent = optional(number)
+        }))
+      }))
+    })), [])
+    documentation = optional(object({
+      content   = optional(string)
+      mime_type = optional(string)
+      subject   = optional(string)
+      links = optional(list(object({
+        display_name = optional(string)
+        url          = optional(string)
+      })))
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "log_scopes" {
+  description = "Log scopes under this project."
+  type = map(object({
+    description    = optional(string)
+    resource_names = list(string)
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "logging_data_access" {
-  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.logging_data_access : [
-        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
-      ]
-    ]))
-    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
-  }
+  description = "Control activation of data access logs. The special 'allServices' key denotes configuration for all services."
+  type = map(object({
+    ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+    DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+    DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "logging_exclusions" {
@@ -36,11 +142,41 @@ variable "logging_exclusions" {
   nullable    = false
 }
 
-variable "log_scopes" {
-  description = "Log scopes under this project."
+variable "logging_metrics" {
+  description = "Log-based metrics."
   type = map(object({
-    description    = optional(string)
-    resource_names = list(string)
+    filter           = string
+    bucket_name      = optional(string)
+    description      = optional(string)
+    disabled         = optional(bool)
+    label_extractors = optional(map(string))
+    value_extractor  = optional(string)
+    bucket_options = optional(object({
+      explicit_buckets = optional(object({
+        bounds = list(number)
+      }))
+      exponential_buckets = optional(object({
+        num_finite_buckets = number
+        growth_factor      = number
+        scale              = number
+      }))
+      linear_buckets = optional(object({
+        num_finite_buckets = number
+        width              = number
+        offset             = number
+      }))
+    }))
+    metric_descriptor = optional(object({
+      metric_kind  = string
+      value_type   = string
+      display_name = optional(string)
+      unit         = optional(string)
+      labels = optional(list(object({
+        key         = string
+        description = optional(string)
+        value_type  = optional(string)
+      })), [])
+    }))
   }))
   nullable = false
   default  = {}
@@ -82,4 +218,23 @@ variable "metric_scopes" {
   type        = list(string)
   default     = []
   nullable    = false
+}
+
+variable "notification_channels" {
+  description = "Monitoring notification channels."
+  type = map(object({
+    type         = string
+    description  = optional(string)
+    display_name = optional(string)
+    enabled      = optional(bool)
+    labels       = optional(map(string))
+    user_labels  = optional(map(string))
+    sensitive_labels = optional(object({
+      auth_token  = optional(string)
+      password    = optional(string)
+      service_key = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }

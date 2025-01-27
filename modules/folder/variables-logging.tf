@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,14 @@
  */
 
 variable "logging_data_access" {
-  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.logging_data_access : [
-        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
-      ]
-    ]))
-    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
-  }
+  description = "Control activation of data access logs. The special 'allServices' key denotes configuration for all services."
+  type = map(object({
+    ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+    DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+    DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "logging_exclusions" {
@@ -57,10 +53,18 @@ variable "logging_sinks" {
     filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
+    intercept_children   = optional(bool, false)
     type                 = string
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      !v.intercept_children || (v.include_children && v.type == "project")
+    ])
+    error_message = "'type' must be set to 'project' if 'intercept_children' is 'true'."
+  }
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :

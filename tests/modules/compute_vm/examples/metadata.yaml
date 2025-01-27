@@ -21,7 +21,7 @@ values:
         apt-get install -y nginx
     name: nginx-server
     project: project-id
-    zone: europe-west1-b
+    zone: europe-west8-b
     labels:
       env: dev
       system: crm

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,24 +47,24 @@ resource "google_folder_iam_audit_config" "default" {
   folder   = local.folder_id
   service  = each.key
   dynamic "audit_log_config" {
-    for_each = each.value
-    iterator = config
+    for_each = { for k, v in each.value : k => v if v != null }
     content {
-      log_type         = config.key
-      exempted_members = config.value
+      log_type         = audit_log_config.key
+      exempted_members = audit_log_config.value.exempted_members
     }
   }
 }
 
 resource "google_logging_folder_sink" "sink" {
-  for_each         = local.logging_sinks
-  name             = each.key
-  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
-  folder           = local.folder_id
-  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
-  filter           = each.value.filter
-  include_children = each.value.include_children
-  disabled         = each.value.disabled
+  for_each           = local.logging_sinks
+  name               = each.key
+  description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  folder             = local.folder_id
+  destination        = "${each.value.type}.googleapis.com/${each.value.destination}"
+  filter             = each.value.filter
+  include_children   = each.value.include_children
+  intercept_children = each.value.intercept_children
+  disabled           = each.value.disabled
 
   dynamic "bigquery_options" {
     for_each = each.value.type == "bigquery" ? [""] : []

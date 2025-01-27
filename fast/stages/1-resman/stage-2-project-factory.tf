@@ -26,9 +26,10 @@ module "pf-sa-rw" {
   display_name = "Terraform resman project factory main service account."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-rw["project_factory"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-rw[k].iam_email if v.stage == "project-factory"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
@@ -48,9 +49,10 @@ module "pf-sa-ro" {
   display_name = "Terraform resman project factory main service account (read-only)."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-ro["project_factory"].iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [
+      for k, v in local.cicd_repositories :
+      module.cicd-sa-ro[k].iam_email if v.stage == "project-factory"
+    ]
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]

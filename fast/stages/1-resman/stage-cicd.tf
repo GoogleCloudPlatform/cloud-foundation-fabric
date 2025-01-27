@@ -14,24 +14,36 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description CI/CD locals and resources.
+
 locals {
-  # intermediate normalization of repository configurations
   _cicd_configs = merge(
-    # stage 2s
+    # stage 2
     {
-      for k, v in var.fast_stage_2 :
-      k => merge(v.cicd_config, {
-        env = "prod", short_name = v.short_name, lvl = 2
-      })
-      if v.cicd_config != null
+      for k, v in var.fast_stage_2 : k => merge(v.cicd_config, {
+        env        = "prod"
+        level      = 2
+        stage      = replace(k, "_", "-")
+        short_name = v.short_name
+      }) if v.cicd_config != null
     },
-    # stage 3s
+    # stage 3
     {
-      for k, v in local.stage3 :
-      k => merge(v.cicd_config, {
-        env = v.environment, short_name = coalesce(v.short_name, k), lvl = 3
-      })
-      if v.cicd_config != null
+      for k, v in local.stage3 : k => merge(v.cicd_config, {
+        env        = v.environment
+        level      = 3
+        short_name = coalesce(v.short_name, k)
+        stage      = replace(k, "_", "-")
+      }) if v.cicd_config != null
+    },
+    # addons
+    {
+      for k, v in var.fast_addon : k => merge(v.cicd_config, {
+        env        = "prod"
+        level      = 2
+        short_name = k
+        stage      = substr(v.parent_stage, 2, -1)
+      }) if v.cicd_config != null
     }
   )
   # finalize configurations and filter by valid identity provider and type
@@ -41,18 +53,16 @@ locals {
       fileexists("${path.module}/templates/workflow-${v.repository.type}.yaml")
     )
   }
-  # lists of input files for each stage
-  cicd_workflow_files = {
-    stage_2 = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    stage_3 = [
-      for k, v in local._cicd_configs :
-      "2-${k}.auto.tfvars" if v.lvl == 2
-    ]
-  }
+  cicd_workflow_providers = merge(
+    {
+      for k, v in local.cicd_repositories :
+      k => "${v.level}-${k}-providers.tf"
+    },
+    {
+      for k, v in local.cicd_repositories :
+      "${k}-r" => "${v.level}-${k}-r-providers.tf"
+    }
+  )
 }
 
 module "cicd-sa-rw" {
@@ -63,9 +73,9 @@ module "cicd-sa-rw" {
     name = each.value.short_name
   })
   display_name = (
-    "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account."
+    "CI/CD ${each.value.level}-${each.value.short_name} ${each.value.env} service account."
   )
-  prefix = "${var.prefix}-${each.value.env}"
+  prefix = "${var.prefix}-${var.environments[each.value.env].short_name}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       each.value.repository.branch == null
@@ -98,9 +108,9 @@ module "cicd-sa-ro" {
     name = each.value.short_name
   })
   display_name = (
-    "CI/CD ${each.value.lvl}-${each.value.short_name} ${each.value.env} service account (read-only)."
+    "CI/CD ${each.value.level}-${each.value.short_name} ${each.value.env} service account (read-only)."
   )
-  prefix = "${var.prefix}-${each.value.env}"
+  prefix = "${var.prefix}-${var.environments[each.value.env].short_name}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(

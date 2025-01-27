@@ -31,17 +31,20 @@ locals {
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
-        email     = format(agent.identity, local.project.number)
-        iam_email = "serviceAccount:${format(agent.identity, local.project.number)}"
+        email      = format(agent.identity, local.project.number)
+        iam_email  = "serviceAccount:${format(agent.identity, local.project.number)}"
+        create_jit = api == "cloudservices" || contains(var.services, api)
       })
     }
   ]...)
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it
   primary_service_agents = [
-    for agent in local._project_service_agents :
-    agent.api
-    if agent.is_primary && var.service_agents_config.create_primary_agents
+    for agent in local._project_service_agents : agent.api if(
+      agent.is_primary &&
+      var.service_agents_config.create_primary_agents &&
+      agent.create_jit
+    )
   ]
   # list of roles that should be granted to service agents for the
   # current project, if the user requested it

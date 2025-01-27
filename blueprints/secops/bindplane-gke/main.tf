@@ -215,6 +215,7 @@ resource "helm_release" "bindplane" {
     gcp_project_id      = module.project.project_id
     hostname            = "${var.dns_config.hostname}.${var.dns_config.domain}"
     address             = "ingress"
+    tag                 = var.bindplane_config.image_tag
   })]
 
   depends_on = [

@@ -1,0 +1,358 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_iam_workload_identity_pool.default[0]:
+    description: null
+    disabled: null
+    display_name: null
+    project: fast-prod-iac-core-0
+    timeouts: null
+    workload_identity_pool_id: fast-bootstrap
+  google_iam_workload_identity_pool_provider.default["gh-test"]:
+    attribute_condition: attribute.repository_owner=="fast"
+    attribute_mapping:
+      attribute.actor: assertion.actor
+      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
+      attribute.ref: assertion.ref
+      attribute.repository: assertion.repository
+      attribute.repository_owner: assertion.repository_owner
+      attribute.sub: assertion.sub
+      google.subject: assertion.sub
+    aws: []
+    description: null
+    disabled: null
+    display_name: null
+    oidc:
+    - allowed_audiences: []
+      issuer_uri: https://token.actions.githubusercontent.com
+      jwks_json: null
+    project: fast-prod-iac-core-0
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: fast-bootstrap
+    workload_identity_pool_provider_id: fast-bootstrap-gh-test
+    x509: []
+  google_iam_workload_identity_pool_provider.default["gl-test"]:
+    attribute_condition: attribute.namespace_path=="fast"
+    attribute_mapping:
+      attribute.environment: assertion.environment
+      attribute.environment_protected: assertion.environment_protected
+      attribute.namespace_id: assertion.namespace_id
+      attribute.namespace_path: assertion.namespace_path
+      attribute.pipeline_id: assertion.pipeline_id
+      attribute.pipeline_source: assertion.pipeline_source
+      attribute.project_id: assertion.project_id
+      attribute.project_path: assertion.project_path
+      attribute.ref: assertion.ref
+      attribute.ref_protected: assertion.ref_protected
+      attribute.ref_type: assertion.ref_type
+      attribute.repository: assertion.project_path
+      attribute.sub: assertion.sub
+      google.subject: assertion.sub
+    aws: []
+    description: null
+    disabled: null
+    display_name: null
+    oidc:
+    - allowed_audiences: []
+      issuer_uri: https://gitlab.com
+      jwks_json: null
+    project: fast-prod-iac-core-0
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: fast-bootstrap
+    workload_identity_pool_provider_id: fast-bootstrap-gl-test
+    x509: []
+  google_storage_bucket_object.workflows["0-bootstrap"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: workflows/0-bootstrap-workflow.yaml
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.workflows["1-resman"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: workflows/1-resman-workflow.yaml
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.workflows["1-resman-tenants"]:
+    bucket: fast-prod-iac-core-outputs-0
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: workflows/1-resman-tenants-workflow.yaml
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.automation-tf-bootstrap-r-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform organization bootstrap service account (read-only).
+    email: fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-bootstrap-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-bootstrap-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-tf-bootstrap-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform organization bootstrap service account.
+    email: fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-bootstrap-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.admin
+  ? module.automation-tf-cicd-r-sa["bootstrap"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-r-sa["bootstrap"].google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD bootstrap service account (read-only).
+    email: fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-cicd-r-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-r-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.automation-tf-cicd-r-sa["resman"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-r-sa["resman"].google_service_account.service_account[0]:
+    account_id: fast-prod-resman-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD resman service account (read-only).
+    email: fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-cicd-r-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-r-sa["resman"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account.service_account[0]:
+    account_id: fast-prod-resman-tenants-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD resman-tenants service account (read-only).
+    email: fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.automation-tf-cicd-sa["bootstrap"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-sa["bootstrap"].google_service_account.service_account[0]:
+    account_id: fast-prod-bootstrap-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD bootstrap service account.
+    email: fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  ? module.automation-tf-cicd-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.automation-tf-cicd-sa["resman"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-sa["resman"].google_service_account.service_account[0]:
+    account_id: fast-prod-resman-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD resman service account.
+    email: fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-cicd-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-sa["resman"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.automation-tf-cicd-sa["resman-tenants"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
+  : condition: []
+    project: fast-prod-iac-core-0
+    role: roles/logging.logWriter
+  module.automation-tf-cicd-sa["resman-tenants"].google_service_account.service_account[0]:
+    account_id: fast-prod-resman-tenants-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform CI/CD resman-tenants service account.
+    email: fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-cicd-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    role: roles/iam.workloadIdentityUser
+  ? module.automation-tf-cicd-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.objectViewer
+  module.automation-tf-resman-r-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-resman-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 resman service account (read-only).
+    email: fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-resman-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-resman-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  module.automation-tf-resman-sa.google_service_account.service_account[0]:
+    account_id: fast-prod-resman-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform stage 1 resman service account.
+    email: fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    project: fast-prod-iac-core-0
+    timeouts: null
+  module.automation-tf-resman-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.automation-tf-resman-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
+  : bucket: fast-prod-iac-core-outputs-0
+    condition: []
+    role: roles/storage.admin
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 3
+  google_essential_contacts_contact: 3
+  google_iam_workload_identity_pool: 1
+  google_iam_workload_identity_pool_provider: 2
+  google_logging_organization_settings: 1
+  google_logging_organization_sink: 4
+  google_logging_project_bucket_config: 4
+  google_org_policy_policy: 24
+  google_organization_iam_binding: 27
+  google_organization_iam_custom_role: 13
+  google_organization_iam_member: 29
+  google_project: 3
+  google_project_iam_audit_config: 1
+  google_project_iam_binding: 19
+  google_project_iam_member: 22
+  google_project_service: 31
+  google_project_service_identity: 7
+  google_service_account: 12
+  google_service_account_iam_binding: 12
+  google_storage_bucket: 4
+  google_storage_bucket_iam_binding: 4
+  google_storage_bucket_iam_member: 12
+  google_storage_bucket_object: 13
+  google_storage_project_service_account: 3
+  google_tags_tag_key: 1
+  google_tags_tag_value: 2
+  local_file: 13
+  modules: 26
+  resources: 271

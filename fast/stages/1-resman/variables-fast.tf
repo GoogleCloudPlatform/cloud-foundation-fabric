@@ -33,6 +33,7 @@ variable "automation" {
       principal_repo   = string
     }))
     service_accounts = object({
+      resman   = string
       resman-r = string
     })
   })
@@ -73,6 +74,7 @@ variable "environments" {
   description = "Environment names."
   type = map(object({
     name       = string
+    short_name = string
     tag_name   = string
     is_default = optional(bool, false)
   }))

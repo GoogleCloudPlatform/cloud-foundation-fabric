@@ -52,10 +52,10 @@ values:
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west8
     service_account:
-    - email: vm-default@my-project.iam.gserviceaccount.com
+    - email: fixture-service-account@project-id.iam.gserviceaccount.com
       scopes:
       - https://www.googleapis.com/auth/cloud-platform
       - https://www.googleapis.com/auth/userinfo.email
