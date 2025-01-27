@@ -17,57 +17,52 @@
 # tfdoc:file:description IAM bindings
 
 locals {
-  iam_template_map = {
-    for binding in flatten([
-      for role, members in var.iam : [
-        for template_k, template_v in google_data_catalog_tag_template.tag_template : {
-          template = template_v,
-          role     = role,
-          members  = members
-        }
-      ]
-    ]) : "${binding.template.tag_template_id}-${binding.role}" => binding
-  }
-
-  iam_bindings_template_map = {
-    for binding in flatten([
-      for iam_bindings_k, iam_bindings_v in var.iam_bindings : [
-        for template_k, template_v in google_data_catalog_tag_template.tag_template : {
-          template         = template_v,
-          iam_bindings_key = iam_bindings_k,
-          role             = iam_bindings_v.role,
-          member           = iam_bindings_v.members,
-          condition        = iam_bindings_v.condition
-        }
-      ]
-    ]) : "${binding.template.tag_template_id}-${binding.iam_bindings_key}" => binding
-  }
-
-  iam_bindings_additive_template_map = {
-    for binding in flatten([
-      for iam_bindings_k, iam_bindings_v in var.iam_bindings_additive : [
-        for template_k, template_v in google_data_catalog_tag_template.tag_template : {
-          template       = template_v,
-          iam_bindings_k = iam_bindings_k,
-          role           = iam_bindings_v.role,
-          member         = iam_bindings_v.member,
-          condition      = iam_bindings_v.condition
-        }
-      ]
-    ]) : "${binding.template.tag_template_id}-${binding.iam_bindings_k}" => binding
-  }
+  tt_iam = flatten([
+    for k, v in local.tag_templates : [
+      for role, members in v.iam : {
+        key     = k
+        role    = role
+        members = members
+      }
+    ]
+  ])
+  tt_iam_bindings = merge([
+    for k, v in local.tag_templates : {
+      for binding_key, data in v.iam_bindings :
+      binding_key => {
+        key       = k
+        role      = data.role
+        members   = data.members
+        condition = data.condition
+      }
+    }
+  ]...)
+  tt_iam_bindings_additive = merge([
+    for k, v in local.tag_templates : {
+      for binding_key, data in v.iam_bindings_additive :
+      binding_key => {
+        key       = k
+        role      = data.role
+        member    = data.member
+        condition = data.condition
+      }
+    }
+  ]...)
 }
 
 resource "google_data_catalog_tag_template_iam_binding" "authoritative" {
-  for_each     = local.iam_template_map
-  tag_template = each.value.template.id
+  for_each = {
+    for binding in local.tt_iam :
+    "${binding.key}.${binding.role}" => binding
+  }
+  tag_template = google_data_catalog_tag_template.default[each.value.key].id
   role         = each.value.role
   members      = each.value.members
 }
 
 resource "google_data_catalog_tag_template_iam_binding" "bindings" {
-  for_each     = local.iam_bindings_template_map
-  tag_template = each.value.template.id
+  for_each     = local.tt_iam_bindings
+  tag_template = google_data_catalog_tag_template.default[each.value.key].id
   role         = each.value.role
   members      = each.value.member
   dynamic "condition" {
@@ -81,8 +76,8 @@ resource "google_data_catalog_tag_template_iam_binding" "bindings" {
 }
 
 resource "google_data_catalog_tag_template_iam_member" "bindings" {
-  for_each     = local.iam_bindings_additive_template_map
-  tag_template = each.value.template.id
+  for_each     = local.tt_iam_bindings_additive
+  tag_template = google_data_catalog_tag_template.default[each.value.key].id
   role         = each.value.role
   member       = each.value.member
   dynamic "condition" {
