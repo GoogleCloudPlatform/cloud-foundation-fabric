@@ -18,7 +18,7 @@ The following diagram is a high level reference of the resources created and man
   - [Top-level folders](#top-level-folders)
   - [Stage 2](#stage-2)
   - [Stage 3](#stage-3)
-  - [Project (and hierarchy) factory](#project-and-hierarchy-factory)
+  - [Project and hierarchy factory](#project-and-hierarchy-factory)
 - [Other design considerations](#other-design-considerations)
   - [Secure tags](#secure-tags)
   - [Multitenancy](#multitenancy)
