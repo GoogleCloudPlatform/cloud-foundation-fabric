@@ -16,10 +16,16 @@
 
 output "data_catalog_tag_template_ids" {
   description = "Data catalog tag template ids."
-  value       = { for k, v in google_data_catalog_tag_template.tag_template : v.tag_template_id => v.id }
+  value = {
+    for k, v in google_data_catalog_tag_template.default :
+    v.tag_template_id => v.id
+  }
 }
 
 output "data_catalog_tag_templates" {
   description = "Data catalog tag templates."
-  value       = { for k, v in google_data_catalog_tag_template.tag_template : v.tag_template_id => v }
+  value = {
+    for k, v in google_data_catalog_tag_template.default :
+    v.tag_template_id => v
+  }
 }

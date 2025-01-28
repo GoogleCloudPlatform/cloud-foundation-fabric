@@ -15,36 +15,71 @@
  */
 
 locals {
-  _factory_tag_template = {
-    for f in try(fileset(var.factories_config.tag_templates, "*.yaml"), []) :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.factories_config.tag_templates}/${f}"))
+  # read factory data
+  _tt_path = try(pathexpand(var.factories_config.tag_templates), null)
+  _tt_files = try(
+    fileset(local._tt_path, "**/*.yaml"),
+    []
+  )
+  _tt = {
+    for f in local._tt_files :
+    split(".", f)[0] => yamldecode(file(
+      "${coalesce(local._tt_path, "-")}/${f}"
+    ))
   }
-
-  factory_tag_template = merge(local._factory_tag_template, var.tag_templates)
+  # normalize factory data and merge
+  tag_templates = merge({
+    for k, v in local._tt : k => {
+      display_name = lookup(v, "display_name", null)
+      force_delete = lookup(v, "force_delete", false)
+      region       = lookup(v, "region", null)
+      fields = {
+        for fk, fv in v.fields : fk => {
+          display_name = lookup(fv, "display_name", null)
+          description  = lookup(fv, "description", null)
+          is_required  = lookup(fv, "is_required", false)
+          order        = lookup(fv, "order", null)
+          type = merge(
+            { primitive_type = null, enum_type_values = null },
+            fv.type
+          )
+        }
+      }
+      iam                   = lookup(v, "iam", {})
+      iam_bindings          = lookup(v, "iam_bindings", {})
+      iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
+    }
+  }, var.tag_templates)
 }
 
-resource "google_data_catalog_tag_template" "tag_template" {
-  for_each        = local.factory_tag_template
+resource "google_data_catalog_tag_template" "default" {
+  for_each        = local.tag_templates
   project         = var.project_id
+  region          = coalesce(each.value.region, var.region)
   tag_template_id = each.key
-  region          = each.value.region
-  display_name    = try(each.value.display_name, null)
-
+  display_name    = each.value.display_name
   dynamic "fields" {
     for_each = each.value.fields
     content {
       field_id     = fields.key
-      display_name = try(fields.value["display_name"], null)
-      is_required  = try(fields.value["is_required"], false)
-      type {
-        primitive_type = try(fields.value["type"].primitive_type, null)
-        dynamic "enum_type" {
-          for_each = try(fields.value["type"].enum_type != null, false) ? ["1"] : []
-          content {
+      display_name = fields.value.display_name
+      description  = fields.value.description
+      is_required  = fields.value.is_required
+      order        = fields.value.order
+      dynamic "type" {
+        for_each = fields.value.type.primitive_type != null ? [""] : []
+        content {
+          primitive_type = fields.value.type.primitive_type
+        }
+      }
+      dynamic "type" {
+        for_each = fields.value.type.enum_type_values != null ? [""] : []
+        content {
+          enum_type {
             dynamic "allowed_values" {
-              for_each = fields.value["type"].enum_type
+              for_each = toset(fields.value.type.enum_type_values)
               content {
-                display_name = allowed_values.value
+                display_name = allowed_values.key
               }
             }
           }
@@ -52,6 +87,5 @@ resource "google_data_catalog_tag_template" "tag_template" {
       }
     }
   }
-
   force_delete = try(each.value.force_delete, false)
 }
