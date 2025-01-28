@@ -24,6 +24,11 @@ output "certificates" {
   value       = google_certificate_manager_certificate.certificates
 }
 
+output "dns_authorizations" {
+  description = "DNS authorizations."
+  value       = google_certificate_manager_dns_authorization.dns_authorizations
+}
+
 output "map" {
   description = "Map."
   value       = var.map == null ? null : google_certificate_manager_certificate_map.map[0]
@@ -33,6 +38,3 @@ output "map_id" {
   description = "Map id."
   value       = var.map == null ? null : google_certificate_manager_certificate_map.map[0].id
 }
-
-
-

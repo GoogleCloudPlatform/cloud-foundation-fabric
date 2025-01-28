@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ locals {
 
 resource "google_storage_bucket_iam_binding" "authoritative" {
   for_each = local.iam
-  bucket   = google_storage_bucket.bucket.name
+  bucket   = local.bucket.name
   role     = each.key
   members  = each.value
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
   for_each = var.iam_bindings
-  bucket   = google_storage_bucket.bucket.name
+  bucket   = local.bucket.name
   role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
@@ -57,7 +57,7 @@ resource "google_storage_bucket_iam_binding" "bindings" {
 
 resource "google_storage_bucket_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
-  bucket   = google_storage_bucket.bucket.name
+  bucket   = local.bucket.name
   role     = each.value.role
   member   = each.value.member
   dynamic "condition" {

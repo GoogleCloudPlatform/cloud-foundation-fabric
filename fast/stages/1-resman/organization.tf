@@ -19,8 +19,7 @@
 locals {
   # context tag values for enabled stage 2s (merged in the final map below)
   _context_tag_values_stage2 = {
-    for k, v in var.fast_stage_2 :
-    k => replace(k, "_", "-") if v.enabled
+    for k, v in local.stage2 : k => replace(k, "_", "-")
   }
   # merge all context tag values into a single map
   context_tag_values = merge(
@@ -52,15 +51,11 @@ locals {
         {
           "roles/resourcemanager.tagUser" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-rw[0].iam_email],
-            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-rw[0].iam_email],
-            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-rw[0].iam_email],
+            [for k, v in module.stage2-sa-rw : v.iam_email]
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
             try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
-            !var.fast_stage_2.project_factory.enabled ? [] : [module.pf-sa-ro[0].iam_email],
-            !var.fast_stage_2.networking.enabled ? [] : [module.net-sa-ro[0].iam_email],
-            !var.fast_stage_2.security.enabled ? [] : [module.sec-sa-ro[0].iam_email],
+            [for k, v in module.stage2-sa-ro : v.iam_email]
           ))
         }
       )
@@ -69,18 +64,27 @@ locals {
       )
     }
   }
-  # service account expansion for user-specified tag values
+  # combine org-level IAM additive from billing and stage 2s
+  iam_bindings_additive = merge(
+    merge([
+      for k, v in local.stage2 :
+      v.organization_config.iam_bindings_additive
+    ]...),
+    local.billing_mode != "org" ? {} : local.billing_iam
+  )
+  # IAM principal expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
+      iam = {
+        for rk, rv in v.iam : rk => [
+          for rm in rv : lookup(local.principals_iam, rm, rm)
+        ]
+      }
       values = {
         for vk, vv in v.values : vk => merge(vv, {
           iam = {
             for rk, rv in vv.iam : rk => [
-              for rm in rv : (
-                contains(keys(local.service_accounts), rm)
-                ? "serviceAccount:${local.service_accounts[rm]}"
-                : rm
-              )
+              for rm in rv : lookup(local.principals_iam, rm, rm)
             ]
           }
         })
@@ -94,7 +98,13 @@ module "organization" {
   count           = var.root_node == null ? 1 : 0
   organization_id = "organizations/${var.organization.id}"
   # additive bindings leveraging the delegated IAM grant set in stage 0
-  iam_bindings_additive = local.iam_bindings_additive
+  iam_bindings_additive = {
+    for k, v in local.iam_bindings_additive : k => {
+      role      = lookup(var.custom_roles, v.role, v.role)
+      member    = lookup(local.principals_iam, v.member, v.member)
+      condition = lookup(v, "condition", null)
+    }
+  }
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {

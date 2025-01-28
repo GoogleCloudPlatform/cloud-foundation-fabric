@@ -19,11 +19,11 @@ locals {
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   ]))
-  iam_delegated_principals = try(
-    var.stage_config["security"].iam_delegated_principals, {}
+  iam_admin_delegated = try(
+    var.stage_config["security"].iam_admin_delegated, {}
   )
-  iam_viewer_principals = try(
-    var.stage_config["security"].iam_viewer_principals, {}
+  iam_viewer = try(
+    var.stage_config["security"].iam_viewer, {}
   )
   project_services = [
     "certificatemanager.googleapis.com",
@@ -64,14 +64,14 @@ module "project" {
   # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
     (var.custom_roles.project_iam_viewer) = try(
-      local.iam_viewer_principals[each.key], []
+      local.iam_viewer[each.key], []
     )
   }
   iam_bindings = (
-    lookup(local.iam_delegated_principals, each.key, null) == null ? {} : {
+    lookup(local.iam_admin_delegated, each.key, null) == null ? {} : {
       sa_delegated_grants = {
         role    = "roles/resourcemanager.projectIamAdmin"
-        members = try(local.iam_delegated_principals[each.key], [])
+        members = try(local.iam_admin_delegated[each.key], [])
         condition = {
           title       = "${each.key}_stage3_sa_delegated_grants"
           description = "${var.environments[each.key].name} project delegated grants."

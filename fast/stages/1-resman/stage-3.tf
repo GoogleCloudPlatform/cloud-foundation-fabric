@@ -23,20 +23,19 @@ locals {
     fileset(local._stage3_path, "**/*.yaml"),
     []
   )
-  _stage3 = {
+  _stage3_data = {
     for f in local._stage3_files :
     split(".", f)[0] => yamldecode(file(
       "${coalesce(local._stage3_path, "-")}/${f}"
     ))
   }
   # merge stage 3 from factory and variable data
-  stage3 = merge(
+  _stage3 = merge(
     # normalize factory data attributes with defaults and nulls
     {
-      for k, v in local._stage3 : k => {
-        short_name       = v.short_name
-        environment      = try(v.environment, "dev")
-        implements_stage = try(v.implements_stage, null)
+      for k, v in local._stage3_data : k => {
+        short_name  = v.short_name
+        environment = try(v.environment, "dev")
         cicd_config = lookup(v, "cicd_config", null) == null ? null : {
           identity_provider = v.cicd_config.identity_provider
           repository = merge(v.cicd_config.repository, {
@@ -45,69 +44,81 @@ locals {
           })
         }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
-          name              = v.folder_config.name
-          iam_by_principals = try(v.folder_config.iam_by_principals, {})
-          parent_id         = try(v.folder_config.parent_id, null)
-          tag_bindings      = try(v.folder_config.tag_bindings, {})
-        }
-        organization_iam = lookup(v, "organization_iam", null) == null ? null : {
-          context_tag_value = v.organization_iam.context_tag_value
-          sa_roles = merge(
-            { ro = [], rw = [] }, v.organization_iam.sa_roles
-          )
-        }
-        stage2_iam = {
-          networking = {
-            iam_admin_delegated = try(
-              v.stage2_iam.networking.iam_admin_delegated, false
-            )
-            sa_roles = merge(
-              { ro = [], rw = [] }, try(v.stage2_iam.networking.sa_roles, {})
-            )
-          }
-          security = {
-            iam_admin_delegated = try(
-              v.stage2_iam.security.iam_admin_delegated, false
-            )
-            sa_roles = merge(
-              { ro = [], rw = [] }, try(v.stage2_iam.security.sa_roles, {})
-            )
-          }
+          name                  = v.folder_config.name
+          iam                   = try(v.folder_config.iam, {})
+          iam_bindings          = try(v.folder_config.iam_bindings, {})
+          iam_bindings_additive = try(v.folder_config.iam_bindings_additive, {})
+          iam_by_principals     = try(v.folder_config.iam_by_principals, {})
+          org_policies          = try(v.folder_config.org_policies, {})
+          parent_id             = try(v.folder_config.parent_id, null)
+          tag_bindings          = try(v.folder_config.tag_bindings, {})
         }
       }
     },
     var.fast_stage_3
   )
-  # extract and normalize organization IAM for stage 3s
-  stage3_sa_roles_in_org = flatten([
-    for k, v in local.stage3 : [
-      for sa, roles in try(v.organization_iam.sa_roles, []) : [
-        for role in roles : {
-          context = try(v.organization_iam.context_tag_value, "")
-          env     = var.environments[v.environment].tag_name
-          role    = role
-          sa      = sa
-          s3      = k
+  # normalize attributes
+  stage3 = {
+    for k, v in local._stage3 : k => merge(v, {
+      short_name = replace(coalesce(v.short_name, k), "_", "-")
+      # this code is identical to the one used for stage 2s
+      folder_config = v.folder_config == null ? null : merge(v.folder_config, {
+        iam = {
+          for kk, vv in v.folder_config.iam : kk => [
+            for m in vv : contains(["ro", "rw"], m) ? "${k}-${m}" : m
+          ]
         }
-      ]
-    ]
-  ])
-  # extract and normalize stage 2 IAM for stage 2s
-  stage3_iam_in_stage2 = flatten([
-    for k, v in local.stage3 : [
-      for s2, attrs in v.stage2_iam : [
-        for sa, roles in attrs.sa_roles : [
-          for role in roles : {
-            env  = var.environments[v.environment].tag_name
-            role = lookup(var.custom_roles, role, role)
-            sa   = sa
-            s2   = s2
-            s3   = k
+        iam_bindings = {
+          for kk, vv in v.folder_config.iam_bindings :
+          kk => {
+            role = vv.role
+            members = [
+              for m in vv.members : contains(["ro", "rw"], m) ? "${k}-${m}" : m
+            ]
+            condition = vv.condition == null ? null : {
+              title = vv.condition.title
+              expression = templatestring(vv.condition.expression, {
+                organization = var.organization
+                tag_names    = var.tag_names
+                tag_root     = local.tag_root
+              })
+              description = lookup(vv.condition, "description", null)
+            }
           }
-        ]
-      ]
-    ]
-  ])
+        }
+        iam_bindings_additive = {
+          for kk, vv in v.folder_config.iam_bindings_additive :
+          kk => {
+            role   = vv.role
+            member = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
+            condition = vv.condition == null ? null : {
+              title = vv.condition.title
+              expression = templatestring(vv.condition.expression, {
+                organization = var.organization
+                tag_names    = var.tag_names
+                tag_root     = local.tag_root
+              })
+              description = lookup(vv.condition, "description", null)
+            }
+          }
+        }
+      })
+    })
+    if !contains(
+      local.stage2_shortnames, replace(coalesce(v.short_name, k), "_", "-")
+    )
+  }
+}
+
+check "stage_short_names" {
+  assert {
+    condition = alltrue([
+      for k, v in local._stage3 : !contains(
+        local.stage2_shortnames, replace(coalesce(v.short_name, k), "_", "-")
+      )
+    ])
+    error_message = "Some stage 3 short names overlap stage 2."
+  }
 }
 
 # top-level folder
@@ -137,6 +148,7 @@ module "stage3-folder" {
 
   }
   iam_by_principals = each.value.folder_config.iam_by_principals
+  org_policies      = each.value.folder_config.org_policies
   tag_bindings = merge(
     {
       environment = local.tag_values["environment/${var.environments[each.value.environment].tag_name}"].id
@@ -162,7 +174,7 @@ module "stage3-sa-rw" {
   display_name = (
     "Terraform resman ${each.key} service account."
   )
-  prefix = "${var.prefix}-${each.value.environment}"
+  prefix = "${var.prefix}-${var.environments[each.value.environment].short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-rw["${each.key}-prod"].iam_email, null)

@@ -17,6 +17,18 @@
 # tfdoc:file:description Locals for provider output files.
 
 locals {
+  _parent_stage_resources = {
+    "1-resman" = {
+      bucket = module.automation-tf-resman-gcs.name
+      sa     = module.automation-tf-resman-sa.email
+      sa_r   = module.automation-tf-resman-r-sa.email
+    }
+    "1-vpcsc" = {
+      bucket = module.automation-tf-vpcsc-gcs.name
+      sa     = module.automation-tf-vpcsc-sa.email
+      sa_r   = module.automation-tf-vpcsc-r-sa.email
+    }
+  }
   providers = merge(
     # this stage's providers
     {
@@ -66,16 +78,8 @@ locals {
       "${v.parent_stage}-${k}" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         name          = "${v.parent_stage}-${k}"
-        bucket = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-gcs.name
-          : module.automation-tf-vpcsc-gcs.name
-        )
-        sa = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-sa.name
-          : module.automation-tf-vpcsc-sa.name
-        )
+        bucket        = local._parent_stage_resources[v.parent_stage].bucket
+        sa            = local._parent_stage_resources[v.parent_stage].sa
       })
     },
     {
@@ -83,16 +87,8 @@ locals {
       "${v.parent_stage}-${k}-r" => templatefile(local._tpl_providers, {
         backend_extra = "prefix = \"addons/${k}\""
         name          = "${v.parent_stage}-${k}"
-        bucket = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-gcs.name
-          : module.automation-tf-vpcsc-gcs.name
-        )
-        sa = (
-          v.parent_stage == "resman"
-          ? module.automation-tf-resman-r-sa.name
-          : module.automation-tf-vpcsc-r-sa.name
-        )
+        bucket        = local._parent_stage_resources[v.parent_stage].bucket
+        sa            = local._parent_stage_resources[v.parent_stage].sa_r
       })
     }
   )

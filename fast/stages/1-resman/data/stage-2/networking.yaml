@@ -1,0 +1,119 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/fast-stage2.schema.json
+
+short_name: net
+folder_config:
+  name: Networking
+  create_env_folders: true
+  iam_by_principals:
+    gcp-network-admins:
+      - roles/editor
+  iam:
+    roles/logging.admin:
+      - rw
+    roles/owner:
+      - rw
+    roles/resourcemanager.folderAdmin:
+      - rw
+    roles/resourcemanager.projectCreator:
+      - rw
+    roles/compute.xpnAdmin:
+      - rw
+    roles/resourcemanager.tagUser:
+      - rw
+    roles/viewer:
+      - ro
+    roles/resourcemanager.folderViewer:
+      - ro
+    roles/resourcemanager.tagViewer:
+      - ro
+    # project factory roles
+    roles/compute.networkViewer:
+      - project-factory-ro
+    service_project_network_admin:
+      - project-factory-rw
+    project_iam_viewer:
+      - project-factory-ro
+  # project factory delegated IAM grant
+  iam_bindings:
+    project_factory:
+      role: roles/resourcemanager.projectIamAdmin
+      members:
+        - project-factory-rw
+      condition:
+        title: Project factory delegated IAM grant.
+        expression: |
+          api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+            'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
+            'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
+          ])
+  # example conditional grants for stage 3s
+  iam_bindings_additive:
+    # GCVE
+    gcve_dev_net_admin:
+      role: gcve_network_admin
+      member: gcve-dev-rw
+      condition:
+        title: GCVE dev network admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    gcve_dev_net_viewer:
+      role: gcve_network_viewer
+      member: gcve-dev-ro
+      condition:
+        title: GCVE dev network viewer.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # GKE
+    gke_dns_admin:
+      role: roles/dns.admin
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    gke_dns_reader:
+      role: roles/dns.reader
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS reader.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+organization_config:
+  iam_bindings_additive:
+    sa_net_rw_fw_policy_admin:
+      member: rw
+      role: roles/compute.orgFirewallPolicyAdmin
+    sa_net_rw_ngfw_enterprise_admin:
+      member: rw
+      role: ngfw_enterprise_admin
+    sa_net_rw_xpn_admin:
+      member: rw
+      role: roles/compute.xpnAdmin
+    sa_net_ro_fw_policy_user:
+      member: ro
+      role: roles/compute.orgFirewallPolicyUser
+    sa_net_ro_ngfw_enterprise_viewer:
+      member: ro
+      role: ngfw_enterprise_viewer
+# example configuration for stage 3s needing environment-level conditional grants
+stage3_config:
+  iam_admin_delegated:
+    - environment: dev
+      principal: gcve-dev-rw
+  iam_viewer:
+    - environment: dev
+      principal: gcve-dev-ro

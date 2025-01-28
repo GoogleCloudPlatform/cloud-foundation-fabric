@@ -29,3 +29,10 @@ output "instance_ssh" {
     )
   }
 }
+
+output "service_account_emails" {
+  description = "Service account emails."
+  value = {
+    for k, v in module.service-accounts : k => v.email
+  }
+}

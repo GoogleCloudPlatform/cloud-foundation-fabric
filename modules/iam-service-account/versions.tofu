@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v37.0.0-rc2
+# Fabric release: v37.1.0
 
 terraform {
-  required_version = ">= 1.8.0"
+  required_version = ">= 1.9.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tofu:modules/iam-service-account:v37.0.0-rc2"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v37.1.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tofu:modules/iam-service-account:v37.0.0-rc2"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v37.1.0-tofu"
   }
 }
