@@ -1,0 +1,51 @@
+name: dev-spoke
+delete_default_routes_on_create: true
+mtu: 1500
+project_id: sruff-net-project-0 # I wish there was a way to dynamically retrieve all the project_ids to create a lookup table :( 
+shared_vpc_host: true
+subnets_factory_config: 
+  subnets_folder: data/subnets/dev-spoke
+firewall_factory_config:
+  rules_folder: data/firewall/dev-spoke
+vpn_configs:
+  to-onprem:
+    region: europe-west8
+    peer_gateways:
+      default:
+        external:
+          redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+          interfaces: 
+            - 8.8.8.8
+    router_config:
+      asn: 64514
+    tunnels:
+      remote-0:
+        bgp_peer:
+          address: 169.254.1.1
+          asn: 64513
+        bgp_session_range: "169.254.1.2/30"
+        peer_external_gateway_interface: 0
+        shared_secret: "mySecret"
+        vpn_gateway_interface: 0
+  to-hub:
+    region: europe-west12
+    peer_gateways:
+      default:
+        gcp: hub/to-dev # pray for the best
+    router_config:
+      asn: 64520
+    tunnels:
+      remote-0:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.2.1
+          asn: 64521
+        bgp_session_range: "169.254.2.2/30"
+        vpn_gateway_interface: 0
+      remote-1:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.2.5
+          asn: 64521
+        bgp_session_range: "169.254.2.6/30"
+        vpn_gateway_interface: 1
