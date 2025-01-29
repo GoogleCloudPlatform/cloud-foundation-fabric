@@ -1,0 +1,27 @@
+name: prod-spoke
+delete_default_routes_on_create: true
+mtu: 1500
+project_id: sruff-net-project-0
+vpn_configs:
+  to-hub:
+    region: europe-west12
+    peer_gateways:
+      default:
+        gcp: hub/to-prod
+    router_config:
+      asn: 64523
+    tunnels:
+      remote-0:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.3.1
+          asn: 64522
+        bgp_session_range: "169.254.3.2/30"
+        vpn_gateway_interface: 0
+      remote-1:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.3.5
+          asn: 64522
+        bgp_session_range: "169.254.3.6/30"
+        vpn_gateway_interface: 1

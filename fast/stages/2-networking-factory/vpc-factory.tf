@@ -73,7 +73,6 @@ locals {
     },
     var.vpc_configs
   )
-
 }
 
 module "vpcs" {
@@ -130,11 +129,12 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway" {
   depends_on = [module.vpcs]
 }
 
+#TODO(sruffilli) How do we manage reusing the same CR for multiple VPNs? It smells like a hard nut to crack.
 module "vpn-ha" {
   source             = "../../../modules/net-vpn-ha"
   for_each           = local.vpns
   project_id         = module.vpcs[each.value.vpc_name].project_id
-  name               = each.value.vpn_name
+  name               = replace(each.key, "/", "-")
   network            = each.value.vpc_name
   region             = each.value.region
   router_config      = each.value.router_config

@@ -1,0 +1,68 @@
+name: hub
+delete_default_routes_on_create: true
+mtu: 1500
+project_id: sruff-net-project-0 # I wish there was a way to dynamically retrieve all the project_ids to create a lookup table :( 
+vpn_configs:
+  to-onprem:
+    region: europe-west8
+    peer_gateways:
+      default:
+        external:
+          redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+          interfaces: 
+            - 8.8.8.8
+    router_config:
+      asn: 64514
+    tunnels:
+      remote-0:
+        bgp_peer:
+          address: 169.254.1.1
+          asn: 64513
+        bgp_session_range: "169.254.1.2/30"
+        peer_external_gateway_interface: 0
+        shared_secret: "mySecret"
+        vpn_gateway_interface: 0
+  to-dev:
+    region: europe-west12
+    peer_gateways:
+      default:
+        gcp: dev-spoke/to-hub # pray for the best
+    router_config:
+      asn: 64521
+    tunnels:
+      remote-0:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.2.2
+          asn: 64520
+        bgp_session_range: "169.254.2.1/30"
+        vpn_gateway_interface: 0
+      remote-1:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.2.6
+          asn: 64520
+        bgp_session_range: "169.254.2.5/30"
+        vpn_gateway_interface: 1
+  to-prod:
+    region: europe-west12
+    peer_gateways:
+      default:
+        gcp: prod-spoke/to-hub
+    router_config:
+      asn: 64522
+    tunnels:
+      remote-0:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.3.2
+          asn: 64523
+        bgp_session_range: "169.254.3.1/30"
+        vpn_gateway_interface: 0
+      remote-1:
+        shared_secret: foobar
+        bgp_peer:
+          address: 169.254.3.6
+          asn: 64523
+        bgp_session_range: "169.254.3.5/30"
+        vpn_gateway_interface: 1

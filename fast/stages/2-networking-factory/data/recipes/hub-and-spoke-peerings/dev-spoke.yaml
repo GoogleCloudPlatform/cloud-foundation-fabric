@@ -1,0 +1,11 @@
+name: dev-spoke
+delete_default_routes_on_create: true
+mtu: 1500
+project_id: sruff-net-project-0 
+subnets_factory_config: 
+  subnets_folder: data/subnets/dev-spoke
+firewall_factory_config:
+  rules_folder: data/firewall/dev-spoke
+peering_configs:
+  to-hub:
+    peer_network: hub
