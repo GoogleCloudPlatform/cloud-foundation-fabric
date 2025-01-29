@@ -15,7 +15,6 @@
 # yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
 
 name: Teams
-automation: true
 iam_by_principals:
   project-factory-rw:
     - roles/owner
