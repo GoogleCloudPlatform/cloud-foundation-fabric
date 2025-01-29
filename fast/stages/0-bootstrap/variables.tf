@@ -344,8 +344,9 @@ variable "resource_names" {
 variable "universe" {
   description = "Target GCP universe."
   type = object({
-    domain = string
-    prefix = string
+    domain               = string
+    prefix               = string
+    unavailable_services = optional(list(string))
   })
   default = null
 }
