@@ -249,6 +249,13 @@ variable "skip_delete" {
   # }
 }
 
+variable "universe" {
+  description = "GCP universe where deploy the project. This will be prepended to the project id."
+  type        = string
+  default     = ""
+  nullable    = false
+}
+
 variable "vpc_sc" {
   description = "VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module."
   type = object({
