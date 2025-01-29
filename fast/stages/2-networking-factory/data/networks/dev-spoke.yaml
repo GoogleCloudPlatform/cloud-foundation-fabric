@@ -2,7 +2,6 @@ name: dev-spoke
 delete_default_routes_on_create: true
 mtu: 1500
 project_id: sruff-net-project-0 # I wish there was a way to dynamically retrieve all the project_ids to create a lookup table :( 
-shared_vpc_host: true
 subnets_factory_config: 
   subnets_folder: data/subnets/dev-spoke
 firewall_factory_config:
