@@ -15,6 +15,7 @@
  */
 
 locals {
+  # descriptive_name cannot contain colons, so we omit the universe from the default
   descriptive_name = (
     var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
   )
@@ -25,6 +26,7 @@ locals {
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
+  project_id  = "${local.universe}${local.prefix}${var.name}"
   project = (
     var.project_create ?
     {
@@ -33,23 +35,24 @@ locals {
       name       = try(google_project.project[0].name, null)
     }
     : {
-      project_id = "${local.prefix}${var.name}"
+      project_id = local.project_id
       number     = try(data.google_project.project[0].number, null)
       name       = try(data.google_project.project[0].name, null)
     }
   )
+  universe = var.universe == "" ? "" : "${var.universe}:"
 }
 
 data "google_project" "project" {
   count      = var.project_create ? 0 : 1
-  project_id = "${local.prefix}${var.name}"
+  project_id = local.project_id
 }
 
 resource "google_project" "project" {
   count               = var.project_create ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
-  project_id          = "${local.prefix}${var.name}"
+  project_id          = local.project_id
   name                = local.descriptive_name
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
