@@ -20,14 +20,14 @@ counts:
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
   google_project: 2
-  google_project_iam_binding: 4
+  google_project_iam_binding: 2
   google_project_iam_member: 4
   google_project_service: 10
   google_project_service_identity: 8
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
   modules: 12
-  resources: 58
+  resources: 56
 
 outputs:
   certificate_authority_pools: __missing__

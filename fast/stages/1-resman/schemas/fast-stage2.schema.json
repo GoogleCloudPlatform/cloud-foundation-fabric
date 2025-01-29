@@ -1,21 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "FAST stage 3",
+  "title": "FAST stage 2",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "short_name",
-    "environment"
-  ],
   "properties": {
     "short_name": {
       "type": "string"
-    },
-    "environment": {
-      "enum": [
-        "dev",
-        "prod"
-      ]
     },
     "cicd_config": {
       "type": "object",
@@ -62,17 +52,9 @@
         "name": {
           "type": "string"
         },
-        "parent_id": {
-          "type": "string"
-        },
-        "tag_bindings": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z0-9_-]+$": {
-              "type": "string"
-            }
-          }
+        "create_env_folders": {
+          "type": "boolean",
+          "default": true
         },
         "iam": {
           "$ref": "#/$defs/iam"
@@ -159,6 +141,59 @@
               }
             }
           }
+        },
+        "parent_id": {
+          "type": "string"
+        }
+      }
+    },
+    "organization_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "iam_by_principals": {
+          "$ref": "#/$defs/iam_by_principals"
+        }
+      }
+    },
+    "stage3_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam_admin_delegated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "environment": {
+                "type": "string"
+              },
+              "principal": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            }
+          }
+        },
+        "iam_viewer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "environment": {
+                "type": "string"
+              },
+              "principal": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            }
+          }
         }
       }
     }
@@ -194,7 +229,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|[a-z])"
             },
             "condition": {
               "type": "object",

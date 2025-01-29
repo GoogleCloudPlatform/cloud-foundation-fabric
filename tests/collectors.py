@@ -72,6 +72,7 @@ class FabricTestFile(pytest.File):
     common = raw.pop('common_tfvars', [])
     for test_name, spec in raw.get('tests', {}).items():
       spec = {} if spec is None else spec
+      extra_dirs = spec.get('extra_dirs')
       extra_files = spec.get('extra_files')
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
       tf_var_files = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
@@ -82,24 +83,26 @@ class FabricTestFile(pytest.File):
         yield FabricTestItem.from_parent(self, name=name, module=module,
                                          inventory=[i],
                                          tf_var_files=tf_var_files,
-                                         extra_files=extra_files)
+                                         extra_files=extra_files,
+                                         extra_dirs=extra_dirs)
 
 
 class FabricTestItem(pytest.Item):
 
   def __init__(self, name, parent, module, inventory, tf_var_files,
-               extra_files=None):
+               extra_files=None, extra_dirs=None):
     super().__init__(name, parent)
     self.module = module
     self.inventory = inventory
     self.tf_var_files = tf_var_files
+    self.extra_dirs = extra_dirs
     self.extra_files = extra_files
 
   def runtest(self):
     try:
       summary = plan_validator(self.module, self.inventory,
                                self.parent.path.parent, self.tf_var_files,
-                               self.extra_files)
+                               self.extra_files, self.extra_dirs)
     except AssertionError:
 
       def full_paths(x):
