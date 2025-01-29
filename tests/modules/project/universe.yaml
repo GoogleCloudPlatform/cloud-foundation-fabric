@@ -14,20 +14,8 @@
 
 values:
   google_project.project[0]:
-    auto_create_network: false
-    billing_account: null
-    deletion_policy: DELETE
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    folder_id: null
-    labels: null
     name: foo-my-project
-    org_id: null
     project_id: alpha:foo-my-project
-    tags: null
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
 
 counts:
   google_project: 1
