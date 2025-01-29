@@ -3,7 +3,12 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-01-24 16:09:32+00:00 to: None since: v37.0.0 -->
+## [Unreleased] <!-- from: 2025-01-26 10:01:38+00:00 to: None since: v37.1.0 -->
+
+### MODULES
+
+- [[#2848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2848)] Support project creation in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-01-29 11:40:41+00:00 -->
+- [[#2842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2842)] Refactor data catalog tag template module ([ludoo](https://github.com/ludoo)) <!-- 2025-01-28 09:30:42+00:00 -->
 
 ## [37.1.0] - 2025-01-26
 
