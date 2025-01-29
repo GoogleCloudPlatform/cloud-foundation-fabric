@@ -112,6 +112,10 @@ locals {
             }
           }
         }
+        iam_by_principals = {
+          for kk, vv in v.folder_config.iam_by_principals :
+          (contains(["ro", "rw"], kk) ? "${k}-${kk}" : kk) => vv
+        }
       })
       organization_config = merge(v.organization_config, {
         iam_bindings_additive = {
@@ -185,7 +189,7 @@ module "stage2-folder" {
   }
   iam_by_principals = {
     for k, v in each.value.folder_config.iam_by_principals :
-    lookup(local.principals, k, k) => [
+    lookup(local.principals_iam, k, k) => [
       for r in v : lookup(var.custom_roles, r, r)
     ]
   }
