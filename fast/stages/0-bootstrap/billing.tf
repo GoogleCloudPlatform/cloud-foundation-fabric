@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ module "billing-export-project" {
   parent = coalesce(
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
-  prefix = var.prefix
+  prefix   = var.prefix
+  universe = try(var.universe.prefix, null)
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ module "log-export-project" {
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
   prefix          = var.prefix
+  universe        = try(var.universe.prefix, null)
   billing_account = var.billing_account.id
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
