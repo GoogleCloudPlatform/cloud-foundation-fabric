@@ -3,10 +3,23 @@ variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
     vpcs                  = optional(string, "data/networks")
+    ncc_hubs              = optional(string, "data/ncc-hubs")
     dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
     firewall_policy_name  = optional(string, "net-default")
   })
   nullable = false
+}
+
+variable "ncc_hubs_configs" {
+  description = "Consolidated configuration for the NCC Hubs"
+  type = map(object({
+    name            = string
+    project_id      = string
+    description     = optional(string, "Terraform-managed.")
+    preset_topology = optional(string, "MESH")
+    export_psc      = optional(bool, true)
+  }))
+  default = {}
 }
 
 variable "vpc_configs" {
@@ -152,6 +165,12 @@ variable "vpc_configs" {
         public_import = optional(bool)
       }), {})
     })), {})
+    ncc_configs = optional(object({
+      hub         = string
+      description = optional(string, "Terraform-managed.")
+      labels      = optional(map(string))
+      #TODO(sruffilli): support for google_network_connectivity_spoke.linked_vpc_network
+    }))
   }))
   default = null
 }

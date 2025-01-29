@@ -1,0 +1,9 @@
+name: test-spoke
+delete_default_routes_on_create: true
+mtu: 1500
+project_id: sruff-net-project-0
+peering_configs:
+  to-hub:
+    peer_network: hub
+ncc_configs:
+  hub: ncc-hub
