@@ -77,19 +77,17 @@ variable "vpc_configs" {
       priority      = optional(number)
       tags          = optional(list(string))
     })), {})
-    routing_mode                = optional(string, "GLOBAL")
-    shared_vpc_host             = optional(bool, false)
-    shared_vpc_service_projects = optional(list(string), [])
+    routing_mode = optional(string, "GLOBAL")
     subnets_factory_config = optional(object({
       context = optional(object({
         regions = optional(map(string), {})
       }), {})
       subnets_folder = optional(string)
-    }), null)
+    }), {})
     firewall_factory_config = optional(object({
       cidr_tpl_file = optional(string)
       rules_folder  = optional(string)
-    }))
+    }), {})
     vpn_configs = optional(map(object({
       name   = string
       region = string
@@ -144,7 +142,16 @@ variable "vpc_configs" {
         shared_secret                   = optional(string)
         vpn_gateway_interface           = number
       }))
-    })))
+    })), {})
+    peering_configs = optional(map(object({
+      peer_network = string
+      routes_config = optional(object({
+        export        = optional(bool, true)
+        import        = optional(bool, true)
+        public_export = optional(bool)
+        public_import = optional(bool)
+      }), {})
+    })), {})
   }))
   default = null
 }

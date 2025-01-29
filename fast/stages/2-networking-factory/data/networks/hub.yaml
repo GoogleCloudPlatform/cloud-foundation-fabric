@@ -2,7 +2,9 @@ name: hub
 delete_default_routes_on_create: true
 mtu: 1500
 project_id: sruff-net-project-0 # I wish there was a way to dynamically retrieve all the project_ids to create a lookup table :( 
-shared_vpc_host: true
+peering_configs:
+  to-prod:
+    peer_network: prod-spoke
 vpn_configs:
   to-dev:
     region: europe-west12
