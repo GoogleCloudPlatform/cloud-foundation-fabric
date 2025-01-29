@@ -25,7 +25,7 @@ locals {
   ]
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
-  prefix      = var.prefix == "" ? "" : "${var.prefix}-"
+  prefix      = var.prefix == null ? "" : "${var.prefix}-"
   project_id  = "${local.universe}${local.prefix}${var.name}"
   project = (
     var.project_create ?

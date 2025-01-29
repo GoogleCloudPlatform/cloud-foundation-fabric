@@ -151,8 +151,11 @@ variable "parent" {
 variable "prefix" {
   description = "Optional prefix used to generate project id and name."
   type        = string
-  default     = ""
-  nullable    = false
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_create" {
