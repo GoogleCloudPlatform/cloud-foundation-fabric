@@ -58,14 +58,14 @@ module "billing-export-project" {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
   }
-  services = setsubtract([
+  services = [
     # "cloudresourcemanager.googleapis.com",
     # "iam.googleapis.com",
     # "serviceusage.googleapis.com",
     "bigquery.googleapis.com",
     "bigquerydatatransfer.googleapis.com",
     "storage.googleapis.com"
-  ], try(var.universe.unavailable_services, []))
+  ]
 }
 
 module "billing-export-dataset" {

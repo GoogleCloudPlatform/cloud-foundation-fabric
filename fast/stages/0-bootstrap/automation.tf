@@ -128,7 +128,7 @@ module "automation-project" {
       }
     }
   )
-  services = setsubtract(concat(
+  services = concat(
     [
       "accesscontextmanager.googleapis.com",
       "bigquery.googleapis.com",
@@ -159,7 +159,7 @@ module "automation-project" {
       "compute.googleapis.com",
       "container.googleapis.com",
     ]
-  ), try(var.universe.unavailable_services, []))
+  )
   # Enable IAM data access logs to capture impersonation and service
   # account token generation events. This is implemented within the
   # automation project to limit log volume. For heightened security,

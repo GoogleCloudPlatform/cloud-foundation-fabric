@@ -54,14 +54,14 @@ module "log-export-project" {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
   }
-  services = setsubtract([
+  services = [
     # "cloudresourcemanager.googleapis.com",
     # "iam.googleapis.com",
     # "serviceusage.googleapis.com",
     "bigquery.googleapis.com",
     "storage.googleapis.com",
     "stackdriver.googleapis.com"
-  ], try(var.universe.unavailable_services, []))
+  ]
 }
 
 # one log export per type, with conditionals to skip those not needed

@@ -346,7 +346,7 @@ variable "universe" {
   type = object({
     domain               = string
     prefix               = string
-    unavailable_services = optional(list(string))
+    unavailable_services = optional(list(string), [])
   })
   default = null
 }
