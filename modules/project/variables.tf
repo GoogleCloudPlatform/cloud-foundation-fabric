@@ -250,10 +250,12 @@ variable "skip_delete" {
 }
 
 variable "universe" {
-  description = "GCP universe where deploy the project. This will be prepended to the project id."
-  type        = string
-  default     = ""
-  nullable    = false
+  description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
+  type = object({
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "vpc_sc" {
