@@ -342,6 +342,7 @@ variable "resource_names" {
 }
 
 variable "universe" {
+  description = "Target GCP universe."
   type = object({
     domain = string
     prefix = string
