@@ -247,7 +247,7 @@ variable "skip_delete" {
 }
 
 variable "universe" {
-  description = "GCP universe where deploy the project. This will prepended to the project id."
+  description = "GCP universe where deploy the project. This will be prepended to the project id."
   type        = string
   default     = ""
   nullable    = false
