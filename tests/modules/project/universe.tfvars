@@ -1,0 +1,2 @@
+prefix   = "foo"
+universe = "alpha"
