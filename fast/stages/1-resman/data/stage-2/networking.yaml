@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,34 +19,24 @@ folder_config:
   name: Networking
   create_env_folders: true
   iam_by_principals:
+    rw:
+      - roles/logging.admin
+      - roles/owner
+      - roles/resourcemanager.folderAdmin
+      - roles/resourcemanager.projectCreator
+      - roles/compute.xpnAdmin
+      - roles/resourcemanager.tagUser
+    ro:
+      - roles/viewer
+      - roles/resourcemanager.folderViewer
+      - roles/resourcemanager.tagViewer
+    project-factory-rw:
+      - service_project_network_admin
+    project-factory-ro:
+      - roles/compute.networkViewer
+      - project_iam_viewer
     gcp-network-admins:
       - roles/editor
-  iam:
-    roles/logging.admin:
-      - rw
-    roles/owner:
-      - rw
-    roles/resourcemanager.folderAdmin:
-      - rw
-    roles/resourcemanager.projectCreator:
-      - rw
-    roles/compute.xpnAdmin:
-      - rw
-    roles/resourcemanager.tagUser:
-      - rw
-    roles/viewer:
-      - ro
-    roles/resourcemanager.folderViewer:
-      - ro
-    roles/resourcemanager.tagViewer:
-      - ro
-    # project factory roles
-    roles/compute.networkViewer:
-      - project-factory-ro
-    service_project_network_admin:
-      - project-factory-rw
-    project_iam_viewer:
-      - project-factory-ro
   # project factory delegated IAM grant
   iam_bindings:
     project_factory:

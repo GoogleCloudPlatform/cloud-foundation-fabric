@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,32 +18,24 @@ short_name: sec
 folder_config:
   name: Security
   iam_by_principals:
+    rw:
+      - roles/logging.admin
+      - roles/owner
+      - roles/resourcemanager.folderAdmin
+      - roles/resourcemanager.projectCreator
+      - roles/resourcemanager.tagUser
+    ro:
+      - roles/viewer
+      - roles/resourcemanager.folderViewer
+      - roles/resourcemanager.tagViewer
+    project-factory-rw:
+      - roles/cloudkms.cryptoKeyEncrypterDecrypter
+    project-factory-ro:
+      - roles/cloudkms.viewer
+      - project_iam_viewer
     gcp-security-admins:
       - roles/editor
-  iam:
-    roles/logging.admin:
-      - rw
-    roles/owner:
-      - rw
-    roles/resourcemanager.folderAdmin:
-      - rw
-    roles/resourcemanager.projectCreator:
-      - rw
-    roles/resourcemanager.tagUser:
-      - rw
-    roles/viewer:
-      - ro
-    roles/resourcemanager.folderViewer:
-      - ro
-    roles/resourcemanager.tagViewer:
-      - ro
-    # project factory roles
-    roles/cloudkms.cryptoKeyEncrypterDecrypter:
-      - project-factory-rw
-    roles/cloudkms.viewer:
-      - project-factory-ro
-    project_iam_viewer:
-      - project-factory-ro
+
   # project factory delegated IAM grant
   iam_bindings:
     project_factory:

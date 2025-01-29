@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,23 +15,19 @@
 # yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
 
 name: Teams
-iam:
-  "roles/owner":
-    - project-factory-rw
-  "roles/resourcemanager.folderAdmin":
-    - project-factory-rw
-  "roles/resourcemanager.projectCreator":
-    - project-factory-rw
-  "roles/resourcemanager.tagUser":
-    - project-factory-rw
-  "service_project_network_admin":
-    - project-factory-rw
-  "roles/viewer":
-    - project-factory-ro
-  "roles/resourcemanager.folderViewer":
-    - project-factory-ro
-  "roles/resourcemanager.tagViewer":
-    - project-factory-ro
+automation: true
+iam_by_principals:
+  project-factory-rw:
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.tagUser
+    - service_project_network_admin
+  project-factory-ro:
+    - roles/viewer
+    - roles/resourcemanager.folderViewer
+    - roles/resourcemanager.tagViewer
+
 # don't create a context tag since this uses the pf tag
 is_fast_context: false
 tag_bindings:
