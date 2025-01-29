@@ -695,16 +695,16 @@ FAST defines a simple mechanism to extend stage functionality via the use of [ad
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L112) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L117) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L122) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L134) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L139) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L144) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L154) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L161) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L170) | Terraform variable files for the following stages. | ✓ |  |
-| [tfvars_globals](outputs.tf#L176) | Terraform Globals variable files for the following stages. | ✓ |  |
-| [workforce_identity_pool](outputs.tf#L182) | Workforce Identity Federation pool. |  |  |
-| [workload_identity_pool](outputs.tf#L191) | Workload Identity Federation pool and providers. |  |  |
+| [automation](outputs.tf#L113) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L118) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L123) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L135) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L140) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L145) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L155) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L162) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L171) | Terraform variable files for the following stages. | ✓ |  |
+| [tfvars_globals](outputs.tf#L177) | Terraform Globals variable files for the following stages. | ✓ |  |
+| [workforce_identity_pool](outputs.tf#L183) | Workforce Identity Federation pool. |  |  |
+| [workload_identity_pool](outputs.tf#L192) | Workload Identity Federation pool and providers. |  |  |
 <!-- END TFDOC -->
