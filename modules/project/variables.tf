@@ -151,11 +151,8 @@ variable "parent" {
 variable "prefix" {
   description = "Optional prefix used to generate project id and name."
   type        = string
-  default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
+  default     = ""
+  nullable    = false
 }
 
 variable "project_create" {
@@ -247,6 +244,13 @@ variable "skip_delete" {
   #   condition     = var.skip_delete != null
   #   error_message = "skip_delete is deprecated. Use deletion_policy."
   # }
+}
+
+variable "universe" {
+  description = "GCP universe where deploy the project. This will prepended to the project id."
+  type        = string
+  default     = ""
+  nullable    = false
 }
 
 variable "vpc_sc" {

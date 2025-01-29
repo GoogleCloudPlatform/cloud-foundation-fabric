@@ -28,7 +28,7 @@ output "custom_role_id" {
     for k, v in google_project_iam_custom_role.roles :
     # build the string manually so that role IDs can be used as map
     # keys (useful for folder/organization/project-level iam bindings)
-    (k) => "projects/${local.prefix}${var.name}/roles/${local.custom_roles[k].name}"
+    (k) => "projects/${local.project_id}/roles/${local.custom_roles[k].name}"
   }
 }
 
@@ -47,7 +47,7 @@ output "default_service_accounts" {
 
 output "id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = local.project_id
   depends_on = [
     google_project.project,
     data.google_project.project,
