@@ -17,7 +17,7 @@
 # tfdoc:file:description Locals for provider output files.
 
 # TODO: templates should probably use provider::terraform::encode_expr
-# (not jsonencode) to encode extas
+# (not jsonencode) to encode extras
 
 locals {
   _parent_stage_resources = {
