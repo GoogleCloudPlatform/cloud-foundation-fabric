@@ -1,0 +1,45 @@
+project_configs:
+  name: net-dev-01
+  services: 
+    - container.googleapis.com
+    - compute.googleapis.com
+    - dns.googleapis.com
+    - iap.googleapis.com
+    - networkmanagement.googleapis.com
+    - networksecurity.googleapis.com
+    - servicenetworking.googleapis.com
+    - stackdriver.googleapis.com
+    - vpcaccess.googleapis.com
+  shared_vpc_host_config:
+    enabled: true
+vpc_configs:
+  dev-spoke: 
+    delete_default_routes_on_create: true
+    mtu: 1500
+    subnets_factory_config: 
+      subnets_folder: data/subnets/dev-spoke
+    firewall_factory_config:
+      rules_folder: data/firewall/dev-spoke    
+    vpn_configs:
+      to-hub:
+        region: europe-west12
+        peer_gateways:
+          default:
+            gcp: net-land-01/hub/to-dev
+        router_config:
+          asn: 64520
+        tunnels:
+          remote-0:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.1
+              asn: 64521
+            bgp_session_range: "169.254.2.2/30"
+            vpn_gateway_interface: 0
+          remote-1:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.5
+              asn: 64521
+            bgp_session_range: "169.254.2.6/30"
+            vpn_gateway_interface: 1

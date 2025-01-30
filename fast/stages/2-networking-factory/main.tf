@@ -17,6 +17,21 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  _network_factory_path = try(
+    pathexpand(var.factories_config.vpcs), null
+  )
+  _network_factory_files = try(
+    fileset(local._network_factory_path, "**/*.yaml"),
+    []
+  )
+  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_configs.
+  _network_projects = {
+    for f in local._network_factory_files :
+    split(".", f)[0] => yamldecode(file(
+      "${coalesce(local._network_factory_path, "-")}/${f}"
+    ))
+  }
+
   env_tag_values = {
     for k, v in var.environments : k => var.tag_values["environment/${v.tag_name}"]
   }
@@ -35,8 +50,6 @@ locals {
   iam_viewer_principals = try(
     var.stage_config["networking"].iam_viewer_principals, {}
   )
-  nva_zones = ["b", "c"]
-  # combine all regions from variables and subnets
 }
 
 module "folder" {
@@ -64,51 +77,51 @@ module "folder" {
 #   }
 # }
 
-module "net-project" {
-  source          = "../../../modules/project"
-  billing_account = var.billing_account.id
-  name            = "net-project-0"
-  parent = coalesce(
-    var.folder_ids.networking-prod,
-    var.folder_ids.networking
-  )
-  prefix = var.prefix
-  services = [
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "dns.googleapis.com",
-    "iap.googleapis.com",
-    "networkmanagement.googleapis.com",
-    "networksecurity.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "stackdriver.googleapis.com",
-    "vpcaccess.googleapis.com"
-  ]
-  shared_vpc_host_config = {
-    enabled = true
-  }
-  #metric_scopes = [module.net-project.project_id]
-  # optionally delegate a fixed set of IAM roles to selected principals
-  iam = {
-    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
-  }
-  iam_bindings = (
-    lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
-      sa_delegated_grants = {
-        role    = "roles/resourcemanager.projectIamAdmin"
-        members = try(local.iam_delegated_principals["dev"], [])
-        condition = {
-          title       = "dev_stage3_sa_delegated_grants"
-          description = "${var.environments["dev"].name} host project delegated grants."
-          expression = format(
-            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-            local.iam_delegated
-          )
-        }
-      }
-    }
-  )
-  tag_bindings = local.has_env_folders ? {} : {
-    environment = local.env_tag_values["dev"]
-  }
-}
+# module "network-projects" {
+#   source          = "../../../modules/project"
+#   billing_account = var.billing_account.id
+#   name            = "net-project-0"
+#   parent = coalesce(
+#     var.folder_ids.networking-prod,
+#     var.folder_ids.networking
+#   )
+#   prefix = var.prefix
+#   services = [
+#     "container.googleapis.com",
+#     "compute.googleapis.com",
+#     "dns.googleapis.com",
+#     "iap.googleapis.com",
+#     "networkmanagement.googleapis.com",
+#     "networksecurity.googleapis.com",
+#     "servicenetworking.googleapis.com",
+#     "stackdriver.googleapis.com",
+#     "vpcaccess.googleapis.com"
+#   ]
+#   shared_vpc_host_config = {
+#     enabled = true
+#   }
+#   #metric_scopes = [module.net-project.project_id]
+#   # optionally delegate a fixed set of IAM roles to selected principals
+#   iam = {
+#     (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
+#   }
+#   iam_bindings = (
+#     lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
+#       sa_delegated_grants = {
+#         role    = "roles/resourcemanager.projectIamAdmin"
+#         members = try(local.iam_delegated_principals["dev"], [])
+#         condition = {
+#           title       = "dev_stage3_sa_delegated_grants"
+#           description = "${var.environments["dev"].name} host project delegated grants."
+#           expression = format(
+#             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+#             local.iam_delegated
+#           )
+#         }
+#       }
+#     }
+#   )
+#   tag_bindings = local.has_env_folders ? {} : {
+#     environment = local.env_tag_values["dev"]
+#   }
+# }
