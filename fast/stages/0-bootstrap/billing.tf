@@ -48,7 +48,7 @@ module "billing-export-project" {
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
   prefix   = var.prefix
-  universe = try(var.universe.prefix, null)
+  universe = var.universe
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
     ? {}

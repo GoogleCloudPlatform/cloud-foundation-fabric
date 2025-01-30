@@ -43,7 +43,7 @@ module "log-export-project" {
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
   prefix          = var.prefix
-  universe        = try(var.universe.prefix, null)
+  universe        = var.universe
   billing_account = var.billing_account.id
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null
