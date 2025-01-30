@@ -16,5 +16,9 @@ vpc_configs:
   prod-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
+    subnets_factory_config: 
+      subnets_folder: data/subnets/prod-spoke
+    firewall_factory_config:
+      rules_folder: data/firewall/prod-spoke        
     ncc_configs:
       hub: net-land-01/hub

@@ -22,6 +22,10 @@ vpc_configs:
   hub: 
     delete_default_routes_on_create: true
     mtu: 1500
+    subnets_factory_config: 
+      subnets_folder: data/subnets/hub
+    firewall_factory_config:
+      rules_folder: data/firewall/hub     
     vpn_configs:
       to-onprem:
         region: europe-west8
