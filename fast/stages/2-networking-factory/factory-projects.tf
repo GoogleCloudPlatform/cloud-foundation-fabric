@@ -17,7 +17,7 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  projects = { for k, v in local._network_projects : k => merge(v.project_configs,
+  projects = { for k, v in local._network_projects : k => merge(
     {
       billing_account = try(v.project_configs.billing_account, var.billing_account.id)
       prefix          = try(v.project_configs.prefix, var.prefix)
@@ -41,7 +41,8 @@ locals {
           }
         }
       ))
-    })
+    },
+    v.project_configs)
   }
 }
 
