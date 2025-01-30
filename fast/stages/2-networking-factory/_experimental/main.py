@@ -2,7 +2,7 @@ import os
 import yaml
 from collections import defaultdict
 
-YAML_DIR = "../data/recipes/hub-and-spoke-ncc"
+YAML_DIR = "../data/recipes/hub-and-spoke-peerings"
 # YAML_DIR = "../data/networks"
 NCC_HUBS_DIR = "../data/ncc-hubs"
 

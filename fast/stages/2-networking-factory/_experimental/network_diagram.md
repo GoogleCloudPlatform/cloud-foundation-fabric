@@ -7,8 +7,8 @@ graph TD
         prod-spoke["VPC: prod-spoke"]
         ncc-hub["NCC Hub: ncc-hub"]:::nccHub
     end
+    dev-spoke <-->|Peering| hub
+    hub <-->|Peering| prod-spoke
     hub -->|VPN Tunnel to default| default
-    prod-spoke -->|NCC Spoke| ncc-hub
-    dev-spoke -->|NCC Spoke| ncc-hub
     default["External: default"]
 ```
