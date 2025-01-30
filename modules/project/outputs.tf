@@ -167,8 +167,8 @@ output "service_agents" {
 }
 
 output "services" {
-  description = "Service APIs to enabled in the project."
-  value       = var.services
+  description = "Service APIs to enable in the project."
+  value       = local.available_services
   depends_on = [
     google_project_service.project_services,
     google_project_service_identity.default,
