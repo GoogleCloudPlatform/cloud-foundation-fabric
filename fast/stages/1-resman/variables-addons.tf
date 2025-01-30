@@ -31,12 +31,10 @@ variable "fast_addon" {
   default  = {}
   validation {
     condition = alltrue([
-      for k, v in var.fast_addon : contains(
-        ["2-networking", "2-project-factory", "2-security"],
-        v.parent_stage
-      )
+      for k, v in var.fast_addon :
+      startswith(v.parent_stage, "2-")
     ])
-    error_message = "Resman-defined addons only support '2-networking', '2-project-factory' and '2-security' stages."
+    error_message = "The parent stage of resman-defined addons should match '2-<stage2-name>'."
   }
   validation {
     condition = alltrue([
@@ -47,5 +45,17 @@ variable "fast_addon" {
       )
     ])
     error_message = "Invalid CI/CD repository type."
+  }
+}
+
+check "addons_parent_stage" {
+  assert {
+    condition = alltrue([
+      for k, v in var.fast_addon : contains(
+        [for x in keys(local.stage2) : "2-${x}"],
+        v.parent_stage
+      )
+    ])
+    error_message = "Resman-defined addons only support stage 2 as parents."
   }
 }
