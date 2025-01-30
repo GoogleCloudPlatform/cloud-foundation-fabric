@@ -46,6 +46,7 @@ module "cluster" {
   #   enable_pod_metrics         = true
   #   enable_statefulset_metrics = true
   #   enable_storage_metrics     = true
+  #   enable_cadvisor_metrics    = true
   # }
   # cluster_autoscaling = {
   #   auto_provisioning_defaults = {
