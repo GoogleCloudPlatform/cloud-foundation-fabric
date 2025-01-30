@@ -26,7 +26,7 @@ locals {
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
-  project_id  = "${local.universe}${local.prefix}${var.name}"
+  project_id  = "${local.universe_prefix}${local.prefix}${var.name}"
   project = (
     var.project_create ?
     {
@@ -40,7 +40,8 @@ locals {
       name       = try(data.google_project.project[0].name, null)
     }
   )
-  universe = var.universe == "" ? "" : "${var.universe}:"
+  universe_prefix    = var.universe == null ? "" : "${var.universe.prefix}:"
+  available_services = tolist(setsubtract(var.services, try(var.universe.unavailable_services, [])))
 }
 
 data "google_project" "project" {
@@ -68,7 +69,7 @@ resource "google_project" "project" {
 }
 
 resource "google_project_service" "project_services" {
-  for_each                   = toset(var.services)
+  for_each                   = toset(local.available_services)
   project                    = local.project.project_id
   service                    = each.value
   disable_on_destroy         = var.service_config.disable_on_destroy
@@ -78,7 +79,7 @@ resource "google_project_service" "project_services" {
 
 resource "google_compute_project_metadata_item" "default" {
   for_each = (
-    contains(var.services, "compute.googleapis.com") ? var.compute_metadata : {}
+    contains(local.available_services, "compute.googleapis.com") ? var.compute_metadata : {}
   )
   project    = local.project.project_id
   key        = each.key
