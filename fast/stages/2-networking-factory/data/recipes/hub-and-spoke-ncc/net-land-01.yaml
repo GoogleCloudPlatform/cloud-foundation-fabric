@@ -12,6 +12,8 @@ project_configs:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
+ncc_hub_configs:
+  name: hub
 vpc_configs:
   test: 
     delete_default_routes_on_create: true
@@ -20,11 +22,6 @@ vpc_configs:
   hub: 
     delete_default_routes_on_create: true
     mtu: 1500
-    peering_configs:
-      to-prod:
-        peer_network: net-prod-01/prod-spoke
-      to-dev:
-        peer_network: net-dev-01/dev-spoke
     vpn_configs:
       to-onprem:
         region: europe-west8

@@ -16,11 +16,6 @@
 
 locals {
 
-
-  #  _vpns = {
-  #   for k, v in local._network_projects : k => v.vpc_configs.vpn_configs if try(v.vpc_configs.vpn_configs != null, false)
-  # }
-
   peerings = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in factory_config.vpc_configs : [
