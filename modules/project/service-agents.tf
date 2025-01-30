@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    var.services, var.service_agents_config.services_enabled
+    local.available_services, var.service_agents_config.services_enabled
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
@@ -33,7 +33,7 @@ locals {
       (agent.name) => merge(agent, {
         email      = format(agent.identity, local.project.number)
         iam_email  = "serviceAccount:${format(agent.identity, local.project.number)}"
-        create_jit = api == "cloudservices" || contains(var.services, api)
+        create_jit = api == "cloudservices" || contains(local.available_services, api)
       })
     }
   ]...)
