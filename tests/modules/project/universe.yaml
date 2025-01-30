@@ -16,11 +16,22 @@ values:
   google_project.project[0]:
     name: foo-my-project
     project_id: alpha:foo-my-project
+  google_project_service.project_services["aaa.googleapis.com"]:
+    project: alpha:foo-my-project
+    service: aaa.googleapis.com
+  google_project_service.project_services["bbb.googleapis.com"]:
+    project: alpha:foo-my-project
+    service: bbb.googleapis.com
 
 counts:
   google_project: 1
+  google_project_service: 2
+  resources: 3
 
 outputs:
   id: alpha:foo-my-project
   name: foo-my-project
   project_id: foo-my-project
+  services:
+  - aaa.googleapis.com
+  - bbb.googleapis.com
