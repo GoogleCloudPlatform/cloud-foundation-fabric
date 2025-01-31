@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ locals {
 
   peerings = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in factory_config.vpc_configs : [
+      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
         for k, v in try(vpc_config.peering_configs, {}) : {
           "${factory_key}/${vpc_key}/${k}" = {
             project                             = factory_key
@@ -37,7 +37,7 @@ locals {
 
   vpns = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in factory_config.vpc_configs : [
+      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
         for k, v in try(vpc_config.vpn_configs, {}) : {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {
             vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 locals {
 
-  _vpcs_preprocess = [for factory_key, factory_value in local._network_projects : {
-    for k, v in factory_value.vpc_configs : "${factory_key}/${k}" => {
+  _vpcs_preprocess = [for factory_key, factory_config in local._network_projects : {
+    for k, v in try(factory_config.vpc_configs, {}) : "${factory_key}/${k}" => {
       project_id                        = module.network-projects[factory_key].id
       name                              = k
       auto_create_subnetworks           = try(v.auto_create_subnetworks, false)

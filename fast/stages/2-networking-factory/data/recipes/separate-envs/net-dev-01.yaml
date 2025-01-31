@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 project_config:
-  name: net-land-01
+  name: net-dev-01
   services: 
     - container.googleapis.com
     - compute.googleapis.com
@@ -15,27 +15,13 @@ project_config:
   shared_vpc_host_config:
     enabled: true
 vpc_configs:
-  test: 
-    delete_default_routes_on_create: true
-    mtu: 1500
-    auto_create_subnetworks: true
-    peering_configs:
-      to-hub:
-        peer_network: net-land-01/hub
-  hub: 
+  dev-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
     subnets_factory_config: 
-      subnets_folder: data/subnets/hub
+      subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/hub     
-    peering_configs:
-      to-prod:
-        peer_network: net-prod-01/prod-spoke
-      to-dev:
-        peer_network: net-dev-01/dev-spoke
-      to-test:
-        peer_network: net-land-01/test      
+      rules_folder: data/firewall/dev-spoke        
     vpn_configs:
       to-onprem:
         region: europe-west8

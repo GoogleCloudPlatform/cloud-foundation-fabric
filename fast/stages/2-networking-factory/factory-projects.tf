@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@
 locals {
   projects = { for k, v in local._network_projects : k => merge(
     {
-      billing_account = try(v.project_config.billing_account, var.billing_account.id)
-      prefix          = try(v.project_config.prefix, var.prefix)
-      parent          = try(v.project_config.parent, var.folder_ids.networking)
+      billing_account        = try(v.project_config.billing_account, var.billing_account.id)
+      prefix                 = try(v.project_config.prefix, var.prefix)
+      parent                 = try(v.project_config.parent, var.folder_ids.networking)
+      shared_vpc_host_config = try(v.project_config.shared_vpc_host_config, null)
       iam = merge(try(v.project_config.iam, {}), {
         (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
       })
