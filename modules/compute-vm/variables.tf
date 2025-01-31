@@ -338,7 +338,7 @@ variable "options" {
         )
       )
     )
-    error_message = "Invalid advance options performance monitoring unit value."
+    error_message = "Allowed values for options.advanced_machine_features.performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
   }
 }
 
