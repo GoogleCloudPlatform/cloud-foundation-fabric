@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ locals {
 
   ncc_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : {
-      for vpc_key, vpc_config in factory_config.vpc_configs : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
+      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
         project_id        = module.network-projects[factory_key].id
         network_self_link = module.vpcs["${factory_key}/${vpc_key}"].self_link
         labels            = try(vpc_config.ncc_configs.labels, {})
