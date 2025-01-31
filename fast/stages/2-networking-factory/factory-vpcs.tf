@@ -18,7 +18,7 @@ locals {
 
   _vpcs_preprocess = [for factory_key, factory_config in local._network_projects : {
     for k, v in try(factory_config.vpc_configs, {}) : "${factory_key}/${k}" => {
-      project_id                        = module.network-projects[factory_key].id
+      project_id                        = module.projects[factory_key].id
       name                              = k
       auto_create_subnetworks           = try(v.auto_create_subnetworks, false)
       create_googleapis_routes          = try(v.create_googleapis_routes, {})
@@ -65,7 +65,7 @@ module "vpcs" {
   psa_configs                       = each.value.psa_configs
   routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
-  depends_on                        = [module.network-projects]
+  depends_on                        = [module.projects]
 }
 
 module "firewall" {

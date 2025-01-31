@@ -47,7 +47,7 @@ locals {
   }
 }
 
-module "network-projects" {
+module "projects" {
   source                 = "../../../modules/project"
   for_each               = local.projects
   billing_account        = each.value.billing_account

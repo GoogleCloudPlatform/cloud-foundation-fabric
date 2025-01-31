@@ -108,6 +108,62 @@ variable "vpc_configs" {
           public_ns  = list(string)
         }))
       }))
+      dns_zones = optional(map(object({
+        force_destroy = optional(bool)
+        description   = optional(string, "Terraform managed.")
+        iam           = optional(map(list(string)), {})
+        zone_config = object({
+          domain = string
+          forwarding = optional(object({
+            forwarders      = optional(map(string), {})
+            client_networks = optional(list(string), )
+          }))
+          peering = optional(object({
+            client_networks = optional(list(string), )
+            peer_network    = string
+          }))
+          public = optional(object({
+            dnssec_config = optional(object({
+              non_existence = optional(string, "nsec3")
+              state         = string
+              key_signing_key = optional(object(
+                { algorithm = string, key_length = number }),
+                { algorithm = "rsasha256", key_length = 2048 }
+              )
+              zone_signing_key = optional(object(
+                { algorithm = string, key_length = number }),
+                { algorithm = "rsasha256", key_length = 1024 }
+              )
+            }))
+            enable_logging = optional(bool, false)
+          }))
+          private = optional(object({
+            client_networks             = optional(list(string), )
+            service_directory_namespace = optional(string)
+          }))
+        })
+        recordsets = optional(map(object({
+          ttl     = optional(number, 300)
+          records = optional(list(string))
+          geo_routing = optional(list(object({
+            location = string
+            records  = optional(list(string))
+            health_checked_targets = optional(list(object({
+              load_balancer_type = string
+              ip_address         = string
+              port               = string
+              ip_protocol        = string
+              network_url        = string
+              project            = string
+              region             = optional(string)
+            })))
+          })))
+          wrr_routing = optional(list(object({
+            weight  = number
+            records = list(string)
+          })))
+        })), {})
+      })))
       firewall_policy_enforcement_order = optional(string, "AFTER_CLASSIC_FIREWALL")
       ipv6_config = optional(object({
         enable_ula_internal = optional(bool)
