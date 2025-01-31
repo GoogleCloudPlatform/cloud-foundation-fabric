@@ -26,6 +26,15 @@ vpc_configs:
     delete_default_routes_on_create: true
     mtu: 1500
     dns_zones:
+      onprem-fwd:
+        zone_config:
+          domain: .
+          forwarding:
+            forwarders: 
+              "8.8.8.8": default
+              "1.1.1.1": default
+            client_networks:
+              - net-land-01/hub  
       dot-test:
         zone_config:
           domain: test.
@@ -34,7 +43,8 @@ vpc_configs:
               - net-land-01/hub
         recordsets:
           "A localhost": 
-            records: ["127.0.0.1"]  
+            records: ["127.0.0.1"]
+            
     subnets_factory_config: 
       subnets_folder: data/subnets/hub
     firewall_factory_config:

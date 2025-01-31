@@ -15,85 +15,60 @@
  */
 
 locals {
-
-  dns_zones_cn_private = merge(flatten([
+  dns_zone_entries = flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
-        for k, v in try(vpc_config.dns_zones, {}) : {
-          "${factory_key}/${vpc_key}/${k}" = {
-            name          = replace("${vpc_key}-${k}", "/", "-")
-            project_id    = module.projects[factory_key].id
-            description   = try(v.description, "Terraform-managed.")
-            force_destroy = try(v.force_destroy, null)
-            iam           = try(v.iam, null)
-            recordsets    = try(v.recordsets, {})
-            zone_config = {
-              domain                      = try(v.zone_config.domain, null)
-              service_directory_namespace = try(v.zone_config.service_directory_namespace, null)
-              private = {
-                client_networks = [for net in v.zone_config.private.client_networks : try(module.vpcs[net].self_link, net)]
-              }
+        for zone_key, zone in try(vpc_config.dns_zones, {}) : {
+          key = "${factory_key}/${vpc_key}/${zone_key}"
+          value = merge(
+            {
+              name          = replace("${vpc_key}-${zone_key}", "/", "-")
+              project_id    = module.projects[factory_key].id
+              description   = try(zone.description, "Terraform-managed.")
+              force_destroy = try(zone.force_destroy, null)
+              iam           = try(zone.iam, null)
+              recordsets    = try(zone.recordsets, null)
+            },
+            {
+              zone_config = merge(
+                { domain = try(zone.zone_config.domain, null) },
+                contains(keys(try(zone.zone_config, {})), "private") ? {
+                  private = {
+                    service_directory_namespace = try(zone.zone_config.private.service_directory_namespace, null)
+                    client_networks = [
+                      for net in zone.zone_config.private.client_networks :
+                      try(module.vpcs[net].self_link, net)
+                    ]
+                  }
+                } : {},
+                contains(keys(try(zone.zone_config, {})), "peering") ? {
+                  peering = {
+                    peer_network = try(module.vpcs[zone.zone_config.peering.peer_network].self_link, zone.zone_config.peering.peer_network),
+                    client_networks = [
+                      for net in zone.zone_config.peering.client_networks :
+                      try(module.vpcs[net].self_link, net)
+                    ]
+                  }
+                } : {},
+                contains(keys(try(zone.zone_config, {})), "forwarding") ? {
+                  forwarding = {
+                    forwarders = try(zone.zone_config.forwarding.forwarders, {}),
+                    client_networks = [
+                      for net in zone.zone_config.forwarding.client_networks :
+                      try(module.vpcs[net].self_link, net)
+                    ]
+                  }
+                } : {}
+              )
             }
-          }
+          )
         }
-        if try(v.zone_config.private != null, false)
       ]
     ]
-  ])...)
+  ])
 
-  dns_zones_cn_peering = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
-        for k, v in try(vpc_config.dns_zones, {}) : {
-          "${factory_key}/${vpc_key}/${k}" = {
-            name          = replace("${vpc_key}-${k}", "/", "-")
-            project_id    = factory_key
-            description   = try(v.description, "Terraform-managed.")
-            force_destroy = try(v.force_destroy, null)
-            iam           = try(v.iam, null)
-            recordsets    = try(v.recordsets, {})
-            zone_config = {
-              domain       = try(v.zone_config.domain, null)
-              peer_network = try(v.zone_config.peer_network, null)
-              peering = {
-                client_networks = [for net in v.zone_config.peering.client_networks : try(module.vpcs[net].self_link, net)]
-              }
-            }
-          }
-        }
-        if try(v.zone_config.peering != null, false)
-      ]
-    ]
-  ])...)
-
-  dns_zones_cn_forwarding = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
-        for k, v in try(vpc_config.dns_zones, {}) : {
-          "${factory_key}/${vpc_key}/${k}" = {
-            name          = replace("${vpc_key}-${k}", "/", "-")
-            project_id    = factory_key
-            description   = try(v.description, "Terraform-managed.")
-            force_destroy = try(v.force_destroy, null)
-            iam           = try(v.iam, null)
-            recordsets    = try(v.recordsets, {})
-            zone_config = {
-              domain       = try(v.zone_config.domain, null)
-              peer_network = try(v.zone_config.peer_network, null)
-              forwarding = {
-                forwarders      = try(v.zone_config.forwarding.forwarders, {})
-                client_networks = [for net in v.zone_config.forwarding.client_networks : try(module.vpcs[net].self_link, net)]
-              }
-            }
-          }
-        }
-        if try(v.zone_config.forwarding != null, false)
-      ]
-    ]
-  ])...)
-
-  dns_zones = merge(local.dns_zones_cn_private, local.dns_zones_cn_peering, local.dns_zones_cn_forwarding)
-
+  # Convert the flattened list into a map.
+  dns_zones = { for entry in local.dns_zone_entries : entry.key => entry.value }
 }
 
 module "dns-zones" {
