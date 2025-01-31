@@ -1,4 +1,6 @@
-project_configs:
+# skip boilerplate check
+
+project_config:
   name: net-prod-01
   services: 
     - container.googleapis.com
