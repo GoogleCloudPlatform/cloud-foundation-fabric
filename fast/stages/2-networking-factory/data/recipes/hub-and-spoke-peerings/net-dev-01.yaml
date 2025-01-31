@@ -18,6 +18,14 @@ vpc_configs:
   dev-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
+    dns_zones:
+      root-peering:
+        zone_config:
+          domain: .
+          peering:
+            peer_network: net-land-01/hub
+            client_networks:
+              - net-dev-01/dev-spoke  
     subnets_factory_config: 
       subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
