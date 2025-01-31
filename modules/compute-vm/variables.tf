@@ -331,9 +331,11 @@ variable "options" {
     condition = (
       try(var.options.advanced_machine_features.performance_monitoring_unit, null) == null
       ||
-      contains(
-        ["ARCHITECTURAL", "ENHANCED", "STANDARD"],
-        coalesce(var.options.advanced_machine_features.performance_monitoring_unit, "-")
+      contains(["ARCHITECTURAL", "ENHANCED", "STANDARD"], coalesce(
+        try(
+          var.options.advanced_machine_features.performance_monitoring_unit, null
+        ), "-"
+        )
       )
     )
     error_message = "Invalid advance options performance monitoring unit value."
