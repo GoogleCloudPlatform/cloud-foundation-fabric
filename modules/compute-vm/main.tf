@@ -15,6 +15,7 @@
  */
 
 locals {
+  advanced_mf = var.options.advanced_machine_features
   attached_disks = {
     for disk in var.attached_disks :
     (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
@@ -164,6 +165,20 @@ resource "google_compute_instance" "default" {
   labels                    = var.labels
   metadata                  = var.metadata
   resource_policies         = local.ischedule_attach
+
+  dynamic "advanced_machine_features" {
+    for_each = local.advanced_mf != null ? [""] : []
+    content {
+      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
+      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
+      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
+      threads_per_core             = local.advanced_mf.threads_per_core
+      turbo_mode = (
+        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+      )
+      visible_core_count = local.advanced_mf.visible_core_count
+    }
+  }
 
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal
@@ -368,6 +383,20 @@ resource "google_compute_instance_template" "default" {
   metadata              = var.metadata
   labels                = var.labels
   resource_manager_tags = local.tags_combined
+
+  dynamic "advanced_machine_features" {
+    for_each = local.advanced_mf != null ? [""] : []
+    content {
+      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
+      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
+      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
+      threads_per_core             = local.advanced_mf.threads_per_core
+      turbo_mode = (
+        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+      )
+      visible_core_count = local.advanced_mf.visible_core_count
+    }
+  }
 
   disk {
     auto_delete           = var.boot_disk.auto_delete

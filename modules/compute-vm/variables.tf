@@ -292,6 +292,14 @@ variable "network_interfaces" {
 variable "options" {
   description = "Instance options."
   type = object({
+    advanced_machine_features = optional(object({
+      enable_nested_virtualization = optional(bool)
+      enable_turbo_mode            = optional(bool)
+      enable_uefi_networking       = optional(bool)
+      performance_monitoring_unit  = optional(string)
+      threads_per_core             = optional(number)
+      visible_core_count           = optional(number)
+    }))
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
     max_run_duration = optional(object({
@@ -312,10 +320,23 @@ variable "options" {
     termination_action        = null
   }
   validation {
-    condition = (var.options.termination_action == null
+    condition = (
+      var.options.termination_action == null
       ||
-    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+      contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1"))
+    )
     error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
+  }
+  validation {
+    condition = (
+      try(var.options.advanced_machine_features.performance_monitoring_unit, null) == null
+      ||
+      contains(
+        ["ARCHITECTURAL", "ENHANCED", "STANDARD"],
+        coalesce(var.options.advanced_machine_features.performance_monitoring_unit, "-")
+      )
+    )
+    error_message = "Invalid advance options performance monitoring unit value."
   }
 }
 
