@@ -12,19 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project
+values:
+  google_project.project[0]:
+    name: foo-my-project
+    project_id: alpha:foo-my-project
+  google_project_service.project_services["aaa.googleapis.com"]:
+    project: alpha:foo-my-project
+    service: aaa.googleapis.com
+  google_project_service.project_services["bbb.googleapis.com"]:
+    project: alpha:foo-my-project
+    service: bbb.googleapis.com
 
-common_tfvars:
-  - common.tfvars
+counts:
+  google_project: 1
+  google_project_service: 2
+  resources: 3
 
-tests:
-  prefix:
-  no_prefix:
-  parent_folder:
-  parent_org:
-  no_parent:
-  service_encryption_keys:
-  org_policies_list:
-  org_policies_boolean:
-  iam_by_principals_additive:
-  universe:
+outputs:
+  id: alpha:foo-my-project
+  name: foo-my-project
+  project_id: foo-my-project
+  services:
+  - aaa.googleapis.com
+  - bbb.googleapis.com

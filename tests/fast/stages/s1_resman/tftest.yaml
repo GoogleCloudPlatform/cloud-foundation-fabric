@@ -16,3 +16,5 @@ module: fast/stages/1-resman
 
 tests:
   simple:
+    # extra_dirs:
+    #   - ../../../tests/fast/stages/s1_resman/test-data

@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
 
-short_name: gke
-environment: prod
-folder_config:
-  name: Production
-  parent_id: gke
-stage2_iam:
-  networking:
-    sa_roles:
-      ro:
-        - roles/dns.reader
-      rw:
-        - roles/dns.admin
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
+
+custom.disableKubeletReadOnlyPort:
+  rules:
+    - enforce: true

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,9 +132,10 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles     = optional(string, "data/custom-roles")
-    org_policies     = optional(string, "data/org-policies")
-    org_policies_iac = optional(string, "data/org-policies-iac")
+    custom_constraints = optional(string, "data/custom-constraints")
+    custom_roles       = optional(string, "data/custom-roles")
+    org_policies       = optional(string, "data/org-policies")
+    org_policies_iac   = optional(string, "data/org-policies-iac")
   })
   nullable = false
   default  = {}
@@ -339,6 +340,16 @@ variable "resource_names" {
   })
   nullable = false
   default  = {}
+}
+
+variable "universe" {
+  description = "Target GCP universe."
+  type = object({
+    domain               = string
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "workforce_identity_providers" {
