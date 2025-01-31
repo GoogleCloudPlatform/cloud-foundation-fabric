@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@
 locals {
   projects = { for k, v in local._network_projects : k => merge(
     {
-      billing_account = try(v.project_configs.billing_account, var.billing_account.id)
-      prefix          = try(v.project_configs.prefix, var.prefix)
-      parent          = try(v.project_configs.parent, var.folder_ids.networking)
-      iam = merge(try(v.project_configs.iam, {}), {
+      billing_account = try(v.project_config.billing_account, var.billing_account.id)
+      prefix          = try(v.project_config.prefix, var.prefix)
+      parent          = try(v.project_config.parent, var.folder_ids.networking)
+      iam = merge(try(v.project_config.iam, {}), {
         (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
       })
-      iam_bindings = merge(try(v.project_configs.iam_bindings, {}), (
+      iam_bindings = merge(try(v.project_config.iam_bindings, {}), (
         lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
           sa_delegated_grants = {
             role    = "roles/resourcemanager.projectIamAdmin"
@@ -42,7 +42,7 @@ locals {
         }
       ))
     },
-    v.project_configs)
+    v.project_config)
   }
 }
 

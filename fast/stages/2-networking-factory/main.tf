@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ locals {
     fileset(local._network_factory_path, "**/*.yaml"),
     []
   )
-  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_configs.
+  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_config.
   _network_projects = {
     for f in local._network_factory_files :
     split(".", f)[0] => yamldecode(file(
