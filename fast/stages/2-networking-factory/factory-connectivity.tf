@@ -42,7 +42,7 @@ locals {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {
             vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name
             vpn_name   = replace("${factory_key}/${vpc_key}/${k}", "/", "-")
-            project_id = module.network-projects[factory_key].id
+            project_id = module.projects[factory_key].id
           })
         }
       ]

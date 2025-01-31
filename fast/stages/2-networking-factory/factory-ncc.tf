@@ -18,7 +18,7 @@
 locals {
   ncc_hubs = { for k, v in local._network_projects : "${k}/${v.ncc_hub_configs.name}" => {
     name            = v.ncc_hub_configs.name
-    project_id      = module.network-projects[k].id
+    project_id      = module.projects[k].id
     description     = try(v.ncc_hub_configs.description, "Terraform-managed")
     export_psc      = try(v.ncc_hub_configs.export_psc, true)
     preset_topology = try(v.ncc_hub_configs.preset_topology, "MESH")
@@ -29,7 +29,7 @@ locals {
   ncc_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : {
       for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
-        project_id        = module.network-projects[factory_key].id
+        project_id        = module.projects[factory_key].id
         network_self_link = module.vpcs["${factory_key}/${vpc_key}"].self_link
         labels            = try(vpc_config.ncc_configs.labels, {})
         hub               = google_network_connectivity_hub.hub[vpc_config.ncc_configs.hub].id
