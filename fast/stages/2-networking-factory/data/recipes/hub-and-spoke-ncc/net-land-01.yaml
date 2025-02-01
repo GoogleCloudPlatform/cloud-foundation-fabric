@@ -16,6 +16,11 @@ project_config:
     enabled: true
 ncc_hub_configs:
   name: hub
+  groups: 
+    default:
+      auto_accept: 
+        - net-prod-01
+        - net-dev-01
 vpc_configs:
   test: 
     delete_default_routes_on_create: true
