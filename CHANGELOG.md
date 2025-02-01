@@ -5,8 +5,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-01-26 10:01:38+00:00 to: None since: v37.1.0 -->
 
+### BLUEPRINTS
+
+- [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
+
 ### MODULES
 
+- [[#2855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2855)] Add support for advanced machine features to compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2025-01-31 09:27:29+00:00 -->
+- [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
 - [[#2852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2852)] Allow universe-bound projects to exclude services ([juliocc](https://github.com/juliocc)) <!-- 2025-01-30 07:48:58+00:00 -->
 - [[#2848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2848)] Support project creation in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-01-29 11:40:41+00:00 -->
 - [[#2842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2842)] Refactor data catalog tag template module ([ludoo](https://github.com/ludoo)) <!-- 2025-01-28 09:30:42+00:00 -->
