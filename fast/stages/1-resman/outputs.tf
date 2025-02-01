@@ -29,7 +29,7 @@ locals {
     local.top_level_service_accounts
   )
   tfvars = {
-    stage_config = merge(
+    stage_configs = merge(
       {
         for k, v in local.stage3 : k => {
           environment = v.environment
