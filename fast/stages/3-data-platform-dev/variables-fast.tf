@@ -24,10 +24,11 @@ variable "billing_account" {
 
 variable "environments" {
   # tfdoc:variable:source 1-resman
-  description = "Long environment names."
+  description = "Environment names."
   type = object({
     dev = object({
-      name = string
+      name       = string
+      short_name = string
     })
   })
 }
@@ -58,9 +59,17 @@ variable "prefix" {
   }
 }
 
+variable "regions" {
+  # tfdoc:variable:source 2-networking
+  description = "Region mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "subnet_self_links" {
   # tfdoc:variable:source 2-networking
-  description = "Subnet VPC name => { name => self link }  mappings."
+  description = "Subnet VPC name => { name => self link } mappings."
   type        = map(map(string))
   nullable    = false
   default     = {}

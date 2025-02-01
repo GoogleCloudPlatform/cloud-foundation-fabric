@@ -54,6 +54,15 @@ variable "data_domains" {
       services          = optional(list(string))
     }), {})
   }))
+  nullable = false
+  default  = {}
+}
+
+variable "default_region" {
+  description = "Region used by default for resources when not explicitly defined. Supports interpolation from networking regions."
+  type        = string
+  nullable    = false
+  default     = "primary"
 }
 
 variable "factories_config" {
@@ -149,7 +158,13 @@ variable "shared_project_config" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
-    services          = optional(list(string))
+    name              = optional(string)
+    services = optional(list(string), [
+      # TODO: define default list of services
+      "datacatalog.googleapis.com",
+      "logging.googleapis.com",
+      "monitoring.googleapis.com"
+    ])
   })
   nullable = false
   default  = {}
