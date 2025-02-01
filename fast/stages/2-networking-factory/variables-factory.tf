@@ -89,6 +89,11 @@ variable "vpc_configs" {
       description     = optional(string, "Terraform-managed.")
       preset_topology = optional(string, "MESH")
       export_psc      = optional(bool, true)
+      groups = optional(map(object({
+        labels      = optional(map(string))
+        description = optional(string, "Terraform-managed.")
+        auto_accept = optional(list(string), [])
+      })))
     }))
     vpc_configs = optional(map(object({
       auto_create_subnetworks = optional(bool, false)
@@ -287,10 +292,12 @@ variable "vpc_configs" {
         }), {})
       })), {})
       ncc_configs = optional(object({
-        hub         = string
-        description = optional(string, "Terraform-managed.")
-        labels      = optional(map(string))
-        #TODO(sruffilli): support for google_network_connectivity_spoke.linked_vpc_network
+        hub                   = string
+        description           = optional(string, "Terraform-managed.")
+        labels                = optional(map(string))
+        group                 = optional(string)
+        exclude_export_ranges = optional(list(string), null)
+        include_export_ranges = optional(list(string), null)
       }))
     })))
   }))
