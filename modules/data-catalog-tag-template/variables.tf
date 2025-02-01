@@ -31,6 +31,7 @@ variable "project_id" {
 variable "region" {
   description = "Default region for tag templates."
   type        = string
+  default     = null
 }
 
 variable "tag_templates" {
