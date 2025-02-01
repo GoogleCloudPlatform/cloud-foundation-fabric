@@ -158,9 +158,8 @@ variable "fast_stage_3" {
   default  = {}
   validation {
     condition = alltrue([
-      for k, v in var.fast_stage_3 :
-      contains(
-        [for k, v in var.environments : k],
+      for k, v in var.fast_stage_3 : contains(
+        keys(var.environments),
         coalesce(v.environment, "-")
       )
     ])

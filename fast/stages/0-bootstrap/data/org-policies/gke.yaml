@@ -12,19 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
 
-common_tfvars:
-  - common.tfvars
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
-tests:
-  prefix:
-  no_prefix:
-  parent_folder:
-  parent_org:
-  no_parent:
-  service_encryption_keys:
-  org_policies_list:
-  org_policies_boolean:
-  iam_by_principals_additive:
-  universe:
+custom.disableKubeletReadOnlyPort:
+  rules:
+    - enforce: true
