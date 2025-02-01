@@ -84,6 +84,7 @@ resource "google_network_connectivity_spoke" "default" {
     include_export_ranges = each.value.include_export_ranges
   }
   depends_on = [google_network_connectivity_hub.hub]
+  group      = each.value.group
 }
 
 resource "google_network_connectivity_group" "default" {
@@ -101,5 +102,3 @@ resource "google_network_connectivity_group" "default" {
   }
   depends_on = [google_network_connectivity_hub.hub]
 }
-
-# TODO(sruffilli): support google_network_connectivity_group

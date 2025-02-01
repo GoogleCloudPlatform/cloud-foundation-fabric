@@ -24,3 +24,4 @@ vpc_configs:
       rules_folder: data/firewall/dev-spoke        
     ncc_configs:
       hub: net-land-01/hub
+      group: net-land-01/hub/default
