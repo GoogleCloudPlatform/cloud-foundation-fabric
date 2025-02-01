@@ -91,6 +91,11 @@ output "service_accounts" {
   value       = local.service_accounts
 }
 
+output "tag_values" {
+  description = "Tag values."
+  value       = local.tfvars.tag_values
+}
+
 # ready to use variable values for subsequent stages
 output "tfvars" {
   description = "Terraform variable files for the following stages."

@@ -18,48 +18,72 @@
 # TODO: refactor tag template module for template-level IAM
 
 variable "data_domains" {
-  description = ""
+  description = "Data domains defined here"
+  # project id / resource ids use key
   type = map(object({
-    # project id / resource ids use key
-    # TODO: iam from project module
-    # TODO: org policies from project module (check if FAST allows it)
-    # TODO: check Composer3 (GA?)
+    data_products = optional(map(object({
+
+    })), {})
     networking_config = optional(object({
       uses_local_vpc = optional(object({
-
       }))
       uses_shared_vpc = optional(object({
-
       }))
     }))
-    data_products = optional(map(object{
-
+    project_config = optional(object({
+      iam = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
+      services          = optional(list(string))
     }), {})
   }))
 }
 
+variable "factories_config" {
+  description = "Configuration for the resource factories."
+  type = object({
+    data_domains = optional(string, "data/data-domains")
+    policy_tags  = optional(string, "data/policy_tags")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "policy_tags" {
-  description = ""
+  description = "Shared data catalog tag templates."
   type = map(object({
-    region       = string
     display_name = optional(string)
     force_delete = optional(bool, false)
+    region       = optional(string)
     fields = map(object({
       display_name = optional(string)
       description  = optional(string)
+      is_required  = optional(bool, false)
+      order        = optional(number)
       type = object({
-        primitive_type = optional(string)
-        enum_type = optional(list(object({
-          allowed_values = object({
-            display_name = string
-          })
-        })), null)
+        primitive_type   = optional(string)
+        enum_type_values = optional(list(string))
       })
-      is_required = optional(bool, false)
-      order       = optional(number)
     }))
-    iam = map(list(string))
-    iam_bindings = map(object({
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
       members = list(string)
       role    = string
       condition = optional(object({
@@ -67,8 +91,8 @@ variable "policy_tags" {
         title       = string
         description = optional(string)
       }))
-    }))
-    iam_bindings_additive = map(object({
+    })), {})
+    iam_bindings_additive = optional(map(object({
       member = string
       role   = string
       condition = optional(object({
@@ -76,8 +100,9 @@ variable "policy_tags" {
         title       = string
         description = optional(string)
       }))
-    }))
+    })), {})
   }))
+  default = {}
 }
 
 variable "secure_tags" {
@@ -95,7 +120,7 @@ variable "secure_tags" {
   default  = {}
   validation {
     condition = alltrue([
-      for k, v in var.tags : v != null
+      for k, v in var.secure_tags : v != null
     ])
     error_message = "Use an empty map instead of null as value."
   }
@@ -104,7 +129,27 @@ variable "secure_tags" {
 variable "shared_project_config" {
   description = "Configuration for the top-level shared project."
   type = object({
-    # iam etc.
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_by_principals = optional(map(list(string)), {})
+    services          = optional(list(string))
   })
   nullable = false
   default  = {}
