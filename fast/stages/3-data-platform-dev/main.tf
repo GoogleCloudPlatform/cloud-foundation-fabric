@@ -43,6 +43,8 @@ module "shared-tag-templates" {
   source     = "../../../modules/data-catalog-tag-template"
   project_id = module.shared-project.project_id
   region     = local.region
+  # TODO: interpolate region in policy tags
+  # TODO: decide if this module needs a for_each on regions
   factories_config = {
     tag_templates = var.factories_config.policy_tags
   }
