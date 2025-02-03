@@ -44,7 +44,6 @@ vpc_configs:
         recordsets:
           "A localhost": 
             records: ["127.0.0.1"]
-            
     subnets_factory_config: 
       subnets_folder: data/subnets/hub
     firewall_factory_config:
