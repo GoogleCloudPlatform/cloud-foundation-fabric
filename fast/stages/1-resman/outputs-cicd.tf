@@ -24,10 +24,10 @@ locals {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_workflow_providers[v.identity_provider].audiences, []
+          local.identity_providers[v.identity_provider].audiences, []
         )
         identity_provider = try(
-          local.cicd_workflow_providers[v.identity_provider].name, ""
+          local.identity_providers[v.identity_provider].name, ""
         )
         outputs_bucket = var.automation.outputs_bucket
         service_accounts = {
@@ -36,8 +36,8 @@ locals {
         }
         stage_name = k
         tf_providers_files = {
-          apply = local.cicd_workflow_providers[k]
-          plan  = local.cicd_workflow_providers["${k}-r"]
+          apply = replace(local.cicd_workflow_providers[k], "_", "-")
+          plan  = replace(local.cicd_workflow_providers["${k}-r"], "_", "-")
         }
         tf_var_files = (
           v.level == 2 ?
