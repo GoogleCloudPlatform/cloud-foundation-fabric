@@ -18,6 +18,9 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     tag_templates = optional(string)
+    context = optional(object({
+      regions = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
