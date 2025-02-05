@@ -18,19 +18,60 @@
 # TODO: refactor tag template module for template-level IAM
 
 variable "data_domains" {
-  description = "Data domains defined here"
+  description = "Data domains defined here."
   # project id / resource ids use key
   type = map(object({
     data_products = optional(map(object({
-
-    })), {})
-    networking_config = optional(object({
-      uses_local_vpc = optional(object({
+      automation_config = object({})
+      networking_config = optional(object({
+        local_vpc_config = optional(object({
+        }))
+        shared_vpc_config = optional(object({
+        }))
       }))
-      uses_shared_vpc = optional(object({
+      project_config = object({
+        iam = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_by_principals = optional(map(list(string)), {})
+        services          = optional(list(string))
+      })
+      exposure_layer_config = object({
+        bigquery = optional(object({}))
+        gcs      = optional(object({}))
+      })
+      # project
+      # - iam for dp editors
+      # - services
+      # - iam for consumers with condition on exposure
+      # - 1-n datasets with exposure tag set
+      # automation sa
+    })), {})
+    folder_config = optional(map(object({
+    })))
+    networking_config = optional(object({
+      local_vpc_config = optional(object({
+      }))
+      shared_vpc_config = optional(object({
       }))
     }))
-    project_config = optional(object({
+    central_project_config = optional(object({
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
@@ -115,7 +156,7 @@ variable "policy_tags" {
 }
 
 variable "secure_tags" {
-  description = ""
+  description = "Resource manager tags created in the central project."
   type = map(object({
     description = optional(string, "Managed by the Terraform organization module.")
     iam         = optional(map(list(string)), {})
@@ -135,8 +176,10 @@ variable "secure_tags" {
   }
 }
 
-variable "shared_project_config" {
-  description = "Configuration for the top-level shared project."
+# TODO: rename to central
+
+variable "central_project_config" {
+  description = "Configuration for the top-level central project."
   type = object({
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({

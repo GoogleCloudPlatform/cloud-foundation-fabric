@@ -18,7 +18,7 @@ output "project_ids" {
   description = "Project id."
   value = merge(
     {
-      shared = module.shared-project.project_id
+      shared = module.central-project.project_id
     }
   )
 }

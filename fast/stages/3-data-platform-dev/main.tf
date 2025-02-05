@@ -23,29 +23,30 @@ locals {
   region      = lookup(var.regions, var.default_region, var.default_region)
 }
 
-module "shared-project" {
+module "central-project" {
   source                = "../../../modules/project"
   billing_account       = var.billing_account.id
-  name                  = coalesce(var.shared_project_config.name, "dp-shared-0")
+  name                  = coalesce(var.central_project_config.name, "dp-central-0")
   parent                = var.folder_ids[var.stage_config.name]
   prefix                = local.prefix
-  iam                   = var.shared_project_config.iam
-  iam_bindings          = var.shared_project_config.iam_bindings
-  iam_bindings_additive = var.shared_project_config.iam_bindings_additive
-  iam_by_principals     = var.shared_project_config.iam_by_principals
+  iam                   = var.central_project_config.iam
+  iam_bindings          = var.central_project_config.iam_bindings
+  iam_bindings_additive = var.central_project_config.iam_bindings_additive
+  iam_by_principals     = var.central_project_config.iam_by_principals
   labels = {
     environment = var.stage_config.environment
   }
-  services = var.shared_project_config.services
+  services = var.central_project_config.services
 }
 
-module "shared-tag-templates" {
+module "central-tag-templates" {
   source     = "../../../modules/data-catalog-tag-template"
-  project_id = module.shared-project.project_id
+  project_id = module.central-project.project_id
   region     = local.region
-  # TODO: interpolate region in policy tags
-  # TODO: decide if this module needs a for_each on regions
   factories_config = {
     tag_templates = var.factories_config.policy_tags
+    context = {
+      regions = var.regions
+    }
   }
 }
