@@ -45,20 +45,18 @@ locals {
   ncc_vpn_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
-        for vpn_key, vpn_config in try(vpc_config.vpn_configs, {}) : [
-          for k, v in try(vpn_config.tunnels, {}) : {
-            "${factory_key}/${vpc_key}/${vpn_key}/${k}" = {
-              name             = replace("${factory_key}/${vpc_key}/${vpn_key}/${k}", "/", "-")
-              project_id       = module.projects[factory_key].id
-              hub              = google_network_connectivity_hub.hub[v.ncc-spoke-config.hub].id
-              location         = vpn_config.region
-              description      = try(v.ncc-spoke-config.description, "Terraform-managed.")
-              labels           = try(v.ncc-spoke-config.labels, {})
-              tunnel_self_link = module.vpn-ha["${factory_key}/${vpc_key}/${vpn_key}"].tunnel_self_links[k]
-            }
+        for vpn_key, vpn_config in try(vpc_config.vpn_configs, {}) : {
+          "${factory_key}/${vpc_key}/${vpn_key}" = {
+            name             = replace("${factory_key}/${vpc_key}/${vpn_key}", "/", "-")
+            project_id       = module.projects[factory_key].id
+            hub              = google_network_connectivity_hub.hub[vpn_config.ncc-spoke-config.hub].id
+            location         = vpn_config.region
+            description      = lookup(vpn_config.ncc-spoke-config, "description", "Terraform-managed.")
+            labels           = lookup(vpn_config.ncc-spoke-config, "labels", {})
+            tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha["${factory_key}/${vpc_key}/${vpn_key}"].tunnel_self_links[t]]
           }
-          if try(v.ncc-spoke-config != null, false)
-        ]
+        }
+        if try(vpn_config.ncc-spoke-config != null, false)
       ]
     ]
   ])...)
@@ -124,7 +122,7 @@ resource "google_network_connectivity_group" "default" {
   depends_on = [google_network_connectivity_hub.hub]
 }
 
-resource "google_network_connectivity_spoke" "tunnel" {
+resource "google_network_connectivity_spoke" "tunnels" {
   for_each    = local.ncc_vpn_spokes
   project     = each.value.project_id
   name        = each.value.name
@@ -133,7 +131,7 @@ resource "google_network_connectivity_spoke" "tunnel" {
   labels      = each.value.labels
   hub         = each.value.hub
   linked_vpn_tunnels {
-    uris                       = [each.value.tunnel_self_link] #TODO(sruffilli): support adding multiple tunnels at once
+    uris                       = each.value.tunnel_self_link
     site_to_site_data_transfer = true
     include_import_ranges      = ["ALL_IPV4_RANGES"]
   }
