@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ locals {
             location    = try(r.condition.location, null)
             title       = try(r.condition.title, null)
           }
+          parameters = try(r.parameters, null)
         }
       ]
     }
@@ -89,8 +90,9 @@ resource "google_org_policy_policy" "default" {
         for_each = spec.value.rules
         iterator = rule
         content {
-          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
           enforce = (
             spec.value.is_boolean_policy && rule.value.enforce != null
             ? upper(tostring(rule.value.enforce))
@@ -127,8 +129,9 @@ resource "google_org_policy_policy" "default" {
         for_each = spec.value.rules
         iterator = rule
         content {
-          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
           enforce = (
             spec.value.is_boolean_policy && rule.value.enforce != null
             ? upper(tostring(rule.value.enforce))
