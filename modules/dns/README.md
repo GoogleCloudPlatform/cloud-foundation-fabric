@@ -4,9 +4,19 @@ This module allows simple management of Google Cloud DNS zones and records. It s
 
 For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_managed_zone#dnssec_config).
 
-## Examples
+<!-- BEGIN TOC -->
+- [Private Zone](#private-zone)
+- [Forwarding Zone](#forwarding-zone)
+- [Peering Zone](#peering-zone)
+- [Routing Policies](#routing-policies)
+- [Reverse Lookup Zone](#reverse-lookup-zone)
+- [Public Zone](#public-zone)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [Fixtures](#fixtures)
+<!-- END TOC -->
 
-### Private Zone
+## Private Zone
 
 ```hcl
 module "private-dns" {
@@ -30,7 +40,7 @@ module "private-dns" {
 # tftest modules=1 resources=4 inventory=private-zone.yaml e2e
 ```
 
-### Forwarding Zone
+## Forwarding Zone
 
 ```hcl
 module "private-dns" {
@@ -48,7 +58,7 @@ module "private-dns" {
 # tftest modules=1 resources=1 inventory=forwarding-zone.yaml e2e
 ```
 
-### Peering Zone
+## Peering Zone
 
 ```hcl
 module "private-dns" {
@@ -66,7 +76,7 @@ module "private-dns" {
 # tftest modules=1 resources=1 inventory=peering-zone.yaml
 ```
 
-### Routing Policies 
+## Routing Policies
 
 ```hcl
 module "private-dns" {
@@ -115,7 +125,7 @@ module "private-dns" {
 # tftest modules=4 resources=12 fixtures=fixtures/net-lb-app-int-cross-region.tf,fixtures/compute-mig.tf inventory=routing-policies.yaml e2e
 ```
 
-### Reverse Lookup Zone
+## Reverse Lookup Zone
 
 ```hcl
 module "private-dns" {
@@ -132,7 +142,7 @@ module "private-dns" {
 # tftest modules=1 resources=1 inventory=reverse-zone.yaml e2e
 ```
 
-### Public Zone
+## Public Zone
 
 ```hcl
 module "public-dns" {
