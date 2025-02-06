@@ -139,9 +139,19 @@ module "folder" {
     "compute.vmExternalIpAccess" = {
       rules = [{ deny = { all = true } }]
     }
+    "essentialcontacts.managed.allowedContactDomains" = {
+      rules = [
+        {
+          enforce = true
+          parameters = jsonencode({
+            allowedDomains = ["@example.com"]
+          })
+        }
+      ]
+    }
   }
 }
-# tftest modules=1 resources=8 inventory=org-policies.yaml e2e
+# tftest modules=1 resources=9 inventory=org-policies.yaml e2e
 ```
 
 ### Organization Policy Factory
