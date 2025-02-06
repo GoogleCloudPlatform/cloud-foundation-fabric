@@ -46,6 +46,9 @@
                     "type": "string"
                   }
                 }
+              },
+              "parameters": {
+                "type": "string"
               }
             }
           }
