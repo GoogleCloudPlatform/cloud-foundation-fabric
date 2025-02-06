@@ -21,15 +21,17 @@ variable "data_domains" {
   description = "Data domains defined here."
   # project id / resource ids use key
   type = map(object({
+    name       = string
+    short_name = optional(string)
     data_products = optional(map(object({
-      automation_config = object({})
+      short_name = optional(string)
       networking_config = optional(object({
         local_vpc_config = optional(object({
         }))
         shared_vpc_config = optional(object({
         }))
       }))
-      project_config = object({
+      project_config = optional(object({
         iam = optional(map(list(string)), {})
         iam_bindings = optional(map(object({
           members = list(string)
@@ -51,11 +53,11 @@ variable "data_domains" {
         })), {})
         iam_by_principals = optional(map(list(string)), {})
         services          = optional(list(string))
-      })
-      exposure_layer_config = object({
+      }), {})
+      exposure_layer_config = optional(object({
         bigquery = optional(object({}))
         gcs      = optional(object({}))
-      })
+      }), {})
       # project
       # - iam for dp editors
       # - services
@@ -64,13 +66,26 @@ variable "data_domains" {
       # automation sa
     })), {})
     folder_config = optional(map(object({
+      iam          = optional(map(list(string)), {})
+      iam_bindings = optional(map(list(string)), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
     })))
     networking_config = optional(object({
       local_vpc_config = optional(object({
       }))
       shared_vpc_config = optional(object({
+        host_project = string
       }))
-    }))
+    }), {})
     central_project_config = optional(object({
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
@@ -175,8 +190,6 @@ variable "secure_tags" {
     error_message = "Use an empty map instead of null as value."
   }
 }
-
-# TODO: rename to central
 
 variable "central_project_config" {
   description = "Configuration for the top-level central project."
