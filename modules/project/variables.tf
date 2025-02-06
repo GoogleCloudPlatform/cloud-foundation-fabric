@@ -132,6 +132,7 @@ variable "org_policies" {
         location    = optional(string)
         title       = optional(string)
       }), {})
+      parameters = optional(string)
     })), [])
   }))
   default  = {}
