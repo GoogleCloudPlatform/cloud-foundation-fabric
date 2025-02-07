@@ -171,7 +171,7 @@ module "folder" {
     org_policies = "configs/org-policies/"
   }
 }
-# tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
+# tftest modules=1 resources=9 files=boolean,list inventory=org-policies.yaml e2e
 ```
 
 ```yaml
@@ -193,6 +193,11 @@ iam.disableServiceAccountKeyUpload:
       title: condition
     enforce: true
   - enforce: false
+essentialcontacts.managed.allowedContactDomains:
+  rules:
+  - enforce: true
+    parameters: |
+      {"allowedDomains": ["@example.com"]}
 
 # tftest-file id=boolean path=configs/org-policies/boolean.yaml schema=org-policies.schema.json
 ```
