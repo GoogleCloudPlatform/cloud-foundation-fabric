@@ -29,6 +29,10 @@ vpc_configs:
   hub: 
     delete_default_routes_on_create: true
     mtu: 1500
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64514
     dns_zones:
       onprem-fwd:
         zone_config:
@@ -64,7 +68,8 @@ vpc_configs:
               interfaces: 
                 - 8.8.8.8
         router_config:
-          asn: 64514
+          create: false
+          name: net-land-01/hub/vpn-router
         tunnels:
           remote-0:
             bgp_peer:
