@@ -772,6 +772,7 @@ module "instance" {
       vm_stop  = "0 17 * * *"
     }
   }
+  depends_on = [module.project]  # ensure that grants are complete before creating schedule / instance
 }
 # tftest inventory=instance-schedule-create.yaml e2e skip
 ```
