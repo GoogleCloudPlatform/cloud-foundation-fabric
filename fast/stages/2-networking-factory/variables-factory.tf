@@ -208,6 +208,16 @@ variable "vpc_configs" {
         range_prefix     = optional(string)
         service_producer = optional(string, "servicenetworking.googleapis.com")
       })), [])
+      routers = optional(map(object({
+        region = string
+        asn    = optional(number)
+        custom_advertise = optional(object({
+          all_subnets = bool
+          ip_ranges   = map(string)
+        }))
+        keepalive = optional(number)
+        name      = optional(string)
+      })))
       routes = optional(map(object({
         description   = optional(string, "Terraform-managed.")
         dest_range    = string

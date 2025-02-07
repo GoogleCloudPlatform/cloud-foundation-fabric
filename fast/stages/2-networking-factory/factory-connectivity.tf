@@ -35,6 +35,24 @@ locals {
     ]
   ])...)
 
+  routers = merge(flatten([
+    for factory_key, factory_config in local._network_projects : [
+      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+        for router_key, router_config in try(vpc_config.routers, {}) : {
+          "${factory_key}/${vpc_key}/${router_key}" = merge(router_config, {
+            vpc_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
+            project_id        = module.projects[factory_key].id
+            custom_advertise  = try(router_config.custom_advertise, {})
+            advertise_mode    = try(router_config.custom_advertise != null, false) ? "CUSTOM" : "DEFAULT"
+            advertised_groups = try(router_config.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : []
+            keepalive         = try(router_config.keepalive, null)
+            asn               = try(router_config.asn, null)
+          })
+        }
+      ]
+    ]
+  ])...)
+
   vpns = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
@@ -43,12 +61,18 @@ locals {
             vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name
             vpn_name   = replace("${factory_key}/${vpc_key}/${k}", "/", "-")
             project_id = module.projects[factory_key].id
-          })
+            },
+            {
+              router_config = merge(v.router_config,
+                try(v.router_config.create, false) == false ? {
+                  name = try(google_compute_router.router[v.router_config.name].name, v.router_config.name)
+              } : {})
+            }
+          )
         }
       ]
     ]
   ])...)
-
 }
 
 #TODO(sruffilli): implement stack_type
@@ -63,6 +87,28 @@ resource "google_compute_network_peering" "local_network_peering" {
   import_subnet_routes_with_public_ip = each.value.import_subnet_routes_with_public_ip
 }
 
+
+resource "google_compute_router" "router" {
+  for_each = local.routers
+  name     = replace(each.key, "/", "-")
+  project  = each.value.project_id
+  region   = each.value.region
+  network  = each.value.vpc_self_link
+  bgp {
+    advertise_mode    = each.value.advertise_mode
+    advertised_groups = each.value.advertised_groups
+    dynamic "advertised_ip_ranges" {
+      for_each = try(each.value.custom_advertise.ip_ranges, {})
+      iterator = range
+      content {
+        range       = range.key
+        description = range.value
+      }
+    }
+    keepalive_interval = each.value.keepalive
+    asn                = each.value.asn
+  }
+}
 
 resource "google_compute_ha_vpn_gateway" "ha_gateway" {
   for_each   = local.vpns
