@@ -33,7 +33,7 @@ iam_bindings:
       - project-factory-ro
     condition:
       title: project-factory-scoped
-      description: Org policy tag scoped grant for project factory.
+      description: Allow to check buckets and contact policies
       expression: |
         resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
 is_fast_context: false
