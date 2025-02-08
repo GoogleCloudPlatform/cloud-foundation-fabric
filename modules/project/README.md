@@ -804,7 +804,7 @@ module "kms" {
   project_id = var.project_id # KMS is in different project to prevent dependency cycle
   keyring = {
     location = var.region
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-regional" = {
@@ -1362,7 +1362,7 @@ module "kms" {
   project_id = var.project_id # Keys come from different project to prevent dependency cycle
   keyring = {
     location = "global"
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-global" = {

@@ -43,7 +43,7 @@ values:
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.kms.google_kms_key_ring.default[0]:
     location: europe-west8
-    name: test-1
+    name: test-test
     project: project-id
 
 counts:

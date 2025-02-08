@@ -324,7 +324,7 @@ module "kms" {
   project_id = module.project.project_id
   keyring = {
     location = var.regions.secondary
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-regional" = {
