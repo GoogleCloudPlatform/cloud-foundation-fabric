@@ -26,16 +26,16 @@ iam_by_principals:
     - roles/viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
-
 iam_bindings:
   pf_viewer:
     role: organization_admin_viewer
     members:
-      - project-factory-teams-r
+      - project-factory-ro
     condition:
-      title: project-factory-only
-      expression: "resource.matchTag(\"12345678/context\", \"project-factory\")"
-# don't create a context tag since this uses the pf tag
+      title: project-factory-scoped
+      description: Org policy tag scoped grant for project factory.
+      expression: |
+        resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
 is_fast_context: false
 tag_bindings:
   context: context/project-factory
