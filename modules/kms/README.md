@@ -30,7 +30,7 @@ module "kms" {
   project_id = var.project_id
   keyring = {
     location = var.region
-    name     = "test-1"
+    name     = "${var.prefix}-test"
   }
   keys = {
     key-a = {
@@ -82,7 +82,7 @@ module "kms" {
   project_id = var.project_id
   keyring = {
     location = var.region
-    name     = "test-2"
+    name     = "${var.prefix}-test"
   }
   keys = {
     key-a = {
@@ -105,7 +105,7 @@ module "kms" {
   project_id = var.project_id
   keyring = {
     location = var.region
-    name     = "test-3"
+    name     = "${var.prefix}-test"
   }
   import_job = {
     id               = "my-import-job"
@@ -141,7 +141,7 @@ module "kms" {
   project_id = var.project_id
   keyring = {
     location = var.region
-    name     = "test-3"
+    name     = "${var.prefix}-test"
   }
   tag_bindings = {
     env-sandbox = module.org.tag_values["environment/sandbox"].id

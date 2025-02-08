@@ -21,7 +21,7 @@ values:
       protection_level: HSM
   module.kms.google_kms_key_ring.default[0]:
     location: europe-west8
-    name: test-2
+    name: test-test
     project: project-id
 
 counts:
