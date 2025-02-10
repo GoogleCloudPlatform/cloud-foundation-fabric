@@ -426,6 +426,9 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/0-bootstrap-provide
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/0-bootstrap.auto.tfvars ./
 ```
 
+- important for CI/CD
+The `0-bootstrap.auto.tfvars` file is a crucial component of the CI/CD pipeline and must be manually created. This file is essentially the `terraform.tfvars` file renamed to avoid being ignored in version control systems like GitHub or GitLab, where `terraform.tfvars` is often included in `.gitignore`. By renaming it and committing `0-bootstrap.auto.tfvars` to your source control, you ensure that the necessary configurations are available in the pipeline.
+
 Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`. If your organization was created with "Secure by Default Org Policy", that is with some of the org policies enabled, add `-var 'org_policies_config={"import_defaults": true}'` to `terraform apply`:
 
 ```bash
@@ -636,6 +639,7 @@ The remaining configuration is manual, as it regards the repositories themselves
     - for GitHub, place it in a `.github/workflows` folder in the repository root
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
     - for Source Repositories, place it in `.cloudbuild/workflow.yaml`
+  - To prevent the creation of local files in the CI/CD pipeline, comment out the `outputs_location` line in the `terraform.tfvars` file by adding a `#` at the beginning, like so: `# outputs_location = "~/fast-config"`. This configuration is only necessary for the initial local deployments and should not be used in the CI/CD environment. 
 
 ### Add-ons
 

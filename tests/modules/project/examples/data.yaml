@@ -88,7 +88,7 @@ values:
     timeouts: null
   module.kms.google_kms_key_ring.default[0]:
     location: global
-    name: keyring
+    name: test-keyring
     project: project-id
     timeouts: null
   module.kms.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
