@@ -503,7 +503,7 @@ module "project" {
     "iam.allowedPolicyMemberDomains" = {
       rules = [{
         allow = {
-          values = ["C0xxxxxxx", "C0yyyyyyy"]
+          values = ["C0xxxxxxx", "C0yyyyyyy", "C0zzzzzzz"]
         }
       }]
     }
@@ -522,7 +522,7 @@ module "project" {
         {
           enforce = true
           parameters = jsonencode({
-            allowedDomains = ["@example.com"]
+            allowedDomains = ["@example.com", "@secondary.example.com"]
           })
         }
       ]
