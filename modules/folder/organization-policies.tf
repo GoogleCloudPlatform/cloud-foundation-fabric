@@ -159,7 +159,7 @@ resource "google_org_policy_policy" "default" {
         content {
           allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
           deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
-          parameters = rule.value.parameters == null ? null : jsonencode(rule.value.parameters)
+          parameters = rule.value.parameters
           enforce = (
             spec.value.is_boolean_policy && rule.value.enforce != null
             ? upper(tostring(rule.value.enforce))
