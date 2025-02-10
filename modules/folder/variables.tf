@@ -84,6 +84,9 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     org_policies = optional(string)
+    context = optional(object({
+      org_policies = optional(map(map(string)), {})
+    }), {})
   })
   nullable = false
   default  = {}
