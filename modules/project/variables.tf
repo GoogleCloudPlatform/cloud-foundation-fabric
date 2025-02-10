@@ -87,6 +87,7 @@ variable "factories_config" {
     quotas        = optional(string)
     context = optional(object({
       notification_channels = optional(map(string), {})
+      org_policies          = optional(map(map(string)), {})
     }), {})
   })
   nullable = false
