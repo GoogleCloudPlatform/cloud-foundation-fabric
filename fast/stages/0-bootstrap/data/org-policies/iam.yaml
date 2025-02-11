@@ -22,11 +22,11 @@ iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:
     - enforce: true
 
-iam.disableServiceAccountKeyCreation:
+iam.managed.disableServiceAccountKeyCreation:
   rules:
     - enforce: true
 
-iam.disableServiceAccountKeyUpload:
+iam.managed.disableServiceAccountKeyUpload:
   rules:
     - enforce: true
 
