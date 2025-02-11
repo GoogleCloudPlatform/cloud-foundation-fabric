@@ -18,36 +18,18 @@
 
 # yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
-iam.allowedPolicyMemberDomains:
+essentialcontacts.allowedContactDomains:
   rules:
     - allow:
         values:
-          - ${organization.customer_id}
+          - '@${organization.domain}'
       condition:
-        title: Restrict member domains
+        title: Restrict essential contacts domains
         expression: |
-          !resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
+          !resource.matchTag('${tags.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')
     - allow:
         all: true
       condition:
-        title: Allow any member domain
+        title: Allow essential contacts from any domain
         expression: |
-          resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
-
-iam.automaticIamGrantsForDefaultServiceAccounts:
-  rules:
-    - enforce: true
-
-iam.disableServiceAccountKeyCreation:
-  rules:
-    - enforce: true
-
-iam.disableServiceAccountKeyUpload:
-  rules:
-    - enforce: true
-
-iam.serviceAccountKeyExposureResponse:
-  rules:
-    - allow:
-        values:
-          - DISABLE_KEY
+          resource.matchTag('${tags.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')
