@@ -24,53 +24,38 @@
 #    - dp1.yaml
 
 variable "data_domains" {
-  description = "Data domains defined here."
-  # project id / resource ids use key
+  description = "Data domain definitions."
   type = map(object({
     name       = string
     short_name = optional(string)
     data_products = optional(map(object({
       short_name = optional(string)
-      # TODO: tackled in phase 2
-      # networking_config = optional(object({
-      #   local_vpc_config = optional(object({
-      #   }))
-      #   shared_vpc_config = optional(object({
-      #   }))
-      # }))
-      project_config = optional(object({
-        iam = optional(map(list(string)), {})
-        iam_bindings = optional(map(object({
-          members = list(string)
-          role    = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        iam_bindings_additive = optional(map(object({
-          member = string
-          role   = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        iam_by_principals = optional(map(list(string)), {})
-        services          = optional(list(string))
-      }), {})
       exposed_resources = optional(object({
         bigquery = optional(object({}))
         gcs      = optional(object({}))
       }), {})
-      # project
-      # - iam for dp editors
-      # - services
-      # - iam for consumers with condition on exposure
-      # - 1-n datasets with exposure tag set
-      # automation sa
+      iam = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals = optional(map(list(string)), {})
+      # networking_config = optional(object({}))
+      services = optional(list(string))
     })), {})
     folder_config = optional(map(object({
       iam          = optional(map(list(string)), {})
@@ -86,15 +71,8 @@ variable "data_domains" {
       })), {})
       iam_by_principals = optional(map(list(string)), {})
     })))
-    # TODO: tackled in phase 2
-    # networking_config = optional(object({
-    #   local_vpc_config = optional(object({
-    #   }))
-    #   shared_vpc_config = optional(object({
-    #     host_project = string
-    #   }))
-    # }), {})
-    central_project_config = optional(object({
+    # networking_config = optional(object({}))
+    project_config = optional(object({
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
@@ -120,6 +98,24 @@ variable "data_domains" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "data_exposure_config" {
+  description = "Data exposure configuration."
+  type = object({
+    tag_name = optional(string, "exposure/allow")
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = (
+      var.data_exposure_config.tag_name != null &&
+      length(regexall(
+        "^[a-z][a-z0-9-]+/[a-z][a-z0-9]+", var.data_exposure_config.tag_name
+      )) > 0
+    )
+    error_message = "Invalid tag name, required format is 'tag_key/tag_value'."
+  }
 }
 
 variable "default_region" {
@@ -178,34 +174,26 @@ variable "policy_tags" {
   default = {}
 }
 
-variable "data_exposure_config" {
-  type = object({
-    # resource_prefix = optional(string, "exp") # exp_foo_0
-    tag_name = optional(string, "exposure/allow")
-  })
+variable "secure_tags" {
+  description = "Resource manager tags created in the central project."
+  type = map(object({
+    description = optional(string, "Managed by the Terraform project module.")
+    iam         = optional(map(list(string)), {})
+    values = optional(map(object({
+      description = optional(string, "Managed by the Terraform project module.")
+      iam         = optional(map(list(string)), {})
+      id          = optional(string)
+    })), {})
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.secure_tags : v != null
+    ])
+    error_message = "Use an empty map instead of null as value."
+  }
 }
-
-# TODO: data sharing scope = company
-# variable "secure_tags" {
-#   description = "Resource manager tags created in the central project."
-#   type = map(object({
-#     description = optional(string, "Managed by the Terraform organization module.")
-#     iam         = optional(map(list(string)), {})
-#     values = optional(map(object({
-#       description = optional(string, "Managed by the Terraform organization module.")
-#       iam         = optional(map(list(string)), {})
-#       id          = optional(string)
-#     })), {})
-#   }))
-#   nullable = false
-#   default  = {}
-#   validation {
-#     condition = alltrue([
-#       for k, v in var.secure_tags : v != null
-#     ])
-#     error_message = "Use an empty map instead of null as value."
-#   }
-# }
 
 variable "central_project_config" {
   description = "Configuration for the top-level central project."
