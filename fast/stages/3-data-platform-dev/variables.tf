@@ -17,6 +17,12 @@
 # TODO: factories for secure/policy tags, dd, dp
 # TODO: refactor tag template module for template-level IAM
 
+# dd0
+#  - config.yaml
+#  - products
+#    - dp0.yaml
+#    - dp1.yaml
+
 variable "data_domains" {
   description = "Data domains defined here."
   # project id / resource ids use key
@@ -25,12 +31,13 @@ variable "data_domains" {
     short_name = optional(string)
     data_products = optional(map(object({
       short_name = optional(string)
-      networking_config = optional(object({
-        local_vpc_config = optional(object({
-        }))
-        shared_vpc_config = optional(object({
-        }))
-      }))
+      # TODO: tackled in phase 2
+      # networking_config = optional(object({
+      #   local_vpc_config = optional(object({
+      #   }))
+      #   shared_vpc_config = optional(object({
+      #   }))
+      # }))
       project_config = optional(object({
         iam = optional(map(list(string)), {})
         iam_bindings = optional(map(object({
@@ -54,7 +61,7 @@ variable "data_domains" {
         iam_by_principals = optional(map(list(string)), {})
         services          = optional(list(string))
       }), {})
-      exposure_layer_config = optional(object({
+      exposed_resources = optional(object({
         bigquery = optional(object({}))
         gcs      = optional(object({}))
       }), {})
@@ -79,13 +86,14 @@ variable "data_domains" {
       })), {})
       iam_by_principals = optional(map(list(string)), {})
     })))
-    networking_config = optional(object({
-      local_vpc_config = optional(object({
-      }))
-      shared_vpc_config = optional(object({
-        host_project = string
-      }))
-    }), {})
+    # TODO: tackled in phase 2
+    # networking_config = optional(object({
+    #   local_vpc_config = optional(object({
+    #   }))
+    #   shared_vpc_config = optional(object({
+    #     host_project = string
+    #   }))
+    # }), {})
     central_project_config = optional(object({
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
@@ -170,26 +178,34 @@ variable "policy_tags" {
   default = {}
 }
 
-variable "secure_tags" {
-  description = "Resource manager tags created in the central project."
-  type = map(object({
-    description = optional(string, "Managed by the Terraform organization module.")
-    iam         = optional(map(list(string)), {})
-    values = optional(map(object({
-      description = optional(string, "Managed by the Terraform organization module.")
-      iam         = optional(map(list(string)), {})
-      id          = optional(string)
-    })), {})
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.secure_tags : v != null
-    ])
-    error_message = "Use an empty map instead of null as value."
-  }
+variable "data_exposure_config" {
+  type = object({
+    # resource_prefix = optional(string, "exp") # exp_foo_0
+    tag_name = optional(string, "exposure/allow")
+  })
 }
+
+# TODO: data sharing scope = company
+# variable "secure_tags" {
+#   description = "Resource manager tags created in the central project."
+#   type = map(object({
+#     description = optional(string, "Managed by the Terraform organization module.")
+#     iam         = optional(map(list(string)), {})
+#     values = optional(map(object({
+#       description = optional(string, "Managed by the Terraform organization module.")
+#       iam         = optional(map(list(string)), {})
+#       id          = optional(string)
+#     })), {})
+#   }))
+#   nullable = false
+#   default  = {}
+#   validation {
+#     condition = alltrue([
+#       for k, v in var.secure_tags : v != null
+#     ])
+#     error_message = "Use an empty map instead of null as value."
+#   }
+# }
 
 variable "central_project_config" {
   description = "Configuration for the top-level central project."
