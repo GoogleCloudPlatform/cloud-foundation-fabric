@@ -36,6 +36,11 @@ moved {
   to   = google_compute_global_forwarding_rule.default[""]
 }
 
+moved {
+  from = google_compute_global_forwarding_rule.default
+  to   = google_compute_global_forwarding_rule.default[""]
+}
+
 resource "google_compute_global_forwarding_rule" "default" {
   provider    = google-beta
   for_each    = var.forwarding_rules_config
