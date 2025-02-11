@@ -15,9 +15,10 @@
  */
 
 locals {
-  fwd_rule_ports = (
-    var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
-  )
+  fwd_rule_names = {
+    for k, v in var.forwarding_rules_config :
+    k => k == "" ? var.name : "${var.name}-${k}"
+  }
   fwd_rule_target = (
     var.protocol == "HTTPS"
     ? google_compute_target_https_proxy.default[0].id
@@ -30,19 +31,28 @@ locals {
   )
 }
 
+moved {
+  from = google_compute_global_forwarding_rule.default
+  to   = google_compute_global_forwarding_rule.default[""]
+}
+
 resource "google_compute_global_forwarding_rule" "default" {
   provider    = google-beta
+  for_each    = var.forwarding_rules_config
   project     = var.project_id
-  name        = var.name
-  description = var.description
-  ip_address  = var.address
+  name        = coalesce(each.value.name, local.fwd_rule_names[each.key])
+  description = coalesce(each.value.description, var.description)
+  ip_address  = each.value.address
   ip_protocol = "TCP"
+  ip_version  = each.value.ipv6 == true ? "IPV6" : "IPV4"
   load_balancing_scheme = (
     var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   )
-  port_range = join(",", local.fwd_rule_ports)
-  labels     = var.labels
-  target     = local.fwd_rule_target
+  port_range = join(",", (
+    var.protocol == "HTTPS" ? [443] : coalesce(each.value.ports, [80])
+  ))
+  labels = var.labels
+  target = local.fwd_rule_target
 }
 
 # certificates
