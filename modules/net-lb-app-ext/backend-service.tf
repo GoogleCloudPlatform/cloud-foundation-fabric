@@ -62,9 +62,11 @@ resource "google_compute_backend_service" "default" {
   ]
   load_balancing_scheme = var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   port_name = (
-    each.value.port_name == null
-    ? lower(each.value.protocol == null ? var.protocol : each.value.protocol)
-    : each.value.port_name
+    contains(keys(google_compute_region_network_endpoint_group.serverless), each.key)
+    ? null
+    : each.value.port_name != null
+    ? each.value.port_name
+    : lower(each.value.protocol == null ? var.protocol : each.value.protocol)
   )
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
