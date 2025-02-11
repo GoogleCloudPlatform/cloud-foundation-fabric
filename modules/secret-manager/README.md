@@ -112,7 +112,7 @@ module "kms-global" {
   project_id = module.project.project_id
   keyring = {
     location = "global"
-    name     = "keyring-global"
+    name     = "${var.prefix}-keyring-global"
   }
   keys = {
     "key-global" = {
@@ -131,7 +131,7 @@ module "kms-primary-region" {
   project_id = module.project.project_id
   keyring = {
     location = var.regions.primary
-    name     = "keyring-regional"
+    name     = "${var.prefix}-keyring-regional"
   }
   keys = {
     "key-regional" = {
@@ -149,7 +149,7 @@ module "kms-secondary-region" {
   project_id = module.project.project_id
   keyring = {
     location = var.regions.secondary
-    name     = "keyring-regional"
+    name     = "${var.prefix}-keyring-regional"
   }
   keys = {
     "key-regional" = {

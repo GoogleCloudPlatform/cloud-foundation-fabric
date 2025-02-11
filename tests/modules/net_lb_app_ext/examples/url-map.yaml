@@ -57,11 +57,11 @@ values:
     security_policy: null
     security_settings: []
     timeouts: null
-  module.glb-0.google_compute_global_forwarding_rule.default:
+  module.glb-0.google_compute_global_forwarding_rule.default[""]:
     allow_psc_global_access: null
     description: Terraform managed.
     ip_protocol: TCP
-    ip_version: null
+    ip_version: IPV4
     labels: null
     load_balancing_scheme: EXTERNAL
     metadata_filters: []

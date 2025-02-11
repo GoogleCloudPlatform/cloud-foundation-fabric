@@ -11,9 +11,7 @@ custom_roles = {
 dns = {
   dev_resolvers  = ["10.10.10.10"]
   prod_resolvers = ["10.20.10.10"]
-  enable_logging = true
 }
-enable_cloud_nat = true
 environments = {
   dev = {
     is_default = false
@@ -53,6 +51,18 @@ prefix = "fast2"
 tag_values = {
   "environment/development" = "tagValues/12345"
   "environment/production"  = "tagValues/12346"
+}
+vpc_configs = {
+  dev = {
+    cloudnat = {
+      enable = true
+    }
+  }
+  prod = {
+    cloudnat = {
+      enable = true
+    }
+  }
 }
 vpn_onprem_dev_primary_config = {
   peer_external_gateways = {

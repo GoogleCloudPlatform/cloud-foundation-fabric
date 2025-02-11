@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    var.services, var.service_agents_config.services_enabled
+    local.available_services, var.service_agents_config.services_enabled
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
@@ -31,17 +31,20 @@ locals {
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
-        email     = format(agent.identity, local.project.number)
-        iam_email = "serviceAccount:${format(agent.identity, local.project.number)}"
+        email      = format(agent.identity, local.project.number)
+        iam_email  = "serviceAccount:${format(agent.identity, local.project.number)}"
+        create_jit = api == "cloudservices" || contains(local.available_services, api)
       })
     }
   ]...)
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it
   primary_service_agents = [
-    for agent in local._project_service_agents :
-    agent.api
-    if agent.is_primary && var.service_agents_config.create_primary_agents
+    for agent in local._project_service_agents : agent.api if(
+      agent.is_primary &&
+      var.service_agents_config.create_primary_agents &&
+      agent.create_jit
+    )
   ]
   # list of roles that should be granted to service agents for the
   # current project, if the user requested it

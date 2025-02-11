@@ -23,44 +23,13 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
 variable "project_id" {
   description = "Id of the project where Tag Templates will be created."
+  type        = string
+}
+
+variable "region" {
+  description = "Default region for tag templates."
   type        = string
 }
 
@@ -69,21 +38,58 @@ variable "tag_templates" {
   type = map(object({
     display_name = optional(string)
     force_delete = optional(bool, false)
-    region       = string
+    region       = optional(string)
     fields = map(object({
       display_name = optional(string)
       description  = optional(string)
+      is_required  = optional(bool, false)
+      order        = optional(number)
       type = object({
-        primitive_type = optional(string)
-        enum_type = optional(list(object({
-          allowed_values = object({
-            display_name = string
-          })
-        })), null)
+        primitive_type   = optional(string)
+        enum_type_values = optional(list(string))
       })
-      is_required = optional(bool, false)
-      order       = optional(number)
     }))
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
   default = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.tag_templates : [
+        for kf, vf in v.fields : (
+          vf.type.primitive_type == null ||
+          vf.type.enum_type_values == null
+        )
+      ]
+    ]))
+    error_message = "Field type can be primitive or enum, not both."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.tag_templates : [
+        for kf, vf in v.fields : vf.type.primitive_type == null || contains(
+          ["DOUBLE", "STRING", "BOOL", "TIMESTAMP"],
+          coalesce(vf.type.primitive_type, "-")
+        )
+      ]
+    ]))
+    error_message = "Primitive field type can only be DOUBLE, STRING, BOOL, or TIMESTAMP."
+  }
 }

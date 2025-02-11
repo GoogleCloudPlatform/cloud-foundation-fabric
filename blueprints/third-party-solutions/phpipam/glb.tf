@@ -30,11 +30,15 @@ module "addresses" {
 }
 
 module "glb-redirect" {
-  source               = "../../../modules/net-lb-app-ext"
-  count                = local.glb_create ? 1 : 0
-  project_id           = module.project.project_id
-  name                 = "phpipam-glb-redirect"
-  address              = module.addresses[0].global_addresses["phpipam"].address
+  source     = "../../../modules/net-lb-app-ext"
+  count      = local.glb_create ? 1 : 0
+  project_id = module.project.project_id
+  name       = "phpipam-glb-redirect"
+  forwarding_rules_config = {
+    "" = {
+      address = module.addresses[0].global_addresses["phpipam"].address
+    }
+  }
   health_check_configs = {}
   urlmap_config = {
     description = "URL redirect for phpipam glb."
@@ -51,8 +55,12 @@ module "glb" {
   count      = local.glb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "phpipam-glb"
-  address    = module.addresses[0].global_addresses["phpipam"].address
-  protocol   = "HTTPS"
+  forwarding_rules_config = {
+    "" = {
+      address = module.addresses[0].global_addresses["phpipam"].address
+    }
+  }
+  protocol = "HTTPS"
 
   backend_service_configs = {
     default = {

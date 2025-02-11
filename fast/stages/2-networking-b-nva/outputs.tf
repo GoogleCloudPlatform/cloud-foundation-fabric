@@ -67,6 +67,7 @@ locals {
   tfvars = {
     host_project_ids             = local.host_project_ids
     host_project_numbers         = local.host_project_numbers
+    regions                      = var.regions
     subnet_self_links            = local.subnet_self_links
     subnet_proxy_only_self_links = local.subnet_proxy_only_self_links
     subnet_psc_self_links        = local.subnet_psc_self_links
@@ -111,11 +112,6 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Network project numbers."
   value       = local.host_project_numbers
-}
-
-output "ping_commands" {
-  description = "Ping commands for test instances to be run to check VPC reachability."
-  value       = var.create_test_instances ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${module.test-vms[instance].internal_ip} # ${instance}"]) : ""
 }
 
 output "shared_vpc_self_links" {

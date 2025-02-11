@@ -17,16 +17,14 @@
 locals {
   folder_ids = merge(
     # stage 2
-    !var.fast_stage_2.networking.enabled ? {} : {
-      networking      = module.net-folder[0].id
-      networking-dev  = try(module.net-folder-dev[0].id, null)
-      networking-prod = try(module.net-folder-prod[0].id, null)
-    },
-    !var.fast_stage_2.security.enabled ? {} : {
-      security      = module.sec-folder[0].id
-      security-dev  = try(module.sec-folder-dev[0].id, null)
-      security-prod = try(module.sec-folder-prod[0].id, null)
-    },
+    !var.fast_stage_2.networking.enabled ? {} : merge(
+      { networking = module.net-folder[0].id },
+      { for k, v in module.net-folder-envs : "networking-${k}" => v.id }
+    ),
+    !var.fast_stage_2.security.enabled ? {} : merge(
+      { security = module.sec-folder[0].id },
+      { for k, v in module.sec-folder-envs : "security-${k}" => v.id }
+    ),
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
     # top-level folders

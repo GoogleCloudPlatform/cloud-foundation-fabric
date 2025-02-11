@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 values:
   module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.disableGuestAttributesAccess
     parent: projects/test-project
     spec:
@@ -24,8 +25,11 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.skipDefaultNetworkCreation
     parent: projects/test-project
     spec:
@@ -36,8 +40,11 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.trustedImageProjects
     parent: projects/test-project
     spec:
@@ -48,11 +55,14 @@ values:
         condition: []
         deny_all: null
         enforce: null
+        parameters: null
         values:
         - allowed_values:
           - projects/my-project
           denied_values: null
+    timeouts: null
   module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
     name: projects/test-project/policies/compute.vmExternalIpAccess
     parent: projects/test-project
     spec:
@@ -63,8 +73,26 @@ values:
         condition: []
         deny_all: 'TRUE'
         enforce: null
+        parameters: null
         values: []
+    timeouts: null
+  module.project.google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]:
+    dry_run_spec: []
+    name: projects/test-project/policies/essentialcontacts.managed.allowedContactDomains
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@example.com","@secondary.example.com"]}'
+        values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.allowedPolicyMemberDomains
     parent: projects/test-project
     spec:
@@ -75,12 +103,16 @@ values:
         condition: []
         deny_all: null
         enforce: null
+        parameters: null
         values:
         - allowed_values:
           - C0xxxxxxx
           - C0yyyyyyy
+          - C0zzzzzzz
           denied_values: null
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.disableServiceAccountKeyCreation
     parent: projects/test-project
     spec:
@@ -91,8 +123,11 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
+    timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
     name: projects/test-project/policies/iam.disableServiceAccountKeyUpload
     parent: projects/test-project
     spec:
@@ -107,19 +142,31 @@ values:
           title: condition
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'FALSE'
+        parameters: null
         values: []
+    timeouts: null
   module.project.google_project.project[0]:
+    auto_create_network: false
     billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
+    labels: null
     name: test-project
     org_id: null
     project_id: test-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
 
 counts:
-  google_org_policy_policy: 7
+  google_org_policy_policy: 8
   google_project: 1

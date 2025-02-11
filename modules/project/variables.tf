@@ -87,6 +87,7 @@ variable "factories_config" {
     quotas        = optional(string)
     context = optional(object({
       notification_channels = optional(map(string), {})
+      org_policies          = optional(map(map(string)), {})
     }), {})
   })
   nullable = false
@@ -132,6 +133,7 @@ variable "org_policies" {
         location    = optional(string)
         title       = optional(string)
       }), {})
+      parameters = optional(string)
     })), [])
   }))
   default  = {}
@@ -247,6 +249,15 @@ variable "skip_delete" {
   #   condition     = var.skip_delete != null
   #   error_message = "skip_delete is deprecated. Use deletion_policy."
   # }
+}
+
+variable "universe" {
+  description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
+  type = object({
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "vpc_sc" {

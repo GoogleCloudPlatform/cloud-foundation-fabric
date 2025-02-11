@@ -41,54 +41,41 @@ variable "bootstrap_user" {
   default     = null
 }
 
-variable "cicd_repositories" {
+variable "cicd_config" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
     resman = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
-    }))
-    tenants = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
     vpcsc = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
   })
-  default = null
+  nullable = false
+  default  = {}
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.name, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null name."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.identity_provider, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null provider."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
+      for k, v in coalesce(var.cicd_config, {}) :
       v == null || (
-        contains(["github", "gitlab", "terraform"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab", "terraform"], coalesce(try(v.repository.type, null), "null"))
       )
     ])
     error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'terraform'."

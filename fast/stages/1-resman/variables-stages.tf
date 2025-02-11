@@ -35,18 +35,6 @@ variable "fast_stage_2" {
         parent_id          = optional(string)
       }), {})
     }), {})
-    network_security = optional(object({
-      enabled    = optional(bool, false)
-      short_name = optional(string, "nsec")
-      cicd_config = optional(object({
-        identity_provider = string
-        repository = object({
-          name   = string
-          branch = optional(string)
-          type   = optional(string, "github")
-        })
-      }))
-    }), {})
     project_factory = optional(object({
       enabled    = optional(bool, true)
       short_name = optional(string, "pf")

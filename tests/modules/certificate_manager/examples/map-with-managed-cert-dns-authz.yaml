@@ -18,9 +18,7 @@ values:
     labels: null
     location: global
     managed:
-    - dns_authorizations:
-      - mydomain-mycompany-org
-      domains:
+    - domains:
       - mydomain.mycompany.org
       issuance_config: null
     name: my-certificate-1
