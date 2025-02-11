@@ -217,6 +217,7 @@ variable "enable_features" {
     gateway_api           = optional(bool, false)
     groups_for_rbac       = optional(string)
     image_streaming       = optional(bool, false)
+    multi_networking      = optional(bool, false)
     intranode_visibility  = optional(bool, false)
     l4_ilb_subsetting     = optional(bool, false)
     mesh_certificates     = optional(bool)
@@ -248,6 +249,12 @@ variable "enable_features" {
       var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
     )
     error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
+  }
+  validation {
+    condition = (
+      var.enable_features.multi_networking ? var.enable_features.dataplane_v2 : true
+    )
+    error_message = "Multi-networking is only supported for clusters with Dataplane v2."
   }
 }
 

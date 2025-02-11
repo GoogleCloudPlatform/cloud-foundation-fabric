@@ -116,12 +116,37 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   dynamic "network_config" {
-    for_each = var.pod_range != null ? [""] : []
+    for_each = anytrue([
+      var.pod_range != null,
+      var.additional_node_network_configs != null,
+      var.additional_pod_network_configs != null
+    ]) ? [""] : []
     content {
-      create_pod_range     = var.pod_range.secondary_pod_range.create
-      enable_private_nodes = var.pod_range.secondary_pod_range.enable_private_nodes
-      pod_ipv4_cidr_block  = var.pod_range.secondary_pod_range.cidr
-      pod_range            = var.pod_range.secondary_pod_range.name
+      enable_private_nodes = anytrue(concat(
+        try(var.additional_node_network_configs[*].enable_private_nodes, [false]),
+        [try(var.pod_range.secondary_pod_range.enable_private_nodes, false)]
+      ))
+
+      create_pod_range     = try(var.pod_range.secondary_pod_range.create, false)
+      pod_ipv4_cidr_block  = try(var.pod_range.secondary_pod_range.cidr, null)
+      pod_range            = try(var.pod_range.secondary_pod_range.name, null)
+
+      dynamic "additional_node_network_configs" {
+        for_each = var.additional_node_network_configs != null ? var.additional_node_network_configs : []
+        content {
+          network    = additional_node_network_configs.value.network
+          subnetwork = additional_node_network_configs.value.subnetwork
+        }
+      }
+
+      dynamic "additional_pod_network_configs" {
+        for_each = var.additional_pod_network_configs != null ? var.additional_pod_network_configs : []
+        content {
+          subnetwork          = additional_pod_network_configs.value.subnetwork
+          secondary_pod_range = additional_pod_network_configs.value.secondary_pod_range
+          max_pods_per_node   = additional_pod_network_configs.value.max_pods_per_node
+        }
+      }
     }
   }
 

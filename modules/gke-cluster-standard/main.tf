@@ -39,6 +39,7 @@ resource "google_container_cluster" "cluster" {
   enable_shielded_nodes                    = var.enable_features.shielded_nodes
   enable_fqdn_network_policy               = var.enable_features.fqdn_network_policy
   enable_tpu                               = var.enable_features.tpu
+  enable_multi_networking                  = var.enable_features.multi_networking
   initial_node_count                       = var.default_nodepool.initial_node_count
   remove_default_node_pool                 = var.default_nodepool.remove_pool
   deletion_protection                      = var.deletion_protection

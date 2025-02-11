@@ -185,6 +185,26 @@ variable "pod_range" {
   default = null
 }
 
+variable "additional_node_network_configs" {
+  description = "Addtional node networks"
+  type = list(object({
+    network              = optional(string)
+    subnetwork           = optional(string)
+    enable_private_nodes = optional(bool)
+  }))
+  default = null
+}
+
+variable "additional_pod_network_configs" {
+  description = "Addtional pods networks"
+  type = list(object({
+    subnetwork          = optional(string)
+    secondary_pod_range = optional(string)
+    max_pods_per_node   = optional(number)
+  }))
+  default = null
+}
+
 variable "project_id" {
   description = "Cluster project id."
   type        = string
