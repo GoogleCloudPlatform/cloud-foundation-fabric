@@ -18,7 +18,7 @@
 # SSL certificate but it is not exported as output
 output "custom_domain" {
   description = "Custom domain for the Load Balancer."
-  value       = local.gclb_create ? var.custom_domain : "none"
+  value       = try(var.custom_domain, null)
 }
 
 output "default_URL" {
@@ -28,5 +28,5 @@ output "default_URL" {
 
 output "load_balancer_ip" {
   description = "LB IP that forwards to Cloud Run service."
-  value       = local.gclb_create ? module.glb[0].address : "none"
+  value       = try(module.glb[0].address, null)
 }
