@@ -8,6 +8,11 @@ This repository provides a collection of Terraform blueprints designed to automa
 
 <br clear="left">
 
+## Detection as Code with Terraform for Google SecOps
+
+<a href="./detection-as-code/" title="Detection as Code with Terraform for Google SecOps"><img src="./detection-as-code/images/diagram.png" align="left" width="280px"></a> This [blueprint](./detection-as-code/) is a sample terraform repository to implementing a Detection as code pipeline for managing Google SecOps rules based on Terraform code.
+
+<br clear="left">
 
 ## SecOps GKE Forwarder
 
