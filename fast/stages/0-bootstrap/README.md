@@ -79,7 +79,6 @@ It's often desirable to have organization policies deployed before any other res
 
 To cover this use case, organization policies have been moved from the resource management to the bootstrap stage in FAST versions after 26.0.0. They are managed via the usual factory approach, and a [sample set of data files](./data/org-policies/) is included with this stage. They are not applied during the initial run when the `bootstrap_user` variable is set, to work around incompatibilities with user credentials.
 
-The only current exception to the factory approach is the `iam.allowedPolicyMemberDomains` constraint (DRS), which is managed in code so as to be able to auto-allow the organization's domain. More domains can be added via the `org_policies_config` variable, which also serves as an umbrella for future policies that will need to be managed in code.
 
 #### Security Command Center Enterprise
 
@@ -116,7 +115,7 @@ org_policies_config = {
 # tftest skip
 ```
 
-The above tag can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The id in the condition is the organization id, followed by the name of the organization policy tag key (defaults to `org-policies`).
+The above tag can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The name of the tag can be referenced from the factory files using `tags.org_policies_config`, as shown below.
 
 ```yaml
 compute.requireOsLogin:
@@ -124,7 +123,7 @@ compute.requireOsLogin:
   - enforce: true
   - enforce: false
     condition:
-      expression: resource.matchTag('12345678/org-policies-config', 'compute-require-oslogin-false')
+      expression: resource.matchTag('${tags.org_policies_tag_name}', 'compute-require-oslogin-false')
 ```
 
 ### Automation project and resources
