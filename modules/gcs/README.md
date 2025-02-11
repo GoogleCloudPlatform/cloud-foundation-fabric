@@ -47,7 +47,7 @@ module "kms" {
   project_id = var.project_id
   keyring = {
     location = "europe" # location of the KMS must match location of the bucket
-    name     = "test"
+    name     = "${var.prefix}-test"
   }
   keys = {
     bucket_key = {

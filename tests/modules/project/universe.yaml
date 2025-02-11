@@ -31,7 +31,7 @@ counts:
 outputs:
   id: alpha:foo-my-project
   name: foo-my-project
-  project_id: foo-my-project
+  project_id: alpha:foo-my-project
   services:
   - aaa.googleapis.com
   - bbb.googleapis.com

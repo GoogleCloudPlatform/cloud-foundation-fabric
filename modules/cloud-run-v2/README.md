@@ -170,7 +170,8 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=service-direct-vpc.yaml e2e
+# E2E test disabled due to b/332419038
+# tftest modules=1 resources=1 inventory=service-direct-vpc.yaml
 ```
 
 ## VPC Access Connector
@@ -276,7 +277,7 @@ module "kms" {
   project_id = module.project.project_id
   keyring = {
     location = var.region
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-regional" = {
