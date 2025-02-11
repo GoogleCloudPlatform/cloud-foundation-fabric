@@ -61,11 +61,11 @@ resource "google_compute_backend_service" "default" {
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ]
   load_balancing_scheme = var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
-  port_name = (
+  port_name = var.use_classic_version ? (
     each.value.port_name == null
     ? lower(each.value.protocol == null ? var.protocol : each.value.protocol)
     : each.value.port_name
-  )
+  ) : null
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
   )
