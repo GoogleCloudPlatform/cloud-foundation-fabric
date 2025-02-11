@@ -57,12 +57,16 @@ resource "google_compute_region_network_endpoint_group" "psc_negs" {
 }
 
 module "ext_lb" {
-  count               = length(local.ext_instances) > 0 ? 1 : 0
-  source              = "../../../modules/net-lb-app-ext"
-  name                = "ext-lb"
-  project_id          = module.project.project_id
-  protocol            = "HTTPS"
-  address             = var.ext_lb_config.address
+  count      = length(local.ext_instances) > 0 ? 1 : 0
+  source     = "../../../modules/net-lb-app-ext"
+  name       = "ext-lb"
+  project_id = module.project.project_id
+  protocol   = "HTTPS"
+  forwarding_rules_config = {
+    "" = {
+      address = var.ext_lb_config.address
+    }
+  }
   use_classic_version = false
   backend_service_configs = {
     default = {

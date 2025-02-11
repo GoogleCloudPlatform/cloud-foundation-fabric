@@ -30,25 +30,20 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  provider    = google-beta
-  project     = var.project_id
-  name        = var.name
-  region      = var.region
-  description = var.description
-  ip_address  = var.address
-  ip_protocol = "TCP"
-  # external regional load balancer is always EXTERNAL_MANAGER.
-  # TODO(jccb): double check if this is true
+  provider              = google-beta
+  project               = var.project_id
+  name                  = var.name
+  region                = var.region
+  description           = var.description
+  ip_address            = var.address
+  ip_protocol           = "TCP"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   port_range            = join(",", local.fwd_rule_ports)
   labels                = var.labels
   target                = local.fwd_rule_target
   network               = var.vpc
-  # external regional app lb only supports standard tier
-  network_tier = "STANDARD"
+  network_tier          = var.network_tier_standard ? "STANDARD" : "PREMIUM"
 }
-
-# certificates
 
 resource "google_compute_region_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.create_configs
@@ -61,8 +56,6 @@ resource "google_compute_region_ssl_certificate" "default" {
     create_before_destroy = true
   }
 }
-
-# proxies
 
 resource "google_compute_region_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
