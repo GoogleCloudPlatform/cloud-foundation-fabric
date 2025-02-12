@@ -79,6 +79,13 @@ It's often desirable to have organization policies deployed before any other res
 
 To cover this use case, organization policies have been moved from the resource management to the bootstrap stage in FAST versions after 26.0.0. They are managed via the usual factory approach, and a [sample set of data files](./data/org-policies/) is included with this stage. They are not applied during the initial run when the `bootstrap_user` variable is set, to work around incompatibilities with user credentials.
 
+FAST uses unmanaged organization policies by default. For those who prefer managed policies, a separate sample set is available. To use these managed policies, configure `factories_config` as shown below.
+
+```tfvars
+factories_config = {
+  org_policies = "data/org-policies-managed"
+}
+```
 
 #### Security Command Center Enterprise
 
