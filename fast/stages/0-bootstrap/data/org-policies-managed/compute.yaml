@@ -97,11 +97,11 @@ compute.vmExternalIpAccess:
 #   - deny:
 #       all: true
 
-compute.restrictProtocolForwardingCreationForTypes:
+compute.managed.restrictProtocolForwardingCreationForTypes:
   rules:
-    - allow:
-        values:
-          - in:INTERNAL
+  - enforce: true
+    parameters: |
+      {"allowedSchemes": ["INTERNAL"]}
 
 # compute.restrictSharedVpcHostProjects:
 #   rules:
