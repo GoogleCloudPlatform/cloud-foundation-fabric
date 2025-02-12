@@ -27,6 +27,7 @@ variable "backend_service_configs" {
     enable_cdn                      = optional(bool)
     health_checks                   = optional(list(string), ["default"])
     log_sample_rate                 = optional(number)
+    locality_lb_policy              = optional(string)
     port_name                       = optional(string)
     project_id                      = optional(string)
     protocol                        = optional(string)
@@ -101,6 +102,7 @@ variable "backend_service_configs" {
       oauth2_client_secret        = string
       oauth2_client_secret_sha256 = optional(string)
     }))
+    locality_lb_policies = optional(list(object({})))
     outlier_detection = optional(object({
       consecutive_errors                    = optional(number)
       consecutive_gateway_failure           = optional(number)
@@ -152,5 +154,17 @@ variable "backend_service_configs" {
       )]
     ]))
     error_message = "When specified, balancing mode needs to be 'RATE' or 'UTILIZATION'."
+  }
+  validation {
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
+          "ORIGINAL_DESTINATION", "MAGLEV", "WEIGHTED_MAGLEV", null
+        ],
+        backend_service.locality_lb_policy
+      )
+    ])
+    error_message = "When specified, locality lb policy must be one of : 'ROUND_ROBIN', 'LEAST_REQUEST', 'RING_HASH', 'RANDOM', 'ORIGINAL_DESTINATION', 'MAGLEV', 'WEIGHTED_MAGLEV'."
   }
 }
