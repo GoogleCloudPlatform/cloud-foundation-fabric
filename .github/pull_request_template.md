@@ -11,3 +11,18 @@ I applicable, I acknowledge that I have:
 - [ ] Ran `terraform fmt` on all modified files
 - [ ] Regenerated the relevant README.md files using [`tools/tfdoc.py`](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/CONTRIBUTING.md#fabric-tools)
 - [ ] Made sure all relevant tests pass
+
+<!--
+Uncomment and complete the upgrade notes section below (if applicable), following the examples provided.
+-->
+
+<!--
+** Upgrade Notes **
+
+```upgrade-note
+fast/stages/0-boostrap: example upgrade note 1.
+```
+```upgrade-note
+modules/project: example upgrade note 2.
+```
+-->

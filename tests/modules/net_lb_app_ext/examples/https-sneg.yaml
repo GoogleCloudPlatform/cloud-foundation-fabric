@@ -16,7 +16,7 @@ values:
   module.glb-0.google_compute_backend_service.default["default"]:
     port_name: http
     protocol: HTTPS
-  module.glb-0.google_compute_global_forwarding_rule.default:
+  module.glb-0.google_compute_global_forwarding_rule.default[""]:
     load_balancing_scheme: EXTERNAL
     port_range: '443'
   module.glb-0.google_compute_region_network_endpoint_group.serverless["neg-0"]:
