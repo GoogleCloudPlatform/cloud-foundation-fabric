@@ -8,6 +8,11 @@ This repository provides a collection of Terraform blueprints designed to automa
 
 <br clear="left">
 
+## SecOps Anonymization pipeline
+
+<a href="./secops-anonymization-pipeline/" title="SecOps Anonymization pipeline"><img src="./secops-anonymization-pipeline/images/diagram.png" align="left" width="280px"></a> This [blueprint](./secops-anonymization-pipeline/) is a modular solution for deploying a SecOps pipeline for exporting raw data from a SecOps tenant, optionally anonymize it and then import data back in a different SecOps tenant.
+
+<br clear="left">
 
 ## SecOps GKE Forwarder
 
