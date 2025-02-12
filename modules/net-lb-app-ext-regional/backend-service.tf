@@ -36,9 +36,6 @@ locals {
   }
 }
 
-# TODO(jccb): add security_policy block
-# TODO(jccb): add connection_tracking_policy block
-
 resource "google_compute_region_backend_service" "default" {
   provider = google-beta
   for_each = var.backend_service_configs
@@ -56,10 +53,8 @@ resource "google_compute_region_backend_service" "default" {
   health_checks = length(each.value.health_checks) == 0 ? null : [
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ]
-  # external regional load balancer is always EXTERNAL_MANAGER.
-  # TODO(jccb): double check if this is true
+  # external regional load balancer is always EXTERNAL_MANAGED.
   load_balancing_scheme = "EXTERNAL_MANAGED"
-  #TODO(jccb): add locality_lb_policy with MAGLEV and WEIGHTED_MAGLEV when scheme EXTERNAL
   port_name = (
     each.value.port_name == null
     ? lower(each.value.protocol == null ? var.protocol : each.value.protocol)
@@ -68,6 +63,7 @@ resource "google_compute_region_backend_service" "default" {
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
   )
+  security_policy  = each.value.security_policy
   session_affinity = each.value.session_affinity
   timeout_sec      = each.value.timeout_sec
 

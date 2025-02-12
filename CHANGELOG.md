@@ -5,17 +5,38 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-01-26 10:01:38+00:00 to: None since: v37.1.0 -->
 
+## [37.2.0] - 2025-02-11
+
 ### BLUEPRINTS
 
+- [[#2879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2879)] Address outstanding load balancer FRs ([ludoo](https://github.com/ludoo)) <!-- 2025-02-11 17:09:02+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
+- [[#2863](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2863)] Deprecate composer-2 blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-03 10:27:15+00:00 -->
 - [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
+
+### FAST
+
+- [[#2874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2874)] Add note about the use of n-stagename/moved/ files during upgrade ([lyricnz](https://github.com/lyricnz)) <!-- 2025-02-10 07:34:37+00:00 -->
+- [[#2862](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2862)] update docs: clarify 0-bootstrap.auto.tfvars creation and outputs_loc… ([ZoranBatman](https://github.com/ZoranBatman)) <!-- 2025-02-03 15:44:47+00:00 -->
 
 ### MODULES
 
+- [[#2879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2879)] Address outstanding load balancer FRs ([ludoo](https://github.com/ludoo)) <!-- 2025-02-11 17:09:02+00:00 -->
+- [[#2876](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2876)] Add context to organization policy factories ([juliocc](https://github.com/juliocc)) <!-- 2025-02-10 22:24:02+00:00 -->
+- [[#2871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2871)] Fix KMS E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-09 23:56:20+00:00 -->
+- [[#2870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2870)] Add dependency for compute-vm schedule ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-07 11:02:40+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
+- [[#2867](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2867)] Disable E2E test for direct VPC Egress ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-05 08:56:04+00:00 -->
 - [[#2855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2855)] Add support for advanced machine features to compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2025-01-31 09:27:29+00:00 -->
 - [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
 - [[#2852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2852)] Allow universe-bound projects to exclude services ([juliocc](https://github.com/juliocc)) <!-- 2025-01-30 07:48:58+00:00 -->
 - [[#2848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2848)] Support project creation in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-01-29 11:40:41+00:00 -->
 - [[#2842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2842)] Refactor data catalog tag template module ([ludoo](https://github.com/ludoo)) <!-- 2025-01-28 09:30:42+00:00 -->
+
+### TOOLS
+
+- [[#2871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2871)] Fix KMS E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-09 23:56:20+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
 
 ## [37.1.0] - 2025-01-26
 
@@ -2770,7 +2791,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...HEAD
+[37.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...v37.2.0
 [37.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.0.0...v37.1.0
 [37.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.2.0...v37.0.0
 [36.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...v36.2.0

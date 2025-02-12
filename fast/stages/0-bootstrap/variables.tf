@@ -260,12 +260,8 @@ variable "org_policies_config" {
   description = "Organization policies customization."
   type = object({
     iac_policy_member_domains = optional(list(string))
-    constraints = optional(object({
-      allowed_essential_contact_domains = optional(list(string), [])
-      allowed_policy_member_domains     = optional(list(string), [])
-    }), {})
-    import_defaults = optional(bool, false)
-    tag_name        = optional(string, "org-policies")
+    import_defaults           = optional(bool, false)
+    tag_name                  = optional(string, "org-policies")
     tag_values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
       iam         = optional(map(list(string)), {})
