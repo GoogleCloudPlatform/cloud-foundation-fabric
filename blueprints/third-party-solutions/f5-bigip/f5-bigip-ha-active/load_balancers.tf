@@ -20,7 +20,7 @@ locals {
     : k => {
       address       = try(module.lb-addresses.internal_addresses["${var.prefix}-ilb-${k}"].address)
       global_access = v.global_access
-      ip_version    = v.ip_version
+      ipv6          = v.ipv6
       protocol      = v.protocol
     } if v.external == false
   }
@@ -28,7 +28,7 @@ locals {
     for k, v in var.forwarding_rules_config
     : k => {
       address    = try(module.lb-addresses.external_addresses["${var.prefix}-nlb-${k}"].address)
-      ip_version = v.ip_version
+      ipv6       = v.ipv6
       protocol   = v.protocol
       subnetwork = v.subnetwork
     } if v.external == true
@@ -42,7 +42,7 @@ module "lb-addresses" {
     for k, v in var.forwarding_rules_config
     : k => {
       address    = v.address
-      ipv6       = v.ip_version == "IPV6" ? { endpoint_type = "NETLB" } : null
+      ipv6       = v.ipv6 ? { endpoint_type = "NETLB" } : null
       name       = "${var.prefix}-nlb-${k}"
       region     = var.region
       subnetwork = var.vpc_config["dataplane"]["subnetwork"]
@@ -52,7 +52,7 @@ module "lb-addresses" {
     for k, v in var.forwarding_rules_config
     : k => {
       address    = v.address
-      ipv6       = v.ip_version == "IPV6" ? {} : null
+      ipv6       = v.ipv6 == "IPV6" ? {} : null
       name       = "${var.prefix}-ilb-${k}"
       region     = var.region
       subnetwork = var.vpc_config["dataplane"]["subnetwork"]
