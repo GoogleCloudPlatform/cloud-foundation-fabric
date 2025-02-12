@@ -1,5 +1,4 @@
-# skip boilerplate check
-# Copyright 2025 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/0-bootstrap
-tests:
-  simple:
-    inventory:
-      - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
-      - simple_org_policies.yaml
-  managed_org_policies:
-    inventory:
-      - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
-      - managed_org_policies.yaml
-  iam_by_principals:
-  cicd:
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
+
+storage.uniformBucketLevelAccess:
+  rules:
+    - enforce: true
+
+storage.publicAccessPrevention:
+  rules:
+    - enforce: true
+
+
+storage.secureHttpTransport:
+  rules:
+    - enforce: true
