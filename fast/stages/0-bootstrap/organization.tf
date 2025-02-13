@@ -81,8 +81,8 @@ import {
       "iam.allowedPolicyMemberDomains",
       "essentialcontacts.allowedContactDomains",
       "storage.uniformBucketLevelAccess",
-      "compute.setNewProjectDefaultToZonalDNSOnly", # Verified as of 2024-09-13
-      # "constraints/compute.restrictProtocolForwardingCreationForTypes", # Officially be applied starting 2024-08-15, but still MIA as of 2024-09-13
+      "compute.setNewProjectDefaultToZonalDNSOnly",         # Verified as of 2024-09-13
+      "compute.restrictProtocolForwardingCreationForTypes", # Verified as of 2025-02-13
     ])
   )
   id = "organizations/${var.organization.id}/policies/${each.key}"
