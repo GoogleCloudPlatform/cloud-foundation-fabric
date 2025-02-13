@@ -79,6 +79,9 @@ googleapis-private:
         - 199.36.153.9
         - 199.36.153.10
         - 199.36.153.11
+    AAAA:
+      rrdatas:
+        - "2600:2d00:0002:2000::"
 googleapis-restricted:
   dns_name: "restricted.googleapis.com."
   local_data:
@@ -88,6 +91,9 @@ googleapis-restricted:
         - 199.36.153.5
         - 199.36.153.6
         - 199.36.153.7
+    AAAA:
+      rrdatas:
+        - "2600:2d00:0002:1000::"
 gstatic-all:
   dns_name: "*.gstatic.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
