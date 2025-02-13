@@ -113,10 +113,10 @@ variable "egress_policies" {
   validation {
     condition = alltrue([
       for k, v in var.egress_policies : v.from.identities == null ? true : alltrue([
-        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:|principalSet:)", identity))
       ])
     ])
-    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:', 'principal:' or 'principalSet:."
   }
 }
 
@@ -201,10 +201,10 @@ variable "ingress_policies" {
   validation {
     condition = alltrue([
       for k, v in var.ingress_policies : v.from.identities == null ? true : alltrue([
-        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:|principalSet:)", identity))
       ])
     ])
-    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:', 'principal:', 'principalSet:'."
   }
 }
 
