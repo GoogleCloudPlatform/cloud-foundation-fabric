@@ -106,6 +106,7 @@ resource "google_gke_hub_feature_membership" "default" {
       content {
         prevent_drift = each.value.config_sync.prevent_drift
         source_format = each.value.config_sync.source_format
+        enabled       = true
         dynamic "git" {
           for_each = (
             try(each.value.config_sync.git, null) == null ? {} : { 1 = 1 }

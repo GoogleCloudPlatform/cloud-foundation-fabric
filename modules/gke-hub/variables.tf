@@ -31,33 +31,33 @@ variable "configmanagement_clusters" {
 variable "configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
-    binauthz = bool
+    binauthz = optional(bool)
+    version  = optional(string)
     config_sync = object({
-      git = object({
-        gcp_service_account_email = string
-        https_proxy               = string
-        policy_dir                = string
-        secret_type               = string
-        sync_branch               = string
+      git = optional(object({
         sync_repo                 = string
-        sync_rev                  = string
-        sync_wait_secs            = number
-      })
-      prevent_drift = string
-      source_format = string
+        policy_dir                = string
+        gcp_service_account_email = optional(string)
+        https_proxy               = optional(string)
+        secret_type               = optional(string, "none")
+        sync_branch               = optional(string)
+        sync_rev                  = optional(string)
+        sync_wait_secs            = optional(number)
+      }))
+      prevent_drift = optional(bool)
+      source_format = optional(string, "hierarchy")
     })
-    hierarchy_controller = object({
-      enable_hierarchical_resource_quota = bool
-      enable_pod_tree_labels             = bool
-    })
+    hierarchy_controller = optional(object({
+      enable_hierarchical_resource_quota = optional(bool)
+      enable_pod_tree_labels             = optional(bool)
+    }))
     policy_controller = object({
-      audit_interval_seconds     = number
-      exemptable_namespaces      = list(string)
-      log_denies_enabled         = bool
-      referential_rules_enabled  = bool
-      template_library_installed = bool
+      audit_interval_seconds     = optional(number)
+      exemptable_namespaces      = optional(list(string))
+      log_denies_enabled         = optional(bool)
+      referential_rules_enabled  = optional(bool)
+      template_library_installed = optional(bool)
     })
-    version = string
   }))
   default  = {}
   nullable = false
@@ -73,14 +73,7 @@ variable "features" {
     multiclusterservicediscovery = optional(bool, false)
     servicemesh                  = optional(bool, false)
   })
-  default = {
-    appdevexperience             = false
-    configmanagement             = false
-    identityservice              = false
-    multiclusteringress          = null
-    servicemesh                  = false
-    multiclusterservicediscovery = false
-  }
+  default  = {}
   nullable = false
 }
 

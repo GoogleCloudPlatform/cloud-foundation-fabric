@@ -3,20 +3,1300 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased]
-<!-- None < 2023-08-09 17:02:13+00:00 -->
+## [Unreleased] <!-- from: 2025-02-11 17:16:34+00:00 to: None since: v37.2.0 -->
+
+## [37.3.0] - 2025-02-12
 
 ### BLUEPRINTS
 
+- [[#2883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2883)] **incompatible change:** Fix ipv6 and align loadbalancer address types ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-12 13:09:31+00:00 -->
+
+### MODULES
+
+- [[#2883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2883)] **incompatible change:** Fix ipv6 and align loadbalancer address types ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-12 13:09:31+00:00 -->
+
+## [37.2.0] - 2025-02-11
+
+### BLUEPRINTS
+
+- [[#2879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2879)] Address outstanding load balancer FRs ([ludoo](https://github.com/ludoo)) <!-- 2025-02-11 17:09:02+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
+- [[#2863](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2863)] Deprecate composer-2 blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-03 10:27:15+00:00 -->
+- [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
+
+### FAST
+
+- [[#2874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2874)] Add note about the use of n-stagename/moved/ files during upgrade ([lyricnz](https://github.com/lyricnz)) <!-- 2025-02-10 07:34:37+00:00 -->
+- [[#2862](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2862)] update docs: clarify 0-bootstrap.auto.tfvars creation and outputs_loc… ([ZoranBatman](https://github.com/ZoranBatman)) <!-- 2025-02-03 15:44:47+00:00 -->
+
+### MODULES
+
+- [[#2879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2879)] Address outstanding load balancer FRs ([ludoo](https://github.com/ludoo)) <!-- 2025-02-11 17:09:02+00:00 -->
+- [[#2876](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2876)] Add context to organization policy factories ([juliocc](https://github.com/juliocc)) <!-- 2025-02-10 22:24:02+00:00 -->
+- [[#2871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2871)] Fix KMS E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-09 23:56:20+00:00 -->
+- [[#2870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2870)] Add dependency for compute-vm schedule ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-07 11:02:40+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
+- [[#2867](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2867)] Disable E2E test for direct VPC Egress ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-05 08:56:04+00:00 -->
+- [[#2855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2855)] Add support for advanced machine features to compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2025-01-31 09:27:29+00:00 -->
+- [[#2841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2841)] Add cAdvisor Metrics to Autopilot/Standard GKE Cluster ([HeiglAnna](https://github.com/HeiglAnna)) <!-- 2025-01-30 13:29:07+00:00 -->
+- [[#2852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2852)] Allow universe-bound projects to exclude services ([juliocc](https://github.com/juliocc)) <!-- 2025-01-30 07:48:58+00:00 -->
+- [[#2848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2848)] Support project creation in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-01-29 11:40:41+00:00 -->
+- [[#2842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2842)] Refactor data catalog tag template module ([ludoo](https://github.com/ludoo)) <!-- 2025-01-28 09:30:42+00:00 -->
+
+### TOOLS
+
+- [[#2871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2871)] Fix KMS E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-09 23:56:20+00:00 -->
+- [[#2869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2869)] Expose org policy parameters ([juliocc](https://github.com/juliocc)) <!-- 2025-02-07 09:55:06+00:00 -->
+
+## [37.1.0] - 2025-01-26
+
+### FAST
+
+- [[#2839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2839)] Revert "Allow multiple stage-2 project factories" ([ludoo](https://github.com/ludoo)) <!-- 2025-01-26 09:37:43+00:00 -->
+
+## [37.0.0] - 2025-01-24
+
+### FAST
+
+- [[#2836](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2836)] Interpolate SAs in tag-level iam ([juliocc](https://github.com/juliocc)) <!-- 2025-01-24 09:39:03+00:00 -->
+- [[#2834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2834)] **incompatible change:** Allow multiple stage-2 project factories ([juliocc](https://github.com/juliocc)) <!-- 2025-01-23 23:38:22+00:00 -->
+- [[#2831](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2831)] Allow networking stage to be disabled ([juliocc](https://github.com/juliocc)) <!-- 2025-01-22 06:45:23+00:00 -->
+- [[#2828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2828)] Small fix to net test add-on context expansion ([ludoo](https://github.com/ludoo)) <!-- 2025-01-21 10:14:43+00:00 -->
+- [[#2826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2826)] Fix stage 1 addons provider outputs ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 06:55:40+00:00 -->
+- [[#2825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2825)] FAST add-on for networking test resources ([ludoo](https://github.com/ludoo)) <!-- 2025-01-20 08:41:35+00:00 -->
+- [[#2823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2823)] Update service activation in ngfw add-on ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 13:23:23+00:00 -->
+- [[#2821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2821)] FAST SWP networking add-on, refactor CAS module interface ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 07:12:41+00:00 -->
+- [[#2818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2818)] Top level folder factory support for automation SA IAM ([sruffilli](https://github.com/sruffilli)) <!-- 2025-01-16 09:33:00+00:00 -->
+- [[#2817](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2817)] Fix permadiff in stage 0 vpc-sc service account, add schemas to hierarchical policy YAML files ([ludoo](https://github.com/ludoo)) <!-- 2025-01-15 09:47:04+00:00 -->
+- [[#2815](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2815)] [FAST] Add missing permission to ngfwEnterprise org ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-01-14 08:40:58+00:00 -->
+- [[#2813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2813)] feat: restructure how var files are provided to workflow templates ([Liam-Johnston](https://github.com/Liam-Johnston)) <!-- 2025-01-14 06:29:38+00:00 -->
+- [[#2810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2810)] Small fixes and improvements to FAST netsec/net ([ludoo](https://github.com/ludoo)) <!-- 2025-01-11 12:48:45+00:00 -->
+- [[#2800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2800)] Implement FAST stage add-ons, refactor netsec as add-on ([ludoo](https://github.com/ludoo)) <!-- 2025-01-09 18:14:12+00:00 -->
+- [[#2801](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2801)] Add optional support for fw policies via new vpc_configs variable, refactor factories variable in net stages ([ludoo](https://github.com/ludoo)) <!-- 2025-01-09 16:14:56+00:00 -->
+- [[#2787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2787)] Leverage environments for folder and project creation in FAST resman and security ([ludoo](https://github.com/ludoo)) <!-- 2024-12-27 20:03:31+00:00 -->
+
+### MODULES
+
+- [[#2821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2821)] **incompatible change:** FAST SWP networking add-on, refactor CAS module interface ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 07:12:41+00:00 -->
+- [[#2820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2820)] **incompatible change:** Do not create service agent resources in project module for services not explicitly enabled ([ludoo](https://github.com/ludoo)) <!-- 2025-01-17 15:55:41+00:00 -->
+
+## [36.2.0] - 2025-01-24
+
+### BLUEPRINTS
+
+- [[#2837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2837)] Update module metadata format and prep v36.2.0 ([juliocc](https://github.com/juliocc)) <!-- 2025-01-24 15:45:17+00:00 -->
+- [[#2827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2827)] Add `bucket_create` to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 22:48:36+00:00 -->
+- [[#2816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2816)] Update `logging_data_access` type ([juliocc](https://github.com/juliocc)) <!-- 2025-01-14 16:00:35+00:00 -->
+
+### FAST
+
+- [[#2831](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2831)] Allow networking stage to be disabled ([juliocc](https://github.com/juliocc)) <!-- 2025-01-22 06:45:23+00:00 -->
+- [[#2828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2828)] Small fix to net test add-on context expansion ([ludoo](https://github.com/ludoo)) <!-- 2025-01-21 10:14:43+00:00 -->
+- [[#2826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2826)] Fix stage 1 addons provider outputs ([juliocc](https://github.com/juliocc)) <!-- 2025-01-21 06:55:40+00:00 -->
+- [[#2825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2825)] FAST add-on for networking test resources ([ludoo](https://github.com/ludoo)) <!-- 2025-01-20 08:41:35+00:00 -->
+- [[#2823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2823)] Update service activation in ngfw add-on ([ludoo](https://github.com/ludoo)) <!-- 2025-01-18 13:23:23+00:00 -->
+
+## [36.1.0] - 2025-01-10
+
+- [[#2777](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2777)] Document `tag_bindings` definition as `map(string)` ([juliocc](https://github.com/juliocc)) <!-- 2024-12-19 13:47:32+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2808)] Bump golang.org/x/net from 0.23.0 to 0.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-01-10 15:48:39+00:00 -->
+- [[#2807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2807)] Bump golang.org/x/net from 0.23.0 to 0.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-01-09 14:02:26+00:00 -->
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2796)] Add docker image tag to bindplane config variable ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-01-03 15:52:51+00:00 -->
+- [[#2792](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2792)] fix non-empty plan after apply for vertex mlops ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-31 16:27:47+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
+- [[#2790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2790)] Fix cycle in the autopilot-cluster blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-29 19:30:59+00:00 -->
+- [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
+- [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
+- [[#2752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2752)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-08 09:34:19+00:00 -->
+- [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
+- [[#2749](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2749)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-12-06 05:54:12+00:00 -->
+- [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
+
+### FAST
+
+- [[#2798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2798)] ADR proposal for FAST add-on stages ([ludoo](https://github.com/ludoo)) <!-- 2025-01-05 15:02:47+00:00 -->
+- [[#2774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2774)] [FAST] Remove unused stage 1 CICD variables ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-17 16:26:02+00:00 -->
+- [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
+- [[#2767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2767)] Fix workspace logs sink in FAST bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 13:22:42+00:00 -->
+- [[#2766](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2766)] Allow optional creation of billing resources in FAST boostrap stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-13 11:32:17+00:00 -->
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
+- [[#2744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2744)] Fix parent id lookup for networking and security in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-12-04 20:08:31+00:00 -->
+- [[#2733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2733)] **incompatible change:** Updating yaml naming in prod subnet folder to match other lifecycles ([mtndrew404](https://github.com/mtndrew404)) <!-- 2024-11-26 06:40:22+00:00 -->
+
+### MODULES
+
+- [[#2799](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2799)] Add intercepting sinks to the organization and folder modules ([rshokati2](https://github.com/rshokati2)) <!-- 2025-01-10 10:36:08+00:00 -->
+- [[#2806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2806)] ASN should be optional in router_config variable as it is not necessa… ([apichick](https://github.com/apichick)) <!-- 2025-01-09 14:46:43+00:00 -->
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2802)] Added BGP priority variable for dedicated interconnect because it was… ([apichick](https://github.com/apichick)) <!-- 2025-01-07 17:07:55+00:00 -->
+- [[#2758](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2758)] Add Alerts, Logging, Channels Factories ([joshw123](https://github.com/joshw123)) <!-- 2025-01-05 19:49:21+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
+- [[#2786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2786)] Make PSA connection more robust ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-26 15:37:25+00:00 -->
+- [[#2784](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2784)] Fix validation message in cas module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-25 07:25:07+00:00 -->
+- [[#2783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2783)] Update net-lb-app-ext security_settings variables ([wenzizone](https://github.com/wenzizone)) <!-- 2024-12-25 06:52:31+00:00 -->
+- [[#2781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2781)] Fix bindplane cos module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-23 09:37:09+00:00 -->
+- [[#2780](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2780)] Fix handling of SSL certificates in external load balancer modules ([rodriguezsergio](https://github.com/rodriguezsergio)) <!-- 2024-12-21 10:26:29+00:00 -->
+- [[#2776](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2776)] Add support for log views and log scopes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-18 17:29:45+00:00 -->
+- [[#2772](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2772)] Fix for perma-diff when using PSC NEGs. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 13:28:48+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
+- [[#2761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2761)] **incompatible change:** Refactor GKE cluster modules access configurations, add support for DNS endpoint ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 10:02:24+00:00 -->
+- [[#2764](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2764)] Ignore ssl certificates if none are passed in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-12 09:37:37+00:00 -->
+- [[#2757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2757)] Update net-vlan-attachment module readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-11 08:00:28+00:00 -->
+- [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
+- [[#2740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2740)] Add support for password validation policy to cloudsql module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-09 09:44:15+00:00 -->
+- [[#2750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2750)] Add disk encyption key to the google_compute_instance_template - Sovereign support ([rune92](https://github.com/rune92)) <!-- 2024-12-09 09:30:58+00:00 -->
+- [[#2718](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2718)] Add path_template_match and path_template_rewrite support to net-lb-app-ext  ([rosmo](https://github.com/rosmo)) <!-- 2024-12-09 08:32:48+00:00 -->
+- [[#2755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2755)] remove default location in tag value - cloud-run-v2 tags.tf ([Mattible](https://github.com/Mattible)) <!-- 2024-12-09 07:48:23+00:00 -->
+- [[#2751](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2751)] Add support for routing mode to net-swp module ([ludoo](https://github.com/ludoo)) <!-- 2024-12-08 13:26:02+00:00 -->
+- [[#2748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2748)] Add ability to autogenerate md5 keys in net-vpn-ha ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-06 07:34:56+00:00 -->
+- [[#2745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2745)] Add optional automated MD5 generation to net-vlan-attachment module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-12-05 16:55:16+00:00 -->
+- [[#2741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2741)] Add support for secret manager config to gke cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2024-11-29 08:24:18+00:00 -->
+- [[#2734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2734)] Allow override of GKE Nodepool SA Display Name ([robrankin](https://github.com/robrankin)) <!-- 2024-11-28 06:47:17+00:00 -->
+- [[#2738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2738)] Support switchover in alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-27 15:57:33+00:00 -->
+- [[#2739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2739)] Add basename to SWP policy rules factory ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-27 14:42:33+00:00 -->
+- [[#2737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2737)] **incompatible change:** SWP module refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-11-27 12:54:59+00:00 -->
+
+### TOOLS
+
+- [[#2803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2803)] New tool `versions.py` to manage versions.tf/tofu  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-09 08:57:49+00:00 -->
+- [[#2791](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2791)] Fabric e2e fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-12-31 14:25:36+00:00 -->
+- [[#2778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2778)] Fix failing tests for OpenTofu ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-20 09:19:01+00:00 -->
+- [[#2721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2721)] New BindPlane OP Management console on GKE SecOps blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-12-17 21:16:40+00:00 -->
+- [[#2771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2771)] Use separate versions.tofu for OpenTofu constraints ([wiktorn](https://github.com/wiktorn)) <!-- 2024-12-17 11:29:04+00:00 -->
+- [[#2769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2769)] Support customizable resource names to fast stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 18:07:28+00:00 -->
+- [[#2768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2768)] Support customizable resource names in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-12-16 16:46:34+00:00 -->
+- [[#2765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2765)] Update issue templates ([juliocc](https://github.com/juliocc)) <!-- 2024-12-12 12:40:47+00:00 -->
+- [[#2736](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2736)] Add confidential compute support to google_dataproc_cluster module, bump provider versions ([steenblik](https://github.com/steenblik)) <!-- 2024-12-10 15:39:48+00:00 -->
+
+## [36.0.1] - 2024-11-23
+
+### FAST
+
+- [[#2731](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2731)] Add missing role to FAST stage 0 org-level delegated IAM grants ([ludoo](https://github.com/ludoo)) <!-- 2024-11-23 06:58:13+00:00 -->
+
+### TOOLS
+
+- [[#2730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2730)] Run tests and linting when pushing to master or fast-dev ([juliocc](https://github.com/juliocc)) <!-- 2024-11-22 19:21:38+00:00 -->
+
+## [36.0.0] - 2024-11-22
+
+### BLUEPRINTS
+
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### FAST
+
+- [[#2714](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2714)] Remove stale resman validation ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 16:00:06+00:00 -->
+- [[#2707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2707)] Expose `factories_config` for resman top level folders ([juliocc](https://github.com/juliocc)) <!-- 2024-11-17 22:54:56+00:00 -->
+- [[#2701](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2701)] Allow disabling network security stage ([juliocc](https://github.com/juliocc)) <!-- 2024-11-17 09:04:18+00:00 -->
+- [[#2697](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2697)] Remove REGIONAL/MULTI_REGIONAL buckets from FAST ([juliocc](https://github.com/juliocc)) <!-- 2024-11-16 10:14:47+00:00 -->
+- [[#2693](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2693)] Unify usage of top level folders short_name ([juliocc](https://github.com/juliocc)) <!-- 2024-11-15 12:56:46+00:00 -->
+- [[#2694](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2694)] Make project iam viewer name consistent with GCP naming ([juliocc](https://github.com/juliocc)) <!-- 2024-11-15 10:48:37+00:00 -->
+- [[#2688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2688)] Streamline environments variable across stages ([ludoo](https://github.com/ludoo)) <!-- 2024-11-15 09:22:18+00:00 -->
+- [[#2685](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2685)] Add missing billing roles to project factory ro SA in stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 10:41:30+00:00 -->
+- [[#2683](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2683)] Add missing roles to project factory ro SA in stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 09:25:51+00:00 -->
+- [[#2656](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2656)] Fix permadiff in bootstrap IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-11-01 14:56:07+00:00 -->
+- [[#2652](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2652)] Final fixes for v36.0.0-rc1 ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 16:47:11+00:00 -->
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] **incompatible change:** Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### MODULES
+
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+### TOOLS
+
+- [[#2688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2688)] Streamline environments variable across stages ([ludoo](https://github.com/ludoo)) <!-- 2024-11-15 09:22:18+00:00 -->
+- [[#2660](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2660)] Refactor changelog for the new release process ([ludoo](https://github.com/ludoo)) <!-- 2024-11-11 10:59:45+00:00 -->
+- [[#2648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2648)] Refactor of FAST resource management and subsequent stages ([ludoo](https://github.com/ludoo)) <!-- 2024-10-31 15:55:55+00:00 -->
+
+## [35.1.0] - 2024-11-22
+
+### BLUEPRINTS
+
+- [[#2706](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2706)] Added min_instances, max_instances, min_throughput and max_throughtpu… ([apichick](https://github.com/apichick)) <!-- 2024-11-21 08:05:12+00:00 -->
+- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
+- [[#2705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2705)] Added outputs to apigee-x-foundations blueprint (PSC NEGs) ([apichick](https://github.com/apichick)) <!-- 2024-11-18 07:36:49+00:00 -->
+- [[#2704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2704)] Added outputs to apigee-x-foundations blueprint (instances and lbs) ([apichick](https://github.com/apichick)) <!-- 2024-11-17 16:28:30+00:00 -->
+- [[#2514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2514)] New SecOps blueprints section and SecOps GKE Forwarder ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-05 13:41:37+00:00 -->
+- [[#2658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2658)] Update service agents spec ([juliocc](https://github.com/juliocc)) <!-- 2024-11-05 11:10:23+00:00 -->
+- [[#2659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2659)] Fix Vertex MLOps blueprint  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-05 10:22:43+00:00 -->
+- [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
+- [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
+
+### FAST
+
+- [[#2715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2715)] Allow setting GCS location default/override in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-11-18 16:45:52+00:00 -->
+- [[#2640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2640)] Add Automation Service Accounts Output ([joshw123](https://github.com/joshw123)) <!-- 2024-11-17 17:29:06+00:00 -->
+- [[#2681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2681)] Keeping my contributor status :) ([drebes](https://github.com/drebes)) <!-- 2024-11-13 20:28:44+00:00 -->
+- [[#2680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2680)] Swap groups_iam/iam_group for iam_by_principals in bootstrap README ([robrankin](https://github.com/robrankin)) <!-- 2024-11-13 15:33:41+00:00 -->
+
+### MODULES
+
+- [[#2726](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2726)] enable_private_path_for_google_cloud_services added to CloudSQL ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-11-22 13:08:34+00:00 -->
+- [[#2727](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2727)] Fix typo on maintenance config ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-22 09:35:45+00:00 -->
+- [[#2706](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2706)] Added min_instances, max_instances, min_throughput and max_throughtpu… ([apichick](https://github.com/apichick)) <!-- 2024-11-21 08:05:12+00:00 -->
+- [[#2719](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2719)] Allow factory files to be empty ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-21 07:41:24+00:00 -->
+- [[#2723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2723)] Fix not setting user defined password ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-20 09:55:00+00:00 -->
+- [[#2716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2716)] Add support for workload_metadata_config in Standard GKE clusters ([Tirthankar17](https://github.com/Tirthankar17)) <!-- 2024-11-20 09:36:10+00:00 -->
+- [[#2720](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2720)] Add location to cert-manager issuance config and fix issuance config reference ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-19 12:27:11+00:00 -->
+- [[#2715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2715)] Allow setting GCS location default/override in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-11-18 16:45:52+00:00 -->
+- [[#2689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2689)] add GPU options to compute-vm module ([ooshrioo](https://github.com/ooshrioo)) <!-- 2024-11-18 15:40:38+00:00 -->
+- [[#2712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2712)] Add hierarchical namespace support to GCS module ([juliocc](https://github.com/juliocc)) <!-- 2024-11-18 11:41:49+00:00 -->
+- [[#2711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2711)] Allow providing network for Direct VPC access ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-18 09:25:20+00:00 -->
+- [[#2640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2640)] Add Automation Service Accounts Output ([joshw123](https://github.com/joshw123)) <!-- 2024-11-17 17:29:06+00:00 -->
+- [[#2702](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2702)] Move direct vpc out of BETA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 11:52:50+00:00 -->
+- [[#2700](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2700)] Fix non-empty plan after mixing CloudSQL with other mounts ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 10:55:37+00:00 -->
+- [[#2699](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2699)] Fix E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-16 10:02:16+00:00 -->
+- [[#2692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2692)] Fix examples for GCS mount ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-15 08:58:01+00:00 -->
+- [[#2687](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2687)] Fix initial user on secondary cluster issue ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-11-14 21:20:38+00:00 -->
+- [[#2686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2686)] Fix gcs & NFS mounts for cloud-run-v2 service ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-14 12:33:21+00:00 -->
+- [[#2682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2682)] Add support for service account in pubsub module bigquery subscriptions ([ludoo](https://github.com/ludoo)) <!-- 2024-11-14 11:05:37+00:00 -->
+- [[#2676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2676)] Fix "inconsistent conditional result types" error in `modules/vpc-sc` ([joelvoss](https://github.com/joelvoss)) <!-- 2024-11-12 09:27:51+00:00 -->
+- [[#2673](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2673)] bump modules/README github tag reference ([kaue](https://github.com/kaue)) <!-- 2024-11-11 18:13:12+00:00 -->
+- [[#2670](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2670)] Fix the location of the GCS and NFS attributes ([wintermi](https://github.com/wintermi)) <!-- 2024-11-11 09:01:16+00:00 -->
+- [[#2669](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2669)] Additional examples for Cloud Run and Cloud SQL ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-10 06:02:30+00:00 -->
+- [[#2668](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2668)] SWP: remove condition from `addresses` variable and make it null by default ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-09 21:50:47+00:00 -->
+- [[#2666](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2666)] Update SWP ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-11-09 12:54:13+00:00 -->
+- [[#2657](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2657)] add enable_object_retention argument ([kejti23](https://github.com/kejti23)) <!-- 2024-11-05 16:27:29+00:00 -->
+- [[#2658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2658)] Update service agents spec ([juliocc](https://github.com/juliocc)) <!-- 2024-11-05 11:10:23+00:00 -->
+- [[#2632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2632)] Migrate blueprints/data-solutions/vertex-mlops to google_workbench_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:34:54+00:00 -->
+- [[#2631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2631)] fix Vertex-ML-Ops e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-11-04 09:13:33+00:00 -->
+- [[#2653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2653)] Add required enabled field introduced in Terraform version 5.41.0 ([jacobmammoliti](https://github.com/jacobmammoliti)) <!-- 2024-11-01 07:01:14+00:00 -->
+
+## [35.0.0] - 2024-10-30
+<!-- None < 2024-09-05 10:07:19+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2643](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2643)] Add codespell to pre-commit  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-10-30 09:30:37+00:00 -->
+- [[#2629](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2629)] Bump cookie and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-10-17 07:11:45+00:00 -->
+- [[#2623](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2623)] Bump cookie and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-10-15 14:05:52+00:00 -->
+- [[#2609](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2609)] Add support for bundling net monitoring tool in a Docker image, and deploying via CR Job ([ludoo](https://github.com/ludoo)) <!-- 2024-10-07 12:56:09+00:00 -->
+- [[#2585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2585)] Apigee x foundations certificate manager ([apichick](https://github.com/apichick)) <!-- 2024-09-24 06:49:36+00:00 -->
+- [[#2584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2584)] README fixes to FAST docs ([skalolazka](https://github.com/skalolazka)) <!-- 2024-09-19 13:23:40+00:00 -->
+- [[#2574](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2574)] Bump path-to-regexp and express in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:21:22+00:00 -->
+- [[#2573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2573)] Bump path-to-regexp and express in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-09-18 08:09:06+00:00 -->
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
+### FAST
+
+- [[#2649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2649)] Clarify fast-dev purpose ([juliocc](https://github.com/juliocc)) <!-- 2024-10-30 14:08:04+00:00 -->
+- [[#2643](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2643)] Add codespell to pre-commit  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-10-30 09:30:37+00:00 -->
+- [[#2641](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2641)] Adding DNS for GKE control plane to private google access APIs ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-10-29 13:09:26+00:00 -->
+- [[#2630](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2630)] [FAST] Fix stage 2 simple NVA wrong location - causing test failures ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-10-18 12:43:03+00:00 -->
+- [[#2611](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2611)] Add TFE integration for backend and CICD ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-16 06:01:39+00:00 -->
+- [[#2620](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2620)] added output for tfvars_globals ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-15 07:39:09+00:00 -->
+- [[#2544](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2544)] GCVE network mode for 2-networking-b-nva  stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-10-15 06:28:15+00:00 -->
+- [[#2616](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2616)] Support log exclusions in FAST bootstrap log sinks ([ludoo](https://github.com/ludoo)) <!-- 2024-10-09 07:22:28+00:00 -->
+- [[#2604](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2604)] fixed tfe wif definition variables ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-03 13:41:31+00:00 -->
+- [[#2600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2600)] FAST: Adds support for PSC transitivity to 2-a ([sruffilli](https://github.com/sruffilli)) <!-- 2024-10-02 09:39:24+00:00 -->
+- [[#2598](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2598)] added terraform enterprise/hcp terraform def to wif providers ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-10-01 23:12:49+00:00 -->
+- [[#2584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2584)] README fixes to FAST docs ([skalolazka](https://github.com/skalolazka)) <!-- 2024-09-19 13:23:40+00:00 -->
+- [[#2582](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2582)] Make it explicit in FAST docs that stages need to be run once before CI/CD setup ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:43:36+00:00 -->
+- [[#2581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2581)] Update FAST stage diagrams ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:39:35+00:00 -->
+- [[#2579](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2579)] FAST resman mt fixes ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 07:02:04+00:00 -->
+- [[#2568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2568)] Update a few references from 3-project-factory to 2-project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2024-09-19 05:11:32+00:00 -->
+- [[#2558](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2558)] Update variables.tf ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-09-16 08:28:22+00:00 -->
+- [[#2564](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2564)] Enables compute.setNewProjectDefaultToZonalDNSOnly and essentialcontacts.allowedContactDomains ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-13 09:09:55+00:00 -->
+- [[#2563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2563)] Update list of imported org policies ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-13 07:05:01+00:00 -->
+
+### MODULES
+
+- [[#2642](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2642)] Reorganize ADRs and new versioning ADR ([juliocc](https://github.com/juliocc)) <!-- 2024-10-30 11:39:53+00:00 -->
+- [[#2643](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2643)] Add codespell to pre-commit  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-10-30 09:30:37+00:00 -->
+- [[#2645](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2645)] feat(modules/secret-manager): add support for version_destroy_ttl ([frits-v](https://github.com/frits-v)) <!-- 2024-10-30 08:54:31+00:00 -->
+- [[#2639](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2639)] **incompatible change:** Add option to attach multiple snapshot schedule to disks ([shujaatsscripts](https://github.com/shujaatsscripts)) <!-- 2024-10-28 17:53:43+00:00 -->
+- [[#2638](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2638)] Fix ipv6 output in net-vpc module, add support for extra volumes in cloud run v2 module ([ludoo](https://github.com/ludoo)) <!-- 2024-10-24 06:36:21+00:00 -->
+- [[#2625](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2625)] Add Project Factory Logging Data Option ([joshw123](https://github.com/joshw123)) <!-- 2024-10-17 10:54:42+00:00 -->
+- [[#2617](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2617)] fix(artifact-registry): fix a move issue with tf>1.7 ([NitriKx](https://github.com/NitriKx)) <!-- 2024-10-11 09:41:06+00:00 -->
+- [[#2608](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2608)] Additional job attributes in cloud run v2 module ([ludoo](https://github.com/ludoo)) <!-- 2024-10-07 09:45:59+00:00 -->
+- [[#2599](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2599)] **incompatible change:** Alloydb variables refactor ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-10-06 09:49:16+00:00 -->
+- [[#2606](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2606)] feat: implement the new iam interface in `artifact-registry` ([NitriKx](https://github.com/NitriKx)) <!-- 2024-10-04 13:49:48+00:00 -->
+- [[#2595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2595)] Allow manage existing SSM instance ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-09-27 10:13:30+00:00 -->
+- [[#2572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2572)] Added biglake-catalog module ([apichick](https://github.com/apichick)) <!-- 2024-09-24 15:39:29+00:00 -->
+- [[#2593](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2593)] Fix looker README and add custom url for looker instance module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-09-23 09:12:24+00:00 -->
+- [[#2590](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2590)] Fix permadiff on iap attribute in net-lb-app-int module ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-09-20 11:35:18+00:00 -->
+- [[#2565](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2565)] New looker core module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-09-20 10:12:09+00:00 -->
+- [[#2587](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2587)] Project Module CMEK: added CloudRun ([artemBogdantsev](https://github.com/artemBogdantsev)) <!-- 2024-09-20 08:30:06+00:00 -->
+- [[#2586](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2586)] Add location for each SSM IAM resource ([lnesteroff](https://github.com/lnesteroff)) <!-- 2024-09-20 07:30:46+00:00 -->
+- [[#2569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2569)] Secure source manager ([apichick](https://github.com/apichick)) <!-- 2024-09-19 10:29:01+00:00 -->
+- [[#2570](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2570)] Bigquery dataset routines ([apichick](https://github.com/apichick)) <!-- 2024-09-19 09:13:32+00:00 -->
+- [[#2583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2583)] **incompatible change:** Support secret-level expire time in secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2024-09-19 08:35:44+00:00 -->
+- [[#2559](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2559)] Fix e2e tests for cloud run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-10 10:04:40+00:00 -->
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
+### TOOLS
+
+- [[#2536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2536)] **incompatible change:** Add support for google provider 6.x ([sruffilli](https://github.com/sruffilli)) <!-- 2024-09-05 10:35:59+00:00 -->
+
+## [34.1.0] - 2024-09-05
+<!-- 2024-09-05 10:07:19+00:00 < 2024-08-30 08:18:13+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+
+### FAST
+
+- [[#2545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2545)] Add documentation instructions for potential issues in cicd-github and bootstrap stages ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 12:04:44+00:00 -->
+
+### MODULES
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+- [[#2556](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2556)] Updated the auto pilot gke security posture configuration ([oluakingcp](https://github.com/oluakingcp)) <!-- 2024-09-04 13:53:07+00:00 -->
+- [[#2553](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2553)] Added the GKE security_posture configuration ([oluakingcp](https://github.com/oluakingcp)) <!-- 2024-09-04 13:29:18+00:00 -->
+- [[#2546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2546)] Full examples for CMEK examples ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-04 10:16:50+00:00 -->
+
+### TOOLS
+
+- [[#2557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2557)] Bump provider to 5.43.1 ahead of next release ([juliocc](https://github.com/juliocc)) <!-- 2024-09-04 17:58:07+00:00 -->
+- [[#2552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2552)] Upload hidden files ([wiktorn](https://github.com/wiktorn)) <!-- 2024-09-03 15:18:21+00:00 -->
+
+## [34.0.0] - 2024-08-30
+<!-- 2024-08-30 08:18:13+00:00 < 2024-08-01 11:45:37+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
+- [[#2542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2542)] Use generic project name in HA VPN over IC blueprint ([juliocc](https://github.com/juliocc)) <!-- 2024-08-30 07:32:21+00:00 -->
+- [[#2530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2530)] Add managed folders support to `gcs` module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 07:30:53+00:00 -->
+- [[#2531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2531)] Update stable provider too to 5.43 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 06:49:46+00:00 -->
+- [[#2525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2525)] Bump provider to last release of version 5 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-27 14:50:59+00:00 -->
+- [[#2502](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2502)] Add `deletion_policy` to project module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-16 16:33:39+00:00 -->
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
+- [[#2463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2463)] Typo in README: well know -> well-known ([derailed-dash](https://github.com/derailed-dash)) <!-- 2024-08-03 07:54:55+00:00 -->
+
+### FAST
+
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
+- [[#2541](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2541)] Moved blocks and fix to resman for FAST v33-v34 transition ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 07:44:27+00:00 -->
+- [[#2484](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2484)] [FAST] TLS inspection support for NGFW Enterprise ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-30 07:15:17+00:00 -->
+- [[#2530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2530)] Add managed folders support to `gcs` module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 07:30:53+00:00 -->
+- [[#2511](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2511)] [FAST] Add permissions to nsec-r SA ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-21 18:26:32+00:00 -->
+- [[#2509](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2509)] Depend network security stage from fast features in FAST resman stage ([ludoo](https://github.com/ludoo)) <!-- 2024-08-21 06:38:43+00:00 -->
+- [[#2505](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2505)] **incompatible change:** Refactor FAST project factory and supporting documentation ([ludoo](https://github.com/ludoo)) <!-- 2024-08-20 16:45:42+00:00 -->
+- [[#2499](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2499)] Firewall policy module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-11 08:12:03+00:00 -->
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
+- [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
+- [[#2483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2483)] Add bootstrap output with log destination ids ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 14:23:38+00:00 -->
+- [[#2482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2482)] [FAST] Rename netsec stage to nsec ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 12:30:09+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2471](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2471)] Rename 1-vpc-sc stage to 1-vpcsc ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 11:21:55+00:00 -->
+- [[#2470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2470)] Make policyReader binding additive in bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 09:35:38+00:00 -->
+- [[#2466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2466)] [FAST] Sets projects_data_path optional, as in the project factory module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-06 06:27:34+00:00 -->
+- [[#2464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2464)] Fix peering routes config in fast a network stage ([ludoo](https://github.com/ludoo)) <!-- 2024-08-03 20:18:45+00:00 -->
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### MODULES
+
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
+- [[#2538](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2538)] Module net-vpc fix for reserved ranges ([jamesdalf](https://github.com/jamesdalf)) <!-- 2024-08-30 05:10:28+00:00 -->
+- [[#2539](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2539)] Exposing aws_v4_authentication configuration in global external alb ([okguru1](https://github.com/okguru1)) <!-- 2024-08-29 13:45:50+00:00 -->
+- [[#2537](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2537)] Add send_secondary_ip_range_if_empty=true to google_compute_subnetwork ([sruffilli](https://github.com/sruffilli)) <!-- 2024-08-28 14:00:09+00:00 -->
+- [[#2533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2533)] Added the possibility of setting the duration of a GCE instance. ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-08-28 09:36:45+00:00 -->
+- [[#2535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2535)] Allow customizable prefix in net-vpc module PSA configs ([ludoo](https://github.com/ludoo)) <!-- 2024-08-28 09:24:13+00:00 -->
+- [[#2528](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2528)] Support budget restriction read only ([kejti23](https://github.com/kejti23)) <!-- 2024-08-28 09:08:14+00:00 -->
+- [[#2530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2530)] Add managed folders support to `gcs` module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 07:30:53+00:00 -->
+- [[#2531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2531)] Update stable provider too to 5.43 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 06:49:46+00:00 -->
+- [[#2525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2525)] Bump provider to last release of version 5 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-27 14:50:59+00:00 -->
+- [[#2523](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2523)] feat: Add security_policy to backend service configuration ([EmileHofsink](https://github.com/EmileHofsink)) <!-- 2024-08-27 12:19:14+00:00 -->
+- [[#2521](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2521)] net-vpc module add overlap CIDR subnet attribute ([jamesdalf](https://github.com/jamesdalf)) <!-- 2024-08-26 19:48:26+00:00 -->
+- [[#2518](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2518)] Fix CMEK typo in project module. Part 2 :) ([artemBogdantsev](https://github.com/artemBogdantsev)) <!-- 2024-08-23 17:16:17+00:00 -->
+- [[#2517](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2517)] Fix CMEK typo in project module  ([artemBogdantsev](https://github.com/artemBogdantsev)) <!-- 2024-08-23 16:39:21+00:00 -->
+- [[#2516](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2516)] Key inconsistency in project-factory ([V0idC0de](https://github.com/V0idC0de)) <!-- 2024-08-23 15:47:51+00:00 -->
+- [[#2515](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2515)] Add ca pool object to certification-authority-service module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-23 09:43:01+00:00 -->
+- [[#2508](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2508)] Add support for disable default snat ([okguru1](https://github.com/okguru1)) <!-- 2024-08-21 09:43:28+00:00 -->
+- [[#2510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2510)] net-swp module cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-08-21 09:28:20+00:00 -->
+- [[#2505](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2505)] **incompatible change:** Refactor FAST project factory and supporting documentation ([ludoo](https://github.com/ludoo)) <!-- 2024-08-20 16:45:42+00:00 -->
+- [[#2501](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2501)] Use the `google_tags_location_tag_binding` Terraform resource to bind tags on KMS key rings ([arnodasilva](https://github.com/arnodasilva)) <!-- 2024-08-20 05:43:18+00:00 -->
+- [[#2502](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2502)] Add `deletion_policy` to project module ([juliocc](https://github.com/juliocc)) <!-- 2024-08-16 16:33:39+00:00 -->
+- [[#2420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2420)] Add name overrides for Internal and External Load Balancers ([cvanwijck-hub24](https://github.com/cvanwijck-hub24)) <!-- 2024-08-16 06:45:30+00:00 -->
+- [[#2499](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2499)] Firewall policy module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-11 08:12:03+00:00 -->
+- [[#2498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2498)] DNS rpz module factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 15:19:28+00:00 -->
+- [[#2497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2497)] Net vpc firewall factory schema ([ludoo](https://github.com/ludoo)) <!-- 2024-08-10 13:04:50+00:00 -->
+- [[#2496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2496)] [fix] certificate authority service returning bad pool id ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 16:20:53+00:00 -->
+- [[#2493](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2493)] [fix] Fixes errors in certificate-authority-service module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-09 14:58:53+00:00 -->
+- [[#2495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2495)] ensure dns_keys output freshness ([nathou](https://github.com/nathou)) <!-- 2024-08-09 14:33:55+00:00 -->
+- [[#2494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2494)] Additional module schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 13:58:06+00:00 -->
+- [[#2491](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2491)] Organization module factory schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-09 10:22:57+00:00 -->
+- [[#2490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2490)] Bind schemas to factory files, add support for groups in VPC-SC schema ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-09 10:08:22+00:00 -->
+- [[#2489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2489)] Extend test collector to include yaml files under tests/schemas/ and fast data files ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 08:59:00+00:00 -->
+- [[#2486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2486)] Fix failing tests for CloudSQL ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-08 18:16:53+00:00 -->
+- [[#2485](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2485)] Project factory module JSON schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-08 16:43:11+00:00 -->
+- [[#2481](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2481)] Adds a new certification authority service (CAS) module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-08 07:55:49+00:00 -->
+- [[#2480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2480)] Add support for PSC global access to net-address ([juliocc](https://github.com/juliocc)) <!-- 2024-08-07 17:27:03+00:00 -->
+- [[#2477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2477)] VPC-SC factory JSON Schemas ([ludoo](https://github.com/ludoo)) <!-- 2024-08-07 12:09:38+00:00 -->
+- [[#2474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2474)] [fix] Pass optional location variable at certificates creation ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-07 07:05:57+00:00 -->
+- [[#2476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2476)] Cloud run v2 custom audiences ([apichick](https://github.com/apichick)) <!-- 2024-08-07 06:54:36+00:00 -->
+- [[#2475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2475)] Cloud run v2 output uri ([apichick](https://github.com/apichick)) <!-- 2024-08-06 20:09:19+00:00 -->
+- [[#2472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2472)] Fix grammar in net-vpc-peering preconditions ([juliocc](https://github.com/juliocc)) <!-- 2024-08-06 12:27:31+00:00 -->
+- [[#2469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2469)] Fix  E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-08-06 09:49:30+00:00 -->
+- [[#2460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2460)] **incompatible change:** VPC-SC as separate FAST stage 1 ([ludoo](https://github.com/ludoo)) <!-- 2024-08-02 16:04:36+00:00 -->
+
+### TOOLS
+
+- [[#2543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2543)] Prepare v34.0.0 release ([ludoo](https://github.com/ludoo)) <!-- 2024-08-30 08:06:33+00:00 -->
+- [[#2531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2531)] Update stable provider too to 5.43 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-28 06:49:46+00:00 -->
+- [[#2525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2525)] Bump provider to last release of version 5 ([juliocc](https://github.com/juliocc)) <!-- 2024-08-27 14:50:59+00:00 -->
+- [[#2520](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2520)] Add e2e pubusb errors ([juliocc](https://github.com/juliocc)) <!-- 2024-08-26 17:55:33+00:00 -->
+- [[#2492](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2492)] Add schema testing to PR workflow ([juliocc](https://github.com/juliocc)) <!-- 2024-08-09 13:43:11+00:00 -->
+- [[#2488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2488)] Introduce YAML schema validation for YAML examples ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 21:09:22+00:00 -->
+- [[#2487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2487)] Example testing improvements ([juliocc](https://github.com/juliocc)) <!-- 2024-08-08 19:22:27+00:00 -->
+
+## [33.0.0] - 2024-08-01
+
+### BLUEPRINTS
+
+- [[#2450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2450)] Remove "constraints/" from org policy names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-29 13:15:04+00:00 -->
+- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] Add generic URL output to modules/artifiact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2433](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2433)] **incompatible change:** Reintroduce docker image path output in AR module ([ludoo](https://github.com/ludoo)) <!-- 2024-07-20 06:49:59+00:00 -->
+- [[#2416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2416)] Add support for sqlAssertion AutoDQ rule type in dataplex-datascan ([jayBana](https://github.com/jayBana)) <!-- 2024-07-09 21:29:45+00:00 -->
+- [[#2395](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2395)] Fix tutorial error. ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-29 06:55:33+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] **incompatible change:** Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2392)] Added forward_proxy_uri to apigee environments in apigee-x-foundation… ([apichick](https://github.com/apichick)) <!-- 2024-06-27 17:48:24+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2382](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2382)] Fixes related to Apigee KMS keys ([apichick](https://github.com/apichick)) <!-- 2024-06-26 06:12:26+00:00 -->
+- [[#2372](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2372)] Added spanner-instance module ([apichick](https://github.com/apichick)) <!-- 2024-06-23 17:25:22+00:00 -->
+
+### FAST
+
+- [[#2410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2410)] [FAST] Add basic NGFW enterprise stage ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-08-01 09:41:31+00:00 -->
+- [[#2450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2450)] Remove "constraints/" from org policy names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-29 13:15:04+00:00 -->
+- [[#2397](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2397)] NCC in 2-net-a-simple ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-25 16:03:09+00:00 -->
+- [[#2446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2446)] Remove alpha from gcloud storage cp as it moved to GA ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-24 20:46:43+00:00 -->
+- [[#2444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2444)] Add context to net-vpc factory ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-24 13:54:20+00:00 -->
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2440)] FAST ng: stage 0 environments and VPC-SC IaC resources ([ludoo](https://github.com/ludoo)) <!-- 2024-07-23 09:52:39+00:00 -->
+- [[#2430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2430)] FAST: IAM cleanups to reflect PF changes ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-18 12:59:30+00:00 -->
+- [[#2417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2417)] Allow description to be set for FAST-managed tags ([juliocc](https://github.com/juliocc)) <!-- 2024-07-09 16:55:21+00:00 -->
+- [[#2412](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2412)] [FAST] Housekeeping in CICD workflow templates and extra stage ([jayBana](https://github.com/jayBana)) <!-- 2024-07-08 12:40:33+00:00 -->
+- [[#2411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2411)] [FAST] Fix IAM bindings to impersonate resman CICD SAs at bootstrap stage ([jayBana](https://github.com/jayBana)) <!-- 2024-07-08 10:58:41+00:00 -->
+- [[#2404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2404)] Documented new GCVE design options ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-07-02 14:46:55+00:00 -->
+- [[#2402](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2402)] gitlab workflow template fixes #2401 ([sudhirrs](https://github.com/sudhirrs)) <!-- 2024-07-01 09:42:55+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2378](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2378)] Add wording for SCC Enterprise to FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-06-24 17:03:07+00:00 -->
+
+### MODULES
+
+- [[#2459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2459)] Allow user to override peerings names ([juliocc](https://github.com/juliocc)) <!-- 2024-07-31 15:13:22+00:00 -->
+- [[#2457](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2457)] update readme with cross project backend external regional/global LB - review ([vivianvarela](https://github.com/vivianvarela)) <!-- 2024-07-30 15:28:14+00:00 -->
+- [[#2454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2454)] Add support for dry-run org policies ([juliocc](https://github.com/juliocc)) <!-- 2024-07-30 13:12:57+00:00 -->
+- [[#2456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2456)] Manage lifecycle of cloud functions v2 IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-07-30 12:08:05+00:00 -->
+- [[#2449](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2449)] Add moved blocks for the service networking service agent and IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 12:01:21+00:00 -->
+- [[#2448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2448)] **incompatible change:** Add generic URL output to modules/artifact-registry ([juliocc](https://github.com/juliocc)) <!-- 2024-07-25 08:33:01+00:00 -->
+- [[#2447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2447)] Fix wrong expression in compute-mig module ([bz-canva](https://github.com/bz-canva)) <!-- 2024-07-25 05:26:26+00:00 -->
+- [[#2445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2445)] Override primary flag for the storage transfer service agent ([juliocc](https://github.com/juliocc)) <!-- 2024-07-24 14:12:56+00:00 -->
+- [[#2444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2444)] Add context to net-vpc factory ([sruffilli](https://github.com/sruffilli)) <!-- 2024-07-24 13:54:20+00:00 -->
+- [[#2443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2443)] Project service agents moved block and enabled services ([ludoo](https://github.com/ludoo)) <!-- 2024-07-24 12:02:53+00:00 -->
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2439)] **incompatible change:** Remove default values to secondary range names in GKE cluster modules ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-07-22 20:20:58+00:00 -->
+- [[#2437](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2437)] Add coalesce to factory fw policies to support empty yaml files ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-22 15:40:22+00:00 -->
+- [[#2436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2436)] Allow disabling topic creation in GCS module notification ([ludoo](https://github.com/ludoo)) <!-- 2024-07-22 10:51:26+00:00 -->
+- [[#2433](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2433)] **incompatible change:** Reintroduce docker image path output in AR module ([ludoo](https://github.com/ludoo)) <!-- 2024-07-20 06:49:59+00:00 -->
+- [[#2424](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2424)] E2E tests for ncc-spoke-ra ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-13 11:54:34+00:00 -->
+- [[#2427](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2427)] Fix Cloud Function v1/v2 E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-13 11:43:05+00:00 -->
+- [[#2421](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2421)] fix cloudbuild service account email ([nathou](https://github.com/nathou)) <!-- 2024-07-11 13:31:04+00:00 -->
+- [[#2418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2418)] Adding support for DWS for GKE nodepools ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-10 13:18:12+00:00 -->
+- [[#2416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2416)] Add support for sqlAssertion AutoDQ rule type in dataplex-datascan ([jayBana](https://github.com/jayBana)) <!-- 2024-07-09 21:29:45+00:00 -->
+- [[#2406](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2406)] **incompatible change:** Adding TPU limits for GKE cluster node auto-provisioning (NAP) ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-09 09:26:30+00:00 -->
+- [[#2415](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2415)] Added certificate_manager_certificates to app load balancers ([apichick](https://github.com/apichick)) <!-- 2024-07-09 05:36:06+00:00 -->
+- [[#2413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2413)] **incompatible change:** Add E2E tests for Cloud Functions and fix perma-diff ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-08 14:14:21+00:00 -->
+- [[#2409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2409)] Adds support for external SPGs to net-firewall-policy ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-06 10:33:09+00:00 -->
+- [[#2407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2407)] Allow project factory projects to override name ([juliocc](https://github.com/juliocc)) <!-- 2024-07-04 18:14:04+00:00 -->
+- [[#2405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2405)] Adding placement_policy for GKE nodepools (ex: GPU compact placement or TPU topology) ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-07-03 10:21:31+00:00 -->
+- [[#2400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2400)] Add info about roles for connectors service agent ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-30 18:17:51+00:00 -->
+- [[#2396](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2396)] **incompatible change:** Update `modules/artifact-registry` with newly-released features. ([juliocc](https://github.com/juliocc)) <!-- 2024-06-28 17:52:25+00:00 -->
+- [[#2393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2393)] Add support for SSL policy to net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-28 07:03:10+00:00 -->
+- [[#2387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2387)] Added certificate-manager module ([apichick](https://github.com/apichick)) <!-- 2024-06-27 13:05:35+00:00 -->
+- [[#2390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2390)] Add AssuredWorkload support to the folder module ([averbuks](https://github.com/averbuks)) <!-- 2024-06-27 12:28:17+00:00 -->
+- [[#2384](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2384)] Allow Cloud NAT to only use secondary ranges ([juliocc](https://github.com/juliocc)) <!-- 2024-06-27 08:05:45+00:00 -->
+- [[#2388](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2388)] Added missing links to firestore module is READMEs. ([apichick](https://github.com/apichick)) <!-- 2024-06-27 06:54:03+00:00 -->
+- [[#2389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2389)] Several wording and typos updates  ([bluPhy](https://github.com/bluPhy)) <!-- 2024-06-27 05:36:19+00:00 -->
+- [[#2374](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2374)] Added firestore module ([apichick](https://github.com/apichick)) <!-- 2024-06-26 12:18:42+00:00 -->
+- [[#2380](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2380)] Added private_endpoint_subnetwork parameters to GKE standard and autopilot modules ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-06-25 14:16:01+00:00 -->
+- [[#2370](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2370)] Apigee - Add forward_proxy_uri support on environment resource ([diogo-j-n-teixeira](https://github.com/diogo-j-n-teixeira)) <!-- 2024-06-25 07:50:19+00:00 -->
+- [[#2376](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2376)] Removed advertised_groups ALL_VPC_SUBNETS, ALL_VPC_SUBNETS as they ar… ([apichick](https://github.com/apichick)) <!-- 2024-06-24 07:15:20+00:00 -->
+- [[#2375](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2375)] Minor fixes in workstations IAM ([apichick](https://github.com/apichick)) <!-- 2024-06-24 06:59:29+00:00 -->
+- [[#2372](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2372)] Added spanner-instance module ([apichick](https://github.com/apichick)) <!-- 2024-06-23 17:25:22+00:00 -->
+- [[#2373](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2373)] Added expire_time option to the secret-manager module ([deanosaurx](https://github.com/deanosaurx)) <!-- 2024-06-23 15:20:10+00:00 -->
+- [[#2371](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2371)] Support build service account in cloud function v2 module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-21 18:19:29+00:00 -->
+- [[#2369](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2369)] Add example, tests and fix for Google APIs PSC endpoint ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-20 10:44:43+00:00 -->
+- [[#2368](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2368)] Fix for plan not in sync when creating billing budgets in project factory #2365 ([sudhirrs](https://github.com/sudhirrs)) <!-- 2024-06-20 05:23:20+00:00 -->
+- [[#2366](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2366)] Added additional range field to GKE standand and autopilot ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-06-18 12:17:09+00:00 -->
+
+### TOOLS
+
+- [[#2452](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2452)] Add `--extra-files` option to plan_summary.py cmd ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-07-30 09:29:19+00:00 -->
+- [[#2445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2445)] Override primary flag for the storage transfer service agent ([juliocc](https://github.com/juliocc)) <!-- 2024-07-24 14:12:56+00:00 -->
+- [[#2423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2423)] **incompatible change:** Refactor service agent management ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 20:05:38+00:00 -->
+- [[#2441](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2441)] Add commit id at the end of README ([juliocc](https://github.com/juliocc)) <!-- 2024-07-23 10:04:18+00:00 -->
+- [[#2413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2413)] **incompatible change:** Add E2E tests for Cloud Functions and fix perma-diff ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-08 14:14:21+00:00 -->
+- [[#2399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2399)] Test different versions of Terraform ([wiktorn](https://github.com/wiktorn)) <!-- 2024-07-05 11:21:41+00:00 -->
+
+## [32.0.1] - 2024-07-26
+<!-- 2024-07-26 05:52:59+00:00 < 2024-06-16 07:51:14+00:00 -->
+
+### MODULES
+
+- [[#2447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2447)] Fix wrong expression in compute-mig module ([bz-canva](https://github.com/bz-canva)) <!-- 2024-07-25 05:26:26+00:00 -->
+
+## [32.0.0] - 2024-06-16
+
+### BLUEPRINTS
+
+- [[#2361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2361)] **incompatible change:** Support GCS objects in cloud function modules bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 11:44:01+00:00 -->
+- [[#2358](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2358)] **incompatible change:** Support pre-made bundle archives in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 12:58:23+00:00 -->
+- [[#2347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2347)] Add GCVE Logging and Monitoring Blueprint ([KonradSchieban](https://github.com/KonradSchieban)) <!-- 2024-06-11 14:36:23+00:00 -->
+- [[#2356](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2356)] Add Terraform installation step to meet the versions.tf requirements ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-11 13:40:31+00:00 -->
+- [[#2355](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2355)] Bump @grpc/grpc-js from 1.10.7 to 1.10.9 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-06-11 05:21:41+00:00 -->
+- [[#2341](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2341)] Alloydb add support for psc ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-06-05 11:39:03+00:00 -->
+- [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
+- [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
+- [[#2299](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2299)] Kong Gateway on GKE offloading to Cloud Run ([juliodiez](https://github.com/juliodiez)) <!-- 2024-05-29 14:26:25+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2106)] Gitlab Runner blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-27 08:34:35+00:00 -->
+- [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
+- [[#2296](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2296)] Bump requests from 2.31.0 to 2.32.0 in /blueprints/cloud-operations/network-quota-monitoring/src ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-21 07:20:53+00:00 -->
+- [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
+
+### DOCUMENTATION
+
+- [[#2106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2106)] Gitlab Runner blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-27 08:34:35+00:00 -->
+
+### FAST
+
+- [[#2353](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2353)] Add main project factory service account ([ludoo](https://github.com/ludoo)) <!-- 2024-06-10 10:23:30+00:00 -->
+- [[#2352](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2352)] **incompatible change:** Remove support for source repositories from FAST CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2024-06-10 09:02:55+00:00 -->
+- [[#2344](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2344)] Fix typos in documentation ([albertogeniola](https://github.com/albertogeniola)) <!-- 2024-06-07 14:32:06+00:00 -->
+- [[#2340](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2340)] Fix wrong documentation reference to tfvars ([albertogeniola](https://github.com/albertogeniola)) <!-- 2024-06-04 14:23:08+00:00 -->
+- [[#2337](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2337)] DNS policy fix ([sruffilli](https://github.com/sruffilli)) <!-- 2024-06-03 06:25:35+00:00 -->
+- [[#2335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2335)] Add perimeter ids in vpc-sc module outputs, fix vpc-sc in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 18:08:00+00:00 -->
+- [[#2334](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2334)] Support setting IAM for FAST tags in resource management stage ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 12:57:14+00:00 -->
+- [[#2333](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2333)] Fix resman top-level folders variable types ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 12:45:32+00:00 -->
+- [[#2332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2332)] Fix dns policy ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-31 11:27:31+00:00 -->
+- [[#2331](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2331)] Enable hierarchy in fast project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 11:11:13+00:00 -->
+- [[#2330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2330)] Update PGA domains ([juliocc](https://github.com/juliocc)) <!-- 2024-05-31 10:53:50+00:00 -->
+- [[#2329](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2329)] FAST: Enable networkconnectivity when using NCC-RA in 2-b ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-31 08:22:24+00:00 -->
+- [[#2328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2328)] [FAST] Rename stage 2-networking-d-separate-envs to 2-networking-c-separate-envs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-31 06:09:31+00:00 -->
+- [[#2325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2325)] Fix restrictAllowedGenerations org policy example ([juliocc](https://github.com/juliocc)) <!-- 2024-05-30 12:19:24+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2319](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2319)] Pbrumblay/clarify org policy tags ([pbrumblay](https://github.com/pbrumblay)) <!-- 2024-05-29 06:19:39+00:00 -->
+- [[#2309](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2309)] **incompatible change:** Merge FAST C and E network stages into a new B stage. ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 15:27:28+00:00 -->
+- [[#2315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2315)] FAST: Obsolete assets cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 09:35:13+00:00 -->
+- [[#2305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2305)] FAST MT: Readme updates and more prefix validation  ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-24 10:01:55+00:00 -->
+- [[#2232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2232)] New extra stage for FAST gitlab setup ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:17:14+00:00 -->
+- [[#2294](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2294)] Avoid unnecessary terraform plans for closed (unmerged) PRs ([pbrumblay](https://github.com/pbrumblay)) <!-- 2024-05-21 13:03:07+00:00 -->
+- [[#2298](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2298)] Adjust list of imported org policies to official docs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-21 09:27:57+00:00 -->
+- [[#2297](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2297)] Add support for tenant factory CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2024-05-21 08:39:47+00:00 -->
+- [[#2292](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2292)] [FAST] fix: tenant-factory logging bucket project ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-05-20 16:51:12+00:00 -->
+- [[#2290](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2290)] Add wif permissions to bootstrap tf SA ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-20 16:15:23+00:00 -->
+- [[#2289](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2289)] Fix mt diagram and broken link ([ludoo](https://github.com/ludoo)) <!-- 2024-05-18 21:53:49+00:00 -->
+- [[#2288](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2288)] Ignore test resource data in new network stage, split out fast variables ([ludoo](https://github.com/ludoo)) <!-- 2024-05-17 13:30:57+00:00 -->
+- [[#2286](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2286)] Switch FAST stages 0-1s to excalidraw diagrams ([ludoo](https://github.com/ludoo)) <!-- 2024-05-17 09:10:13+00:00 -->
+- [[#2287](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2287)] **incompatible change:** FAST: Cleanup/harmonization of Simple and NVA net stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 13:49:16+00:00 -->
+- [[#2284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2284)] **incompatible change:** Unify VPN and Peering FAST stages ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-16 09:18:32+00:00 -->
+- [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
+
+### MODULES
+
+- [[#2364](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2364)] Relax dataproc master config type ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 14:19:57+00:00 -->
+- [[#2363](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2363)] Add support for different endpoint types for Cloud NAT ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-14 13:37:58+00:00 -->
+- [[#2362](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2362)] Strip bucket name from bundle URI in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 12:31:01+00:00 -->
+- [[#2361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2361)] **incompatible change:** Support GCS objects in cloud function modules bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 11:44:01+00:00 -->
+- [[#2360](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2360)] Validate bundle, use pathexpand in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-14 07:23:50+00:00 -->
+- [[#2359](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2359)] Don't compute checksum in cloud function modules for static bundles ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 16:08:12+00:00 -->
+- [[#2358](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2358)] **incompatible change:** Support pre-made bundle archives in cloud function modules ([ludoo](https://github.com/ludoo)) <!-- 2024-06-13 12:58:23+00:00 -->
+- [[#2357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2357)] Add use_table_schema parameter for PubSub subscription to BigQuery ([mdaddetta](https://github.com/mdaddetta)) <!-- 2024-06-12 22:36:19+00:00 -->
+- [[#2354](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2354)] Use var.vpc_config.subnetwork in NEGs when var.neg_config.*.subnetwork is not provided ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-10 14:57:12+00:00 -->
+- [[#2351](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2351)] Added missing validation values for backend services ([deanosaurx](https://github.com/deanosaurx)) <!-- 2024-06-09 07:15:22+00:00 -->
+- [[#2350](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2350)] Add network tags outputs and examples to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-09 05:52:15+00:00 -->
+- [[#2341](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2341)] Alloydb add support for psc ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-06-05 11:39:03+00:00 -->
+- [[#2339](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2339)] Enable stateful ha in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-06-04 07:51:20+00:00 -->
+- [[#2336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2336)] Add documentation for load balancer changes ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-03 06:47:49+00:00 -->
+- [[#2335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2335)] Add perimeter ids in vpc-sc module outputs, fix vpc-sc in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-31 18:08:00+00:00 -->
+- [[#2321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2321)] Fixed e2e tests for alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-30 09:41:15+00:00 -->
+- [[#2312](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2312)] Fixes for Alloydb E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-29 14:46:15+00:00 -->
+- [[#2317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2317)] resource_labels added to the node_config nodepool ([fulyagonultas](https://github.com/fulyagonultas)) <!-- 2024-05-29 12:56:15+00:00 -->
+- [[#2280](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2280)] Secret manager e2etests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-05-28 07:28:09+00:00 -->
+- [[#2307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2307)] Extend support for tag bindings to more modules ([ludoo](https://github.com/ludoo)) <!-- 2024-05-25 08:42:45+00:00 -->
+- [[#2306](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2306)] Internet NEG for internal proxy LB ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-24 10:56:28+00:00 -->
+- [[#2304](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2304)] **incompatible change:** Remove default location from container-registry, datacatalog-policy-tag, workstation-cluster ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:20:53+00:00 -->
+- [[#2303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2303)] **incompatible change:** Remove default location from gcs module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-24 07:02:33+00:00 -->
+- [[#2301](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2301)] Fix permadiff in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-23 06:38:03+00:00 -->
+- [[#2300](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2300)] Add support for shared vpc host to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-05-22 07:56:34+00:00 -->
+- [[#2285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2285)] New alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:40:26+00:00 -->
+- [[#2291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2291)] IPS support for Firewall Policy ([rickygodoy](https://github.com/rickygodoy)) <!-- 2024-05-21 04:38:43+00:00 -->
+- [[#2293](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2293)] Internet NEG for net-lb-app-int ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-20 19:12:39+00:00 -->
+
+### TOOLS
+
+- [[#2363](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2363)] Add support for different endpoint types for Cloud NAT ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-14 13:37:58+00:00 -->
+- [[#2346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2346)] use /bin/sh for pre-commit script for portability ([wiktorn](https://github.com/wiktorn)) <!-- 2024-06-07 06:15:33+00:00 -->
+- [[#2343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2343)] Change shebang on pre-commit checks ([albertogeniola](https://github.com/albertogeniola)) <!-- 2024-06-05 17:55:09+00:00 -->
+- [[#2327](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2327)] Add outstanding checks from lint.sh to pre-commit ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-31 10:22:21+00:00 -->
+- [[#2326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2326)] Add pre-commit hook configuration ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-30 17:35:09+00:00 -->
+- [[#2315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2315)] FAST: Obsolete assets cleanup ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-28 09:35:13+00:00 -->
+- [[#2314](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2314)] Explicit YAPF style ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-28 08:53:14+00:00 -->
+- [[#2302](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2302)] Add AlloyDB service for e2e tests harness ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-23 09:44:41+00:00 -->
+- [[#2285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2285)] New alloydb module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-22 07:40:26+00:00 -->
+- [[#2254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2254)] **incompatible change:** FAST: add top-level folders and restructure teams/tenants in resman ([ludoo](https://github.com/ludoo)) <!-- 2024-05-15 09:17:13+00:00 -->
+
+## [31.1.0] - 2024-05-15
+<!-- 2024-05-15 09:01:39+00:00 < 2024-05-14 19:52:57+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2282](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2282)] Disable reserved_internal_range in net-vpc due to provider bug ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-15 05:46:18+00:00 -->
+
+### MODULES
+
+- [[#2282](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2282)] Disable reserved_internal_range in net-vpc due to provider bug ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-15 05:46:18+00:00 -->
+
+## [31.0.0] - 2024-05-14
+<!-- 2024-05-14 19:52:57+00:00 < 2024-03-20 13:57:56+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2278](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2278)] Bump express from 4.18.2 to 4.19.2 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-14 19:30:35+00:00 -->
+- [[#2275](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2275)] Add support for reserved_internal_range in net-vpc ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-14 19:19:45+00:00 -->
+- [[#2277](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2277)] Added missing apigee org attributes to apigee x foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 18:48:05+00:00 -->
+- [[#2279](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2279)] Bump protobufjs, @google-cloud/logging-bunyan and @google-cloud/monitoring in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-05-14 18:37:16+00:00 -->
+- [[#2274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2274)] Added apigee-x-foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 14:53:38+00:00 -->
+- [[#2243](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2243)] Added new attributes Apigee organization and bumped up providers version ([apichick](https://github.com/apichick)) <!-- 2024-04-28 15:31:42+00:00 -->
+- [[#2239](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2239)] Update README.md ([vicenteg](https://github.com/vicenteg)) <!-- 2024-04-25 23:14:32+00:00 -->
+- [[#2230](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2230)] docs: :memo: fix error in phpIPAM terraform config by updating VPC pe… ([PapaPeskwo](https://github.com/PapaPeskwo)) <!-- 2024-04-22 10:55:03+00:00 -->
+- [[#2227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2227)] Bump golang.org/x/net from 0.17.0 to 0.23.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-04-19 12:26:14+00:00 -->
+- [[#2228](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2228)] Bump golang.org/x/net from 0.17.0 to 0.23.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-04-19 12:25:52+00:00 -->
+- [[#2226](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2226)] fix cloud sql PSA after module upgrade ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-04-19 10:41:02+00:00 -->
+- [[#2220](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2220)] Add tflint to pipelines ([juliocc](https://github.com/juliocc)) <!-- 2024-04-17 08:23:49+00:00 -->
+- [[#2218](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2218)] **incompatible change:** Allow multiple PSA service providers in net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-16 15:02:36+00:00 -->
+- [[#2208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2208)] Updated diagram to better reflect PSC terminology ([bswenka](https://github.com/bswenka)) <!-- 2024-04-09 15:18:43+00:00 -->
+- [[#2207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2207)] feat(gke-cluster-standard): Add optional `CiliumClusterWideNetworkPolicy` ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2024-04-09 15:08:36+00:00 -->
+- [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
+- [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
+- [[#2181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2181)] Bump express from 4.17.3 to 4.19.2 in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2024-03-28 06:14:50+00:00 -->
+- [[#2174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2174)] Bump provider version to 5.18 to fix non-empty plan for google_notebooks_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-25 18:57:14+00:00 -->
+- [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
+- [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
+- [[#2169](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2169)] Add stub READMEs for the removed hub and spoke blueprints ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 06:48:46+00:00 -->
+
+### DOCUMENTATION
+
+- [[#2164](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2164)] Updated CONTRIBUTING.md with a guide to cut a new release ([sruffilli](https://github.com/sruffilli)) <!-- 2024-03-20 17:08:27+00:00 -->
+
+### FAST
+
+- [[#2267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2267)] Fix 0-bootstrap iam_by_principals not taking into account all principals ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-12 19:02:04+00:00 -->
+- [[#2263](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2263)] Update docs - gcp-network-admins -> gcp-vpc-network-admins ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-10 08:04:25+00:00 -->
+- [[#2260](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2260)] Remove data source from folder module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-09 13:09:54+00:00 -->
+- [[#2253](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2253)] Misc FAST fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-05-02 06:56:26+00:00 -->
+- [[#2235](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2235)] Update FAST logging ([juliocc](https://github.com/juliocc)) <!-- 2024-04-25 06:31:52+00:00 -->
+- [[#2233](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2233)] Fix permissions for branch network dev - read sa ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-04-23 13:19:39+00:00 -->
+- [[#2221](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2221)] Enable TFLint in FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2024-04-18 08:06:24+00:00 -->
+- [[#2220](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2220)] Add tflint to pipelines ([juliocc](https://github.com/juliocc)) <!-- 2024-04-17 08:23:49+00:00 -->
+- [[#2218](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2218)] **incompatible change:** Allow multiple PSA service providers in net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-16 15:02:36+00:00 -->
+- [[#2219](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2219)] Remove unused variables/locals from FAST ([juliocc](https://github.com/juliocc)) <!-- 2024-04-16 14:14:24+00:00 -->
+- [[#2215](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2215)] Add new org policies to FAST ([juliocc](https://github.com/juliocc)) <!-- 2024-04-15 13:29:24+00:00 -->
+- [[#2210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2210)] Add support for quotas to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 17:03:04+00:00 -->
+- [[#2206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2206)] Update the description and README for the tags variable ([timothy-jabez](https://github.com/timothy-jabez)) <!-- 2024-04-10 13:08:59+00:00 -->
+- [[#2204](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2204)] Align exported tfvars in FAST networking stages, add psc and proxy only subnets ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 07:26:47+00:00 -->
+- [[#2203](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2203)] **incompatible change:** FAST security stage refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 03:14:39+00:00 -->
+- [[#2196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2196)] Add variable to resman to control top-level folder IAM ([juliocc](https://github.com/juliocc)) <!-- 2024-04-04 08:26:35+00:00 -->
+- [[#2195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2195)] Allow r/o project factory SAs access to folder-level IAM ([ludoo](https://github.com/ludoo)) <!-- 2024-04-03 19:51:47+00:00 -->
+- [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
+- [[#2178](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2178)] Add missing permission to org viewer custom role in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2024-03-27 08:06:25+00:00 -->
+- [[#2172](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2172)] Fix subnet names in FAST net stage c nva ([ludoo](https://github.com/ludoo)) <!-- 2024-03-24 11:54:29+00:00 -->
+
+### MODULES
+
+- [[#2275](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2275)] Add support for reserved_internal_range in net-vpc ([sruffilli](https://github.com/sruffilli)) <!-- 2024-05-14 19:19:45+00:00 -->
+- [[#2274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2274)] Added apigee-x-foundations blueprint ([apichick](https://github.com/apichick)) <!-- 2024-05-14 14:53:38+00:00 -->
+- [[#2270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2270)] Cloud function CMEK key support ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-05-14 12:56:10+00:00 -->
+- [[#2272](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2272)] New Bindplane cloud-config-container setup ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-14 12:45:40+00:00 -->
+- [[#2269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2269)] Implement the full IAM interface for tags ([ludoo](https://github.com/ludoo)) <!-- 2024-05-13 18:18:52+00:00 -->
+- [[#2268](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2268)] Add logging settings to folder module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-13 07:24:17+00:00 -->
+- [[#2242](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2242)] CloudSQL PSC Endpoints support ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-12 10:00:40+00:00 -->
+- [[#2265](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2265)] Fix failing E2E net-vpc test ([wiktorn](https://github.com/wiktorn)) <!-- 2024-05-11 15:29:35+00:00 -->
+- [[#2264](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2264)] Fix bug from output typo in new project-factory module ([JanCVanB](https://github.com/JanCVanB)) <!-- 2024-05-10 22:19:36+00:00 -->
+- [[#2262](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2262)] Make Simple NVA route IAP traffic through NIC 0 ([juliocc](https://github.com/juliocc)) <!-- 2024-05-09 16:29:25+00:00 -->
+- [[#2261](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2261)] Add Hybrid NAT support ([juliocc](https://github.com/juliocc)) <!-- 2024-05-09 13:24:41+00:00 -->
+- [[#2260](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2260)] Remove data source from folder module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-09 13:09:54+00:00 -->
+- [[#2247](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2247)] Fix workstation-cluster module for private deployment ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-05-02 06:09:10+00:00 -->
+- [[#2252](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2252)] Add support for labels to GKE backup plans ([ludoo](https://github.com/ludoo)) <!-- 2024-05-01 18:20:22+00:00 -->
+- [[#2251](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2251)] Fix factory ingress policy services in vpc-sc module ([ludoo](https://github.com/ludoo)) <!-- 2024-05-01 16:50:30+00:00 -->
+- [[#2248](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2248)] Added missing identity when connectors API is enabled ([jnahelou](https://github.com/jnahelou)) <!-- 2024-04-30 17:21:35+00:00 -->
+- [[#2246](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2246)] Fixed issue with service networking DNS peering ([apichick](https://github.com/apichick)) <!-- 2024-04-28 20:18:02+00:00 -->
+- [[#2243](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2243)] Added new attributes Apigee organization and bumped up providers version ([apichick](https://github.com/apichick)) <!-- 2024-04-28 15:31:42+00:00 -->
+- [[#2244](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2244)] **incompatible change:** Removed BFD settings from net-vpn-ha module as it is not supported ([apichick](https://github.com/apichick)) <!-- 2024-04-28 10:11:08+00:00 -->
+- [[#2241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2241)] Use default labels on pubsub subscription when no override is provided ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-27 07:22:41+00:00 -->
+- [[#2238](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2238)] fix: allow disabling node autoprovisioning ([kumadee](https://github.com/kumadee)) <!-- 2024-04-26 07:17:48+00:00 -->
+- [[#2234](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2234)] Added build environment variables in cloud function v1 ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-04-23 17:20:38+00:00 -->
+- [[#2229](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2229)] **incompatible change:** Refactor vpc-sc support in project module, add support for dry run ([ludoo](https://github.com/ludoo)) <!-- 2024-04-22 07:28:01+00:00 -->
+- [[#2226](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2226)] fix cloud sql PSA after module upgrade ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-04-19 10:41:02+00:00 -->
+- [[#2224](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2224)] added missing option for exclusion scope ([cmalpe](https://github.com/cmalpe)) <!-- 2024-04-18 11:12:16+00:00 -->
+- [[#2220](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2220)] Add tflint to pipelines ([juliocc](https://github.com/juliocc)) <!-- 2024-04-17 08:23:49+00:00 -->
+- [[#2218](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2218)] **incompatible change:** Allow multiple PSA service providers in net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-16 15:02:36+00:00 -->
+- [[#2216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2216)] Remove data source from net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-16 11:11:12+00:00 -->
+- [[#2214](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2214)] Net LB App Internal Cross-Region recipe ([ludoo](https://github.com/ludoo)) <!-- 2024-04-14 16:38:05+00:00 -->
+- [[#2213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2213)] Add support for tags to GCS module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-11 13:19:06+00:00 -->
+- [[#2211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2211)] Add project quotas factory ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-11 09:51:19+00:00 -->
+- [[#2212](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2212)] Add support for GCS soft-delete retention period ([sruffilli](https://github.com/sruffilli)) <!-- 2024-04-11 07:31:00+00:00 -->
+- [[#2210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2210)] Add support for quotas to project module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 17:03:04+00:00 -->
+- [[#2209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2209)] Add support for data cache to cloud sql module ([ludoo](https://github.com/ludoo)) <!-- 2024-04-10 06:24:01+00:00 -->
+- [[#2207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2207)] feat(gke-cluster-standard): Add optional `CiliumClusterWideNetworkPolicy` ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2024-04-09 15:08:36+00:00 -->
+- [[#2205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2205)] Add validation rule for DNS module health check targets ([ludoo](https://github.com/ludoo)) <!-- 2024-04-08 11:30:42+00:00 -->
+- [[#2201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2201)] Updating cloud-run-v2 terraform and some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2024-04-07 09:49:07+00:00 -->
+- [[#2202](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2202)] added force_destroy to dns module ([nika-pr](https://github.com/nika-pr)) <!-- 2024-04-05 09:20:51+00:00 -->
+- [[#2191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2191)] FAST GCVE stage ([eliamaldini](https://github.com/eliamaldini)) <!-- 2024-04-03 15:25:12+00:00 -->
+- [[#2190](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2190)] VPC module - PSA configurable service producer ([spica29](https://github.com/spica29)) <!-- 2024-04-02 18:23:25+00:00 -->
+- [[#2185](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2185)] Fix failing e2e tests for Cloud Run CMEK ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-28 14:02:56+00:00 -->
+- [[#2182](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2182)] **incompatible change:** Fix default nodepool defaults in gke standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-28 10:22:15+00:00 -->
+- [[#2177](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2177)] add cmek option for cloud_run_v2 ([SalehElnagarSecurrency](https://github.com/SalehElnagarSecurrency)) <!-- 2024-03-27 09:15:03+00:00 -->
+- [[#2175](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2175)] feat(gke-cluster-standard): Set optional `default_node_pool` configuration ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2024-03-26 17:05:35+00:00 -->
+- [[#2174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2174)] Bump provider version to 5.18 to fix non-empty plan for google_notebooks_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-25 18:57:14+00:00 -->
+- [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
+- [[#2170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2170)] Support optional secondary ranges in net-cloudnat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 11:10:48+00:00 -->
+- [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
+- [[#2166](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2166)] feat(net-cloudnat): add `tcp_time_wait` to `config_timeouts` ([frits-v](https://github.com/frits-v)) <!-- 2024-03-20 21:26:28+00:00 -->
+
+### TOOLS
+
+- [[#2225](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2225)] Generalization of tflint call for FAST stages ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-18 19:04:24+00:00 -->
+- [[#2221](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2221)] Enable TFLint in FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2024-04-18 08:06:24+00:00 -->
+- [[#2220](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2220)] Add tflint to pipelines ([juliocc](https://github.com/juliocc)) <!-- 2024-04-17 08:23:49+00:00 -->
+- [[#2214](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2214)] Net LB App Internal Cross-Region recipe ([ludoo](https://github.com/ludoo)) <!-- 2024-04-14 16:38:05+00:00 -->
+- [[#2192](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2192)] Update labeler version ([ludoo](https://github.com/ludoo)) <!-- 2024-04-03 09:24:10+00:00 -->
+- [[#2189](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2189)] Use explicit UTF-8 encoding in tfdoc.py ([wiktorn](https://github.com/wiktorn)) <!-- 2024-04-02 18:34:51+00:00 -->
+- [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
+
+## [30.0.0] - 2024-03-20
+<!-- 2024-03-20 13:57:56+00:00 < 2024-01-24 19:15:39+00:00 -->
+
+### BLUEPRINTS
+
+- [[#2141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2141)] Dataproc module cleanup & fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 10:05:33+00:00 -->
+- [[#2131](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2131)] Introduce mandatory OWNERS file for blueprint maintainership ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 08:40:46+00:00 -->
+- [[#2133](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2133)] Updated diagram to better reflect code naming. ([bswenka](https://github.com/bswenka)) <!-- 2024-03-06 19:23:37+00:00 -->
+- [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
+- [[#2119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2119)] Fix phpipam blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-29 08:33:07+00:00 -->
+- [[#2110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2110)] Gitlab blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-27 17:36:46+00:00 -->
+- [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
+- [[#2105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2105)] **incompatible change:** Enable shielded nodes by default on GKE mt blueprint and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2024-02-22 07:35:27+00:00 -->
+- [[#2082](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2082)] Fix GKE multitenant blueprint roles ([ludoo](https://github.com/ludoo)) <!-- 2024-02-16 14:15:22+00:00 -->
+- [[#2076](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2076)] Use Fabric modules in blueprints/networking/psc-glb-and-armor ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-15 20:57:47+00:00 -->
+- [[#2075](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2075)] Updated path matchers to be more user friendly, added better test exa… ([bswenka](https://github.com/bswenka)) <!-- 2024-02-15 17:27:26+00:00 -->
+- [[#2079](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2079)] Format python files in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-15 08:37:49+00:00 -->
+- [[#2071](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2071)] Bswenka/psc glb and armor 2 producers ([bswenka](https://github.com/bswenka)) <!-- 2024-02-14 15:40:51+00:00 -->
+- [[#2072](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2072)] Fix e2e tests - vertex mlops and net-address ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-13 06:40:31+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2058](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2058)] glb and armor subnet fix ([bswenka](https://github.com/bswenka)) <!-- 2024-02-09 10:41:14+00:00 -->
+- [[#2061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2061)] HA MySQL cluster deployment on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-09 10:23:35+00:00 -->
+- [[#2059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2059)] GKE stateful blueprints ([juliocc](https://github.com/juliocc)) <!-- 2024-02-08 18:28:41+00:00 -->
+- [[#2036](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2036)] Shielded nodes and custom service account in FAST GKE stage and blueprint (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-02-01 15:16:00+00:00 -->
+- [[#2016](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2016)] **incompatible change:** Ensure data platform service accounts meet FAST requirements ([ludoo](https://github.com/ludoo)) <!-- 2024-01-28 13:00:33+00:00 -->
+
+### DOCUMENTATION
+
+- [[#2143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2143)] Update README.md (Fixed typos in /cloud-foundation-fabric/tree/master/blueprints/cloud-operations) ([Tianyou3](https://github.com/Tianyou3)) <!-- 2024-03-10 14:25:12+00:00 -->
+- [[#2131](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2131)] Introduce mandatory OWNERS file for blueprint maintainership ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 08:40:46+00:00 -->
+- [[#2138](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2138)] Updating README.md file for fixing some typo ([NayeemShaMd](https://github.com/NayeemShaMd)) <!-- 2024-03-07 15:20:51+00:00 -->
+- [[#2136](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2136)] Update FAST state IAM files ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 23:08:09+00:00 -->
+- [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
+- [[#2120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2120)] Implement GKE patterns naming conventions ([juliocc](https://github.com/juliocc)) <!-- 2024-02-29 06:57:22+00:00 -->
+- [[#2110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2110)] Gitlab blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-27 17:36:46+00:00 -->
+- [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
+- [[#2094](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2094)] update README to add analytics hub module ([thinhha](https://github.com/thinhha)) <!-- 2024-02-19 16:07:57+00:00 -->
+- [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2061)] HA MySQL cluster deployment on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-09 10:23:35+00:00 -->
+- [[#2059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2059)] GKE stateful blueprints ([juliocc](https://github.com/juliocc)) <!-- 2024-02-08 18:28:41+00:00 -->
+- [[#2013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2013)] Add Tag Template module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-27 11:30:21+00:00 -->
+
+### FAST
+
+- [[#2139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2139)] Logging updates ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 09:07:13+00:00 -->
+- [[#2115](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2115)] **incompatible change:** Align resource names in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2024-02-29 06:45:19+00:00 -->
+- [[#2112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2112)] Add support for billing budgets to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-02-27 18:13:49+00:00 -->
+- [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
+- [[#2105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2105)] **incompatible change:** Enable shielded nodes by default on GKE mt blueprint and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2024-02-22 07:35:27+00:00 -->
+- [[#2101](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2101)] Make all project_parent_ids fields optional ([juliocc](https://github.com/juliocc)) <!-- 2024-02-20 15:21:56+00:00 -->
+- [[#2086](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2086)] Support domainless orgs in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-02-19 08:29:37+00:00 -->
+- [[#2077](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2077)] **incompatible change:** Add workforce_identity_federation in 0-bootstrap ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-14 23:10:24+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2065](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2065)] Fix imports of org policies ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-11 06:22:11+00:00 -->
+- [[#2057](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2057)] Postpone setting essential contacts until provisioning using SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 19:08:44+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2050)] Enable additional recommended org policies ([juliocc](https://github.com/juliocc)) <!-- 2024-02-05 09:46:37+00:00 -->
+- [[#2041](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2041)] Leverage net-vpc module for DNS logging in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-02-03 07:16:00+00:00 -->
+- [[#2038](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2038)] Make Cloud NAT creation optional in FAST net stages. ([juliocc](https://github.com/juliocc)) <!-- 2024-02-02 09:58:17+00:00 -->
+- [[#2036](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2036)] Shielded nodes and custom service account in FAST GKE stage and blueprint (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-02-01 15:16:00+00:00 -->
+- [[#2033](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2033)] Add DNS query logging to FAST net stages ([juliocc](https://github.com/juliocc)) <!-- 2024-01-31 12:44:51+00:00 -->
+- [[#2032](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2032)] Selectively enable logging in FAST and firewall policy module rules (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-31 08:50:35+00:00 -->
+- [[#2031](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2031)] Clarify relationship with checklist groups in FAST bootstrap docs ([ludoo](https://github.com/ludoo)) <!-- 2024-01-31 07:51:21+00:00 -->
+- [[#2030](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2030)] logging for default ingress rules in FAST (CSPR-related) ([juliocc](https://github.com/juliocc)) <!-- 2024-01-30 16:53:01+00:00 -->
+- [[#2019](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2019)] Fix sourcerepo templates and concat call ([juliocc](https://github.com/juliocc)) <!-- 2024-01-30 10:46:34+00:00 -->
+- [[#2016](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2016)] **incompatible change:** Ensure data platform service accounts meet FAST requirements ([ludoo](https://github.com/ludoo)) <!-- 2024-01-28 13:00:33+00:00 -->
+- [[#2014](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2014)] Enforce trusted image projects constraint in FAST bootstrap (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-26 10:14:45+00:00 -->
+- [[#2010](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2010)] Add support for essential contacts to FAST (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-25 11:20:14+00:00 -->
+
+### MODULES
+
+- [[#2162](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2162)] Support automation/controlling projects and resources in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-03-19 15:50:07+00:00 -->
+- [[#2152](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2152)] Add folder factory to project-factory module ([juliocc](https://github.com/juliocc)) <!-- 2024-03-14 12:03:42+00:00 -->
+- [[#2141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2141)] Dataproc module cleanup & fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 10:05:33+00:00 -->
+- [[#2142](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2142)] Adds bfd and md5 auth support to google_compute_router_peer ([sruffilli](https://github.com/sruffilli)) <!-- 2024-03-10 13:06:49+00:00 -->
+- [[#2139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2139)] Logging updates ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 09:07:13+00:00 -->
+- [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
+- [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
+- [[#2130](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2130)] **incompatible change:** Add support for service account IAM variables to pf ([ludoo](https://github.com/ludoo)) <!-- 2024-03-05 12:13:02+00:00 -->
+- [[#2129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2129)] Remove ignore_changes as terraform-provider-google#16804 is closed ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-05 07:11:07+00:00 -->
+- [[#2125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2125)] Add support for PSC network attachments and interfaces in modules ([ludoo](https://github.com/ludoo)) <!-- 2024-03-04 09:12:11+00:00 -->
+- [[#2124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2124)] Update docs about role automatically granted to dataform SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-04 06:47:26+00:00 -->
+- [[#2122](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2122)] Define service attachment interface for lb modules and implement in internal LBs ([ludoo](https://github.com/ludoo)) <!-- 2024-03-02 18:36:30+00:00 -->
+- [[#2121](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2121)] **incompatible change:** enabling dataform service agent upon activating the API ([marcjwo](https://github.com/marcjwo)) <!-- 2024-02-29 16:27:32+00:00 -->
+- [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
+- [[#2112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2112)] Add support for billing budgets to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-02-27 18:13:49+00:00 -->
+- [[#2111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2111)] Fix pathexpand in firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 15:52:41+00:00 -->
+- [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
+- [[#2107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2107)] Time zone support for CloudSQL SQL Server ([spica29](https://github.com/spica29)) <!-- 2024-02-25 19:49:14+00:00 -->
+- [[#2100](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2100)] Module Data Catalog Tag - Add support for types ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-22 10:51:54+00:00 -->
+- [[#2104](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2104)] Fix datacalog type of kubernetes_software_config.component_version and properties ([SalehElnagarSecurrency](https://github.com/SalehElnagarSecurrency)) <!-- 2024-02-22 07:23:39+00:00 -->
+- [[#2090](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2090)] add session affinity values: "GENERATED_COOKIE", "HEADER_FIELD", "HTTP_COOKIE" to variables-backend-service.tf ([tamartayar](https://github.com/tamartayar)) <!-- 2024-02-21 09:04:10+00:00 -->
+- [[#2102](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2102)] Allow projects as destinations for log sinks ([juliocc](https://github.com/juliocc)) <!-- 2024-02-21 07:41:13+00:00 -->
+- [[#2098](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2098)] Fix cors policy type in lb app ext modules ([ludoo](https://github.com/ludoo)) <!-- 2024-02-20 07:17:25+00:00 -->
+- [[#2097](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2097)] Fix #2095 for other types of load balancers ([juliocc](https://github.com/juliocc)) <!-- 2024-02-19 21:33:25+00:00 -->
+- [[#2096](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2096)] Do not convert route rules to set ([juliocc](https://github.com/juliocc)) <!-- 2024-02-19 21:14:03+00:00 -->
+- [[#2087](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2087)] add analytics hub module ([thinhha](https://github.com/thinhha)) <!-- 2024-02-19 15:55:00+00:00 -->
+- [[#2091](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2091)] Accept email in service account module name ([ludoo](https://github.com/ludoo)) <!-- 2024-02-19 12:43:05+00:00 -->
+- [[#1954](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1954)] Add support for Cloud Run v2 jobs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-18 13:57:34+00:00 -->
+- [[#2083](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2083)] Fix data-catalog tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-17 09:56:18+00:00 -->
+- [[#2081](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2081)] VPC-SC module factories ([ludoo](https://github.com/ludoo)) <!-- 2024-02-17 07:02:16+00:00 -->
+- [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2062](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2062)] Add Tags in project output. ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-09 09:42:18+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2053](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2053)] Added destroy_scheduled_duration variable ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-02-07 15:47:50+00:00 -->
+- [[#2051](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2051)] fix: auto_provisioning_defaults is not really optional ([kumadee](https://github.com/kumadee)) <!-- 2024-02-06 06:09:13+00:00 -->
+- [[#2035](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2035)] Fix dnssec_config issue on state off ([haraldhaas](https://github.com/haraldhaas)) <!-- 2024-02-01 06:53:33+00:00 -->
+- [[#2030](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2030)] logging for default ingress rules in FAST (CSPR-related) ([juliocc](https://github.com/juliocc)) <!-- 2024-01-30 16:53:01+00:00 -->
+- [[#2008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2008)] Updated the DataQualitySpec for Dataplex Datascan ([shourya116](https://github.com/shourya116)) <!-- 2024-01-30 15:14:50+00:00 -->
+- [[#2027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2027)] Tag Template - Fix readme tests ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-30 11:04:47+00:00 -->
+- [[#2015](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2015)] Fix typo in logging sinks implementation ([ludoo](https://github.com/ludoo)) <!-- 2024-01-28 09:27:28+00:00 -->
+- [[#2013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2013)] Add Tag Template module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-27 11:30:21+00:00 -->
+- [[#2012](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2012)] Add support for target_resources to net-firewall-policy module ([bcorbitt-ps](https://github.com/bcorbitt-ps)) <!-- 2024-01-25 17:56:17+00:00 -->
+- [[#2002](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2002)] Fixes and additional support for ssl_mode for CloudSQL module ([spica29](https://github.com/spica29)) <!-- 2024-01-25 15:29:08+00:00 -->
+- [[#2010](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2010)] Add support for essential contacts to FAST (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-25 11:20:14+00:00 -->
+
+### TOOLS
+
+- [[#2154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2154)] Projects data source e2e tests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-03-15 22:58:11+00:00 -->
+- [[#2151](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2151)] Kms e2e tests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-03-13 10:31:21+00:00 -->
+- [[#2149](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2149)] Cloudnat E-2-E Tests ([Lorioux](https://github.com/Lorioux)) <!-- 2024-03-11 15:47:11+00:00 -->
+- [[#2147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2147)] Add test reports to checks ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 09:54:35+00:00 -->
+- [[#2144](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2144)] Update actions to latest versions ([juliocc](https://github.com/juliocc)) <!-- 2024-03-11 08:31:16+00:00 -->
+- [[#2136](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2136)] Update FAST state IAM files ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 23:08:09+00:00 -->
+- [[#2132](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2132)] feat: add e2e test for compute-mig module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-06 20:30:20+00:00 -->
+- [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
+- [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
+- [[#2109](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2109)] Once again fix e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-23 18:21:39+00:00 -->
+- [[#2108](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2108)] Fix too long project names in e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-23 10:41:58+00:00 -->
+- [[#1954](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1954)] Add support for Cloud Run v2 jobs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-18 13:57:34+00:00 -->
+- [[#2079](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2079)] Format python files in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-15 08:37:49+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2039](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2039)] Remove unused tfeditor ([juliocc](https://github.com/juliocc)) <!-- 2024-02-02 10:14:14+00:00 -->
+
+## [29.0.0] - 2024-01-24
+
+### BLUEPRINTS
+
+- [[#2004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2004)] **incompatible change:** Remove default region for Cloud Function and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-24 10:23:40+00:00 -->
+- [[#1977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1977)] Add example to FAST GKE stage, streamline GKE Hub module variables and usage ([ludoo](https://github.com/ludoo)) <!-- 2024-01-20 10:06:38+00:00 -->
+- [[#1992](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1992)] Fix Data platform foundation ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-20 07:49:47+00:00 -->
+- [[#1976](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1976)] Network dashboard - fixing 2 bugs: overridden variable and page token … ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-01-15 13:28:17+00:00 -->
+- [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
+- [[#1952](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1952)] Composer blueprints improvements ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-29 11:09:16+00:00 -->
+- [[#1939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1939)] Networking Sandbox Blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-21 16:50:39+00:00 -->
+- [[#1942](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1942)] Blueprints naming convention update ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-21 16:02:25+00:00 -->
+- [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
+- [[#1931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1931)] Quota monitor blueprint: don't fail quota fetch on deleted project ([ludoo](https://github.com/ludoo)) <!-- 2023-12-15 19:20:49+00:00 -->
+- [[#1930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1930)] Allow granting network user role on host project from project module and factory ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-15 13:39:21+00:00 -->
+- [[#1924](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1924)] Update quota monitor blueprint to support project discovery ([maunope](https://github.com/maunope)) <!-- 2023-12-12 18:17:01+00:00 -->
+- [[#1912](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1912)] **incompatible change:** Custom role factories for organization and project modules ([ludoo](https://github.com/ludoo)) <!-- 2023-12-11 14:16:39+00:00 -->
+- [[#1916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1916)] Add triggerer configuration for Composer ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-11 11:54:49+00:00 -->
+- [[#1907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1907)] Add support for subnet-level service network user grants to project module, improve docs ([ludoo](https://github.com/ludoo)) <!-- 2023-12-07 09:07:48+00:00 -->
+- [[#1871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1871)] Added workstation-cluster module ([apichick](https://github.com/apichick)) <!-- 2023-11-30 06:15:37+00:00 -->
+- [[#1886](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1886)] Fixes to F5 blueprint docs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-24 18:45:38+00:00 -->
+- [[#1874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1874)] Added PSC support to CloudSQL Module ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-11-24 14:47:45+00:00 -->
+- [[#1883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1883)] F5 deployment blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-24 13:02:34+00:00 -->
+
+### DOCUMENTATION
+
+- [[#2001](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2001)] Marcwo/dataform module ([marcjwo](https://github.com/marcjwo)) <!-- 2024-01-24 16:13:22+00:00 -->
+- [[#1981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1981)] Added Cross-region internal application load balancer module ([apichick](https://github.com/apichick)) <!-- 2024-01-16 17:10:08+00:00 -->
+- [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
+- [[#1959](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1959)] net-lb-app-ext example fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 13:38:30+00:00 -->
+- [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
+- [[#1902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1902)] First version of Cloud Run module v2 ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 18:19:16+00:00 -->
+- [[#1949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1949)] Update REFERENCES.md ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 10:57:15+00:00 -->
+- [[#1939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1939)] Networking Sandbox Blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-21 16:50:39+00:00 -->
+- [[#1942](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1942)] Blueprints naming convention update ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-21 16:02:25+00:00 -->
+- [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
+- [[#1890](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1890)] Use TFTEST_E2E_ instead of TF_VAR variables ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-30 19:03:59+00:00 -->
+- [[#1871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1871)] Added workstation-cluster module ([apichick](https://github.com/apichick)) <!-- 2023-11-30 06:15:37+00:00 -->
+- [[#1883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1883)] F5 deployment blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-24 13:02:34+00:00 -->
+
+### FAST
+
+- [[#2009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2009)] Tighten up security of automation project (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-24 18:40:36+00:00 -->
+- [[#2000](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2000)] Checklist attribution bucket ([ludoo](https://github.com/ludoo)) <!-- 2024-01-23 11:32:15+00:00 -->
+- [[#1997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1997)] Update checklist parsing for top-level key ([ludoo](https://github.com/ludoo)) <!-- 2024-01-23 06:34:03+00:00 -->
+- [[#1992](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1992)] Fix Data platform foundation ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-20 07:49:47+00:00 -->
+- [[#1969](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1969)] Integrate checklist data in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-01-18 04:45:30+00:00 -->
+- [[#1967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1967)] Add locations on terraform.tfvars.sample for bootstrap stage ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-01-09 07:32:28+00:00 -->
+- [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
+- [[#1945](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1945)] Fix GitHub CI/CD provider ([ludoo](https://github.com/ludoo)) <!-- 2023-12-21 17:10:50+00:00 -->
+- [[#1943](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1943)] Revert "Add debug step for JWT tokens" ([ludoo](https://github.com/ludoo)) <!-- 2023-12-21 13:50:28+00:00 -->
+- [[#1940](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1940)] Add kernels.googleusercontent.com zone in dns response policy ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-20 10:18:11+00:00 -->
+- [[#1938](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1938)] Add debug step for JWT tokens ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-20 08:26:55+00:00 -->
+- [[#1932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1932)] Simplify organization tags.tf locals ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 16:09:22+00:00 -->
+- [[#1912](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1912)] **incompatible change:** Custom role factories for organization and project modules ([ludoo](https://github.com/ludoo)) <!-- 2023-12-11 14:16:39+00:00 -->
+- [[#1900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1900)] Patch Github actions ci google-github-actions/auth@v0 --> v2 ([ibrahimparvez2](https://github.com/ibrahimparvez2)) <!-- 2023-12-04 12:16:02+00:00 -->
+
+### MODULES
+
+- [[#2009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2009)] Tighten up security of automation project (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-24 18:40:36+00:00 -->
+- [[#2001](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2001)] Marcwo/dataform module ([marcjwo](https://github.com/marcjwo)) <!-- 2024-01-24 16:13:22+00:00 -->
+- [[#2005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2005)] Fix named ranges behaviour if cidr_tpl_file variable not provided. ([miromichalicka](https://github.com/miromichalicka)) <!-- 2024-01-24 11:18:11+00:00 -->
+- [[#2004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2004)] **incompatible change:** Remove default region for Cloud Function and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-24 10:23:40+00:00 -->
+- [[#1993](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1993)] Fix DNS E2E test + add one to net-lb-app-int-cross-region ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-23 15:34:45+00:00 -->
+- [[#1999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1999)] Added Enabled Kubernetes Beta APIs feature ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-01-23 11:09:22+00:00 -->
+- [[#1996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1996)] Fix factory default value for rule ports in firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2024-01-21 11:38:24+00:00 -->
+- [[#1994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1994)] DNS response policies e2e changes ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-01-20 18:47:02+00:00 -->
+- [[#1977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1977)] Add example to FAST GKE stage, streamline GKE Hub module variables and usage ([ludoo](https://github.com/ludoo)) <!-- 2024-01-20 10:06:38+00:00 -->
+- [[#1987](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1987)] Specify `docker_repository` field for google_cloudfunctions2_function ([kumadee](https://github.com/kumadee)) <!-- 2024-01-20 09:40:27+00:00 -->
+- [[#1990](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1990)] Fixed README and test for DNS module ([apichick](https://github.com/apichick)) <!-- 2024-01-19 09:12:20+00:00 -->
+- [[#1988](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1988)] Added health checked targets for geo routing policy in dns module ([apichick](https://github.com/apichick)) <!-- 2024-01-18 17:46:46+00:00 -->
+- [[#1979](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1979)] feat: enable mtls on external application application load balancer ([Tazminia](https://github.com/Tazminia)) <!-- 2024-01-17 06:24:54+00:00 -->
+- [[#1982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1982)] Add resource manager tags support for instance template ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-01-16 17:40:15+00:00 -->
+- [[#1981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1981)] Added Cross-region internal application load balancer module ([apichick](https://github.com/apichick)) <!-- 2024-01-16 17:10:08+00:00 -->
+- [[#1980](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1980)] Proper validation of empty string value in identity_type ([viliampucik](https://github.com/viliampucik)) <!-- 2024-01-16 09:28:30+00:00 -->
+- [[#1978](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1978)] Fix identity_type ([viliampucik](https://github.com/viliampucik)) <!-- 2024-01-15 20:40:06+00:00 -->
+- [[#1970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1970)] Add support for service_external_ips_config to GKE cluster modules ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-01-12 10:50:54+00:00 -->
+- [[#1968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1968)] use provided SA for cloud function v2 trigger ([juliocc](https://github.com/juliocc)) <!-- 2024-01-08 16:39:01+00:00 -->
+- [[#1966](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1966)] Support for ANY_USER_ACCOUNT in module vpc-sc egress rule. ([xjantoth](https://github.com/xjantoth)) <!-- 2024-01-08 13:23:07+00:00 -->
+- [[#1964](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1964)] Use fixtures in net-lb-ext ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 16:09:49+00:00 -->
+- [[#1958](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1958)] Create bigtable service identity with project if api is enabled ([steenblik](https://github.com/steenblik)) <!-- 2024-01-06 15:38:08+00:00 -->
+- [[#1963](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1963)] net-address end-to-end tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 13:02:52+00:00 -->
+- [[#1962](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1962)] Add end-to-end tests for net-lb-app-ext-regional ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 11:05:53+00:00 -->
+- [[#1892](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1892)] New module for external regional application load balancer ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 15:59:27+00:00 -->
+- [[#1960](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1960)] Add PNA support to Service Directory module ([stribioli](https://github.com/stribioli)) <!-- 2024-01-05 15:19:33+00:00 -->
+- [[#1957](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1957)] Add e2e test for net_lb_app_ext module ([andybubu](https://github.com/andybubu)) <!-- 2024-01-05 09:02:23+00:00 -->
+- [[#1956](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1956)] Support CMEK encryption on Bigtable instances. ([steenblik](https://github.com/steenblik)) <!-- 2024-01-05 08:29:37+00:00 -->
+- [[#1902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1902)] First version of Cloud Run module v2 ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 18:19:16+00:00 -->
+- [[#1944](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1944)] Dns e2e ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2023-12-23 10:29:32+00:00 -->
+- [[#1948](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1948)] Fix GCVE network policy ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-22 10:29:44+00:00 -->
+- [[#1947](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1947)] GCVE: add network policy configuration ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-22 10:02:12+00:00 -->
+- [[#1946](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1946)] Minor fix to GCVE module readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-21 17:29:30+00:00 -->
+- [[#1941](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1941)] Use new resources in GCVE module, bump provider versions ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-21 13:23:38+00:00 -->
+- [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
+- [[#1935](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1935)] E2E tests fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-19 10:01:03+00:00 -->
+- [[#1933](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1933)] Add project-scoped secure tags ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 17:24:06+00:00 -->
+- [[#1932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1932)] Simplify organization tags.tf locals ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 16:09:22+00:00 -->
+- [[#1930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1930)] Allow granting network user role on host project from project module and factory ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-15 13:39:21+00:00 -->
+- [[#1928](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1928)] **incompatible change:** Fix health check autocreation and id output in passthrough LB modules ([ludoo](https://github.com/ludoo)) <!-- 2023-12-13 23:39:55+00:00 -->
+- [[#1926](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1926)] Add support for policy based routes to net-vpc ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-13 15:19:41+00:00 -->
+- [[#1905](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1905)] gke-cluster-standard : Support upgrade_settings for node auto provisioner ([noony](https://github.com/noony)) <!-- 2023-12-12 19:17:52+00:00 -->
+- [[#1923](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1923)] Removed deprecated variable and added labels ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-12-12 18:32:48+00:00 -->
+- [[#1922](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1922)] can_ip_forward in simple-nva examples ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-12 13:09:59+00:00 -->
+- [[#1921](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1921)] Sync tf version to version used by tests ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-12 08:43:09+00:00 -->
+- [[#1920](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1920)] Bump tf version ([ludoo](https://github.com/ludoo)) <!-- 2023-12-12 08:19:47+00:00 -->
+- [[#1918](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1918)] Added missing parameters in kubelet and linux node configuration ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-12-11 19:05:24+00:00 -->
+- [[#1917](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1917)] Added the possibility to configure maintenance window and deny maintenance period in Cloud SQL module module ([francesco-pavan-huware](https://github.com/francesco-pavan-huware)) <!-- 2023-12-11 16:59:00+00:00 -->
+- [[#1912](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1912)] **incompatible change:** Custom role factories for organization and project modules ([ludoo](https://github.com/ludoo)) <!-- 2023-12-11 14:16:39+00:00 -->
+- [[#1909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1909)] net_lb_ext module e2e and example testing changes ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2023-12-08 09:04:07+00:00 -->
+- [[#1908](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1908)] README fixes for #1907 ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-07 10:05:27+00:00 -->
+- [[#1906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1906)] gke-cluster-standard : Set optional shielded_instance_config block in cluster_autoscaling.auto_provisioning_defaults ([noony](https://github.com/noony)) <!-- 2023-12-07 09:37:13+00:00 -->
+- [[#1907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1907)] Add support for subnet-level service network user grants to project module, improve docs ([ludoo](https://github.com/ludoo)) <!-- 2023-12-07 09:07:48+00:00 -->
+- [[#1904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1904)] gke-cluster-standard : Add possibility to enable image streaming feature at cluster level ([noony](https://github.com/noony)) <!-- 2023-12-07 05:36:22+00:00 -->
+- [[#1903](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1903)] Enable sole tenancy (`node_affinities`) on compute_vm ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-05 17:05:23+00:00 -->
+- [[#1901](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1901)] Add IPv6 to HA VPN module + test inventories ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-04 22:38:42+00:00 -->
+- [[#1898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1898)] Use unique names for logging buckets in examples ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-03 11:50:46+00:00 -->
+- [[#1896](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1896)] e2e test fix for net-vpc-firewall module ([rthangaraju](https://github.com/rthangaraju)) <!-- 2023-12-01 12:50:56+00:00 -->
+- [[#1895](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1895)] Add support for firewall tags to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-12-01 11:27:38+00:00 -->
+- [[#1891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1891)] artifact-registry: Support cleanup policies ([noony](https://github.com/noony)) <!-- 2023-12-01 10:33:02+00:00 -->
+- [[#1894](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1894)] e2e test fix for iam-service-account module ([rthangaraju](https://github.com/rthangaraju)) <!-- 2023-12-01 08:23:37+00:00 -->
+- [[#1893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1893)] E2E and examples tests for net-vpc module ([rthangaraju](https://github.com/rthangaraju)) <!-- 2023-11-30 16:00:56+00:00 -->
+- [[#1861](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1861)] Added external data configuration support to BigQuery Module ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-11-30 13:33:51+00:00 -->
+- [[#1871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1871)] Added workstation-cluster module ([apichick](https://github.com/apichick)) <!-- 2023-11-30 06:15:37+00:00 -->
+- [[#1874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1874)] Added PSC support to CloudSQL Module ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-11-24 14:47:45+00:00 -->
+- [[#1885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1885)] Fixed envoy file, it has extra character that was preventing envoy to start ([apichick](https://github.com/apichick)) <!-- 2023-11-24 09:59:48+00:00 -->
+
+### TOOLS
+
+- [[#1985](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1985)] Better error reporting when missing setup for E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-17 20:34:20+00:00 -->
+- [[#1961](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1961)] Use zones b and c for MIG fixture ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 15:02:12+00:00 -->
+- [[#1955](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1955)] Add version check to tools/lint.sh ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-30 08:09:10+00:00 -->
+- [[#1914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1914)] Allow per-module terraform fixtures ([juliocc](https://github.com/juliocc)) <!-- 2023-12-29 09:43:44+00:00 -->
+- [[#1953](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1953)] Fix variable region ([andybubu](https://github.com/andybubu)) <!-- 2023-12-28 14:04:15+00:00 -->
+- [[#1950](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1950)] Add version check ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-27 07:40:23+00:00 -->
+- [[#1937](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1937)] Fix always succeeding test ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-21 11:01:08+00:00 -->
+- [[#1932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1932)] Simplify organization tags.tf locals ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 16:09:22+00:00 -->
+- [[#1890](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1890)] Use TFTEST_E2E_ instead of TF_VAR variables ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-30 19:03:59+00:00 -->
+
+## [28.0.0] - 2023-11-24
+<!-- 2023-11-24 09:21:21+00:00 < 2023-10-04 10:23:37+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1882)] Fixes/improvements to F5 HA blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-23 15:15:48+00:00 -->
+- [[#1787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1787)] F5 blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-22 18:48:14+00:00 -->
+- [[#1873](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1873)] Add DLP Service Agent role ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-20 14:34:28+00:00 -->
+- [[#1859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1859)] Net dash cfv2 ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-11-16 14:45:45+00:00 -->
+- [[#1863](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1863)] End-to-end tests for Vertex blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-16 12:49:30+00:00 -->
+- [[#1856](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1856)] Sql user features ([Francesco-cloud24](https://github.com/Francesco-cloud24)) <!-- 2023-11-13 09:27:14+00:00 -->
+- [[#1739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1739)] Added CMEK for Secret auto managed ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-11-10 15:45:47+00:00 -->
+- [[#1848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1848)] Dataproc module bug fix ([Francesco-cloud24](https://github.com/Francesco-cloud24)) <!-- 2023-11-09 15:48:29+00:00 -->
+- [[#1851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1851)] Support multilevel data and allow overriding project id in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-11-09 08:29:46+00:00 -->
+- [[#1838](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1838)] Simplify #1836 fix, Avoid map-related casting errors in project factory ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-02 09:34:59+00:00 -->
+- [[#1836](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1836)] **incompatible change:** Avoid map-related casting errors in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-11-02 07:24:51+00:00 -->
+- [[#1832](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1832)] [Minimal Data Platform] Fix Landing and curated IAM ([lcaggio](https://github.com/lcaggio)) <!-- 2023-11-01 16:53:07+00:00 -->
+- [[#1825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1825)] Handling SQL IP address issue ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-10-30 16:26:07+00:00 -->
+- [[#1821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1821)] [net-address] enable ipv6 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-28 13:36:31+00:00 -->
+- [[#1814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1814)] **incompatible change:** Allow specifying arbitrary project roles for service accounts in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-26 14:09:04+00:00 -->
+- [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
+- [[#1806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1806)] Updating network dashboard: fixing Cloud SQL problem, fixing 1 metric… ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-10-25 10:37:25+00:00 -->
+- [[#1796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1796)] Make extended shared vpc attributes optional in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-23 13:45:48+00:00 -->
+- [[#1782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1782)] Add upper cap to versions, update copyright notices ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-20 16:17:48+00:00 -->
+- [[#1765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1765)] Add support for dual stack and multiple forwarding rules to net-lb-int module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-17 09:30:35+00:00 -->
+- [[#1748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1748)] Bump golang.org/x/net from 0.7.0 to 0.17.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-10-12 05:41:41+00:00 -->
+- [[#1747](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1747)] Bump golang.org/x/net from 0.7.0 to 0.17.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-10-12 05:21:10+00:00 -->
+- [[#1735](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1735)] Make deletion protection consistent across all modules ([juliocc](https://github.com/juliocc)) <!-- 2023-10-05 15:31:08+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1787)] F5 blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-22 18:48:14+00:00 -->
+- [[#1832](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1832)] [Minimal Data Platform] Fix Landing and curated IAM ([lcaggio](https://github.com/lcaggio)) <!-- 2023-11-01 16:53:07+00:00 -->
+- [[#1831](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1831)] Update wording in FAST and gcve module READMEs ([bluPhy](https://github.com/bluPhy)) <!-- 2023-10-31 15:54:19+00:00 -->
+- [[#1782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1782)] Add upper cap to versions, update copyright notices ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-20 16:17:48+00:00 -->
+- [[#1773](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1773)] Add service usage consumer role to IaC SAs, refactor delegated grants in FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-10-18 12:18:31+00:00 -->
+- [[#1743](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1743)] Billing account module ([ludoo](https://github.com/ludoo)) <!-- 2023-10-15 15:02:50+00:00 -->
+
+### FAST
+
+- [[#1855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1855)] Document `fast_features` ([juliocc](https://github.com/juliocc)) <!-- 2023-11-20 21:41:06+00:00 -->
+- [[#1864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1864)] End to end tests for GCS ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-16 12:36:21+00:00 -->
+- [[#1836](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1836)] **incompatible change:** Avoid map-related casting errors in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-11-02 07:24:51+00:00 -->
+- [[#1818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1818)] FAST: rename VPC-related files to `net-*` ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-27 08:23:08+00:00 -->
+- [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
+- [[#1810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1810)] FAST: Add access transparency logs to the default sinks ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-24 20:09:01+00:00 -->
+- [[#1809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1809)] FAST: Add VPC serverless connector NAT ranges to hierarchical fw ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-24 19:46:04+00:00 -->
+- [[#1811](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1811)] FAST: removed references to kms_defaults ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-24 19:18:08+00:00 -->
+- [[#1802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1802)] Less verbose project factory stage outputs ([ludoo](https://github.com/ludoo)) <!-- 2023-10-24 07:03:36+00:00 -->
+- [[#1797](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1797)] Improve usage of optionals in FAST stage 2 VPN variables ([ludoo](https://github.com/ludoo)) <!-- 2023-10-23 13:23:30+00:00 -->
+- [[#1788](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1788)] FAST: adds support for wif provider pubkey ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-21 16:52:19+00:00 -->
+- [[#1782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1782)] Add upper cap to versions, update copyright notices ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-20 16:17:48+00:00 -->
+- [[#1780](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1780)] Add sink for workspace logs to bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2023-10-19 14:51:02+00:00 -->
+- [[#1775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1775)] Add gcp org policy constraints file to bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2023-10-18 18:21:17+00:00 -->
+- [[#1773](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1773)] Add service usage consumer role to IaC SAs, refactor delegated grants in FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-10-18 12:18:31+00:00 -->
+- [[#1765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1765)] Add support for dual stack and multiple forwarding rules to net-lb-int module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-17 09:30:35+00:00 -->
+- [[#1760](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1760)] Add support for psa peered domains to fast stages ([ludoo](https://github.com/ludoo)) <!-- 2023-10-16 06:57:18+00:00 -->
+- [[#1759](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1759)] Minor edits to FAST network stage READMEs ([ludoo](https://github.com/ludoo)) <!-- 2023-10-15 16:14:48+00:00 -->
+- [[#1743](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1743)] Billing account module ([ludoo](https://github.com/ludoo)) <!-- 2023-10-15 15:02:50+00:00 -->
+- [[#1735](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1735)] Make deletion protection consistent across all modules ([juliocc](https://github.com/juliocc)) <!-- 2023-10-05 15:31:08+00:00 -->
+- [[#1734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1734)] Update to lint.sh and wording to some tf ([bluPhy](https://github.com/bluPhy)) <!-- 2023-10-05 06:32:08+00:00 -->
+- [[#1733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1733)] Fix typo in FAST stage 2 README ([bluPhy](https://github.com/bluPhy)) <!-- 2023-10-04 22:22:44+00:00 -->
+
+### MODULES
+
+- [[#1884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1884)] Fix failing E2E tests for folders ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-24 08:09:14+00:00 -->
+- [[#1881](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1881)] Support boot disk KMS key in GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2023-11-23 11:52:14+00:00 -->
+- [[#1879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1879)] Output all neg ids in app lbs ([juliocc](https://github.com/juliocc)) <!-- 2023-11-23 07:41:31+00:00 -->
+- [[#1878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1878)] Fix permissions assignments ([flaprimo](https://github.com/flaprimo)) <!-- 2023-11-22 12:16:25+00:00 -->
+- [[#1876](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1876)] Examples and E2e testing for folder module ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2023-11-22 09:25:11+00:00 -->
+- [[#1869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1869)] added missing sql parameters ([Francesco-cloud24](https://github.com/Francesco-cloud24)) <!-- 2023-11-20 21:27:59+00:00 -->
+- [[#1868](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1868)] Fix/dlpagent ([ddaluka](https://github.com/ddaluka)) <!-- 2023-11-20 13:11:01+00:00 -->
+- [[#1870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1870)] End to end tests for Cloud Run + permadiff fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-18 18:26:54+00:00 -->
+- [[#1864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1864)] End to end tests for GCS ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-16 12:36:21+00:00 -->
+- [[#1860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1860)] Organization module end-to-end tests ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-14 17:55:00+00:00 -->
+- [[#1856](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1856)] Sql user features ([Francesco-cloud24](https://github.com/Francesco-cloud24)) <!-- 2023-11-13 09:27:14+00:00 -->
+- [[#1858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1858)] Removed options that are not applicable to this load balancer ([apichick](https://github.com/apichick)) <!-- 2023-11-13 07:08:26+00:00 -->
+- [[#1739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1739)] Added CMEK for Secret auto managed ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-11-10 15:45:47+00:00 -->
+- [[#1845](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1845)] Extend `cluster_autoscaling` fields in gke-cluster-standard ([anthonyhaussman](https://github.com/anthonyhaussman)) <!-- 2023-11-10 11:39:51+00:00 -->
+- [[#1848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1848)] Dataproc module bug fix ([Francesco-cloud24](https://github.com/Francesco-cloud24)) <!-- 2023-11-09 15:48:29+00:00 -->
+- [[#1847](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1847)] Fix validation and dynamic block for optional gpu_driver ([Gilfar](https://github.com/Gilfar)) <!-- 2023-11-08 13:49:56+00:00 -->
+- [[#1846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1846)] Add support for IAM to vpc sc module ([ludoo](https://github.com/ludoo)) <!-- 2023-11-08 10:27:44+00:00 -->
+- [[#1844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1844)] Allow disabling IAM for sink identity in resource manager modules ([apichick](https://github.com/apichick)) <!-- 2023-11-07 08:30:42+00:00 -->
+- [[#1841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1841)] Fix modules to support new Apigee X environment types ([Teodelas](https://github.com/Teodelas)) <!-- 2023-11-06 08:56:04+00:00 -->
+- [[#1842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1842)] Bump provider version to 5.6.0 ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-04 08:14:03+00:00 -->
+- [[#1823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1823)] Add end-to-end tests for project module ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-03 17:04:19+00:00 -->
+- [[#1837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1837)] Added envoy as SNI dynamic forward proxy to cloud-config-container ([apichick](https://github.com/apichick)) <!-- 2023-11-03 07:43:15+00:00 -->
+- [[#1839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1839)] Added create_before_destroy = true for self-managed certificates ([apichick](https://github.com/apichick)) <!-- 2023-11-02 14:14:45+00:00 -->
+- [[#1833](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1833)] Net VPC Peering: added stack_type field ([cmalpe](https://github.com/cmalpe)) <!-- 2023-11-01 09:46:03+00:00 -->
+- [[#1826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1826)] Add public_access_prevention field to GCS module ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-31 10:11:31+00:00 -->
+- [[#1817](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1817)] KMS module: Import job feature ([cmalpe](https://github.com/cmalpe)) <!-- 2023-10-30 15:25:57+00:00 -->
+- [[#1822](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1822)] Billing budget factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-29 10:24:52+00:00 -->
+- [[#1821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1821)] [net-address] enable ipv6 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-28 13:36:31+00:00 -->
+- [[#1820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1820)] Added iam_bindings and iam_bindings_additive to apigee module ([apichick](https://github.com/apichick)) <!-- 2023-10-27 18:08:18+00:00 -->
+- [[#1813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1813)] empty gpu sharing config fix ([ewojtach](https://github.com/ewojtach)) <!-- 2023-10-27 09:49:34+00:00 -->
+- [[#1815](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1815)] Fix logic for default source range in firewall ingress rules ([ludoo](https://github.com/ludoo)) <!-- 2023-10-26 15:25:37+00:00 -->
+- [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
+- [[#1750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1750)] AI models support ([ewojtach](https://github.com/ewojtach)) <!-- 2023-10-25 09:42:37+00:00 -->
+- [[#1798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1798)] Fix Apigee add-ons configuration ([mwarm2](https://github.com/mwarm2)) <!-- 2023-10-25 07:37:45+00:00 -->
+- [[#1808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1808)] Allow setting `enable_private_nodes` in GKE nodepool pod range ([ludoo](https://github.com/ludoo)) <!-- 2023-10-24 17:34:04+00:00 -->
+- [[#1805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1805)] net-lb-ext: Add option to set IPv6 subnetwork for IPv6 external fw rules ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-24 13:37:33+00:00 -->
+- [[#1804](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1804)] compute-vm: remove old todo ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-24 10:45:54+00:00 -->
+- [[#1803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1803)] use the repository format in the image_path output ([Tutuchan](https://github.com/Tutuchan)) <!-- 2023-10-24 10:24:53+00:00 -->
+- [[#1801](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1801)] Fix Internal App LB serverless NEG backend example ([juliocc](https://github.com/juliocc)) <!-- 2023-10-24 07:25:44+00:00 -->
+- [[#1795](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1795)] Allow users to optionally specify address names ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-23 15:17:07+00:00 -->
+- [[#1792](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1792)] Removed unnecessary try statements from apigee module outputs ([apichick](https://github.com/apichick)) <!-- 2023-10-22 16:13:13+00:00 -->
+- [[#1786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1786)] net-lb-ext: add support for multiple forwarding rules (IPs) and dual-stack (IPv4/IPv6) ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-21 16:19:18+00:00 -->
+- [[#1782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1782)] Add upper cap to versions, update copyright notices ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-20 16:17:48+00:00 -->
+- [[#1774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1774)] Added ProtectedApplication feature to GKE Backup ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-10-19 17:54:22+00:00 -->
+- [[#1775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1775)] Add gcp org policy constraints file to bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2023-10-18 18:21:17+00:00 -->
+- [[#1771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1771)] Fix resource manager tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-10-18 09:24:00+00:00 -->
+- [[#1769](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1769)] Remove incompatible balancing_mode ([wiktorn](https://github.com/wiktorn)) <!-- 2023-10-18 06:11:32+00:00 -->
+- [[#1765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1765)] Add support for dual stack and multiple forwarding rules to net-lb-int module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-17 09:30:35+00:00 -->
+- [[#1762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1762)] Make subnets depend on proxy only subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-10-16 11:39:52+00:00 -->
+- [[#1757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1757)] Add autoclass to GCS ([jeroenmonteban](https://github.com/jeroenmonteban)) <!-- 2023-10-16 07:45:10+00:00 -->
+- [[#1756](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1756)] Exposed stack_type variable in compute_vm module ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-10-16 06:28:57+00:00 -->
+- [[#1743](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1743)] Billing account module ([ludoo](https://github.com/ludoo)) <!-- 2023-10-15 15:02:50+00:00 -->
+- [[#1752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1752)] Add outputs to BigQuery dataset module ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-13 15:02:48+00:00 -->
+- [[#1754](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1754)] Fix typo in GKE nodepool taints ([ludoo](https://github.com/ludoo)) <!-- 2023-10-12 12:04:15+00:00 -->
+- [[#1746](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1746)] Module autopilot bug fixes ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-10-12 10:40:29+00:00 -->
+- [[#1745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1745)] Add missing fields to Cloud Storage bucket ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-10 20:40:30+00:00 -->
+- [[#1744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1744)] Append "s" to pubsub backoff times ([juliocc](https://github.com/juliocc)) <!-- 2023-10-10 10:32:20+00:00 -->
+- [[#1741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1741)] Add PSA peered domains support to `net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2023-10-06 15:31:33+00:00 -->
+- [[#1737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1737)] Enforce mandatory types in all variables ([juliocc](https://github.com/juliocc)) <!-- 2023-10-06 09:44:34+00:00 -->
+- [[#1732](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1732)] Added FQDN Network Policy feature on GKE Cluster ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-10-06 08:05:54+00:00 -->
+- [[#1735](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1735)] Make deletion protection consistent across all modules ([juliocc](https://github.com/juliocc)) <!-- 2023-10-05 15:31:08+00:00 -->
+- [[#1726](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1726)] Add materialized views for bigquery ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-04 12:25:57+00:00 -->
+
+### TOOLS
+
+- [[#1863](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1863)] End-to-end tests for Vertex blueprint ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-16 12:49:30+00:00 -->
+- [[#1860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1860)] Organization module end-to-end tests ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-14 17:55:00+00:00 -->
+- [[#1782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1782)] Add upper cap to versions, update copyright notices ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-20 16:17:48+00:00 -->
+- [[#1751](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1751)] End-to-end tests for terraform modules ([wiktorn](https://github.com/wiktorn)) <!-- 2023-10-20 07:59:52+00:00 -->
+- [[#1737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1737)] Enforce mandatory types in all variables ([juliocc](https://github.com/juliocc)) <!-- 2023-10-06 09:44:34+00:00 -->
+- [[#1734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1734)] Update to lint.sh and wording to some tf ([bluPhy](https://github.com/bluPhy)) <!-- 2023-10-05 06:32:08+00:00 -->
+
+## [27.0.0] - 2023-10-04
+
+### BLUEPRINTS
+
+- [[#1730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1730)] Minimal Data Platform - Fix ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 10:15:51+00:00 -->
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
+- [[#1722](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1722)] Add support for org policies to project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 14:13:57+00:00 -->
+- [[#1692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1692)] **incompatible change:** Allow using no service account in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2023-09-19 16:56:51+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
+- [[#1707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1707)] Only apply org policies when bootstrap user is not set ([ludoo](https://github.com/ludoo)) <!-- 2023-09-27 21:24:41+00:00 -->
+- [[#1697](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1697)] Define and adopt standard IP ranges for FAST networking ([juliocc](https://github.com/juliocc)) <!-- 2023-09-21 14:27:54+00:00 -->
+- [[#1698](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1698)] **incompatible change:** FAST: move organization policies to stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2023-09-21 14:03:22+00:00 -->
+- [[#1695](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1695)] **incompatible change:** Rename FAST globals output file ([ludoo](https://github.com/ludoo)) <!-- 2023-09-20 08:36:07+00:00 -->
+
+### FAST
+
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
+- [[#1718](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1718)] FAST: add example of custom org policy condition to bootstrap README ([ludoo](https://github.com/ludoo)) <!-- 2023-09-30 08:22:56+00:00 -->
+- [[#1715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1715)] Fix indentation in FAST hierarchical firewall rules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-29 13:37:41+00:00 -->
+- [[#1711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1711)] [FAST] Fix tenant folder tag ([lcaggio](https://github.com/lcaggio)) <!-- 2023-09-28 21:48:15+00:00 -->
+- [[#1707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1707)] Only apply org policies when bootstrap user is not set ([ludoo](https://github.com/ludoo)) <!-- 2023-09-27 21:24:41+00:00 -->
+- [[#1705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1705)] Fix typo in bootstrap stage README ([giterinhub](https://github.com/giterinhub)) <!-- 2023-09-27 12:21:09+00:00 -->
+- [[#1697](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1697)] Define and adopt standard IP ranges for FAST networking ([juliocc](https://github.com/juliocc)) <!-- 2023-09-21 14:27:54+00:00 -->
+- [[#1698](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1698)] **incompatible change:** FAST: move organization policies to stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2023-09-21 14:03:22+00:00 -->
+- [[#1695](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1695)] **incompatible change:** Rename FAST globals output file ([ludoo](https://github.com/ludoo)) <!-- 2023-09-20 08:36:07+00:00 -->
+
+### MODULES
+
+- [[#1714](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1714)] Support multiple protocols (L3_DEFAULT) through `net-ilb-in` ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-04 08:30:11+00:00 -->
+- [[#1727](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1727)] Update GCS IAM ([apichick](https://github.com/apichick)) <!-- 2023-10-04 06:43:08+00:00 -->
+- [[#1728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1728)] Fix dnssec keys lookup ([juliocc](https://github.com/juliocc)) <!-- 2023-10-03 19:37:22+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
+- [[#1723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1723)] Add storage billing model to `bigquery-dataset` ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-02 17:37:40+00:00 -->
+- [[#1719](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1719)] Add GLB HTTP to HTTPS redirect example ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 10:10:24+00:00 -->
+- [[#1717](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1717)] Apigee module fix try ([apichick](https://github.com/apichick)) <!-- 2023-10-01 12:26:22+00:00 -->
+- [[#1716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1716)] Add retry policy for subscriptions ([devuonocar](https://github.com/devuonocar)) <!-- 2023-09-29 14:46:26+00:00 -->
+- [[#1709](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1709)] Add bug fix in bucket local variable ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-09-28 10:17:53+00:00 -->
+- [[#1704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1704)] Add cloud function secrets tests ([wiktorn](https://github.com/wiktorn)) <!-- 2023-09-26 09:22:36+00:00 -->
+- [[#1703](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1703)] Add bug fix to allow to use Secret Manager secrets to mount files in … ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-09-25 13:27:03+00:00 -->
+- [[#1701](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1701)] Add support for default nodepool sa in GKE cluster module ([ludoo](https://github.com/ludoo)) <!-- 2023-09-22 08:37:38+00:00 -->
+- [[#1696](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1696)] Add deletion_protection_enabled attribute to cloudsql-instance to ena… ([steenblik](https://github.com/steenblik)) <!-- 2023-09-20 13:09:38+00:00 -->
+- [[#1690](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1690)] **incompatible change:** Rename instance attachment to match versions 23 and earlier ([cygnus8595](https://github.com/cygnus8595)) <!-- 2023-09-20 09:32:05+00:00 -->
+- [[#1694](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1694)] Fix apigee addons config conditional expression ([eddern](https://github.com/eddern)) <!-- 2023-09-19 19:39:09+00:00 -->
+- [[#1692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1692)] **incompatible change:** Allow using no service account in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2023-09-19 16:56:51+00:00 -->
+- [[#1688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1688)] Fix repd disk attachment in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-09-18 13:02:28+00:00 -->
+
+## [26.0.0] - 2023-09-18
+<!-- 2023-09-18 07:03:09+00:00 < 2023-08-09 17:02:13+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1684](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1684)] **incompatible change:** Update resource-level IAM interface for kms and pubsub modules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-17 08:48:09+00:00 -->
+- [[#1682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1682)] GKE cluster modules: add optional kube state metrics ([olliefr](https://github.com/olliefr)) <!-- 2023-09-15 11:18:45+00:00 -->
+- [[#1681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1681)] **incompatible change:** Embed subnet-level IAM in the variables controlling creation of subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-09-15 06:42:24+00:00 -->
+- [[#1680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1680)] Upgrades to `monitoring_config` in `gke-cluster-*`, docs update, and cosmetics fixes to GKE cluster modules ([olliefr](https://github.com/olliefr)) <!-- 2023-09-14 22:25:57+00:00 -->
+- [[#1679](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1679)] Add lineage on Minimal Data Platform blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-09-14 15:52:20+00:00 -->
+- [[#1678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1678)] Allow only one of `secondary_range_blocks` or `secondary_range_names` when creating GKE clusters. ([juliocc](https://github.com/juliocc)) <!-- 2023-09-14 11:29:08+00:00 -->
+- [[#1671](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1671)] **incompatible change:** Fixed, added back environments to each instance, that way we can also… ([apichick](https://github.com/apichick)) <!-- 2023-09-13 14:58:04+00:00 -->
+- [[#1662](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1662)] merge labels from data_merges in project factory ([Tutuchan](https://github.com/Tutuchan)) <!-- 2023-09-08 10:27:46+00:00 -->
+- [[#1651](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1651)] add AIRFLOW_VAR_ prefix to environment variables in data-platform blueprints ([Tutuchan](https://github.com/Tutuchan)) <!-- 2023-09-08 07:38:29+00:00 -->
+- [[#1642](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1642)] New phpIPAM serverless third parties solution in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-09-07 13:30:23+00:00 -->
+- [[#1654](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1654)] Fix project factory blueprint and fast stage ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-09-07 12:48:39+00:00 -->
+- [[#1647](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1647)] Bump provider version to 4.80.0 ([juliocc](https://github.com/juliocc)) <!-- 2023-09-05 10:06:19+00:00 -->
+- [[#1638](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1638)] gke-cluster-standard: change logging configuration ([olliefr](https://github.com/olliefr)) <!-- 2023-08-31 11:49:15+00:00 -->
+- [[#1636](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1636)] Delete api gateway blueprint ([juliodiez](https://github.com/juliodiez)) <!-- 2023-08-29 11:32:40+00:00 -->
+- [[#1607](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1607)] Trap requests timeout error in quota sync ([ludoo](https://github.com/ludoo)) <!-- 2023-08-21 16:37:55+00:00 -->
 - [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 - [[#1601](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1601)] [Data Platform] Update README.md ([lcaggio](https://github.com/lcaggio)) <!-- 2023-08-18 16:27:43+00:00 -->
 
 ### DOCUMENTATION
 
+- [[#1687](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1687)] Add IAM variables template to ADR ([juliocc](https://github.com/juliocc)) <!-- 2023-09-17 09:08:11+00:00 -->
+- [[#1686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1686)] CONTRIBUTING guide: fix broken links and update "running tests for specific examples" section ([olliefr](https://github.com/olliefr)) <!-- 2023-09-16 19:46:46+00:00 -->
+- [[#1658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1658)] **incompatible change:** Change type of `iam_bindings` variable to allow multiple conditional bindings ([ludoo](https://github.com/ludoo)) <!-- 2023-09-08 06:56:31+00:00 -->
+- [[#1642](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1642)] New phpIPAM serverless third parties solution in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-09-07 13:30:23+00:00 -->
+- [[#1640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1640)] Simplify linting output in workflow ([juliocc](https://github.com/juliocc)) <!-- 2023-08-31 09:16:37+00:00 -->
+- [[#1636](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1636)] Delete api gateway blueprint ([juliodiez](https://github.com/juliodiez)) <!-- 2023-08-29 11:32:40+00:00 -->
 - [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 
 ### FAST
 
+- [[#1684](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1684)] **incompatible change:** Update resource-level IAM interface for kms and pubsub modules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-17 08:48:09+00:00 -->
+- [[#1685](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1685)] Fix psa routing variable in FAST net stages ([ludoo](https://github.com/ludoo)) <!-- 2023-09-16 08:31:03+00:00 -->
+- [[#1682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1682)] GKE cluster modules: add optional kube state metrics ([olliefr](https://github.com/olliefr)) <!-- 2023-09-15 11:18:45+00:00 -->
+- [[#1681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1681)] **incompatible change:** Embed subnet-level IAM in the variables controlling creation of subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-09-15 06:42:24+00:00 -->
+- [[#1680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1680)] Upgrades to `monitoring_config` in `gke-cluster-*`, docs update, and cosmetics fixes to GKE cluster modules ([olliefr](https://github.com/olliefr)) <!-- 2023-09-14 22:25:57+00:00 -->
+- [[#1678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1678)] Allow only one of `secondary_range_blocks` or `secondary_range_names` when creating GKE clusters. ([juliocc](https://github.com/juliocc)) <!-- 2023-09-14 11:29:08+00:00 -->
+- [[#1664](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1664)] Align pf stage sample data to new format ([ludoo](https://github.com/ludoo)) <!-- 2023-09-09 08:04:19+00:00 -->
+- [[#1663](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1663)] [#1661] Make FAST stage 1 resman tf destroy more reliable ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-09-08 10:09:31+00:00 -->
+- [[#1659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1659)] Link project factory documentation from FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2023-09-08 07:14:16+00:00 -->
+- [[#1658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1658)] **incompatible change:** Change type of `iam_bindings` variable to allow multiple conditional bindings ([ludoo](https://github.com/ludoo)) <!-- 2023-09-08 06:56:31+00:00 -->
+- [[#1654](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1654)] Fix project factory blueprint and fast stage ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-09-07 12:48:39+00:00 -->
+- [[#1638](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1638)] gke-cluster-standard: change logging configuration ([olliefr](https://github.com/olliefr)) <!-- 2023-08-31 11:49:15+00:00 -->
+- [[#1634](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1634)] [revert(revert(patch))] Remove unused ASN numbers for CloudNAT in FAST ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-28 15:32:30+00:00 -->
+- [[#1631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1631)] Allow single hfw policy association in folder and organization modules ([juliocc](https://github.com/juliocc)) <!-- 2023-08-28 14:46:05+00:00 -->
+- [[#1626](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1626)] Revert "Remove unused ASN numbers from CloudNAT to avoid provider errors" ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-28 07:33:53+00:00 -->
+- [[#1623](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1623)] Fix role name for delegated grants in FAST bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2023-08-25 06:43:20+00:00 -->
+- [[#1612](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1612)] Fix: align stage-2-e-nva-bgp to the latest APIs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-23 11:34:11+00:00 -->
+- [[#1610](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1610)] Fix: use existing variable to optionally name fw policies ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-22 06:55:56+00:00 -->
 - [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 - [[#1597](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1597)] fix null object exception in bootstrap output when using cloudsource ([sm3142](https://github.com/sm3142)) <!-- 2023-08-17 09:03:23+00:00 -->
 - [[#1593](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1593)] Fix FAST CI/CD for Gitlab ([ludoo](https://github.com/ludoo)) <!-- 2023-08-15 10:59:31+00:00 -->
@@ -24,6 +1304,41 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1684](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1684)] **incompatible change:** Update resource-level IAM interface for kms and pubsub modules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-17 08:48:09+00:00 -->
+- [[#1683](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1683)] Fix subnet iam_bindings to use arbitrary keys ([juliocc](https://github.com/juliocc)) <!-- 2023-09-15 13:15:59+00:00 -->
+- [[#1682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1682)] GKE cluster modules: add optional kube state metrics ([olliefr](https://github.com/olliefr)) <!-- 2023-09-15 11:18:45+00:00 -->
+- [[#1681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1681)] **incompatible change:** Embed subnet-level IAM in the variables controlling creation of subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-09-15 06:42:24+00:00 -->
+- [[#1680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1680)] Upgrades to `monitoring_config` in `gke-cluster-*`, docs update, and cosmetics fixes to GKE cluster modules ([olliefr](https://github.com/olliefr)) <!-- 2023-09-14 22:25:57+00:00 -->
+- [[#1678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1678)] Allow only one of `secondary_range_blocks` or `secondary_range_names` when creating GKE clusters. ([juliocc](https://github.com/juliocc)) <!-- 2023-09-14 11:29:08+00:00 -->
+- [[#1675](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1675)] GKE Autopilot module: add network tags ([olliefr](https://github.com/olliefr)) <!-- 2023-09-14 09:34:51+00:00 -->
+- [[#1676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1676)] fixed up nit from PR 1666 ([dgulli](https://github.com/dgulli)) <!-- 2023-09-14 05:23:20+00:00 -->
+- [[#1672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1672)] Added possibility to use gcs push endpoint on pubsub subscription ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-09-13 19:42:43+00:00 -->
+- [[#1671](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1671)] **incompatible change:** Fixed, added back environments to each instance, that way we can also… ([apichick](https://github.com/apichick)) <!-- 2023-09-13 14:58:04+00:00 -->
+- [[#1666](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1666)] added support for global proxy only subnets ([dgulli](https://github.com/dgulli)) <!-- 2023-09-13 08:46:09+00:00 -->
+- [[#1669](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1669)] Fix for partner interconnect ([apichick](https://github.com/apichick)) <!-- 2023-09-12 13:29:35+00:00 -->
+- [[#1668](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1668)] fix(compute-mig): add correct type optionality for metrics in autosca… ([NotArpit](https://github.com/NotArpit)) <!-- 2023-09-12 11:58:09+00:00 -->
+- [[#1667](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1667)] fix(compute-mig): add mode property to compute_region_autoscaler ([NotArpit](https://github.com/NotArpit)) <!-- 2023-09-11 11:25:32+00:00 -->
+- [[#1658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1658)] **incompatible change:** Change type of `iam_bindings` variable to allow multiple conditional bindings ([ludoo](https://github.com/ludoo)) <!-- 2023-09-08 06:56:31+00:00 -->
+- [[#1653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1653)] Fixes to the apigee module ([juliocc](https://github.com/juliocc)) <!-- 2023-09-07 15:02:56+00:00 -->
+- [[#1642](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1642)] New phpIPAM serverless third parties solution in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-09-07 13:30:23+00:00 -->
+- [[#1650](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1650)] Make net-vpc variables non-nullable ([juliocc](https://github.com/juliocc)) <!-- 2023-09-06 08:52:29+00:00 -->
+- [[#1647](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1647)] Bump provider version to 4.80.0 ([juliocc](https://github.com/juliocc)) <!-- 2023-09-05 10:06:19+00:00 -->
+- [[#1646](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1646)] gke-cluster-autopilot: add monitoring configuration ([olliefr](https://github.com/olliefr)) <!-- 2023-09-04 15:43:59+00:00 -->
+- [[#1645](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1645)] gke-cluster-autopilot: add validation for release_channel input variable ([olliefr](https://github.com/olliefr)) <!-- 2023-09-03 00:37:50+00:00 -->
+- [[#1638](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1638)] gke-cluster-standard: change logging configuration ([olliefr](https://github.com/olliefr)) <!-- 2023-08-31 11:49:15+00:00 -->
+- [[#1625](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1625)] gke-cluster-autopilot: add logging configuration ([olliefr](https://github.com/olliefr)) <!-- 2023-08-31 11:06:57+00:00 -->
+- [[#1637](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1637)] GRPC variable is misnamed "GRCP" in `modules/cloud-run/variables.tf`, causing liveness probe and startup probe to fail ([zacharysmithdatatonic](https://github.com/zacharysmithdatatonic)) <!-- 2023-08-30 11:47:05+00:00 -->
+- [[#1632](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1632)] Vpc sc allow null for identity type ([LudovicEmo](https://github.com/LudovicEmo)) <!-- 2023-08-29 02:28:58+00:00 -->
+- [[#1633](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1633)] Do not set default ASN number ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-28 15:06:32+00:00 -->
+- [[#1631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1631)] Allow single hfw policy association in folder and organization modules ([juliocc](https://github.com/juliocc)) <!-- 2023-08-28 14:46:05+00:00 -->
+- [[#1630](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1630)] [Fix] Add explicit dependency between CR peers and NCC RA spoke creation ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-28 13:50:46+00:00 -->
+- [[#1613](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1613)] Cloud SQL activation policy selectable ([cmvalla](https://github.com/cmvalla)) <!-- 2023-08-25 10:12:08+00:00 -->
+- [[#1619](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1619)] Adding support for NAT in Apigee ([billabongrob](https://github.com/billabongrob)) <!-- 2023-08-24 18:25:54+00:00 -->
+- [[#1620](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1620)] Remove net-firewall-policy match variable validation ([richard-olson](https://github.com/richard-olson)) <!-- 2023-08-24 17:45:32+00:00 -->
+- [[#1614](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1614)] Fix net-firewall-policy factory name and action ([richard-olson](https://github.com/richard-olson)) <!-- 2023-08-23 14:06:00+00:00 -->
+- [[#1584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1584)] add support for object upload to gcs module ([ehorning](https://github.com/ehorning)) <!-- 2023-08-22 17:01:19+00:00 -->
+- [[#1609](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1609)] **incompatible change:** Use cloud run bindings for cf v2 invoker role, refactor iam handling in cf v2 and cloud run ([ludoo](https://github.com/ludoo)) <!-- 2023-08-22 07:23:49+00:00 -->
+- [[#1590](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1590)] GCVE module first release ([eliamaldini](https://github.com/eliamaldini)) <!-- 2023-08-21 07:05:45+00:00 -->
 - [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 - [[#1600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1600)] fix(cloud-run): move cpu boost annotation to revision ([LiuVII](https://github.com/LiuVII)) <!-- 2023-08-18 14:46:25+00:00 -->
 - [[#1599](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1599)] Fixing some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-08-18 08:29:26+00:00 -->
@@ -38,6 +1353,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1641](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1641)] Lint script ([juliocc](https://github.com/juliocc)) <!-- 2023-08-31 09:38:09+00:00 -->
+- [[#1640](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1640)] Simplify linting output in workflow ([juliocc](https://github.com/juliocc)) <!-- 2023-08-31 09:16:37+00:00 -->
+- [[#1635](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1635)] Silence FAST tests warnings ([juliocc](https://github.com/juliocc)) <!-- 2023-08-29 05:26:58+00:00 -->
 - [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 - [[#1585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1585)] Print inventory path when a test fails ([juliocc](https://github.com/juliocc)) <!-- 2023-08-11 10:28:08+00:00 -->
 
@@ -119,7 +1437,7 @@ All notable changes to this project will be documented in this file.
 - [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 - [[#1509](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1509)] Add output to org module with custom constraint details and depends_on ([juliocc](https://github.com/juliocc)) <!-- 2023-07-18 08:24:39+00:00 -->
 - [[#1503](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1503)] Move IAM grant to function level for trigger SA ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-12 14:19:35+00:00 -->
-- [[#1479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1479)] Update ncc-spoke-ra module to explicity request ncc hub id when referencing existing hubs ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 14:18:43+00:00 -->
+- [[#1479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1479)] Update ncc-spoke-ra module to explicitly request ncc hub id when referencing existing hubs ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 14:18:43+00:00 -->
 - [[#1499](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1499)] Add support for custom description in net-address ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 11:04:54+00:00 -->
 - [[#1497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1497)] **incompatible change:** Implement proper support for data access logs in resource manager modules ([ludoo](https://github.com/ludoo)) <!-- 2023-07-10 08:08:03+00:00 -->
 
@@ -1167,7 +2485,7 @@ All notable changes to this project will be documented in this file.
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
 - new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./blueprints/networking/private-cloud-function-from-onprem/)
-- new networking example showing how to organize [decentralized firewall](./blueprints/networking/decentralized-firewall/) management on GCP
+- new networking example showing how to organize decentralized firewall management on GCP
 
 ## [5.0.0] - 2021-06-17
 
@@ -1483,75 +2801,96 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v25.0.0...HEAD
-[25.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...v25.0.0
-[24.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...v24.0.0
-[23.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...v23.0.0
-[22.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0
-[21.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0
-[20.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0
-[19.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...v19.0.0
-[18.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...v18.0.0
-[16.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v15.0.0...v16.0.0
-[15.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
-[14.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
-[13.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
-[12.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.2.0...v12.0.0
-[11.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.1.0...v11.2.0
-[11.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.0.0...v11.1.0
-[11.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v10.0.1...v11.0.0
-[10.0.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v10.0.0...v10.0.1
-[10.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.3...v10.0.0
-[9.0.3]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.2...v9.0.3
-[9.0.2]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.0...v9.0.2
-[9.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v8.0.0...v9.0.0
-[8.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v7.0.0...v8.0.0
-[7.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v6.0.0...v7.0.0
-[6.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v5.1.0...v6.0.0
-[5.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
-[5.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
-[4.9.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
-[4.8.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.7.0...v4.8.0
-[4.7.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.6.1...v4.7.0
-[4.6.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.6.0...v4.6.1
-[4.6.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.5.1...v4.6.0
-[4.5.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.5.0...v4.5.1
-[4.5.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.2...v4.5.0
-[4.4.2]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.1...v4.4.2
-[4.4.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.0...v4.4.1
-[4.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
-[4.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
-[4.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.1.0...v4.2.0
-[4.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.0.0...v4.1.0
-[4.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.5.0...v4.0.0
-[3.5.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.4.0...v3.5.0
-[3.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.3.0...v3.4.0
-[3.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
-[3.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
-[3.1.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
-[3.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
-[3.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
-[2.8.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.7.1...v2.8.0
-[2.7.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.7.0...v2.7.1
-[2.7.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.6.0...v2.7.0
-[2.6.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.5.0...v2.6.0
-[2.5.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.2...v2.5.0
-[2.4.2]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.1...v2.4.2
-[2.4.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.0...v2.4.1
-[2.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.3.0...v2.4.0
-[2.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.2.0...v2.3.0
-[2.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.1.0...v2.2.0
-[2.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.9.0...v2.0.0
-[1.9.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.8.1...v1.9.0
-[1.8.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.8.0...v1.8.1
-[1.8.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.7.0...v1.8.0
-[1.7.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.6.0...v1.7.0
-[1.6.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.5.0...v1.6.0
-[1.5.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.4.1...v1.5.0
-[1.4.1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.4.0...v1.4.1
-[1.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.3.0...v1.4.0
-[1.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v0.1...v1.0.0
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...HEAD
+[37.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...v37.2.0
+[37.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.0.0...v37.1.0
+[37.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.2.0...v37.0.0
+[36.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.1.0...v36.2.0
+[36.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.1...v36.1.0>
+[36.0.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.0.0...v36.0.1>
+[36.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.1.0...v36.0.0>
+[35.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v35.0.0...v35.1.0>
+[35.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.1.0...v35.0.0>
+[34.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v34.0.0...v34.1.0>
+[34.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v33.0.0...v34.0.0>
+[33.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.1...v33.0.0>
+[32.0.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v32.0.0...v32.0.1>
+[32.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.1.0...v32.0.0>
+[31.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v31.0.0...v31.1.0>
+[31.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...v31.0.0>
+[30.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0>
+[29.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0>
+[28.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v27.0.0...v28.0.0>
+[27.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v26.0.0...v27.0.0>
+[26.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v25.0.0...v26.0.0>
+[25.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...v25.0.0>
+[24.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...v24.0.0>
+[23.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...v23.0.0>
+[22.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0>
+[21.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0>
+[20.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0>
+[19.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...v19.0.0>
+[18.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...v18.0.0>
+[16.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v15.0.0...v16.0.0>
+[15.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v14.0.0...v15.0.0>
+[14.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v13.0.0...v14.0.0>
+[13.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v12.0.0...v13.0.0>
+[12.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.2.0...v12.0.0>
+[11.2.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.1.0...v11.2.0>
+[11.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v11.0.0...v11.1.0>
+[11.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v10.0.1...v11.0.0>
+[10.0.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v10.0.0...v10.0.1>
+[10.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.3...v10.0.0>
+[9.0.3]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.2...v9.0.3>
+[9.0.2]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v9.0.0...v9.0.2>
+[9.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v8.0.0...v9.0.0>
+[8.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v7.0.0...v8.0.0>
+[7.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v6.0.0...v7.0.0>
+[6.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v5.1.0...v6.0.0>
+[5.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v5.0.0...v5.1.0>
+[5.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.9.0...v5.0.0>
+[4.9.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.8.0...v4.9.0>
+[4.8.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.7.0...v4.8.0>
+[4.7.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.6.1...v4.7.0>
+[4.6.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.6.0...v4.6.1>
+[4.6.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.5.1...v4.6.0>
+[4.5.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.5.0...v4.5.1>
+[4.5.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.2...v4.5.0>
+[4.4.2]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.1...v4.4.2>
+[4.4.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.4.0...v4.4.1>
+[4.4.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.3.0...v4.4.0>
+[4.3.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.2.0...v4.3.0>
+[4.2.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.1.0...v4.2.0>
+[4.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v4.0.0...v4.1.0>
+[4.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.5.0...v4.0.0>
+[3.5.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.4.0...v3.5.0>
+[3.4.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.3.0...v3.4.0>
+[3.3.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.2.0...v3.3.0>
+[3.2.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.1.1...v3.2.0>
+[3.1.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.1.0...v3.1.1>
+[3.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v3.0.0...v3.1.0>
+[3.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.8.0...v3.0.0>
+[2.8.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.7.1...v2.8.0>
+[2.7.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.7.0...v2.7.1>
+[2.7.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.6.0...v2.7.0>
+[2.6.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.5.0...v2.6.0>
+[2.5.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.2...v2.5.0>
+[2.4.2]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.1...v2.4.2>
+[2.4.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.4.0...v2.4.1>
+[2.4.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.3.0...v2.4.0>
+[2.3.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.2.0...v2.3.0>
+[2.2.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.1.0...v2.2.0>
+[2.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v2.0.0...v2.1.0>
+[2.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.9.0...v2.0.0>
+[1.9.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.8.1...v1.9.0>
+[1.8.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.8.0...v1.8.1>
+[1.8.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.7.0...v1.8.0>
+[1.7.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.6.0...v1.7.0>
+[1.6.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.5.0...v1.6.0>
+[1.5.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.4.1...v1.5.0>
+[1.4.1]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.4.0...v1.4.1>
+[1.4.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.3.0...v1.4.0>
+[1.3.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.2.0...v1.3.0>
+[1.2.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.1.0...v1.2.0>
+[1.1.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v1.0.0...v1.1.0>
+[1.0.0]: <https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v0.1...v1.0.0>

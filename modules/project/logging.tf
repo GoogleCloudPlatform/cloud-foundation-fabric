@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,31 @@
 # tfdoc:file:description Log sinks and supporting resources.
 
 locals {
+  logging_sinks = {
+    for k, v in var.logging_sinks :
+    # rewrite destination and type when type="project"
+    k => merge(v, v.type != "project" ? {} : {
+      destination = "projects/${v.destination}"
+      type        = "logging"
+    })
+  }
   sink_bindings = {
-    for type in ["bigquery", "pubsub", "logging", "storage"] :
+    for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
     type => {
       for name, sink in var.logging_sinks :
       name => sink if sink.iam && sink.type == type
     }
+  }
+
+  log_scopes = {
+    for k, v in var.log_scopes :
+    k => merge(v, {
+      # process all resource_names to allow bare project ids
+      resource_names = [
+        for r in v.resource_names :
+        startswith(r, "projects/") ? r : "projects/${r}"
+      ]
+    })
   }
 }
 
@@ -31,17 +50,16 @@ resource "google_project_iam_audit_config" "default" {
   project  = local.project.project_id
   service  = each.key
   dynamic "audit_log_config" {
-    for_each = each.value
-    iterator = config
+    for_each = { for k, v in each.value : k => v if v != null }
     content {
-      log_type         = config.key
-      exempted_members = config.value
+      log_type         = audit_log_config.key
+      exempted_members = audit_log_config.value.exempted_members
     }
   }
 }
 
 resource "google_logging_project_sink" "sink" {
-  for_each               = var.logging_sinks
+  for_each               = local.logging_sinks
   name                   = each.key
   description            = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   project                = local.project.project_id
@@ -51,7 +69,7 @@ resource "google_logging_project_sink" "sink" {
   disabled               = each.value.disabled
 
   dynamic "bigquery_options" {
-    for_each = each.value.type == "biquery" && each.value.bq_partitioned_table != null ? [""] : []
+    for_each = each.value.type == "bigquery" ? [""] : []
     content {
       use_partitioned_tables = each.value.bq_partitioned_table
     }
@@ -69,7 +87,8 @@ resource "google_logging_project_sink" "sink" {
   depends_on = [
     google_project_iam_binding.authoritative,
     google_project_iam_binding.bindings,
-    google_project_iam_member.bindings
+    google_project_iam_member.bindings,
+    google_project_service.project_services
   ]
 }
 
@@ -109,10 +128,26 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   }
 }
 
+resource "google_project_iam_member" "project-sinks-binding" {
+  for_each = local.sink_bindings["project"]
+  project  = each.value.destination
+  role     = "roles/logging.logWriter"
+  member   = google_logging_project_sink.sink[each.key].writer_identity
+}
+
 resource "google_logging_project_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
   project     = local.project.project_id
   description = "${each.key} (Terraform-managed)."
   filter      = each.value
+}
+
+resource "google_logging_log_scope" "log-scopes" {
+  for_each       = local.log_scopes
+  parent         = "projects/${local.project.project_id}"
+  location       = "global"
+  name           = each.key
+  resource_names = each.value.resource_names
+  description    = each.value.description
 }

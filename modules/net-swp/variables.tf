@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-
-
-variable "addresses" {
-  description = "One or more IP addresses to be used for Secure Web Proxy."
-  validation {
-    condition     = length(var.addresses) > 0
-    error_message = "Must specify at least one IP address."
-  }
-}
-
 variable "certificates" {
   description = "List of certificates to be used for Secure Web Proxy."
   type        = list(string)
-}
-
-variable "delete_swg_autogen_router_on_destroy" {
-  description = "Delete automatically provisioned Cloud Router on destroy."
-  type        = bool
-  default     = true
+  nullable    = false
+  default     = []
 }
 
 variable "description" {
@@ -41,10 +27,27 @@ variable "description" {
   default     = "Managed by Terraform."
 }
 
-variable "labels" {
-  description = "Resource labels."
-  type        = map(string)
-  default     = {}
+variable "factories_config" {
+  description = "Path to folder with YAML resource description data files."
+  type = object({
+    policy_rules = optional(string)
+    url_lists    = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
+variable "gateway_config" {
+  description = "Optional Secure Web Gateway configuration."
+  type = object({
+    addresses                = optional(list(string), [])
+    delete_router_on_destroy = optional(bool, true)
+    labels                   = optional(map(string), {})
+    next_hop_routing_mode    = optional(bool, false)
+    ports                    = optional(list(string), [443])
+    scope                    = optional(string)
+  })
+  nullable = false
 }
 
 variable "name" {
@@ -58,62 +61,48 @@ variable "network" {
 }
 
 variable "policy_rules" {
-  description = "List of policy rule definitions, default to allow action. Available keys: secure_tags, url_lists, custom. URL lists that only have values set will be created."
-  type = object({
-    secure_tags = optional(map(object({
-      tag                    = string
-      session_matcher        = optional(string)
-      application_matcher    = optional(string)
-      priority               = number
-      action                 = optional(string, "ALLOW")
-      enabled                = optional(bool, true)
-      tls_inspection_enabled = optional(bool, false)
-      description            = optional(string)
-    })), {})
-
-    url_lists = optional(map(object({
-      url_list               = string
-      values                 = optional(list(string))
-      session_matcher        = optional(string)
-      application_matcher    = optional(string)
-      priority               = number
-      action                 = optional(string, "ALLOW")
-      enabled                = optional(bool, true)
-      tls_inspection_enabled = optional(bool, false)
-      description            = optional(string)
-    })), {})
-
-    custom = optional(map(object({
-      session_matcher        = optional(string)
-      application_matcher    = optional(string)
-      priority               = number
-      action                 = optional(string, "ALLOW")
-      enabled                = optional(bool, true)
-      tls_inspection_enabled = optional(bool, false)
-      description            = optional(string)
-    })), {})
-  })
-  validation {
-    condition = (
-      length(concat(
-        [for k, v in var.policy_rules.secure_tags : v.priority],
-        [for k, v in var.policy_rules.url_lists : v.priority],
-      [for k, v in var.policy_rules.custom : v.priority])) ==
-      length(distinct(concat(
-        [for k, v in var.policy_rules.secure_tags : v.priority],
-        [for k, v in var.policy_rules.url_lists : v.priority],
-      [for k, v in var.policy_rules.custom : v.priority])))
-    )
-    error_message = "Each rule must have unique priority."
-  }
-  default  = {}
+  description = "Policy rules definitions. Merged with policy rules defined via the factory."
+  type = map(object({
+    priority            = number
+    allow               = optional(bool, true)
+    description         = optional(string)
+    enabled             = optional(bool, true)
+    application_matcher = optional(string)
+    session_matcher     = optional(string)
+    tls_inspect         = optional(bool)
+    matcher_args = optional(object({
+      application = optional(list(string), [])
+      session     = optional(list(string), [])
+    }), {})
+  }))
   nullable = false
+  default  = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.policy_rules : concat(
+        [
+          for vv in v.matcher_args.application :
+          contains(["secure_tag", "service_account", "url_list"], split(":", vv)[0])
+        ],
+        [
+          for vv in v.matcher_args.session :
+          contains(["secure_tag", "service_account", "url_list"], split(":", vv)[0])
+        ],
+      )
+    ]))
+    error_message = "Matcher arguments need to use a 'serviceaccount:' 'tag:' or 'url_list:' prefix."
+  }
 }
 
-variable "ports" {
-  description = "Ports to use for Secure Web Proxy."
-  type        = list(number)
-  default     = [443]
+variable "policy_rules_contexts" {
+  description = "Replacement contexts for policy rules matcher arguments."
+  type = object({
+    secure_tags      = optional(map(string), {})
+    service_accounts = optional(map(string), {})
+    url_lists        = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "project_id" {
@@ -126,10 +115,19 @@ variable "region" {
   type        = string
 }
 
-variable "scope" {
-  description = "Scope determines how configuration across multiple Gateway instances are merged."
-  type        = string
-  default     = null
+variable "service_attachment" {
+  description = "PSC service attachment configuration."
+  type = object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  })
+  default = null
 }
 
 variable "subnetwork" {
@@ -140,9 +138,29 @@ variable "subnetwork" {
 variable "tls_inspection_config" {
   description = "TLS inspection configuration."
   type = object({
-    ca_pool               = optional(string, null)
-    exclude_public_ca_set = optional(bool, false)
-    description           = optional(string)
+    create_config = optional(object({
+      ca_pool               = optional(string, null)
+      description           = optional(string, null)
+      exclude_public_ca_set = optional(bool, false)
+    }), null)
+    id = optional(string, null)
   })
-  default = null
+  nullable = false
+  default  = {}
+  validation {
+    condition = !(
+      var.tls_inspection_config.create_config != null &&
+      var.tls_inspection_config.id != null
+    )
+    error_message = "You can't assign values both to `create.config.ca_pool` and `id`."
+  }
+}
+
+variable "url_lists" {
+  description = "URL lists."
+  type = map(object({
+    values      = list(string)
+    description = optional(string)
+  }))
+  default = {}
 }

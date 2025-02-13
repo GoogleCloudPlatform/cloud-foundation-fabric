@@ -101,7 +101,11 @@ variable "lifecycle_rules" {
 variable "location" {
   description = "Bucket location."
   type        = string
-  default     = "US"
+  default     = null
+  validation {
+    condition     = ((var.bucket_create == true) == (var.location != null))
+    error_message = "Bucket location is required if and only if bucket_create is true."
+  }
 }
 
 variable "logging_config" {

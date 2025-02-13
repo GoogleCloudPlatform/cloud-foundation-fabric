@@ -1,0 +1,42 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: ${namespace} # Job under team-a namespace
+  generateName: sample-job-
+  annotations:
+    kueue.x-k8s.io/queue-name: local-queue # Point to the LocalQueue
+spec:
+  ttlSecondsAfterFinished: 60 # Job will be deleted after 60 seconds
+  parallelism: 3 # This Job will have 3 replicas running at the same time
+  completions: 3 # This Job requires 3 completions
+  suspend: true # Set to true to allow Kueue to control the Job when it starts
+  template:
+    spec:
+      containers:
+      - name: dummy-job
+        image: gcr.io/k8s-staging-perf-tests/sleep:latest
+        args: ["10s"] # Sleep for 10 seconds
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+            ephemeral-storage: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+            ephemeral-storage: "512Mi"
+      restartPolicy: Never

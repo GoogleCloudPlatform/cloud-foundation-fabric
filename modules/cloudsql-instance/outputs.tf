@@ -21,6 +21,12 @@ locals {
   )
 }
 
+output "client_certificates" {
+  description = "The CA Certificate used to connect to the SQL Instance via SSL."
+  value       = google_sql_ssl_cert.client_certificates
+  sensitive   = true
+}
+
 output "connection_name" {
   description = "Connection name of the primary instance."
   value       = google_sql_database_instance.primary.connection_name
@@ -31,6 +37,19 @@ output "connection_names" {
   value = {
     for id, instance in local._all_instances :
     id => instance.connection_name
+  }
+}
+
+output "dns_name" {
+  description = "The dns name of the instance."
+  value       = google_sql_database_instance.primary.dns_name
+}
+
+output "dns_names" {
+  description = "Dns names of all instances."
+  value = {
+    for id, instance in local._all_instances :
+    id => instance.dns_name
   }
 }
 
@@ -79,10 +98,17 @@ output "names" {
   }
 }
 
-output "postgres_client_certificates" {
-  description = "The CA Certificate used to connect to the SQL Instance via SSL."
-  value       = google_sql_ssl_cert.postgres_client_certificates
-  sensitive   = true
+output "psc_service_attachment_link" {
+  description = "The link to service attachment of PSC instance."
+  value       = google_sql_database_instance.primary.psc_service_attachment_link
+}
+
+output "psc_service_attachment_links" {
+  description = "Links to service attachment of PSC instances."
+  value = {
+    for id, instance in local._all_instances :
+    id => instance.psc_service_attachment_link
+  }
 }
 
 output "self_link" {

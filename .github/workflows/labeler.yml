@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 name: "Label Pull Requests"
 
 on:
+  # only used for PRs that involve labeler itself
+  # https://github.com/actions/labeler?tab=readme-ov-file#notes-regarding-pull_request_target-event
+  # pull_request:
   pull_request_target:
 
 jobs:
@@ -24,7 +27,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v4
+    - uses: actions/labeler@v5
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         sync-labels: true

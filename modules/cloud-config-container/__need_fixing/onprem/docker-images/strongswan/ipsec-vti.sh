@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ case "${PLUTO_VERB}" in
         # Disable IPSEC Policy
         sudo /sbin/sysctl -w net.ipv4.conf.${VTI_IF}.disable_policy=1
 
-        # Enable loosy source validation, if possible. Otherwise disable validation.
+        # Enable loose source validation, if possible. Otherwise disable validation.
         sudo /sbin/sysctl -w net.ipv4.conf.${VTI_IF}.rp_filter=2 || sysctl -w net.ipv4.conf.${VTI_IF}.rp_filter=0
 
-        # If you would like to use VTI for policy-based you should take care of routing by yourselv, e.x.
+        # If you would like to use VTI for policy-based you should take care of routing by yourself,, e.x.
         if [[ "${PLUTO_PEER_CLIENT}" != "0.0.0.0/0" ]]; then
             ${IP} r add "${PLUTO_PEER_CLIENT}" dev "${VTI_IF}"
         fi

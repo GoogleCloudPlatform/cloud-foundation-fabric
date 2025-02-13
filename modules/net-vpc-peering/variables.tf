@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,16 @@
 variable "local_network" {
   description = "Resource link of the network to add a peering to."
   type        = string
+}
+
+variable "name" {
+  description = "Optional names for the the peering resources. If not set, peering names will be generated based on the network names."
+  type = object({
+    local = optional(string)
+    peer  = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "peer_create_peering" {
@@ -58,4 +68,14 @@ variable "routes_config" {
   })
   nullable = false
   default  = {}
+}
+
+variable "stack_type" {
+  description = "IP version(s) of traffic and routes that are allowed to be imported or exported between peer networks. Possible values: IPV4_ONLY, IPV4_IPV6."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.stack_type == "IPV4_ONLY" || var.stack_type == "IPV4_IPV6" || var.stack_type == null
+    error_message = "The stack_type must be either 'IPV4_ONLY' or 'IPV4_IPV6'."
+  }
 }

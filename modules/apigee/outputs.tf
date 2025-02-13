@@ -21,17 +21,17 @@ output "endpoint_attachment_hosts" {
 
 output "envgroups" {
   description = "Environment groups."
-  value       = try(google_apigee_envgroup.envgroups, null)
+  value       = google_apigee_envgroup.envgroups
 }
 
 output "environments" {
   description = "Environment."
-  value       = try(google_apigee_environment.environments, null)
+  value       = google_apigee_environment.environments
 }
 
 output "instances" {
   description = "Instances."
-  value       = try(google_apigee_instance.instances, null)
+  value       = google_apigee_instance.instances
 }
 
 output "nat_ips" {

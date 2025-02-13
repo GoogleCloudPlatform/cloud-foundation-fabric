@@ -42,6 +42,7 @@ class State(enum.IntEnum):
   FAIL_OUTPUT_PERIOD = enum.auto()
   FAIL_VARIABLE_DESCRIPTION = enum.auto()
   FAIL_OUTPUT_DESCRIPTION = enum.auto()
+  FAIL_MISSING_TYPES = enum.auto()
 
   @property
   def failed(self):
@@ -60,6 +61,7 @@ class State(enum.IntEnum):
         State.FAIL_OUTPUT_PERIOD: '.O',
         State.FAIL_VARIABLE_DESCRIPTION: 'DV',
         State.FAIL_OUTPUT_DESCRIPTION: 'DO',
+        State.FAIL_MISSING_TYPES: 'TY',
     }[self.value]
 
 
@@ -144,6 +146,13 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
             ', '.join(nc),
         ])
 
+      elif no_types := [v.name for v in newvars if not v.type]:
+        state = state.FAIL_MISSING_TYPES
+        diff = "\n".join([
+            f'----- {readme_rel} variables without types -----',
+            ', '.join(no_types),
+        ])
+
       yield readme_rel, state, diff
 
 
@@ -174,7 +183,7 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
     else:
       print('Errored modules:')
       print('\n'.join([e[0] for e in errors]))
-
+    print(errors)
     raise SystemExit('Errors found.')
 
 

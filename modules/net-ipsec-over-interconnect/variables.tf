@@ -80,15 +80,19 @@ variable "tunnels" {
   description = "VPN tunnel configurations."
   type = map(object({
     bgp_peer = object({
-      address        = string
-      asn            = number
-      route_priority = optional(number, 1000)
+      address = string
+      asn     = number
       custom_advertise = optional(object({
         all_subnets          = bool
         all_vpc_subnets      = bool
         all_peer_vpc_subnets = bool
         ip_ranges            = map(string)
       }))
+      md5_authentication_key = optional(object({
+        name = string
+        key  = string
+      }))
+      route_priority = optional(number, 1000)
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.

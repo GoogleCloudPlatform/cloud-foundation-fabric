@@ -1,0 +1,11 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: dev-dataplatform
+region: primary
+description: Default subnet for dev Data Platform
+ip_cidr_range: 10.68.2.0/24
+secondary_ip_ranges:
+  pods: 100.69.0.0/16
+  services: 100.71.2.0/24

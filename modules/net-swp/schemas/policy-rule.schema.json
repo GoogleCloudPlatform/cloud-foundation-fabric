@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Policy rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "priority"
+  ],
+  "properties": {
+    "priority": {
+      "type": "integer"
+    },
+    "allow": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "application_matcher": {
+      "type": "string"
+    },
+    "session_matcher": {
+      "type": "string"
+    },
+    "tls_inspect": {
+      "type": "boolean"
+    },
+    "matcher_args": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "application": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "session": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

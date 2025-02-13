@@ -20,10 +20,16 @@
 # service perimeters are needed, switch to the
 # google_access_context_manager_service_perimeters resource
 
+locals {
+  egress_policies  = merge(local.data.egress_policies, var.egress_policies)
+  ingress_policies = merge(local.data.ingress_policies, var.ingress_policies)
+}
+
 resource "google_access_context_manager_service_perimeter" "regular" {
   for_each                  = var.service_perimeters_regular
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
+  description               = each.value.description
   title                     = each.key
   perimeter_type            = "PERIMETER_TYPE_REGULAR"
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
@@ -43,8 +49,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "egress_policies" {
         for_each = spec.value.egress_policies == null ? {} : {
           for k in spec.value.egress_policies :
-          k => lookup(var.egress_policies, k, null)
-          if contains(keys(var.egress_policies), k)
+          k => lookup(local.egress_policies, k, null)
+          if contains(keys(local.egress_policies), k)
         }
         iterator = policy
         content {
@@ -86,8 +92,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "ingress_policies" {
         for_each = spec.value.ingress_policies == null ? {} : {
           for k in spec.value.ingress_policies :
-          k => lookup(var.ingress_policies, k, null)
-          if contains(keys(var.ingress_policies), k)
+          k => lookup(local.ingress_policies, k, null)
+          if contains(keys(local.ingress_policies), k)
         }
         iterator = policy
         content {
@@ -167,8 +173,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "egress_policies" {
         for_each = status.value.egress_policies == null ? {} : {
           for k in status.value.egress_policies :
-          k => lookup(var.egress_policies, k, null)
-          if contains(keys(var.egress_policies), k)
+          k => lookup(local.egress_policies, k, null)
+          if contains(keys(local.egress_policies), k)
         }
         iterator = policy
         content {
@@ -210,8 +216,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "ingress_policies" {
         for_each = status.value.ingress_policies == null ? {} : {
           for k in status.value.ingress_policies :
-          k => lookup(var.ingress_policies, k, null)
-          if contains(keys(var.ingress_policies), k)
+          k => lookup(local.ingress_policies, k, null)
+          if contains(keys(local.ingress_policies), k)
         }
         iterator = policy
         content {

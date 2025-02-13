@@ -24,6 +24,13 @@ values:
     name: people
     project: project-id
   module.db.google_sql_database_instance.primary: {}
+  module.db.google_sql_user.users["fixture-service-account@project-id.iam.gserviceaccount.com"]:
+    instance: db
+    name: fixture-service-account@project-id.iam.gserviceaccount.com
+    password: null
+    password_policy: []
+    project: project-id
+    type: CLOUD_IAM_SERVICE_ACCOUNT
   module.db.google_sql_user.users["user1"]:
     deletion_policy: null
     instance: db
@@ -55,5 +62,5 @@ values:
 counts:
   google_sql_database: 2
   google_sql_database_instance: 1
-  google_sql_user: 2
-  modules: 1
+  google_sql_user: 3
+  modules: 2

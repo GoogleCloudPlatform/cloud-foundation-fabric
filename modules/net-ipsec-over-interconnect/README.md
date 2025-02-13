@@ -64,6 +64,11 @@ module "vpngw-a" {
       bgp_peer = {
         address = "169.254.1.2"
         asn     = 64514
+        # MD5 Authentication is optional
+        md5_authentication_key = {
+          name = "foo"
+          key  = "bar"
+        }
       }
       bgp_session_range     = "169.254.1.1/30"
       shared_secret         = "foobar"
@@ -112,7 +117,7 @@ module "vpngw-a" {
 | [project_id](variables.tf#L54) | The project id. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L59) | GCP Region. | <code>string</code> | ✓ |  |
 | [router_config](variables.tf#L64) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create    &#61; optional&#40;bool, true&#41;&#10;  asn       &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [tunnels](variables.tf#L79) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address        &#61; string&#10;    asn            &#61; number&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets          &#61; bool&#10;      all_vpc_subnets      &#61; bool&#10;      all_peer_vpc_subnets &#61; bool&#10;      ip_ranges            &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_gateway_id                 &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L79) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address &#61; string&#10;    asn     &#61; number&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets          &#61; bool&#10;      all_vpc_subnets      &#61; bool&#10;      all_peer_vpc_subnets &#61; bool&#10;      ip_ranges            &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      key  &#61; string&#10;    &#125;&#41;&#41;&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_gateway_id                 &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,28 @@
 
 values:
   module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
+    cloud_logging_config:
+    - enable_logging: false
+    description: Terraform managed.
     dns_name: test.example.
+    force_destroy: false
+    forwarding_config: []
+    labels: null
     name: test-example
-    project: myproject
-  module.private-dns.google_dns_record_set.dns_record_set["A geo"]:
+    peering_config: []
+    private_visibility_config:
+    - gke_clusters: []
+      networks:
+      - network_url: projects/xxx/global/networks/aaa
+    project: project-id
+    reverse_lookup: false
+    service_directory_config: []
+    timeouts: null
+    visibility: private
+  module.private-dns.google_dns_record_set.dns_record_set["A geo1"]:
     managed_zone: test-example
-    name: geo.test.example.
-    project: myproject
+    name: geo1.test.example.
+    project: project-id
     routing_policy:
     - enable_geo_fencing: null
       geo:
@@ -41,10 +56,24 @@ values:
     rrdatas: null
     ttl: 300
     type: A
+  module.private-dns.google_dns_record_set.dns_record_set["A geo2"]:
+    managed_zone: test-example
+    name: geo2.test.example.
+    project: project-id
+    routing_policy:
+    - enable_geo_fencing: null
+      geo:
+        - location: europe-west8
+          rrdatas: null
+      primary_backup: []
+      wrr: []
+    rrdatas: null
+    ttl: 300
+    type: A
   module.private-dns.google_dns_record_set.dns_record_set["A regular"]:
     managed_zone: test-example
     name: regular.test.example.
-    project: myproject
+    project: project-id
     routing_policy: []
     rrdatas:
     - 10.20.0.1
@@ -53,7 +82,7 @@ values:
   module.private-dns.google_dns_record_set.dns_record_set["A wrr"]:
     managed_zone: test-example
     name: wrr.test.example.
-    project: myproject
+    project: project-id
     routing_policy:
     - enable_geo_fencing: null
       geo: []
@@ -77,4 +106,6 @@ values:
 
 counts:
   google_dns_managed_zone: 1
-  google_dns_record_set: 3
+  google_dns_record_set: 4
+  modules: 4
+  resources: 12

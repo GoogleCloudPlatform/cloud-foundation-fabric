@@ -44,7 +44,7 @@ locals {
   health_check = (
     var.health_check != null
     ? var.health_check
-    : google_compute_region_health_check.default.0.self_link
+    : google_compute_region_health_check.default[0].self_link
   )
 }
 
@@ -93,7 +93,7 @@ resource "google_compute_network_endpoint_group" "default" {
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : try(each.value.subnetwork, var.vpc_config.subnetwork)
+    : coalesce(each.value.subnetwork, var.vpc_config.subnetwork)
   )
 }
 
@@ -121,4 +121,86 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   psc_target_service    = each.value.psc.target_service
   network               = each.value.psc.network
   subnetwork            = each.value.psc.subnetwork
+  lifecycle {
+    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
+    ignore_changes = [psc_data]
+  }
+}
+
+# Internet NEG
+locals {
+  _neg_endpoints_internet = flatten([
+    for k, v in local.neg_internet : [
+      for kk, vv in v.internet.endpoints : merge(vv, {
+        key = "${k}-${kk}", neg = k, region = v.internet.region, use_fqdn = v.internet.use_fqdn
+      })
+    ]
+  ])
+  neg_endpoints_internet = {
+    for v in local._neg_endpoints_internet : (v.key) => v
+  }
+  neg_internet = {
+    for k, v in var.neg_configs :
+    k => v if v.internet != null
+  }
+}
+
+resource "google_compute_region_network_endpoint_group" "internet" {
+  for_each = local.neg_internet
+  project  = var.project_id
+  name     = "${var.name}-${each.key}"
+  region   = each.value.internet.region
+  # re-enable once provider properly supports this
+  # default_port = each.value.default_port
+  # description = coalesce(each.value.description, var.description)
+  network_endpoint_type = (
+    each.value.internet.use_fqdn ? "INTERNET_FQDN_PORT" : "INTERNET_IP_PORT"
+  )
+  network = var.vpc_config.network
+}
+
+resource "google_compute_region_network_endpoint" "internet" {
+  for_each = local.neg_endpoints_internet
+  project = (
+    google_compute_region_network_endpoint_group.internet[each.value.neg].project
+  )
+  region = each.value.region
+  region_network_endpoint_group = (
+    google_compute_region_network_endpoint_group.internet[each.value.neg].name
+  )
+  fqdn       = each.value.use_fqdn ? each.value.destination : null
+  ip_address = each.value.use_fqdn ? null : each.value.destination
+  port       = each.value.port
+}
+
+# PSC Producer Service attachments
+resource "google_compute_service_attachment" "default" {
+  count          = var.service_attachment == null ? 0 : 1
+  project        = var.project_id
+  region         = var.region
+  name           = var.name
+  description    = var.description
+  target_service = google_compute_forwarding_rule.default.id
+  nat_subnets    = var.service_attachment.nat_subnets
+  connection_preference = (
+    var.service_attachment.automatic_connection
+    ? "ACCEPT_AUTOMATIC"
+    : "ACCEPT_MANUAL"
+  )
+  consumer_reject_lists = var.service_attachment.consumer_reject_lists
+  domain_names = (
+    var.service_attachment.domain_name == null
+    ? null
+    : [var.service_attachment.domain_name]
+  )
+  enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
+  reconcile_connections = var.service_attachment.reconcile_connections
+  dynamic "consumer_accept_lists" {
+    for_each = var.service_attachment.consumer_accept_lists
+    iterator = accept
+    content {
+      project_id_or_num = accept.key
+      connection_limit  = accept.value
+    }
+  }
 }

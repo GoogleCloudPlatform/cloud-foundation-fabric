@@ -13,13 +13,13 @@
 # limitations under the License.
 
 values:
-  module.cf-http-one.google_storage_bucket_object.bundle:
-    source: /tmp/bundle-my-project-test-cf-http-one.zip
-  module.cf-http-two.google_storage_bucket_object.bundle:
-    source: /tmp/bundle-my-project-test-cf-http-two.zip
+  module.cf-http-one.google_storage_bucket_object.bundle[0]:
+    source: /tmp/bundle-project-id-test-cf-http-one.zip
+  module.cf-http-two.google_storage_bucket_object.bundle[0]:
+    source: /tmp/bundle-project-id-test-cf-http-two.zip
 
 counts:
   google_cloudfunctions_function: 2
   google_storage_bucket_object: 2
   modules: 2
-  resources: 4
+  resources: 7

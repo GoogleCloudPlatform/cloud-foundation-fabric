@@ -1,0 +1,216 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpn-1.google_compute_ha_vpn_gateway.ha_gateway[0]:
+    description: Terraform managed external VPN gateway
+    name: net1-to-net-2
+    network: projects/xxx/global/networks/bbb
+    project: project-id
+    region: europe-west4
+    stack_type: IPV4_ONLY
+  module.vpn-1.google_compute_router.router[0]:
+    bgp:
+    - advertise_mode: CUSTOM
+      advertised_groups:
+      - ALL_SUBNETS
+      advertised_ip_ranges:
+      - description: default
+        range: 10.0.0.0/8
+      asn: 64514
+      keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: vpn-net1-to-net-2
+    network: projects/xxx/global/networks/bbb
+    project: project-id
+    region: europe-west4
+  module.vpn-1.google_compute_router_interface.router_interface["remote-0"]:
+    interconnect_attachment: null
+    ip_range: 169.254.1.2/30
+    name: net1-to-net-2-remote-0
+    private_ip_address: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    subnetwork: null
+    vpn_tunnel: net1-to-net-2-remote-0
+  module.vpn-1.google_compute_router_interface.router_interface["remote-1"]:
+    interconnect_attachment: null
+    ip_range: 169.254.2.2/30
+    name: net1-to-net-2-remote-1
+    private_ip_address: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    subnetwork: null
+    vpn_tunnel: net1-to-net-2-remote-1
+  module.vpn-1.google_compute_router_peer.bgp_peer["remote-0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: 1000
+    enable: true
+    enable_ipv6: false
+    interface: net1-to-net-2-remote-0
+    name: net1-to-net-2-remote-0
+    peer_asn: 64513
+    peer_ip_address: 169.254.1.1
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    router_appliance_instance: null
+  module.vpn-1.google_compute_router_peer.bgp_peer["remote-1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: 1000
+    enable: true
+    enable_ipv6: false
+    interface: net1-to-net-2-remote-1
+    name: net1-to-net-2-remote-1
+    peer_asn: 64513
+    peer_ip_address: 169.254.2.1
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    router_appliance_instance: null
+  module.vpn-1.google_compute_vpn_tunnel.tunnels["remote-0"]:
+    description: null
+    ike_version: 2
+    name: net1-to-net-2-remote-0
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    target_vpn_gateway: null
+    vpn_gateway_interface: 0
+  module.vpn-1.google_compute_vpn_tunnel.tunnels["remote-1"]:
+    description: null
+    ike_version: 2
+    name: net1-to-net-2-remote-1
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net1-to-net-2
+    target_vpn_gateway: null
+    vpn_gateway_interface: 1
+  module.vpn-1.random_id.secret:
+    byte_length: 8
+  module.vpn-2.google_compute_ha_vpn_gateway.ha_gateway[0]:
+    description: Terraform managed external VPN gateway
+    name: net2-to-net1
+    network: projects/xxx/global/networks/ccc
+    project: project-id
+    region: europe-west4
+    stack_type: IPV4_ONLY
+  module.vpn-2.google_compute_router.router[0]:
+    bgp:
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64513
+      keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    name: vpn-net2-to-net1
+    network: projects/xxx/global/networks/ccc
+    project: project-id
+    region: europe-west4
+  module.vpn-2.google_compute_router_interface.router_interface["remote-0"]:
+    interconnect_attachment: null
+    ip_range: 169.254.1.1/30
+    name: net2-to-net1-remote-0
+    private_ip_address: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    subnetwork: null
+    vpn_tunnel: net2-to-net1-remote-0
+  module.vpn-2.google_compute_router_interface.router_interface["remote-1"]:
+    interconnect_attachment: null
+    ip_range: 169.254.2.1/30
+    name: net2-to-net1-remote-1
+    private_ip_address: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    subnetwork: null
+    vpn_tunnel: net2-to-net1-remote-1
+  module.vpn-2.google_compute_router_peer.bgp_peer["remote-0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: 1000
+    enable: true
+    enable_ipv6: false
+    interface: net2-to-net1-remote-0
+    name: net2-to-net1-remote-0
+    peer_asn: 64514
+    peer_ip_address: 169.254.1.2
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    router_appliance_instance: null
+  module.vpn-2.google_compute_router_peer.bgp_peer["remote-1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: 1000
+    enable: true
+    enable_ipv6: false
+    interface: net2-to-net1-remote-1
+    name: net2-to-net1-remote-1
+    peer_asn: 64514
+    peer_ip_address: 169.254.2.2
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    router_appliance_instance: null
+  module.vpn-2.google_compute_vpn_tunnel.tunnels["remote-0"]:
+    description: null
+    ike_version: 2
+    name: net2-to-net1-remote-0
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    target_vpn_gateway: null
+    vpn_gateway_interface: 0
+  module.vpn-2.google_compute_vpn_tunnel.tunnels["remote-1"]:
+    description: null
+    ike_version: 2
+    name: net2-to-net1-remote-1
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    project: project-id
+    region: europe-west4
+    router: vpn-net2-to-net1
+    target_vpn_gateway: null
+    vpn_gateway_interface: 1
+  module.vpn-2.random_id.secret:
+    byte_length: 8
+
+counts:
+  google_compute_ha_vpn_gateway: 2
+  google_compute_router: 2
+  google_compute_router_interface: 4
+  google_compute_router_peer: 4
+  google_compute_vpn_tunnel: 4
+  modules: 2
+  random_id: 6
+  resources: 22

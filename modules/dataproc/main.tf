@@ -16,12 +16,8 @@
 
 # tfdoc:file:description Cloud Dataproc resource definition.
 
-locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-}
-
 resource "google_dataproc_cluster" "cluster" {
-  name                          = "${local.prefix}${var.name}"
+  name                          = var.name
   project                       = var.project_id
   region                        = var.region
   graceful_decommission_timeout = var.dataproc_config.graceful_decommission_timeout
@@ -62,6 +58,12 @@ resource "google_dataproc_cluster" "cluster" {
               enable_secure_boot          = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_secure_boot
               enable_vtpm                 = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_vtpm
               enable_integrity_monitoring = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_integrity_monitoring
+            }
+          }
+          dynamic "confidential_instance_config" {
+            for_each = var.dataproc_config.cluster_config.gce_cluster_config.confidential_instance_config == null ? [] : [""]
+            content {
+              enable_confidential_compute = var.dataproc_config.cluster_config.gce_cluster_config.confidential_instance_config.enable_confidential_compute
             }
           }
         }
@@ -108,8 +110,8 @@ resource "google_dataproc_cluster" "cluster" {
           dynamic "accelerators" {
             for_each = var.dataproc_config.cluster_config.worker_config.accelerators == null ? [] : [""]
             content {
-              accelerator_type  = var.dataproc_config.cluster_config.accelerators.accelerator_type
-              accelerator_count = var.dataproc_config.cluster_config.accelerators.accelerator_count
+              accelerator_type  = var.dataproc_config.cluster_config.worker_config.accelerators.accelerator_type
+              accelerator_count = var.dataproc_config.cluster_config.worker_config.accelerators.accelerator_count
             }
           }
         }
@@ -185,10 +187,10 @@ resource "google_dataproc_cluster" "cluster" {
         for_each = var.dataproc_config.cluster_config.dataproc_metric_config == null ? [] : [""]
         content {
           dynamic "metrics" {
-            for_each = var.dataproc_config.cluster_config.dataproc_metric_config.metrics == null ? [] : [""]
+            for_each = coalesce(var.dataproc_config.cluster_config.dataproc_metric_config.metrics, [])
             content {
-              metric_source    = var.dataproc_config.cluster_config.dataproc_metric_config.metrics.metric_source
-              metric_overrides = var.dataproc_config.cluster_config.dataproc_metric_config.metrics.metric_overrides
+              metric_source    = metrics.value.metric_source
+              metric_overrides = metrics.value.metric_overrides
             }
           }
         }
@@ -247,7 +249,6 @@ resource "google_dataproc_cluster" "cluster" {
               properties        = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config.properties
             }
           }
-
           dynamic "gke_cluster_config" {
             for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config == null ? [] : [""]
             content {
@@ -258,26 +259,26 @@ resource "google_dataproc_cluster" "cluster" {
                   node_pool = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool
                   roles     = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.roles
                   dynamic "node_pool_config" {
-                    for_each = try(var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config == null ? [] : [""], [])
+                    for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config == null ? [] : [""]
                     content {
                       dynamic "autoscaling" {
-                        for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.autoscaling == null ? [] : [""]
+                        for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.autoscaling == null ? [] : [""]
                         content {
-                          min_node_count = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.autoscaling.min_node_count
-                          max_node_count = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.autoscaling.max_node_count
+                          min_node_count = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.autoscaling.min_node_count
+                          max_node_count = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.autoscaling.max_node_count
                         }
                       }
                       dynamic "config" {
-                        for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config == null ? [] : [""]
+                        for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config == null ? [] : [""]
                         content {
-                          machine_type     = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config.machine_type
-                          local_ssd_count  = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config.local_ssd_count
-                          preemptible      = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config.preemptible
-                          min_cpu_platform = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config.min_cpu_platform
-                          spot             = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.config.spot
+                          machine_type     = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config.machine_type
+                          local_ssd_count  = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config.local_ssd_count
+                          preemptible      = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config.preemptible
+                          min_cpu_platform = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config.min_cpu_platform
+                          spot             = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.config.spot
                         }
                       }
-                      locations = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_config.locations
+                      locations = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.gke_cluster_config.node_pool_target.node_pool_config.locations
                     }
                   }
                 }

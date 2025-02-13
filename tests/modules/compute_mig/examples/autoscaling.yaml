@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,12 +26,37 @@ values:
       mode: 'ON'
       scale_in_control: []
       scaling_schedules: []
+    description: Terraform managed.
     name: mig-test
-    project: my-project
+    project: project-id
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
+  module.nginx-mig.google_compute_instance_group_manager.default[0]:
+    all_instances_config: []
+    auto_healing_policies: []
+    base_instance_name: mig-test
+    description: Terraform managed.
+    list_managed_instances_results: PAGELESS
+    name: mig-test
+    named_port: []
+    project: project-id
+    stateful_disk: []
+    stateful_external_ip: []
+    stateful_internal_ip: []
+    target_pools: null
+    target_size: 3
+    timeouts: null
+    version:
+    - name: default
+      target_size: []
+    wait_for_instances: false
+    wait_for_instances_status: STABLE
+    zone: europe-west8-b
 
 counts:
   google_compute_autoscaler: 1
   google_compute_instance_group_manager: 1
   google_compute_instance_template: 1
+  modules: 2
+  resources: 3
+  

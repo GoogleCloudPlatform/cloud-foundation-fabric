@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: dev-default
+region: primary
+ip_cidr_range: 10.68.0.0/24
+description: Default primary-region subnet for dev

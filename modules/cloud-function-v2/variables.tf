@@ -116,7 +116,6 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "us-east1"
 }
 
 variable "secrets" {

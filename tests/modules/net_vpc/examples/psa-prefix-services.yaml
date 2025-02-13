@@ -1,0 +1,124 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpc.google_compute_global_address.psa_ranges["myrange"]:
+    address: 10.0.1.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    labels: null
+    name: myrange
+    prefix_length: 24
+    project: project-id
+    purpose: VPC_PEERING
+    timeouts: null
+  module.vpc.google_compute_global_address.psa_ranges["netapp"]:
+    address: 10.0.2.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    labels: null
+    name: netapp
+    prefix_length: 24
+    project: project-id
+    purpose: VPC_PEERING
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: project-id
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_network_peering_routes_config.psa_routes["netapp.servicenetworking.goog"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    network: my-network
+    project: project-id
+    timeouts: null
+  module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    network: my-network
+    project: project-id
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: production
+    network: my-network
+    private_ip_google_access: true
+    project: project-id
+    region: europe-west1
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  module.vpc.google_service_networking_connection.psa_connection["netapp.servicenetworking.goog"]:
+    deletion_policy: null
+    reserved_peering_ranges:
+    - netapp
+    service: netapp.servicenetworking.goog
+    timeouts: null
+    update_on_creation_fail: null
+  module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    deletion_policy: ABANDON
+    reserved_peering_ranges:
+    - myrange
+    service: servicenetworking.googleapis.com
+    timeouts: null
+    update_on_creation_fail: null
+
+counts:
+  google_compute_global_address: 2
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 2
+  google_compute_route: 2
+  google_compute_subnetwork: 1
+  google_service_networking_connection: 2
+  modules: 1
+  resources: 10
+
+outputs: {}

@@ -61,9 +61,10 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     cidr_tpl_file = optional(string)
-    rules_folder  = string
+    rules_folder  = optional(string)
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "ingress_rules" {

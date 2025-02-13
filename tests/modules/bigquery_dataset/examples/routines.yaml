@@ -1,0 +1,61 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigquery-dataset.google_bigquery_dataset.default:
+    dataset_id: my_dataset
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
+    project: my-project
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.bigquery-dataset.google_bigquery_routine.default["custom_masking_routine"]:
+    arguments:
+    - argument_kind: FIXED_TYPE
+      data_type: '{"typeKind":"STRING"}'
+      mode: null
+      name: ssn
+    data_governance_type: DATA_MASKING
+    dataset_id: my_dataset
+    definition_body: SAFE.REGEXP_REPLACE(ssn, '[0-9]', 'X')
+    description: null
+    determinism_level: null
+    imported_libraries: null
+    language: SQL
+    project: my-project
+    remote_function_options: []
+    return_table_type: null
+    return_type: null
+    routine_id: custom_masking_routine
+    routine_type: SCALAR_FUNCTION
+    spark_options: []
+    timeouts: null
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_routine: 1
+  modules: 1
+  resources: 2

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ variable "peer_gateways" {
       redundancy_type = string
       interfaces      = list(string)
       description     = optional(string, "Terraform managed external VPN gateway")
+      name            = optional(string)
     }))
     gcp = optional(string)
   }))
@@ -57,14 +58,15 @@ variable "region" {
 variable "router_config" {
   description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
-    create    = optional(bool, true)
-    asn       = number
-    name      = optional(string)
-    keepalive = optional(number)
+    asn    = optional(number)
+    create = optional(bool, true)
     custom_advertise = optional(object({
       all_subnets = bool
       ip_ranges   = map(string)
     }))
+    keepalive     = optional(number)
+    name          = optional(string)
+    override_name = optional(string)
   })
   nullable = false
 }
@@ -77,17 +79,26 @@ variable "tunnels" {
       asn            = number
       route_priority = optional(number, 1000)
       custom_advertise = optional(object({
-        all_subnets          = bool
-        all_vpc_subnets      = bool
-        all_peer_vpc_subnets = bool
-        ip_ranges            = map(string)
+        all_subnets = bool
+        ip_ranges   = map(string)
       }))
+      md5_authentication_key = optional(object({
+        name = string
+        key  = optional(string)
+      }))
+      ipv6 = optional(object({
+        nexthop_address      = optional(string)
+        peer_nexthop_address = optional(string)
+      }))
+      name = optional(string)
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
     bgp_session_range               = string
     ike_version                     = optional(number, 2)
+    name                            = optional(string)
     peer_external_gateway_interface = optional(number)
+    peer_router_interface_name      = optional(string)
     peer_gateway                    = optional(string, "default")
     router                          = optional(string)
     shared_secret                   = optional(string)
@@ -107,6 +118,7 @@ variable "vpn_gateway_create" {
   description = "Create HA VPN Gateway. Set to null to avoid creation."
   type = object({
     description = optional(string, "Terraform managed external VPN gateway")
+    ipv6        = optional(bool, false)
   })
   default = {}
 }

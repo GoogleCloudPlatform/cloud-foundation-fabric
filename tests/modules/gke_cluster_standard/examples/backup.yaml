@@ -19,15 +19,20 @@ values:
 
   module.cluster-1.google_gke_backup_backup_plan.backup_plan["backup-1"]:
     backup_config:
-    - all_namespaces: true
+    - all_namespaces: null
       encryption_key: []
       include_secrets: true
       include_volume_data: true
-      selected_applications: []
+      selected_applications:
+      - namespaced_names:
+        - namespace: namespace-1
+          name:  app-1
+        - namespace: namespace-1
+          name:  app-2
       selected_namespaces: []
     backup_schedule:
     - cron_schedule: 0 9 * * 1
-    location: europe-west-2
+    location: europe-west2
     name: backup-1
     project: project-id
     retention_policy:

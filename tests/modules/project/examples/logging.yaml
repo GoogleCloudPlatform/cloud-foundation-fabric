@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,59 @@
 # limitations under the License.
 
 values:
+  module.bucket.google_logging_project_bucket_config.bucket[0]:
+    bucket_id: test-bucket
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: project-id
+    retention_days: 30
+  module.dataset.google_bigquery_dataset.default:
+    dataset_id: bq_sink
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: true
+    description: Terraform managed.
+    friendly_name: null
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
+    project: project-id
+  module.destination-project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
+    folder_id: '1122334455'
+    labels: null
+    name: test-dest-prj
+    org_id: null
+    project_id: test-dest-prj
+  module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-dest-prj
+    service: logging.googleapis.com
+  module.gcs.google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: true
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: test-gcs_sink
+    project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    uniform_bucket_level_access: true
   module.project-host.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
@@ -21,8 +74,19 @@ values:
     disabled: null
     filter: resource.type=gce_instance
     name: no-gce-instances
-    project: my-project
+    project: test-project
+  module.project-host.google_logging_project_sink.sink["alert"]:
+    custom_writer_identity: null
+    description: alert (Terraform-managed).
+    destination: logging.googleapis.com/projects/test-dest-prj
+    disabled: false
+    exclusions: []
+    filter: severity=ALERT
+    name: alert
+    project: test-project
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["debug"]:
+    custom_writer_identity: null
     description: debug (Terraform-managed).
     disabled: false
     exclusions:
@@ -32,63 +96,91 @@ values:
       name: no-compute
     filter: severity=DEBUG
     name: debug
-    project: my-project
-    unique_writer_identity: false
+    project: test-project
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["info"]:
+    bigquery_options:
+    - use_partitioned_tables: false
+    custom_writer_identity: null
     description: info (Terraform-managed).
     disabled: false
     exclusions: []
     filter: severity=INFO
     name: info
-    project: my-project
-    unique_writer_identity: false
+    project: test-project
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["notice"]:
+    custom_writer_identity: null
     description: notice (Terraform-managed).
+    destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
     exclusions: []
     filter: severity=NOTICE
     name: notice
-    project: my-project
-    unique_writer_identity: false
+    project: test-project
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["warnings"]:
+    custom_writer_identity: null
     description: warnings (Terraform-managed).
-    destination: storage.googleapis.com/gcs_sink
+    destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING
     name: warnings
-    project: my-project
-    unique_writer_identity: false
+    project: test-project
+    unique_writer_identity: true
   module.project-host.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: '1234567890'
+    deletion_policy: 'DELETE'
+    folder_id: '1122334455'
     labels: null
-    name: my-project
+    name: test-project
     org_id: null
-    project_id: my-project
-    skip_delete: false
+    project_id: test-project
   module.project-host.google_project_iam_member.bucket-sinks-binding["debug"]:
     condition:
     - title: debug bucket writer
     role: roles/logging.bucketWriter
+  module.project-host.google_project_iam_member.project-sinks-binding["alert"]:
+    condition: []
+    project: test-dest-prj
+    role: roles/logging.logWriter
+  module.project-host.google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: logging.googleapis.com
   module.project-host.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
     condition: []
+    project: project-id
     role: roles/pubsub.publisher
+    topic: pubsub_sink
   module.project-host.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
-    bucket: gcs_sink
+    bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
+  module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    name: pubsub_sink
+    project: project-id
 
 counts:
   google_bigquery_dataset: 1
   google_bigquery_dataset_iam_member: 1
   google_logging_project_bucket_config: 1
   google_logging_project_exclusion: 1
-  google_logging_project_sink: 4
-  google_project: 1
-  google_project_iam_member: 1
+  google_logging_project_sink: 5
+  google_project: 2
+  google_project_iam_member: 2
+  google_project_service: 2
   google_pubsub_topic: 1
   google_pubsub_topic_iam_member: 1
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 1
+  modules: 6
+  resources: 19
+
+

@@ -1,3 +1,6 @@
+venv/*
+*/venv/*
+**/.python-version
 **/.terraform
 **/terraform.tfstate*
 **/terraform.tfvars
@@ -9,7 +12,6 @@
 **/.pytest_cache
 **/.test.lock
 .idea
-.vscode
 .idx/dev.nix
 backend.tf
 backend-config.hcl
@@ -37,7 +39,7 @@ examples/cloud-operations/adfs/ansible/vars/vars.yaml
 examples/cloud-operations/adfs/ansible/gssh.sh
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/vars.yaml
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/gssh.sh
-blueprints/cloud-operations/network-dashboard/cloud-function.zip
+blueprints/cloud-operations/network-quota-monitoring/cloud-function.zip
 blueprints/apigee/bigquery-analytics/bundle-export.zip
 blueprints/apigee/bigquery-analytics/bundle-gcs2bq.zip
 blueprints/apigee/bigquery-analytics/apiproxy.zip
@@ -55,3 +57,4 @@ blueprints/gke/autopilot/ansible/vars/vars.yaml
 blueprints/gke/autopilot/bundle/monitoring/kustomization.yaml
 blueprints/gke/autopilot/bundle/locust/kustomization.yaml
 blueprints/gke/autopilot/bundle.tar.gz
+blueprints/gke/patterns/batch/job-*.yaml

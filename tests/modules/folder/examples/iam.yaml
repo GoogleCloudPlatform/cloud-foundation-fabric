@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,27 +15,27 @@
 values:
   module.folder.google_folder.folder[0]:
     display_name: Folder name
-    parent: organizations/1234567890
+    parent: folders/1122334455
     timeouts: null
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - group:cloud-owners@example.org
-    - user:one@example.org
+    - group:organization-admins@example.org
+    - serviceAccount:sa1@sa.example
     role: roles/owner
   module.folder.google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
     condition: []
     members:
-    - group:cloud-owners@example.org
+    - group:organization-admins@example.org
     role: roles/resourcemanager.folderAdmin
   module.folder.google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
     condition: []
     members:
-    - group:cloud-owners@example.org
+    - group:organization-admins@example.org
     role: roles/resourcemanager.projectCreator
   module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
-    member: user:am1@example.org
+    member: serviceAccount:sa1@sa.example
     role: roles/storage.admin
 
 counts:

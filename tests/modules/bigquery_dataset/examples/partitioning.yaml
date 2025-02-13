@@ -14,7 +14,7 @@
 
 values:
   module.bigquery-dataset.google_bigquery_dataset.default:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     location: EU
     project: my-project
   module.bigquery-dataset.google_bigquery_table.default["table_a"]:

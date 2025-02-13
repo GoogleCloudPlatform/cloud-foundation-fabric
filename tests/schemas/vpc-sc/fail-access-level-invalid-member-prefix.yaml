@@ -1,0 +1,6 @@
+# skip boilerplate check
+# tftest schema=modules/vpc-sc/schemas/access-level.schema.json fail
+# fails because members must be prefixed with serviceAccount: or user:
+conditions:
+  - members:
+      - "group:group@example.com"

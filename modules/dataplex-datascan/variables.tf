@@ -41,6 +41,11 @@ variable "data_quality_spec" {
   type = object({
     sampling_percent = optional(number)
     row_filter       = optional(string)
+    post_scan_actions = optional(object({
+      bigquery_export = optional(object({
+        results_table = optional(string)
+      }))
+    }))
     rules = list(object({
       column               = optional(string)
       ignore_null          = optional(bool, null)
@@ -73,15 +78,10 @@ variable "data_quality_spec" {
       table_condition_expectation = optional(object({
         sql_expression = string
       }))
+      sql_assertion = optional(object({
+        sql_statement = string
+      }))
     }))
-  })
-}
-
-variable "data_quality_spec_file" {
-  description = "Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
-  default     = null
-  type = object({
-    path = string
   })
 }
 
@@ -97,46 +97,11 @@ variable "execution_schedule" {
   default     = null
 }
 
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "Dataplex DataScan IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    data_quality_spec = optional(string)
+  })
   nullable = false
   default  = {}
 }

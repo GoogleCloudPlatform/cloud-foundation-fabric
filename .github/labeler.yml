@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,32 +13,24 @@
 # limitations under the License.
 
 'on:blueprints':
-  - any:
-    - 'blueprints/**'
-    - '!**/*.md'
-
-'on:documentation':
-  - any:
-      - '**/*.md'
-      - '!**/README.md'
-
-  - 'README.md'
-  - 'blueprints/README.md'
-  - 'blueprints/*/README.md'
-  - 'modules/README.md'
-  - 'fast/README.md'
-  - 'fast/stages/README.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'blueprints/**'
 
 'on:FAST':
-  - any:
-    - 'fast/**'
-    - '!**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'fast/**'
 
 'on:modules':
-  - any:
-    - 'modules/**'
-    - '!**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'modules/**'
 
 'on:tools':
-  - 'tools/**'
-  - '.github/**'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'tools/**'
+      - '.github/**'
+    - all-globs-to-all-files:
+      - 'tests/**'

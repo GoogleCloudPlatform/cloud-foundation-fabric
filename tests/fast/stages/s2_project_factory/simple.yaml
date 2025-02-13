@@ -1,0 +1,153 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+tests/fast/stages/s2_project_factory/tftest.yaml values:
+  module.projects.module.hierarchy-folder-lvl-1["team-a"].google_folder.folder[0]:
+    display_name: Team A
+    parent: folders/1234567890
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-1["team-b"].google_folder.folder[0]:
+    display_name: Team B
+    parent: folders/1234567890
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-a/dev"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-a/dev"].google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-a/prod"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-a/prod"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/production
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-b/dev"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-b/dev"].google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-b/prod"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.projects.module.hierarchy-folder-lvl-2["team-b/prod"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/production
+    timeouts: null
+  module.projects.module.projects["dev-ta-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: dev-net-spoke-0
+    service_project: test-dev-ta-0
+    timeouts: null
+  module.projects.module.projects["dev-ta-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    labels: null
+    name: test-dev-ta-0
+    project_id: test-dev-ta-0
+    timeouts: null
+  module.projects.module.projects["dev-ta-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects.module.projects["dev-ta-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-dev-ta-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects.module.projects["dev-tb-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: dev-net-spoke-0
+    service_project: test-dev-tb-0
+    timeouts: null
+  module.projects.module.projects["dev-tb-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    labels: null
+    name: test-dev-tb-0
+    project_id: test-dev-tb-0
+    timeouts: null
+  module.projects.module.projects["dev-tb-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects.module.projects["dev-tb-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-dev-tb-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects.module.projects["prod-ta-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: prod-net-spoke-0
+    service_project: test-prod-ta-0
+    timeouts: null
+  module.projects.module.projects["prod-ta-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    labels: null
+    name: test-prod-ta-0
+    project_id: test-prod-ta-0
+    timeouts: null
+  module.projects.module.projects["prod-ta-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: prod-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects.module.projects["prod-ta-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-prod-ta-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects.module.projects["prod-tb-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: prod-net-spoke-0
+    service_project: test-prod-tb-0
+    timeouts: null
+  module.projects.module.projects["prod-tb-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    labels: null
+    name: test-prod-tb-0
+    project_id: test-prod-tb-0
+    timeouts: null
+  module.projects.module.projects["prod-tb-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: prod-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects.module.projects["prod-tb-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-prod-tb-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+
+counts:
+  google_compute_shared_vpc_service_project: 4
+  google_folder: 6
+  google_project: 4
+  google_project_iam_member: 4
+  google_project_service: 4
+  google_tags_tag_binding: 4
+  modules: 11
+  resources: 26

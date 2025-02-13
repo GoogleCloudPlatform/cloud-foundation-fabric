@@ -17,9 +17,19 @@
 locals {
   _vpcaccess_annotation = (
     local.vpc_connector_create
-    ? {
-      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id
-    }
+    ? merge({
+      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector[0].id
+      },
+      var.revision_annotations.vpcaccess_egress == null ? {
+        # if creating a vpc connector and no explicit annotation is given,
+        # add "private-ranges-only" annotation to prevent permanent diff
+        "run.googleapis.com/vpc-access-egress" = "private-ranges-only"
+        } : {
+        "run.googleapis.com/vpc-access-egress" = (
+          var.revision_annotations.vpcaccess_egress
+        )
+      },
+    )
     : (
       var.revision_annotations.vpcaccess_connector == null
       ? {}
@@ -82,8 +92,10 @@ locals {
   trigger_sa_create = try(
     var.eventarc_triggers.service_account_create, false
   )
-  trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email, null
+  trigger_sa_email = (
+    local.trigger_sa_create ?
+    google_service_account.trigger_service_account[0].email
+    : try(var.eventarc_triggers.service_account_email, null)
   )
   vpc_connector_create = var.vpc_connector_create != null
 }
@@ -104,9 +116,12 @@ resource "google_vpc_access_connector" "connector" {
   max_throughput = var.vpc_connector_create.throughput.max
   min_instances  = var.vpc_connector_create.instances.min
   min_throughput = var.vpc_connector_create.throughput.min
-  subnet {
-    name       = var.vpc_connector_create.subnet.name
-    project_id = var.vpc_connector_create.subnet.project_id
+  dynamic "subnet" {
+    for_each = alltrue([for k, v in var.vpc_connector_create.subnet : (v == null)]) ? [] : [""]
+    content {
+      name       = var.vpc_connector_create.subnet.name
+      project_id = var.vpc_connector_create.subnet.project_id
+    }
   }
 }
 
@@ -294,8 +309,8 @@ resource "google_cloud_run_service" "service" {
 
   lifecycle {
     ignore_changes = [
-      metadata.0.annotations["run.googleapis.com/operation-id"],
-      template.0.metadata.0.labels["run.googleapis.com/startupProbeType"]
+      metadata[0].annotations["run.googleapis.com/operation-id"],
+      template[0].metadata[0].labels["run.googleapis.com/startupProbeType"]
     ]
   }
 }

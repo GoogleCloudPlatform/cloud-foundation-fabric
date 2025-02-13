@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
-
 variable "backend_buckets_config" {
   description = "Backend buckets configuration."
   type = map(object({
@@ -59,6 +53,31 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address     = optional(string)
+    description = optional(string)
+    ipv6        = optional(bool, false)
+    name        = optional(string)
+    ports       = optional(list(number), null)
+  }))
+  default = {
+    "" = {}
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.forwarding_rules_config :
+      v.ports == null || (
+        var.protocol == "HTTPS" && alltrue([
+          for p in coalesce(v.ports, []) : contains([80, 8080], p)
+        ])
+      )
+    ])
+    error_message = "Ports can only be configured when using HTTP. Valid HTTP ports are 80 and 8080."
+  }
+}
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
@@ -74,9 +93,11 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy connfiguration."
   type = object({
-    certificate_map = optional(string)
-    quic_override   = optional(string)
-    ssl_policy      = optional(string)
+    certificate_manager_certificates = optional(list(string))
+    certificate_map                  = optional(string)
+    quic_override                    = optional(string)
+    ssl_policy                       = optional(string)
+    mtls_policy                      = optional(string) # id of the mTLS policy to use for the target proxy.
   })
   default  = {}
   nullable = false
@@ -182,12 +203,6 @@ variable "neg_configs" {
     ])
     error_message = "Cloud Function NEGs need either target function or target urlmask defined."
   }
-}
-
-variable "ports" {
-  description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
-  type        = list(string)
-  default     = null
 }
 
 variable "project_id" {

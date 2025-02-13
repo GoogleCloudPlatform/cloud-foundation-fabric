@@ -1,0 +1,167 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.addresses.google_compute_global_address.global["glb-test-0"]:
+    address_type: null
+    description: Terraform managed.
+    ip_version: null
+    name: glb-test-0
+    network: null
+    project: project-id
+    purpose: null
+    timeouts: null
+  module.glb-test-0-redirect.google_compute_global_forwarding_rule.default[""]:
+    allow_psc_global_access: null
+    description: Terraform managed.
+    ip_protocol: TCP
+    ip_version: __missing__
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    metadata_filters: []
+    name: glb-test-0-redirect
+    no_automate_dns_zone: null
+    port_range: '80'
+    project: project-id
+    source_ip_ranges: null
+    timeouts: null
+  module.glb-test-0-redirect.google_compute_target_http_proxy.default[0]:
+    description: Terraform managed.
+    http_keep_alive_timeout_sec: null
+    name: glb-test-0-redirect
+    project: project-id
+    timeouts: null
+  module.glb-test-0-redirect.google_compute_url_map.default:
+    default_route_action: []
+    default_service: null
+    default_url_redirect:
+    - host_redirect: null
+      https_redirect: true
+      path_redirect: null
+      prefix_redirect: null
+      redirect_response_code: MOVED_PERMANENTLY_DEFAULT
+      strip_query: false
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: glb-test-0-redirect
+    path_matcher: []
+    project: project-id
+    test: []
+    timeouts: null
+  module.glb-test-0.google_compute_backend_service.default["default"]:
+    affinity_cookie_ttl_sec: null
+    circuit_breakers: []
+    compression_mode: null
+    connection_draining_timeout_sec: 300
+    consistent_hash: []
+    custom_request_headers: null
+    custom_response_headers: null
+    description: Terraform managed.
+    edge_security_policy: null
+    enable_cdn: null
+    load_balancing_scheme: EXTERNAL_MANAGED
+    locality_lb_policies: []
+    locality_lb_policy: null
+    name: glb-test-0-default
+    outlier_detection: []
+    port_name: http
+    project: project-id
+    protocol: HTTP
+    security_policy: null
+    security_settings: []
+    timeouts: null
+  module.glb-test-0.google_compute_global_forwarding_rule.default[""]:
+    allow_psc_global_access: null
+    description: Terraform managed.
+    ip_protocol: TCP
+    ip_version: __missing__
+    labels: null
+    load_balancing_scheme: EXTERNAL_MANAGED
+    metadata_filters: []
+    name: glb-test-0
+    no_automate_dns_zone: null
+    port_range: '443'
+    project: project-id
+    source_ip_ranges: null
+    timeouts: null
+  module.glb-test-0.google_compute_health_check.default["default"]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: glb-test-0-default
+    project: project-id
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.glb-test-0.google_compute_managed_ssl_certificate.default["default"]:
+    description: null
+    managed:
+    - domains:
+      - glb-test.example.com
+    name: glb-test-0-default
+    project: project-id
+    timeouts: null
+    type: MANAGED
+  module.glb-test-0.google_compute_target_https_proxy.default[0]:
+    certificate_manager_certificates: null
+    certificate_map: null
+    description: Terraform managed.
+    http_keep_alive_timeout_sec: null
+    name: glb-test-0
+    project: project-id
+    quic_override: NONE
+    server_tls_policy: null
+    ssl_policy: null
+    timeouts: null
+  module.glb-test-0.google_compute_url_map.default:
+    default_route_action: []
+    default_url_redirect: []
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: glb-test-0
+    path_matcher: []
+    project: project-id
+    test: []
+    timeouts: null
+
+counts:
+  google_compute_backend_service: 1
+  google_compute_global_address: 1
+  google_compute_global_forwarding_rule: 2
+  google_compute_health_check: 1
+  google_compute_instance: 2
+  google_compute_instance_group: 2
+  google_compute_managed_ssl_certificate: 1
+  google_compute_target_http_proxy: 1
+  google_compute_target_https_proxy: 1
+  google_compute_url_map: 2
+  modules: 5
+  resources: 14
+
+outputs: {}

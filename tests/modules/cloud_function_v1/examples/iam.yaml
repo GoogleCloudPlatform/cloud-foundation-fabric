@@ -17,12 +17,12 @@ values:
     condition: []
     members:
     - allUsers
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west9
     role: roles/cloudfunctions.invoker
 
 counts:
   google_cloudfunctions_function: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 3
+  resources: 6

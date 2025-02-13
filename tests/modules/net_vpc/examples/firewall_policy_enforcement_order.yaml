@@ -18,7 +18,7 @@ values:
     delete_default_routes_on_create: false
     description: Terraform-managed.
     name: my-network
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
     network_firewall_policy_enforcement_order: BEFORE_CLASSIC_FIREWALL
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
@@ -27,24 +27,23 @@ values:
     log_config: []
     name: production
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     role: null
     secondary_ip_range:
-    - ip_cidr_range: 172.16.0.0/20
-      range_name: pods
-    - ip_cidr_range: 192.168.0.0/24
-      range_name: services
+      - ip_cidr_range: 172.16.0.0/20
+        range_name: pods
+      - ip_cidr_range: 192.168.0.0/24
+        range_name: services
   module.vpc.google_compute_subnetwork.subnetwork["europe-west2/production"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.16.0/24
     log_config: []
     name: production
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west2
     role: null
-    secondary_ip_range: []
 
 counts:
   google_compute_network: 1

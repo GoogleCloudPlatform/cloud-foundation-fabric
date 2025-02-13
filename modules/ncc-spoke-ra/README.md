@@ -13,98 +13,110 @@ module "spoke-ra" {
   source     = "./fabric/modules/ncc-spoke-ra"
   hub        = { create = true, name = "ncc-hub" }
   name       = "spoke-ra"
-  project_id = "my-project"
-  region     = "europe-west1"
+  project_id = var.project_id
+  region     = var.region
   router_appliances = [
     {
-      internal_ip  = "10.0.0.3"
-      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app"
+      internal_ip  = module.compute-vm-primary-b.internal_ip
+      vm_self_link = module.compute-vm-primary-b.self_link
     }
   ]
   router_config = {
     asn           = 65000
-    ip_interface0 = "10.0.0.14"
-    ip_interface1 = "10.0.0.15"
+    ip_interface0 = "10.0.16.14"
+    ip_interface1 = "10.0.16.15"
     peer_asn      = 65001
   }
   vpc_config = {
-    network_name     = "my-vpc"
+    network_name     = var.vpc.self_link
     subnet_self_link = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=5 resources=11 fixtures=fixtures/compute-vm-nva.tf e2e
 ```
 
 ### Two spokes
 
 ```hcl
+resource "google_network_connectivity_hub" "default" {
+  name        = "Hub"
+  description = "Hub"
+  project     = var.project_id
+}
+
 module "spoke-ra-a" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
+  hub        = { id = google_network_connectivity_hub.default.id }
   name       = "spoke-ra-a"
-  project_id = "my-project"
-  region     = "europe-west1"
+  project_id = var.project_id
+  region     = var.regions.primary
   router_appliances = [
     {
-      internal_ip  = "10.0.0.3"
-      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
+      internal_ip  = module.compute-vm-primary-b.internal_ip
+      vm_self_link = module.compute-vm-primary-b.self_link
     }
   ]
   router_config = {
     asn           = 65000
-    ip_interface0 = "10.0.0.14"
-    ip_interface1 = "10.0.0.15"
+    ip_interface0 = "10.0.16.14"
+    ip_interface1 = "10.0.16.15"
     peer_asn      = 65001
   }
   vpc_config = {
-    network_name     = "my-vpc1"
-    subnet_self_link = "projects/my-project/regions/europe-west1/subnetworks/subnet"
+    network_name     = var.vpc.self_link
+    subnet_self_link = var.subnets.primary.self_link
   }
 }
 
 module "spoke-ra-b" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
+  hub        = { id = google_network_connectivity_hub.default.id }
   name       = "spoke-ra-b"
-  project_id = "my-project"
-  region     = "europe-west3"
+  project_id = var.project_id
+  region     = var.regions.secondary
   router_appliances = [
     {
-      internal_ip  = "10.1.0.5"
-      vm_self_link = "projects/my-project/zones/europe-west3-b/instances/router-app-b"
+      internal_ip  = module.compute-vm-secondary-b.internal_ip
+      vm_self_link = module.compute-vm-secondary-b.self_link
     }
   ]
   router_config = {
     asn           = 65000
-    ip_interface0 = "10.0.0.14"
-    ip_interface1 = "10.0.0.15"
+    ip_interface0 = "10.1.16.14"
+    ip_interface1 = "10.1.16.15"
     peer_asn      = 65002
   }
   vpc_config = {
-    network_name     = "my-vpc2"
-    subnet_self_link = "projects/my-project/regions/europe-west3/subnetworks/subnet"
+    network_name     = var.vpc.self_link
+    subnet_self_link = var.subnets.secondary.self_link
   }
 }
-# tftest modules=2 resources=12
+# tftest modules=6 resources=17 fixtures=fixtures/compute-vm-nva.tf e2e
 ```
 
 ### Spoke with load-balanced router appliances
 
 ```hcl
+resource "google_network_connectivity_hub" "default" {
+  name        = "Hub"
+  description = "Hub"
+  project     = var.project_id
+}
+
 module "spoke-ra" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
+  hub        = { id = google_network_connectivity_hub.default.id }
   name       = "spoke-ra"
-  project_id = "my-project"
-  region     = "europe-west1"
+  project_id = var.project_id
+  region     = var.region
   router_appliances = [
     {
-      internal_ip  = "10.0.0.3"
-      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
+      internal_ip  = module.compute-vm-primary-b.internal_ip
+      vm_self_link = module.compute-vm-primary-b.self_link
     },
     {
-      internal_ip  = "10.0.0.4"
-      vm_self_link = "projects/my-project/zones/europe-west1-c/instances/router-app-b"
+      internal_ip  = module.compute-vm-primary-c.internal_ip
+      vm_self_link = module.compute-vm-primary-c.self_link
     }
   ]
   router_config = {
@@ -115,19 +127,18 @@ module "spoke-ra" {
         "10.10.0.0/24" = "peered-vpc"
       }
     }
-    ip_interface0 = "10.0.0.14"
-    ip_interface1 = "10.0.0.15"
+    ip_interface0 = "10.0.16.14"
+    ip_interface1 = "10.0.16.15"
     peer_asn      = 65001
   }
   vpc_config = {
-    network_name     = "my-vpc"
+    network_name     = var.vpc.self_link
     subnet_self_link = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=8
+# tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -150,4 +161,7 @@ module "spoke-ra" {
 | [router](outputs.tf#L27) | Cloud Router resource. |  |
 | [spoke-ra](outputs.tf#L32) | NCC spoke resource. |  |
 
+## Fixtures
+
+- [compute-vm-nva.tf](../../tests/fixtures/compute-vm-nva.tf)
 <!-- END TFDOC -->

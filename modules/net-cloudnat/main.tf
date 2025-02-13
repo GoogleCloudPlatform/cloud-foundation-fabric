@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,15 @@ locals {
     ? try(google_compute_router.router[0].name, null)
     : var.router_name
   )
+  subnet_config = (
+    var.config_source_subnetworks.all != true
+    ? "LIST_OF_SUBNETWORKS"
+    : (
+      var.config_source_subnetworks.primary_ranges_only == true
+      ? "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
+      : "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    )
+  )
 }
 
 resource "google_compute_router" "router" {
@@ -38,21 +47,41 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_nat" "nat" {
-  project                             = var.project_id
-  region                              = var.region
-  name                                = var.name
-  router                              = local.router_name
-  nat_ips                             = var.addresses
-  nat_ip_allocate_option              = length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat  = var.config_source_subnets
-  icmp_idle_timeout_sec               = var.config_timeouts.icmp
-  udp_idle_timeout_sec                = var.config_timeouts.udp
-  tcp_established_idle_timeout_sec    = var.config_timeouts.tcp_established
-  tcp_transitory_idle_timeout_sec     = var.config_timeouts.tcp_transitory
-  enable_endpoint_independent_mapping = var.config_port_allocation.enable_endpoint_independent_mapping
-  enable_dynamic_port_allocation      = var.config_port_allocation.enable_dynamic_port_allocation
-  min_ports_per_vm                    = var.config_port_allocation.min_ports_per_vm
-  max_ports_per_vm                    = var.config_port_allocation.max_ports_per_vm
+  provider       = google-beta
+  project        = var.project_id
+  region         = var.region
+  name           = var.name
+  endpoint_types = var.endpoint_types
+  type           = var.type
+  router         = local.router_name
+  nat_ips        = var.addresses
+  nat_ip_allocate_option = (
+    var.type == "PRIVATE"
+    ? null
+    : (
+      length(var.addresses) > 0
+      ? "MANUAL_ONLY"
+      : "AUTO_ONLY"
+    )
+  )
+  source_subnetwork_ip_ranges_to_nat = local.subnet_config
+  icmp_idle_timeout_sec              = var.config_timeouts.icmp
+  udp_idle_timeout_sec               = var.config_timeouts.udp
+  tcp_established_idle_timeout_sec   = var.config_timeouts.tcp_established
+  tcp_time_wait_timeout_sec          = var.config_timeouts.tcp_time_wait
+  tcp_transitory_idle_timeout_sec    = var.config_timeouts.tcp_transitory
+  enable_endpoint_independent_mapping = (
+    var.config_port_allocation.enable_endpoint_independent_mapping
+  )
+  enable_dynamic_port_allocation = (
+    var.config_port_allocation.enable_dynamic_port_allocation
+  )
+  min_ports_per_vm = (
+    var.config_port_allocation.min_ports_per_vm
+  )
+  max_ports_per_vm = (
+    var.config_port_allocation.max_ports_per_vm
+  )
 
   log_config {
     enable = var.logging_filter == null ? false : true
@@ -60,11 +89,35 @@ resource "google_compute_router_nat" "nat" {
   }
 
   dynamic "subnetwork" {
-    for_each = var.subnetworks
+    for_each = toset(
+      local.subnet_config == "LIST_OF_SUBNETWORKS"
+      ? var.config_source_subnetworks.subnetworks
+      : []
+    )
     content {
-      name                     = subnetwork.value.self_link
-      source_ip_ranges_to_nat  = subnetwork.value.config_source_ranges
-      secondary_ip_range_names = subnetwork.value.secondary_ranges
+      name = subnetwork.value.self_link
+      source_ip_ranges_to_nat = (
+        subnetwork.value.all_ranges == true
+        ? ["ALL_IP_RANGES"]
+        : concat(
+          (
+            subnetwork.value.primary_range
+            ? ["PRIMARY_IP_RANGE"]
+            : []
+          )
+          ,
+          (
+            subnetwork.value.secondary_ranges == null
+            ? []
+            : ["LIST_OF_SECONDARY_IP_RANGES"]
+          )
+        )
+      )
+      secondary_ip_range_names = (
+        subnetwork.value.all_ranges == true
+        ? null
+        : subnetwork.value.secondary_ranges
+      )
     }
   }
 
@@ -75,9 +128,9 @@ resource "google_compute_router_nat" "nat" {
       description = rules.value.description
       match       = rules.value.match
       action {
-        source_nat_active_ips = rules.value.source_ips
+        source_nat_active_ips    = rules.value.source_ips
+        source_nat_active_ranges = rules.value.source_ranges
       }
     }
   }
 }
-

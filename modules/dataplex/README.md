@@ -1,4 +1,4 @@
-# Dataplex instance with lake, zone & assests
+# Dataplex instance with lake, zone & assets
 
 This module manages the creation of Dataplex instance along with lake, zone & assets in single regions.
 

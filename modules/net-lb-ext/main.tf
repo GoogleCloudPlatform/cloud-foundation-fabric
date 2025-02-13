@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,33 @@ locals {
   health_check = (
     var.health_check != null
     ? var.health_check
-    : google_compute_region_health_check.default.0.self_link
+    : google_compute_region_health_check.default[0].self_link
   )
 }
 
+moved {
+  from = google_compute_forwarding_rule.forwarding_rules
+  to   = google_compute_forwarding_rule.default
+}
+
 resource "google_compute_forwarding_rule" "default" {
+  for_each    = var.forwarding_rules_config
   provider    = google-beta
   project     = var.project_id
   region      = var.region
-  name        = var.name
-  description = var.description
-  ip_address  = var.address
-  ip_protocol = var.protocol
+  name        = coalesce(each.value.name, each.key == "" ? var.name : "${var.name}-${each.key}")
+  description = each.value.description
+  ip_address  = each.value.address
+  ip_protocol = each.value.protocol
+  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )
   load_balancing_scheme = "EXTERNAL"
-  ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
-  all_ports             = var.ports == null ? true : null
+  ports                 = each.value.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
+  all_ports             = each.value.ports == null ? true : null
   labels                = var.labels
+  subnetwork            = each.value.subnetwork
   # is_mirroring_collector = false
 }
 
@@ -46,7 +54,7 @@ resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = var.project_id
   region                          = var.region
-  name                            = var.name
+  name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.description
   load_balancing_scheme           = "EXTERNAL"
   protocol                        = var.backend_service_config.protocol

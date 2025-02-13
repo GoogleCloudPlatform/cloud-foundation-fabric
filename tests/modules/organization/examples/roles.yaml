@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ values:
   module.org.google_organization_iam_binding.authoritative["organizations/1122334455/roles/myRole"]:
     condition: []
     members:
-    - user:me@example.com
+    - group:organization-admins@example.org
     org_id: '1122334455'
     role: organizations/1122334455/roles/myRole
   module.org.google_organization_iam_custom_role.roles["myRole"]:

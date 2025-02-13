@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,18 @@
 
 output "id" {
   description = "Fully qualified logging bucket id."
-  value = try(
-    google_logging_project_bucket_config.bucket.0.id,
-    google_logging_folder_bucket_config.bucket.0.id,
-    google_logging_organization_bucket_config.bucket.0.id,
-    google_logging_billing_account_bucket_config.bucket.0.id,
+  value       = local.bucket.id
+}
+
+output "view_ids" {
+  description = "The automatic and user-created views in this bucket."
+  value = merge(
+    {
+      for k, v in google_logging_log_view.views :
+      k => v.id
+    },
+    {
+      "_AllLogs" = "${local.bucket.id}/views/_AllLogs"
+    }
   )
 }

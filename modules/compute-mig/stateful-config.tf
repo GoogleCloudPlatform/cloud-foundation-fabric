@@ -22,7 +22,7 @@ resource "google_compute_per_instance_config" "default" {
   zone     = var.location
   name     = each.key
   instance_group_manager = try(
-    google_compute_instance_group_manager.default.0.name, null
+    google_compute_instance_group_manager.default[0].name, null
   )
   minimal_action                   = each.value.minimal_action
   most_disruptive_allowed_action   = each.value.most_disruptive_action
@@ -59,7 +59,7 @@ resource "google_compute_region_per_instance_config" "default" {
   region   = var.location
   name     = each.key
   region_instance_group_manager = try(
-    google_compute_region_instance_group_manager.default.0.name, null
+    google_compute_region_instance_group_manager.default[0].name, null
   )
   minimal_action                   = each.value.minimal_action
   most_disruptive_allowed_action   = each.value.most_disruptive_action

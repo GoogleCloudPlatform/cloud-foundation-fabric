@@ -1,0 +1,144 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cicd-sa-ro["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
+    condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-ro["networking"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-net-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-net prod service account (read-only).
+    email: fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-ro["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/test/00-networking
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-ro["networking"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+  module.cicd-sa-ro["security"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
+    condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-ro["security"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-sec-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-sec prod service account (read-only).
+    email: fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/test/00-security
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-ro["security"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+  module.cicd-sa-rw["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
+    condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-rw["networking"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-net-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-net prod service account.
+    email: fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-1@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-rw["networking"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.fast_sub/repo:test/00-networking:ref:refs/heads/main
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-rw["networking"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+  module.cicd-sa-rw["security"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]:
+    condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-rw["security"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-sec-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-sec prod service account.
+    email: fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-1@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/test/00-security
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-rw["security"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+
+counts:
+  google_folder: 14
+  google_folder_iam_binding: 74
+  google_org_policy_policy: 2
+  google_organization_iam_member: 18
+  google_project_iam_member: 23
+  google_service_account: 23
+  google_service_account_iam_binding: 23
+  google_storage_bucket: 10
+  google_storage_bucket_iam_binding: 20
+  google_storage_bucket_iam_member: 23
+  google_storage_bucket_object: 24
+  google_tags_tag_binding: 14
+  google_tags_tag_key: 2
+  google_tags_tag_value: 12
+  google_tags_tag_value_iam_binding: 4
+  modules: 48
+  resources: 286
+
+outputs:
+  cicd_repositories:
+    networking:
+      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno
+      repository:
+        branch: main
+        name: test/00-networking
+        type: github
+    security:
+      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-gitlab-ludomagno
+      repository:
+        branch: null
+        name: test/00-security
+        type: gitlab
+  folder_ids: __missing__
+  tfvars: __missing__
+

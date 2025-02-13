@@ -17,8 +17,9 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location                  = optional(string)
+    force_destroy             = optional(bool)
     lifecycle_delete_age_days = optional(number)
+    location                  = optional(string)
   })
   default = null
 }
@@ -26,6 +27,13 @@ variable "bucket_config" {
 variable "bucket_name" {
   description = "Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null."
   type        = string
+  nullable    = false
+}
+
+variable "build_environment_variables" {
+  description = "A set of key/value environment variable pairs available during build time."
+  type        = map(string)
+  default     = {}
 }
 
 variable "build_worker_pool" {
@@ -35,12 +43,36 @@ variable "build_worker_pool" {
 }
 
 variable "bundle_config" {
-  description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
+  description = "Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified."
   type = object({
-    source_dir  = string
-    output_path = optional(string)
-    excludes    = optional(list(string))
+    path = string
+    folder_options = optional(object({
+      archive_path = optional(string)
+      excludes     = optional(list(string))
+    }), {})
   })
+  nullable = false
+  validation {
+    condition = (
+      var.bundle_config.path != null && (
+        # GCS object
+        (
+          startswith(var.bundle_config.path, "gs://") &&
+          endswith(var.bundle_config.path, ".zip")
+        )
+        ||
+        # local folder
+        length(fileset(pathexpand(var.bundle_config.path), "**/*")) > 0
+        ||
+        # local ZIP archive
+        (
+          try(fileexists(pathexpand(var.bundle_config.path)), null) != null &&
+          endswith(var.bundle_config.path, ".zip")
+        )
+      )
+    )
+    error_message = "Bundle path must be set to a GCS object URI, a local folder or a local zip file."
+  }
 }
 
 variable "description" {
@@ -75,6 +107,12 @@ variable "function_config" {
   }
 }
 
+variable "https_security_level" {
+  description = "The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -83,6 +121,12 @@ variable "iam" {
 
 variable "ingress_settings" {
   description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY ."
+  type        = string
+  default     = null
+}
+
+variable "kms_key" {
+  description = "Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository field that was created with the same KMS crypto key."
   type        = string
   default     = null
 }
@@ -116,14 +160,24 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "europe-west1"
+}
+
+variable "repository_settings" {
+  description = "Docker Registry to use for storing the function's Docker images and specific repository. If kms_key is provided, the repository must have already been encrypted with the key."
+  type = object({
+    registry   = optional(string)
+    repository = optional(string)
+  })
+  default = {
+    registry = "ARTIFACT_REGISTRY"
+  }
 }
 
 variable "secrets" {
   description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
   type = map(object({
     is_volume  = bool
-    project_id = number
+    project_id = string
     secret     = string
     versions   = list(string)
   }))
@@ -168,8 +222,22 @@ variable "vpc_connector_config" {
   type = object({
     ip_cidr_range = string
     network       = string
+    instances = optional(object({
+      max = optional(number)
+      min = optional(number, 2)
+    }))
+    throughput = optional(object({
+      max = optional(number, 300)
+      min = optional(number, 200)
+    }))
   })
   default = null
+  validation {
+    condition = (
+      var.vpc_connector_config == null ||
+      try(var.vpc_connector_config.instances, null) != null ||
+      try(var.vpc_connector_config.throughput, null) != null
+    )
+    error_message = "VPC connector must specify either instances or throughput."
+  }
 }
-
-

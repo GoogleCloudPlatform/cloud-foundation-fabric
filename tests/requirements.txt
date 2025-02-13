@@ -5,3 +5,4 @@ marko>=1.2.2
 deepdiff>=6.2.3
 python-hcl2>=4.3.0
 pytest-xdist>=3.1.0
+jsonschema>=4.22.0

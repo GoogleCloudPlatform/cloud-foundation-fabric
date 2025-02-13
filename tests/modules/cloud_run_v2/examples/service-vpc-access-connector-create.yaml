@@ -1,0 +1,69 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: false
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west8
+    name: hello
+    project: project-id
+    scaling: []
+    template:
+    - annotations: null
+      containers:
+      - args: null
+        command: null
+        depends_on: null
+        env: []
+        image: us-docker.pkg.dev/cloudrun/container/hello
+        liveness_probe: []
+        name: hello
+        volume_mounts: []
+        working_dir: null
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      labels: null
+      revision: null
+      session_affinity: null
+      volumes: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.cloud_run.google_vpc_access_connector.connector[0]:
+    ip_cidr_range: 10.10.10.0/28
+    machine_type: e2-micro
+    max_instances: 10
+    min_instances: 3
+    name: hello
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    region: europe-west8
+    subnet: []
+    timeouts: null
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_vpc_access_connector: 1
+  modules: 1
+  resources: 2

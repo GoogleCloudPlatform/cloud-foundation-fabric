@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 locals {
   bucket = (
-    var.bucket_name != null
+    var.bucket_config == null
     ? var.bucket_name
     : (
       length(google_storage_bucket.bucket) > 0
@@ -34,7 +34,9 @@ locals {
     try(var.trigger_config.service_account_create, false) == true
   )
   trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email, null
+    google_service_account.trigger_service_account[0].email,
+    var.trigger_config.service_account_email,
+    null
   )
   vpc_connector = (
     var.vpc_connector == null
@@ -42,35 +44,46 @@ locals {
     : (
       try(var.vpc_connector.create, false) == false
       ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      : google_vpc_access_connector.connector[0].id
     )
   )
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == true ? 1 : 0
-  project       = var.project_id
-  name          = var.vpc_connector.name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
-  network       = var.vpc_connector_config.network
+  count          = try(var.vpc_connector.create, false) == true ? 1 : 0
+  project        = var.project_id
+  name           = var.vpc_connector.name
+  region         = var.region
+  ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
+  network        = var.vpc_connector_config.network
+  max_instances  = try(var.vpc_connector_config.instances.max, null)
+  min_instances  = try(var.vpc_connector_config.instances.min, null)
+  max_throughput = try(var.vpc_connector_config.throughput.max, null)
+  min_throughput = try(var.vpc_connector_config.throughput.min, null)
 }
 
 resource "google_cloudfunctions2_function" "function" {
-  provider    = google-beta
-  project     = var.project_id
-  location    = var.region
-  name        = "${local.prefix}${var.name}"
-  description = var.description
+  provider     = google-beta
+  project      = var.project_id
+  location     = var.region
+  name         = "${local.prefix}${var.name}"
+  description  = var.description
+  kms_key_name = var.kms_key
   build_config {
+    service_account       = var.build_service_account
     worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
     entry_point           = var.function_config.entry_point
-    environment_variables = var.environment_variables
+    environment_variables = var.build_environment_variables
+    docker_repository     = var.docker_repository_id
     source {
       storage_source {
         bucket = local.bucket
-        object = google_storage_bucket_object.bundle.name
+        object = (
+          local.bundle_type == "gcs"
+          ? replace(var.bundle_config.path, "/^gs:\\/\\/[^\\/]+\\//", "")
+          : google_storage_bucket_object.bundle[0].name
+        )
       }
     }
   }
@@ -118,7 +131,7 @@ resource "google_cloudfunctions2_function" "function" {
         key        = secret.key
         project_id = secret.value.project_id
         secret     = secret.value.secret
-        version    = try(secret.value.versions.0, "latest")
+        version    = try(secret.value.versions[0], "latest")
       }
     }
 
@@ -133,8 +146,8 @@ resource "google_cloudfunctions2_function" "function" {
           for_each = secret.value.versions
           iterator = version
           content {
-            path    = split(":", version)[1]
-            version = split(":", version)[0]
+            path    = split(":", version.value)[1]
+            version = split(":", version.value)[0]
           }
         }
       }
@@ -152,6 +165,9 @@ resource "google_cloudfunctions2_function_iam_binding" "binding" {
   cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
   members        = each.value
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
+  }
 }
 
 resource "google_cloud_run_service_iam_binding" "invoker" {
@@ -171,6 +187,9 @@ resource "google_cloud_run_service_iam_binding" "invoker" {
       : ["serviceAccount:${local.trigger_sa_email}"]
     )
   )))
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
+  }
 }
 
 resource "google_cloud_run_service_iam_member" "invoker" {
@@ -185,51 +204,9 @@ resource "google_cloud_run_service_iam_member" "invoker" {
   service  = google_cloudfunctions2_function.function.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"
-}
-
-resource "google_storage_bucket" "bucket" {
-  count                       = var.bucket_config == null ? 0 : 1
-  project                     = var.project_id
-  name                        = "${local.prefix}${var.bucket_name}"
-  uniform_bucket_level_access = true
-  location = (
-    var.bucket_config.location == null
-    ? var.region
-    : var.bucket_config.location
-  )
-  labels = var.labels
-
-  dynamic "lifecycle_rule" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      action { type = "Delete" }
-      condition {
-        age        = var.bucket_config.lifecycle_delete_age_days
-        with_state = "ARCHIVED"
-      }
-    }
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions2_function.function]
   }
-
-  dynamic "versioning" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      enabled = true
-    }
-  }
-}
-
-resource "google_storage_bucket_object" "bundle" {
-  name   = "bundle-${data.archive_file.bundle.output_md5}.zip"
-  bucket = local.bucket
-  source = data.archive_file.bundle.output_path
-}
-
-data "archive_file" "bundle" {
-  type             = "zip"
-  source_dir       = var.bundle_config.source_dir
-  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
-  output_file_mode = "0644"
-  excludes         = var.bundle_config.excludes
 }
 
 resource "google_service_account" "service_account" {

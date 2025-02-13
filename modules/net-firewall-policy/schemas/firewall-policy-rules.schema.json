@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Firewall Rules",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9_-]+$": {
+      "$ref": "#/$defs/rule"
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "priority"
+      ],
+      "properties": {
+        "priority": {
+          "type": "number"
+        },
+        "action": {
+          "enum": [
+            "allow",
+            "deny",
+            "goto_next",
+            "apply_security_profile_group"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "enable_logging": {
+          "type": "boolean"
+        },
+        "security_profile_group": {
+          "type": "string"
+        },
+        "target_resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "target_service_accounts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "target_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tls_inspect": {
+          "type": "boolean"
+        },
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "address_groups": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fqdns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "region_codes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "threat_intelligences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "destination_ranges": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "source_ranges": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "source_tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer4_configs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "protocol": {
+                    "type": "string"
+                  },
+                  "ports": {
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

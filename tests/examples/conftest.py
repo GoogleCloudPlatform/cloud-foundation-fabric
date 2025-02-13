@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
 """Pytest configuration for testing code examples."""
 
 import collections
-import re
 from pathlib import Path
 
 import marko
+import pytest
+
+from .utils import File, TerraformExample, YamlExample, get_tftest_directive
 
 FABRIC_ROOT = Path(__file__).parents[2]
 
-FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
 
-Example = collections.namedtuple('Example', 'name code module files')
-File = collections.namedtuple('File', 'path content')
-
-
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc, test_group='example',
+                          filter_tests=lambda x: 'skip' not in x):
   """Find all README.md files and collect code examples tagged for testing."""
-  if 'example' in metafunc.fixturenames:
+  if test_group in metafunc.fixturenames:
     readmes = FABRIC_ROOT.glob('**/README.md')
     examples = []
     ids = []
@@ -39,16 +37,22 @@ def pytest_generate_tests(metafunc):
       doc = marko.parse(readme.read_text())
       index = 0
       files = collections.defaultdict(dict)
+      fixtures = {}
 
       # first pass: collect all examples tagged with tftest-file
       last_header = None
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
-          match = FILE_TEST_RE.search(code)
-          if match:
-            name, path = match.groups()
+          directive = get_tftest_directive(code)
+          if directive is None:
+            continue
+          if directive.name == 'tftest-file':
+            name, path = directive.kwargs['id'], directive.kwargs['path']
             files[last_header][name] = File(path, code)
+          if directive.name == 'tftest-fixture':
+            name = directive.kwargs['id']
+            fixtures[name] = code
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
 
@@ -59,17 +63,37 @@ def pytest_generate_tests(metafunc):
         if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
-          if 'tftest skip' in code:
+          directive = get_tftest_directive(code)
+          if directive is None:
             continue
-          if child.lang == 'hcl':
+          if directive and not filter_tests(directive.args):
+            continue
+          if child.lang in ('hcl', 'tfvars'):
             path = module.relative_to(FABRIC_ROOT)
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'
-            ids.append(f'{path}:{last_header}:{index}')
-            examples.append(Example(name, code, path, files[last_header]))
+            ids.append(f'terraform:{path}:{last_header}:{index}')
+            # if test is marked with 'serial' in tftest line then add them to this xdist group
+            # this, together with `--dist loadgroup` will ensure that those tests will be run one after another
+            # even if multiple workers are used
+            # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
+            marks = [pytest.mark.xdist_group('serial')
+                    ] if 'serial' in directive.args else []
+            example = TerraformExample(name, code, path, files[last_header],
+                                       fixtures, child.lang, directive)
+            examples.append(pytest.param(example, marks=marks))
+          elif child.lang == "yaml":
+            schema = directive.kwargs.get('schema')
+            name = directive.kwargs.get('id')
+            if directive.name == "tftest-file" and schema:
+              schema = module / 'schemas' / schema
+              example = YamlExample(code, module, schema)
+              yaml_path = directive.kwargs['path']
+              ids.append(f'yaml:{path}:{last_header}:{yaml_path}:{index}')
+              examples.append(pytest.param(example))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0
 
-    metafunc.parametrize('example', examples, ids=ids)
+    metafunc.parametrize(test_group, examples, ids=ids)

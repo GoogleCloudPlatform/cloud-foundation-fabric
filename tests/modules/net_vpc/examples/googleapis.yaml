@@ -13,25 +13,28 @@
 # limitations under the License.
 
 values:
+  module.vpc.google_compute_network.network[0]:
+    name: my-vpc
+    project: project-id
   module.vpc.google_compute_route.gateway["private-6-googleapis"]:
-    dest_range: 2600:2d00:0002:2000::/64
+    dest_range: 2600:2d00:2:2000::/64
     name: my-vpc-private-6-googleapis
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
   module.vpc.google_compute_route.gateway["restricted-6-googleapis"]:
-    dest_range: 2600:2d00:0002:1000::/64
+    dest_range: 2600:2d00:2:1000::/64
     name: my-vpc-restricted-6-googleapis
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
 
 counts:

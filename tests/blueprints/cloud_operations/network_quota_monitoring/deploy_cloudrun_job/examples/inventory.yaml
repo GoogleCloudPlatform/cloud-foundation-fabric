@@ -1,0 +1,256 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_scheduler_job.job:
+    app_engine_http_target: []
+    attempt_deadline: 320s
+    description: Schedule net monitor job.
+    http_target:
+    - body: null
+      headers: null
+      http_method: POST
+      oauth_token:
+      - scope: null
+        service_account_email: netmon-invoker@my-project.iam.gserviceaccount.com
+      oidc_token: []
+    name: netmon
+    project: my-project
+    pubsub_target: []
+    region: europe-west1
+    retry_config:
+    - retry_count: 1
+    schedule: '*/30 * * * *'
+    time_zone: UTC
+    timeouts: null
+  google_organization_iam_member.discovery["roles/cloudasset.viewer"]:
+    condition: []
+    member: serviceAccount:netmon@my-project.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/cloudasset.viewer
+  google_organization_iam_member.discovery["roles/compute.viewer"]:
+    condition: []
+    member: serviceAccount:netmon@my-project.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.viewer
+  module.ar.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: DOCKER
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: my-project
+    remote_repository_config: []
+    repository_id: netmon
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+  module.cr-job.google_cloud_run_v2_job.job[0]:
+    annotations: null
+    binary_authorization: []
+    client: null
+    client_version: null
+    deletion_protection: false
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west1
+    name: netmon
+    project: my-project
+    run_execution_token: null
+    start_execution_token: null
+    template:
+    - annotations: null
+      labels: null
+      template:
+      - containers:
+        - args:
+          - -dr
+          - organizations/1234567890
+          - -mon
+          - my-project
+          - -f
+          - '3456789012'
+          - -f
+          - '7890123456'
+          command: null
+          env: []
+          image: europe-west1-docker.pkg.dev/my-project/netmon/netmon
+          name: netmon
+          ports: []
+          volume_mounts: []
+          working_dir: null
+        encryption_key: null
+        max_retries: 0
+        service_account: netmon@my-project.iam.gserviceaccount.com
+        volumes: []
+        vpc_access: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.cr-job.google_cloud_run_v2_job_iam_binding.binding["roles/run.invoker"]:
+    condition: []
+    location: europe-west1
+    members:
+    - serviceAccount:netmon-invoker@my-project.iam.gserviceaccount.com
+    name: netmon
+    project: my-project
+    role: roles/run.invoker
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 12345-ABCDEF-12345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '2345678901'
+    labels: null
+    name: my-project
+    org_id: null
+    project_id: my-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project.google_project_iam_member.service_agents["artifactregistry"]:
+    condition: []
+    project: my-project
+    role: roles/artifactregistry.serviceAgent
+  module.project.google_project_iam_member.service_agents["cloudasset"]:
+    condition: []
+    project: my-project
+    role: roles/cloudasset.serviceAgent
+  module.project.google_project_iam_member.service_agents["cloudscheduler"]:
+    condition: []
+    project: my-project
+    role: roles/cloudscheduler.serviceAgent
+  module.project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: my-project
+    role: roles/compute.serviceAgent
+  module.project.google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: my-project
+    role: roles/monitoring.notificationServiceAgent
+  module.project.google_project_iam_member.service_agents["serverless-robot-prod"]:
+    condition: []
+    project: my-project
+    role: roles/run.serviceAgent
+  module.project.google_project_service.project_services["artifactregistry.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: artifactregistry.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["cloudasset.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: cloudasset.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["cloudscheduler.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: cloudscheduler.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: compute.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["run.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: run.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["artifactregistry.googleapis.com"]:
+    project: my-project
+    service: artifactregistry.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["cloudasset.googleapis.com"]:
+    project: my-project
+    service: cloudasset.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["cloudscheduler.googleapis.com"]:
+    project: my-project
+    service: cloudscheduler.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: my-project
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["run.googleapis.com"]:
+    project: my-project
+    service: run.googleapis.com
+    timeouts: null
+  module.sa-invoker.google_service_account.service_account[0]:
+    account_id: netmon-invoker
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Net monitoring service invoker.
+    project: my-project
+    timeouts: null
+  module.sa.google_project_iam_member.project-roles["my-project-roles/monitoring.metricWriter"]:
+    condition: []
+    project: my-project
+    role: roles/monitoring.metricWriter
+  module.sa.google_service_account.service_account[0]:
+    account_id: netmon
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Net monitoring service.
+    project: my-project
+    timeouts: null
+
+counts:
+  google_artifact_registry_repository: 1
+  google_cloud_run_v2_job: 1
+  google_cloud_run_v2_job_iam_binding: 1
+  google_cloud_scheduler_job: 1
+  google_organization_iam_member: 2
+  google_project: 1
+  google_project_iam_member: 7
+  google_project_service: 6
+  google_project_service_identity: 5
+  google_service_account: 2
+  modules: 5
+  resources: 27
+
+outputs:
+  project_id:
+    sensitive: false
+    type: string
+    value: my-project
+  service_account:
+    sensitive: false
+    type: string
+    value: netmon@my-project.iam.gserviceaccount.com

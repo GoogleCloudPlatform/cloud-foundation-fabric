@@ -11,10 +11,10 @@ These modules are designed for several use cases:
 
 ## Available modules
 
+- [Bindplane](./bindplane)
 - [CoreDNS](./coredns)
 - [MySQL](./mysql)
 - [Nginx](./nginx)
-- [Squid forward proxy](./squid)
 - On-prem in Docker (*needs fixing*)
 
 ## Using the modules

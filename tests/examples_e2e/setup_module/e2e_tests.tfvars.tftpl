@@ -1,0 +1,74 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+bucket             = "${bucket}"
+billing_account_id = "${billing_account_id}"
+group_email     = "${group_email}"
+organization_id = "organizations/${organization_id}"
+folder_id       = "folders/${folder_id}"
+project_id      = "${project_id}"
+project_number  = "${project_number}"
+region          = "${region}"
+regions         = {
+  primary       = "${regions.primary}"
+  secondary     = "${regions.secondary}"
+}
+service_account = {
+    id        = "${service_account.id}"
+    email     = "${service_account.email}"
+    iam_email = "${service_account.iam_email}"
+  }
+
+subnet = {
+    name      = "${subnet.name}"
+    region    = "${subnet.region}"
+    cidr      = "${subnet.ip_cidr_range}"
+    self_link = "${subnet.self_link}"
+}
+subnets = {
+    primary = {
+      name      = "${subnet.name}"
+      region    = "${subnet.region}"
+      cidr      = "${subnet.ip_cidr_range}"
+      self_link = "${subnet.self_link}"
+    }
+    secondary = {
+      name      = "${subnet_secondary.name}"
+      region    = "${subnet_secondary.region}"
+      cidr      = "${subnet_secondary.ip_cidr_range}"
+      self_link = "${subnet_secondary.self_link}"
+    }
+
+}
+subnet_psc_1 = {
+    name      = "${subnet_psc_1.name}"
+    region    = "${subnet_psc_1.region}"
+    cidr      = "${subnet_psc_1.ip_cidr_range}"
+    self_link = "${subnet_psc_1.self_link}"
+}
+vpc = {
+    name      = "${vpc.name}"
+    self_link = "${vpc.self_link}"
+    id        = "${vpc.id}"
+  }
+
+# vpc1 =  {
+#    name      = "vpc_name"
+#    self_link = "projects/xxx/global/networks/bbb"
+#  }
+#vpc2 = {
+#    name      = "vpc2_name"
+#    self_link = "projects/xxx/global/networks/ccc"
+#  }
+zone = "${region}-a"

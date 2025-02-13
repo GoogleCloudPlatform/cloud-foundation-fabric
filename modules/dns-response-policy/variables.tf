@@ -27,6 +27,15 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "factories_config" {
+  description = "Path to folder containing rules data files for the optional factory."
+  type = object({
+    rules = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "name" {
   description = "Policy name."
   type        = string
@@ -63,10 +72,16 @@ variable "rules" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "rules_file" {
-  description = "Optional data file in YAML format listing rules that will be combined with those passed in via the `rules` variable."
-  type        = string
-  default     = null
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.rules : [
+        for dk, dv in v.local_data : contains([
+          "A", "AAAA", "CAA", "CNAME", "DNSKEY", "DS", "HTTPS", "IPSECVPNKEY",
+          "MX", "NAPTR", "NS", "PTR", "SOA", "SPF", "SRV", "SSHFP", "SVCB",
+          "TLSA", "TXT"
+        ], dk)
+      ]
+    ]))
+    error_message = "Invalid local data key."
+  }
 }

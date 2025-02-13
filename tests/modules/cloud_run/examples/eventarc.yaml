@@ -13,46 +13,63 @@
 # limitations under the License.
 
 values:
-  module.cloud_run.google_cloud_run_service.service: {}
+  module.cloud_run.google_cloud_run_service.service:
+    autogenerate_revision_name: false
+    location: europe-west8
+    metadata:
+    - annotations: null
+      generation: 0
+      labels: null
+    name: hello
+    project: project-id
+    template:
+    - metadata:
+      - {}
+      spec:
+      - containers:
+        - args: null
+          command: null
+          env: []
+          env_from: []
+          image: us-docker.pkg.dev/cloudrun/container/hello
+          liveness_probe: []
+          volume_mounts: []
+          working_dir: null
+        volumes: []
+    timeouts: null
   module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-1"]:
+    channel: null
     destination:
-    - cloud_function: null
-      cloud_run_service:
+    - cloud_run_service:
       - path: null
-        region: europe-west1
+        region: europe-west8
         service: hello
-      gke: []
-      workflow: null
-    location: europe-west1
+    labels: null
+    location: europe-west8
     matching_criteria:
     - attribute: type
       operator: ''
       value: google.cloud.pubsub.topic.v1.messagePublished
     name: pubsub-topic-1
-    project: my-project
+    project: project-id
+    service_account: null
+    timeouts: null
     transport:
     - pubsub:
-      - topic: topic1
-  module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-2"]:
-    destination:
-    - cloud_function: null
-      cloud_run_service:
-      - path: null
-        region: europe-west1
-        service: hello
-      gke: []
-      workflow: null
-    location: europe-west1
-    matching_criteria:
-    - attribute: type
-      operator: ''
-      value: google.cloud.pubsub.topic.v1.messagePublished
-    name: pubsub-topic-2
-    project: my-project
-    transport:
-    - pubsub:
-      - topic: topic2
+      - topic: projects/project-id/topics/pubsub_sink
+  module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    name: pubsub_sink
+    project: project-id
+    timeouts: null
 
 counts:
   google_cloud_run_service: 1
-  google_eventarc_trigger: 2
+  google_eventarc_trigger: 1
+  google_pubsub_topic: 1
+  modules: 2
+  resources: 3
+
+outputs: {}

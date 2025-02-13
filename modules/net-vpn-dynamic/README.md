@@ -4,7 +4,7 @@
 
 This example shows how to configure a single VPN tunnel using a couple of extra features
 
--  custom advertisement on the tunnel's BGP session; if custom advertisement is not needed, simply set the `bgp_peer_options` attribute to `null`
+- custom advertisement on the tunnel's BGP session; if custom advertisement is not needed, simply set the `bgp_peer_options` attribute to `null`
 - internally generated shared secret, which can be fetched from the module's `random_secret` output for reuse; a predefined secret can be used instead by assigning it to the `shared_secret` attribute
 
 ```hcl
@@ -18,9 +18,10 @@ module "vm" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
-
 
 module "vpn-dynamic" {
   source     = "./fabric/modules/net-vpn-dynamic"
@@ -31,7 +32,6 @@ module "vpn-dynamic" {
   router_config = {
     asn = 64514
   }
-
   tunnels = {
     remote-1 = {
       bgp_peer = {

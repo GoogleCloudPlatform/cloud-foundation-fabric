@@ -1,0 +1,20 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/firewall-rules.schema.json
+
+# This is only relevant when using NCC-RA, and can be safely removed otherwise
+ingress:
+  allow-ncc-nva-bgp-landing:
+    description: "Allow BGP traffic from NCC Cloud Routers to NVAs"
+    source_ranges:
+      - 10.128.64.201/32
+      - 10.128.64.202/32
+      - 10.128.96.201/32
+      - 10.128.96.202/32
+    targets: ["nva"]
+    rules:
+      - protocol: tcp
+        ports:
+          - 179

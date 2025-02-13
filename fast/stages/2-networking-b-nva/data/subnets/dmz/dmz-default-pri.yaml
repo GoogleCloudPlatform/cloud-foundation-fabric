@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: dmz-default
+region: primary
+ip_cidr_range: 10.64.128.0/24
+description: Default primary-region subnet for landing dmz

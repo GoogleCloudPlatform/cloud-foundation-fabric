@@ -18,15 +18,15 @@ values:
     network_interface:
     - access_config: []
       alias_ip_range:
-      - ip_cidr_range: 10.16.0.10/32
-        subnetwork_range_name: alias1
+      - ip_cidr_range: 100.71.1.123/32
+        subnetwork_range_name: services
       ipv6_access_config: []
       network: projects/xxx/global/networks/aaa
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
-    project: my-project
-    zone: europe-west1-b
+    project: project-id
+    zone: europe-west8-b
 
 counts:
   google_compute_instance: 1

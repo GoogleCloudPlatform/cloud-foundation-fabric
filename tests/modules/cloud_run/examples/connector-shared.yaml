@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_service.service:
     autogenerate_revision_name: false
-    location: europe-west1
+    location: europe-west8
     metadata:
     - {}
     name: hello
@@ -37,11 +37,9 @@ values:
   module.cloud_run.google_vpc_access_connector.connector[0]:
     ip_cidr_range: null
     machine_type: e2-micro
-    max_throughput: 300
-    min_throughput: 200
     name: hello
     project: project-id
-    region: europe-west1
+    region: europe-west8
     subnet:
     - name: subnet-vpc-access
       project_id: host-project

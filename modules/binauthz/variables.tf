@@ -59,12 +59,6 @@ variable "default_admission_rule" {
   }
 }
 
-variable "global_policy_evaluation_mode" {
-  description = "Global policy evaluation mode."
-  type        = string
-  default     = null
-}
-
 variable "project_id" {
   description = "Project ID."
   type        = string

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,82 @@
  * limitations under the License.
  */
 
+variable "assured_workload_config" {
+  description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
+  type = object({
+    compliance_regime         = string
+    display_name              = string
+    location                  = string
+    organization              = string
+    enable_sovereign_controls = optional(bool)
+    labels                    = optional(map(string), {})
+    partner                   = optional(string)
+    partner_permissions = optional(object({
+      assured_workloads_monitoring = optional(bool)
+      data_logs_viewer             = optional(bool)
+      service_access_approver      = optional(bool)
+    }))
+    violation_notifications_enabled = optional(bool)
+
+  })
+  default = null
+  validation {
+    condition = try(contains([
+      "ASSURED_WORKLOADS_FOR_PARTNERS",
+      "AU_REGIONS_AND_US_SUPPORT",
+      "CA_PROTECTED_B, IL5",
+      "CA_REGIONS_AND_SUPPORT",
+      "CJIS",
+      "COMPLIANCE_REGIME_UNSPECIFIED",
+      "EU_REGIONS_AND_SUPPORT",
+      "FEDRAMP_HIGH",
+      "FEDRAMP_MODERATE",
+      "HIPAA, HITRUST",
+      "IL2",
+      "IL4",
+      "ISR_REGIONS_AND_SUPPORT",
+      "ISR_REGIONS",
+      "ITAR",
+      "JP_REGIONS_AND_SUPPORT",
+      "US_REGIONAL_ACCESS"
+    ], var.assured_workload_config.compliance_regime), true)
+    error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
+  }
+  validation {
+    condition = try(contains([
+      "LOCAL_CONTROLS_BY_S3NS",
+      "PARTNER_UNSPECIFIED",
+      "SOVEREIGN_CONTROLS_BY_PSN",
+      "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
+      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+    ], var.assured_workload_config.partner), true)
+    error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
+  }
+}
+
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "deletion_protection" {
+  description = "Deletion protection setting for this folder."
+  type        = bool
+  default     = false
+}
+
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    org_policies = optional(string)
+    context = optional(object({
+      org_policies = optional(map(map(string)), {})
+    }), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "firewall_policy" {
@@ -36,106 +107,10 @@ variable "folder_create" {
   default     = true
 }
 
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
 variable "id" {
   description = "Folder ID in case you use folder_create=false."
   type        = string
   default     = null
-}
-
-variable "logging_data_access" {
-  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.logging_data_access : [
-        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
-      ]
-    ]))
-    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
-  }
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this folder in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
-  type = map(object({
-    bq_partitioned_table = optional(bool)
-    description          = optional(string)
-    destination          = string
-    disabled             = optional(bool, false)
-    exclusions           = optional(map(string), {})
-    filter               = string
-    include_children     = optional(bool, true)
-    type                 = string
-  }))
-  default  = {}
-  nullable = false
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
-    ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      v.bq_partitioned_table != true || v.type == "bigquery"
-    ])
-    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
-  }
 }
 
 variable "name" {
@@ -165,16 +140,11 @@ variable "org_policies" {
         location    = optional(string)
         title       = optional(string)
       }), {})
+      parameters = optional(string)
     })), [])
   }))
   default  = {}
   nullable = false
-}
-
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
 }
 
 variable "parent" {

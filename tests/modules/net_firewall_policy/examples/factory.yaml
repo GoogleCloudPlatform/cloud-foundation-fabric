@@ -11,38 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 values:
   module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
+    description: null
     parent: folders/1234567890
     short_name: test-1
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
     attachment_target: folders/4567890123
     name: test-1-test
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/icmp"]:
-    action: allow
-    direction: INGRESS
-    disabled: false
-    enable_logging: null
-    match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: icmp
-        ports: null
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 10.0.0.0/8
-      src_region_codes: null
-      src_threat_intelligences: null
-    priority: 1000
-    target_resources: null
-    target_service_accounts: null
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/smtp"]:
     action: deny
+    description: null
     direction: EGRESS
     disabled: false
     enable_logging: null
@@ -67,8 +49,67 @@ values:
     priority: 900
     target_resources: null
     target_service_accounts: null
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/icmp"]:
+    action: allow
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: icmp
+        ports: []
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/issue-1995"]:
+    action: allow
+    description: Allow intra-cluster communication required by k8s networking model
+    direction: INGRESS
+    disabled: false
+    enable_logging: true
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - 1-65535
+      - ip_protocol: udp
+        ports:
+        - 1-65535
+      - ip_protocol: icmp
+        ports: []
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.1.0/24
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 10020
+    target_resources: null
+    target_service_accounts:
+    - sa-gke-cluster@burner-project.iam.gserviceaccount.com
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/ssh"]:
     action: allow
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: null
@@ -91,8 +132,13 @@ values:
     priority: 1002
     target_resources: null
     target_service_accounts: null
+    timeouts: null
 
 counts:
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
-  google_compute_firewall_policy_rule: 3
+  google_compute_firewall_policy_rule: 4
+  modules: 1
+  resources: 6
+
+outputs: {}

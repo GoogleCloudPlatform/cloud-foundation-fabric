@@ -15,7 +15,7 @@
 values:
   module.vpc["gateway"].google_compute_network.network[0]:
     name: my-network-with-route-gateway
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc["gateway"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
@@ -26,7 +26,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 100
-    project: my-project
+    project: project-id
     tags:
     - tag-a
   module.vpc["gateway"].google_compute_route.gateway["next-hop"]:
@@ -38,11 +38,11 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
   module.vpc["ilb"].google_compute_network.network[0]:
     name: my-network-with-route-ilb
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc["ilb"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
@@ -53,7 +53,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 100
-    project: my-project
+    project: project-id
     tags:
     - tag-a
   module.vpc["ilb"].google_compute_route.ilb["next-hop"]:
@@ -65,11 +65,11 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
   module.vpc["instance"].google_compute_network.network[0]:
     name: my-network-with-route-instance
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc["instance"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
@@ -80,7 +80,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 100
-    project: my-project
+    project: project-id
     tags:
     - tag-a
   module.vpc["instance"].google_compute_route.instance["next-hop"]:
@@ -93,11 +93,11 @@ values:
     next_hop_instance_zone: europe-west1-b
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
   module.vpc["ip"].google_compute_network.network[0]:
     name: my-network-with-route-ip
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc["ip"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
@@ -108,7 +108,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 100
-    project: my-project
+    project: project-id
     tags:
     - tag-a
   module.vpc["ip"].google_compute_route.ip["next-hop"]:
@@ -121,11 +121,11 @@ values:
     next_hop_ip: 192.168.0.128
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
   module.vpc["vpn_tunnel"].google_compute_network.network[0]:
     name: my-network-with-route-vpn-tunnel
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc["vpn_tunnel"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
@@ -136,7 +136,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 100
-    project: my-project
+    project: project-id
     tags:
     - tag-a
   module.vpc["vpn_tunnel"].google_compute_route.vpn_tunnel["next-hop"]:
@@ -148,7 +148,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: regions/europe-west1/vpnTunnels/foo
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
 
 counts:

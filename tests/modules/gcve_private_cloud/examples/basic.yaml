@@ -13,30 +13,46 @@
 # limitations under the License.
 
 values:
-  module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
+  module.gcve-pc.google_vmwareengine_network.default[0]:
     description: Terraform-managed.
-    location: europe-west8
-    name: europe-west8-default
+    location: global
+    name: gcve-pc-default
     project: gcve-test-project
     timeouts: null
-    type: LEGACY
-  module.gcve-pc.google_vmwareengine_private_cloud.private-cloud:
-    description: Terraform-managed.
+    type: STANDARD
+  module.gcve-pc.google_vmwareengine_network_peering.default["transit-conn1"]:
+    description: Managed by Terraform.
+    export_custom_routes: false
+    export_custom_routes_with_public_ip: false
+    import_custom_routes: false
+    import_custom_routes_with_public_ip: false
+    name: gcve-pc-transit-conn1
+    peer_network: projects/test-prj-gcve-01/global/networks/default
+    peer_network_type: STANDARD
+    project: gcve-test-project
+    timeouts: null
+  module.gcve-pc.google_vmwareengine_private_cloud.default["pcc_one"]:
+    deletion_delay_hours: null
+    description: Managed by Terraform.
     location: europe-west8-a
     management_cluster:
-    - cluster_id: gcve-pc-mgmt-cluster
+    - cluster_id: gcve-pc-pcc_one-mgmt-cluster
       node_type_configs:
       - custom_core_count: 0
         node_count: 3
         node_type_id: standard-72
-    name: gcve-pc
+      stretched_cluster_config: []
+    name: gcve-pc-pcc_one
     network_config:
     - management_cidr: 192.168.0.0/24
     project: gcve-test-project
+    send_deletion_delay_hours_if_zero: null
     timeouts: null
+    type: null
 
 counts:
   google_vmwareengine_network: 1
+  google_vmwareengine_network_peering: 1
   google_vmwareengine_private_cloud: 1
   modules: 1
-  resources: 2
+  resources: 3

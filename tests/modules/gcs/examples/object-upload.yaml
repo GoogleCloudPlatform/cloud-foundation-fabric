@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
 # limitations under the License.
 
 values:
-  module.bucket.google_storage_bucket.bucket:
-    name: my-bucket
-    project: myproject
+  module.bucket.google_storage_bucket.bucket[0]:
+    name: test-my-bucket
+    project: project-id
   module.bucket.google_storage_bucket_object.objects["sample-data"]:
     name: example-file.csv
-    source: data/example-file.csv
+    source: assets/example-file.csv
     content_type: text/csv
 
 counts:

@@ -18,7 +18,7 @@ values:
     database_version: POSTGRES_13
     name: myprefix-db
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.db.google_sql_database_instance.replicas["replica1"]:
     clone: []
     database_version: POSTGRES_13

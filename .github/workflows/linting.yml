@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,24 +17,42 @@ on:
   pull_request:
     branches:
       - master
+      - fast-dev
+  push:
+    branches:
+      - master
+      - fast-dev
 
 jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: 'pip'
           cache-dependency-path: 'tools/requirements.txt'
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.1
+          terraform_version: 1.10.2
+
+      - uses: terraform-linters/setup-tflint@v4
+        name: Setup TFLint
+        with:
+          tflint_version: v0.54.0
+
+      - name: Init TFLint
+        run: |
+          cp .tflint.hcl ~
+          tflint --init
+        env:
+          # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Install dependencies
         run: |
@@ -49,6 +67,13 @@ jobs:
         id: fmt
         run: |
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
+
+      - name: TFLint Modules
+        run: cd modules && tflint --recursive -f compact
+
+      - name: TFLint FAST
+        run: |
+          python3 tools/tflint-fast.py
 
       - name: Check documentation
         id: documentation-fabric
@@ -68,12 +93,30 @@ jobs:
       - name: Check python formatting
         id: yapf
         run: |
-          yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d \
+          yapf -p -d -r \
             tools/*.py \
-            blueprints/cloud-operations/network-dashboard/src/*py \
-            blueprints/cloud-operations/network-dashboard/src/plugins/*py
+            blueprints
 
       - name: Check blueprint metadata
         id: metadata
         run: |
           python tools/validate_metadata.py -v --failed-only blueprints
+
+      - name: Check modules versions
+        id: versions
+        run: |
+          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;)
+          if [[ -n "${OUTPUT_TF}" ]] ; then
+            echo "Terraform versions.tf:"
+            echo "${OUTPUT_TF}"
+          fi
+          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tofu {} \;)
+          if [[ -n "${OUTPUT_TOFU}" ]] ; then
+            echo "Terraform versions.tofu:"
+            echo "${OUTPUT_TOFU}"
+          fi
+          egrep -v "(required_version|module_name)" default-versions.tf > /tmp/versions.tf
+          egrep -v "(required_version|module_name)" default-versions.tofu > /tmp/versions.tofu
+          diff -rub /tmp/versions.tf /tmp/versions.tofu
+          DIFF_EC=$?
+          [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]

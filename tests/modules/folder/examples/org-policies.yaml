@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,13 @@
 
 values:
   module.folder.google_folder.folder[0]:
+    deletion_protection: false
     display_name: Folder name
-    parent: organizations/1234567890
+    parent: folders/1122334455
+    tags: null
+    timeouts: null
   module.folder.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -25,8 +29,11 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
+    timeouts: null
   module.folder.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -35,8 +42,11 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
+    timeouts: null
   module.folder.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -45,11 +55,14 @@ values:
         condition: []
         deny_all: null
         enforce: null
+        parameters: null
         values:
         - allowed_values:
           - projects/my-project
           denied_values: null
+    timeouts: null
   module.folder.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -58,22 +71,11 @@ values:
         condition: []
         deny_all: 'TRUE'
         enforce: null
+        parameters: null
         values: []
-  module.folder.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: null
-        values:
-        - allowed_values:
-          - C0xxxxxxx
-          - C0yyyyyyy
-          denied_values: null
-  module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    timeouts: null
+  module.folder.google_org_policy_policy.default["essentialcontacts.managed.allowedContactDomains"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -82,8 +84,42 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: '{"allowedDomains":["@example.com","@secondary.example.com"]}'
         values: []
+    timeouts: null
+  module.folder.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - C0xxxxxxx
+          - C0yyyyyyy
+          - C0zzzzzzz
+          denied_values: null
+    timeouts: null
+  module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -96,13 +132,16 @@ values:
           title: condition
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'FALSE'
+        parameters: null
         values: []
+    timeouts: null
 
 counts:
   google_folder: 1
-  google_org_policy_policy: 7
+  google_org_policy_policy: 8

@@ -20,6 +20,12 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "force_destroy" {
+  description = "Set this to true to delete all records in the zone upon zone destruction."
+  type        = bool
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -43,7 +49,16 @@ variable "recordsets" {
     records = optional(list(string))
     geo_routing = optional(list(object({
       location = string
-      records  = list(string)
+      records  = optional(list(string))
+      health_checked_targets = optional(list(object({
+        load_balancer_type = string
+        ip_address         = string
+        port               = string
+        ip_protocol        = string
+        network_url        = string
+        project            = string
+        region             = optional(string)
+      })))
     })))
     wrr_routing = optional(list(object({
       weight  = number
@@ -68,6 +83,19 @@ variable "recordsets" {
       )
     ])
     error_message = "Only one of records, wrr_routing or geo_routing can be defined for each recordset."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in coalesce(var.recordsets, {}) : [
+        for r in try(v.geo_routing.health_checked_targets, []) : [
+          contains(
+            ["regionalL4ilb", "regionalL7ilb", "globalL7ilb", null],
+            try(r.load_balancer_type, null)
+          )
+        ]
+      ]
+    ]))
+    error_message = "Invalid load balancer type for health checked target."
   }
 }
 

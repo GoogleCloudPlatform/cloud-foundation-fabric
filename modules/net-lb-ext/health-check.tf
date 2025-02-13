@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 # tfdoc:file:description Health check resource.
 
 locals {
-  hc       = var.health_check_config
+  hc = (
+    var.health_check != null ? null : var.health_check_config
+  )
   hc_grpc  = try(local.hc.grpc, null) != null
   hc_http  = try(local.hc.http, null) != null
   hc_http2 = try(local.hc.http2, null) != null
@@ -31,7 +33,7 @@ resource "google_compute_region_health_check" "default" {
   count               = local.hc != null ? 1 : 0
   project             = var.project_id
   region              = var.region
-  name                = var.name
+  name                = local.hc.name != null ? local.hc.name : var.name
   description         = local.hc.description
   check_interval_sec  = local.hc.check_interval_sec
   healthy_threshold   = local.hc.healthy_threshold

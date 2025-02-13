@@ -1,6 +1,6 @@
 #cloud-config
 
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,6 +50,9 @@ write_files:
       iptables -t nat -A POSTROUTING -o ${interface.name} -d ${cidr} -j ACCEPT
 %{ endfor ~}
       iptables -t nat -A POSTROUTING -o ${interface.name} -j MASQUERADE
+%{ endif ~}
+%{ if interface.number == 0 ~}
+      ip route add 35.235.240.0/20 via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endif ~}
 %{ for route in interface.routes ~}
       ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}

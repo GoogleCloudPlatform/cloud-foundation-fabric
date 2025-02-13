@@ -14,30 +14,30 @@
 
 values:
   module.bigquery-dataset.google_bigquery_dataset.default:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     description: Terraform managed.
     location: EU
     project: my-project
   module.bigquery-dataset.google_bigquery_dataset_access.group_by_email["reader-group"]:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     group_by_email: playground-test@ludomagno.net
     project: my-project
     role: READER
   module.bigquery-dataset.google_bigquery_dataset_access.special_group["project_owners"]:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     project: my-project
     role: OWNER
     special_group: projectOwners
   module.bigquery-dataset.google_bigquery_dataset_access.user_by_email["owner"]:
-    dataset_id: my-dataset
+    dataset_id: my_dataset
     project: my-project
     role: OWNER
     user_by_email: ludo@ludomagno.net
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["my-project_my-dataset_my-table"]:
-    dataset_id: my-dataset
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["my-project_my_dataset_my-table"]:
+    dataset_id: my_dataset
     project: my-project
     view:
-    - dataset_id: my-dataset
+    - dataset_id: my_dataset
       project_id: my-project
       table_id: my-table
 

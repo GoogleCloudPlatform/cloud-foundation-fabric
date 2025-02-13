@@ -1,0 +1,49 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.looker.google_iap_brand.looker_brand[0]:
+    application_title: Cloud IAP protected Application
+    project: project-id
+    support_email: support@google.com
+    timeouts: null
+  module.looker.google_iap_client.looker_client[0]:
+    display_name: Looker Core default oauth client.
+    timeouts: null
+  module.looker.google_looker_instance.looker:
+    admin_settings: []
+    consumer_network: null
+    custom_domain: []
+    deny_maintenance_period: []
+    maintenance_window: []
+    name: looker
+    oauth_config:
+      - {}
+    platform_edition: LOOKER_CORE_TRIAL
+    private_ip_enabled: false
+    project: project-id
+    public_ip_enabled: true
+    region: europe-west8
+    reserved_range: null
+    timeouts: null
+    user_metadata: []
+
+counts:
+  google_iap_brand: 1
+  google_iap_client: 1
+  google_looker_instance: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

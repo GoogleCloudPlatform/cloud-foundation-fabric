@@ -1,0 +1,30 @@
+# skip boilerplate check
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: team-b # Job under team-a namespace
+  generateName: sample-job-
+  annotations:
+    kueue.x-k8s.io/queue-name: local-queue # Point to the LocalQueue
+spec:
+  ttlSecondsAfterFinished: 60 # Job will be deleted after 60 seconds
+  parallelism: 3 # This Job will have 3 replicas running at the same time
+  completions: 3 # This Job requires 3 completions
+  suspend: true # Set to true to allow Kueue to control the Job when it starts
+  template:
+    spec:
+      containers:
+      - name: dummy-job
+        image: gcr.io/k8s-staging-perf-tests/sleep:latest
+        args: ["10s"] # Sleep for 10 seconds
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+            ephemeral-storage: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+            ephemeral-storage: "512Mi"
+      restartPolicy: Never

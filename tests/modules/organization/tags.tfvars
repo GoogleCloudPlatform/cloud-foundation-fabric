@@ -13,8 +13,8 @@ tags = {
   baz = {
     id = "tagKeys/1234567890"
     values = {
-      one = null
-      two = null
+      one = {}
+      two = {}
     }
   }
   foobar = {
@@ -25,7 +25,7 @@ tags = {
       ]
     }
     values = {
-      one = null
+      one = {}
       two = {
         description = "Foobar 2."
         iam = {

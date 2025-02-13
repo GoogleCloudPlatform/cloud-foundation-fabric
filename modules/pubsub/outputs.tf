@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ output "id" {
   value       = local.topic_id_static
   depends_on = [
     google_pubsub_topic.default,
-    google_pubsub_topic_iam_binding.default
+    google_pubsub_topic_iam_binding.authoritative,
+    google_pubsub_topic_iam_binding.bindings,
+    google_pubsub_topic_iam_member.bindings
   ]
 }
 
@@ -39,7 +41,9 @@ output "subscription_id" {
     for k, v in google_pubsub_subscription.default : k => v.id
   }
   depends_on = [
-    google_pubsub_subscription_iam_binding.default
+    google_pubsub_subscription_iam_binding.authoritative,
+    google_pubsub_subscription_iam_binding.bindings,
+    google_pubsub_subscription_iam_member.members
   ]
 }
 
@@ -47,7 +51,9 @@ output "subscriptions" {
   description = "Subscription resources."
   value       = google_pubsub_subscription.default
   depends_on = [
-    google_pubsub_subscription_iam_binding.default
+    google_pubsub_subscription_iam_binding.authoritative,
+    google_pubsub_subscription_iam_binding.bindings,
+    google_pubsub_subscription_iam_member.members
   ]
 }
 
@@ -55,6 +61,8 @@ output "topic" {
   description = "Topic resource."
   value       = google_pubsub_topic.default
   depends_on = [
-    google_pubsub_topic_iam_binding.default
+    google_pubsub_topic_iam_binding.authoritative,
+    google_pubsub_topic_iam_binding.bindings,
+    google_pubsub_topic_iam_member.bindings
   ]
 }

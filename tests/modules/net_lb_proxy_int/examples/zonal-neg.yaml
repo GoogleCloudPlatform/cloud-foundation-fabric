@@ -1,0 +1,145 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_address.test:
+    address: 10.0.0.10
+    address_type: INTERNAL
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: neg-test
+    network: null
+    project: project-id
+    region: europe-west1
+    subnetwork: subnet_self_link
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.int-tcp-proxy.google_compute_forwarding_rule.default:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: Terraform managed.
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy
+    network: projects/xxx/global/networks/aaa
+    no_automate_dns_zone: null
+    port_range: '80'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: subnet_self_link
+    timeouts: null
+  module.int-tcp-proxy.google_compute_network_endpoint.default["my-neg-e-0"]:
+    instance: test-1
+    ip_address: 10.0.0.10
+    network_endpoint_group: int-tcp-proxy-my-neg
+    port: 80
+    project: project-id
+    timeouts: null
+    zone: europe-west1-b
+  module.int-tcp-proxy.google_compute_network_endpoint_group.default["my-neg"]:
+    default_port: null
+    description: Terraform managed.
+    name: int-tcp-proxy-my-neg
+    network: projects/xxx/global/networks/aaa
+    network_endpoint_type: GCE_VM_IP_PORT
+    project: project-id
+    subnetwork: subnet_self_link
+    timeouts: null
+    zone: europe-west1-b
+  module.int-tcp-proxy.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: CONNECTION
+      capacity_scaler: 1
+      description: Terraform managed.
+      failover: false
+      max_connections: null
+      max_connections_per_endpoint: 10
+      max_connections_per_instance: null
+      max_rate: null
+      max_rate_per_endpoint: null
+      max_rate_per_instance: null
+      max_utilization: null
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    description: Terraform managed.
+    enable_cdn: null
+    failover_policy: []
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policy: null
+    name: int-tcp-proxy
+    network: null
+    outlier_detection: []
+    project: project-id
+    protocol: TCP
+    region: europe-west1
+    security_policy: null
+    session_affinity: NONE
+    subsetting: []
+    timeouts: null
+  module.int-tcp-proxy.google_compute_region_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: int-tcp-proxy
+    project: project-id
+    region: europe-west1
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.int-tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    description: Terraform managed.
+    name: int-tcp-proxy
+    project: project-id
+    proxy_header: NONE
+    region: europe-west1
+    timeouts: null
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 1
+  google_compute_network_endpoint: 1
+  google_compute_network_endpoint_group: 1
+  google_compute_region_backend_service: 1
+  google_compute_region_health_check: 1
+  google_compute_region_target_tcp_proxy: 1
+  modules: 1
+  resources: 7

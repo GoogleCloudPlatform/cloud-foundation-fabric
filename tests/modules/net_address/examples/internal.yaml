@@ -20,16 +20,16 @@ values:
     network: null
     project: project-id
     purpose: SHARED_LOADBALANCER_VIP
-    region: region
+    region: europe-west8
     subnetwork: subnet_self_link
   module.addresses.google_compute_address.internal["ilb-2"]:
-    address: 10.0.0.2
+    address: 10.0.16.102
     address_type: INTERNAL
     labels: null
     name: ilb-2
     network: null
     project: project-id
-    region: region
+    region: europe-west8
     subnetwork: subnet_self_link
 
 counts:

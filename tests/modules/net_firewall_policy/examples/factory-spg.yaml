@@ -1,0 +1,105 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_network_security_security_profile.security_profile:
+    description: null
+    labels: null
+    location: global
+    name: security-profile
+    parent: organizations/0123456789
+    threat_prevention_profile: []
+    type: THREAT_PREVENTION
+  google_network_security_security_profile_group.security_profile_group:
+    description: Sample security profile group.
+    labels: null
+    location: global
+    name: security-profile-group
+    parent: organizations/0123456789
+  module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
+    description: null
+    parent: my-project
+    short_name: fw-policy
+  module.firewall-policy.google_compute_firewall_policy_association.hierarchical["my-vpc"]:
+    name: fw-policy-my-vpc
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/http"]:
+    action: apply_security_profile_group
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '80'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+    tls_inspect: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+
+counts:
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 1
+  google_compute_network: 1
+  google_compute_route: 2
+  google_network_security_security_profile: 1
+  google_network_security_security_profile_group: 1
+  modules: 2
+  resources: 8

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,48 @@
 
 locals {
   local_network_name = element(reverse(split("/", var.local_network)), 0)
-  peer_network_name  = element(reverse(split("/", var.peer_network)), 0)
-  prefix             = var.prefix == null ? "" : "${var.prefix}-"
+  auto_local_name    = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
+
+  peer_network_name = element(reverse(split("/", var.peer_network)), 0)
+  auto_peer_name    = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
+
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
-  name         = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
-  network      = var.local_network
-  peer_network = var.peer_network
-  export_custom_routes = try(
-    var.routes_config.local.export, null
-  )
-  import_custom_routes = try(
-    var.routes_config.local.import, null
-  )
-  export_subnet_routes_with_public_ip = try(
-    var.routes_config.local.public_export, null
-  )
-  import_subnet_routes_with_public_ip = try(
-    var.routes_config.local.public_import, null
-  )
+  name                                = coalesce(var.name.local, local.auto_local_name)
+  network                             = var.local_network
+  peer_network                        = var.peer_network
+  export_custom_routes                = var.routes_config.local.export
+  import_custom_routes                = var.routes_config.local.import
+  export_subnet_routes_with_public_ip = var.routes_config.local.public_export
+  import_subnet_routes_with_public_ip = var.routes_config.local.public_import
+  stack_type                          = var.stack_type
+
+  lifecycle {
+    precondition {
+      condition     = (length(local.auto_local_name) <= 63 || var.name.local != null)
+      error_message = "The default peering name exceeds 63 characters. Use var.name.local to provide a custom the name."
+    }
+  }
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
-  count        = var.peer_create_peering ? 1 : 0
-  name         = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
-  network      = var.peer_network
-  peer_network = var.local_network
-  export_custom_routes = try(
-    var.routes_config.peer.export, null
-  )
-  import_custom_routes = try(
-    var.routes_config.peer.import, null
-  )
-  export_subnet_routes_with_public_ip = try(
-    var.routes_config.peer.public_export, null
-  )
-  import_subnet_routes_with_public_ip = try(
-    var.routes_config.peer.public_import, null
-  )
-  depends_on = [google_compute_network_peering.local_network_peering]
+  count                               = var.peer_create_peering ? 1 : 0
+  name                                = coalesce(var.name.peer, local.auto_peer_name)
+  network                             = var.peer_network
+  peer_network                        = var.local_network
+  export_custom_routes                = var.routes_config.peer.export
+  import_custom_routes                = var.routes_config.peer.import
+  export_subnet_routes_with_public_ip = var.routes_config.peer.public_export
+  import_subnet_routes_with_public_ip = var.routes_config.peer.public_import
+  stack_type                          = var.stack_type
+  depends_on                          = [google_compute_network_peering.local_network_peering]
+
+  lifecycle {
+    precondition {
+      condition     = (length(local.auto_peer_name) <= 63 || var.name.peer != null)
+      error_message = "The default peering name exceeds 63 characters. Use var.name.peer to provide a custom name."
+    }
+  }
 }

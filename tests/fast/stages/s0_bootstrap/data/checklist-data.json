@@ -1,0 +1,746 @@
+{
+  "cloud_setup_config": {
+    "version": "0.1.0",
+    "organization": {
+      "id": "123456789012",
+      "name": "fast.example.com"
+    },
+    "billing_account": {},
+    "resource_hierarchy": {
+      "template": "DIV_TEAM_ENV",
+      "environments": [
+        {
+          "name": "Production",
+          "recommendation": "ENV_REC_PROD"
+        },
+        {
+          "name": "Non-Production",
+          "recommendation": "ENV_REC_NONPROD"
+        },
+        {
+          "name": "Development",
+          "recommendation": "ENV_REC_DEV"
+        }
+      ],
+      "business_units": [
+        {
+          "name": "Department 1",
+          "teams": [
+            {
+              "name": "Team 1"
+            },
+            {
+              "name": "Team 2"
+            },
+            {
+              "name": "Team 3"
+            },
+            {
+              "name": "Team 4"
+            }
+          ]
+        },
+        {
+          "name": "Department 2",
+          "teams": [
+            {
+              "name": "Team 1"
+            },
+            {
+              "name": "Team 2"
+            },
+            {
+              "name": "Team 3"
+            },
+            {
+              "name": "Team 4"
+            }
+          ]
+        },
+        {
+          "name": "Department 3",
+          "teams": [
+            {
+              "name": "Team 1"
+            },
+            {
+              "name": "Team 2"
+            },
+            {
+              "name": "Team 3"
+            },
+            {
+              "name": "Team 4"
+            }
+          ]
+        }
+      ],
+      "top_level_teams": [
+        {
+          "name": "Team 1"
+        },
+        {
+          "name": "Team 2"
+        },
+        {
+          "name": "Team 3"
+        }
+      ]
+    },
+    "folders": [
+      {
+        "reference_id": "Common",
+        "parent": "ROOT",
+        "display_name": "Common"
+      },
+      {
+        "reference_id": "Department 1",
+        "parent": "ROOT",
+        "display_name": "Department 1"
+      },
+      {
+        "reference_id": "Department 1/Team 1",
+        "parent": "Department 1",
+        "display_name": "Team 1"
+      },
+      {
+        "reference_id": "Department 1/Team 1/Production",
+        "parent": "Department 1/Team 1",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 1/Team 1/Non-Production",
+        "parent": "Department 1/Team 1",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 1/Team 1/Development",
+        "parent": "Department 1/Team 1",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 1/Team 2",
+        "parent": "Department 1",
+        "display_name": "Team 2"
+      },
+      {
+        "reference_id": "Department 1/Team 2/Production",
+        "parent": "Department 1/Team 2",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 1/Team 2/Non-Production",
+        "parent": "Department 1/Team 2",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 1/Team 2/Development",
+        "parent": "Department 1/Team 2",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 1/Team 3",
+        "parent": "Department 1",
+        "display_name": "Team 3"
+      },
+      {
+        "reference_id": "Department 1/Team 3/Production",
+        "parent": "Department 1/Team 3",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 1/Team 3/Non-Production",
+        "parent": "Department 1/Team 3",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 1/Team 3/Development",
+        "parent": "Department 1/Team 3",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 1/Team 4",
+        "parent": "Department 1",
+        "display_name": "Team 4"
+      },
+      {
+        "reference_id": "Department 1/Team 4/Production",
+        "parent": "Department 1/Team 4",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 1/Team 4/Non-Production",
+        "parent": "Department 1/Team 4",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 1/Team 4/Development",
+        "parent": "Department 1/Team 4",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 2",
+        "parent": "ROOT",
+        "display_name": "Department 2"
+      },
+      {
+        "reference_id": "Department 2/Team 1",
+        "parent": "Department 2",
+        "display_name": "Team 1"
+      },
+      {
+        "reference_id": "Department 2/Team 1/Production",
+        "parent": "Department 2/Team 1",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 2/Team 1/Non-Production",
+        "parent": "Department 2/Team 1",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 2/Team 1/Development",
+        "parent": "Department 2/Team 1",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 2/Team 2",
+        "parent": "Department 2",
+        "display_name": "Team 2"
+      },
+      {
+        "reference_id": "Department 2/Team 2/Production",
+        "parent": "Department 2/Team 2",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 2/Team 2/Non-Production",
+        "parent": "Department 2/Team 2",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 2/Team 2/Development",
+        "parent": "Department 2/Team 2",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 2/Team 3",
+        "parent": "Department 2",
+        "display_name": "Team 3"
+      },
+      {
+        "reference_id": "Department 2/Team 3/Production",
+        "parent": "Department 2/Team 3",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 2/Team 3/Non-Production",
+        "parent": "Department 2/Team 3",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 2/Team 3/Development",
+        "parent": "Department 2/Team 3",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 2/Team 4",
+        "parent": "Department 2",
+        "display_name": "Team 4"
+      },
+      {
+        "reference_id": "Department 2/Team 4/Production",
+        "parent": "Department 2/Team 4",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 2/Team 4/Non-Production",
+        "parent": "Department 2/Team 4",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 2/Team 4/Development",
+        "parent": "Department 2/Team 4",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 3",
+        "parent": "ROOT",
+        "display_name": "Department 3"
+      },
+      {
+        "reference_id": "Department 3/Team 1",
+        "parent": "Department 3",
+        "display_name": "Team 1"
+      },
+      {
+        "reference_id": "Department 3/Team 1/Production",
+        "parent": "Department 3/Team 1",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 3/Team 1/Non-Production",
+        "parent": "Department 3/Team 1",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 3/Team 1/Development",
+        "parent": "Department 3/Team 1",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 3/Team 2",
+        "parent": "Department 3",
+        "display_name": "Team 2"
+      },
+      {
+        "reference_id": "Department 3/Team 2/Production",
+        "parent": "Department 3/Team 2",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 3/Team 2/Non-Production",
+        "parent": "Department 3/Team 2",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 3/Team 2/Development",
+        "parent": "Department 3/Team 2",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 3/Team 3",
+        "parent": "Department 3",
+        "display_name": "Team 3"
+      },
+      {
+        "reference_id": "Department 3/Team 3/Production",
+        "parent": "Department 3/Team 3",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 3/Team 3/Non-Production",
+        "parent": "Department 3/Team 3",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 3/Team 3/Development",
+        "parent": "Department 3/Team 3",
+        "display_name": "Development"
+      },
+      {
+        "reference_id": "Department 3/Team 4",
+        "parent": "Department 3",
+        "display_name": "Team 4"
+      },
+      {
+        "reference_id": "Department 3/Team 4/Production",
+        "parent": "Department 3/Team 4",
+        "display_name": "Production"
+      },
+      {
+        "reference_id": "Department 3/Team 4/Non-Production",
+        "parent": "Department 3/Team 4",
+        "display_name": "Non-Production"
+      },
+      {
+        "reference_id": "Department 3/Team 4/Development",
+        "parent": "Department 3/Team 4",
+        "display_name": "Development"
+      }
+    ],
+    "projects": [
+      {
+        "id": "vpc-host-prod-us602-dp794",
+        "name": "vpc-host-prod",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_VPC_HOST_PROD"
+      },
+      {
+        "id": "vpc-host-nonprod-us602-dp794",
+        "name": "vpc-host-nonprod",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_VPC_HOST_NONPROD"
+      },
+      {
+        "id": "logging-us602-dp794",
+        "name": "logging",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_LOGGING"
+      },
+      {
+        "id": "monitoring-prod-us602-dp794",
+        "name": "monitoring-prod",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_MONITORING_PROD"
+      },
+      {
+        "id": "monitoring-nonprod-us602-dp794",
+        "name": "monitoring-nonprod",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_MONITORING_NONPROD"
+      },
+      {
+        "id": "monitoring-dev-us602-dp794",
+        "name": "monitoring-dev",
+        "parent": "Common",
+        "recommendation": "PROJ_REC_MONITORING_DEV"
+      }
+    ],
+    "logging": {
+      "sinks": [
+        {
+          "destination": {
+            "project_id": "logging-us602-dp794",
+            "name": "fast-onboarding-0.joonix-logging",
+            "location": "europe-west1",
+            "retention_period_seconds": "2592000"
+          },
+          "role": "SINK_LOG_BUCKET"
+        }
+      ]
+    },
+    "access_control": [
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 1/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 2/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 3/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 4/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 1/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 2/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 3/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 4/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 1/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 2/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 3/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 4/Non-Production"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 1/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 2/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 3/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 1/Team 4/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 1/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 2/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 3/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 2/Team 4/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 1/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 2/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 3/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-developers@fast.example.com",
+        "group_id": "DEVELOPERS",
+        "role": [
+          "roles/compute.instanceAdmin.v1",
+          "roles/container.admin"
+        ],
+        "resource": {
+          "type": "FOLDER",
+          "id": "Department 3/Team 4/Development"
+        }
+      },
+      {
+        "principal": "group:gcp-logging-viewers@fast.example.com",
+        "group_id": "LOGGING_VIEWERS",
+        "role": [
+          "roles/logging.viewer",
+          "roles/logging.privateLogViewer",
+          "roles/bigquery.dataViewer",
+          "roles/owner"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-logging-viewers@fast.example.com",
+        "group_id": "LOGGING_VIEWERS",
+        "role": [
+          "roles/logging.viewer",
+          "roles/logging.privateLogViewer",
+          "roles/bigquery.dataViewer",
+          "roles/owner"
+        ],
+        "resource": {
+          "type": "PROJECT",
+          "id": "vpc-host-prod-us602-dp794"
+        }
+      },
+      {
+        "principal": "group:gcp-logging-viewers@fast.example.com",
+        "group_id": "LOGGING_VIEWERS",
+        "role": [
+          "roles/logging.viewer",
+          "roles/logging.privateLogViewer",
+          "roles/bigquery.dataViewer"
+        ],
+        "resource": {
+          "type": "PROJECT",
+          "id": "logging-us602-dp794"
+        }
+      },
+      {
+        "principal": "group:gcp-security-admins@fast.example.com",
+        "group_id": "SECURITY_ADMINS",
+        "role": [
+          "roles/bigquery.dataViewer"
+        ],
+        "resource": {
+          "type": "PROJECT",
+          "id": "logging-us602-dp794"
+        }
+      }
+    ]
+  }
+}

@@ -116,6 +116,15 @@ resource "google_compute_router_peer" "default" {
       description = range.value
     }
   }
+
+  dynamic "md5_authentication_key" {
+    for_each = each.value.bgp_peer.md5_authentication_key != null ? [each.value.bgp_peer.md5_authentication_key] : []
+    content {
+      name = md5_authentication_key.value.name
+      key  = md5_authentication_key.value.key
+    }
+  }
+
   interface = google_compute_router_interface.default[each.key].name
 }
 

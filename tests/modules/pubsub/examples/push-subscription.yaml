@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 values:
   module.pubsub.google_pubsub_subscription.default["test-push"]:
+    bigquery_config: []
+    cloud_storage_config: []
+    dead_letter_policy: []
+    enable_exactly_once_delivery: false
+    enable_message_ordering: false
+    filter: null
+    labels: null
+    message_retention_duration: 604800s
     name: test-push
-    project: my-project
+    project: project-id
     push_config:
     - attributes: null
+      no_wrapper: []
       oidc_token: []
       push_endpoint: https://example.com/foo
+    retain_acked_messages: false
+    retry_policy: []
+    timeouts: null
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: my-topic
-    project: my-project
+    project: project-id
+    timeouts: null
 
 counts:
   google_pubsub_subscription: 1
   google_pubsub_topic: 1
+  modules: 1
+  resources: 2

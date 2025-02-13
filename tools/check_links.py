@@ -78,9 +78,12 @@ def check_docs(dir_name, external=False):
 @click.option('-e', '--external', is_flag=True, default=False,
               help='Whether to test external links.')
 @click.option('--show-summary/--no-show-summary', default=True)
-def main(dirs, external, show_summary=True):
+@click.option('--scan-files', default=False, is_flag=True)
+def main(dirs, external, show_summary=True, scan_files=False):
   'Checks links in Markdown files contained in dirs.'
   errors = []
+  if scan_files:
+    dirs = [pathlib.Path(x).parent for x in dirs]
   for dir_name in dirs:
     if show_summary:
       print(f'----- {dir_name} -----')

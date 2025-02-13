@@ -159,6 +159,7 @@ resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
 
 data "google_dns_keys" "dns_keys" {
   managed_zone = local.managed_zone.id
+  project      = var.project_id
   depends_on = [
     google_dns_managed_zone.dns_managed_zone
   ]

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 values:
-  module.myproject-default-service-accounts.google_project_iam_member.project-roles["myproject-roles/logging.logWriter"]:
+  module.myproject-default-service-accounts.google_project_iam_member.project-roles["project-id-roles/logging.logWriter"]:
     condition: []
-    project: myproject
+    project: project-id
     role: roles/logging.logWriter
-  module.myproject-default-service-accounts.google_project_iam_member.project-roles["myproject-roles/monitoring.metricWriter"]:
+  module.myproject-default-service-accounts.google_project_iam_member.project-roles["project-id-roles/monitoring.metricWriter"]:
     condition: []
-    project: myproject
+    project: project-id
     role: roles/monitoring.metricWriter
   module.myproject-default-service-accounts.google_service_account.service_account[0]:
     account_id: vm-default
     description: null
     disabled: false
     display_name: Terraform-managed.
-    project: myproject
+    project: project-id
     timeouts: null
   module.myproject-default-service-accounts.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]:
     condition: []
     members:
-    - user:foo@example.com
+    - group:organization-admins@example.org
     role: roles/iam.serviceAccountUser
 
 counts:

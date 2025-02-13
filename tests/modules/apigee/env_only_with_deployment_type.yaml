@@ -14,7 +14,7 @@
 
 values:
   google_apigee_envgroup_attachment.envgroup_attachments["apis-test-test"]:
-    envgroup_id: test
+    envgroup_id: organizations/my-project/envgroups/test
     environment: apis-test
     timeouts: null
   google_apigee_environment.environments["apis-test"]:
@@ -23,12 +23,11 @@ values:
     display_name: APIs test
     name: apis-test
     node_config:
-    - max_node_count: '5'
-      min_node_count: '2'
+      - max_node_count: "5"
+        min_node_count: "2"
     org_id: organizations/my-project
     timeouts: null
 
 counts:
   google_apigee_envgroup_attachment: 1
   google_apigee_environment: 1
-

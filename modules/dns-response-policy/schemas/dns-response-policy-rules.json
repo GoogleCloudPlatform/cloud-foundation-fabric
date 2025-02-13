@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DNS Response Policy Rules",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9-]+$": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dns_name": {
+          "type": "string"
+        },
+        "behavior": {
+          "type": "string"
+        },
+        "local_data": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(?:A|AAAA|CAA|CNAME|DNSKEY|DS|HTTPS|IPSECVPNKEY|MX|NAPTR|NS|PTR|SOA|SPF|SRV|SSHFP|SVCB|TLSA|TXT)$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ttl": {
+                  "type": "number"
+                },
+                "rrdatas": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

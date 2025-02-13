@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_service.service:
     autogenerate_revision_name: false
-    location: europe-west1
+    location: europe-west8
     metadata:
     - {}
     name: hello

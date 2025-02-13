@@ -1,0 +1,96 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
+    folder_id: '1122334455'
+    labels: null
+    name: test-project
+    org_id: null
+    project_id: test-project
+    timeouts: null
+  module.project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-project
+    role: roles/compute.serviceAgent
+  module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: compute.googleapis.com
+    timeouts: null
+  module.project.google_tags_tag_binding.binding["env-prod"]:
+    timeouts: null
+  module.project.google_tags_tag_key.default["environment"]:
+    description: Environment specification.
+    parent: projects/test-project
+    purpose: null
+    purpose_data: null
+    short_name: environment
+    timeouts: null
+  module.project.google_tags_tag_key_iam_binding.bindings["environment:viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.org
+    role: roles/resourcemanager.tagViewer
+  module.project.google_tags_tag_key_iam_binding.default["environment:roles/resourcemanager.tagAdmin"]:
+    condition: []
+    members:
+    - group:organization-admins@example.org
+    role: roles/resourcemanager.tagAdmin
+  module.project.google_tags_tag_key_iam_member.bindings["environment:user_app1"]:
+    condition: []
+    member: group:app1-team@example.org
+    role: roles/resourcemanager.tagUser
+  module.project.google_tags_tag_value.default["environment/dev"]:
+    description: Managed by the Terraform project module.
+    short_name: dev
+    timeouts: null
+  module.project.google_tags_tag_value.default["environment/prod"]:
+    description: 'Environment: production.'
+    short_name: prod
+    timeouts: null
+  module.project.google_tags_tag_value_iam_binding.bindings["environment/prod:admin"]:
+    condition: []
+    members:
+    - group:gcp-support@example.org
+    role: roles/resourcemanager.tagAdmin
+  module.project.google_tags_tag_value_iam_binding.default["environment/prod:roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - group:app1-team@example.org
+    role: roles/resourcemanager.tagViewer
+  module.project.google_tags_tag_value_iam_member.bindings["environment/dev:user_app2"]:
+    condition: []
+    member: group:app2-team@example.org
+    role: roles/resourcemanager.tagUser
+
+counts:
+  google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 1
+  google_tags_tag_binding: 1
+  google_tags_tag_key: 1
+  google_tags_tag_key_iam_binding: 2
+  google_tags_tag_key_iam_member: 1
+  google_tags_tag_value: 2
+  google_tags_tag_value_iam_binding: 2
+  google_tags_tag_value_iam_member: 1
+  modules: 1
+  resources: 13
+
+outputs: {}

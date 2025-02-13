@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 output "bucket" {
   description = "Bucket resource."
-  value       = google_storage_bucket.bucket
+  value       = one(google_storage_bucket.bucket)
 }
 
 # We add `id` as an alias to `name` to simplify log sink handling.
@@ -27,19 +27,23 @@ output "bucket" {
 
 output "id" {
   description = "Fully qualified bucket id."
-  value       = "${local.prefix}${lower(var.name)}"
+  value       = local._name
   depends_on = [
     google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
+    google_storage_bucket_iam_binding.bindings,
+    google_storage_bucket_iam_binding.authoritative,
+    google_storage_bucket_iam_member.bindings
   ]
 }
 
 output "name" {
   description = "Bucket name."
-  value       = "${local.prefix}${lower(var.name)}"
+  value       = local._name
   depends_on = [
     google_storage_bucket.bucket,
-    google_storage_bucket_iam_binding.bindings
+    google_storage_bucket_iam_binding.bindings,
+    google_storage_bucket_iam_binding.authoritative,
+    google_storage_bucket_iam_member.bindings
   ]
 }
 
@@ -62,10 +66,10 @@ output "objects" {
 
 output "topic" {
   description = "Topic ID used by GCS."
-  value       = local.notification ? google_pubsub_topic.topic[0].id : null
+  value       = try(google_pubsub_topic.topic[0].id, null)
 }
 
 output "url" {
   description = "Bucket URL."
-  value       = google_storage_bucket.bucket.url
+  value       = local.bucket.url
 }

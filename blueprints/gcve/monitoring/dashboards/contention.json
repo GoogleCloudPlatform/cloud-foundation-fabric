@@ -1,0 +1,552 @@
+{
+    "displayName": "GCVE Contention",
+    "mosaicLayout": {
+      "columns": 12,
+      "tiles": [
+        {
+          "height": 3,
+          "widget": {
+            "title": "Available CPU in Mhz",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.cluster.cpu.available\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "yPos": 1
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Available Memory",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "STACKED_AREA",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.cluster.memory.available\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "xPos": 6,
+          "yPos": 1
+        },
+        {
+          "height": 1,
+          "widget": {
+            "text": {
+              "format": "RAW"
+            },
+            "title": "Cluster"
+          },
+          "width": 12
+        },
+        {
+          "height": 1,
+          "widget": {
+            "text": {
+              "format": "RAW"
+            },
+            "title": "Hosts"
+          },
+          "width": 12,
+          "yPos": 4
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "CPU Used",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MAX"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.cpu.used\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "yPos": 5
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Memory Used",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "STACKED_AREA",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MAX"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.memory.used\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "xPos": 6,
+          "yPos": 5
+        },
+        {
+          "height": 1,
+          "widget": {
+            "text": {
+              "format": "RAW"
+            },
+            "title": "Virtual Machines"
+          },
+          "width": 12,
+          "yPos": 16
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Memory Usage Bytes",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "STACKED_AREA",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.memory.usage_bytes\" resource.type=\"generic_node\"",
+                      "secondaryAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "xPos": 6,
+          "yPos": 17
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "CPU Usage in Mhz",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MAX"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.cpu.usage\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 6,
+          "yPos": 17
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Disk Usage Bytes",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "STACKED_AREA",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MAX"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.disk.usage_bytes\" resource.type=\"generic_node\""
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 12,
+          "yPos": 26
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Memory Utilization",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "crossSeriesReducer": "REDUCE_PERCENTILE_95",
+                        "groupByFields": [
+                          "resource.label.\"node_id\""
+                        ],
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.memory.utilization\" resource.type=\"generic_node\"",
+                      "secondaryAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 8,
+          "yPos": 11
+        },
+        {
+          "height": 3,
+          "widget": {
+            "scorecard": {
+              "gaugeView": {
+                "upperBound": 100
+              },
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch generic_node\n| metric\n    'external.googleapis.com/vmware/vcenter.host_system.memory.utilization'\n| group_by 1m, [value_utilization_max: max(value.utilization)]\n| every 1m\n| group_by [resource.node_id],\n    [value_utilization_max_max: max(value_utilization_max)]\n| top 1"
+              }
+            },
+            "title": "Peak Memory Utilization"
+          },
+          "width": 4,
+          "xPos": 8,
+          "yPos": 11
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "CPU Usage",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.cpu.usage\" resource.type=\"generic_node\"",
+                      "secondaryAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 8,
+          "yPos": 8
+        },
+        {
+          "height": 3,
+          "widget": {
+            "scorecard": {
+              "gaugeView": {
+                "upperBound": 100
+              },
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.cpu.usage\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Peak CPU Usage"
+          },
+          "width": 4,
+          "xPos": 8,
+          "yPos": 8
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.memory.usage_bytes\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "VM Total Memory Used"
+          },
+          "width": 3,
+          "xPos": 3,
+          "yPos": 20
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vsphere.hosts.powered_on\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Powered On Hosts"
+          },
+          "width": 2,
+          "xPos": 8,
+          "yPos": 14
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vsphere.hosts.powered_off\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Powered Off Hosts"
+          },
+          "width": 2,
+          "xPos": 10,
+          "yPos": 14
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.cluster.memory.available\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Memory Available In Cluster"
+          },
+          "width": 4,
+          "yPos": 14
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.host_system.memory.used\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Memory Used By Hosts"
+          },
+          "width": 4,
+          "xPos": 4,
+          "yPos": 14
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.cluster.memory.available\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Memory Available in Cluster"
+          },
+          "width": 3,
+          "yPos": 20
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "gaugeView": {
+                "upperBound": 100
+              },
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "perSeriesAligner": "ALIGN_MEAN"
+                  },
+                  "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.cpu.used_percent\" resource.type=\"generic_node\""
+                }
+              }
+            },
+            "title": "Used CPU Percentage"
+          },
+          "width": 6,
+          "xPos": 6,
+          "yPos": 20
+        },
+        {
+          "height": 4,
+          "widget": {
+            "title": "CPU Ready",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "minAlignmentPeriod": "60s",
+                  "plotType": "LINE",
+                  "timeSeriesQuery": {
+                    "timeSeriesFilter": {
+                      "aggregation": {
+                        "perSeriesAligner": "ALIGN_MEAN"
+                      },
+                      "filter": "metric.type=\"external.googleapis.com/vmware/vcenter.vm.cpu.ready\" resource.type=\"generic_node\"",
+                      "secondaryAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 12,
+          "yPos": 22
+        }
+      ]
+    }
+  }

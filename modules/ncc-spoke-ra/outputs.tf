@@ -16,12 +16,12 @@
 
 output "hub" {
   description = "NCC hub resource (only if auto-created)."
-  value       = try(google_network_connectivity_hub.hub.0, null)
+  value       = try(google_network_connectivity_hub.hub[0], null)
 }
 
 output "id" {
   description = "Fully qualified hub id."
-  value       = try(google_network_connectivity_hub.hub.0.id, null)
+  value       = try(google_network_connectivity_hub.hub[0].id, null)
 }
 
 output "router" {

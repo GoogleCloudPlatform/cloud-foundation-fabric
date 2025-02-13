@@ -15,11 +15,11 @@
 values:
   module.cloud_run.google_cloud_run_service.service:
     autogenerate_revision_name: false
-    location: europe-west1
+    location: europe-west8
     metadata:
     - {}
     name: hello
-    project: my-project
+    project: project-id
     template:
     - metadata:
       - {}
@@ -42,13 +42,28 @@ values:
         volumes: []
   module.cloud_run.google_cloud_run_service_iam_binding.binding["roles/run.invoker"]:
     condition: []
-    location: europe-west1
+    location: europe-west8
     members:
     - allUsers
-    project: my-project
+    project: project-id
     role: roles/run.invoker
     service: hello
+  module.cloud_run.google_service_account.service_account[0]:
+    account_id: tf-cr-hello
+    disabled: false
+    display_name: Terraform Cloud Run hello.
+    project: project-id
+  module.secret-manager.google_secret_manager_secret.default["credentials"]:
+    project: project-id
+    secret_id: credentials
+  module.secret-manager.google_secret_manager_secret_iam_binding.default["credentials.roles/secretmanager.secretAccessor"]:
+    condition: []
+    role: roles/secretmanager.secretAccessor
+
 
 counts:
   google_cloud_run_service: 1
   google_cloud_run_service_iam_binding: 1
+  google_secret_manager_secret: 1
+  google_secret_manager_secret_iam_binding: 1
+  google_service_account: 1

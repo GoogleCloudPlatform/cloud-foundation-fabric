@@ -21,6 +21,7 @@ locals {
     ? local.ipsec_enabled ? try(google_compute_router.encrypted[0].name, null) : try(google_compute_router.unencrypted[0].name, null)
     : var.router_config.name
   )
+  secret = random_id.secret.b64_url
 }
 
 resource "google_compute_address" "default" {
@@ -61,7 +62,15 @@ resource "google_compute_router" "encrypted" {
   region                        = var.region
   encrypted_interconnect_router = true
   bgp {
-    asn = var.router_config.asn
+    asn            = var.router_config.asn
+    advertise_mode = var.dedicated_interconnect_config == null ? "DEFAULT" : "CUSTOM"
+    dynamic "advertised_ip_ranges" {
+      for_each = var.dedicated_interconnect_config == null ? var.ipsec_gateway_ip_ranges : {}
+      content {
+        description = advertised_ip_ranges.key
+        range       = advertised_ip_ranges.value
+      }
+    }
   }
 }
 
@@ -106,14 +115,15 @@ resource "google_compute_router_interface" "default" {
 }
 
 resource "google_compute_router_peer" "default" {
+  count                     = var.dedicated_interconnect_config != null ? 1 : 0
   name                      = "${var.name}-peer"
   project                   = var.project_id
   router                    = local.router
   region                    = var.region
   peer_ip_address           = split("/", google_compute_interconnect_attachment.default.customer_router_ip_address)[0]
   peer_asn                  = var.peer_asn
-  interface                 = "${var.name}-intf"
-  advertised_route_priority = 100
+  interface                 = google_compute_router_interface.default[0].name
+  advertised_route_priority = var.dedicated_interconnect_config.bgp_priority
   advertise_mode            = "CUSTOM"
 
   dynamic "advertised_ip_ranges" {
@@ -127,14 +137,26 @@ resource "google_compute_router_peer" "default" {
   dynamic "bfd" {
     for_each = var.router_config.bfd != null ? toset([var.router_config.bfd]) : []
     content {
-      session_initialization_mode = bfd.session_initialization_mode
-      min_receive_interval        = bfd.min_receive_interval
-      min_transmit_interval       = bfd.min_transmit_interval
-      multiplier                  = bfd.multiplier
+      session_initialization_mode = bfd.value.session_initialization_mode
+      min_receive_interval        = bfd.value.min_receive_interval
+      min_transmit_interval       = bfd.value.min_transmit_interval
+      multiplier                  = bfd.value.multiplier
+    }
+  }
+
+  dynamic "md5_authentication_key" {
+    for_each = var.router_config.md5_authentication_key != null ? [var.router_config.md5_authentication_key] : []
+    content {
+      name = md5_authentication_key.value.name
+      key  = coalesce(md5_authentication_key.value.key, local.secret)
     }
   }
 
   depends_on = [
     google_compute_router_interface.default
   ]
+}
+
+resource "random_id" "secret" {
+  byte_length = 12
 }

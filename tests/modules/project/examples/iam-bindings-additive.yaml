@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,32 +15,35 @@
 values:
   module.project.google_project.project[0]:
     auto_create_network: false
-    billing_account: null
-    folder_id: null
+    billing_account: 123456-123456-123456
+    deletion_policy: 'DELETE'
+    folder_id: '1122334455'
     labels: null
-    name: project-1
+    name: test-project
     org_id: null
-    project_id: project-1
-    skip_delete: false
+    project_id: test-project
     timeouts: null
   module.project.google_project_iam_member.bindings["group-owner"]:
     condition: []
-    member: group:p1-owners@example.org
-    project: project-1
+    member: group:organization-admins@example.org
+    project: test-project
     role: roles/owner
+  module.project.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-project
+    role: roles/compute.serviceAgent
   module.project.google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: project-1
+    project: test-project
     service: compute.googleapis.com
     timeouts: null
 
 counts:
   google_project: 1
-  google_project_iam_member: 1
+  google_project_iam_member: 2
   google_project_service: 1
   modules: 1
-  resources: 3
+  resources: 4
 
 outputs: {}
-

@@ -1,0 +1,113 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.alloydb.google_alloydb_cluster.primary:
+    annotations: null
+    cluster_id: db
+    cluster_type: PRIMARY
+    continuous_backup_config:
+      - enabled: true
+        encryption_config: []
+        recovery_window_days: 14
+    database_version: POSTGRES_15
+    deletion_policy: DEFAULT
+    display_name: db
+    encryption_config: []
+    etag: null
+    initial_user: []
+    labels: null
+    location: europe-west8
+    maintenance_update_policy: []
+    network_config:
+      - allocated_ip_range: null
+        network: projects/xxx/global/networks/aaa
+    project: project-id
+    restore_backup_source: []
+    restore_continuous_backup_source: []
+    secondary_config: []
+    timeouts: null
+  module.alloydb.google_alloydb_cluster.secondary[0]:
+    annotations: null
+    cluster_id: db-sec
+    cluster_type: SECONDARY
+    continuous_backup_config:
+      - enabled: true
+        encryption_config: []
+        recovery_window_days: 14
+    database_version: POSTGRES_15
+    deletion_policy: FORCE
+    display_name: db-sec
+    encryption_config: []
+    etag: null
+    initial_user: []
+    labels: null
+    location: europe-west12
+    maintenance_update_policy: []
+    network_config:
+      - allocated_ip_range: null
+        network: projects/xxx/global/networks/aaa
+    project: project-id
+    restore_backup_source: []
+    restore_continuous_backup_source: []
+    secondary_config: [{}]
+    timeouts: null
+  module.alloydb.google_alloydb_instance.primary:
+    annotations: null
+    availability_type: REGIONAL
+    display_name: db
+    gce_zone: null
+    instance_id: db
+    instance_type: PRIMARY
+    labels: null
+    machine_config:
+      - cpu_count: 2
+    network_config:
+      - authorized_external_networks: []
+        enable_public_ip: false
+    query_insights_config:
+      - query_plans_per_minute: 5
+        query_string_length: 1024
+        record_application_tags: true
+        record_client_address: true
+    read_pool_config: []
+    timeouts: null
+  module.alloydb.google_alloydb_instance.secondary[0]:
+    annotations: null
+    availability_type: REGIONAL
+    display_name: db-sec
+    gce_zone: null
+    instance_id: db-sec
+    instance_type: SECONDARY
+    labels: null
+    machine_config:
+      - cpu_count: 2
+    network_config:
+      - authorized_external_networks: []
+        enable_public_ip: false
+    query_insights_config:
+      - query_plans_per_minute: 5
+        query_string_length: 1024
+        record_application_tags: true
+        record_client_address: true
+    read_pool_config: []
+    timeouts: null
+
+counts:
+  google_alloydb_cluster: 2
+  google_alloydb_instance: 2
+  modules: 1
+  resources: 4
+
+outputs: {}

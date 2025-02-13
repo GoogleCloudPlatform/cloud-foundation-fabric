@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,18 @@ variable "description" {
 }
 
 variable "egress_rules" {
-  description = "List of egress rule definitions, action can be 'allow', 'deny', 'goto_next'. The match.layer4configs map is in protocol => optional [ports] format."
+  description = "List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format."
   type = map(object({
     priority                = number
     action                  = optional(string, "deny")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    security_profile_group  = optional(string)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
+    tls_inspect             = optional(bool, null)
     match = object({
       address_groups       = optional(list(string))
       fqdns                = optional(list(string))
@@ -56,22 +59,36 @@ variable "egress_rules" {
   validation {
     condition = alltrue([
       for k, v in var.egress_rules :
-      contains(["allow", "deny", "goto_next"], v.action)
+      contains(["allow", "deny", "goto_next", "apply_security_profile_group"], v.action)
     ])
-    error_message = "Action can only be one of 'allow', 'deny', 'goto_next'."
+    error_message = "Action can only be one of 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   }
 }
 
+variable "factories_config" {
+  description = "Paths to folders for the optional factories."
+  type = object({
+    cidr_file_path          = optional(string)
+    egress_rules_file_path  = optional(string)
+    ingress_rules_file_path = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "ingress_rules" {
-  description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'."
+  description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   type = map(object({
     priority                = number
     action                  = optional(string, "allow")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    security_profile_group  = optional(string)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
+    tls_inspect             = optional(bool, null)
     match = object({
       address_groups       = optional(list(string))
       fqdns                = optional(list(string))
@@ -91,9 +108,9 @@ variable "ingress_rules" {
   validation {
     condition = alltrue([
       for k, v in var.ingress_rules :
-      contains(["allow", "deny", "goto_next"], v.action)
+      contains(["allow", "deny", "goto_next", "apply_security_profile_group"], v.action)
     ])
-    error_message = "Action can only be one of 'allow', 'deny', 'goto_next'."
+    error_message = "Action can only be one of 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   }
 }
 
@@ -115,13 +132,9 @@ variable "region" {
   default     = null
 }
 
-variable "rules_factory_config" {
-  description = "Configuration for the optional rules factory."
-  type = object({
-    cidr_file_path          = optional(string)
-    egress_rules_file_path  = optional(string)
-    ingress_rules_file_path = optional(string)
-  })
-  nullable = false
-  default  = {}
+variable "security_profile_group_ids" {
+  description = "The optional security groups ids to be referenced in factories."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

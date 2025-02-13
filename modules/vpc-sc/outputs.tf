@@ -29,7 +29,7 @@ output "access_levels" {
 
 output "access_policy" {
   description = "Access policy resource, if autocreated."
-  value       = try(google_access_context_manager_access_policy.default.0, null)
+  value       = try(google_access_context_manager_access_policy.default[0], null)
 }
 
 # TODO: deprecate in favor of id

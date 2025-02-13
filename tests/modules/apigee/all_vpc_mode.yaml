@@ -42,7 +42,7 @@ values:
     description: APIs Test
     display_name: APIs test
     name: apis-test
-  google_apigee_environment_iam_binding.binding["apis-prod-roles/viewer"]:
+  google_apigee_environment_iam_binding.authoritative["apis-prod-roles/viewer"]:
     condition: []
     env_id: apis-prod
     members:

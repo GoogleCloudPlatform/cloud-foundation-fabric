@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,32 +36,40 @@ locals {
 }
 
 resource "google_secret_manager_secret" "default" {
-  for_each  = var.secrets
-  project   = var.project_id
-  secret_id = each.key
-  labels    = lookup(var.labels, each.key, null)
+  for_each            = var.secrets
+  project             = var.project_id
+  secret_id           = each.key
+  labels              = lookup(var.labels, each.key, null)
+  expire_time         = each.value.expire_time
+  version_destroy_ttl = each.value.version_destroy_ttl
 
   dynamic "replication" {
-    for_each = each.value == null ? [""] : []
+    for_each = each.value.locations == null ? [""] : []
     content {
-      automatic = true
+      auto {
+        dynamic "customer_managed_encryption" {
+          for_each = try(lookup(each.value.keys, "global", null) == null ? [] : [""], [])
+          content {
+            kms_key_name = each.value.keys["global"]
+          }
+        }
+      }
     }
   }
 
   dynamic "replication" {
-    for_each = each.value == null ? [] : [each.value]
-    iterator = locations
+    for_each = each.value.locations == null ? [] : [""]
     content {
       user_managed {
         dynamic "replicas" {
-          for_each = locations.value
+          for_each = each.value.locations
           iterator = location
           content {
             location = location.value
             dynamic "customer_managed_encryption" {
-              for_each = try(var.encryption_key[location.value] != null ? [""] : [], [])
+              for_each = try(lookup(each.value.keys, location.value, null) == null ? [] : [""], [])
               content {
-                kms_key_name = var.encryption_key[location.value]
+                kms_key_name = each.value.keys[location.value]
               }
             }
           }

@@ -1,0 +1,227 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_storage_bucket_object.tfvars:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: tfvars/1-vpcsc.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.vpc-sc[0].google_access_context_manager_access_level.basic["geo_it"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks: []
+        members: []
+        negate: null
+        regions:
+        - IT
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    timeouts: null
+    title: geo_it
+  module.vpc-sc[0].google_access_context_manager_access_level.basic["identity_me"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks: []
+        members:
+        - user:user@fast.example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    timeouts: null
+    title: identity_me
+  module.vpc-sc[0].google_access_context_manager_access_policy.default[0]:
+    parent: organizations/123456789012
+    scopes: null
+    timeouts: null
+    title: default
+  module.vpc-sc[0].google_access_context_manager_service_perimeter.regular["default"]:
+    description: null
+    perimeter_type: PERIMETER_TYPE_REGULAR
+    spec:
+    - egress_policies:
+      - egress_from:
+        - identities:
+          - user:user@fast.example.com
+          identity_type: null
+          source_restriction: null
+          sources: []
+        egress_to:
+        - external_resources: null
+          operations:
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: compute.googleapis.com
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: monitoring.googleapis.com
+          resources:
+          - '*'
+      ingress_policies:
+      - ingress_from:
+        - identities:
+          - serviceAccount:o1234567890-1234567890@gcp-sa-logging.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - projects/1234567890
+      - ingress_from:
+        - identities:
+          - user:user@fast.example.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: compute.googleapis.com
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: monitoring.googleapis.com
+          resources:
+          - '*'
+      resources:
+      - projects/1234567890
+      restricted_services:
+      - accessapproval.googleapis.com
+      - adsdatahub.googleapis.com
+      - aiplatform.googleapis.com
+      - alpha-documentai.googleapis.com
+      - apigee.googleapis.com
+      - apigeeconnect.googleapis.com
+      - artifactregistry.googleapis.com
+      - assuredworkloads.googleapis.com
+      - automl.googleapis.com
+      - bigquery.googleapis.com
+      - bigquerydatatransfer.googleapis.com
+      - bigtable.googleapis.com
+      - binaryauthorization.googleapis.com
+      - cloudasset.googleapis.com
+      - cloudbuild.googleapis.com
+      - cloudfunctions.googleapis.com
+      - cloudkms.googleapis.com
+      - cloudprofiler.googleapis.com
+      - cloudresourcemanager.googleapis.com
+      - cloudsearch.googleapis.com
+      - cloudtrace.googleapis.com
+      - composer.googleapis.com
+      - compute.googleapis.com
+      - connectgateway.googleapis.com
+      - contactcenterinsights.googleapis.com
+      - container.googleapis.com
+      - containeranalysis.googleapis.com
+      - containerregistry.googleapis.com
+      - containerthreatdetection.googleapis.com
+      - datacatalog.googleapis.com
+      - dataflow.googleapis.com
+      - datafusion.googleapis.com
+      - dataproc.googleapis.com
+      - datastream.googleapis.com
+      - dialogflow.googleapis.com
+      - dlp.googleapis.com
+      - dns.googleapis.com
+      - documentai.googleapis.com
+      - eventarc.googleapis.com
+      - file.googleapis.com
+      - gameservices.googleapis.com
+      - gkeconnect.googleapis.com
+      - gkehub.googleapis.com
+      - healthcare.googleapis.com
+      - iam.googleapis.com
+      - iaptunnel.googleapis.com
+      - language.googleapis.com
+      - lifesciences.googleapis.com
+      - logging.googleapis.com
+      - managedidentities.googleapis.com
+      - memcache.googleapis.com
+      - meshca.googleapis.com
+      - metastore.googleapis.com
+      - ml.googleapis.com
+      - monitoring.googleapis.com
+      - networkconnectivity.googleapis.com
+      - networkmanagement.googleapis.com
+      - networksecurity.googleapis.com
+      - networkservices.googleapis.com
+      - notebooks.googleapis.com
+      - opsconfigmonitoring.googleapis.com
+      - osconfig.googleapis.com
+      - oslogin.googleapis.com
+      - privateca.googleapis.com
+      - pubsub.googleapis.com
+      - pubsublite.googleapis.com
+      - recaptchaenterprise.googleapis.com
+      - recommender.googleapis.com
+      - redis.googleapis.com
+      - run.googleapis.com
+      - secretmanager.googleapis.com
+      - servicecontrol.googleapis.com
+      - servicedirectory.googleapis.com
+      - spanner.googleapis.com
+      - speakerid.googleapis.com
+      - speech.googleapis.com
+      - sqladmin.googleapis.com
+      - storage.googleapis.com
+      - storagetransfer.googleapis.com
+      - texttospeech.googleapis.com
+      - tpu.googleapis.com
+      - trafficdirector.googleapis.com
+      - transcoder.googleapis.com
+      - translate.googleapis.com
+      - videointelligence.googleapis.com
+      - vision.googleapis.com
+      - vpcaccess.googleapis.com
+      vpc_accessible_services: []
+    status: []
+    timeouts: null
+    title: default
+    use_explicit_dry_run_spec: true
+counts:
+  google_access_context_manager_access_level: 2
+  google_access_context_manager_access_policy: 1
+  google_access_context_manager_service_perimeter: 1
+  google_storage_bucket_object: 1
+  modules: 1
+  resources: 5

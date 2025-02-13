@@ -20,6 +20,7 @@ variable "endpoint_config" {
   type = map(object({
     address  = string
     port     = number
+    network  = optional(string, null)
     metadata = map(string)
   }))
   default = {}

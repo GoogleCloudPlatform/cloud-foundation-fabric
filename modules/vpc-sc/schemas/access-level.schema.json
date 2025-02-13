@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VPC-SC access level",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "combining_function": {
+      "type": "string"
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "device_policy": {
+            "type": "object",
+            "required": [
+              "require_admin_approval",
+              "require_corp_owned"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "allowed_device_management_levels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "allowed_encryption_statuses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "require_admin_approval": {
+                "type": "boolean"
+              },
+              "require_corp_owned": {
+                "type": "boolean"
+              },
+              "require_screen_lock": {
+                "type": "boolean"
+              },
+              "os_constraints": {
+                "type": "array",
+                "required": [
+                  "os_type"
+                ],
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "os_type": {
+                      "type": "string"
+                    },
+                    "minimum_version": {
+                      "type": "string"
+                    },
+                    "require_verified_chrome_os": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ip_subnetworks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:serviceAccount:|user:)"
+            }
+          },
+          "negate": {
+            "type": "boolean"
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required_access_levels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

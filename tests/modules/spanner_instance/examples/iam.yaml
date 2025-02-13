@@ -1,0 +1,72 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.spanner_instance.google_spanner_database.spanner_databases["my-database"]:
+    ddl: []
+    deletion_protection: false
+    enable_drop_protection: false
+    encryption_config: []
+    instance: my-instance
+    name: my-database
+    project: project-id
+    timeouts: null
+    version_retention_period: 1d
+  module.spanner_instance.google_spanner_database_iam_binding.authoritative["my-database.roles/spanner.databaseReader"]:
+    condition: []
+    database: my-database
+    instance: my-instance
+    members:
+    - group:group1@myorg.com
+    project: project-id
+    role: roles/spanner.databaseReader
+  module.spanner_instance.google_spanner_database_iam_binding.bindings["my-database.spanner-database-role-user"]:
+    condition:
+    - description: Grant permissions on my_role
+      expression: (resource.type == "spanner.googleapis.com/DatabaseRole" && (resource.name.endsWith("/my_role")))
+      title: role-my_role
+    database: my-database
+    instance: my-instance
+    members:
+    - group:group2@myorg.com
+    project: project-id
+    role: roles/spanner.databaseRoleUser
+  module.spanner_instance.google_spanner_database_iam_member.bindings["my-database.spanner-database-admin"]:
+    condition:
+    - description: Delegated role grants.
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/storage.databaseReader'])
+      title: delegated-role-grants
+    database: my-database
+    instance: my-instance
+    member: group:group3@myorg.com
+    project: project-id
+    role: roles/spanner.databaseAdmin
+  module.spanner_instance.google_spanner_instance.spanner_instance[0]:
+    autoscaling_config: []
+    config: regional-us-central1
+    display_name: Regional instance
+    force_destroy: false
+    labels: null
+    name: my-instance
+    num_nodes: 1
+    project: project-id
+    timeouts: null
+
+counts:
+  google_spanner_database: 1
+  google_spanner_database_iam_binding: 2
+  google_spanner_database_iam_member: 1
+  google_spanner_instance: 1
+  modules: 1
+  resources: 5

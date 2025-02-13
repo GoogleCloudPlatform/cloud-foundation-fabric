@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
 
 variable "backend_service_config" {
   description = "Backend service level configuration."
@@ -36,6 +30,8 @@ variable "backend_service_config" {
       ratio                     = optional(number)
     }))
     log_sample_rate  = optional(number)
+    name             = optional(string)
+    protocol         = optional(string, "UNSPECIFIED")
     session_affinity = optional(string)
     timeout_sec      = optional(number)
   })
@@ -54,22 +50,14 @@ variable "backend_service_config" {
 }
 
 variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
+  description = "Load balancer backends."
   type = list(object({
-    group          = string
-    balancing_mode = optional(string, "CONNECTION")
-    description    = optional(string, "Terraform managed.")
-    failover       = optional(bool, false)
+    group       = string
+    description = optional(string, "Terraform managed.")
+    failover    = optional(bool, false)
   }))
   default  = []
   nullable = false
-  validation {
-    condition = alltrue([
-      for b in var.backends : contains(
-        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
-    )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
-  }
 }
 
 variable "description" {
@@ -78,10 +66,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-variable "global_access" {
-  description = "Global access, defaults to false if not set."
-  type        = bool
-  default     = null
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address       = optional(string)
+    description   = optional(string)
+    global_access = optional(bool, true)
+    ipv6          = optional(bool, false)
+    name          = optional(string)
+    ports         = optional(list(string), null)
+    protocol      = optional(string, "TCP")
+  }))
+  default = {
+    "" = {}
+  }
 }
 
 variable "group_configs" {
@@ -109,6 +107,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({
@@ -190,26 +189,29 @@ variable "name" {
   type        = string
 }
 
-variable "ports" {
-  description = "Comma-separated ports, leave null to use all ports."
-  type        = list(string)
-  default     = null
-}
-
 variable "project_id" {
   description = "Project id where resources will be created."
   type        = string
 }
 
-variable "protocol" {
-  description = "IP protocol used, defaults to TCP."
-  type        = string
-  default     = "TCP"
-}
-
 variable "region" {
   description = "GCP region."
   type        = string
+}
+
+variable "service_attachments" {
+  description = "PSC service attachments, keyed by forwarding rule."
+  type = map(object({
+    nat_subnets           = list(string)
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(string)
+    enable_proxy_protocol = optional(bool, false)
+    reconcile_connections = optional(bool)
+  }))
+  default = null
 }
 
 variable "service_label" {

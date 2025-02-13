@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 # tfdoc:file:description Folder-level organization policies.
 
 locals {
+  _factory_data_path = pathexpand(coalesce(var.factories_config.org_policies, "-"))
   _factory_data_raw = merge([
-    for f in try(fileset(var.org_policies_data_path, "*.yaml"), []) :
-    yamldecode(file("${var.org_policies_data_path}/${f}"))
+    for f in try(fileset(local._factory_data_path, "*.yaml"), []) :
+    yamldecode(file("${local._factory_data_path}/${f}"))
   ]...)
-
   # simulate applying defaults to data coming from yaml files
   _factory_data = {
     for k, v in local._factory_data_raw :
@@ -31,32 +31,57 @@ locals {
       rules = [
         for r in try(v.rules, []) : {
           allow = can(r.allow) ? {
-            all    = try(r.allow.all, null)
-            values = try(r.allow.values, null)
+            all = try(r.allow.all, null)
+            values = (
+              can(r.allow.values)
+              ? [for x in r.allow.values : templatestring(x, var.factories_config.context.org_policies)]
+              : null
+            )
           } : null
           deny = can(r.deny) ? {
-            all    = try(r.deny.all, null)
-            values = try(r.deny.values, null)
+            all = try(r.deny.all, null)
+            values = (
+              can(r.deny.values)
+              ? [for x in r.deny.values : templatestring(x, var.factories_config.context.org_policies)]
+              : null
+            )
           } : null
           enforce = try(r.enforce, null)
           condition = {
-            description = try(r.condition.description, null)
-            expression  = try(r.condition.expression, null)
-            location    = try(r.condition.location, null)
-            title       = try(r.condition.title, null)
+            description = (
+              can(r.condition.description)
+              ? templatestring(r.condition.description, var.factories_config.context.org_policies)
+              : null
+            )
+            expression = (
+              can(r.condition.expression)
+              ? templatestring(r.condition.expression, var.factories_config.context.org_policies)
+              : null
+            )
+            location = (
+              can(r.condition.location)
+              ? templatestring(r.condition.location, var.factories_config.context.org_policies)
+              : null
+            )
+            title = (
+              can(r.condition.title)
+              ? templatestring(r.condition.title, var.factories_config.context.org_policies)
+              : null
+            )
           }
+          parameters = (
+            can(r.parameters)
+            ? templatestring(r.parameters, var.factories_config.context.org_policies)
+            : null
+          )
         }
       ]
     }
   }
-
   _org_policies = merge(local._factory_data, var.org_policies)
-
   org_policies = {
     for k, v in local._org_policies :
     k => merge(v, {
-      name   = "${local.folder.name}/policies/${k}"
-      parent = local.folder.name
       is_boolean_policy = (
         alltrue([for r in v.rules : r.allow == null && r.deny == null])
       )
@@ -78,37 +103,83 @@ locals {
 }
 
 resource "google_org_policy_policy" "default" {
-  for_each = local.org_policies
-  name     = each.value.name
-  parent   = each.value.parent
-  spec {
-    inherit_from_parent = each.value.inherit_from_parent
-    reset               = each.value.reset
-    dynamic "rules" {
-      for_each = each.value.rules
-      iterator = rule
-      content {
-        allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-        deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
-        enforce = (
-          each.value.is_boolean_policy && rule.value.enforce != null
-          ? upper(tostring(rule.value.enforce))
-          : null
-        )
-        dynamic "condition" {
-          for_each = rule.value.condition.expression != null ? [1] : []
-          content {
-            description = rule.value.condition.description
-            expression  = rule.value.condition.expression
-            location    = rule.value.condition.location
-            title       = rule.value.condition.title
+  for_each = toset([
+    for k, v in local._org_policies : trimprefix(k, "dry_run:")
+  ])
+  name   = "${local.folder_id}/policies/${each.value}"
+  parent = local.folder_id
+  dynamic "spec" {
+    for_each = lookup(local.org_policies, each.value, null) != null ? [local.org_policies[each.value]] : []
+    iterator = spec
+    content {
+      inherit_from_parent = spec.value.inherit_from_parent
+      reset               = spec.value.reset
+      dynamic "rules" {
+        for_each = spec.value.rules
+        iterator = rule
+        content {
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
+          enforce = (
+            spec.value.is_boolean_policy && rule.value.enforce != null
+            ? upper(tostring(rule.value.enforce))
+            : null
+          )
+          dynamic "condition" {
+            for_each = rule.value.condition.expression != null ? [1] : []
+            content {
+              description = rule.value.condition.description
+              expression  = rule.value.condition.expression
+              location    = rule.value.condition.location
+              title       = rule.value.condition.title
+            }
+          }
+          dynamic "values" {
+            for_each = rule.value.has_values ? [1] : []
+            content {
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
+            }
           }
         }
-        dynamic "values" {
-          for_each = rule.value.has_values ? [1] : []
-          content {
-            allowed_values = try(rule.value.allow.values, null)
-            denied_values  = try(rule.value.deny.values, null)
+      }
+    }
+  }
+
+  dynamic "dry_run_spec" {
+    for_each = lookup(local.org_policies, "dry_run:${each.value}", null) != null ? [local.org_policies["dry_run:${each.value}"]] : []
+    iterator = spec
+    content {
+      inherit_from_parent = spec.value.inherit_from_parent
+      reset               = spec.value.reset
+      dynamic "rules" {
+        for_each = spec.value.rules
+        iterator = rule
+        content {
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
+          enforce = (
+            spec.value.is_boolean_policy && rule.value.enforce != null
+            ? upper(tostring(rule.value.enforce))
+            : null
+          )
+          dynamic "condition" {
+            for_each = rule.value.condition.expression != null ? [1] : []
+            content {
+              description = rule.value.condition.description
+              expression  = rule.value.condition.expression
+              location    = rule.value.condition.location
+              title       = rule.value.condition.title
+            }
+          }
+          dynamic "values" {
+            for_each = rule.value.has_values ? [1] : []
+            content {
+              allowed_values = try(rule.value.allow.values, null)
+              denied_values  = try(rule.value.deny.values, null)
+            }
           }
         }
       }

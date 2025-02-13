@@ -1,0 +1,204 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.kms.google_kms_crypto_key.default["key-regional"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: key-regional
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms.google_kms_key_ring.default[0]:
+    location: europe-west8
+    name: keyring
+    project: test-looker
+    timeouts: null
+  module.kms.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
+    condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.looker.google_looker_instance.looker:
+    admin_settings:
+      - allowed_email_domains:
+          - google.com
+    custom_domain: []
+    deny_maintenance_period: []
+    encryption_config:
+      - {}
+    maintenance_window: []
+    name: looker
+    oauth_config:
+      - client_id: xxxxxxxxx
+        client_secret: xxxxxxxx
+    platform_edition: LOOKER_CORE_ENTERPRISE_ANNUAL
+    private_ip_enabled: true
+    project: test-looker
+    public_ip_enabled: false
+    region: europe-west8
+    reserved_range: null
+    timeouts: null
+    user_metadata: []
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1122334455'
+    labels: null
+    name: test-looker
+    org_id: null
+    project_id: test-looker
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project.google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: test-looker
+    role: roles/cloudkms.serviceAgent
+  module.project.google_project_iam_member.service_agents["looker"]:
+    condition: []
+    project: test-looker
+    role: roles/looker.serviceAgent
+  module.project.google_project_iam_member.service_agents["service-networking"]:
+    condition: []
+    project: test-looker
+    role: roles/servicenetworking.serviceAgent
+  module.project.google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-looker
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["iap.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-looker
+    service: iap.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["looker.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-looker
+    service: looker.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["servicenetworking.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-looker
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: test-looker
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["iap.googleapis.com"]:
+    project: test-looker
+    service: iap.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["looker.googleapis.com"]:
+    project: test-looker
+    service: looker.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["servicenetworking.googleapis.com"]:
+    project: test-looker
+    service: servicenetworking.googleapis.com
+    timeouts: null
+  module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-looker"]:
+    address: 10.60.0.0
+    address_type: INTERNAL
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    labels: null
+    name: servicenetworking-googleapis-com-looker
+    prefix_length: 16
+    project: test-looker
+    purpose: VPC_PEERING
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: test-looker
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    network: my-network
+    project: test-looker
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: test-looker
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: test-looker
+    tags: null
+    timeouts: null
+  module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    deletion_policy: null
+    reserved_peering_ranges:
+      - servicenetworking-googleapis-com-looker
+    service: servicenetworking.googleapis.com
+    timeouts: null
+    update_on_creation_fail: null
+
+counts:
+  google_compute_global_address: 1
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 1
+  google_compute_route: 2
+  google_kms_crypto_key: 1
+  google_kms_key_ring: 1
+  google_kms_key_ring_iam_binding: 1
+  google_looker_instance: 1
+  google_project: 1
+  google_project_iam_member: 3
+  google_project_service: 4
+  google_project_service_identity: 4
+  google_service_networking_connection: 1
+  modules: 4
+  resources: 22
+
+outputs: {}

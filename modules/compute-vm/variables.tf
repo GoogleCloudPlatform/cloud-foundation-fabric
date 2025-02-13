@@ -41,7 +41,7 @@ variable "attached_disks" {
     device_name = optional(string)
     # TODO: size can be null when source_type is attach
     size              = string
-    snapshot_schedule = optional(string)
+    snapshot_schedule = optional(list(string))
     source            = optional(string)
     source_type       = optional(string)
     options = optional(
@@ -84,7 +84,7 @@ variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
     auto_delete       = optional(bool, true)
-    snapshot_schedule = optional(string)
+    snapshot_schedule = optional(list(string))
     source            = optional(string)
     initialize_params = optional(object({
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
@@ -151,6 +151,35 @@ variable "encryption" {
     kms_key_self_link       = optional(string)
   })
   default = null
+}
+
+variable "gpu" {
+  description = "GPU information. Based on https://cloud.google.com/compute/docs/gpus."
+  type = object({
+    count = number
+    type  = string
+  })
+  default = null
+
+  validation {
+    condition = (
+      var.gpu == null ||
+      contains(
+        [
+          "nvidia-tesla-a100",
+          "nvidia-tesla-p100",
+          "nvidia-tesla-v100",
+          "nvidia-tesla-k80",
+          "nvidia-tesla-p4",
+          "nvidia-tesla-t4",
+          "nvidia-l4",
+          "nvidia-a2"
+        ],
+        try(var.gpu.type, "-")
+      )
+    )
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2."
+  }
 }
 
 variable "group" {
@@ -237,28 +266,52 @@ variable "name" {
   type        = string
 }
 
+variable "network_attached_interfaces" {
+  description = "Network interfaces using network attachments."
+  type        = list(string)
+  nullable    = false
+  default     = []
+}
+
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
-    nat        = optional(bool, false)
     network    = string
     subnetwork = string
+    alias_ips  = optional(map(string), {})
+    nat        = optional(bool, false)
+    nic_type   = optional(string)
+    stack_type = optional(string)
     addresses = optional(object({
       internal = optional(string)
       external = optional(string)
     }), null)
-    alias_ips = optional(map(string), {})
-    nic_type  = optional(string)
   }))
 }
 
 variable "options" {
   description = "Instance options."
   type = object({
+    advanced_machine_features = optional(object({
+      enable_nested_virtualization = optional(bool)
+      enable_turbo_mode            = optional(bool)
+      enable_uefi_networking       = optional(bool)
+      performance_monitoring_unit  = optional(string)
+      threads_per_core             = optional(number)
+      visible_core_count           = optional(number)
+    }))
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
-    spot                      = optional(bool, false)
-    termination_action        = optional(string)
+    max_run_duration = optional(object({
+      nanos   = optional(number)
+      seconds = number
+    }))
+    node_affinities = optional(map(object({
+      values = list(string)
+      in     = optional(bool, true)
+    })), {})
+    spot               = optional(bool, false)
+    termination_action = optional(string)
   })
   default = {
     allow_stopping_for_update = true
@@ -267,10 +320,25 @@ variable "options" {
     termination_action        = null
   }
   validation {
-    condition = (var.options.termination_action == null
+    condition = (
+      var.options.termination_action == null
       ||
-    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+      contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1"))
+    )
     error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
+  }
+  validation {
+    condition = (
+      try(var.options.advanced_machine_features.performance_monitoring_unit, null) == null
+      ||
+      contains(["ARCHITECTURAL", "ENHANCED", "STANDARD"], coalesce(
+        try(
+          var.options.advanced_machine_features.performance_monitoring_unit, null
+        ), "-"
+        )
+      )
+    )
+    error_message = "Allowed values for options.advanced_machine_features.performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
   }
 }
 
@@ -292,23 +360,13 @@ variable "scratch_disks" {
 }
 
 variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
-}
-
-variable "service_account_create" {
-  description = "Auto-create service account."
-  type        = bool
-  default     = false
-}
-
-# scopes and scope aliases list
-# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes
-variable "service_account_scopes" {
-  description = "Scopes applied to service account."
-  type        = list(string)
-  default     = []
+  description = "Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account."
+  type = object({
+    auto_create = optional(bool, false)
+    email       = optional(string)
+    scopes      = optional(list(string))
+  })
+  default = {}
 }
 
 variable "shielded_config" {
@@ -365,7 +423,13 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Tag bindings for this instance, in key => tag value id format."
+  description = "Resource manager tag bindings for this instance, in tag key => tag value format."
+  type        = map(string)
+  default     = null
+}
+
+variable "tag_bindings_firewall" {
+  description = "Firewall (network scoped) tag bindings for this instance, in tag key => tag value format."
   type        = map(string)
   default     = null
 }
@@ -380,3 +444,5 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
+
+

@@ -21,7 +21,7 @@ These modules are used in the examples included in this repository. If you are u
 
     ```terraform
     module "project" {
-        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
+        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v35.0.0&depth=1"
         name                = "my-project"
         billing_account     = "123456-123456-123456"
         parent              = "organizations/123456"
@@ -30,14 +30,18 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Foundational modules
 
-- [billing budget](./billing-budget)
+- [Billing account](./billing-account)
 - [Cloud Identity group](./cloud-identity-group/)
-- [folder](./folder)
-- [service accounts](./iam-service-account)
-- [logging bucket](./logging-bucket)
-- [organization](./organization)
-- [project](./project)
-- [projects-data-source](./projects-data-source)
+- [Folder](./folder)
+- [Service accounts](./iam-service-account)
+- [Logging bucket](./logging-bucket)
+- [Organization](./organization)
+- [Project](./project)
+- [Projects (data source)](./projects-data-source)
+
+## Process factories
+
+- [Project factory](./project-factory/)
 
 ## Networking modules
 
@@ -48,10 +52,11 @@ These modules are used in the examples included in this repository. If you are u
 - [Firewall policy](./net-firewall-policy)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Passthrough Network Load Balancer](./net-lb-ext)
+- [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
+- [Cross-region Internal Application Load Balancer](./net-lb-app-int-cross-region)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
-- [Internal ]
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
@@ -74,17 +79,25 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Data
 
-- [AlloyDB instance](./alloydb-instance)
+- [AlloyDB](./alloydb)
+- [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
-- [Dataplex](./dataplex)
-- [Dataplex DataScan](./dataplex-datascan/)
+- [Biglake catalog](./biglake-catalog)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
+- [Data Catalog Tag](./data-catalog-tag)
+- [Data Catalog Tag Template](./data-catalog-tag-template)
+- [Dataform Repository](./dataform-repository/)
 - [Datafusion](./datafusion)
+- [Dataplex](./dataplex)
+- [Dataplex DataScan](./dataplex-datascan/)
 - [Dataproc](./dataproc)
+- [Firestore](./firestore)
 - [GCS](./gcs)
+- [Looker Core](./looker-core)
 - [Pub/Sub](./pubsub)
+- [Spanner instance](./spanner-instance)
 
 ## Development
 
@@ -93,17 +106,22 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Secure Source Manager instance](./secure-source-manager-instance)
+- [Workstation cluster](./workstation-cluster)
 
 ## Security
 
 - [Binauthz](./binauthz/)
+- [Certificate Authority Service (CAS)](./certificate-authority-service)
 - [KMS](./kms)
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
 - [Secure Web Proxy](./net-swp)
+- [Certificate Manager](./certificate-manager)
 
 ## Serverless
 
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run](./cloud-run)
+- [Cloud Run v2](./cloud-run-v2)

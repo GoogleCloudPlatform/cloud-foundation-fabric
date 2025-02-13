@@ -16,31 +16,31 @@ values:
   module.addresses.google_compute_address.external["a1"]:
     address_type: EXTERNAL
     name: a1
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west8
   module.addresses.google_compute_address.external["a2"]:
     address_type: EXTERNAL
     name: a2
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west8
   module.addresses.google_compute_address.external["a3"]:
     address_type: EXTERNAL
     name: a3
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west8
   module.nat.google_compute_router.router[0]:
     name: nat-nat
-    network: my-vpc
-    project: my-project
-    region: europe-west1
+    network: "projects/xxx/global/networks/aaa"
+    project: project-id
+    region: europe-west8
   module.nat.google_compute_router_nat.nat:
     enable_dynamic_port_allocation: false
     enable_endpoint_independent_mapping: false
     icmp_idle_timeout_sec: 30
     name: nat
     nat_ip_allocate_option: MANUAL_ONLY
-    project: my-project
-    region: europe-west1
+    project: project-id
+    region: europe-west8
     router: nat-nat
     rules:
     - action:

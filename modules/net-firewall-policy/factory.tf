@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,20 @@
  */
 
 locals {
-  _factory_egress_rules = try(
-    yamldecode(file(var.rules_factory_config.egress_rules_file_path)), {}
+  _factory_egress_rules = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.egress_rules_file_path))),
+    {}), tomap({})
   )
-  _factory_ingress_rules = try(
-    yamldecode(file(var.rules_factory_config.ingress_rules_file_path)), {}
+  _factory_ingress_rules = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
+    {}), tomap({})
   )
-  factory_cidrs = try(
-    yamldecode(file(var.rules_factory_config.cidr_file_path)), {}
+  factory_cidrs = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.cidr_file_path))),
+    {}), {}
   )
   factory_egress_rules = {
     for k, v in local._factory_egress_rules : "egress/${k}" => {
@@ -33,8 +39,11 @@ locals {
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
+      security_profile_group  = lookup(v, "security_profile_group", null)
+      target_resources        = lookup(v, "target_resources", null)
       target_service_accounts = lookup(v, "target_service_accounts", null)
       target_tags             = lookup(v, "target_tags", null)
+      tls_inspect             = lookup(v, "tls_inspect", null)
       match = {
         address_groups       = lookup(v.match, "address_groups", null)
         fqdns                = lookup(v.match, "fqdns", null)
@@ -62,7 +71,7 @@ locals {
           ? [{ protocol = "all", ports = null }]
           : [
             for c in v.match.layer4_configs :
-            merge({ protocol = "all", ports = null }, c)
+            merge({ protocol = "all", ports = [] }, c)
           ]
         )
       }
@@ -77,8 +86,11 @@ locals {
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
+      security_profile_group  = lookup(v, "security_profile_group", null)
+      target_resources        = lookup(v, "target_resources", null)
       target_service_accounts = lookup(v, "target_service_accounts", null)
       target_tags             = lookup(v, "target_tags", null)
+      tls_inspect             = lookup(v, "tls_inspect", null)
       match = {
         address_groups       = lookup(v.match, "address_groups", null)
         fqdns                = lookup(v.match, "fqdns", null)
@@ -106,7 +118,7 @@ locals {
           ? [{ protocol = "all", ports = null }]
           : [
             for c in v.match.layer4_configs :
-            merge({ protocol = "all", ports = null }, c)
+            merge({ protocol = "all", ports = [] }, c)
           ]
         )
       }

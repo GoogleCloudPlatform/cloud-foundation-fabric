@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@
 # https://cloud.google.com/run/docs/configuring/shared-vpc-host-project
 - service: run.googleapis.com
   agents:
-    run:
+    cloudrun:
       - roles/vpcaccess.user
 
 # Cloud Run / Cloud Functions

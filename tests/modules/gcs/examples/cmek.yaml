@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 # limitations under the License.
 
 values:
-  module.bucket.google_storage_bucket.bucket:
-    encryption:
-    - default_kms_key_name: my-encryption-key
-    name: my-bucket
-    project: myproject
+  module.bucket.google_storage_bucket.bucket[0]:
+#    encryption: __missing__
+#     - default_kms_key_name:
+    name: test-my-bucket
+    project: project-id
 
 counts:
   google_storage_bucket: 1

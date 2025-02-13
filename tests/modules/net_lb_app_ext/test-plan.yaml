@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ counts:
 outputs:
   address: __missing__
   backend_service_ids: __missing__
-  forwarding_rule: __missing__
+  forwarding_rules: __missing__
   group_ids: __missing__
   health_check_ids: __missing__
   neg_ids: __missing__

@@ -7,6 +7,7 @@ This NVAs can be used to interconnect up to 8 VPCs.
 The NVAs run [Container-Optimized OS (COS)](https://cloud.google.com/container-optimized-os/docs). COS is a Linux-based OS designed for running containers. By default, it only allows SSH ingress connections. To see the exact host firewall configuration, run `sudo iptables -L -v`. More info available in the [official](https://cloud.google.com/container-optimized-os/docs/how-to/firewall) documentation.
 
 To configure the firewall, you can either
+
 - use the [open_ports](variables.tf#L84) variable
 - for a thiner grain control, pass a custom bash script at startup with iptables commands
 
@@ -55,6 +56,7 @@ module "vm" {
   zone               = "europe-west8-b"
   name               = "cos-nva"
   network_interfaces = local.network_interfaces
+  can_ip_forward     = true
   metadata = {
     user-data              = module.cos-nva.cloud_config
     google-logging-enabled = true
@@ -75,9 +77,9 @@ module "vm" {
 
 The sample code brings up [FRRouting](https://frrouting.org/) container.
 
-```
+```conf
 # tftest-file id=frr_conf path=./frr.conf
-# Example frr.conmf file
+# Example frr.conf file
 
 log syslog informational
 no ipv6 forwarding
@@ -86,7 +88,7 @@ router bgp 65001
 line vty
 ```
 
-Following code assumes a file in the same folder named frr.conf exists. 
+Following code assumes a file in the same folder named frr.conf exists.
 
 ```hcl
 locals {
@@ -126,6 +128,7 @@ module "vm" {
   zone               = "europe-west8-b"
   name               = "cos-nva"
   network_interfaces = local.network_interfaces
+  can_ip_forward     = true
   metadata = {
     user-data              = module.cos-nva.cloud_config
     google-logging-enabled = true

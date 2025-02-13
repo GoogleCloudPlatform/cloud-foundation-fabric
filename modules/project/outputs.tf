@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,40 @@
  * limitations under the License.
  */
 
-output "custom_roles" {
-  description = "Ids of the created custom roles."
+output "alert_ids" {
+  description = "Monitoring alert IDs."
   value = {
-    for name, role in google_project_iam_custom_role.roles :
-    name => role.id
+    for k, v in google_monitoring_alert_policy.alerts :
+    k => v.id
+  }
+}
+
+output "custom_role_id" {
+  description = "Map of custom role IDs created in the project."
+  value = {
+    for k, v in google_project_iam_custom_role.roles :
+    # build the string manually so that role IDs can be used as map
+    # keys (useful for folder/organization/project-level iam bindings)
+    (k) => "projects/${local.project_id}/roles/${local.custom_roles[k].name}"
+  }
+}
+
+output "custom_roles" {
+  description = "Map of custom roles resources created in the project."
+  value       = google_project_iam_custom_role.roles
+}
+
+output "default_service_accounts" {
+  description = "Emails of the default service accounts for this project."
+  value = {
+    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
   }
 }
 
 output "id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = local.project_id
   depends_on = [
     google_project.project,
     data.google_project.project,
@@ -34,10 +57,9 @@ output "id" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_kms_crypto_key_iam_member.service_agent_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
@@ -49,8 +71,38 @@ output "name" {
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek
+    google_kms_crypto_key_iam_member.service_agent_cmek,
   ]
+}
+
+output "network_tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose != null && v.purpose != ""
+    )
+  }
+}
+
+output "network_tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default :
+    k => v if local.tag_values[k].tag_network
+  }
+}
+
+output "notification_channel_names" {
+  description = "Notification channel names."
+  value = {
+    for k, v in google_monitoring_notification_channel.channels :
+    k => v.name
+  }
+}
+
+output "notification_channels" {
+  description = "Full notification channel objects."
+  value       = google_monitoring_notification_channel.channels
 }
 
 output "number" {
@@ -63,10 +115,9 @@ output "number" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_kms_crypto_key_iam_member.service_agent_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
@@ -84,35 +135,43 @@ output "project_id" {
     google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_kms_crypto_key_iam_member.service_agent_cmek,
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
-output "service_accounts" {
-  description = "Product robot service accounts in project."
+output "quota_configs" {
+  description = "Quota configurations."
   value = {
-    cloud_services = local.service_account_cloud_services
-    default        = local.service_accounts_default
-    robots         = local.service_accounts_robots
+    for k, v in google_cloud_quotas_quota_preference.default :
+    k => {
+      granted   = v.quota_config[0].granted_value
+      preferred = v.quota_config[0].preferred_value
+    }
   }
+}
+
+output "quotas" {
+  description = "Quota resources."
+  value       = google_cloud_quotas_quota_preference.default
+}
+
+output "service_agents" {
+  description = "List of all (active) service agents for this project."
+  value       = local.aliased_service_agents
   depends_on = [
-    google_project_service.project_services,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    data.google_bigquery_default_service_account.bq_sa,
-    data.google_storage_project_service_account.gcs_sa
+    google_project_service_identity.default,
+    google_project_iam_member.service_agents
   ]
 }
 
 output "services" {
-  description = "Service APIs to enabled in the project."
-  value       = var.services
+  description = "Service APIs to enable in the project."
+  value       = local.available_services
   depends_on = [
     google_project_service.project_services,
-    google_project_service_identity.jit_si,
+    google_project_service_identity.default,
   ]
 }
 
@@ -120,5 +179,22 @@ output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
     for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
+  }
+}
+
+output "tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose == null || v.purpose == ""
+    )
+  }
+}
+
+output "tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default :
+    k => v if !local.tag_values[k].tag_network
   }
 }

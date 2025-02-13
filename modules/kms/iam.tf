@@ -16,25 +16,36 @@
 
 locals {
   key_iam = flatten([
-    for key, roles in var.key_iam : [
-      for role, members in roles : {
-        key     = key
+    for k, v in var.keys : [
+      for role, members in v.iam : {
+        key     = k
         role    = role
         members = members
       }
     ]
   ])
-  key_iam_bindings = flatten([
-    for key, bindings in var.key_iam_bindings : [
-      for binding_key, binding_data in bindings : {
-        key         = key
-        binding_key = "${key}.${binding_key}"
-        role        = binding_data.role
-        members     = binding_data.members
-        condition   = binding_data.condition
+  key_iam_bindings = merge([
+    for k, v in var.keys : {
+      for binding_key, data in v.iam_bindings :
+      binding_key => {
+        key       = k
+        role      = data.role
+        members   = data.members
+        condition = data.condition
       }
-    ]
-  ])
+    }
+  ]...)
+  key_iam_bindings_additive = merge([
+    for k, v in var.keys : {
+      for binding_key, data in v.iam_bindings_additive :
+      binding_key => {
+        key       = k
+        role      = data.role
+        member    = data.member
+        condition = data.condition
+      }
+    }
+  ]...)
 }
 
 resource "google_kms_key_ring_iam_binding" "authoritative" {
@@ -85,9 +96,7 @@ resource "google_kms_crypto_key_iam_binding" "authoritative" {
 }
 
 resource "google_kms_crypto_key_iam_binding" "bindings" {
-  for_each = {
-    for binding in local.key_iam_bindings : binding.binding_key => binding
-  }
+  for_each      = local.key_iam_bindings
   role          = each.value.role
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   members       = each.value.members
@@ -102,7 +111,7 @@ resource "google_kms_crypto_key_iam_binding" "bindings" {
 }
 
 resource "google_kms_crypto_key_iam_member" "members" {
-  for_each      = var.key_iam_bindings_additive
+  for_each      = local.key_iam_bindings_additive
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   role          = each.value.role
   member        = each.value.member

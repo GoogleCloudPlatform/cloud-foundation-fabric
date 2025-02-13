@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
 # limitations under the License.
 
 values:
-  module.bucket.google_storage_bucket.bucket:
+  module.bucket.google_storage_bucket.bucket[0]:
     logging:
-    - log_bucket: log-bucket
-    name: my-bucket
-    project: myproject
+      - log_bucket: log-bucket
+    name: test-my-bucket
+    project: project-id
+    soft_delete_policy:
+      - retention_duration_seconds: 7776000
     retention_policy:
-    - is_locked: true
-      retention_period: 100
+      - is_locked: true
+        retention_period: 100
 
 counts:
   google_storage_bucket: 1

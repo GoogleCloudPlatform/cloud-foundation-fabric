@@ -272,7 +272,7 @@ resource "google_compute_region_url_map" "default" {
         }
       }
       dynamic "route_rules" {
-        for_each = toset(coalesce(m.value.route_rules, []))
+        for_each = coalesce(m.value.route_rules, [])
         content {
           priority = route_rules.value.priority
           service = route_rules.value.service == null ? null : lookup(
@@ -324,6 +324,11 @@ resource "google_compute_region_url_map" "default" {
               )
               regex_match = (
                 try(match_rules.value.path.type, null) == "regex"
+                ? match_rules.value.path.value
+                : null
+              )
+              path_template_match = (
+                try(match_rules.value.path.type, null) == "template"
                 ? match_rules.value.path.value
                 : null
               )
@@ -497,8 +502,9 @@ resource "google_compute_region_url_map" "default" {
                   : [route_action.value.url_rewrite]
                 )
                 content {
-                  host_rewrite        = url_rewrite.value.host
-                  path_prefix_rewrite = url_rewrite.value.path_prefix
+                  host_rewrite          = url_rewrite.value.host
+                  path_prefix_rewrite   = url_rewrite.value.path_prefix
+                  path_template_rewrite = url_rewrite.value.path_template
                 }
               }
               dynamic "weighted_backend_services" {

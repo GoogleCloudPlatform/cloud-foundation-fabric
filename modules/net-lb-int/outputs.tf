@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 output "backend_service" {
   description = "Backend resource."
+  sensitive   = true
   value       = google_compute_region_backend_service.default
 }
 
@@ -29,19 +30,28 @@ output "backend_service_self_link" {
   value       = google_compute_region_backend_service.default.self_link
 }
 
-output "forwarding_rule" {
-  description = "Forwarding rule resource."
-  value       = google_compute_forwarding_rule.default
-}
-
-output "forwarding_rule_address" {
+output "forwarding_rule_addresses" {
   description = "Forwarding rule address."
-  value       = google_compute_forwarding_rule.default.ip_address
+  value = {
+    for k, v in google_compute_forwarding_rule.default
+    : k => v.ip_address
+  }
 }
 
-output "forwarding_rule_self_link" {
-  description = "Forwarding rule self link."
-  value       = google_compute_forwarding_rule.default.self_link
+output "forwarding_rule_self_links" {
+  description = "Forwarding rule self links."
+  value = {
+    for k, v in google_compute_forwarding_rule.default
+    : k => v.self_link
+  }
+}
+
+output "forwarding_rules" {
+  description = "Forwarding rule resources."
+  value = {
+    for k, v in google_compute_forwarding_rule.default
+    : k => v
+  }
 }
 
 output "group_self_links" {
@@ -58,20 +68,30 @@ output "groups" {
 
 output "health_check" {
   description = "Auto-created health-check resource."
-  value       = try(google_compute_health_check.default.0, null)
+  value       = try(google_compute_health_check.default[0], null)
 }
 
-output "health_check_self_id" {
-  description = "Auto-created health-check self id."
-  value       = try(google_compute_health_check.default.0.id, null)
+output "health_check_id" {
+  description = "Auto-created health-check id."
+  value       = try(google_compute_health_check.default[0].id, null)
 }
 
 output "health_check_self_link" {
   description = "Auto-created health-check self link."
-  value       = try(google_compute_health_check.default.0.self_link, null)
+  value       = try(google_compute_health_check.default[0].self_link, null)
 }
 
 output "id" {
-  description = "Fully qualified forwarding rule id."
-  value       = google_compute_forwarding_rule.default.id
+  description = "Fully qualified forwarding rule ids."
+  value = {
+    for k, v in google_compute_forwarding_rule.default
+    : k => v.id
+  }
+}
+
+output "service_attachment_ids" {
+  description = "Service attachment ids."
+  value = {
+    for k, v in google_compute_service_attachment.default : k => v.id
+  }
 }

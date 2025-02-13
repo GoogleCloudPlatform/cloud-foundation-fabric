@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: dmz-default
+region: secondary
+ip_cidr_range: 10.80.128.0/24
+description: Default secondary-region subnet for landing dmz

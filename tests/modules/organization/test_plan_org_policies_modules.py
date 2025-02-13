@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ def test_policy_implementation():
       '@@ -17 +17 @@\n',
       '-# tfdoc:file:description Project-level organization policies.\n',
       '+# tfdoc:file:description Folder-level organization policies.\n',
-      '@@ -58,2 +58,2 @@\n',
-      '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
-      '-      parent = "projects/${local.project.project_id}"\n',
-      '+      name   = "${local.folder.name}/policies/${k}"\n',
-      '+      parent = local.folder.name\n',
+      '@@ -109,2 +109,2 @@\n',
+      '-  name   = "projects/${local.project.project_id}/policies/${each.value}"\n',
+      '-  parent = "projects/${local.project.project_id}"\n',
+      '+  name   = "${local.folder_id}/policies/${each.value}"\n',
+      '+  parent = local.folder_id\n',
   ]
 
   diff2 = difflib.unified_diff(lines['folder'], lines['organization'], 'folder',
@@ -49,12 +49,12 @@ def test_policy_implementation():
       '@@ -17 +17 @@\n',
       '-# tfdoc:file:description Folder-level organization policies.\n',
       '+# tfdoc:file:description Organization-level organization policies.\n',
-      '@@ -58,2 +58,2 @@\n',
-      '-      name   = "${local.folder.name}/policies/${k}"\n',
-      '-      parent = local.folder.name\n',
-      '+      name   = "${var.organization_id}/policies/${k}"\n',
-      '+      parent = var.organization_id\n',
-      '@@ -116,0 +117,9 @@\n',
+      '@@ -109,2 +109,2 @@\n',
+      '-  name   = "${local.folder_id}/policies/${each.value}"\n',
+      '-  parent = local.folder_id\n',
+      '+  name   = "${var.organization_id}/policies/${each.value}"\n',
+      '+  parent = var.organization_id\n',
+      '@@ -187,0 +188,9 @@\n',
       '+  depends_on = [\n',
       '+    google_organization_iam_binding.authoritative,\n',
       '+    google_organization_iam_binding.bindings,\n',

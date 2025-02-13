@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
 
 variable "backend_service_config" {
   description = "Backend service level configuration."
@@ -36,6 +30,7 @@ variable "backend_service_config" {
     }))
     locality_lb_policy = optional(string)
     log_sample_rate    = optional(number)
+    name               = optional(string)
     port_name          = optional(string)
     protocol           = optional(string, "UNSPECIFIED")
     session_affinity   = optional(string)
@@ -70,7 +65,7 @@ variable "backend_service_config" {
 }
 
 variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
+  description = "Load balancer backends."
   type = list(object({
     group       = string
     description = optional(string, "Terraform managed.")
@@ -84,6 +79,22 @@ variable "description" {
   description = "Optional description used for resources."
   type        = string
   default     = "Terraform managed."
+}
+
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address     = optional(string)
+    description = optional(string)
+    ipv6        = optional(bool, false)
+    name        = optional(string)
+    ports       = optional(list(string), null)
+    protocol    = optional(string, "TCP")
+    subnetwork  = optional(string) # Required for IPv6
+  }))
+  default = {
+    "" = {}
+  }
 }
 
 variable "group_configs" {
@@ -110,6 +121,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
     grpc = optional(object({
@@ -191,26 +203,9 @@ variable "name" {
   type        = string
 }
 
-variable "ports" {
-  description = "Comma-separated ports, leave null to use all ports."
-  type        = list(string)
-  default     = null
-}
-
 variable "project_id" {
   description = "Project id where resources will be created."
   type        = string
-}
-
-variable "protocol" {
-  description = "IP protocol used, defaults to TCP. UDP or L3_DEFAULT can also be used."
-  type        = string
-  default     = "TCP"
-  nullable    = false
-  validation {
-    condition     = contains(["L3_DEFAULT", "TCP", "UDP"], var.protocol)
-    error_message = "Allowed values are 'TCP', 'UDP', 'L3_DEFAULT'."
-  }
 }
 
 variable "region" {

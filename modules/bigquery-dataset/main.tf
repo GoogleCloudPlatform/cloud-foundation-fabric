@@ -209,23 +209,116 @@ resource "google_bigquery_dataset_iam_binding" "bindings" {
 }
 
 resource "google_bigquery_table" "default" {
-  provider            = google-beta
-  for_each            = var.tables
-  project             = var.project_id
-  dataset_id          = google_bigquery_dataset.default.dataset_id
-  table_id            = each.key
-  friendly_name       = each.value.friendly_name
-  description         = each.value.description
-  clustering          = each.value.options.clustering
-  expiration_time     = each.value.options.expiration_time
-  labels              = each.value.labels
-  schema              = each.value.schema
-  deletion_protection = each.value.deletion_protection
+  provider                 = google-beta
+  for_each                 = var.tables
+  project                  = var.project_id
+  dataset_id               = google_bigquery_dataset.default.dataset_id
+  table_id                 = each.key
+  friendly_name            = each.value.friendly_name
+  description              = each.value.description
+  clustering               = each.value.options.clustering
+  expiration_time          = each.value.options.expiration_time
+  labels                   = each.value.labels
+  max_staleness            = each.value.options.max_staleness
+  schema                   = each.value.schema
+  deletion_protection      = each.value.deletion_protection
+  require_partition_filter = each.value.require_partition_filter
 
   dynamic "encryption_configuration" {
     for_each = each.value.options.encryption_key != null ? [""] : []
     content {
       kms_key_name = each.value.options.encryption_key
+    }
+  }
+
+  dynamic "external_data_configuration" {
+    for_each = each.value.external_data_configuration != null ? [""] : []
+    content {
+      autodetect                = each.value.external_data_configuration.autodetect
+      compression               = each.value.external_data_configuration.compression
+      connection_id             = each.value.external_data_configuration.connection_id
+      file_set_spec_type        = each.value.external_data_configuration.file_set_spec_type
+      ignore_unknown_values     = each.value.external_data_configuration.ignore_unknown_values
+      max_bad_records           = each.value.external_data_configuration.max_bad_records
+      metadata_cache_mode       = each.value.external_data_configuration.metadata_cache_mode
+      object_metadata           = each.value.external_data_configuration.object_metadata
+      reference_file_schema_uri = each.value.external_data_configuration.reference_file_schema_uri
+      schema                    = each.value.external_data_configuration.schema
+      source_format             = each.value.external_data_configuration.source_format
+      source_uris               = each.value.external_data_configuration.source_uris
+
+      dynamic "avro_options" {
+        for_each = each.value.external_data_configuration.avro_logical_types != null ? [""] : []
+        content {
+          use_avro_logical_types = each.value.external_data_configuration.avro_logical_types
+        }
+      }
+      dynamic "csv_options" {
+        for_each = each.value.external_data_configuration.csv_options != null ? [""] : []
+        content {
+          quote                 = each.value.external_data_configuration.csv_options.quote
+          allow_jagged_rows     = each.value.external_data_configuration.csv_options.allow_jagged_rows
+          allow_quoted_newlines = each.value.external_data_configuration.csv_options.allow_quoted_newlines
+          encoding              = each.value.external_data_configuration.csv_options.encoding
+          field_delimiter       = each.value.external_data_configuration.csv_options.field_delimiter
+          skip_leading_rows     = each.value.external_data_configuration.csv_options.skip_leading_rows
+        }
+      }
+      dynamic "json_options" {
+        for_each = each.value.external_data_configuration.json_options_encoding != null ? [""] : []
+        content {
+          encoding = each.value.external_data_configuration.json_options_encoding
+        }
+      }
+      dynamic "google_sheets_options" {
+        for_each = each.value.external_data_configuration.google_sheets_options != null ? [""] : []
+        content {
+          range             = each.value.external_data_configuration.google_sheets_options.range
+          skip_leading_rows = each.value.external_data_configuration.google_sheets_options.skip_leading_rows
+        }
+      }
+      dynamic "hive_partitioning_options" {
+        for_each = each.value.external_data_configuration.hive_partitioning_options != null ? [""] : []
+        content {
+          mode                     = each.value.external_data_configuration.hive_partitioning_options.mode
+          require_partition_filter = each.value.external_data_configuration.hive_partitioning_options.require_partition_filter
+          source_uri_prefix        = each.value.external_data_configuration.hive_partitioning_options.source_uri_prefix
+        }
+      }
+      dynamic "parquet_options" {
+        for_each = each.value.external_data_configuration.parquet_options != null ? [""] : []
+        content {
+          enum_as_string        = each.value.external_data_configuration.parquet_options.enum_as_string
+          enable_list_inference = each.value.external_data_configuration.parquet_options.enable_list_inference
+        }
+      }
+    }
+  }
+
+  dynamic "table_constraints" {
+    for_each = each.value.table_constraints != null ? [""] : []
+    content {
+      dynamic "primary_key" {
+        for_each = each.value.table_constraints.primary_key_columns != null ? [""] : []
+        content {
+          columns = each.value.table_constraints.primary_key_columns
+        }
+      }
+      dynamic "foreign_keys" {
+        for_each = each.value.table_constraints.foreign_keys != null ? [""] : []
+        content {
+          name = each.value.table_constraints.foreign_keys.name
+          referenced_table {
+            project_id = each.value.table_constraints.foreign_keys.referenced_table.project_id
+            dataset_id = each.value.table_constraints.foreign_keys.referenced_table.dataset_id
+            table_id   = each.value.table_constraints.foreign_keys.referenced_table.table_id
+          }
+          column_references {
+            referencing_column = each.value.table_constraints.foreign_keys.column_references.referencing_column
+            referenced_column  = each.value.table_constraints.foreign_keys.column_references.referenced_column
+          }
+        }
+      }
     }
   }
 
@@ -245,7 +338,7 @@ resource "google_bigquery_table" "default" {
     for_each = try(each.value.partitioning.time, null) != null ? [""] : []
     content {
       expiration_ms = each.value.partitioning.time.expiration_ms
-      field         = each.value.partitioning.field
+      field         = each.value.partitioning.time.field
       type          = each.value.partitioning.time.type
     }
   }
@@ -265,5 +358,96 @@ resource "google_bigquery_table" "views" {
   view {
     query          = each.value.query
     use_legacy_sql = each.value.use_legacy_sql
+  }
+}
+
+resource "google_bigquery_table" "materialized_view" {
+  depends_on               = [google_bigquery_table.default]
+  for_each                 = var.materialized_views
+  project                  = var.project_id
+  dataset_id               = google_bigquery_dataset.default.dataset_id
+  table_id                 = each.key
+  friendly_name            = each.value.friendly_name
+  description              = each.value.description
+  labels                   = each.value.labels
+  clustering               = each.value.options.clustering
+  expiration_time          = each.value.options.expiration_time
+  deletion_protection      = each.value.deletion_protection
+  require_partition_filter = each.value.require_partition_filter
+
+  dynamic "range_partitioning" {
+    for_each = try(each.value.partitioning.range, null) != null ? [""] : []
+    content {
+      field = each.value.partitioning.field
+      range {
+        start    = each.value.partitioning.range.start
+        end      = each.value.partitioning.range.end
+        interval = each.value.partitioning.range.interval
+      }
+    }
+  }
+
+  dynamic "time_partitioning" {
+    for_each = try(each.value.partitioning.time, null) != null ? [""] : []
+    content {
+      expiration_ms = each.value.partitioning.time.expiration_ms
+      field         = each.value.partitioning.time.field
+      type          = each.value.partitioning.time.type
+    }
+  }
+
+  materialized_view {
+    query                            = each.value.query
+    enable_refresh                   = each.value.enable_refresh
+    refresh_interval_ms              = each.value.refresh_interval_ms
+    allow_non_incremental_definition = each.value.allow_non_incremental_definition
+  }
+}
+
+resource "google_bigquery_routine" "default" {
+  for_each             = var.routines
+  project              = var.project_id
+  dataset_id           = google_bigquery_dataset.default.dataset_id
+  routine_id           = each.key
+  description          = each.value.description
+  routine_type         = each.value.routine_type
+  language             = each.value.language
+  definition_body      = each.value.definition_body
+  imported_libraries   = each.value.imported_libraries
+  determinism_level    = each.value.determinism_level
+  data_governance_type = each.value.data_governance_type
+  return_table_type    = each.value.return_table_type
+  dynamic "arguments" {
+    for_each = each.value.arguments
+    content {
+      name          = arguments.key
+      argument_kind = arguments.value.argument_kind
+      mode          = arguments.value.mode
+      data_type     = arguments.value.data_type
+    }
+  }
+  dynamic "spark_options" {
+    for_each = each.value.spark_options == null ? [] : [""]
+    content {
+      connection      = each.value.spark_options.connection
+      runtime_version = each.value.spark_options.runtime_version
+      container_image = each.value.spark_options.container_image
+      properties      = each.value.spark_options.properties
+      main_file_uri   = each.value.spark_options.main_file_uri
+      py_file_uris    = each.value.spark_options.py_file_uris
+      jar_uris        = each.value.spark_options.jar_uris
+      file_uris       = each.value.spark_options.file_uris
+      archive_uris    = each.value.spark_options.archive_uris
+      main_class      = each.value.spark_options.main_class
+    }
+  }
+  dynamic "remote_function_options" {
+    for_each = each.value.remote_function_options == null ? [] : [""]
+    content {
+      endpoint             = each.value.remote_function_options.endpoint
+      connection           = each.value.remote_function_options.connection
+      max_batching_rows    = each.value.remote_function_options.value.max_batching_rows
+      user_defined_context = each.value.remote_function_options.user_defined_context
+    }
   }
 }

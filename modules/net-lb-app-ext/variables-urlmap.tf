@@ -23,12 +23,12 @@ variable "urlmap_config" {
       request_mirror_backend = optional(string)
       cors_policy = optional(object({
         allow_credentials    = optional(bool)
-        allow_headers        = optional(string)
-        allow_methods        = optional(string)
-        allow_origin_regexes = list(string)
-        allow_origins        = list(string)
+        allow_headers        = optional(list(string))
+        allow_methods        = optional(list(string))
+        allow_origin_regexes = optional(list(string))
+        allow_origins        = optional(list(string))
         disabled             = optional(bool)
-        expose_headers       = optional(string)
+        expose_headers       = optional(list(string))
         max_age              = optional(string)
       }))
       fault_injection_policy = optional(object({
@@ -57,8 +57,9 @@ variable "urlmap_config" {
         nanos   = optional(number)
       }))
       url_rewrite = optional(object({
-        host        = optional(string)
-        path_prefix = optional(string)
+        host          = optional(string)
+        path_prefix   = optional(string)
+        path_template = optional(string)
       }))
       weighted_backend_services = optional(map(object({
         weight = number
@@ -83,7 +84,7 @@ variable "urlmap_config" {
       path          = optional(string)
       prefix        = optional(string)
       response_code = optional(string)
-      strip_query   = optional(bool)
+      strip_query   = optional(bool, false)
     }))
     header_action = optional(object({
       request_add = optional(map(object({
@@ -108,12 +109,12 @@ variable "urlmap_config" {
         request_mirror_backend = optional(string)
         cors_policy = optional(object({
           allow_credentials    = optional(bool)
-          allow_headers        = optional(string)
-          allow_methods        = optional(string)
-          allow_origin_regexes = list(string)
-          allow_origins        = list(string)
+          allow_headers        = optional(list(string))
+          allow_methods        = optional(list(string))
+          allow_origin_regexes = optional(list(string))
+          allow_origins        = optional(list(string))
           disabled             = optional(bool)
-          expose_headers       = optional(string)
+          expose_headers       = optional(list(string))
           max_age              = optional(string)
         }))
         fault_injection_policy = optional(object({
@@ -271,7 +272,7 @@ variable "urlmap_config" {
           headers = optional(list(object({
             name         = string
             invert_match = optional(bool, false)
-            type         = optional(string, "present") # exact, prefix, suffix, regex, present, range
+            type         = optional(string, "present") # exact, prefix, suffix, regex, present, range, template
             value        = optional(string)
             range_value = optional(object({
               end   = string
@@ -330,8 +331,9 @@ variable "urlmap_config" {
             nanos   = optional(number)
           }))
           url_rewrite = optional(object({
-            host        = optional(string)
-            path_prefix = optional(string)
+            host          = optional(string)
+            path_prefix   = optional(string)
+            path_template = optional(string)
           }))
           weighted_backend_services = optional(map(object({
             weight = number

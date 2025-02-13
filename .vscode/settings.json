@@ -1,0 +1,40 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "*.schema.json"
+      ],
+      "url": "http://json-schema.org/draft-07/schema#"
+    }
+  ],
+  "yaml.schemas": {
+    "modules/organization/schemas/custom-role.schema.json": [
+      "data/**/custom-roles/**/*yaml"
+    ],
+    "modules/organization/schemas/org-policies.schema.json": [
+      "data/**/org-policies/**/*yaml"
+    ],
+    "modules/organization/schemas/org-policy-custom-constraints.schema.json": [
+      "data/**/org-policy-custom-constraints/**/*yaml"
+    ],
+    "modules/project-factory/schemas/budget.schema.json": [
+      "data/**/budgets/**/*yaml"
+    ],
+    "modules/project-factory/schemas/folder.schema.json": [
+      "data/**/folders/**/*yaml",
+      "data/**/hierarchy/**/*yaml"
+    ],
+    "modules/project-factory/schemas/project.schema.json": [
+      "data/**/projects/**/*yaml"
+    ],
+    "modules/vpc-sc/schemas/access-level.schema.json": [
+      "data/**/access-levels/**/*yaml"
+    ],
+    "modules/vpc-sc/schemas/egress-policy.schema.json": [
+      "data/**/egress-policies/**/*yaml"
+    ],
+    "modules/vpc-sc/schemas/ingress-policy.schema.json": [
+      "data/**/ingress-policies/**/*yaml"
+    ],
+  }
+}

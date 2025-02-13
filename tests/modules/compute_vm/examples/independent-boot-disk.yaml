@@ -29,7 +29,7 @@ values:
     source_snapshot_encryption_key: []
     timeouts: null
     type: pd-balanced
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.simple-vm-example.google_compute_instance.default[0]:
     advanced_machine_features: []
     allow_stopping_for_update: true
@@ -75,7 +75,7 @@ values:
       - https://www.googleapis.com/auth/userinfo.email
     shielded_instance_config: []
     tags: null
-    zone: europe-west1-b
+    zone: europe-west8-b
   module.simple-vm-example.google_service_account.service_account[0]:
     account_id: tf-vm-test
     display_name: Terraform VM test.

@@ -24,12 +24,12 @@ values:
     - gke_clusters: []
       networks:
       - network_url: projects/xxx/global/networks/aaa
-    project: myproject
+    project: project-id
     visibility: private
   module.private-dns.google_dns_record_set.dns_record_set["A localhost"]:
     managed_zone: test-example
     name: localhost.test.example.
-    project: myproject
+    project: project-id
     routing_policy: []
     rrdatas:
     - 127.0.0.1
@@ -38,7 +38,7 @@ values:
   module.private-dns.google_dns_record_set.dns_record_set["A myhost"]:
     managed_zone: test-example
     name: myhost.test.example.
-    project: myproject
+    project: project-id
     routing_policy: []
     rrdatas:
     - 10.0.0.120

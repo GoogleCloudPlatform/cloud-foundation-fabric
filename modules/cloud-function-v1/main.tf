@@ -16,7 +16,7 @@
 
 locals {
   bucket = (
-    var.bucket_name != null
+    var.bucket_config == null
     ? var.bucket_name
     : (
       length(google_storage_bucket.bucket) > 0
@@ -36,18 +36,22 @@ locals {
     : (
       try(var.vpc_connector.create, false) == false
       ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      : google_vpc_access_connector.connector[0].id
     )
   )
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == false ? 0 : 1
-  project       = var.project_id
-  name          = var.vpc_connector.name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
-  network       = var.vpc_connector_config.network
+  count          = try(var.vpc_connector.create, false) == true ? 1 : 0
+  project        = var.project_id
+  name           = var.vpc_connector.name
+  region         = var.region
+  ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
+  network        = var.vpc_connector_config.network
+  max_instances  = try(var.vpc_connector_config.instances.max, null)
+  min_instances  = try(var.vpc_connector_config.instances.min, null)
+  max_throughput = try(var.vpc_connector_config.throughput.max, null)
+  min_throughput = try(var.vpc_connector_config.throughput.min, null)
 }
 
 resource "google_cloudfunctions_function" "function" {
@@ -63,14 +67,21 @@ resource "google_cloudfunctions_function" "function" {
   environment_variables = var.environment_variables
   service_account_email = local.service_account_email
   source_archive_bucket = local.bucket
-  source_archive_object = google_storage_bucket_object.bundle.name
-  labels                = var.labels
-  trigger_http          = var.trigger_config == null ? true : null
-
-  ingress_settings  = var.ingress_settings
-  build_worker_pool = var.build_worker_pool
-
-  vpc_connector = local.vpc_connector
+  source_archive_object = (
+    local.bundle_type == "gcs"
+    ? replace(var.bundle_config.path, "/^gs:\\/\\/[^\\/]+\\//", "")
+    : google_storage_bucket_object.bundle[0].name
+  )
+  labels                       = var.labels
+  trigger_http                 = var.trigger_config == null ? true : null
+  https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
+  ingress_settings             = var.ingress_settings
+  build_worker_pool            = var.build_worker_pool
+  build_environment_variables  = var.build_environment_variables
+  kms_key_name                 = var.kms_key
+  docker_registry              = try(var.repository_settings.registry, "ARTIFACT_REGISTRY")
+  docker_repository            = try(var.repository_settings.repository, null)
+  vpc_connector                = local.vpc_connector
   vpc_connector_egress_settings = try(
     var.vpc_connector.egress_settings, null
   )
@@ -96,7 +107,7 @@ resource "google_cloudfunctions_function" "function" {
       key        = secret.key
       project_id = secret.value.project_id
       secret     = secret.value.secret
-      version    = try(secret.value.versions.0, "latest")
+      version    = try(secret.value.versions[0], "latest")
     }
   }
 
@@ -111,8 +122,8 @@ resource "google_cloudfunctions_function" "function" {
         for_each = secret.value.versions
         iterator = version
         content {
-          path    = split(":", version)[1]
-          version = split(":", version)[0]
+          path    = split(":", version.value)[1]
+          version = split(":", version.value)[0]
         }
       }
     }
@@ -126,51 +137,6 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   cloud_function = google_cloudfunctions_function.function.id
   role           = each.key
   members        = each.value
-}
-
-resource "google_storage_bucket" "bucket" {
-  count                       = var.bucket_config == null ? 0 : 1
-  project                     = var.project_id
-  name                        = "${local.prefix}${var.bucket_name}"
-  uniform_bucket_level_access = true
-  location = (
-    var.bucket_config.location == null
-    ? var.region
-    : var.bucket_config.location
-  )
-  labels = var.labels
-
-  dynamic "lifecycle_rule" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      action { type = "Delete" }
-      condition {
-        age        = var.bucket_config.lifecycle_delete_age_days
-        with_state = "ARCHIVED"
-      }
-    }
-  }
-
-  dynamic "versioning" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      enabled = true
-    }
-  }
-}
-
-resource "google_storage_bucket_object" "bundle" {
-  name   = "bundle-${data.archive_file.bundle.output_md5}.zip"
-  bucket = local.bucket
-  source = data.archive_file.bundle.output_path
-}
-
-data "archive_file" "bundle" {
-  type             = "zip"
-  source_dir       = var.bundle_config.source_dir
-  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
-  output_file_mode = "0644"
-  excludes         = var.bundle_config.excludes
 }
 
 resource "google_service_account" "service_account" {

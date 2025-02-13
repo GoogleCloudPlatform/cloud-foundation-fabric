@@ -121,7 +121,6 @@ variable "options" {
     delete_contents_on_destroy      = optional(bool, false)
     is_case_insensitive             = optional(bool)
     max_time_travel_hours           = optional(number, 168)
-    storage_billing_model           = optional(string)
   })
   default = {}
 }

@@ -1,0 +1,58 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#env:
+#  log_level: debug
+
+# Do not use Kong Ingress Controller
+ingressController:
+ enabled: false
+  
+image:
+ repository: kong/kong-gateway
+ tag: "3.6.1.4"
+  
+# Mount the secret created earlier
+secretVolumes:
+ - kong-cluster-cert
+  
+env:
+ # data_plane nodes do not have a database
+ role: data_plane
+ database: "off"
+  
+ # Tell the data plane how to connect to the control plane
+ cluster_control_plane: kong-cp-kong-cluster.kong.svc.cluster.local:8005
+ cluster_telemetry_endpoint: kong-cp-kong-clustertelemetry.kong.svc.cluster.local:8006
+  
+ # Configure control plane / data plane authentication
+ lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
+ cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+ cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  
+# Enterprise functionality
+enterprise:
+ enabled: true
+ license_secret: kong-enterprise-license
+  
+# The data plane handles proxy traffic only
+proxy:
+ enabled: true
+  
+# These roles are served by the kong-cp deployment
+admin:
+ enabled: false
+  
+manager:
+ enabled: false

@@ -121,30 +121,36 @@ variable "backend_service_configs" {
       }))
     }))
     security_settings = optional(object({
-      client_tls_policy = string
-      subject_alt_names = list(string)
-    }))
-  }))
+      client_tls_policy = optional(string)
+      subject_alt_names = optional(list(string))
+      aws_v4_authentication = optional(object({
+        access_key_id      = optional(string)
+        access_key         = optional(string)
+        access_key_version = optional(string)
+        origin_region      = optional(string)
+      }))
+  })) }))
   default  = {}
   nullable = false
   validation {
-    condition = contains(
-      [
-        "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
-        "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
-      ],
-      try(var.backend_service_configs.locality_lb_policy, "-")
-    )
-    error_message = "Invalid locality lb policy value."
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
+          "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
+        ],
+        coalesce(backend_service.session_affinity, "NONE")
+      )
+    ])
+    error_message = "Invalid session affinity value."
   }
   validation {
-    condition = contains(
-      [
-        "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
-        "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
-      ],
-      try(var.backend_service_configs.session_affinity, "NONE")
-    )
-    error_message = "Invalid session affinity value."
+    condition = alltrue(flatten([
+      for backend_service in values(var.backend_service_configs) : [
+        for backend in backend_service.backends : contains(
+          ["RATE", "UTILIZATION"], coalesce(backend.balancing_mode, "UTILIZATION")
+      )]
+    ]))
+    error_message = "When specified, balancing mode needs to be 'RATE' or 'UTILIZATION'."
   }
 }

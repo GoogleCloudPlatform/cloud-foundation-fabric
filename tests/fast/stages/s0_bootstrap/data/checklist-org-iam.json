@@ -1,0 +1,108 @@
+{
+  "cloud_setup_org_iam": {
+    "version": "0.1.0",
+    "organization": {
+      "id": "123456789012",
+      "name": "fast.example.com"
+    },
+    "iam_bindings": [
+      {
+        "principal": "group:gcp-organization-admins@fast.example.com",
+        "group_id": "ORG_ADMINS",
+        "role": [
+          "roles/storage.objectAdmin",
+          "roles/resourcemanager.folderAdmin",
+          "roles/resourcemanager.projectCreator",
+          "roles/billing.user",
+          "roles/iam.organizationRoleAdmin",
+          "roles/orgpolicy.policyAdmin",
+          "roles/securitycenter.admin",
+          "roles/cloudsupport.admin"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-billing-admins@fast.example.com",
+        "group_id": "BILLING_ADMINS",
+        "role": [
+          "roles/billing.admin",
+          "roles/billing.creator",
+          "roles/resourcemanager.organizationViewer"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-network-admins@fast.example.com",
+        "group_id": "NETWORK_ADMINS",
+        "role": [
+          "roles/compute.networkAdmin",
+          "roles/compute.xpnAdmin",
+          "roles/compute.securityAdmin",
+          "roles/resourcemanager.folderViewer"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-logging-admins@fast.example.com",
+        "group_id": "LOGGING_ADMINS",
+        "role": [
+          "roles/logging.admin"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-monitoring-admins@fast.example.com",
+        "group_id": "MONITORING_ADMINS",
+        "role": [
+          "roles/monitoring.admin"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-security-admins@fast.example.com",
+        "group_id": "SECURITY_ADMINS",
+        "role": [
+          "roles/orgpolicy.policyAdmin",
+          "roles/iam.securityReviewer",
+          "roles/iam.organizationRoleViewer",
+          "roles/securitycenter.admin",
+          "roles/resourcemanager.folderIamAdmin",
+          "roles/logging.privateLogViewer",
+          "roles/logging.configWriter",
+          "roles/container.viewer",
+          "roles/compute.viewer"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      },
+      {
+        "principal": "group:gcp-devops@fast.example.com",
+        "group_id": "DEVOPS",
+        "role": [
+          "roles/resourcemanager.folderViewer"
+        ],
+        "resource": {
+          "type": "ORGANIZATION",
+          "id": "123456789012"
+        }
+      }
+    ]
+  }
+}

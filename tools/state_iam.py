@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ FIELDS = ('authoritative', 'resource_type', 'resource_id', 'role',
 ORG_IDS = {}
 RESOURCE_SORT = {'organization': 0, 'folder': 1, 'project': 2}
 RESOURCE_TYPE_RE = re.compile(r'^google_([^_]+)_iam_([^_]+)$')
+
 Binding = collections.namedtuple('Binding', ' '.join(FIELDS))
+Folder = collections.namedtuple('Folder', 'id name parent_id')
 
 
 def _org_id(resource_id):
   if resource_id not in ORG_IDS:
-    ORG_IDS[resource_id] = f'[org_id #{len(ORG_IDS)}]'
+    ORG_IDS[resource_id] = f'[org-{len(ORG_IDS)}]'
   return ORG_IDS[resource_id]
 
 
@@ -98,16 +100,14 @@ def get_folders(resources):
       continue
     for i in r['instances']:
       folder_id = i['attributes']['id']
-      folder_name = i['attributes']['display_name']
-      if folder_name not in folders:
-        folders[folder_name] = []
-      folders[folder_name].append(folder_id)
-  for name, ids in folders.items():
-    for i, folder_id in enumerate(ids):
-      if len(ids) == 1:
-        yield folder_id, name
-      else:
-        yield folder_id, f'{name} [#{i}]'
+      folders[folder_id] = Folder(folder_id, i['attributes']['display_name'],
+                                  i['attributes']['parent'])
+  for folder_id, folder in folders.items():
+    if folder.parent_id.startswith('folders/') and folder.parent_id in folders:
+      name = f'{folders[folder.parent_id].name}/{folder.name}'
+    else:
+      name = folder.name
+    yield folder_id, name
 
 
 def output_csv(bindings):

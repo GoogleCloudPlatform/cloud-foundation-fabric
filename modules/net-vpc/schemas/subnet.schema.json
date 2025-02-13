@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Subnet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ip_cidr_range",
+    "region"
+  ],
+  "properties": {
+    "active": {
+      "type": "boolean"
+    },
+    "description": {
+      "type": "string"
+    },
+    "enable_private_access": {
+      "type": "boolean"
+    },
+    "flow_logs_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aggregation_interval": {
+          "type": "string"
+        },
+        "filter_expression": {
+          "type": "string"
+        },
+        "flow_sampling": {
+          "type": "number"
+        },
+        "metadata": {
+          "type": "string"
+        },
+        "metadata_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "global": {
+      "type": "boolean"
+    },
+    "ip_cidr_range": {
+      "type": "string"
+    },
+    "ipv6": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "access_type": {
+          "type": "string"
+        }
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "psc": {
+      "type": "boolean"
+    },
+    "proxy_only": {
+      "type": "boolean"
+    },
+    "secondary_ip_ranges": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^roles/": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+          }
+        }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^roles/"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|ro|rw)"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^roles/"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

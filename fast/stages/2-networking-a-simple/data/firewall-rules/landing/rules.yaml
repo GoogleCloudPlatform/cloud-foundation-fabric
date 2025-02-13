@@ -1,0 +1,15 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/firewall-rules.schema.json
+
+ingress:
+  allow-onprem-probes-landing-example:
+    description: "Allow traffic from onprem probes"
+    source_ranges:
+      - onprem_probes
+    rules:
+      - protocol: tcp
+        ports:
+          - 12345

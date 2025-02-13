@@ -199,6 +199,7 @@ resource "google_compute_backend_service" "default" {
   dynamic "iap" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
+      enabled                     = true
       oauth2_client_id            = iap.value.oauth2_client_id
       oauth2_client_secret        = iap.value.oauth2_client_secret
       oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256
@@ -257,6 +258,17 @@ resource "google_compute_backend_service" "default" {
     content {
       client_tls_policy = ss.value.client_tls_policy
       subject_alt_names = ss.value.subject_alt_names
+
+      dynamic "aws_v4_authentication" {
+        for_each = ss.value.aws_v4_authentication == null ? [] : [""]
+
+        content {
+          access_key_id      = ss.value.aws_v4_authentication.access_key_id
+          access_key         = ss.value.aws_v4_authentication.access_key
+          access_key_version = ss.value.aws_v4_authentication.access_key_version
+          origin_region      = ss.value.aws_v4_authentication.origin_region
+        }
+      }
     }
   }
 }

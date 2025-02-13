@@ -16,29 +16,31 @@
 
 # tfdoc:file:description Cloud Dataproc module output.
 
-output "bucket_names" {
-  description = "List of bucket names which have been assigned to the cluster."
-  value       = google_dataproc_cluster.cluster.cluster_config.0.bucket
-}
-
-output "http_ports" {
-  description = "The map of port descriptions to URLs."
-  value       = google_dataproc_cluster.cluster.cluster_config.0.endpoint_config.0.http_ports
-}
+# FIXME: 2024-03-08: broken in provider
+#output "bucket_names" {
+#  description = "List of bucket names which have been assigned to the cluster."
+#  value       = google_dataproc_cluster.cluster.cluster_config[0].bucket
+#}
+#
+#output "http_ports" {
+#  description = "The map of port descriptions to URLs."
+#  value       = google_dataproc_cluster.cluster.cluster_config[0].endpoint_config[0].http_ports
+#}
 
 output "id" {
   description = "Fully qualified cluster id."
   value       = google_dataproc_cluster.cluster.id
 }
 
-output "instance_names" {
-  description = "List of instance names which have been assigned to the cluster."
-  value = {
-    master             = google_dataproc_cluster.cluster.cluster_config.0.master_config.0.instance_names
-    worker             = google_dataproc_cluster.cluster.cluster_config.0.worker_config.0.instance_names
-    preemptible_worker = google_dataproc_cluster.cluster.cluster_config.0.preemptible_worker_config.0.instance_names
-  }
-}
+# FIXME: 2024-03-08: broken in provider
+#output "instance_names" {
+#  description = "List of instance names which have been assigned to the cluster."
+#  value = {
+#    master             = google_dataproc_cluster.cluster.cluster_config[0].master_config[0].instance_names
+#    worker             = google_dataproc_cluster.cluster.cluster_config[0].worker_config[0].instance_names
+#    preemptible_worker = google_dataproc_cluster.cluster.cluster_config[0].preemptible_worker_config[0].instance_names
+#  }
+#}
 
 output "name" {
   description = "The name of the cluster."

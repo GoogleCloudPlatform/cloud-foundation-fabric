@@ -38,18 +38,20 @@ variable "dataproc_config" {
         node_group_affinity = optional(object({
           node_group_uri = string
         }))
-
         shielded_instance_config = optional(object({
           enable_secure_boot          = bool
           enable_vtpm                 = bool
           enable_integrity_monitoring = bool
         }))
+        confidential_instance_config = optional(object({
+          enable_confidential_compute = bool
+        }))
       }))
       master_config = optional(object({
         num_instances    = number
-        machine_type     = string
-        min_cpu_platform = string
-        image_uri        = string
+        machine_type     = optional(string)
+        min_cpu_platform = optional(string)
+        image_uri        = optional(string)
         disk_config = optional(object({
           boot_disk_type    = string
           boot_disk_size_gb = number
@@ -128,14 +130,13 @@ variable "dataproc_config" {
       dataproc_metric_config = optional(object({
         metrics = list(object({
           metric_source    = string
-          metric_overrides = optional(string)
+          metric_overrides = optional(list(string))
         }))
       }))
       metastore_config = optional(object({
         dataproc_metastore_service = string
       }))
     }))
-
     virtual_cluster_config = optional(object({
       staging_bucket = optional(string)
       auxiliary_services_config = optional(object({
@@ -149,10 +150,9 @@ variable "dataproc_config" {
       kubernetes_cluster_config = object({
         kubernetes_namespace = optional(string)
         kubernetes_software_config = object({
-          component_version = list(map(string))
-          properties        = optional(list(map(string)))
+          component_version = map(string)
+          properties        = optional(map(string))
         })
-
         gke_cluster_config = object({
           gke_cluster_target = optional(string)
           node_pool_target = optional(object({
@@ -163,7 +163,6 @@ variable "dataproc_config" {
                 min_node_count = optional(number)
                 max_node_count = optional(number)
               }))
-
               config = object({
                 machine_type     = optional(string)
                 preemptible      = optional(bool)
@@ -171,7 +170,6 @@ variable "dataproc_config" {
                 min_cpu_platform = optional(string)
                 spot             = optional(bool)
               })
-
               locations = optional(list(string))
             }))
           }))
@@ -180,50 +178,6 @@ variable "dataproc_config" {
     }))
   })
   default = {}
-}
-
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
 }
 
 variable "labels" {
@@ -237,16 +191,6 @@ variable "name" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Optional prefix used to generate project id and name."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
-}
-
 variable "project_id" {
   description = "Project ID."
   type        = string
@@ -255,10 +199,4 @@ variable "project_id" {
 variable "region" {
   description = "Dataproc region."
   type        = string
-}
-
-variable "service_account" {
-  description = "Service account to set on the Dataproc cluster."
-  type        = string
-  default     = null
 }

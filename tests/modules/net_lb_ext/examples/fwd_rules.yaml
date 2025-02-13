@@ -1,0 +1,260 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.compute-vm-group-b.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: cos-cloud/cos-stable
+        resource_manager_tags: null
+        size: 10
+        storage_pool: null
+        type: pd-balanced
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    name: my-ig-b
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-b
+  module.compute-vm-group-b.google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: my-ig-b
+    named_port: []
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    timeouts: null
+    zone: europe-west8-b
+  module.compute-vm-group-c.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: cos-cloud/cos-stable
+        resource_manager_tags: null
+        size: 10
+        storage_pool: null
+        type: pd-balanced
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    name: my-ig-c
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-c
+  module.compute-vm-group-c.google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: my-ig-c
+    named_port: []
+    network: projects/xxx/global/networks/aaa
+    project: project-id
+    timeouts: null
+    zone: europe-west8-c
+  module.nlb.google_compute_forwarding_rule.default["vip-one"]:
+    all_ports: true
+    allow_global_access: null
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: nlb-test-vip-one
+    no_automate_dns_zone: null
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    target: null
+    timeouts: null
+  module.nlb.google_compute_forwarding_rule.default["vip-two"]:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: nlb-test-vip-two
+    no_automate_dns_zone: null
+    ports:
+    - '80'
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    target: null
+    timeouts: null
+  module.nlb.google_compute_instance_group.default["my-group"]:
+    description: Terraform managed.
+    name: nlb-test-my-group
+    named_port: []
+    project: project-id
+    timeouts: null
+    zone: europe-west8-b
+  module.nlb.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    description: Terraform managed.
+    enable_cdn: null
+    failover_policy: []
+    load_balancing_scheme: EXTERNAL
+    locality_lb_policy: null
+    name: nlb-test
+    network: null
+    outlier_detection: []
+    project: project-id
+    protocol: UNSPECIFIED
+    region: europe-west8
+    security_policy: null
+    subsetting: []
+    timeouts: null
+  module.nlb.google_compute_region_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: nlb-test
+    project: project-id
+    region: europe-west8
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+
+counts:
+  google_compute_forwarding_rule: 2
+  google_compute_instance: 2
+  google_compute_instance_group: 3
+  google_compute_region_backend_service: 1
+  google_compute_region_health_check: 1
+  modules: 3
+  resources: 9

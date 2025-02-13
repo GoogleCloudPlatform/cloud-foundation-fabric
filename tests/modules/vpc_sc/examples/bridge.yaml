@@ -48,7 +48,7 @@ values:
     - access_levels: null
       egress_policies: []
       ingress_policies: []
-      resources: []
+      resources: null
       restricted_services: null
       vpc_accessible_services: []
     title: b2

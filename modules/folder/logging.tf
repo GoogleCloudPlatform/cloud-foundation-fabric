@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,42 +17,57 @@
 # tfdoc:file:description Log sinks and supporting resources.
 
 locals {
+  logging_sinks = {
+    for k, v in var.logging_sinks :
+    # rewrite destination and type when type="project"
+    k => merge(v, v.type != "project" ? {} : {
+      destination = "projects/${v.destination}"
+      type        = "logging"
+    })
+  }
   sink_bindings = {
-    for type in ["bigquery", "pubsub", "logging", "storage"] :
+    for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
     type => {
       for name, sink in var.logging_sinks :
       name => sink
-      if sink.type == type
+      if sink.iam == true && sink.type == type
     }
   }
 }
 
+resource "google_logging_folder_settings" "default" {
+  count                = var.logging_settings != null ? 1 : 0
+  folder               = local.folder_id
+  disable_default_sink = var.logging_settings.disable_default_sink
+  storage_location     = var.logging_settings.storage_location
+}
+
 resource "google_folder_iam_audit_config" "default" {
   for_each = var.logging_data_access
-  folder   = local.folder.name
+  folder   = local.folder_id
   service  = each.key
   dynamic "audit_log_config" {
-    for_each = each.value
-    iterator = config
+    for_each = { for k, v in each.value : k => v if v != null }
     content {
-      log_type         = config.key
-      exempted_members = config.value
+      log_type         = audit_log_config.key
+      exempted_members = audit_log_config.value.exempted_members
     }
   }
 }
 
 resource "google_logging_folder_sink" "sink" {
-  for_each         = var.logging_sinks
-  name             = each.key
-  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
-  folder           = local.folder.name
-  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
-  filter           = each.value.filter
-  include_children = each.value.include_children
-  disabled         = each.value.disabled
+  for_each           = local.logging_sinks
+  name               = each.key
+  description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
+  folder             = local.folder_id
+  destination        = "${each.value.type}.googleapis.com/${each.value.destination}"
+  filter             = each.value.filter
+  include_children   = each.value.include_children
+  intercept_children = each.value.intercept_children
+  disabled           = each.value.disabled
 
   dynamic "bigquery_options" {
-    for_each = each.value.type == "biquery" && each.value.bq_partitioned_table != false ? [""] : []
+    for_each = each.value.type == "bigquery" ? [""] : []
     content {
       use_partitioned_tables = each.value.bq_partitioned_table
     }
@@ -100,18 +115,24 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
-
   condition {
     title       = "${each.key} bucket writer"
-    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder.id}"
+    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder_id}"
     expression  = "resource.name.endsWith('${each.value.destination}')"
   }
+}
+
+resource "google_project_iam_member" "project-sinks-binding" {
+  for_each = local.sink_bindings["project"]
+  project  = each.value.destination
+  role     = "roles/logging.logWriter"
+  member   = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_logging_folder_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
-  folder      = local.folder.name
+  folder      = local.folder_id
   description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

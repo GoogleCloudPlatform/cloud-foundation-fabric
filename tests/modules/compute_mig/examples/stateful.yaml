@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ values:
     list_managed_instances_results: PAGELESS
     name: mig-test
     named_port: []
-    project: my-prj
+    project: project-id
     stateful_disk: []
     stateful_external_ip: []
     stateful_internal_ip: []
@@ -43,19 +43,22 @@ values:
       - delete_rule: NEVER
         device_name: data-1
         mode: READ_WRITE
-        source: projects/my-prj/zones/europe-west8-b/disks/test-data-1
+      external_ip: []
+      internal_ip: []
       metadata:
         foo: bar
-    project: my-prj
+    project: project-id
+    remove_instance_on_destroy: false
     remove_instance_state_on_destroy: false
     timeouts: null
     zone: europe-west8-b
 
+
 counts:
+  google_compute_disk: 1
   google_compute_instance_group_manager: 1
   google_compute_instance_template: 1
   google_compute_per_instance_config: 1
   modules: 2
-  resources: 3
+  resources: 4
 
-outputs: {}

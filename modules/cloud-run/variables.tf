@@ -100,6 +100,14 @@ variable "eventarc_triggers" {
     service_account_create = optional(bool, false)
   })
   default = {}
+  validation {
+    condition = (
+      var.eventarc_triggers.service_account_email == null && length(var.eventarc_triggers.audit_log) == 0
+      ) || (
+      var.eventarc_triggers.service_account_email != null
+    )
+    error_message = "service_account_email is required if providing audit_log"
+  }
 }
 
 variable "gen2_execution_environment" {
@@ -156,7 +164,6 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "europe-west1"
 }
 
 variable "revision_annotations" {
@@ -196,6 +203,13 @@ variable "startup_cpu_boost" {
   description = "Enable startup cpu boost."
   type        = bool
   default     = false
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this service, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "timeout_seconds" {

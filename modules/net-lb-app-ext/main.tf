@@ -15,13 +15,14 @@
  */
 
 locals {
-  fwd_rule_ports = (
-    var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
-  )
+  fwd_rule_names = {
+    for k, v in var.forwarding_rules_config :
+    k => k == "" ? var.name : "${var.name}-${k}"
+  }
   fwd_rule_target = (
     var.protocol == "HTTPS"
-    ? google_compute_target_https_proxy.default.0.id
-    : google_compute_target_http_proxy.default.0.id
+    ? google_compute_target_https_proxy.default[0].id
+    : google_compute_target_http_proxy.default[0].id
   )
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
@@ -30,19 +31,33 @@ locals {
   )
 }
 
+moved {
+  from = google_compute_global_forwarding_rule.default
+  to   = google_compute_global_forwarding_rule.default[""]
+}
+
+moved {
+  from = google_compute_global_forwarding_rule.default
+  to   = google_compute_global_forwarding_rule.default[""]
+}
+
 resource "google_compute_global_forwarding_rule" "default" {
   provider    = google-beta
+  for_each    = var.forwarding_rules_config
   project     = var.project_id
-  name        = var.name
-  description = var.description
-  ip_address  = var.address
+  name        = coalesce(each.value.name, local.fwd_rule_names[each.key])
+  description = coalesce(each.value.description, var.description)
+  ip_address  = each.value.address
   ip_protocol = "TCP"
+  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   load_balancing_scheme = (
     var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   )
-  port_range = join(",", local.fwd_rule_ports)
-  labels     = var.labels
-  target     = local.fwd_rule_target
+  port_range = join(",", (
+    var.protocol == "HTTPS" ? [443] : coalesce(each.value.ports, [80])
+  ))
+  labels = var.labels
+  target = local.fwd_rule_target
 }
 
 # certificates
@@ -63,9 +78,6 @@ resource "google_compute_managed_ssl_certificate" "default" {
   managed {
     domains = each.value.domains
   }
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 # proxies
@@ -79,13 +91,15 @@ resource "google_compute_target_http_proxy" "default" {
 }
 
 resource "google_compute_target_https_proxy" "default" {
-  count            = var.protocol == "HTTPS" ? 1 : 0
-  project          = var.project_id
-  name             = var.name
-  description      = var.description
-  certificate_map  = var.https_proxy_config.certificate_map
-  quic_override    = var.https_proxy_config.quic_override
-  ssl_certificates = local.proxy_ssl_certificates
-  ssl_policy       = var.https_proxy_config.ssl_policy
-  url_map          = google_compute_url_map.default.id
+  count                            = var.protocol == "HTTPS" ? 1 : 0
+  project                          = var.project_id
+  name                             = var.name
+  description                      = var.description
+  certificate_map                  = var.https_proxy_config.certificate_map
+  certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
+  quic_override                    = var.https_proxy_config.quic_override
+  ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
+  ssl_policy                       = var.https_proxy_config.ssl_policy
+  url_map                          = google_compute_url_map.default.id
+  server_tls_policy                = var.https_proxy_config.mtls_policy
 }

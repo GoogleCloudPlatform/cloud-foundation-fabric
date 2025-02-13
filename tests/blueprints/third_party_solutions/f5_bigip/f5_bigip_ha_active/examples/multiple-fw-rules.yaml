@@ -1,0 +1,493 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.f5-lb.module.bigip-vms["a"].google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742
+        resource_manager_tags: null
+        size: 100
+        storage_pool: null
+        type: pd-ssd
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: n2-standard-4
+    metadata_startup_script: null
+    name: test-lb-a
+    network_interface:
+    - access_config: []
+      alias_ip_range:
+      - ip_cidr_range: 192.168.1.0/24
+        subnetwork_range_name: ip-range-a
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/dataplane
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/management
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: my-project
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west1-a
+  module.f5-lb.module.bigip-vms["a"].google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: test-lb-a
+    named_port: []
+    network: projects/my-project/global/networks/dataplane
+    project: my-project
+    timeouts: null
+    zone: europe-west1-a
+  module.f5-lb.module.bigip-vms["b"].google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742
+        resource_manager_tags: null
+        size: 100
+        storage_pool: null
+        type: pd-ssd
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    labels: null
+    machine_type: n2-standard-4
+    metadata_startup_script: null
+    name: test-lb-b
+    network_interface:
+    - access_config: []
+      alias_ip_range:
+      - ip_cidr_range: 192.168.2.0/24
+        subnetwork_range_name: ip-range-b
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/dataplane
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/management
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: my-project
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west1-b
+  module.f5-lb.module.bigip-vms["b"].google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: test-lb-b
+    named_port: []
+    network: projects/my-project/global/networks/dataplane
+    project: my-project
+    timeouts: null
+    zone: europe-west1-b
+  module.f5-lb.module.lb-addresses.google_compute_address.external["ext-ipv4"]:
+    address_type: EXTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-nlb-ext-ipv4
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.lb-addresses.google_compute_address.external["ext-ipv6"]:
+    address_type: EXTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: IPV6
+    ipv6_endpoint_type: NETLB
+    labels: null
+    name: test-nlb-ext-ipv6
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.lb-addresses.google_compute_address.internal["int-ipv4"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-ilb-int-ipv4
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.lb-addresses.google_compute_address.internal["int-ipv6"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-ilb-int-ipv6
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.default["int-ipv4"]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: L3_DEFAULT
+    ip_version: __missing__
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL
+    name: test-ilb-int-ipv4
+    network: projects/my-project/global/networks/dataplane
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    target: null
+    timeouts: null
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.default["int-ipv6"]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: L3_DEFAULT
+    ip_version: __missing__
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL
+    name: test-ilb-int-ipv6
+    network: projects/my-project/global/networks/dataplane
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    target: null
+    timeouts: null
+  module.f5-lb.module.passthrough-ilb[0].google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: test-ilb
+    project: my-project
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check:
+    - port: 65535
+      port_name: null
+      port_specification: USE_FIXED_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.f5-lb.module.passthrough-ilb[0].google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    description: Terraform managed.
+    enable_cdn: null
+    failover_policy: []
+    iap:
+      - enabled: false
+    load_balancing_scheme: INTERNAL
+    locality_lb_policy: null
+    name: test-ilb
+    network: projects/my-project/global/networks/dataplane
+    outlier_detection: []
+    project: my-project
+    protocol: UNSPECIFIED
+    region: europe-west1
+    security_policy: null
+    subsetting: []
+    timeouts: null
+  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.default["ext-ipv4"]:
+    all_ports: true
+    allow_global_access: null
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: L3_DEFAULT
+    ip_version: __missing__
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: test-nlb-ext-ipv4
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    target: null
+    timeouts: null
+  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.default["ext-ipv6"]:
+    all_ports: true
+    allow_global_access: null
+    allow_psc_global_access: null
+    description: null
+    ip_protocol: L3_DEFAULT
+    ip_version: __missing__
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: test-nlb-ext-ipv6
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/ipv6_external
+    target: null
+    timeouts: null
+  module.f5-lb.module.passthrough-nlb[0].google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    description: Terraform managed.
+    enable_cdn: null
+    failover_policy: []
+    load_balancing_scheme: EXTERNAL
+    locality_lb_policy: null
+    name: test-nlb
+    network: null
+    outlier_detection: []
+    project: my-project
+    protocol: UNSPECIFIED
+    region: europe-west1
+    security_policy: null
+    subsetting: []
+    timeouts: null
+  module.f5-lb.module.passthrough-nlb[0].google_compute_region_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: test-nlb
+    project: my-project
+    region: europe-west1
+    ssl_health_check: []
+    tcp_health_check:
+    - port: 65535
+      port_name: null
+      port_specification: USE_FIXED_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.f5-lb.module.vm-addresses-dp.google_compute_address.internal["a"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-a-dp
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.vm-addresses-dp.google_compute_address.internal["b"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-b-dp
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.vm-addresses-mgmt.google_compute_address.internal["a"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-a-mgmt
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.f5-lb.module.vm-addresses-mgmt.google_compute_address.internal["b"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: test-b-mgmt
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_compute_address: 8
+  google_compute_forwarding_rule: 4
+  google_compute_health_check: 1
+  google_compute_instance: 2
+  google_compute_instance_group: 2
+  google_compute_region_backend_service: 2
+  google_compute_region_health_check: 1
+  modules: 8
+  resources: 20

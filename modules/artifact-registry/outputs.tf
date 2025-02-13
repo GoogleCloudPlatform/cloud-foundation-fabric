@@ -17,16 +17,11 @@
 output "id" {
   description = "Fully qualified repository id."
   value       = google_artifact_registry_repository.registry.id
-}
-
-output "image_path" {
-  description = "Repository path for images."
-  value = join("/", [
-    "${var.location}-${local.format_string}.pkg.dev",
-    var.project_id,
-    var.name
-  ])
-  depends_on = [google_artifact_registry_repository.registry]
+  depends_on = [
+    google_artifact_registry_repository_iam_binding.authoritative,
+    google_artifact_registry_repository_iam_binding.bindings2,
+    google_artifact_registry_repository_iam_member.members,
+  ]
 }
 
 output "name" {

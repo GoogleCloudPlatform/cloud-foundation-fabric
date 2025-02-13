@@ -15,7 +15,7 @@
 values:
   module.vpc.google_compute_network.network[0]:
     name: my-network
-    project: my-project
+    project: project-id
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]: {}
   module.vpc.google_dns_policy.default[0]:
     alternative_name_server_config:
@@ -30,7 +30,7 @@ values:
     name: my-network
     networks:
     - {}
-    project: my-project
+    project: project-id
 
 counts:
   google_compute_network: 1

@@ -25,10 +25,16 @@ locals {
       for k, v in google_compute_network_endpoint_group.default : k => v.id
     },
     {
+      for k, v in google_compute_region_network_endpoint_group.internet : k => v.id
+    },
+    {
       for k, v in google_compute_region_network_endpoint_group.default : k => v.id
     },
     {
       for k, v in google_compute_region_network_endpoint_group.psc : k => v.id
+    },
+    {
+      for k, v in google_compute_region_network_endpoint.internet : k => v.id
     }
   )
   hc_ids = {
@@ -60,6 +66,7 @@ resource "google_compute_region_backend_service" "default" {
   )
   session_affinity = each.value.session_affinity
   timeout_sec      = each.value.timeout_sec
+  security_policy  = each.value.security_policy
 
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
@@ -114,28 +121,6 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic "connection_tracking_policy" {
-    for_each = (
-      each.value.connection_tracking == null
-      ? []
-      : [each.value.connection_tracking]
-    )
-    iterator = cb
-    content {
-      connection_persistence_on_unhealthy_backends = (
-        cb.value.persist_conn_on_unhealthy != null
-        ? cb.value.persist_conn_on_unhealthy
-        : null
-      )
-      idle_timeout_sec = cb.value.idle_timeout_sec
-      tracking_mode = (
-        cb.value.track_per_session != null
-        ? cb.value.track_per_session
-        : null
-      )
-    }
-  }
-
   dynamic "consistent_hash" {
     for_each = (
       each.value.consistent_hash == null ? [] : [each.value.consistent_hash]
@@ -178,6 +163,7 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "iap" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
+      enabled                     = true
       oauth2_client_id            = iap.value.oauth2_client_id
       oauth2_client_secret        = iap.value.oauth2_client_secret
       oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256

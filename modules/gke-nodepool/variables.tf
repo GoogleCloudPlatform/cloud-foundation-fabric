@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,15 @@ variable "gke_version" {
   default     = null
 }
 
-variable "labels" {
+variable "k8s_labels" {
   description = "Kubernetes labels applied to each node."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
+variable "labels" {
+  description = "The resource labels to be applied each node (vm)."
   type        = map(string)
   default     = {}
   nullable    = false
@@ -60,28 +67,37 @@ variable "node_config" {
   type = object({
     boot_disk_kms_key   = optional(string)
     disk_size_gb        = optional(number)
-    disk_type           = optional(string)
+    disk_type           = optional(string, "pd-balanced")
     ephemeral_ssd_count = optional(number)
     gcfs                = optional(bool, false)
     guest_accelerator = optional(object({
-      count              = number
-      type               = string
-      gpu_partition_size = optional(string)
+      count = number
+      type  = string
+      gpu_driver = optional(object({
+        version                    = string
+        partition_size             = optional(string)
+        max_shared_clients_per_gpu = optional(number)
+      }))
     }))
-    gvnic      = optional(bool, false)
-    image_type = optional(string)
+    local_nvme_ssd_count = optional(number)
+    gvnic                = optional(bool, false)
+    image_type           = optional(string)
     kubelet_config = optional(object({
       cpu_manager_policy   = string
       cpu_cfs_quota        = optional(bool)
       cpu_cfs_quota_period = optional(string)
+      pod_pids_limit       = optional(number)
     }))
-    linux_node_config_sysctls = optional(map(string))
-    local_ssd_count           = optional(number)
-    machine_type              = optional(string)
-    metadata                  = optional(map(string))
-    min_cpu_platform          = optional(string)
-    preemptible               = optional(bool)
-    sandbox_config_gvisor     = optional(bool)
+    linux_node_config = optional(object({
+      sysctls     = optional(map(string))
+      cgroup_mode = optional(string)
+    }))
+    local_ssd_count       = optional(number)
+    machine_type          = optional(string)
+    metadata              = optional(map(string))
+    min_cpu_platform      = optional(string)
+    preemptible           = optional(bool)
+    sandbox_config_gvisor = optional(bool)
     shielded_instance_config = optional(object({
       enable_integrity_monitoring = optional(bool)
       enable_secure_boot          = optional(bool)
@@ -89,8 +105,25 @@ variable "node_config" {
     spot                          = optional(bool)
     workload_metadata_config_mode = optional(string)
   })
-  default = {
-    disk_type = "pd-balanced"
+  default  = {}
+  nullable = false
+  validation {
+    condition = (
+      alltrue([
+        for k, v in try(var.node_config.guest_accelerator[0].gpu_driver, {}) : contains([
+          "GPU_DRIVER_VERSION_UNSPECIFIED", "INSTALLATION_DISABLED",
+          "DEFAULT", "LATEST"
+        ], v.version)
+      ])
+    )
+    error_message = "Invalid GPU driver version."
+  }
+  validation {
+    condition = contains(
+      ["GCE_METADATA", "GKE_METADATA", "null"],
+      coalesce(var.node_config.workload_metadata_config_mode, "null")
+    )
+    error_message = "node_config.workload_metadata_config_mode must be GCE_METADATA or GKE_METADATA."
   }
 }
 
@@ -125,7 +158,12 @@ variable "nodepool_config" {
       auto_repair  = optional(bool)
       auto_upgrade = optional(bool)
     }))
-    # placement_policy = optional(bool)
+    placement_policy = optional(object({
+      type         = string
+      policy_name  = optional(string)
+      tpu_topology = optional(string)
+    }))
+    queued_provisioning = optional(bool, false)
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number
@@ -138,9 +176,10 @@ variable "pod_range" {
   description = "Pod secondary range configuration."
   type = object({
     secondary_pod_range = object({
-      cidr   = optional(string)
-      create = optional(bool)
-      name   = string
+      name                 = string
+      cidr                 = optional(string)
+      create               = optional(bool)
+      enable_private_nodes = optional(bool)
     })
   })
   default = null
@@ -167,6 +206,7 @@ variable "service_account" {
     create       = optional(bool, false)
     email        = optional(string)
     oauth_scopes = optional(list(string))
+    display_name = optional(string)
   })
   default  = {}
   nullable = false
@@ -186,10 +226,17 @@ variable "tags" {
 
 variable "taints" {
   description = "Kubernetes taints applied to all nodes."
-  type = list(object({
-    key    = string
+  type = map(object({
     value  = string
     effect = string
   }))
-  default = null
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.taints :
+      contains(["NO_SCHEDULE", "PREFER_NO_SCHEDULE", "NO_EXECUTE"], v.effect)
+    ])
+    error_message = "Invalid taint effect."
+  }
 }

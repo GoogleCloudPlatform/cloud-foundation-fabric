@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,32 +13,73 @@
 # limitations under the License.
 
 values:
-  google_kms_crypto_key_iam_member.service_identity_cmek["compute.key1"]:
+  data.google_storage_project_service_account.gcs_sa[0]:
+    project: my-project
+    user_project: null
+  google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
     crypto_key_id: key1
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  google_kms_crypto_key_iam_member.service_identity_cmek["storage.key1"]:
+  google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]:
     condition: []
     crypto_key_id: key1
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  google_kms_crypto_key_iam_member.service_identity_cmek["storage.key2"]:
+  google_kms_crypto_key_iam_member.service_agent_cmek["key-1.gs-project-accounts"]:
     condition: []
     crypto_key_id: key2
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   google_project.project[0]:
     auto_create_network: false
     billing_account: null
+    deletion_policy: 'DELETE'
     folder_id: null
     labels: null
     name: my-project
     org_id: null
     project_id: my-project
-    skip_delete: false
+    timeouts: null
+  google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: my-project
+    role: roles/compute.serviceAgent
+  google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: compute.googleapis.com
+    timeouts: null
+  google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-project
+    service: storage.googleapis.com
     timeouts: null
 
 counts:
   google_kms_crypto_key_iam_member: 3
   google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 2
+  google_storage_project_service_account: 1
+  modules: 0
+  resources: 8
 
 outputs:
+  custom_role_id: {}
+  custom_roles: {}
+  default_service_accounts: __missing__
+  id: my-project
   name: my-project
+  network_tag_keys: {}
+  network_tag_values: {}
+  number: __missing__
+  project_id: my-project
+  quota_configs: {}
+  quotas: {}
+  service_agents: __missing__
+  services:
+  - compute.googleapis.com
+  - storage.googleapis.com
+  sink_writer_identities: {}
+  tag_keys: {}
+  tag_values: {}
