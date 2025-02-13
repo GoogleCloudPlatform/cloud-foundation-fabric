@@ -289,7 +289,7 @@ resource "random_password" "passwords" {
     k
     if v.password == null
   ])
-  length      = 16
+  length      = try(var.password_validation_policy.min_length, 16)
   special     = true
   min_lower   = 1
   min_numeric = 1
