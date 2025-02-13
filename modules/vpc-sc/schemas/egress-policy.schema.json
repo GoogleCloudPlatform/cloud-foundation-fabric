@@ -12,6 +12,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "access_levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "identity_type": {
           "enum": [
             "IDENTITY_TYPE_UNSPECIFIED",
@@ -27,6 +33,12 @@
             "type": "string",
             "pattern": "^(?:serviceAccount:|user:|group:|principal:)"
           }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -34,6 +46,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "external_resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "operations": {
           "type": "array",
           "items": {
@@ -66,9 +84,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "resource_type_external": {
-          "type": "boolean"
         }
       }
     }
