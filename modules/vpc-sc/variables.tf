@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ variable "access_levels" {
       negate                 = optional(bool)
       regions                = optional(list(string), [])
       required_access_levels = optional(list(string), [])
+      vpc_subnets            = optional(map(list(string)), {})
     })), [])
     description = optional(string)
   }))
@@ -82,17 +83,19 @@ variable "egress_policies" {
   description = "Egress policy definitions that can be referenced in perimeters."
   type = map(object({
     from = object({
+      access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
+      resources     = optional(list(string), [])
     })
     to = object({
+      external_resources = optional(list(string))
       operations = optional(list(object({
         method_selectors     = optional(list(string))
         permission_selectors = optional(list(string))
         service_name         = string
       })), [])
-      resources              = optional(list(string))
-      resource_type_external = optional(bool, false)
+      resources = optional(list(string))
     })
   }))
   default  = {}
@@ -110,10 +113,10 @@ variable "egress_policies" {
   validation {
     condition = alltrue([
       for k, v in var.egress_policies : v.from.identities == null ? true : alltrue([
-        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:|principalSet:)", identity))
       ])
     ])
-    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:', 'principal:' or 'principalSet:."
   }
 }
 
@@ -198,10 +201,10 @@ variable "ingress_policies" {
   validation {
     condition = alltrue([
       for k, v in var.ingress_policies : v.from.identities == null ? true : alltrue([
-        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:)", identity))
+        for identity in v.from.identities : can(regex("^(?:serviceAccount:|user:|group:|principal:|principalSet:)", identity))
       ])
     ])
-    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:' or 'principal:'."
+    error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:', 'principal:', 'principalSet:'."
   }
 }
 
