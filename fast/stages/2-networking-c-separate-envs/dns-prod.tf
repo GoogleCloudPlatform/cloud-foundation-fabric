@@ -62,6 +62,19 @@ module "prod-dns-fwd-onprem-rev-10" {
 }
 
 # Google APIs
+# the zone fixes issues with missing MX/SRV records when forwarding onprem
+
+module "prod-dns-priv-googleapis" {
+  source     = "../../../modules/dns"
+  project_id = module.prod-spoke-project.project_id
+  name       = "googleapis-com"
+  zone_config = {
+    domain = "googleapis.com."
+    private = {
+      client_networks = [module.prod-spoke-vpc.self_link]
+    }
+  }
+}
 
 module "prod-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
