@@ -67,4 +67,5 @@ apt_remote_registries = [
 | name | description | sensitive |
 |---|---|:---:|
 | [apt_configs](outputs.tf#L23) | APT configurations for remote registries. |  |
+| [vpcsc_command](outputs.tf#L33) | Command to allow egress to remotes from inside a perimeter. |  |
 <!-- END TFDOC -->
