@@ -102,7 +102,15 @@ variable "backend_service_configs" {
       oauth2_client_secret        = string
       oauth2_client_secret_sha256 = optional(string)
     }))
-    locality_lb_policies = optional(list(object({})))
+    locality_lb_policies = optional(list(object({
+      policy = optional(object({
+        name = string
+      }))
+      custom_policy = optional(object({
+        name = string
+        data = optional(string)
+      }))
+    })))
     outlier_detection = optional(object({
       consecutive_errors                    = optional(number)
       consecutive_gateway_failure           = optional(number)
@@ -157,14 +165,26 @@ variable "backend_service_configs" {
   }
   validation {
     condition = alltrue([
-      for backend_service in values(var.backend_service_configs) : contains(
-        [
-          "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
-          "ORIGINAL_DESTINATION", "MAGLEV", "WEIGHTED_MAGLEV", null
-        ],
-        backend_service.locality_lb_policy
-      )
+      for backend_service in values(var.backend_service_configs) :
+      (backend_service.locality_lb_policy == null ? true :
+        contains(
+              [
+                "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
+                "ORIGINAL_DESTINATION", "MAGLEV"
+              ],
+              backend_service.locality_lb_policy
+      ))
     ])
     error_message = "When specified, locality lb policy must be one of : 'ROUND_ROBIN', 'LEAST_REQUEST', 'RING_HASH', 'RANDOM', 'ORIGINAL_DESTINATION', 'MAGLEV', 'WEIGHTED_MAGLEV'."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for backend_service in values(var.backend_service_configs) : [
+        for llp in (backend_service.locality_lb_policies == null ? [] : backend_service.locality_lb_policies) : (
+          ((llp.policy != null && llp.custom_policy == null) || (llp.policy == null && llp.custom_policy != null))
+        )
+      ]
+    ]))
+    error_message = "When specified, all locality lb polcies must have EITHER policy or custom_policy filled, not both."
   }
 }

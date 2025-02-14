@@ -15,3 +15,4 @@
 module: modules/net-lb-app-ext
 tests:
   test-plan:
+  test-plan-llp:
