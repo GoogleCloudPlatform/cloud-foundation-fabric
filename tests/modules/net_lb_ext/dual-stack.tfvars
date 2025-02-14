@@ -7,9 +7,9 @@ backends = [{
 }]
 forwarding_rules_config = {
   ipv4 = {
-    ip_version = "IPV4"
+    ipv6 = false
   }
   ipv6 = {
-    ip_version = "IPV6"
+    ipv6 = true
   }
 }

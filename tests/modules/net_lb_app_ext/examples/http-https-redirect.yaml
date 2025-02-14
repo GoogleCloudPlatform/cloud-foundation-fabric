@@ -26,7 +26,7 @@ values:
     allow_psc_global_access: null
     description: Terraform managed.
     ip_protocol: TCP
-    ip_version: IPV4
+    ip_version: __missing__
     labels: null
     load_balancing_scheme: EXTERNAL
     metadata_filters: []
@@ -86,7 +86,7 @@ values:
     allow_psc_global_access: null
     description: Terraform managed.
     ip_protocol: TCP
-    ip_version: IPV4
+    ip_version: __missing__
     labels: null
     load_balancing_scheme: EXTERNAL_MANAGED
     metadata_filters: []
@@ -165,4 +165,3 @@ counts:
   resources: 14
 
 outputs: {}
-

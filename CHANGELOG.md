@@ -3,7 +3,17 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-01-26 10:01:38+00:00 to: None since: v37.1.0 -->
+## [Unreleased] <!-- from: 2025-02-11 17:16:34+00:00 to: None since: v37.2.0 -->
+
+## [37.3.0] - 2025-02-12
+
+### BLUEPRINTS
+
+- [[#2883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2883)] **incompatible change:** Fix ipv6 and align loadbalancer address types ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-12 13:09:31+00:00 -->
+
+### MODULES
+
+- [[#2883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2883)] **incompatible change:** Fix ipv6 and align loadbalancer address types ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-12 13:09:31+00:00 -->
 
 ## [37.2.0] - 2025-02-11
 
