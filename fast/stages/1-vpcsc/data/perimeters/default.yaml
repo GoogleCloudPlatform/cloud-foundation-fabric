@@ -1,0 +1,22 @@
+# enable access levels defined in YAML and/or variables
+access_levels:
+	- "geo"
+
+# switch to enforced mode (defaults to true)
+dry_run: yes
+
+# enable egress policies defined in YAML and/or variables
+egress_policies:
+
+# enable ingress policies defined in YAML and/or variables
+# and/or the built-in ingress policy for org-level log sinks
+ingress_policies:
+	- "fast-org-log-sinks"
+	
+# list resources part of this perimeter
+resources:
+
+# turn on VPC accessible services
+vpc_accessible_services:
+	allowed_services:
+	enable_restriction: no

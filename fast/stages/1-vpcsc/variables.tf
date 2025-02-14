@@ -117,6 +117,8 @@ variable "factories_config" {
     access_levels    = optional(string, "data/access-levels")
     egress_policies  = optional(string, "data/egress-policies")
     ingress_policies = optional(string, "data/ingress-policies")
+    perimeters          = optional(string, "data/perimeters")
+    restricted_services = optional(string, "data/restricted-services.yaml")
   })
   nullable = false
   default  = {}
@@ -176,19 +178,16 @@ variable "perimeters" {
     egress_policies     = optional(list(string), [])
     ingress_policies    = optional(list(string), [])
     resources           = optional(list(string), [])
+    resources_filter		= optional(string)
     restricted_services = optional(list(string))
+    type                = optional(string, "regular")
     vpc_accessible_services = optional(object({
       allowed_services   = list(string)
       enable_restriction = optional(bool, true)
     }))
   }))
   nullable = false
-  default = {
-    default = {
-      access_levels    = ["geo"]
-      ingress_policies = ["fast-org-log-sinks"]
-    }
-  }
+  default  = {}
 }
 
 variable "resource_discovery" {
