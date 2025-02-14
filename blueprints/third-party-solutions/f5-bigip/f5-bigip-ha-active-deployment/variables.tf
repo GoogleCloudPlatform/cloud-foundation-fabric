@@ -36,7 +36,14 @@ variable "backend_vm_configs" {
 }
 
 variable "forwarding_rules_config" {
-  type        = map(any)
+  type = map(object({
+    address       = optional(string)
+    external      = optional(bool, false)
+    global_access = optional(bool, true)
+    ipv6          = optional(bool, false)
+    protocol      = optional(string, "L3_DEFAULT")
+    subnetwork    = optional(string) # used for IPv6 NLBs
+  }))
   description = "The optional configurations of the GCP load balancers forwarding rules."
   default = {
     "ipv4" = {
@@ -44,7 +51,7 @@ variable "forwarding_rules_config" {
       protocol = "TCP"
     }
     "ipv6" = {
-      ip_version = "IPV6"
+      ipv6 = true
     }
   }
 }

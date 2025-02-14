@@ -50,7 +50,7 @@ resource "google_compute_forwarding_rule" "default" {
   description = each.value.description
   ip_address  = each.value.address
   ip_protocol = each.value.protocol
-  ip_version  = each.value.ip_version
+  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )
