@@ -30,11 +30,31 @@ locals {
   _project_service_agents = merge([
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
-      (agent.name) => merge(agent, {
-        email      = format(agent.identity, local.project.number)
-        iam_email  = "serviceAccount:${format(agent.identity, local.project.number)}"
-        create_jit = api == "cloudservices" || contains(local.available_services, api)
-      })
+      (agent.name) => merge(agent,
+        var.universe == null
+        ? {
+          // no universe --> just use whatever comes from service-agents.yaml
+          email      = format(agent.identity, local.project.number)
+          iam_email  = "serviceAccount:${format(agent.identity, local.project.number, "")}"
+          create_jit = api == "cloudservices" || contains(local.available_services, api, "")
+        }
+        : (
+          // with universe
+          api == "cloudservices"
+          ? {
+            // for cloud services change the format of the email
+            email      = format("%s@cloudservices.%s-system.iam.gserviceaccount.com", local.project.number, var.universe.prefix)
+            iam_email  = "serviceAccount:${format("%s@cloudservices.%s-system.iam.gserviceaccount.com", local.project.number, var.universe.prefix)}"
+            create_jit = true
+          }
+          : {
+            // otherwise use what comes from service-agents with a different domain
+            email      = format(agent.identity, local.project.number, "${var.universe.prefix}-system.")
+            iam_email  = "serviceAccount:${format(agent.identity, local.project.number, "${var.universe.prefix}-system.")}"
+            create_jit = contains(local.available_services, api)
+          }
+        )
+      )
     }
   ]...)
   # list of APIs with primary agents that should be created for the

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -126,6 +126,8 @@ def main(e2e=False):
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
     identity = identity.replace('PROJECT_NUMBER', '%s')
+    identity = identity.replace('.iam.gserviceaccount.',
+                                '.%siam.gserviceaccount.')
 
     if name == 'monitoring':
       # monitoring is deprecated in favor of monitoring-notification.
