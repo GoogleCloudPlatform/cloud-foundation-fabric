@@ -21,9 +21,9 @@ Granting such a role to the identity running this setup (either machine or human
 
 ## Instance-level Access to the Repository
 
-Instances that need access to the created registries require a grant of the `roles/artifactregistry.writer` role on the relevant repositories, to the instance service accounts. This can be automated via the `apt_remote_registries` variable described below.
+Instances that need access to the created registries require the `roles/artifactregistry.writer` role assigned to the instance service accounts. This can be automated via the `apt_remote_registries` variable described below, to create IAm bindings for each registry.
 
-It's also possible (and maybe desirable) to grant the permission at the project level, if access to multiple repositories is needed from the same set of principals. This needs of course to happen where the project is managed, for example in the project factory YAML file.
+It's also possible (and maybe desirable) to grant the role at the project level, if access to multiple repositories is needed from the same set of principals. This needs of course to happen where the project is managed, for example in the project factory YAML file.
 
 Once proper access has been configured, the `apt_configs` output can be used as a basis to configure the APT sources lists on each instance.
 
