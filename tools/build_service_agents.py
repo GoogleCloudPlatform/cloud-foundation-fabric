@@ -125,9 +125,9 @@ def main(e2e=False):
       # We keep the SERVICE_NAME part as the agent's name
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
-    identity = identity.replace('PROJECT_NUMBER', '%s')
+    identity = identity.replace('PROJECT_NUMBER', '${project_number}')
     identity = identity.replace('.iam.gserviceaccount.',
-                                '.%siam.gserviceaccount.')
+                                '.${universe_domain}iam.gserviceaccount.')
 
     if name == 'monitoring':
       # monitoring is deprecated in favor of monitoring-notification.

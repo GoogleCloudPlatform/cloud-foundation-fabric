@@ -269,7 +269,7 @@ service_agents = {
     "email" = "service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
     "iam_email" = "serviceAccount:service-0123456789@gcp-sa-gkenode.iam.gserviceaccount.com"
     "is_primary" = false
-    "role" = "roles/container.nodeServiceAgent"
+    "role" = "roles/container.defaultNodeServiceAgent"
   }
 }
 ```
