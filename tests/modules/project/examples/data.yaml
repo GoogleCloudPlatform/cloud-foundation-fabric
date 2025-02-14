@@ -360,7 +360,7 @@ values:
   module.project.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: test-project
-    role: roles/container.nodeServiceAgent
+    role: roles/container.defaultNodeServiceAgent
   module.project.google_project_iam_member.service_agents["serverless-robot-prod"]:
     condition: []
     project: test-project
