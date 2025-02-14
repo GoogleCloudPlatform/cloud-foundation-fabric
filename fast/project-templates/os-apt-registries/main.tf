@@ -14,41 +14,28 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Prefix used for all resource names."
-  type        = string
-  nullable    = true
-  default     = "apt-remote"
-}
-
-variable "project_id" {
-  description = "Project id where the registries will be created."
-  type        = string
-  default     = "shared-spoke-0"
-}
-
-variable "location" {
-  description = "Region where the registries will be created."
-  type        = string
-  default     = "europe-west8"
-}
-
-variable "registry_ paths" {
-  description = "Remote artifact registry configurations."
-  type        = list(string)
-  nullable    = false
-  default     = ["DEBIAN debian/dists/bookworm"]
-  validation {
-    condition = alltrue([
-      for v in var.registry_paths : length(split(" ", v)) == 2
-    ])
-    message = "Invalid registry path: format is [BASE] [path]."
+locals {
+  apt_remote_registries = {
+    for v in var.apt_remote_registries : (v.path) => merge(v, {
+      name = element(split("/", split(" ", v.path)[1]), -1)
+    })
   }
-  validation {
-    condition = alltrue([
-      for v in var.registry_paths :
-      contains(["DEBIAN", "UBUNTU"], element(split(" ", v), 0))
-    ])
-    message = "Invalid registry base: only 'DEBIAN' and 'UBUNTU' are supported."
+}
+
+module "registries" {
+  source     = "../../../modules/artifact-registry"
+  for_each   = local.apt_remote_registries
+  project_id = var.project_id
+  location   = var.location
+  name       = "${var.name}-${each.value.name}"
+  format = {
+    apt = {
+      remote = {
+        public_repository = each.value.path
+      }
+    }
+  }
+  iam = {
+    "roles/artifactregistry.writer" = each.value.writer_principals
   }
 }

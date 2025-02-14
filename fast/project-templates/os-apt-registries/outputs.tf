@@ -14,3 +14,25 @@
  * limitations under the License.
  */
 
+locals {
+  format = "deb ar+https://%s-apt.pkg.dev/remote/%s/%s %s main"
+}
+
+# europe-west8-apt.pkg.dev/ldj-prod-os-apt-0/apt-remote-bookworm
+
+output "apt_configs" {
+  description = "APT configurations for remote registries."
+  value = {
+    for k, v in module.registries : v.name => format(
+      local.format, var.location, var.project_id,
+      v.name, local.apt_remote_registries[k].name
+    )
+  }
+}
+
+output "vpcsc_command" {
+  description = "Command to allow egress to remotes from inside a perimeter."
+  value = (
+    "gcloud artifacts vpcsc-config allow --project=${var.project_id} --location=${var.location}"
+  )
+}

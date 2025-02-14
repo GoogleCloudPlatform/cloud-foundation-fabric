@@ -14,3 +14,46 @@
  * limitations under the License.
  */
 
+variable "name" {
+  description = "Prefix used for all resource names."
+  type        = string
+  nullable    = true
+  default     = "apt-remote"
+}
+
+variable "project_id" {
+  description = "Project id where the registries will be created."
+  type        = string
+}
+
+variable "location" {
+  description = "Region where the registries will be created."
+  type        = string
+  default     = "europe-west8"
+}
+
+variable "apt_remote_registries" {
+  description = "Remote artifact registry configurations."
+  type = list(object({
+    path              = string
+    writer_principals = optional(list(string), [])
+  }))
+  nullable = false
+  default = [
+    { path = "DEBIAN debian/dists/bookworm" },
+    { path = "DEBIAN debian-security/dists/bookworm-security" }
+  ]
+  validation {
+    condition = alltrue([
+      for v in var.apt_remote_registries : length(split(" ", v.path)) == 2
+    ])
+    error_message = "Invalid registry path: format is [BASE] [path]."
+  }
+  validation {
+    condition = alltrue([
+      for v in var.apt_remote_registries :
+      contains(["DEBIAN", "UBUNTU"], element(split(" ", v.path), 0))
+    ])
+    error_message = "Invalid registry base: only 'DEBIAN' and 'UBUNTU' are supported."
+  }
+}
