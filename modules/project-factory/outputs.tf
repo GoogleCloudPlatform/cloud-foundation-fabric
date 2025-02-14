@@ -23,9 +23,10 @@ output "projects" {
   description = "Created projects."
   value = {
     for k, v in module.projects : k => {
-      number     = v.number
-      project_id = v.id
-      project    = v
+      number             = v.number
+      project_id         = v.id
+      project            = v
+      automation_enabled = lookup(local.projects[k], "automation", null) != null
       automation_buckets = {
         for kk, vv in module.automation-buckets :
         trimprefix(kk, "${k}/") => vv.name

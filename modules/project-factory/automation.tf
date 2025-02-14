@@ -44,6 +44,8 @@ module "automation-buckets" {
   for_each = {
     for k in local.automation_buckets : "${k.project}/${k.name}" => k
   }
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
   name           = "${each.value.project}-${each.value.name}"
@@ -93,6 +95,8 @@ module "automation-service-accounts" {
   for_each = {
     for k in local.automation_sa : "${k.project}/${k.name}" => k
   }
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
   name        = "${each.value.project}-${each.value.name}"
