@@ -15,6 +15,38 @@
  */
 
 locals {
+  _data = {
+    for k, v in local._data_paths : k => {
+      for f in try(fileset(v, "**/*.yaml"), []) :
+      trimsuffix(f, ".yaml") => yamldecode(file("${v}/${f}"))
+    }
+  }
+
+  # Only perimeters are parsed here. Other factory configs are directly handled at VPC-SC module level
+  _data_paths = {
+    for k in ["perimeters"] : k => (
+      var.factories_config[k] == null
+      ? null
+      : pathexpand(var.factories_config[k])
+    )
+  }
+
+  _perimeter_filters = {
+    for k, v in local._data.perimeters : k => try(v.resources_filter, "state:ACTIVE")
+    if try(v.type != "bridge", true)
+  }
+
+  # Dynamically evaluate perimeter members if discovery is enabled
+  dynamic_projects_map = {
+    for k, v in local._perimeter_filters :
+    k => (var.resource_discovery.enabled != true ? [] : [
+      for p in module.vpc-sc-discovery[k].project_numbers :
+      "projects/${p}"
+      ]
+    )
+    if try(v.type != "bridge", true)
+  }
+
   fast_ingress_policies = var.logging == null ? {} : {
     fast-org-log-sinks = {
       from = {
@@ -27,55 +59,34 @@ locals {
       }
     }
   }
-  perimeters = {
-    for k, v in var.perimeters : k => merge(v, {
-      restricted_services = (
-        v.restricted_services == null
-        ? local.restricted_services
-        : v.restricted_services
-      )
-      resources = distinct(concat(
-        v.resources,
-        k != "default" || var.resource_discovery.enabled != true ? [] : [
-          for v in module.vpc-sc-discovery[0].project_numbers :
-          "projects/${v}"
-        ]
-      ))
-    })
-  }
-  restricted_services = yamldecode(file("data/restricted-services.yaml"))
 }
 
 module "vpc-sc-discovery" {
   source           = "../../../modules/projects-data-source"
-  count            = var.resource_discovery.enabled == true ? 1 : 0
+  for_each         = var.resource_discovery.enabled ? local._perimeter_filters : tomap({})
   parent           = coalesce(var.root_node, "organizations/${var.organization.id}")
   ignore_folders   = var.resource_discovery.ignore_folders
   ignore_projects  = var.resource_discovery.ignore_projects
   include_projects = var.resource_discovery.include_projects
+  query            = each.value
 }
 
 module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
-  count         = var.perimeters.default == null ? 0 : 1
+  count         = length(local._data.perimeters) > 0 ? 1 : 0
+  access_levels = var.access_levels
   access_policy = var.access_policy
   access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
-  access_levels    = var.access_levels
-  egress_policies  = var.egress_policies
-  factories_config = var.factories_config
+
+  dynamic_projects_map = local.dynamic_projects_map
+  egress_policies      = var.egress_policies
+  factories_config     = var.factories_config
   ingress_policies = merge(
     local.fast_ingress_policies,
     var.ingress_policies
   )
-  service_perimeters_regular = {
-    for k, v in local.perimeters : k => {
-      spec                      = v.dry_run ? v : null
-      status                    = !v.dry_run ? v : null
-      use_explicit_dry_run_spec = v.dry_run
-    }
-  }
 }

@@ -21,12 +21,13 @@
 # google_access_context_manager_service_perimeters resource
 
 locals {
-  egress_policies  = merge(local.data.egress_policies, var.egress_policies)
-  ingress_policies = merge(local.data.ingress_policies, var.ingress_policies)
+  egress_policies    = merge(local.data.egress_policies, var.egress_policies)
+  ingress_policies   = merge(local.data.ingress_policies, var.ingress_policies)
+  regular_perimeters = merge(local.data.service_perimeters_regular, var.service_perimeters_regular)
 }
 
 resource "google_access_context_manager_service_perimeter" "regular" {
-  for_each                  = var.service_perimeters_regular
+  for_each                  = local.regular_perimeters
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   description               = each.value.description

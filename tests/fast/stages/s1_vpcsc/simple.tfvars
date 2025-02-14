@@ -20,16 +20,7 @@ factories_config = {
   access_levels    = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/access-levels"
   egress_policies  = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/egress-policies"
   ingress_policies = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/ingress-policies"
-}
-perimeters = {
-  default = {
-    access_levels    = ["geo_it", "identity_me"]
-    egress_policies  = ["test"]
-    ingress_policies = ["fast-org-log-sinks", "test"]
-    resources = [
-      "projects/1234567890"
-    ]
-  }
+  perimeters = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/perimeters"
 }
 resource_discovery = {
   enabled = false

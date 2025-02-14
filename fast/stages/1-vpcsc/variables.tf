@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 variable "access_levels" {
   description = "Access level definitions."
   type = map(object({
@@ -115,9 +116,11 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels    = optional(string, "data/access-levels")
-    egress_policies  = optional(string, "data/egress-policies")
-    ingress_policies = optional(string, "data/ingress-policies")
+    access_levels       = optional(string, "data/access-levels")
+    egress_policies     = optional(string, "data/egress-policies")
+    ingress_policies    = optional(string, "data/ingress-policies")
+    perimeters          = optional(string, "data/perimeters")
+    restricted_services = optional(string, "data/restricted-services.yaml")
   })
   nullable = false
   default  = {}
@@ -168,29 +171,6 @@ variable "outputs_location" {
   description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
   type        = string
   default     = null
-}
-
-variable "perimeters" {
-  description = "Perimeter definitions."
-  type = map(object({
-    access_levels       = optional(list(string), [])
-    dry_run             = optional(bool, true)
-    egress_policies     = optional(list(string), [])
-    ingress_policies    = optional(list(string), [])
-    resources           = optional(list(string), [])
-    restricted_services = optional(list(string))
-    vpc_accessible_services = optional(object({
-      allowed_services   = list(string)
-      enable_restriction = optional(bool, true)
-    }))
-  }))
-  nullable = false
-  default = {
-    default = {
-      access_levels    = ["geo"]
-      ingress_policies = ["fast-org-log-sinks"]
-    }
-  }
 }
 
 variable "resource_discovery" {
