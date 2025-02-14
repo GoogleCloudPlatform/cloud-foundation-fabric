@@ -18,6 +18,11 @@
 
 locals {
   log_sink_destinations = merge(
+    {
+      for k, v in var.log_sinks : k => {
+        id = module.log-export-project.project_id
+      } if v.type == "project"
+    },
     # use the same dataset for all sinks with `bigquery` as  destination
     {
       for k, v in var.log_sinks :

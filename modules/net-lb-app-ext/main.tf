@@ -49,7 +49,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   description = coalesce(each.value.description, var.description)
   ip_address  = each.value.address
   ip_protocol = "TCP"
-  ip_version  = each.value.ipv6 == true ? "IPV6" : "IPV4"
+  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   load_balancing_scheme = (
     var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   )

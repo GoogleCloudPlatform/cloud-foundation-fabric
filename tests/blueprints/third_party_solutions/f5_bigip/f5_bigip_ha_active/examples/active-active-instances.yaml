@@ -50,7 +50,6 @@ values:
   module.f5-lb.module.lb-addresses.google_compute_address.internal["l4"]:
     address_type: INTERNAL
     description: Terraform managed.
-    ip_version: null
     ipv6_endpoint_type: null
     name: test-ilb-l4
     project: my-project
@@ -103,7 +102,7 @@ values:
     allow_global_access: true
     allow_psc_global_access: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV4
+    ip_version: __missing__
     load_balancing_scheme: INTERNAL
     name: test-ilb-l4
     network: projects/my-project/global/networks/dataplane
