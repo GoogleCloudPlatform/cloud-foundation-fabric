@@ -50,7 +50,7 @@ apt_remote_registries = [
     ]
   }
 ]
-# tftest modules=1 resources=7
+# tftest skip
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -69,3 +69,24 @@ apt_remote_registries = [
 | [apt_configs](outputs.tf#L23) | APT configurations for remote registries. |  |
 | [vpcsc_command](outputs.tf#L33) | Command to allow egress to remotes from inside a perimeter. |  |
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source     = "./fabric/fast/project-templates/os-apt-registries"
+  project_id = "my-project"
+  location   = "europe-west3"
+  apt_remote_registries = [
+    { path = "DEBIAN debian/dists/bookworm" },
+    {
+      path = "DEBIAN debian-security/dists/bookworm-security"
+      # grant specific access permissions to this registry
+      writer_principals = [
+        "serviceAccount:vm-default@prod-proj-0.iam.gserviceaccount.com"
+      ]
+    }
+  ]
+}
+# tftest modules=3 resources=4
+```
