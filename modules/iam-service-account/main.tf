@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ locals {
   , {})
   name                  = split("@", var.name)[0]
   prefix                = var.prefix == null ? "" : "${var.prefix}-"
-  resource_email_static = "${local.prefix}${local.name}@${var.project_id}.iam.gserviceaccount.com"
+  resource_email_static = "${local.prefix}${local.name}@${local.sa_domain}.iam.gserviceaccount.com"
   resource_iam_email = (
     local.service_account != null
     ? "serviceAccount:${local.service_account.email}"
@@ -59,6 +59,10 @@ locals {
     : file => filebase64("${path.root}/${var.public_keys_directory}/${file}") }
     : {}
   )
+
+  universe               = try(regex("^([^:]*):[a-z]", var.project_id)[0], "")
+  project_id_no_universe = element(split(":", var.project_id), 1)
+  sa_domain              = join(".", compact([local.project_id_no_universe, local.universe]))
 }
 
 
