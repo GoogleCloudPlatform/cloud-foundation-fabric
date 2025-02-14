@@ -8,7 +8,10 @@ The [`project.yaml`](./project.yaml) file describes the project-level configurat
 
 If you are deploying this inside a FAST-enabled organization, the file can be lightly edited to match your configuration, and then used directly in the [project factory](../../stages/2-project-factory/).
 
-This Terraform can of course be deployed without impersonating a service account, in which case the user running `terraform apply` needs IAM roles granted in the file to the `rw` service account.
+This Terraform can of course be deployed using any pre-existing project. In that case use the YAML file to determine the configuration you need to set on the project:
+
+- enable the APIs listed under `services`
+- grant the permissions listed under `iam` to the principal running Terraform, either machine (service account) or human
 
 ## VPC-SC Integration
 
