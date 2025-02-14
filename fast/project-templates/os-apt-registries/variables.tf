@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Prefix used for all resource names."
-  type        = string
-  nullable    = true
-  default     = "apt-remote"
-}
-
-variable "project_id" {
-  description = "Project id where the registries will be created."
-  type        = string
-}
-
-variable "location" {
-  description = "Region where the registries will be created."
-  type        = string
-  default     = "europe-west8"
-}
-
 variable "apt_remote_registries" {
   description = "Remote artifact registry configurations."
   type = list(object({
@@ -56,4 +38,22 @@ variable "apt_remote_registries" {
     ])
     error_message = "Invalid registry base: only 'DEBIAN' and 'UBUNTU' are supported."
   }
+}
+
+variable "location" {
+  description = "Region where the registries will be created."
+  type        = string
+  default     = "europe-west8"
+}
+
+variable "name" {
+  description = "Prefix used for all resource names."
+  type        = string
+  nullable    = true
+  default     = "apt-remote"
+}
+
+variable "project_id" {
+  description = "Project id where the registries will be created."
+  type        = string
 }

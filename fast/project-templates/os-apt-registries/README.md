@@ -57,10 +57,10 @@ apt_remote_registries = [
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L24) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [apt_remote_registries](variables.tf#L35) | Remote artifact registry configurations. | <code title="list&#40;object&#40;&#123;&#10;  path              &#61; string&#10;  writer_principals &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;  &#123; path &#61; &#34;DEBIAN debian&#47;dists&#47;bookworm&#34; &#125;,&#10;  &#123; path &#61; &#34;DEBIAN debian-security&#47;dists&#47;bookworm-security&#34; &#125;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [location](variables.tf#L29) | Region where the registries will be created. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
-| [name](variables.tf#L17) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;apt-remote&#34;</code> |
+| [project_id](variables.tf#L56) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [apt_remote_registries](variables.tf#L17) | Remote artifact registry configurations. | <code title="list&#40;object&#40;&#123;&#10;  path              &#61; string&#10;  writer_principals &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;  &#123; path &#61; &#34;DEBIAN debian&#47;dists&#47;bookworm&#34; &#125;,&#10;  &#123; path &#61; &#34;DEBIAN debian-security&#47;dists&#47;bookworm-security&#34; &#125;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [location](variables.tf#L43) | Region where the registries will be created. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [name](variables.tf#L49) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;apt-remote&#34;</code> |
 
 ## Outputs
 
