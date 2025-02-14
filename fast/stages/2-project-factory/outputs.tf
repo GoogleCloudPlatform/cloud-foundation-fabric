@@ -14,12 +14,63 @@
  * limitations under the License.
  */
 
+locals {
+  project_outputs = {
+    for k, v in module.projects.projects : k => {
+      bucket = try(
+        v.automation_buckets["state"],
+        v.automation_buckets["tf-state"],
+        null
+      )
+      project_id = v.project_id
+      sa         = try(v.automation_service_accounts["rw"], null)
+      sa_ro      = try(v.automation_service_accounts["ro"], null)
+    } if v.automation_enabled
+  }
+}
+
 output "projects" {
   description = "Created projects."
-  value       = module.projects.projects
+  value = {
+    for k, v in module.projects.projects : k => {
+      id     = v.project_id
+      number = v.number
+      automation = {
+        buckets          = v.automation_buckets
+        service_accounts = v.automation_service_accounts
+      }
+    }
+  }
 }
 
 output "service_accounts" {
   description = "Created service accounts."
-  value       = module.projects.service_accounts
+  value = {
+    for k, v in module.projects.service_accounts : k => {
+      email      = v.email
+      iam_emanil = v.iam_email
+    }
+  }
+}
+
+# generate tfvars file for subsequent stages
+
+resource "local_file" "providers" {
+  for_each = var.outputs_location == null ? {} : {
+    for k, v in local.project_outputs : k => v
+    if v.bucket != null && v.sa != null
+  }
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/${var.stage_name}/${each.key}-providers.tf"
+  content         = templatefile("templates/providers.tf.tpl", each.value)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  for_each = var.outputs_location == null ? {} : {
+    for k, v in local.project_outputs : k => v
+    if v.bucket != null && v.sa != null
+  }
+  bucket  = var.automation.outputs_bucket
+  name    = "providers/${var.stage_name}/${each.key}-providers.tf"
+  content = templatefile("templates/providers.tf.tpl", each.value)
 }
