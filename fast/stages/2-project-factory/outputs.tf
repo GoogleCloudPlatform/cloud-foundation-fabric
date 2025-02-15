@@ -29,6 +29,13 @@ locals {
   }
 }
 
+output "buckets" {
+  description = "Created buckets."
+  value = {
+    for k, v in module.projects.buckets : k => v
+  }
+}
+
 output "projects" {
   description = "Created projects."
   value = {
@@ -47,8 +54,8 @@ output "service_accounts" {
   description = "Created service accounts."
   value = {
     for k, v in module.projects.service_accounts : k => {
-      email      = v.email
-      iam_emanil = v.iam_email
+      email     = v.email
+      iam_email = v.iam_email
     }
   }
 }

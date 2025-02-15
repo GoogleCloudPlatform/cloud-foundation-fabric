@@ -59,46 +59,6 @@ module "projects" {
       notification_channels = var.factories_config.context.notification_channels
     }
   }
-  iam = {
-    for k, v in lookup(each.value, "iam", {}) : k => [
-      for vv in v : try(
-        # automation service account
-        local.context.iam_principals["${each.key}/${vv}"],
-        # other context
-        local.context.iam_principals[vv],
-        # passthrough
-        vv
-      )
-    ]
-  }
-  iam_bindings = {
-    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
-      members = [
-        for vv in v.members : try(
-          # automation service account
-          local.context.iam_principals["${each.key}/${vv}"],
-          # other context
-          local.context.iam_principals[vv],
-          # passthrough
-          vv
-        )
-      ]
-    })
-  }
-  iam_bindings_additive = {
-    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
-      member = try(
-        # automation service account
-        local.context.iam_principals["${each.key}/${v.member}"],
-        # other context
-        local.context.iam_principals[v.member],
-        # passthrough
-        v.member
-      )
-    })
-  }
-  # IAM by principals would trigger dynamic key errors so we don't interpolate
-  iam_by_principals = try(each.value.iam_by_principals, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -145,6 +105,59 @@ module "projects" {
   vpc_sc = each.value.vpc_sc
 }
 
+module "projects-iam" {
+  source         = "../project"
+  for_each       = local.projects
+  name           = module.projects[each.key].project_id
+  project_create = false
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      for vv in v : try(
+        # project service accounts
+        module.service-accounts["${each.key}/${vv}"].iam_email,
+        # automation service account
+        local.context.iam_principals["${each.key}/${vv}"],
+        # other context
+        local.context.iam_principals[vv],
+        # passthrough
+        vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
+      members = [
+        for vv in v.members : try(
+          # project service accounts
+          module.service-accounts["${each.key}/${vv}"].iam_email,
+          # automation service account
+          local.context.iam_principals["${each.key}/${vv}"],
+          # other context
+          local.context.iam_principals[vv],
+          # passthrough
+          vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
+      member = try(
+        # project service accounts
+        module.service-accounts["${each.key}/${v.member}"].iam_email,
+        # automation service account
+        local.context.iam_principals["${each.key}/${v.member}"],
+        # other context
+        local.context.iam_principals[v.member],
+        # passthrough
+        v.member
+      )
+    })
+  }
+  # IAM by principals would trigger dynamic key errors so we don't interpolate
+  iam_by_principals = try(each.value.iam_by_principals, {})
+}
+
 module "buckets" {
   source = "../gcs"
   for_each = {
@@ -152,7 +165,7 @@ module "buckets" {
   }
   project_id     = module.projects[each.value.project].project_id
   prefix         = each.value.prefix
-  name           = each.value.name
+  name           = "${each.value.project}-${each.value.name}"
   encryption_key = each.value.encryption_key
   iam = {
     for k, v in each.value.iam : k => [
