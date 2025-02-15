@@ -13,14 +13,18 @@
 # limitations under the License.
 
 values:
+values:
   module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption: []
     force_destroy: false
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -30,8 +34,12 @@ values:
     requester_pays: null
     retention_policy: []
     storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
   ? module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
   : bucket: test-pf-dev-tb-app0-0-state
     condition: []
@@ -53,6 +61,8 @@ values:
     description: Team B app 0 read-only automation sa.
     disabled: false
     display_name: Service account ro for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
   module.project-factory.module.automation-service-accounts["dev-tb-app0-0/rw"].google_service_account.service_account[0]:
@@ -61,6 +71,8 @@ values:
     description: Team B app 0 read/write automation sa.
     disabled: false
     display_name: Service account rw for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
   module.project-factory.module.billing-account[0].google_billing_budget.default["test-100"]:
@@ -102,8 +114,10 @@ values:
     type: email
     user_labels: null
   module.project-factory.module.hierarchy-folder-lvl-1["team-a"].google_folder.folder[0]:
+    deletion_protection: false
     display_name: Team A
     parent: folders/5678901234
+    tags: null
     timeouts: null
   module.project-factory.module.hierarchy-folder-lvl-1["team-a"].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
@@ -112,22 +126,42 @@ values:
     - group:team-a-admins@example.org
     role: roles/viewer
   module.project-factory.module.hierarchy-folder-lvl-1["team-b"].google_folder.folder[0]:
+    deletion_protection: false
     display_name: Team B
     parent: folders/5678901234
+    tags: null
     timeouts: null
   module.project-factory.module.hierarchy-folder-lvl-1["team-c"].google_folder.folder[0]:
+    deletion_protection: false
     display_name: Team C
     parent: folders/5678901234
+    tags: null
     timeouts: null
   module.project-factory.module.hierarchy-folder-lvl-2["team-a/app-0"].google_folder.folder[0]:
+    deletion_protection: false
     display_name: App 0
+    tags: null
     timeouts: null
   module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_folder.folder[0]:
+    deletion_protection: false
     display_name: App 0
+    tags: null
     timeouts: null
   module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
     tag_value: tagValues/123456
     timeouts: null
+  module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    role: roles/owner
+  module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    role: roles/viewer
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
@@ -154,6 +188,7 @@ values:
     effective_labels:
       app: app-0
       environment: test
+      goog-terraform-provisioned: 'true'
       team: team-a
     labels:
       app: app-0
@@ -161,9 +196,11 @@ values:
       team: team-a
     name: test-pf-dev-ta-app0-be
     project_id: test-pf-dev-ta-app0-be
+    tags: null
     terraform_labels:
       app: app-0
       environment: test
+      goog-terraform-provisioned: 'true'
       team: team-a
     timeouts: null
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["container-engine-robot"]
@@ -228,25 +265,16 @@ values:
     deletion_policy: DELETE
     effective_labels:
       environment: test
+      goog-terraform-provisioned: 'true'
     labels:
       environment: test
     name: test-pf-dev-tb-app0-0
     project_id: test-pf-dev-tb-app0-0
+    tags: null
     terraform_labels:
       environment: test
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.project-factory.module.projects["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    members:
-    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
-    project: test-pf-dev-tb-app0-0
-    role: roles/owner
-  module.project-factory.module.projects["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/viewer"]:
-    condition: []
-    members:
-    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
-    project: test-pf-dev-tb-app0-0
-    role: roles/viewer
   module.project-factory.module.projects["dev-tb-app0-0"].google_project_iam_member.service_agents["serverless-robot-prod"]:
     condition: []
     project: test-pf-dev-tb-app0-0
@@ -289,14 +317,17 @@ values:
     deletion_policy: DELETE
     effective_labels:
       environment: test
+      goog-terraform-provisioned: 'true'
     folder_id: '5678901234'
     labels:
       environment: test
     name: test-pf-teams-iac-0
     org_id: null
     project_id: test-pf-teams-iac-0
+    tags: null
     terraform_labels:
       environment: test
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
@@ -346,6 +377,8 @@ values:
     description: null
     disabled: false
     display_name: Backend instances.
+    email: app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    member: serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
   ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["test-pf-dev-net-spoke-0-roles/compute.networkUser"]
@@ -366,6 +399,8 @@ values:
     description: null
     disabled: false
     display_name: Frontend instances.
+    email: app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
 
@@ -388,5 +423,5 @@ counts:
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 3
   google_tags_tag_binding: 1
-  modules: 15
+  modules: 16
   resources: 56

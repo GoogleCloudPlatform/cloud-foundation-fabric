@@ -65,14 +65,12 @@ module "test-target-project" {
   source          = "./fabric/modules/project"
   billing_account = "1234-ABCD-1234"
   name            = "test-target-project"
-  project_create  = true
 }
 
 module "test-sharedvpc-host-project" {
   source          = "./fabric/modules/project"
   billing_account = "1234-ABCD-1234"
   name            = "test-sharedvpc-host-project"
-  project_create  = true
 }
 
 # tftest modules=7 resources=29

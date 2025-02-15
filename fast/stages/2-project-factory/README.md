@@ -370,6 +370,7 @@ The approach is not shown here but reasonably easy to implement. The main projec
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [projects](outputs.tf#L32) | Created projects. |  |  |
-| [service_accounts](outputs.tf#L46) | Created service accounts. |  |  |
+| [buckets](outputs.tf#L32) | Created buckets. |  |  |
+| [projects](outputs.tf#L39) | Created projects. |  |  |
+| [service_accounts](outputs.tf#L53) | Created service accounts. |  |  |
 <!-- END TFDOC -->

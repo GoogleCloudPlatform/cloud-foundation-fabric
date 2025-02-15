@@ -29,7 +29,7 @@ module "project" {
   name            = var.project_id
   billing_account = try(var.project_create_config.billing_account, null)
   parent          = try(var.project_create_config.parent, null)
-  project_create  = var.project_create_config != null
+  project_reuse   = var.project_create_config != null ? null : {}
   services = [
     "cloudasset.googleapis.com",
     "cloudbuild.googleapis.com",
