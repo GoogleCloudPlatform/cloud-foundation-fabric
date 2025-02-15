@@ -163,9 +163,40 @@ locals {
         var.data_defaults.logging_data_access
       )
       # non-project resources
+      buckets          = try(v.buckets, {})
       service_accounts = try(v.service_accounts, {})
     })
   }
+  buckets = flatten([
+    for k, v in local.projects : [
+      for name, opts in v.buckets : {
+        project               = k
+        name                  = name
+        description           = lookup(opts, "description", "Terraform-managed.")
+        encryption_key        = lookup(opts, "encryption_key", null)
+        iam                   = lookup(opts, "iam", {})
+        iam_bindings          = lookup(opts, "iam_bindings", {})
+        iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
+        labels                = lookup(opts, "labels", {})
+        location              = lookup(opts, "location", null)
+        prefix = coalesce(
+          var.data_overrides.prefix,
+          try(v.prefix, null),
+          var.data_defaults.prefix
+        )
+        storage_class = lookup(
+          opts, "storage_class", "STANDARD"
+        )
+        uniform_bucket_level_access = lookup(
+          opts, "uniform_bucket_level_access", true
+        )
+        versioning = lookup(
+          opts, "versioning", false
+        )
+
+      }
+    ]
+  ])
   service_accounts = flatten([
     for k, v in local.projects : [
       for name, opts in v.service_accounts : {

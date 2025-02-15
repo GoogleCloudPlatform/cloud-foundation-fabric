@@ -145,6 +145,55 @@ module "projects" {
   vpc_sc = each.value.vpc_sc
 }
 
+module "buckets" {
+  source = "../gcs"
+  for_each = {
+    for k in local.buckets : "${k.project}/${k.name}" => k
+  }
+  project_id     = module.projects[each.value.project].project_id
+  prefix         = each.value.prefix
+  name           = each.value.name
+  encryption_key = each.value.encryption_key
+  iam = {
+    for k, v in each.value.iam : k => [
+      for vv in v : try(
+        module.service-accounts["${each.value.project}/${vv}"].iam_email,
+        var.factories_config.context.iam_principals[vv],
+        vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.iam_bindings : k => merge(v, {
+      members = [
+        for vv in v.members : try(
+          module.service-accounts["${each.value.project}/${vv}"].iam_email,
+          var.factories_config.context.iam_principals[vv],
+          vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.iam_bindings_additive : k => merge(v, {
+      member = try(
+        module.service-accounts["${each.value.project}/${v.member}"].iam_email,
+        var.factories_config.context.iam_principals[v.member],
+        v.member
+      )
+    })
+  }
+  labels = each.value.labels
+  location = coalesce(
+    var.data_overrides.storage_location,
+    lookup(each.value, "location", null),
+    var.data_defaults.storage_location
+  )
+  storage_class               = each.value.storage_class
+  uniform_bucket_level_access = each.value.uniform_bucket_level_access
+  versioning                  = each.value.versioning
+}
+
 module "service-accounts" {
   source = "../iam-service-account"
   for_each = {
