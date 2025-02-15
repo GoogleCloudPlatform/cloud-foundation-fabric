@@ -48,9 +48,9 @@ locals {
 }
 
 module "project" {
-  source         = "../../../modules/project"
-  name           = var.project_id
-  project_create = var.project_create
+  source        = "../../../modules/project"
+  name          = var.project_id
+  project_reuse = var.project_create != true ? {} : null
 }
 
 # make direct grants non-authoritative since project administrators
