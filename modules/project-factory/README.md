@@ -204,7 +204,7 @@ The following table lists the available context interpolations. External context
 | folder              | tag bindings    | `tag_values`        |                            |
 | project             | parent          | `folder_ids`        | internally created folders |
 | project             | Shared VPC host | `vpc_host_projects` |                            |
-| project             | Shared VPV IAM  | `iam_principals`    |                            |
+| project             | Shared VPC IAM  | `iam_principals`    |                            |
 | project             | tag bindings    | `tag_values`        |                            |
 | project             | IAM principals  | `iam_principals`    | project service accounts   |
 |                     |                 |                     | IaC service accounts       |
