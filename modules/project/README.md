@@ -1224,10 +1224,7 @@ module "create-project" {
 
 module "project" {
   source          = "./fabric/modules/project"
-  depends_on      = [module.create-project]
-  billing_account = var.billing_account_id
-  name            = "project"
-  parent          = var.folder_id
+  name            = module.create-project.project_id
   prefix          = var.prefix
   # default behavior, uses a data source internally
   # project_reuse = {}
@@ -1239,7 +1236,6 @@ module "project" {
       number = module.create-project.number
     }
   }
-
   iam_by_principals = {
     "group:${var.group_email}" = [
       "roles/cloudasset.owner",
