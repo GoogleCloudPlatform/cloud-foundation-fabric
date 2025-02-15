@@ -171,7 +171,7 @@ variable "project_reuse" {
   default = null
   validation {
     condition = (
-      try(var.project_reuse.use_data_source, null) != true ||
+      try(var.project_reuse.use_data_source, null) != false ||
       try(var.project_reuse.project_attributes, null) != null
     )
     error_message = "Reuse datasource can be disabled only if project attributes are set."

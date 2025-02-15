@@ -1223,9 +1223,9 @@ module "create-project" {
 }
 
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = module.create-project.project_id
-  prefix          = var.prefix
+  source = "./fabric/modules/project"
+  name   = module.create-project.project_id
+  prefix = var.prefix
   # default behavior, uses a data source internally
   # project_reuse = {}
   # avoid use of a data source when project attributes are available
