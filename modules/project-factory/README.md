@@ -275,7 +275,7 @@ module "project-factory" {
     }
   }
 }
-# tftest modules=15 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
+# tftest modules=16 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:

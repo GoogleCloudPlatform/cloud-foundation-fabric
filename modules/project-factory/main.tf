@@ -106,10 +106,16 @@ module "projects" {
 }
 
 module "projects-iam" {
-  source         = "../project"
-  for_each       = local.projects
-  name           = module.projects[each.key].project_id
-  project_create = false
+  source   = "../project"
+  for_each = local.projects
+  name     = module.projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name   = module.projects[each.key].name
+      number = module.projects[each.key].number
+    }
+  }
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(

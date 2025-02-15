@@ -94,13 +94,6 @@ values:
   module.kms.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.data.google_bigquery_default_service_account.bq_sa[0]:
-    project: test-project
-  module.project.data.google_project.project[0]:
-    project_id: test-project
-  module.project.data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-project
-    user_project: null
   module.project.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
@@ -479,7 +472,7 @@ counts:
   google_logging_project_exclusion: 1
   google_logging_project_sink: 4
   google_org_policy_policy: 7
-  google_project: 3
+  google_project: 2
   google_project_iam_audit_config: 2
   google_project_iam_binding: 7
   google_project_iam_member: 14
@@ -491,7 +484,7 @@ counts:
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 8
-  resources: 64
+  resources: 63
 
 
 outputs: {}
