@@ -36,10 +36,10 @@ locals {
 }
 
 module "project" {
-  source         = "../../../modules/project"
-  count          = var._fast_debug.skip_datasources == true ? 0 : 1
-  name           = local.aliased_project_id
-  project_create = false
+  source        = "../../../modules/project"
+  count         = var._fast_debug.skip_datasources == true ? 0 : 1
+  name          = local.aliased_project_id
+  project_reuse = {}
   service_agents_config = {
     services_enabled = [
       "networksecurity.googleapis.com"

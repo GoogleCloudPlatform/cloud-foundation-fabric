@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "buckets" {
+  description = "Bucket names."
+  value = {
+    for k, v in module.buckets : k => v.name
+  }
+}
+
 output "folders" {
   description = "Folder ids."
   value       = local.hierarchy
@@ -43,7 +50,5 @@ output "projects" {
 
 output "service_accounts" {
   description = "Service account emails."
-  value = {
-    for k, v in module.service-accounts : k => v.email
-  }
+  value       = module.service-accounts
 }

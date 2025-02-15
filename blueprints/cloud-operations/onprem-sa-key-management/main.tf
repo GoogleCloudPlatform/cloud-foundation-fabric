@@ -19,10 +19,10 @@ locals {
 }
 
 module "project" {
-  source         = "../../../modules/project"
-  name           = var.project_id
-  project_create = var.project_create
-  services       = var.services
+  source        = "../../../modules/project"
+  name          = var.project_id
+  project_reuse = var.project_create != true ? {} : null
+  services      = var.services
 }
 
 module "integration-sa" {

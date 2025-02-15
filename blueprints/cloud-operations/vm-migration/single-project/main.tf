@@ -33,7 +33,7 @@ module "landing-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com"
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
   iam_bindings_additive = {
     admin_sa_key_admin = {
       role   = "roles/iam.serviceAccountKeyAdmin"

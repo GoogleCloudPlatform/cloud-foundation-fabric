@@ -85,9 +85,15 @@ module "automation-buckets" {
     lookup(each.value, "location", null),
     var.data_defaults.storage_location
   )
-  storage_class               = lookup(each.value, "storage_class", "STANDARD")
-  uniform_bucket_level_access = lookup(each.value, "uniform_bucket_level_access", true)
-  versioning                  = lookup(each.value, "versioning", false)
+  storage_class = lookup(
+    each.value, "storage_class", "STANDARD"
+  )
+  uniform_bucket_level_access = lookup(
+    each.value, "uniform_bucket_level_access", true
+  )
+  versioning = lookup(
+    each.value, "versioning", false
+  )
 }
 
 module "automation-service-accounts" {

@@ -130,10 +130,10 @@ module "vpc" {
 }
 
 module "fleet-project" {
-  source         = "../../../../modules/project"
-  count          = var.fleet_project_id == null ? 0 : 1
-  name           = var.fleet_project_id
-  project_create = false
+  source        = "../../../../modules/project"
+  count         = var.fleet_project_id == null ? 0 : 1
+  name          = var.fleet_project_id
+  project_reuse = {}
 }
 
 module "fleet" {
