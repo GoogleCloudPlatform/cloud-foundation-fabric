@@ -1090,5 +1090,5 @@ After provisioning this change, and verifying that the new certificate is provis
 
 ## Fixtures
 
-- [compute-vm-group-bc.tf](..\..\tests\fixtures\compute-vm-group-bc.tf)
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->
