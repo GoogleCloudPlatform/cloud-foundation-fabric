@@ -169,7 +169,7 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
         item[context].append(data)
 
 
-def create_toc(readme, skip=None):
+def create_toc(readme, skip=['contents']):
   'Create a Markdown table of contents a for README.'
   doc = marko.parse(readme)
   lines = []
@@ -515,9 +515,9 @@ def render_toc(readme, toc):
 @click.option('--replace/--no-replace', default=True)
 @click.option('--show-extra/--no-show-extra', default=False)
 @click.option('--toc-only', is_flag=True, default=False)
-@click.option('--toc-skip', multiple=True, default=["contents"])
+@click.option('--toc-skip', multiple=True, default=['contents'])
 def main(module_path=None, exclude_file=None, files=False, replace=True,
-         show_extra=True, toc_only=False, toc_skip=None):
+         show_extra=True, toc_only=False, toc_skip=['contents']):
   'Program entry point.'
   if toc_only and module_path.endswith('.md'):
     readme_path = module_path
