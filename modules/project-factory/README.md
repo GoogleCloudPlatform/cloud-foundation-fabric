@@ -195,7 +195,10 @@ automation:
 
 Interpolations leverage contexts from two separate sources: an internal set for resources managed by the project factory (folders, service accounts, etc.), and an external user-defined set passed in via the `factories_config.context` variable.
 
-The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolate in all IAM attributes except `iam_by_principal`.
+The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up. 
+
+* Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
+* IAM principals are resolved within context of managed project
 
 | resource            | attribute       | external contexts   | internal contexts          |
 | ------------------- | --------------- | ------------------- | -------------------------- |
