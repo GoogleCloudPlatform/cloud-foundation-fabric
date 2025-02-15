@@ -168,11 +168,11 @@ variable "backend_service_configs" {
       for backend_service in values(var.backend_service_configs) :
       (backend_service.locality_lb_policy == null ? true :
         contains(
-              [
-                "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
-                "ORIGINAL_DESTINATION", "MAGLEV"
-              ],
-              backend_service.locality_lb_policy
+          [
+            "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
+            "ORIGINAL_DESTINATION", "MAGLEV"
+          ],
+          backend_service.locality_lb_policy
       ))
     ])
     error_message = "When specified, locality lb policy must be one of : 'ROUND_ROBIN', 'LEAST_REQUEST', 'RING_HASH', 'RANDOM', 'ORIGINAL_DESTINATION', 'MAGLEV', 'WEIGHTED_MAGLEV'."
@@ -180,7 +180,7 @@ variable "backend_service_configs" {
   validation {
     condition = alltrue(flatten([
       for backend_service in values(var.backend_service_configs) : [
-        for llp in (backend_service.locality_lb_policies == null ? [] : backend_service.locality_lb_policies) : (
+        for llp in(backend_service.locality_lb_policies == null ? [] : backend_service.locality_lb_policies) : (
           ((llp.policy != null && llp.custom_policy == null) || (llp.policy == null && llp.custom_policy != null))
         )
       ]

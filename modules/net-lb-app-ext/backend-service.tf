@@ -60,7 +60,7 @@ resource "google_compute_backend_service" "default" {
   health_checks = length(each.value.health_checks) == 0 ? null : [
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ]
-  locality_lb_policy = (each.value.locality_lb_policies == null ? each.value.locality_lb_policy : null)
+  locality_lb_policy    = (each.value.locality_lb_policies == null ? each.value.locality_lb_policy : null)
   load_balancing_scheme = var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   port_name = (
     each.value.port_name == null
