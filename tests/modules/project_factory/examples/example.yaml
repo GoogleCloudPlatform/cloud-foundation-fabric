@@ -13,7 +13,6 @@
 # limitations under the License.
 
 values:
-values:
   module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -162,6 +161,18 @@ values:
     - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
+  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
+    condition: []
+    members:
+    - serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    role: roles/run.admin
+  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.developer"]:
+    condition: []
+    members:
+    - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    role: roles/run.developer
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
@@ -301,6 +312,68 @@ values:
     project: test-pf-dev-tb-app0-0
     service: run.googleapis.com
     timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-dev-tb-app0-1
+    user_project: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+      - ALL
+    parent: projects/test-pf-dev-tb-app0-1
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-b
+    labels:
+      app: app-0
+      environment: test
+      team: team-b
+    name: test-pf-dev-tb-app0-1
+    project_id: test-pf-dev-tb-app0-1
+    tags: null
+    terraform_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-b
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/container.serviceAgent
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/container.defaultNodeServiceAgent
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["container.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: container.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: storage.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service_identity.default["container.googleapis.com"]
+  : project: test-pf-dev-tb-app0-1
+    service: container.googleapis.com
+    timeouts: null
   module.project-factory.module.projects["teams-iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-teams-iac-0
     user_project: null
@@ -403,25 +476,43 @@ values:
     member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
+  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/logging.logWriter
+  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
+    account_id: app-0-be
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Backend instances.
+    email: app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    timeouts: null
 
 counts:
   google_billing_budget: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
-  google_essential_contacts_contact: 3
+  google_essential_contacts_contact: 4
   google_folder: 5
   google_folder_iam_binding: 1
   google_kms_crypto_key_iam_member: 1
   google_monitoring_notification_channel: 1
-  google_project: 3
-  google_project_iam_binding: 2
-  google_project_iam_member: 14
-  google_project_service: 9
-  google_project_service_identity: 3
-  google_service_account: 4
+  google_project: 4
+  google_project_iam_binding: 4
+  google_project_iam_member: 18
+  google_project_service: 12
+  google_project_service_identity: 4
+  google_service_account: 5
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
-  google_storage_project_service_account: 3
+  google_storage_project_service_account: 4
   google_tags_tag_binding: 1
-  modules: 16
-  resources: 56
+  modules: 19
+  resources: 70

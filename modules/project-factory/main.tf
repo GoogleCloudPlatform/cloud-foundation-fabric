@@ -27,7 +27,8 @@ locals {
       {
         for k, v in module.automation-service-accounts :
         k => v.iam_email
-      }
+      },
+      # module.service-accounts are excluded here, as adding them here results in dependency cycles
     )
   }
 }
@@ -82,22 +83,6 @@ module "projects" {
     var.data_merges.services
   ))
   shared_vpc_host_config = each.value.shared_vpc_host_config
-  shared_vpc_service_config = (
-    try(each.value.shared_vpc_service_config.host_project, null) == null
-    ? null
-    : merge(each.value.shared_vpc_service_config, {
-      host_project = lookup(
-        var.factories_config.context.vpc_host_projects,
-        each.value.shared_vpc_service_config.host_project,
-        each.value.shared_vpc_service_config.host_project
-      )
-      network_users = [
-        for v in try(each.value.shared_vpc_service_config.network_users, []) :
-        lookup(local.context.iam_principals, v, v)
-      ]
-      # TODO: network subnet users
-    })
-  )
   tag_bindings = {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
     k => lookup(var.factories_config.context.tag_values, v, v)
@@ -112,8 +97,9 @@ module "projects-iam" {
   project_reuse = {
     use_data_source = false
     project_attributes = {
-      name   = module.projects[each.key].name
-      number = module.projects[each.key].number
+      name             = module.projects[each.key].name
+      number           = module.projects[each.key].number
+      services_enabled = module.projects[each.key].services
     }
   }
   iam = {
@@ -123,7 +109,9 @@ module "projects-iam" {
         module.service-accounts["${each.key}/${vv}"].iam_email,
         # automation service account
         local.context.iam_principals["${each.key}/${vv}"],
-        # other context
+        # other projects service accounts
+        module.service-accounts[vv].iam_email,
+        # other automation service account
         local.context.iam_principals[vv],
         # passthrough
         vv
@@ -138,7 +126,9 @@ module "projects-iam" {
           module.service-accounts["${each.key}/${vv}"].iam_email,
           # automation service account
           local.context.iam_principals["${each.key}/${vv}"],
-          # other context
+          # other projects service accounts
+          module.service-accounts[vv].iam_email,
+          # other automation service account
           local.context.iam_principals[vv],
           # passthrough
           vv
@@ -153,7 +143,9 @@ module "projects-iam" {
         module.service-accounts["${each.key}/${v.member}"].iam_email,
         # automation service account
         local.context.iam_principals["${each.key}/${v.member}"],
-        # other context
+        # other projects service accounts
+        module.service-accounts[v.member].iam_email,
+        # other automation service account
         local.context.iam_principals[v.member],
         # passthrough
         v.member
@@ -162,6 +154,42 @@ module "projects-iam" {
   }
   # IAM by principals would trigger dynamic key errors so we don't interpolate
   iam_by_principals = try(each.value.iam_by_principals, {})
+  # Shared VPC configuration is done at stage 2, to avoid dependency cycle between project service accounts and
+  # IAM grants done for those service accounts
+  factories_config = {
+    custom_roles = each.value.factories_config.custom_roles
+  }
+  shared_vpc_service_config = (
+    try(each.value.shared_vpc_service_config.host_project, null) == null
+    ? null
+    : merge(each.value.shared_vpc_service_config, {
+      host_project = lookup(
+        var.factories_config.context.vpc_host_projects,
+        each.value.shared_vpc_service_config.host_project,
+        each.value.shared_vpc_service_config.host_project
+      )
+      network_users = [
+        for v in try(each.value.shared_vpc_service_config.network_users, []) :
+        try(
+          # project service accounts
+          module.service-accounts["${each.key}/${v}"].iam_email,
+          # automation service account
+          local.context.iam_principals["${each.key}/${v}"],
+          # other projects service accounts
+          module.service-accounts[v].iam_email,
+          # other automation service account
+          local.context.iam_principals[v],
+          # passthrough
+          v
+        )
+      ]
+      # TODO: network subnet users
+    })
+  )
+  # add service agents config, so Service Agents can be referred in the IAM grants
+  service_agents_config = {
+    grant_default_roles = false # Default roles are granted in module.project
+  }
 }
 
 module "buckets" {
@@ -176,8 +204,15 @@ module "buckets" {
   iam = {
     for k, v in each.value.iam : k => [
       for vv in v : try(
+        # project service accounts
         module.service-accounts["${each.value.project}/${vv}"].iam_email,
-        var.factories_config.context.iam_principals[vv],
+        # automation service account
+        local.context.iam_principals["${each.value.project}/${vv}"],
+        # other projects service accounts
+        module.service-accounts[vv].iam_email,
+        # other automation service account
+        local.context.iam_principals[vv],
+        # passthrough
         vv
       )
     ]
@@ -186,8 +221,15 @@ module "buckets" {
     for k, v in each.value.iam_bindings : k => merge(v, {
       members = [
         for vv in v.members : try(
+          # project service accounts
           module.service-accounts["${each.value.project}/${vv}"].iam_email,
-          var.factories_config.context.iam_principals[vv],
+          # automation service account
+          local.context.iam_principals["${each.value.project}/${vv}"],
+          # other projects service accounts
+          module.service-accounts[vv].iam_email,
+          # other automation service account
+          local.context.iam_principals[vv],
+          # passthrough
           vv
         )
       ]
@@ -196,8 +238,15 @@ module "buckets" {
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
       member = try(
+        # project service accounts
         module.service-accounts["${each.value.project}/${v.member}"].iam_email,
-        var.factories_config.context.iam_principals[v.member],
+        # automation service account
+        local.context.iam_principals["${each.value.project}/${v.member}"],
+        # other projects service accounts
+        module.service-accounts[v.member].iam_email,
+        # other automation service account
+        local.context.iam_principals[v.member],
+        # passthrough
         v.member
       )
     })
