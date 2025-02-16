@@ -164,8 +164,9 @@ variable "project_reuse" {
   type = object({
     use_data_source = optional(bool, true)
     project_attributes = optional(object({
-      name   = string
-      number = number
+      name             = string
+      number           = number
+      services_enabled = optional(list(string), [])
     }))
   })
   default = null
@@ -183,7 +184,6 @@ variable "service_agents_config" {
   type = object({
     create_primary_agents = optional(bool, true)
     grant_default_roles   = optional(bool, true)
-    services_enabled      = optional(list(string), [])
   })
   default  = {}
   nullable = false
