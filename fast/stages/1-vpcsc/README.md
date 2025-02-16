@@ -249,7 +249,7 @@ resources:
 
 # Optionaly, you can list the regular perimeters that are bridged
 # If resource discovery is enabled. The corresponding resources will also be included in the bridge
-members:
+perimeters:
   - landing
   - dev
 ```
