@@ -31,81 +31,20 @@ locals {
     )
   }
 
-  # Default perimeter configuration if not defined in tfvars or factory
-  _perimeter_default = {
-    default = {
-      access_levels    = ["geo"]
-      dry_run          = true
-      egress_policies  = []
-      ingress_policies = ["fast-org-log-sinks"]
-      resources        = []
-      type             = "regular"
-    }
+  _perimeter_filters = {
+    for k, v in local._data.perimeters : k => try(v.resources_filter, "state:ACTIVE")
+    if try(v.type != "bridge", true)
   }
 
-  _perimeters = merge(var.perimeters,
-    local._data.perimeters,
-  length(local._perimeters_names) < 1 ? local._perimeter_default : null)
-
-  # Dynamically evaluate perimeter members if discovery is enabledd
-  _perimeters_projects = {
-    for k, v in local._perimeters :
-    k => distinct(concat(
-      v.resources,
-      var.resource_discovery.enabled != true ? [] : [
-        for p in module.vpc-sc-discovery[k].project_numbers :
-        "projects/${p}"
+  # Dynamically evaluate perimeter members if discovery is enabled
+  dynamic_projects_map = {
+    for k, v in local._perimeter_filters :
+    k => (var.resource_discovery.enabled != true ? [] : [
+      for p in module.vpc-sc-discovery[k].project_numbers :
+      "projects/${p}"
       ]
-    ))
+    )
     if try(v.type != "bridge", true)
-  }
-
-  _perimeters_names = distinct(concat(keys(var.perimeters), [
-    for k, v in local._data.perimeters : k
-    if try(v.type != "bridge", true)
-  ]))
-
-  data = {
-    service_perimeters_bridge = {
-      for k, v in local._perimeters :
-      k => {
-        spec_resources = (
-          v.dry_run
-          ? flatten([for p in v.members : local._perimeters_projects[p]])
-          : null
-        )
-
-        status_resources = (
-          v.dry_run
-          ? null
-          : flatten([for p in v.members : local._perimeters_projects[p]])
-        )
-
-        use_explicit_dry_run_spec = v.dry_run
-      }
-      if try(v.type == "bridge", false)
-    }
-
-
-    service_perimeters_regular = {
-      for k, v in local._perimeters :
-      k => {
-        spec = v.dry_run ? merge(v, {
-          ingress_policies    = v.ingress_policies
-          restricted_services = try(v.restricted_services, local.restricted_services)
-          resources           = local._perimeters_projects[k]
-        }) : null
-
-        status = !v.dry_run ? merge(v, {
-          ingress_policies    = v.ingress_policies
-          restricted_services = try(v.restricted_services, local.restricted_services)
-          resources           = local._perimeters_projects[k]
-        }) : null
-
-        use_explicit_dry_run_spec = v.dry_run
-      }
-      if try(v.type != "bridge", true)
-    }
   }
 
   fast_ingress_policies = var.logging == null ? {} : {
@@ -120,37 +59,29 @@ locals {
       }
     }
   }
-
-  restricted_services = yamldecode(file(var.factories_config.restricted_services))
 }
 
 module "vpc-sc-discovery" {
   source           = "../../../modules/projects-data-source"
-  for_each         = var.resource_discovery.enabled ? local._perimeters : tomap({})
+  for_each         = var.resource_discovery.enabled ? local._perimeter_filters : tomap({})
   parent           = coalesce(var.root_node, "organizations/${var.organization.id}")
   ignore_folders   = var.resource_discovery.ignore_folders
   ignore_projects  = var.resource_discovery.ignore_projects
   include_projects = var.resource_discovery.include_projects
-  query            = try(each.value.resources_filter, "state:ACTIVE")
+  query            = each.value
 }
 
 module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
-  count         = length(local._perimeters) > 0 ? 1 : 0
+  count         = length(local._data.perimeters) > 0 ? 1 : 0
   access_policy = var.access_policy
   access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
 
-  access_levels    = var.access_levels
-  egress_policies  = var.egress_policies
-  factories_config = var.factories_config
-  ingress_policies = merge(
-    local.fast_ingress_policies,
-    var.ingress_policies
-  )
-  service_perimeters_bridge  = local.data.service_perimeters_bridge
-  service_perimeters_regular = local.data.service_perimeters_regular
+  dynamic_projects_map = local.dynamic_projects_map
+  factories_config     = var.factories_config
+  ingress_policies     = var.logging == null ? {} : local.fast_ingress_policies
 }

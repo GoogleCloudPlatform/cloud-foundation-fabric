@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",  
+  "title": "perimeters",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+	"description": {
+		"type": "string"
+	},
+    "dry_run": {
+        "type": "boolean",
+		"default": "false"
+    },
+    "type": {
+        "type": "string",
+        "pattern": "^(?:bridge|regular)$",
+        "default": "regular"
+    },
+    "access_levels": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        },
+        "default": []
+    },
+    "egress_policies": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        },
+        "default": []
+    },
+    "ingress_policies": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        },
+        "default": []
+    },
+    "resources": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        },
+        "default": []
+    },
+    "resources_filter": {
+        "type": "string"
+    },
+    "perimeters": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        }
+    },
+    "restricted_services": {
+        "type": "array",
+        "items": {
+            "type": "string"
+        }
+    },
+    "vpc_accessible_services": {
+        "$ref": "#/$defs/VpcAccessibleServices"
+    }
+  },
+  "$defs": {
+    "VpcAccessibleServices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+          "allowed_services": {
+              "type": "array",
+              "items": {
+                  "type": "string"
+              }
+          },
+          "enable_restriction": {
+              "type": "boolean"
+          }
+      },
+      "required": [
+          "allowed_services",
+          "enable_restriction"
+      ]
+    }
+  }
+}

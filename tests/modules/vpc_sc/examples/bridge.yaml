@@ -44,13 +44,7 @@ values:
       - projects/222221
       restricted_services: null
       vpc_accessible_services: []
-    status:
-    - access_levels: null
-      egress_policies: []
-      ingress_policies: []
-      resources: null
-      restricted_services: null
-      vpc_accessible_services: []
+    status: []
     title: b2
     use_explicit_dry_run_spec: true
 

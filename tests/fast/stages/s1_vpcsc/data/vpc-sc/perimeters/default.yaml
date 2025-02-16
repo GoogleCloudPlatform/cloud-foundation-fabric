@@ -1,4 +1,4 @@
-dry_run: yes
+description: Test perimeter
 access_levels:
   - "geo_it"
   - "identity_me"

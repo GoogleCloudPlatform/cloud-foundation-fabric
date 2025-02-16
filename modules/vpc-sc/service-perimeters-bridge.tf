@@ -21,7 +21,7 @@
 # google_access_context_manager_service_perimeters resource
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
-  for_each                  = var.service_perimeters_bridge
+  for_each                  = merge(var.service_perimeters_bridge, local.data.service_perimeters_bridge)
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   title                     = each.key
@@ -29,14 +29,17 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
 
   dynamic "spec" {
-    for_each = each.value.spec_resources == null ? [] : [""]
+    for_each = (each.value.spec_resources == null ? [] : [""])
     content {
-      resources = each.value.spec_resources
+      resources = each.value.spec_resources == null ? [] : each.value.spec_resources
     }
   }
 
-  status {
-    resources = each.value.status_resources == null ? [] : each.value.status_resources
+  dynamic "status" {
+    for_each = (each.value.status_resources == null ? [] : [""])
+    content {
+      resources = each.value.status_resources == null ? [] : each.value.status_resources
+    }
   }
 
   # lifecycle {

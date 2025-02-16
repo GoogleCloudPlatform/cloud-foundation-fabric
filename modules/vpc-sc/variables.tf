@@ -79,6 +79,12 @@ variable "access_policy_create" {
   default = null
 }
 
+variable "dynamic_projects_map" {
+  description = "External source of resources to perimeter mapping"
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "egress_policies" {
   description = "Egress policy definitions that can be referenced in perimeters."
   type = map(object({
@@ -126,6 +132,7 @@ variable "factories_config" {
     access_levels       = optional(string)
     egress_policies     = optional(string)
     ingress_policies    = optional(string)
+    perimeters          = optional(string)
     restricted_services = optional(string, "data/restricted-services.yaml")
   })
   nullable = false

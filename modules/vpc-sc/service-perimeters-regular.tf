@@ -26,7 +26,7 @@ locals {
 }
 
 resource "google_access_context_manager_service_perimeter" "regular" {
-  for_each                  = var.service_perimeters_regular
+  for_each                  = merge(var.service_perimeters_regular, local.data.service_perimeters_regular)
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   description               = each.value.description
