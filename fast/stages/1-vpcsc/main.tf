@@ -75,6 +75,7 @@ module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if the default perimeter is defined
   count         = length(local._data.perimeters) > 0 ? 1 : 0
+  access_levels = var.access_levels
   access_policy = var.access_policy
   access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
@@ -82,6 +83,8 @@ module "vpc-sc" {
   }
 
   dynamic_projects_map = local.dynamic_projects_map
+  egress_policies      = var.egress_policies
   factories_config     = var.factories_config
-  ingress_policies     = var.logging == null ? {} : local.fast_ingress_policies
+  ingress_policies = merge(var.ingress_policies,
+  (var.logging == null ? {} : local.fast_ingress_policies))
 }
