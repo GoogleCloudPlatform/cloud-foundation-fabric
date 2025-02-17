@@ -166,7 +166,7 @@ variable "backend_service_configs" {
   validation {
     condition = alltrue([
       for backend_service in values(var.backend_service_configs) :
-      (backend_service.locality_lb_policy == null ||
+      (backend_service.locality_lb_policy == null ? true :
         contains(
           [
             "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
