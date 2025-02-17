@@ -166,7 +166,7 @@ variable "backend_service_configs" {
   validation {
     condition = alltrue([
       for backend_service in values(var.backend_service_configs) :
-      (backend_service.locality_lb_policy == null ? true :
+      (backend_service.locality_lb_policy == null || 
         contains(
           [
             "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH", "RANDOM",
@@ -180,7 +180,7 @@ variable "backend_service_configs" {
   validation {
     condition = alltrue(flatten([
       for backend_service in values(var.backend_service_configs) : [
-        for llp in(backend_service.locality_lb_policies == null ? [] : backend_service.locality_lb_policies) : (
+        for llp in coalesce(backend_service.locality_lb_policies, []) : (
           ((llp.policy != null && llp.custom_policy == null) || (llp.policy == null && llp.custom_policy != null))
         )
       ]
