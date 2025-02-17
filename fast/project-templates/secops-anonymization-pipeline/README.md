@@ -1,6 +1,18 @@
 # SecOps Anonymization Pipeline
 
-This blueprint offers a comprehensive and adaptable solution for constructing a SecOps pipeline for exporting raw data from a SecOps tenant, optionally anonymize this data and then import data back in a different SecOps tenant. The pipeline is built on top of various Google Cloud products.
+This application template offers a comprehensive and adaptable solution for constructing a SecOps pipeline for exporting raw data from a SecOps tenant, optionally anonymize this data and then import data back in a different SecOps tenant. The pipeline is built on top of various Google Cloud products.
+
+## Prerequisites
+
+The [`project.yaml`](./project.yaml) file describes the project-level configuration needed in terms of API activation and IAM bindings.
+
+If you are deploying this inside a FAST-enabled organization, the file can be lightly edited to match your configuration, and then used directly in the [project factory](../../stages/2-project-factory/).
+
+This Terraform can of course be deployed using any pre-existing project. In that case use the YAML file to determine the configuration you need to set on the project:
+
+- enable the APIs listed under `services`
+- grant the permissions listed under `iam` to the principal running Terraform, either machine (service account) or human
+
 
 ### High level architecture
 
@@ -86,14 +98,13 @@ Test the solution triggering an export from the Cloud Scheduler page, after few 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L59) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L78) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [secops_config](variables.tf#L95) | SecOps config. | <code title="object&#40;&#123;&#10;  region            &#61; string&#10;  alpha_apis_region &#61; string&#10;  source_tenant &#61; object&#40;&#123;&#10;    gcp_project          &#61; string&#10;    export_sa_key_base64 &#61; string&#10;  &#125;&#41;&#10;  target_tenant &#61; object&#40;&#123;&#10;    gcp_project             &#61; string&#10;    customer_id             &#61; string&#10;    ingestion_sa_key_base64 &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L69) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [secops_config](variables.tf#L86) | SecOps config. | <code title="object&#40;&#123;&#10;  region            &#61; string&#10;  alpha_apis_region &#61; string&#10;  source_tenant &#61; object&#40;&#123;&#10;    gcp_project          &#61; string&#10;    export_sa_key_base64 &#61; string&#10;  &#125;&#41;&#10;  target_tenant &#61; object&#40;&#123;&#10;    gcp_project             &#61; string&#10;    customer_id             &#61; string&#10;    ingestion_sa_key_base64 &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [anonymization_scheduler](variables.tf#L17) | Schedule for triggering export, anonymization and import of data. | <code title="object&#40;&#123;&#10;  trigger-export &#61; string&#10;  anonymize-data &#61; string&#10;  import-data    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  trigger-export &#61; &#34;0 8 29 2 &#42;&#34;&#10;  anonymize-data &#61; &#34;0 12 29 2 &#42;&#34;&#10;  import-data    &#61; &#34;0 13 29 2 &#42;&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [cloud_function_config](variables.tf#L31) | Optional Cloud Function configuration. | <code title="object&#40;&#123;&#10;  build_worker_pool_id &#61; optional&#40;string&#41;&#10;  build_sa             &#61; optional&#40;string&#41;&#10;  debug                &#61; optional&#40;bool, false&#41;&#10;  cpu                  &#61; optional&#40;number, 1&#41;&#10;  memory_mb            &#61; optional&#40;number, 2048&#41;&#10;  timeout_seconds      &#61; optional&#40;number, 3600&#41;&#10;  vpc_connector &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    egress_settings &#61; optional&#40;string, &#34;ALL_TRAFFIC&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [dlp_config](variables.tf#L49) | Data Loss prevention configuration. | <code title="object&#40;&#123;&#10;  region                 &#61; string&#10;  deidentify_template_id &#61; string&#10;  inspect_template_id    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_create](variables.tf#L69) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [regions](variables.tf#L83) | Regions: primary for all resources and secondary for clouds scheduler since the latter is available in few regions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_anonymization](variables.tf#L112) | Whether to skip anonymization step and just import data exported from source tenant. | <code>bool</code> |  | <code>false</code> |
+| [regions](variables.tf#L74) | Regions: primary for all resources and secondary for clouds scheduler since the latter is available in few regions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west1&#34;&#10;  secondary &#61; &#34;europe-west1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_anonymization](variables.tf#L103) | Whether to skip anonymization step and just import data exported from source tenant. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 
@@ -122,10 +133,6 @@ module "test" {
   skip_anonymization = false
   prefix             = "pre"
   project_id         = "gcp-project-id"
-  project_create = {
-    billing_account_id = "12345-ABCDEF-12345"
-    parent             = "folders/2345678901"
-  }
   regions = {
     primary   = "europe-west1"
     secondary = "europe-west1"

@@ -26,17 +26,7 @@ locals {
 
 module "project" {
   source = "../../../modules/project"
-  billing_account = (var.project_create != null
-    ? var.project_create.billing_account_id
-    : null
-  )
-  parent = (var.project_create != null
-    ? var.project_create.parent
-    : null
-  )
-  prefix         = var.project_create == null ? null : var.prefix
-  project_create = var.project_create != null
-  name           = var.project_id
+  name   = var.project_id
   services = concat([
     "secretmanager.googleapis.com",
     "run.googleapis.com",

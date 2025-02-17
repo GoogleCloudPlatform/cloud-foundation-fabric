@@ -45,7 +45,7 @@ automation:
 iam:
   roles/viewer:
     - rw
-  roles/artifactregistry.admin:
+  roles/owner:
     - rw
   # TODO: add instance service accounts that need access to the registries
   # roles/artifactregistry.writer:
