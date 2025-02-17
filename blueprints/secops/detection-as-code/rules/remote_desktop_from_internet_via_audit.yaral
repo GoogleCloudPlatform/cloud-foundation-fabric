@@ -1,0 +1,18 @@
+rule remote_desktop_from_internet_via_audit {
+ meta:
+    author = "Google Cloud Security"
+    description = "Detects RDP logons from non-private ip ranges. RDP & Local Administrator accounts are often targeted for remote access.  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md."
+    reference = "https://tdm.socprime.com/tdm/info/DS3MRqpI1PBa"
+    version = "0.01"
+    created = "2021-03-09"
+    product = "windows"
+    service = "security"
+    mitre = "initial_access, t1076, t1078"
+
+  events:
+    ($selection1.metadata.product_event_type = "4624" and $selection1.extensions.auth.mechanism  = 10)
+    not $selection1.principal.ip in cidr %private_ip_ranges
+
+  condition:
+    $selection1
+}

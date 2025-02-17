@@ -12,13 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-network_traffic_to_specific_country:
-  enabled: true
-  alerting: true
-  archived: false
-  run_frequency: "DAILY"
-remote_desktop_from_internet_via_audit:
-  enabled: true
-  alerting: true
-  archived: false
-  run_frequency: "DAILY"
+private_ip_ranges:
+  description: "Private CIDR ranges"
+  type: CIDR # either CIDR, STRING, REGEX

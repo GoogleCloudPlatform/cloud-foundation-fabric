@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-variable "secops_config" {
+variable "secops_content_config" {
+  description = "Path to SecOps rules and reference lists deployment YAML config files."
+  type = object({
+    reference_lists = string
+    rules           = string
+  })
+  default = {
+    reference_lists = "secops_reference_lists.yaml"
+    rules           = "secops_rules.yaml"
+  }
+}
+
+variable "secops_tenant_config" {
   description = "SecOps tenant configuration."
   type = object({
     location = optional(string, "eu")
     instance = string
     project  = string
   })
-}
-
-variable "secops_rule_config" {
-  description = "Path to SecOps Rule deployment YAML config file."
-  type        = string
-  default     = "secops_rules.yaml"
 }
