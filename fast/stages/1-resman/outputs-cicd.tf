@@ -18,41 +18,16 @@
 
 locals {
   # render CI/CD workflow templates
-
-  _stage_2_cicd_workflow_var_files = {
-    security = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    networking = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    network_security = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    project_factory = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "0-globals.auto.tfvars.json",
-      "2-networking.auto.tfvars.json"
-    ]
-  }
-
   cicd_workflows = {
     for k, v in local.cicd_repositories : "${v.level}-${replace(k, "_", "-")}" => templatefile(
       "${path.module}/templates/workflow-${v.repository.type}.yaml", {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
         audiences = try(
-          local.cicd_workflow_providers[v.identity_provider].audiences, []
+          local.identity_providers[v.identity_provider].audiences, []
         )
         identity_provider = try(
-          local.cicd_workflow_providers[v.identity_provider].name, ""
+          local.identity_providers[v.identity_provider].name, ""
         )
         outputs_bucket = var.automation.outputs_bucket
         service_accounts = {
@@ -61,12 +36,16 @@ locals {
         }
         stage_name = k
         tf_providers_files = {
-          apply = local.cicd_workflow_providers[k]
-          plan  = local.cicd_workflow_providers["${k}-r"]
+          apply = replace(local.cicd_workflow_providers[k], "_", "-")
+          plan  = replace(local.cicd_workflow_providers["${k}-r"], "_", "-")
         }
         tf_var_files = (
           v.level == 2 ?
-          local._stage_2_cicd_workflow_var_files[k]
+          [
+            "0-bootstrap.auto.tfvars.json",
+            "1-resman.auto.tfvars.json",
+            "0-globals.auto.tfvars.json"
+          ]
           : [
             "0-bootstrap.auto.tfvars.json",
             "0-globals.auto.tfvars.json",

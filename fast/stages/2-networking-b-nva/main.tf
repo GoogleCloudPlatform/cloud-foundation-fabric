@@ -29,11 +29,11 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]))
-  iam_delegated_principals = try(
-    var.stage_config["networking"].iam_delegated_principals, {}
+  iam_admin_delegated = try(
+    var.stage_config["networking"].iam_admin_delegated, {}
   )
-  iam_viewer_principals = try(
-    var.stage_config["networking"].iam_viewer_principals, {}
+  iam_viewer = try(
+    var.stage_config["networking"].iam_viewer, {}
   )
   # select the NVA ILB as next hop for spoke VPC routing depending on net mode
   nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,6 @@ locals {
       }
     ]
   ])
-  drs_domains = concat(
-    var.organization.customer_id == null ? [] : [var.organization.customer_id],
-    var.org_policies_config.constraints.allowed_policy_member_domains
-  )
-  essential_contacts_domains = concat(
-    var.organization.domain == null ? [] : ["@${var.organization.domain}"],
-    [for d in var.org_policies_config.constraints.allowed_essential_contact_domains : "@${d}"]
-  )
   org_policies_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
   iam_principals = {
     for k, v in local.iam_principal_bindings : k => v.authoritative
@@ -89,8 +81,8 @@ import {
       "iam.allowedPolicyMemberDomains",
       "essentialcontacts.allowedContactDomains",
       "storage.uniformBucketLevelAccess",
-      "compute.setNewProjectDefaultToZonalDNSOnly", # Verified as of 2024-09-13
-      # "constraints/compute.restrictProtocolForwardingCreationForTypes", # Officially be applied starting 2024-08-15, but still MIA as of 2024-09-13
+      "compute.setNewProjectDefaultToZonalDNSOnly",         # Verified as of 2024-09-13
+      "compute.restrictProtocolForwardingCreationForTypes", # Verified as of 2025-02-13
     ])
   )
   id = "organizations/${var.organization.id}/policies/${each.key}"
@@ -198,9 +190,20 @@ module "organization" {
   custom_roles = var.custom_roles
   factories_config = {
     custom_roles = var.factories_config.custom_roles
+    org_policy_custom_constraints = (
+      var.bootstrap_user != null ? null : var.factories_config.custom_constraints
+    )
     org_policies = (
       var.bootstrap_user != null ? null : var.factories_config.org_policies
     )
+    context = {
+      org_policies = {
+        organization = var.organization
+        tags = {
+          org_policies_tag_name = local.org_policies_tag_name
+        }
+      }
+    }
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
@@ -211,52 +214,6 @@ module "organization" {
       disabled             = attrs.disabled
       exclusions           = attrs.exclusions
     }
-  }
-  org_policies = var.bootstrap_user != null ? {} : {
-    "essentialcontacts.allowedContactDomains" = {
-      rules = [
-        {
-          allow = { values = local.essential_contacts_domains }
-          condition = {
-            expression = (
-              "!resource.matchTag('${local.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')"
-            )
-          }
-        },
-        {
-          allow = { all = true }
-          condition = {
-            expression = (
-              "resource.matchTag('${local.org_policies_tag_name}', 'allowed-essential-contacts-domains-all')"
-            )
-            title = "allow-all"
-          }
-        },
-      ]
-    }
-    "iam.allowedPolicyMemberDomains" = {
-      rules = [
-        {
-          allow = { values = local.drs_domains }
-          condition = {
-            expression = (
-              "!resource.matchTag('${local.org_policies_tag_name}', 'allowed-policy-member-domains-all')"
-            )
-          }
-        },
-        {
-          allow = { all = true }
-          condition = {
-            expression = (
-              "resource.matchTag('${local.org_policies_tag_name}', 'allowed-policy-member-domains-all')"
-            )
-            title = "allow-all"
-          }
-        },
-      ]
-    }
-    # "gcp.resourceLocations" = {}
-    # "iam.workloadIdentityPoolProviders" = {}
   }
   tags = {
     (var.org_policies_config.tag_name) = {

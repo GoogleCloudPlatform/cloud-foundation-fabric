@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "buckets" {
+  description = "Bucket names."
+  value = {
+    for k, v in module.buckets : k => v.name
+  }
+}
+
 output "folders" {
   description = "Folder ids."
   value       = local.hierarchy
@@ -23,9 +30,10 @@ output "projects" {
   description = "Created projects."
   value = {
     for k, v in module.projects : k => {
-      number     = v.number
-      project_id = v.id
-      project    = v
+      number             = v.number
+      project_id         = v.id
+      project            = v
+      automation_enabled = lookup(local.projects[k], "automation", null) != null
       automation_buckets = {
         for kk, vv in module.automation-buckets :
         trimprefix(kk, "${k}/") => vv.name
@@ -42,7 +50,5 @@ output "projects" {
 
 output "service_accounts" {
   description = "Service account emails."
-  value = {
-    for k, v in module.service-accounts : k => v.email
-  }
+  value       = module.service-accounts
 }

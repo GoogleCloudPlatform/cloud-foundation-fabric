@@ -24,9 +24,9 @@ module "project" {
     ? var.project_create.parent
     : null
   )
-  project_create = var.project_create != null
-  prefix         = var.project_create == null ? null : var.prefix
-  name           = var.project_id
+  project_reuse = var.project_create != null ? null : {}
+  prefix        = var.project_create == null ? null : var.prefix
+  name          = var.project_id
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

@@ -11,6 +11,7 @@ The following diagram illustrates the high-level design of created resources, wh
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
 - [How to run this stage](#how-to-run-this-stage)
+  - [Resource management configuration](#resource-management-configuration)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
@@ -58,6 +59,43 @@ This stage is meant to be executed after the FAST "foundational" stages: bootstr
 It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
 
 Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+
+### Resource management configuration
+
+Some configuration changes are needed in resource management before this stage can be run.
+
+First, define a parent folder for each stage environment folder in the `data/top-level-folder` folder [in the resource management stage](../1-resman/data/top-level-folders/). As an example, this YAML definition creates a `GKE` folder under the organization:
+
+```yaml
+# yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
+
+name: GKE
+
+# IAM bindings and organization policies can also be defined here
+```
+
+Then, edit the definition of the networking stage 2 in the `data/stage2` folder [in the resource management stage](../1-resman/data/stage-2/) to include the IAM configuration for GKE. The following are example snippets for GKE dev, make sure they match the `short_name` and `environment` configured above.
+
+In `folder_config.iam_bindings_additive` add:
+
+```yaml
+# folder_config:
+  # iam_bindings_additive:
+    gke_dns_admin:
+      role: roles/dns.admin
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    gke_dns_reader:
+      role: roles/dns.reader
+      member: gke-dev-ro
+      condition:
+        title: GKE dev DNS reader.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+```
 
 ### Provider and Terraform variables
 

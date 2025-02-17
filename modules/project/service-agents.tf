@@ -26,17 +26,31 @@ locals {
     for agent in local._service_agents_data :
     coalesce(agent.api, "cloudservices") => agent... # cloudservices api is null
   }
+  _universe_domain = (
+    var.universe == null
+    ? ""
+    : "${var.universe.prefix}-system."
+  )
   # map of service agent name => agent details for this project
-  _project_service_agents = merge([
+  _project_service_agents_0 = merge([
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
-        email      = format(agent.identity, local.project.number)
-        iam_email  = "serviceAccount:${format(agent.identity, local.project.number)}"
-        create_jit = api == "cloudservices" || contains(local.available_services, api)
+        email = (
+          var.universe == null || api != "cloudservices"
+          ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
+          : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+        )
       })
     }
   ]...)
+  _project_service_agents = {
+    for k, v in local._project_service_agents_0 :
+    k => merge(v, {
+      iam_email  = "serviceAccount:${v.email}"
+      create_jit = v.api == null ? false : contains(local.available_services, v.api)
+    })
+  }
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it
   primary_service_agents = [

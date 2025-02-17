@@ -47,7 +47,7 @@ module "project" {
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
+  project_reuse   = var.project_create != null ? null : {}
   prefix          = var.project_create == null ? null : var.prefix
   iam_bindings_additive = merge(
     var.data_eng_principal == null ? {} : {

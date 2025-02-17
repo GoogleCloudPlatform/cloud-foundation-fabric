@@ -92,6 +92,19 @@ module "landing-dns-priv-gcp" {
 }
 
 # Google APIs via response policies
+# the zone fixes issues with missing MX/SRV records when forwarding onprem
+
+module "landing-dns-priv-googleapis" {
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  name       = "googleapis-com"
+  zone_config = {
+    domain = "googleapis.com."
+    private = {
+      client_networks = [module.landing-vpc.self_link]
+    }
+  }
+}
 
 module "landing-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"

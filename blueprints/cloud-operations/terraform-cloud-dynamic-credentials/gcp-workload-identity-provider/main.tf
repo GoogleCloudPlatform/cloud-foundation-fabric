@@ -20,7 +20,7 @@
 module "project" {
   source          = "../../../../modules/project"
   name            = var.project_id
-  project_create  = var.project_create
+  project_reuse   = var.project_create ? null : {}
   parent          = var.parent
   billing_account = var.billing_account
   services = [

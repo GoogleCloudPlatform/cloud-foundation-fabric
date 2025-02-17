@@ -59,13 +59,13 @@ module "prod-spoke-project" {
   }
   # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
-    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["prod"], [])
+    (var.custom_roles.project_iam_viewer) = try(local.iam_viewer["prod"], [])
   }
   iam_bindings = (
-    lookup(local.iam_delegated_principals, "prod", null) == null ? {} : {
+    lookup(local.iam_admin_delegated, "prod", null) == null ? {} : {
       sa_delegated_grants = {
         role    = "roles/resourcemanager.projectIamAdmin"
-        members = try(local.iam_delegated_principals["prod"], [])
+        members = try(local.iam_admin_delegated["prod"], [])
         condition = {
           title       = "prod_stage3_sa_delegated_grants"
           description = "${var.environments["prod"].name} host project delegated grants."
