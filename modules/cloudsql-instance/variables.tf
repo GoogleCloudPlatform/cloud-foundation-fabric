@@ -250,8 +250,11 @@ variable "replicas" {
 
 variable "root_password" {
   description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
-  type        = string
-  default     = null
+  type = object({
+    password        = optional(string, null)
+    random_password = optional(bool, false) # overrides password
+  })
+  default = {}
 }
 
 variable "ssl" {
