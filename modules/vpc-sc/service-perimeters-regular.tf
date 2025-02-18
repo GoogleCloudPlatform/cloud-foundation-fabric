@@ -54,6 +54,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -120,6 +121,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -201,6 +203,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -267,6 +270,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {

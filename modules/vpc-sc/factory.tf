@@ -48,6 +48,7 @@ locals {
     }
     egress_policies = {
       for k, v in local._data.egress_policies : k => {
+        title = try(v.title, null)
         from = merge({
           access_levels = []
           identity_type = null
@@ -69,6 +70,7 @@ locals {
     }
     ingress_policies = {
       for k, v in local._data.ingress_policies : k => {
+        title = try(v.title, null)
         from = merge({
           access_levels = []
           identity_type = null
