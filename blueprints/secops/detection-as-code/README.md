@@ -1,7 +1,9 @@
 # Detection as Code in Terraform for Google SecOps
 
-This blueprint is a sample terraform repository to implementing a Detection as code pipeline for managing Google SecOps rules based on Terraform code.
-For more information of the code available and how to use it to deploy rules in SecOps please refer to this [medium article](https://medium.com/p/646de8967278).
+This blueprint is a sample terraform repository to implementing a Detection as code pipeline for managing Google SecOps
+rules based on Terraform code.
+For more information of the code available and how to use it to deploy rules in SecOps please refer to
+this [medium article](https://medium.com/p/646de8967278).
 
 ### GitLab CICD Pipeline design
 
@@ -9,18 +11,30 @@ For more information of the code available and how to use it to deploy rules in 
 
 A brief workflow description:
 
-1. **Code Commit and Testing (Optional)**: A SOC engineer makes changes to the Terraform configuration (might be an update to the YARA-L rule or its configuration in the YAML file) in their local development environment. They may optionally test these changes locally with a local terraform plan command.
+1. **Code Commit and Testing (Optional)**: A SOC engineer makes changes to the Terraform configuration (might be an
+   update to the YARA-L rule or its configuration in the YAML file) in their local development environment. They may
+   optionally test these changes locally with a local terraform plan command.
 
-2. **Create Merge Request**: The engineer commits the changes and pushes them to a feature branch in the GitLab repository. Then creates a merge request (MR) in GitLab, which will trigger the CI/CD pipeline.
+2. **Create Merge Request**: The engineer commits the changes and pushes them to a feature branch in the GitLab
+   repository. Then creates a merge request (MR) in GitLab, which will trigger the CI/CD pipeline.
 
-3. **GitLab Plan Pipeline**: The first pipeline executing when a new MR is open is responsible for setting up authentication, initializes Terraform (terraform init), validates the configuration files (terraform validate) to ensure they are syntactically correct and then generates an execution plan (terraform plan) outlining the changes that will be made to the SecOps rules. The plan is then attached as a report to the MR.
+3. **GitLab Plan Pipeline**: The first pipeline executing when a new MR is open is responsible for setting up
+   authentication, initializes Terraform (terraform init), validates the configuration files (terraform validate) to
+   ensure they are syntactically correct and then generates an execution plan (terraform plan) outlining the changes
+   that will be made to the SecOps rules. The plan is then attached as a report to the MR.
 
 
-4. **Review and Approval**: Another SOC engineer (or a predefined set of reviewers) reviews the report generated from the Terraform plan and the proposed chages. If the plan is approved, the approver will approve and merge the MR, while if the changes need adjustments, the approver might request changes, requiring the original developer to update the code and push new commits to the feature branch, restarting the pipeline from step 3.
+4. **Review and Approval**: Another SOC engineer (or a predefined set of reviewers) reviews the report generated from
+   the Terraform plan and the proposed chages. If the plan is approved, the approver will approve and merge the MR,
+   while if the changes need adjustments, the approver might request changes, requiring the original developer to update
+   the code and push new commits to the feature branch, restarting the pipeline from step 3.
 
-5. **GitLab Apply Pipeline**: Merging the MR triggers a new pipeline run on the main branch. The pipeline will still first initialize authentication and Terraform (terraform init). But then it will applly the proposed changes using terraform apply, deploying the updated or new YARA-L rules to Google SecOps.
+5. **GitLab Apply Pipeline**: Merging the MR triggers a new pipeline run on the main branch. The pipeline will still
+   first initialize authentication and Terraform (terraform init). But then it will applly the proposed changes using
+   terraform apply, deploying the updated or new YARA-L rules to Google SecOps.
 
-6. **Report Results**: The pipeline might then optionally reports the results of the deployment (success or failure) to the SOC engineers team, where the SOC team might just have to do some operations in case of a failure.
+6. **Report Results**: The pipeline might then optionally reports the results of the deployment (success or failure) to
+   the SOC engineers team, where the SOC team might just have to do some operations in case of a failure.
 
 ### Deployment
 
@@ -44,6 +58,7 @@ information/configurations in place (for more precise configuration see the Vari
 * The SecOps project ID
 * Region and customer code for the SecOps tenant
 * Chronicle API Admin or equivalent to access SecOps APIs
+* Cloud Storage bucket for storing remote state file
 
 #### Step 2: Prepare the variables
 
@@ -53,6 +68,11 @@ Make sure you’re in the directory of this tutorial (where this README is in).
 Configure the Terraform variables in your `terraform.tfvars` file.
 Rename the existing `terrafomr.tfvars.sample` as starting pointand then see the variables
 documentation below.
+
+For the pipeline to work properly it is mandatory to keep the terraform state in a remote location.
+We recommend a Cloud Storage bucket for storing the state file, we provided a sample backend.tf file
+named `backend.tf.sample` you can rename to backend.tf and replace the name of the Cloud Storage bucket where to store
+state file. It is important for the accoung running the terraform script to have access to such a Cloud Storage bucket.
 
 #### Step 3: Deploy resources
 
@@ -71,7 +91,9 @@ Please first set up Workload Identity Federation and then replace the following 
 - WIF_PROVIDER
 - GITLAB_TOKEN audience
 
-according to the WIF configuration. The service account the pipeline will impersonate must have Chronicle API Admin role or equivalent custom role for dealing with SecOps Rule Management APIs. It is important to setup a remote backend (possibly on GCS) before adopting the pipeline (of course).
+according to the WIF configuration. The service account the pipeline will impersonate must have Chronicle API Admin role
+or equivalent custom role for dealing with SecOps Rule Management APIs. It is important to setup a remote backend (
+possibly on GCS) before adopting the pipeline (of course).
 
 ### GitHub CICD Configuration
 
@@ -80,20 +102,25 @@ Please first set up Workload Identity Federation and then replace the following 
 - SERVICE_ACCOUNT
 - WIF_PROVIDER
 
-according to the WIF configuration. The service account the pipeline will impersonate must have Chronicle API Admin role or equivalent custom role for dealing with SecOps Rule Management APIs. It is important to setup a remote backend (possibly on GCS) before adopting the pipeline (of course).
+according to the WIF configuration. The service account the pipeline will impersonate must have Chronicle API Admin role
+or equivalent custom role for dealing with SecOps Rule Management APIs. It is important to setup a remote backend (
+possibly on GCS) before adopting the pipeline (of course).
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
-| name | description | type | required | default |
-|---|---|:---:|:---:|:---:|
-| [secops_tenant_config](variables.tf#L29) | SecOps tenant configuration. | <code title="object&#40;&#123;&#10;  location &#61; optional&#40;string, &#34;eu&#34;&#41;&#10;  instance &#61; string&#10;  project  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [secops_content_config](variables.tf#L17) | Path to SecOps rules and reference lists deployment YAML config files. | <code title="object&#40;&#123;&#10;  reference_lists &#61; string&#10;  rules &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  reference_lists &#61; &#34;secops_reference_lists.yaml&#34;&#10;  rules &#61; &#34;secops_rules.yaml&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| name                                      | description                                                            |                                                                                                      type                                                                                                      | required |                                                                                  default                                                                                   |
+|-------------------------------------------|------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [secops_tenant_config](variables.tf#L29)  | SecOps tenant configuration.                                           | <code title="object&#40;&#123;&#10;  location &#61; optional&#40;string, &#34;eu&#34;&#41;&#10;  instance &#61; string&#10;  project  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |    ✓     |                                                                                                                                                                            |
+| [secops_content_config](variables.tf#L17) | Path to SecOps rules and reference lists deployment YAML config files. |                             <code title="object&#40;&#123;&#10;  reference_lists &#61; string&#10;  rules &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code>                             |          | <code title="&#123;&#10;  reference_lists &#61; &#34;secops_reference_lists.yaml&#34;&#10;  rules &#61; &#34;secops_rules.yaml&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+
 <!-- END TFDOC -->
+
 ## Test
 
 ```hcl
 module "test" {
-  source = "./fabric/blueprints/secops/detection-as-code"
+  source        = "./fabric/blueprints/secops/detection-as-code"
   secops_config = {
     location = "eu"
     instance = "XXXXXX-XXX-XXXXXX"

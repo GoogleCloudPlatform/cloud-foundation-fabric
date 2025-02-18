@@ -82,7 +82,6 @@ tf-plan-apply:
   - echo "$GITLAB_TOKEN" > token.txt
   - terraform init
   - terraform validate
-  - terraform validate
   - "if [ $COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false -out=$PLAN; fi"
   - "if [ $COMMAND == 'plan' ]; then terraform show --json $PLAN | convert_report > $PLAN_JSON; fi"
   - "if [ $COMMAND == 'apply' ]; then terraform apply -input=false -no-color -auto-approve; fi"
