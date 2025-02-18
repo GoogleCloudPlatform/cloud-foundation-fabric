@@ -17,7 +17,7 @@ Uncomment and complete the upgrade notes section below (if applicable), followin
 -->
 
 <!--
-** Upgrade Notes **
+**Breaking Changes**
 
 ```upgrade-note
 `fast/stages/0-boostrap`: example upgrade note 1.
