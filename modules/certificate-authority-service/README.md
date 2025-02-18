@@ -127,8 +127,9 @@ module "cas" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ca_ids](outputs.tf#L17) | The CA ids. |  |
-| [ca_pool](outputs.tf#L25) | The CA pool. |  |
-| [ca_pool_id](outputs.tf#L30) | The CA pool id. |  |
-| [cas](outputs.tf#L35) | The CAs. |  |
+| [ca_chains](outputs.tf#L17) | The CA chains in PEM format. |  |
+| [ca_ids](outputs.tf#L25) | The CA ids. |  |
+| [ca_pool](outputs.tf#L33) | The CA pool. |  |
+| [ca_pool_id](outputs.tf#L38) | The CA pool id. |  |
+| [cas](outputs.tf#L43) | The CAs. |  |
 <!-- END TFDOC -->

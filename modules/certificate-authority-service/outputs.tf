@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+output "ca_chains" {
+  description = "The CA chains in PEM format."
+  value = {
+    for k, v in google_privateca_certificate_authority.default :
+    k => v.pem_ca_certificates
+  }
+}
+
 output "ca_ids" {
   description = "The CA ids."
   value = {
