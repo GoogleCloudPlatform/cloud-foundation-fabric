@@ -24,7 +24,7 @@ locals {
   }
   folder_id = var.folder_ids[var.stage_config.name]
   prefix    = "${var.prefix}-${local.environment.short_name}"
-  region    = lookup(var.regions, var.default_region, var.default_region)
+  location  = lookup(var.regions, var.default_location, var.default_location)
 }
 
 module "central-project" {

@@ -23,16 +23,53 @@
 #    - dp0.yaml
 #    - dp1.yaml
 
+variable "central_project_config" {
+  description = "Configuration for the top-level central project."
+  type = object({
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_by_principals = optional(map(list(string)), {})
+    name              = optional(string)
+    services = optional(list(string), [
+      # TODO: define default list of services
+      "datacatalog.googleapis.com",
+      "logging.googleapis.com",
+      "monitoring.googleapis.com"
+    ])
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "data_domains" {
   description = "Data domain definitions."
   type = map(object({
-    name       = string
     short_name = optional(string)
     data_products = optional(map(object({
       short_name = optional(string)
       exposed_resources = optional(object({
-        bigquery = optional(object({}))
-        gcs      = optional(object({}))
+        bigquery = optional(map(object({})), {})
+        gcs = optional(map(object({
+          location      = optional(string)
+          storage_class = optional(string)
+        })), {})
       }), {})
       iam = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
@@ -57,7 +94,8 @@ variable "data_domains" {
       # networking_config = optional(object({}))
       services = optional(list(string))
     })), {})
-    folder_config = optional(map(object({
+    folder_config = map(object({
+      name         = string
       iam          = optional(map(list(string)), {})
       iam_bindings = optional(map(list(string)), {})
       iam_bindings_additive = optional(map(object({
@@ -70,7 +108,7 @@ variable "data_domains" {
         }))
       })), {})
       iam_by_principals = optional(map(list(string)), {})
-    })))
+    }))
     # networking_config = optional(object({}))
     project_config = optional(object({
       iam = optional(map(list(string)), {})
@@ -93,6 +131,7 @@ variable "data_domains" {
         }))
       })), {})
       iam_by_principals = optional(map(list(string)), {})
+      name              = optional(string)
       services          = optional(list(string))
     }), {})
   }))
@@ -118,8 +157,8 @@ variable "data_exposure_config" {
   }
 }
 
-variable "default_region" {
-  description = "Region used by default for resources when not explicitly defined. Supports interpolation from networking regions."
+variable "default_location" {
+  description = "Default location used when no location is specified."
   type        = string
   nullable    = false
   default     = "primary"
@@ -193,41 +232,6 @@ variable "secure_tags" {
     ])
     error_message = "Use an empty map instead of null as value."
   }
-}
-
-variable "central_project_config" {
-  description = "Configuration for the top-level central project."
-  type = object({
-    iam = optional(map(list(string)), {})
-    iam_bindings = optional(map(object({
-      members = list(string)
-      role    = string
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-    iam_bindings_additive = optional(map(object({
-      member = string
-      role   = string
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-    iam_by_principals = optional(map(list(string)), {})
-    name              = optional(string)
-    services = optional(list(string), [
-      # TODO: define default list of services
-      "datacatalog.googleapis.com",
-      "logging.googleapis.com",
-      "monitoring.googleapis.com"
-    ])
-  })
-  nullable = false
-  default  = {}
 }
 
 variable "stage_config" {
