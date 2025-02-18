@@ -38,12 +38,6 @@ output "id" {
   ]
 }
 
-output "key" {
-  description = "Service account key."
-  sensitive   = true
-  value       = local.key
-}
-
 output "name" {
   description = "Service account name."
   value       = local.service_account_id_static
