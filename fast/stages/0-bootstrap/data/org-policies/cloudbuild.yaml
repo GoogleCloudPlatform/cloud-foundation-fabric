@@ -18,50 +18,19 @@
 
 # yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
-iam.managed.allowedPolicyMembers:
-  rules:
-    - enforce: false
-      condition:
-        title: Allow any member domain
-        expression: |
-          resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
-
-    - enforce: true
-      parameters: >-
-        {
-          "allowedPrincipalSets": [
-             "//cloudresourcemanager.googleapis.com/organizations/${organization.id}"
-          ]
-        }
-
-iam.disableAuditLoggingExemption:
+compute.disableGuestAttributesAccess:
   rules:
     - enforce: true
 
-iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts:
+cloudbuild.disableCreateDefaultServiceAccount:
   rules:
     - enforce: true
-
-iam.managed.disableServiceAccountKeyCreation:
+    
+cloudbuild.useBuildServiceAccount: 
   rules:
     - enforce: true
-
-iam.managed.disableServiceAccountKeyUpload:
+    
+cloudbuild.useComputeServiceAccount:
   rules:
     - enforce: true
-
-iam.serviceAccountKeyExposureResponse:
-  rules:
-    - allow:
-        values:
-          - DISABLE_KEY
-
-iam.workloadIdentityPoolAwsAccounts:
-  rules:
-    - deny:
-        all: true
-
-iam.workloadIdentityPoolProviders:
-  rules:
-    - deny:
-        all: true
+    

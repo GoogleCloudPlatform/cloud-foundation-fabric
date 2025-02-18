@@ -26,9 +26,65 @@ values:
     parent: organizations/123456789012
     resource_types:
     - container.googleapis.com/Cluster
+  module.organization.google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.disableCreateDefaultServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["cloudbuild.useBuildServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.useBuildServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["cloudbuild.useComputeServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.useComputeServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
   module.organization.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableGuestAttributesAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableInternetNetworkEndpointGroup"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableInternetNetworkEndpointGroup
     parent: organizations/123456789012
     spec:
     - inherit_from_parent: null
@@ -57,6 +113,20 @@ values:
   module.organization.google_org_policy_policy.default["compute.disableSerialPortAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableSerialPortAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableVpcExternalIpv6"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableVpcExternalIpv6
     parent: organizations/123456789012
     spec:
     - inherit_from_parent: null
@@ -239,6 +309,20 @@ values:
         enforce: null
         parameters: null
         values: []
+  module.organization.google_org_policy_policy.default["iam.disableAuditLoggingExemption"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.disableAuditLoggingExemption
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
   module.organization.google_org_policy_policy.default["iam.managed.allowedPolicyMembers"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.managed.allowedPolicyMembers
@@ -324,6 +408,34 @@ values:
         - allowed_values:
           - DISABLE_KEY
           denied_values: null
+  module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.workloadIdentityPoolAwsAccounts
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.workloadIdentityPoolProviders
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        parameters: null
+        values: []
   module.organization.google_org_policy_policy.default["run.allowedIngress"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/run.allowedIngress
@@ -411,4 +523,3 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
-
