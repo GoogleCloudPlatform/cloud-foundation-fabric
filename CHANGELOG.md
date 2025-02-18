@@ -3,7 +3,12 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-02-11 17:16:34+00:00 to: None since: v37.2.0 -->
+## [Unreleased] <!-- from: 2025-02-12 13:19:03+00:00 to: None since: v37.3.0 -->
+
+### MODULES
+
+- [[#2901](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2901)] Add CA chain output to CAS module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-18 07:05:29+00:00 -->
+- [[#2898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2898)] Add support for locality policies to net-lb-app-ext module ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-02-18 06:25:45+00:00 -->
 
 ## [37.3.0] - 2025-02-12
 
@@ -2801,7 +2806,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...HEAD
+[37.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...v37.3.0
 [37.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...v37.2.0
 [37.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.0.0...v37.1.0
 [37.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v36.2.0...v37.0.0
