@@ -52,7 +52,7 @@ resource "google_sql_database_instance" "primary" {
   region              = var.region
   database_version    = var.database_version
   encryption_key_name = var.encryption_key_name
-  root_password       = var.root_password
+  root_password       = var.root_password.random_password ? random_password.root_password[0].result : var.root_password.password
 
   settings {
     tier                        = var.tier
@@ -289,8 +289,22 @@ resource "random_password" "passwords" {
     k
     if v.password == null
   ])
-  length  = 16
-  special = true
+  length      = try(var.password_validation_policy.min_length, 16)
+  special     = true
+  min_lower   = 1
+  min_numeric = 1
+  min_special = 1
+  min_upper   = 1
+}
+
+resource "random_password" "root_password" {
+  count       = var.root_password.random_password ? 1 : 0
+  length      = try(var.password_validation_policy.min_length, 16)
+  special     = true
+  min_lower   = 1
+  min_numeric = 1
+  min_special = 1
+  min_upper   = 1
 }
 
 resource "google_sql_user" "users" {

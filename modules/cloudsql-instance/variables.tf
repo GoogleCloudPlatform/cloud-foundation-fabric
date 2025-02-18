@@ -249,9 +249,17 @@ variable "replicas" {
 }
 
 variable "root_password" {
-  description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
-  type        = string
-  default     = null
+  description = "Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server."
+  type = object({
+    password        = optional(string)
+    random_password = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition     = !(var.root_password.password != null && var.root_password.random_password)
+    error_message = "Cannot provide root_password.password and root_password.random_password at the same time"
+  }
 }
 
 variable "ssl" {

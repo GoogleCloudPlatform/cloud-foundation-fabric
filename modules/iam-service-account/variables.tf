@@ -26,12 +26,6 @@ variable "display_name" {
   default     = "Terraform-managed."
 }
 
-variable "generate_key" {
-  description = "Generate a key for service account."
-  type        = bool
-  default     = false
-}
-
 variable "iam" {
   description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
   type        = map(list(string))

@@ -55,10 +55,9 @@ module "host-project" {
 }
 
 module "m4ce-service-account" {
-  source       = "../../../../modules/iam-service-account"
-  project_id   = module.host-project.project_id
-  name         = "m4ce-sa"
-  generate_key = true
+  source     = "../../../../modules/iam-service-account"
+  project_id = module.host-project.project_id
+  name       = "m4ce-sa"
 }
 
 module "target-projects" {
