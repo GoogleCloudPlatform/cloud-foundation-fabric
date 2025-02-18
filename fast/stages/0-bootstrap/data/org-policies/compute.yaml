@@ -101,7 +101,7 @@ compute.restrictProtocolForwardingCreationForTypes:
   rules:
     - allow:
         values:
-          - in:INTERNAL
+          - INTERNAL
 
 # compute.restrictSharedVpcHostProjects:
 #   rules:

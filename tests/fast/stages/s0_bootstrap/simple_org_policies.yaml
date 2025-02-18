@@ -114,7 +114,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - in:INTERNAL
+          - INTERNAL
           denied_values: null
   module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
     dry_run_spec: []
