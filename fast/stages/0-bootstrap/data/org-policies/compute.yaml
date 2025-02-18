@@ -22,13 +22,21 @@ compute.disableGuestAttributesAccess:
   rules:
     - enforce: true
 
+compute.disableInternetNetworkEndpointGroup:
+  rules:
+  - enforce: true
+
 compute.disableNestedVirtualization:
   rules:
   - enforce: true
 
 compute.disableSerialPortAccess:
   rules:
-  - enforce: true    
+  - enforce: true
+
+compute.disableVpcExternalIpv6:
+  rules:
+  - enforce: true
 
 compute.requireOsLogin:
   rules:
@@ -46,8 +54,8 @@ compute.skipDefaultNetworkCreation:
 
 compute.setNewProjectDefaultToZonalDNSOnly:
   rules:
-  - enforce: true  
-  
+  - enforce: true
+
 # only allow GCP images by default
 compute.trustedImageProjects:
   rules:
