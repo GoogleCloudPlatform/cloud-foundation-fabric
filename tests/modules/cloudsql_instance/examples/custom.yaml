@@ -49,10 +49,10 @@ values:
     keepers: null
     length: 16
     lower: true
-    min_lower: 0
-    min_numeric: 0
-    min_special: 0
-    min_upper: 0
+    min_lower: 1
+    min_numeric: 1
+    min_special: 1
+    min_upper: 1
     number: true
     numeric: true
     override_special: null
