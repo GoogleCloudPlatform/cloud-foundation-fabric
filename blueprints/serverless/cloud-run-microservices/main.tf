@@ -29,7 +29,7 @@ module "main-project" {
   source          = "../../../modules/project"
   name            = var.project_configs.main.project_id
   prefix          = var.prefix
-  project_create  = var.project_configs.main.billing_account_id != null
+  project_reuse   = var.project_configs.main.billing_account_id != null ? null : {}
   billing_account = try(var.project_configs.main.billing_account_id, null)
   parent          = try(var.project_configs.main.parent, null)
   # Enable Shared VPC by default, a use case will use this project as host
@@ -49,7 +49,7 @@ module "service-project" {
   count           = local.two_projects == true ? 1 : 0
   name            = var.project_configs.service.project_id
   prefix          = var.prefix
-  project_create  = var.project_configs.service.billing_account_id != null
+  project_reuse   = var.project_configs.service.billing_account_id != null ? null : {}
   billing_account = try(var.project_configs.service.billing_account_id, null)
   parent          = try(var.project_configs.service.parent, null)
   shared_vpc_service_config = {

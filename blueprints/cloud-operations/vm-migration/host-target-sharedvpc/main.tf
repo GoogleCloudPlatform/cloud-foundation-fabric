@@ -32,7 +32,7 @@ module "host-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com",
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
   iam_bindings_additive = {
     admin_sa_key_admin = {
       role   = "roles/iam.serviceAccountKeyAdmin"
@@ -60,10 +60,10 @@ module "m4ce-service-account" {
 }
 
 module "target-projects" {
-  for_each       = toset(var.migration_target_projects)
-  source         = "../../../../modules/project"
-  name           = each.key
-  project_create = false
+  for_each      = toset(var.migration_target_projects)
+  source        = "../../../../modules/project"
+  name          = each.key
+  project_reuse = {}
   services = [
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
@@ -84,10 +84,10 @@ module "target-projects" {
 }
 
 module "sharedvpc_host_project" {
-  for_each       = toset(var.sharedvpc_host_projects)
-  source         = "../../../../modules/project"
-  name           = each.key
-  project_create = false
+  for_each      = toset(var.sharedvpc_host_projects)
+  source        = "../../../../modules/project"
+  name          = each.key
+  project_reuse = {}
   iam_bindings_additive = {
     admin_compute_viewer = {
       role   = "roles/compute.viewer"

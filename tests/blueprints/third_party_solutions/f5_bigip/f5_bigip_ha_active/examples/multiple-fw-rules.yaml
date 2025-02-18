@@ -234,7 +234,7 @@ values:
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
-    ip_version: IPV6
+    ip_version: null
     ipv6_endpoint_type: null
     labels: null
     name: test-ilb-int-ipv6
@@ -251,7 +251,7 @@ values:
     allow_psc_global_access: null
     description: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV4
+    ip_version: __missing__
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: INTERNAL
@@ -273,7 +273,7 @@ values:
     allow_psc_global_access: null
     description: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV6
+    ip_version: __missing__
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: INTERNAL
@@ -339,7 +339,7 @@ values:
     allow_psc_global_access: null
     description: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV4
+    ip_version: __missing__
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: EXTERNAL
@@ -359,7 +359,7 @@ values:
     allow_psc_global_access: null
     description: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV6
+    ip_version: __missing__
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: EXTERNAL

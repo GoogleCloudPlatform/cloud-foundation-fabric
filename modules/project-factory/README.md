@@ -6,10 +6,10 @@ It supports
 
 - filesystem-driven folder hierarchy exposing the full configuration options available in the [folder module](../folder/)
 - multiple project creation and management exposing the full configuration options available in the [project module](../project/), including KMS key grants and VPC-SC perimeter membership
-- optional per-project [service account management](#service-accounts) including basic IAM grants
+- optional per-project [service account and bucket management](#service-accounts-and-buckets) including basic IAM grants
 - optional [billing budgets](#billing-budgets) factory and budget/project associations
 - cross-referencing of hierarchy folders in projects
-- optional per-project IaC configuration (TODO)
+- optional per-project IaC configuration
 
 The factory is implemented as a thin data translation layer for the underlying modules, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
 
@@ -20,14 +20,16 @@ The code is meant to be executed by a high level service accounts with powerful 
 - Shared VPC connection if service project attachment is desired
 - billing cost manager permissions to manage budgets and monitoring permissions if notifications should also be managed here
 
+## Contents
+
 <!-- BEGIN TOC -->
 - [Folder hierarchy](#folder-hierarchy)
 - [Projects](#projects)
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
-  - [Service accounts](#service-accounts)
+  - [Service accounts and buckets](#service-accounts-and-buckets)
   - [Automation project and resources](#automation-project-and-resources)
 - [Billing budgets](#billing-budgets)
-- [Substitutions in YAML configurations attributes](#substitutions-in-yaml-configurations-attributes)
+- [Interpolation in YAML configuration attributes](#interpolation-in-yaml-configuration-attributes)
 - [Example](#example)
 - [Files](#files)
 - [Variables](#variables)
@@ -61,11 +63,11 @@ In addition to the YAML-based project configurations, the factory accepts three 
 
 Some examples on where to use each of the three sets are [provided below](#example).
 
-### Service accounts
+### Service accounts and buckets
 
-Service accounts can be managed as part of each project's YAML configuration. This allows creation of default service accounts used for GCE instances, in firewall rules, or for application-level credentials without resorting to a separate Terraform configuration.
+Service accounts and GCS buckets can be managed as part of each project's YAML configuration. This allows creation of default service accounts used for GCE instances, in firewall rules, or for application-level credentials without resorting to a separate Terraform configuration.
 
-Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-level YAML map, which exposes most of the variables available in the `iam-service-account` module:
+Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-level YAML map, which exposes most of the variables available in the `iam-service-account` module. Both the `display_name` and `iam_self_roles` attributes are optional.
 
 ```yaml
 service_accounts:
@@ -77,21 +79,31 @@ service_accounts:
     iam_project_roles:
       my-host-project:
         - roles/compute.networkUser
+  terraform-rw: {}
 ```
 
-Both the `display_name` and `iam_self_roles` attributes are optional.
+Each bucket is represented by one key and a set of optional key/value pairs in the `buckets` top-level YAML map, which exposes most of the variables available in the `gcs` module. Bucket location, storage class and a few other attributes can be defaulted/enforced via project factory level variables.
+
+```yaml
+buckets:
+  state:
+    location: europe-west8
+    iam:
+      roles/storage.admin:
+        - terraform-rw
+```
 
 ### Automation project and resources
 
-Project configurations also support defining service accounts and storage buckets to support automation, created in a separate controlling project so as to be outside of the sphere of control of the managed project.
+Other than creating automation resources within the project via the `service_accounts` and `buckets` attributes, this module also support management of automation resources created in a separate controlling project. This allows grating broad roles on the project, while still making sure that the automation resources used for Terraform cannot be manipulated from the same identities.
 
 Automation resources are defined via the `automation` attribute in project configurations, which supports:
 
-- a mandatory `project` attribute to define the external controlling project
-- an optional `service_accounts` list where each element will define a service account in the controlling project
-- an optional `buckets` map where each key will define a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+- a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
+- an optional `service_accounts` list where each element defines a service account in the controlling project
+- an optional `buckets` map where each key defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
 
-Service accounts and buckets will be prefixed with the project name, and use the key specified in the YAML file as a suffix.
+Service accounts and buckets are be prefixed with the project name, and use the key specified in the YAML file as a suffix.
 
 ```yaml
 # file name: prod-app-example-0
@@ -152,16 +164,16 @@ billing_budgets:
 
 A simple billing budget example is show in the [example](#example) below.
 
-## Substitutions in YAML configurations attributes
+## Interpolation in YAML configuration attributes
 
-Substitutions allow referring via short mnemonic names to resources which are either created at runtime, or externally manages.
+Interpolation allow referring via short mnemonic names to resources which are either created at runtime, or externally managed.
 
 This feature has two main benefits:
 
 - being able to refer to resource ids which cannot be known before creation, for example project automation service accounts in IAM bindings
 - making YAML configuration files more easily readable and portable, by using mnemonic keys which are not specific to an organization or project
 
-One example of both types of substitutions is in this project snippet. The automation service account is used in IAM bindings via its `rw` key, while the parent folder is set by referring to its path in the hierarchy factory.
+One example of both types of contexts is in this project snippet. The automation service account is used in IAM bindings via its `rw` key, while the parent folder is set by referring to its path in the hierarchy factory.
 
 ```yaml
 parent: teams/team-a
@@ -181,28 +193,28 @@ automation:
           - rw
 ```
 
-Substitutions come from two separate context sources: an internal set for resources managed by the project factory (folders, service accounts, etc.), and an external user-defined set passed in via the `factories_config.context` variable.
+Interpolations leverage contexts from two separate sources: an internal set for resources managed by the project factory (folders, service accounts, etc.), and an external user-defined set passed in via the `factories_config.context` variable.
 
-Internal substitutions are:
+The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up. 
 
-- hierarchy folders, used to set project parents via the filesystem path of folders (e.g. `teams/team-a`)
-- automation service accounts, used in project IAM bindings via their keys; this does not work in folder IAM bindings
+* Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
+* IAM principals are resolved within context of managed project
 
-External substitution are:
-
-- the map of folder ids in `factories_config.context.folder_ids`, used to set top-level folder parents; the `default` key if present is used when no explicit parent has been set in the YAML file
-- the map of IAM principals in `factories_config.context.iam_principals`, used in IAM bindings for folders and projects; the exception is the `iam_by_principals` attribute which uses no interpolation to prevent dynamic cycles
-- the map of tag value ids in `factories_config.context.tag_values` used in tag bindings for folders and projects
-- the map of Shared VPC host project ids in `factories_config.context.vpc_host_projects` used in service project configurations for projects
-
-External substitution maps are optional, and there's no harm in not defining them if not used.
-
-Some caveats on substitutions:
-
-- project-own service accounts are not part of substitutions to prevent cycles, you can use the `iam_project_roles` and `iam_self_roles` attributes for additive IAM on projects
-- project shared vpc configurations and project-own service accounts only support external substitutions to prevent cycles
-- projects for automation service accounts and buckets do not support substitutions to prevent cycles
-- no substitutions are implemented (yet) for budgets
+| resource            | attribute       | external contexts   | internal contexts          |
+| ------------------- | --------------- | ------------------- | -------------------------- |
+| folder              | parent          | `folder_ids`        | internally created folders |
+| folder              | IAM principals  | `iam_principals`    |                            |
+| folder              | tag bindings    | `tag_values`        |                            |
+| project             | parent          | `folder_ids`        | internally created folders |
+| project             | Shared VPC host | `vpc_host_projects` |                            |
+| project             | Shared VPC IAM  | `iam_principals`    |                            |
+| project             | tag bindings    | `tag_values`        |                            |
+| project             | IAM principals  | `iam_principals`    | project service accounts   |
+|                     |                 |                     | IaC service accounts       |
+| bucket              | IAM principals  | `iam_principals`    | project service accounts   |
+| service account     | IAM projects    | `vpc_host_projects` |                            |
+| IaC bucket          | IAM principals  | `iam_principals`    | IaC service accounts       |
+| IaC service account | IAM principals  | `iam_principals`    |                            |
 
 ## Example
 
@@ -266,7 +278,7 @@ module "project-factory" {
     }
   }
 }
-# tftest modules=15 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
+# tftest modules=16 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -432,7 +444,7 @@ update_rules:
 | [factory-folders.tf](./factory-folders.tf) | Folder hierarchy factory locals. |  |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory locals. |  |
 | [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |
-| [main.tf](./main.tf) | Projects and billing budgets factory resources. | <code>billing-account</code> · <code>iam-service-account</code> · <code>project</code> |
+| [main.tf](./main.tf) | Projects and billing budgets factory resources. | <code>billing-account</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 
@@ -449,9 +461,10 @@ update_rules:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folders](outputs.tf#L17) | Folder ids. |  |
-| [projects](outputs.tf#L22) | Created projects. |  |
-| [service_accounts](outputs.tf#L43) | Service account emails. |  |
+| [buckets](outputs.tf#L17) | Bucket names. |  |
+| [folders](outputs.tf#L24) | Folder ids. |  |
+| [projects](outputs.tf#L29) | Created projects. |  |
+| [service_accounts](outputs.tf#L51) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
 

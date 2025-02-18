@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -235,7 +235,7 @@ values:
   module.project.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: gkehub-test
-    role: roles/container.nodeServiceAgent
+    role: roles/container.defaultNodeServiceAgent
   module.project.google_project_iam_member.service_agents["mcsd"]:
     condition: []
     project: gkehub-test

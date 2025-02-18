@@ -20,7 +20,7 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   prefix          = var.project_create == null ? null : var.prefix
   name            = var.project_id
-  project_create  = var.project_create != null
+  project_reuse   = var.project_create != null ? null : {}
   services = [
     "compute.googleapis.com",
     "memcache.googleapis.com",

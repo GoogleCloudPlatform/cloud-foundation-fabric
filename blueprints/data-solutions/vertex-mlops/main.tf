@@ -193,7 +193,7 @@ module "project" {
   name              = var.project_config.project_id
   parent            = var.project_config.parent
   billing_account   = var.project_config.billing_account_id
-  project_create    = var.project_config.billing_account_id != null
+  project_reuse     = var.project_config.billing_account_id != null ? null : {}
   prefix            = var.prefix
   iam_by_principals = local.iam_principals
   iam_bindings_additive = {

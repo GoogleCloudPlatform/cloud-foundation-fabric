@@ -44,6 +44,8 @@ module "automation-buckets" {
   for_each = {
     for k in local.automation_buckets : "${k.project}/${k.name}" => k
   }
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
   name           = "${each.value.project}-${each.value.name}"
@@ -83,9 +85,15 @@ module "automation-buckets" {
     lookup(each.value, "location", null),
     var.data_defaults.storage_location
   )
-  storage_class               = lookup(each.value, "storage_class", "STANDARD")
-  uniform_bucket_level_access = lookup(each.value, "uniform_bucket_level_access", true)
-  versioning                  = lookup(each.value, "versioning", false)
+  storage_class = lookup(
+    each.value, "storage_class", "STANDARD"
+  )
+  uniform_bucket_level_access = lookup(
+    each.value, "uniform_bucket_level_access", true
+  )
+  versioning = lookup(
+    each.value, "versioning", false
+  )
 }
 
 module "automation-service-accounts" {
@@ -93,6 +101,8 @@ module "automation-service-accounts" {
   for_each = {
     for k in local.automation_sa : "${k.project}/${k.name}" => k
   }
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
   name        = "${each.value.project}-${each.value.name}"

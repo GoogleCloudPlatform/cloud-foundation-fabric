@@ -21,7 +21,7 @@ locals {
 module "project" {
   source          = "../../../modules/project"
   name            = var.project_id
-  project_create  = var.project_create == null ? false : true
+  project_reuse   = var.project_create == null ? {} : null
   billing_account = try(var.project_create.billing_account_id, null)
   parent          = try(var.project_create.parent, null)
   services = [

@@ -60,7 +60,6 @@ variable "default_service_account" {
   }
 }
 
-
 variable "deletion_policy" {
   description = "Deletion policy setting for this project."
   default     = "DELETE"
@@ -160,10 +159,23 @@ variable "prefix" {
   }
 }
 
-variable "project_create" {
-  description = "Create project. When set to false, uses a data source to reference existing project."
-  type        = bool
-  default     = true
+variable "project_reuse" {
+  description = "Reuse existing project if not null. If name and number are not passed in, a data source is used."
+  type = object({
+    use_data_source = optional(bool, true)
+    project_attributes = optional(object({
+      name   = string
+      number = number
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      try(var.project_reuse.use_data_source, null) != false ||
+      try(var.project_reuse.project_attributes, null) != null
+    )
+    error_message = "Reuse datasource can be disabled only if project attributes are set."
+  }
 }
 
 variable "service_agents_config" {
