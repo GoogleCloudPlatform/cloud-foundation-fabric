@@ -17,6 +17,7 @@ Note that this module assumes that some options are the same for both the primar
   - [Query Insights](#query-insights)
   - [Maintenance Config](#maintenance-config)
   - [SSL Config](#ssl-config)
+  - [Password Validation Policy and Root Password Config](#password-validation-policy-and-root-password-config)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
