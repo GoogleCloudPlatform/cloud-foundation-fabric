@@ -361,6 +361,46 @@ module "db" {
 }
 # tftest modules=1 resources=1 e2e
 ```
+
+### Password Validation Policy and Root Password Config
+
+Provide parameters to configure `password_validation_policy` if required.  The `root_password` can also be provided: either an explicit password OR a flag to enable a randomly-generated password.
+
+```hcl
+module "db" {
+  source     = "./fabric/modules/cloudsql-instance"
+  project_id = var.project_id
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
+  }
+  name             = "db"
+  region           = var.region
+  database_version = "MYSQL_8_0"
+  tier             = "db-g1-small"
+
+  gcp_deletion_protection       = false
+  terraform_deletion_protection = false
+
+  root_password = {
+    # password = "ExplitPassword123!"
+    random_password = true
+  }
+
+  password_validation_policy = {
+    enabled                     = true
+    default_complexity          = true
+    disallow_username_substring = true
+    min_length                  = 20
+    reuse_interval              = 5
+  }
+}
+# tftest modules=1 resources=2 e2e
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
