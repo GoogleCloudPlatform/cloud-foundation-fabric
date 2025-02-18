@@ -20,9 +20,9 @@ Uncomment and complete the upgrade notes section below (if applicable), followin
 ** Upgrade Notes **
 
 ```upgrade-note
-fast/stages/0-boostrap: example upgrade note 1.
+`fast/stages/0-boostrap`: example upgrade note 1.
 ```
 ```upgrade-note
-modules/project: example upgrade note 2.
+`modules/project`: example upgrade note 2.
 ```
 -->
