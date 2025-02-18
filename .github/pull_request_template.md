@@ -13,7 +13,7 @@ I applicable, I acknowledge that I have:
 - [ ] Made sure all relevant tests pass
 
 <!--
-Uncomment and complete the upgrade notes section below (if applicable), following the examples provided.
+If your code introduces any breaking changes, uncomment and complete the section below, following the examples provided.
 -->
 
 <!--
