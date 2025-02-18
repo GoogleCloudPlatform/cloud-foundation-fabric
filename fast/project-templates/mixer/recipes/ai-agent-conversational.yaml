@@ -1,0 +1,10 @@
+# abilita discoveryengine.googleapis.com
+# permessi per creare agent builder? permessi service account agent builder?
+
+agent_builder:
+  chat_engines:
+    chat_engine_0:
+      data_store_ids:
+        - data_store_0
+  data_stores:
+    data_store_0: {}
