@@ -28,7 +28,7 @@ locals {
         id           = k
         network_id   = v[0]
         region       = split("/", k)[0]
-        region_alias = lookup(var.regions, split("/", k)[0], null)
+        region_alias = lookup(var.regions, split("/", k)[0], split("/", k)[0])
       },
       !startswith(k, "projects/") ? {} : {
         region = split("/", k)[3]
