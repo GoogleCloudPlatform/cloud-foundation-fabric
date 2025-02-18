@@ -108,8 +108,9 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     extra_dirs = [
         (module_path / dirname).resolve() for dirname in extra_dirs or []
     ]
-    tf.setup(extra_files=extra_files + extra_dirs, upgrade=True)
-    # raise SystemExit(extra_dirs)
+    tf.setup(extra_files=extra_files, upgrade=True)
+    for extra_dir in extra_dirs:
+      os.symlink(extra_dir, tf.tfdir / extra_dir.name)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
 
