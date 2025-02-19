@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    local.available_services, var.service_agents_config.services_enabled
+    local.available_services, try(var.project_reuse.project_attributes.services_enabled, [])
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
@@ -107,13 +107,13 @@ locals {
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
-  count      = contains(local.services, "storage.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count      = contains(local.services, "bigquery.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }
