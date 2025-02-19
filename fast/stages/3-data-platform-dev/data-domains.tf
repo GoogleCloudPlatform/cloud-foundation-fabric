@@ -25,6 +25,18 @@ locals {
       })
     ]
   ])
+  _dp_bqds = flatten([
+    for k, v in local.data_products : [
+      for bk, bv in pv.exposed_resources.bigquery : merge(bv, {
+        data_product     = k
+        data_product_key = v.key
+        key              = "${v.key}-${bk}"
+        location         = coalesce(v.location, local.default_location)
+        name             = bk
+        short_name       = replace("${v.short_name}_${bk}", "-", "_")
+      })
+    ]
+  ])
   _dp_buckets = flatten([
     for k, v in local.data_products : [
       for bk, bv in pv.exposed_resources.gcs : merge(bv, {
@@ -44,6 +56,9 @@ locals {
   }
   data_products = {
     for v in local._data_products : v.key => v
+  }
+  dp_bqds = {
+    for v in local._dp_bqds : v.key => v
   }
   dp_buckets = {
     for v in local._dp_buckets : v.key => v
@@ -103,4 +118,21 @@ module "dp-bucket" {
   prefix     = var.prefix
   name       = "dp-${each.value.short_name}-0"
   location   = each.value.location
+  tag_bindings = {
+    exposure = (
+      module.central_project.tag_values["${var.data_exposure_config.tag_name}"]
+    )
+  }
+}
+
+module "bigquery-dataset" {
+  source     = "../../../modules/bigquery-dataset"
+  project_id = module.dp_project[each.value.data_product_key].project_id
+  id         = "dp_${each.value.short_name}_0"
+  location   = each.value.location
+  tag_bindings = {
+    exposure = (
+      module.central_project.tag_values["${var.data_exposure_config.tag_name}"]
+    )
+  }
 }
