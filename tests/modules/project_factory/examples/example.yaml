@@ -149,6 +149,24 @@ values:
   module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
     tag_value: tagValues/123456
     timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
+  : deletion_policy: null
+    host_project: test-pf-dev-net-spoke-0
+    service_project: test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]
+  : condition: []
+    member: group:gcp-devops@example.org
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container-engine"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/container.hostServiceAgentUser
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -167,8 +185,8 @@ values:
     - serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     role: roles/run.admin
-  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.developer"]:
-    condition: []
+  ? module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.developer"]
+  : condition: []
     members:
     - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
@@ -176,11 +194,6 @@ values:
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
-  module.project-factory.module.projects["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
-    deletion_policy: null
-    host_project: test-pf-dev-net-spoke-0
-    service_project: test-pf-dev-ta-app0-be
-    timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_essential_contacts_contact.contact["admin@example.org"]:
     email: admin@example.org
     language_tag: en
@@ -222,19 +235,6 @@ values:
     condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/container.defaultNodeServiceAgent
-  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]
-  : condition: []
-    member: group:gcp-devops@example.org
-    project: test-pf-dev-net-spoke-0
-    role: roles/compute.networkUser
-  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container-engine"]
-  : condition: []
-    project: test-pf-dev-net-spoke-0
-    role: roles/compute.networkUser
-  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
-  : condition: []
-    project: test-pf-dev-net-spoke-0
-    role: roles/container.hostServiceAgentUser
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["container.googleapis.com"]
   : disable_dependent_services: false
     disable_on_destroy: false
@@ -319,7 +319,7 @@ values:
     email: admin@example.org
     language_tag: en
     notification_category_subscriptions:
-      - ALL
+    - ALL
     parent: projects/test-pf-dev-tb-app0-1
     timeouts: null
   module.project-factory.module.projects["dev-tb-app0-1"].google_project.project[0]:
@@ -476,12 +476,12 @@ values:
     member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
-  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]:
-    condition: []
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
+  : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/logging.logWriter
-  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]:
-    condition: []
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
+  : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
@@ -514,5 +514,7 @@ counts:
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
   google_tags_tag_binding: 1
-  modules: 19
+  modules: 20
   resources: 70
+
+outputs: {}

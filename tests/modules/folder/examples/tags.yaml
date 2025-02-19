@@ -12,21 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-tests/examples/test_plan.py::test_example[modules/folder:Tags] values:
+values:
   module.folder.google_folder.folder[0]:
-    display_name: Test
+    deletion_protection: false
+    display_name: Folder name
     parent: folders/1122334455
+    tags: null
   module.folder.google_tags_tag_binding.binding["env-prod"]: {}
-  module.folder.google_tags_tag_binding.binding["foo"]:
-    tag_value: tagValues/12345678
   module.org.google_tags_tag_key.default["environment"]:
     description: Environment specification.
-    parent: folders/1122334455
-    purpose: null
-    purpose_data: null
+    parent: organizations/1122334455
     short_name: environment
-    timeouts: null
   module.org.google_tags_tag_value.default["environment/dev"]:
     description: Managed by the Terraform organization module.
     short_name: dev
