@@ -44,7 +44,11 @@ resource "google_compute_url_map" "default" {
     )
     iterator = p
     content {
-      error_service = p.value.error_service
+      error_service = p.value.error_service == null ? null : lookup(
+        local.backend_ids,
+        p.value.error_service,
+        p.value.error_service
+      )
       dynamic "error_response_rule" {
         for_each = coalesce(p.value.error_response_rules, [])
         iterator = r
