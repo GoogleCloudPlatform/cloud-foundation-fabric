@@ -30,20 +30,21 @@ output "projects" {
   description = "Created projects."
   value = {
     for k, v in module.projects : k => {
-      number             = v.number
-      project_id         = v.id
-      project            = v
-      automation_enabled = lookup(local.projects[k], "automation", null) != null
-      automation_buckets = {
-        for kk, vv in module.automation-buckets :
-        trimprefix(kk, "${k}/") => vv.name
-        if startswith(kk, "${k}/")
-      }
-      automation_service_accounts = {
-        for kk, vv in module.automation-service-accounts :
-        trimprefix(kk, "${k}/") => vv.email
-        if startswith(kk, "${k}/")
-      }
+      number     = v.number
+      project_id = v.id
+      project    = v
+      automation = (
+        lookup(local.projects[k], "automation", null) == null
+        ? null
+        : {
+          bucket = try(module.automation-bucket[k].name)
+          service_accounts = {
+            for kk, vv in module.automation-service-accounts :
+            trimprefix(kk, "${k}/") => vv.email
+            if startswith(kk, "${k}/")
+          }
+        }
+      )
     }
   }
 }

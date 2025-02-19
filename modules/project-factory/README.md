@@ -101,9 +101,9 @@ Automation resources are defined via the `automation` attribute in project confi
 
 - a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
 - an optional `service_accounts` list where each element defines a service account in the controlling project
-- an optional `buckets` map where each key defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+- an optional `bucket` which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
 
-Service accounts and buckets are be prefixed with the project name, and use the key specified in the YAML file as a suffix.
+Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while buckets use a default `tf-state` suffix.
 
 ```yaml
 # file name: prod-app-example-0
@@ -128,17 +128,16 @@ automation:
     # sa name: foo-prod-app-example-0-ro
     ro:
       description: Read-only automation sa for app example 0.
-  buckets:
-    # bucket name: foo-prod-app-example-0-state
-    state:
-      description: Terraform state bucket for app example 0.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - rw
-          - ro
-          - group:devops@example.org
+  bucket:
+    # bucket name: foo-prod-app-example-0-tf-state
+    description: Terraform state bucket for app example 0.
+    iam:
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - rw
+        - ro
+        - group:devops@example.org
 ```
 
 ## Billing budgets
@@ -195,10 +194,10 @@ automation:
 
 Interpolations leverage contexts from two separate sources: an internal set for resources managed by the project factory (folders, service accounts, etc.), and an external user-defined set passed in via the `factories_config.context` variable.
 
-The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up. 
+The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up.
 
-* Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
-* IAM principals are resolved within context of managed project
+- Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
+- IAM principals are resolved within context of managed project
 
 | resource            | attribute       | external contexts   | internal contexts          |
 | ------------------- | --------------- | ------------------- | -------------------------- |
@@ -395,17 +394,16 @@ automation:
       description: Team B app 0 read/write automation sa.
     ro:
       description: Team B app 0 read-only automation sa.
-  buckets:
-    state:
-      description: Team B app 0 Terraform state bucket.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - gcp-devops
-          - group:team-b-admins@example.org
-          - rw
-          - ro
+  bucket:
+    description: Team B app 0 Terraform state bucket.
+    iam:
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - gcp-devops
+        - group:team-b-admins@example.org
+        - rw
+        - ro
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
@@ -464,7 +462,7 @@ update_rules:
 | [buckets](outputs.tf#L17) | Bucket names. |  |
 | [folders](outputs.tf#L24) | Folder ids. |  |
 | [projects](outputs.tf#L29) | Created projects. |  |
-| [service_accounts](outputs.tf#L51) | Service account emails. |  |
+| [service_accounts](outputs.tf#L52) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
 

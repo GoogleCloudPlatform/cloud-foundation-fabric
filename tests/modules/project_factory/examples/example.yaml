@@ -13,8 +13,7 @@
 # limitations under the License.
 
 values:
-values:
-  module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket.bucket[0]:
+  module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -29,7 +28,7 @@ values:
     lifecycle_rule: []
     location: EU
     logging: []
-    name: test-pf-dev-tb-app0-0-state
+    name: test-pf-dev-tb-app0-0-tf-state
     project: test-pf-teams-iac-0
     requester_pays: null
     retention_policy: []
@@ -40,14 +39,14 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
-  ? module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
-  : bucket: test-pf-dev-tb-app0-0-state
+  ? module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
+  : bucket: test-pf-dev-tb-app0-0-tf-state
     condition: []
     members:
     - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectCreator
-  ? module.project-factory.module.automation-buckets["dev-tb-app0-0/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
-  : bucket: test-pf-dev-tb-app0-0-state
+  ? module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-dev-tb-app0-0-tf-state
     condition: []
     members:
     - group:gcp-devops@example.org
