@@ -1,0 +1,94 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+default:
+  before_script:
+  - echo "${CI_JOB_JWT_V2}" > token.txt
+  image:
+    name: hashicorp/terraform
+    entrypoint:
+    - "/usr/bin/env"
+    - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+workflow:
+  rules:
+    # merge / apply
+    - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        COMMAND: apply
+    # pr / plan
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        COMMAND: plan
+
+variables:
+  GOOGLE_CREDENTIALS: cicd-sa-credentials.json
+  SERVICE_ACCOUNT: # TODO replace with WIF SA
+  WIF_PROVIDER: projects/XXXXXXXXXXX/locations/global/workloadIdentityPools/POOL/providers/PROVIDER
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  PLAN: plan.cache
+  PLAN_JSON: plan.json
+
+stages:
+- gcp-auth
+- tf-plan-apply
+
+cache:
+  - key: gcp-auth
+    paths:
+    - cicd-sa-credentials.json
+
+gcp-auth:
+  image:
+    name: google/cloud-sdk:slim
+  stage: gcp-auth
+  artifacts:
+    paths:
+      - cicd-sa-credentials.json
+  id_tokens:
+    GITLAB_TOKEN:
+      aud:
+        - # TODO replace with audience
+  before_script:
+    - echo "$GITLAB_TOKEN" > token.txt
+  script:
+    - |
+      gcloud iam workload-identity-pools create-cred-config \
+        $WIF_PROVIDER --service-account=$SERVICE_ACCOUNT \
+        --service-account-token-lifetime-seconds=900 \
+        --output-file=$GOOGLE_CREDENTIALS \
+        --credential-source-file=token.txt
+    - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
+    - gcloud auth login --update-adc --cred-file=$GOOGLE_CREDENTIALS
+
+tf-plan-apply:
+  stage: tf-plan-apply
+  dependencies:
+  - gcp-auth
+  script:
+  - apk --no-cache add jq
+  - alias convert_report="jq -r '([.resource_changes[]?.change.actions?]|flatten)|{\"create\":(map(select(.==\"create\"))|length),\"update\":(map(select(.==\"update\"))|length),\"delete\":(map(select(.==\"delete\"))|length)}'"
+  - echo "$GITLAB_TOKEN" > token.txt
+  - terraform init
+  - terraform validate
+  - "if [ $COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false -out=$PLAN; fi"
+  - "if [ $COMMAND == 'plan' ]; then terraform show --json $PLAN | convert_report > $PLAN_JSON; fi"
+  - "if [ $COMMAND == 'apply' ]; then terraform apply -input=false -no-color -auto-approve; fi"
+  artifacts:
+    reports:
+      terraform: $PLAN_JSON
+  id_tokens:
+    GITLAB_TOKEN:
+      aud:
+        - # TODO replace with audience
