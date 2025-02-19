@@ -37,7 +37,7 @@ output "projects" {
         lookup(local.projects[k], "automation", null) == null
         ? null
         : {
-          bucket = try(module.automation-bucket[k].name)
+          bucket = try(module.automation-bucket[k].name, null)
           service_accounts = {
             for kk, vv in module.automation-service-accounts :
             trimprefix(kk, "${k}/") => vv.email
