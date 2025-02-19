@@ -77,7 +77,7 @@ resource "google_sql_database_instance" "primary" {
       allocated_ip_range = try(
         var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null
       )
-      ssl_mode = var.ssl.ssl_mode
+      ssl_mode = var.ssl.mode
       enable_private_path_for_google_cloud_services = (
         var.network_config.connectivity.enable_private_path_for_services
       )
@@ -234,7 +234,7 @@ resource "google_sql_database_instance" "replicas" {
       allocated_ip_range = try(
         var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null
       )
-      ssl_mode = var.ssl.ssl_mode
+      ssl_mode = var.ssl.mode
       enable_private_path_for_google_cloud_services = (
         var.network_config.connectivity.enable_private_path_for_services
       )

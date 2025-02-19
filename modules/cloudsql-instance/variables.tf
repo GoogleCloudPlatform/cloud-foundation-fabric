@@ -267,13 +267,13 @@ variable "ssl" {
   type = object({
     client_certificates = optional(list(string))
     # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
-    ssl_mode = optional(string)
+    mode = optional(string)
   })
   default  = {}
   nullable = false
   validation {
-    condition     = var.ssl.ssl_mode == null || var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
-    error_message = "The variable ssl_mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
+    condition     = var.ssl.mode == null || var.ssl.mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.mode == "ENCRYPTED_ONLY" || var.ssl.mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
+    error_message = "The variable mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
   }
 }
 
