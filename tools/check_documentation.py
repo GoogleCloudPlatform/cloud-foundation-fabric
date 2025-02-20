@@ -177,13 +177,15 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
         print(f'[{state.label}] {readme_path}')
 
   if errors:
-    if show_diffs:
-      print('Errored diffs:')
-      print('\n'.join([e[1] for e in errors]))
-    else:
-      print('Errored modules:')
-      print('\n'.join([e[0] for e in errors]))
-    print(errors)
+    print('\nErrored modules:\n')
+    for e in errors:
+      module, diff = e
+      print(f'- {module}')
+      if show_diffs:
+        print()
+        print(''.join(diff))
+        print()
+    print()
     raise SystemExit('Errors found.')
 
 

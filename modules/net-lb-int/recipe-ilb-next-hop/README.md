@@ -1,6 +1,6 @@
 # Internal Network Load Balancer as Next Hop
 
-This blueprint bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs to emulate virtual appliances.
+This recipe shows how to bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs to emulate virtual appliances.
 
 The following diagram shows the resources created by this blueprint
 
@@ -60,19 +60,17 @@ A sample testing session using `tmux`:
 
 <a href="https://raw.githubusercontent.com/terraform-google-modules/cloud-foundation-fabric/master/networking/ilb-next-hop/test_session.png" title="Test session screenshot"><img src="./test_session.png" width="640px" alt="Test session screenshot"></img>
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L38) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L53) | Existing project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L47) | Existing project id. | <code>string</code> | ✓ |  |
 | [ilb_right_enable](variables.tf#L17) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
 | [ilb_session_affinity](variables.tf#L23) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
 | [ip_ranges](variables.tf#L29) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  left  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  right &#61; &#34;10.0.1.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_create](variables.tf#L47) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| [region](variables.tf#L58) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zones](variables.tf#L64) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
+| [region](variables.tf#L52) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zones](variables.tf#L58) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
 
 ## Outputs
 
@@ -84,17 +82,18 @@ A sample testing session using `tmux`:
 | [ssh_gw](outputs.tf#L48) | Command-line login to gateway VMs. |  |
 | [ssh_vm_left](outputs.tf#L56) | Command-line login to left VMs. |  |
 | [ssh_vm_right](outputs.tf#L64) | Command-line login to right VMs. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
 module "test" {
-  source         = "./fabric/blueprints/networking/ilb-next-hop"
-  prefix         = "test"
-  project_create = true
-  project_id     = "project-1"
+  source     = "./fabric/modules/net-lb-int/recipe-ilb-next-hop"
+  prefix     = "test"
+  project_id = "project-1"
+  _testing = {
+    name   = "project-1"
+    number = 1234567890
+  }
 }
-# tftest modules=18 resources=49
+# tftest modules=18 resources=48
 ```
