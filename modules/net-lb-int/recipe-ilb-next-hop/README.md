@@ -64,13 +64,14 @@ A sample testing session using `tmux`:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L38) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L47) | Existing project id. | <code>string</code> | ✓ |  |
-| [ilb_right_enable](variables.tf#L17) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
-| [ilb_session_affinity](variables.tf#L23) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
-| [ip_ranges](variables.tf#L29) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  left  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  right &#61; &#34;10.0.1.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [region](variables.tf#L52) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zones](variables.tf#L58) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
+| [prefix](variables.tf#L48) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L57) | Existing project id. | <code>string</code> | ✓ |  |
+| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code title="object&#40;&#123;&#10;  name             &#61; string&#10;  number           &#61; number&#10;  services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ilb_right_enable](variables.tf#L27) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
+| [ilb_session_affinity](variables.tf#L33) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
+| [ip_ranges](variables.tf#L39) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  left  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  right &#61; &#34;10.0.1.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L62) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zones](variables.tf#L68) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
 
 ## Outputs
 
