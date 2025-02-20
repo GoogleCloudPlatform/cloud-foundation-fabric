@@ -82,6 +82,7 @@ variable "access_policy_create" {
 variable "egress_policies" {
   description = "Egress policy definitions that can be referenced in perimeters."
   type = map(object({
+    title = optional(string)
     from = object({
       access_levels = optional(list(string), [])
       identity_type = optional(string)
@@ -171,6 +172,7 @@ variable "iam_bindings_additive" {
 variable "ingress_policies" {
   description = "Ingress policy definitions that can be referenced in perimeters."
   type = map(object({
+    title = optional(string)
     from = object({
       access_levels = optional(list(string), [])
       identity_type = optional(string)
