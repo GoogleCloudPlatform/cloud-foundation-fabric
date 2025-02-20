@@ -113,6 +113,14 @@ variable "urlmap_config" {
     })))
     path_matchers = optional(map(object({
       description = optional(string)
+      default_custom_error_response_policy = optional(object({
+        error_service = optional(string)
+        error_response_rules = optional(list(object({
+          match_response_codes   = optional(list(string))
+          path                   = optional(string)
+          override_response_code = optional(number)
+        })))
+      }))
       default_route_action = optional(object({
         request_mirror_backend = optional(string)
         cors_policy = optional(object({
@@ -194,6 +202,14 @@ variable "urlmap_config" {
       path_rules = optional(list(object({
         paths   = list(string)
         service = optional(string)
+        custom_error_response_policy = optional(object({
+          error_service = optional(string)
+          error_response_rules = optional(list(object({
+            match_response_codes   = optional(list(string))
+            path                   = optional(string)
+            override_response_code = optional(number)
+          })))
+        }))
         route_action = optional(object({
           request_mirror_backend = optional(string)
           cors_policy = optional(object({
