@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/workstation-cluster`: changed the interface for configuration timeouts to object, timeouts are now specified as numbers. [[#2911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2911)]
+- `modules/cloudsql-instance`: changed the name of the `var.ssl.ssl_mode` attribute to `var.ssl.mode`. [[#2910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2910)]
 - `modules/iam-service-account`: Removed service account key generation functionality [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)]
 - `modules/net-lb-app-ext`: Adds the two missing fields for locality_lb_policy and locality_lb_policies with field and block set, validation for both and tests. [[#2898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2898)]
 
@@ -17,10 +19,16 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2911)] **incompatible change:** Add support for max workstations, refactor timeouts in workstation-cluster module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-19 09:45:38+00:00 -->
+- [[#2910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2910)] **incompatible change:** Add ssl_mode support to cloudsql-instance replicas ([sruffilli](https://github.com/sruffilli)) <!-- 2025-02-19 09:31:36+00:00 -->
 - [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)] **incompatible change:** Remove Service Account key generation ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-18 17:02:39+00:00 -->
 - [[#2886](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2886)] Increase the default complexity of Cloud SQL DB passwords ([lyricnz](https://github.com/lyricnz)) <!-- 2025-02-18 10:46:29+00:00 -->
 - [[#2901](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2901)] Add CA chain output to CAS module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-18 07:05:29+00:00 -->
 - [[#2898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2898)] Add support for locality policies to net-lb-app-ext module ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-02-18 06:25:45+00:00 -->
+
+### TOOLS
+
+- [[#2908](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2908)] Add breaking changes to changelog ([juliocc](https://github.com/juliocc)) <!-- 2025-02-18 18:09:13+00:00 -->
 
 ## [37.3.0] - 2025-02-12
 
