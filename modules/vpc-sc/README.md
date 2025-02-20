@@ -393,7 +393,7 @@ module "test" {
       status = {
         access_levels    = ["geo-it"]
         resources        = ["projects/11111"]
-        egress_policies  = ["variable-policy", "factory-egress-policy"]
+        egress_policies  = ["factory-egress-policy"]
         ingress_policies = ["variable-policy", "factory-ingress-policy"]
       }
     }
