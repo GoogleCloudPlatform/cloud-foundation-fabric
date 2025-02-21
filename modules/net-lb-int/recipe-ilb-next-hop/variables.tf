@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "_testing" {
+  description = "Populate this variable to avoid triggering the data source."
+  type = object({
+    name             = string
+    number           = number
+    services_enabled = optional(list(string), [])
+  })
+  default = null
+}
+
 variable "ilb_right_enable" {
   description = "Route right to left traffic through ILB."
   type        = bool
@@ -42,12 +52,6 @@ variable "prefix" {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty."
   }
-}
-
-variable "project_create" {
-  description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
 }
 
 variable "project_id" {

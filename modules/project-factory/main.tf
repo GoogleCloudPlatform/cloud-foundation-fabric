@@ -113,8 +113,8 @@ module "projects-iam" {
         module.service-accounts[vv].iam_email,
         # other automation service account
         local.context.iam_principals[vv],
-        # passthrough
-        vv
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        strcontains(vv, ":") ? vv : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
       )
     ]
   }
@@ -130,8 +130,8 @@ module "projects-iam" {
           module.service-accounts[vv].iam_email,
           # other automation service account
           local.context.iam_principals[vv],
-          # passthrough
-          vv
+          # passthrough + error handling using tonumber until Terraform gets fail/raise function
+          strcontains(vv, ":") ? vv : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
         )
       ]
     })
@@ -147,8 +147,8 @@ module "projects-iam" {
         module.service-accounts[v.member].iam_email,
         # other automation service account
         local.context.iam_principals[v.member],
-        # passthrough
-        v.member
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        strcontains(v.member, ":") ? v.member : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
       )
     })
   }
@@ -179,8 +179,8 @@ module "projects-iam" {
           module.service-accounts[v].iam_email,
           # other automation service account
           local.context.iam_principals[v],
-          # passthrough
-          v
+          # passthrough + error handling using tonumber until Terraform gets fail/raise function
+          strcontains(v, ":") ? v : tonumber("[Error] Invalid member: '${v}' in project '${each.key}'")
         )
       ]
       # TODO: network subnet users
@@ -212,8 +212,8 @@ module "buckets" {
         module.service-accounts[vv].iam_email,
         # other automation service account
         local.context.iam_principals[vv],
-        # passthrough
-        vv
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        strcontains(vv, ":") ? vv : tonumber("[Error] Invalid member: '${vv}' for bucket '${each.key}' in project '${each.value.project}'")
       )
     ]
   }
@@ -229,8 +229,8 @@ module "buckets" {
           module.service-accounts[vv].iam_email,
           # other automation service account
           local.context.iam_principals[vv],
-          # passthrough
-          vv
+          # passthrough + error handling using tonumber until Terraform gets fail/raise function
+          strcontains(vv, ":") ? vv : tonumber("[Error] Invalid member: '${vv}' for bucket '${each.key}' in project '${each.value.project}'")
         )
       ]
     })
@@ -246,8 +246,8 @@ module "buckets" {
         module.service-accounts[v.member].iam_email,
         # other automation service account
         local.context.iam_principals[v.member],
-        # passthrough
-        v.member
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        strcontains(v.member, ":") ? v.member : tonumber("[Error] Invalid member: '${v.member}' for bucket '${each.key}' in project '${each.value.project}'")
       )
     })
   }

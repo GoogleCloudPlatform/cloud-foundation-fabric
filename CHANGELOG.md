@@ -3,7 +3,73 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-02-12 13:19:03+00:00 to: None since: v37.3.0 -->
+## [Unreleased] <!-- from: 2025-01-24 16:09:32+00:00 to: None since: v37.0.0 -->
+
+## [38.0.0] - 2025-02-21
+
+### BREAKING CHANGES
+
+- `modules/vpc-sc`: Referencing ingress/egress policies that are not defined results in an error (previously, undefined directional policies were silently ignored) [[#2909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2909)]
+- `modules/project-factory`: The `automation.buckets` attribute has been changed to `automation.bucket` and support for multiple state buckets has been dropped. Save your state to a local file for any automation-enabled project before applying changes in the project factory. [[#2914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2914)]
+- `modules/project`: move input variable `service_agents_config.services_enabled` to `project_reuse.project_attributes.services_enabled` [[#2900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2900)]
+- fast/stages/0-boostrap: enabled restrictProtocolForwardingCreationForTypes to internal only by default [[#2884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2884)]
+- fast/stages/0-boostrap/data/org-policies-managed: new set of org policies using managed constraints [[#2884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2884)]
+- fast/stages/0-boostrap: if you use `var.org_policies_config.constraints.allowed_policy_member_domains` or `var.org_policies_config.constraints.allowed_policy_member_domains`, move their values to a YAML file under bootstrap's org policy factory. [[#2878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2878)]
+
+### BLUEPRINTS
+
+- [[#2909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2909)] Add title to VPC-SC directional policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-20 08:48:09+00:00 -->
+- [[#2794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2794)] New SecOps anonymization pipeline ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-02-17 18:23:20+00:00 -->
+- [[#2899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2899)] Project factory additions, project module reuse implementation ([ludoo](https://github.com/ludoo)) <!-- 2025-02-15 19:37:46+00:00 -->
+- [[#2894](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2894)] Make service agents work in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-02-14 12:16:07+00:00 -->
+
+### FAST
+
+- [[#2909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2909)] Add title to VPC-SC directional policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-20 08:48:09+00:00 -->
+- [[#2914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2914)] **incompatible change:** Add provider output files to project factory stage, single automation bucket in module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-19 17:45:56+00:00 -->
+- [[#2906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2906)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-18 15:34:44+00:00 -->
+- [[#2904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2904)] Fix default compute.restrictProtocolForwardingCreationForTypes value ([juliocc](https://github.com/juliocc)) <!-- 2025-02-18 13:28:33+00:00 -->
+- [[#2902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2902)] Allow passing explicit regions in net test addon subnets ([ludoo](https://github.com/ludoo)) <!-- 2025-02-18 09:26:39+00:00 -->
+- [[#2794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2794)] New SecOps anonymization pipeline ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-02-17 18:23:20+00:00 -->
+- [[#2899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2899)] Project factory additions, project module reuse implementation ([ludoo](https://github.com/ludoo)) <!-- 2025-02-15 19:37:46+00:00 -->
+- [[#2897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2897)] FAST project templates example ([ludoo](https://github.com/ludoo)) <!-- 2025-02-14 19:14:27+00:00 -->
+- [[#2893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2893)] Add support for project-level log sinks to FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-02-14 10:58:18+00:00 -->
+- [[#2887](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2887)] Update VPC-SC module and FAST stage ([juliocc](https://github.com/juliocc)) <!-- 2025-02-13 18:04:09+00:00 -->
+- [[#2891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2891)] Address DNS issues with googleapis RPZ and forwarding ([ludoo](https://github.com/ludoo)) <!-- 2025-02-13 16:08:28+00:00 -->
+- [[#2888](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2888)] Add restrictProtocolForwardingCreationForTypes to FAST import policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-13 13:00:26+00:00 -->
+- [[#2884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2884)] Add new set of org policies with managed constraints to FAST bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2025-02-12 19:38:44+00:00 -->
+- [[#2878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2878)] Move DRS and essential contact domains to factory ([juliocc](https://github.com/juliocc)) <!-- 2025-02-11 16:36:17+00:00 -->
+- [[#2875](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2875)] New FAST stages diagram ([ludoo](https://github.com/ludoo)) <!-- 2025-02-10 13:39:28+00:00 -->
+- [[#2872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2872)] Add bucket IAM policy read ([karpok78](https://github.com/karpok78)) <!-- 2025-02-09 23:55:55+00:00 -->
+- [[#2864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2864)] Workflow fix ([karpok78](https://github.com/karpok78)) <!-- 2025-02-03 15:31:59+00:00 -->
+- [[#2854](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2854)] Expose custom constraint factory in bootstrap ([juliocc](https://github.com/juliocc)) <!-- 2025-01-31 06:03:29+00:00 -->
+- [[#2853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2853)] Allow addons to any flex stage 2 ([juliocc](https://github.com/juliocc)) <!-- 2025-01-30 18:04:28+00:00 -->
+- [[#2851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2851)] Support mulitple universes in bootstrap  ([juliocc](https://github.com/juliocc)) <!-- 2025-01-30 11:35:57+00:00 -->
+- [[#2840](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2840)] Flexible stage 2s in FAST resource manager ([ludoo](https://github.com/ludoo)) <!-- 2025-01-29 12:16:36+00:00 -->
+
+### MODULES
+
+- [[#2917](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2917)] Add error messages for failing interpolations ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-21 08:20:44+00:00 -->
+- [[#2909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2909)] Add title to VPC-SC directional policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-20 08:48:09+00:00 -->
+- [[#2914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2914)] **incompatible change:** Add provider output files to project factory stage, single automation bucket in module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-19 17:45:56+00:00 -->
+- [[#2900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2900)] **incompatible change:** Add ability to refer to other project service accounts in Project Factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-19 15:47:15+00:00 -->
+- [[#2906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2906)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-18 15:34:44+00:00 -->
+- [[#2899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2899)] Project factory additions, project module reuse implementation ([ludoo](https://github.com/ludoo)) <!-- 2025-02-15 19:37:46+00:00 -->
+- [[#2897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2897)] FAST project templates example ([ludoo](https://github.com/ludoo)) <!-- 2025-02-14 19:14:27+00:00 -->
+- [[#2894](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2894)] Make service agents work in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-02-14 12:16:07+00:00 -->
+- [[#2893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2893)] Add support for project-level log sinks to FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-02-14 10:58:18+00:00 -->
+- [[#2892](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2892)] Add universe support to iam-service-account ([juliocc](https://github.com/juliocc)) <!-- 2025-02-14 08:06:23+00:00 -->
+- [[#2887](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2887)] Update VPC-SC module and FAST stage ([juliocc](https://github.com/juliocc)) <!-- 2025-02-13 18:04:09+00:00 -->
+
+### TOOLS
+
+- [[#2909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2909)] Add title to VPC-SC directional policies ([juliocc](https://github.com/juliocc)) <!-- 2025-02-20 08:48:09+00:00 -->
+- [[#2900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2900)] Add ability to refer to other project service accounts in Project Factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-19 15:47:15+00:00 -->
+- [[#2794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2794)] New SecOps anonymization pipeline ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-02-17 18:23:20+00:00 -->
+- [[#2899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2899)] Project factory additions, project module reuse implementation ([ludoo](https://github.com/ludoo)) <!-- 2025-02-15 19:37:46+00:00 -->
+- [[#2894](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2894)] Make service agents work in different universes ([juliocc](https://github.com/juliocc)) <!-- 2025-02-14 12:16:07+00:00 -->
+
+## [37.4.0] - 2025-02-21
 
 ### BREAKING CHANGES
 
@@ -12,13 +78,15 @@ All notable changes to this project will be documented in this file.
 - `modules/iam-service-account`: Removed service account key generation functionality [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)]
 - `modules/net-lb-app-ext`: Adds the two missing fields for locality_lb_policy and locality_lb_policies with field and block set, validation for both and tests. [[#2898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2898)]
 
-
 ### BLUEPRINTS
 
 - [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)] Remove Service Account key generation ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-18 17:02:39+00:00 -->
 
 ### MODULES
 
+- [[#2916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2916)] Add support for custom error response policies to net_lb_app_ext module ([peter-norton](https://github.com/peter-norton)) <!-- 2025-02-20 19:32:24+00:00 -->
+- [[#2915](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2915)] Fix dns_keys output in dns module ([nathou](https://github.com/nathou)) <!-- 2025-02-20 09:56:58+00:00 -->
+- [[#2913](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2913)] Add generated_id backends output to net-lb-app-ext ([danistrebel](https://github.com/danistrebel)) <!-- 2025-02-19 17:16:06+00:00 -->
 - [[#2911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2911)] **incompatible change:** Add support for max workstations, refactor timeouts in workstation-cluster module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-19 09:45:38+00:00 -->
 - [[#2910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2910)] **incompatible change:** Add ssl_mode support to cloudsql-instance replicas ([sruffilli](https://github.com/sruffilli)) <!-- 2025-02-19 09:31:36+00:00 -->
 - [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)] **incompatible change:** Remove Service Account key generation ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-18 17:02:39+00:00 -->
@@ -2826,7 +2894,9 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.0.0...HEAD
+[38.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.4.0...v38.0.0
+[37.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...v37.4.0
 [37.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...v37.3.0
 [37.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...v37.2.0
 [37.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.0.0...v37.1.0

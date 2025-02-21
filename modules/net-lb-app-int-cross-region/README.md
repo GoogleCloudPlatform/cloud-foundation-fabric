@@ -722,10 +722,12 @@ module "ilb-l7" {
 ```
 
 ## Deploying changes to load balancer configurations
-For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
+
+When deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+
 ## Recipes
 
 - [Cross-region internal Application Load Balancer with VM instance group backends](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-lb-app-int-cross-region/recipe-cross-reg-int-app-lb-vm-dns)
