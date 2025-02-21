@@ -92,7 +92,7 @@ locals {
     service_perimeters_bridge = {
       for k, v in local._data.perimeters :
       k => {
-        description = try(v.description, "")
+        description = try(v.description, null)
         spec_resources = (
           try(v.dry_run, false)
           ? distinct(concat(v.resources,
@@ -114,7 +114,7 @@ locals {
     service_perimeters_regular = {
       for k, v in local._data.perimeters :
       k => {
-        description = try(v.description, "")
+        description = try(v.description, null)
         spec = try(v.dry_run, false) ? merge(v, {
           access_levels       = try(v.access_levels, [])
           egress_policies     = try(v.egress_policies, [])
