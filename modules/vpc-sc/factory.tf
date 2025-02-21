@@ -22,7 +22,7 @@ locals {
     }
   }
   _data_paths = {
-    for k in ["access_levels", "egress_policies", "ingress_policies", "perimeters"] : k => (
+    for k in ["access_levels", "bridges", "egress_policies", "ingress_policies", "perimeters"] : k => (
       var.factories_config[k] == null
       ? null
       : pathexpand(var.factories_config[k])
@@ -32,7 +32,6 @@ locals {
     access_levels = {
       for k, v in local._data.access_levels : k => {
         combining_function = try(v.combining_function, null)
-        description        = try(v.description, null)
         conditions = [
           for c in try(v.conditions, []) : merge({
             device_policy          = null
@@ -44,6 +43,8 @@ locals {
             vpc_subnets            = {}
           }, c)
         ]
+        description = try(v.description, null)
+        title       = try(v.title, null)
       }
     }
     egress_policies = {
@@ -89,55 +90,40 @@ locals {
         }
       }
     }
-    service_perimeters_bridge = {
-      for k, v in local._data.perimeters :
+    bridges = {
+      for k, v in local._data.bridges :
       k => {
-        description = try(v.description, null)
-        spec_resources = (
-          try(v.dry_run, false) ?
-          distinct(concat(v.resources, flatten([for p in v.perimeters : var.dynamic_projects_map[p]]))) :
-          null
-        )
-
-        status_resources = (
-          !try(v.dry_run, false) ?
-          distinct(concat(v.resources, flatten([for p in v.perimeters : var.dynamic_projects_map[p]]))) :
-          null
-        )
-
-        use_explicit_dry_run_spec = try(v.dry_run, false)
+        description               = try(v.description, null)
+        title                     = try(v.title, null)
+        spec_resources            = try(v.spec_resources, null)
+        status_resources          = try(v.resources, null)
+        use_explicit_dry_run_spec = try(v.use_explicit_dry_run_spec, false)
       }
-      if try(v.type == "bridge", false)
     }
-    service_perimeters_regular = {
+    perimeters = {
       for k, v in local._data.perimeters :
       k => {
         description = try(v.description, null)
-        spec = try(v.dry_run, false) ? merge(v, {
-          access_levels       = try(v.access_levels, [])
-          egress_policies     = try(v.egress_policies, [])
-          ingress_policies    = try(v.ingress_policies, [])
-          restricted_services = try(v.restricted_services, local.restricted_services)
-          resources = distinct(concat(try(v.resources, []),
-          try(var.dynamic_projects_map[k], [])))
-          vpc_accessible_services = try(v.vpc_accessible_services, null)
-        }) : null
-
-        status = !try(v.dry_run, false) ? merge(v, {
-          access_levels       = try(v.access_levels, [])
-          egress_policies     = try(v.egress_policies, [])
-          ingress_policies    = try(v.ingress_policies, [])
-          restricted_services = try(v.restricted_services, local.restricted_services)
-          resources = distinct(concat(try(v.resources, []),
-          try(var.dynamic_projects_map[k], [])))
-          vpc_accessible_services = try(v.vpc_accessible_services, null)
-        }) : null
-
-        use_explicit_dry_run_spec = try(v.dry_run, false)
+        title       = try(v.title, null)
+        spec = !can(v.spec) ? null : merge(v.spec, {
+          access_levels           = try(v.spec.access_levels, [])
+          egress_policies         = try(v.spec.egress_policies, [])
+          ingress_policies        = try(v.spec.ingress_policies, [])
+          restricted_services     = try(v.spec.restricted_services, [])
+          resources               = try(v.spec.resources, [])
+          vpc_accessible_services = try(v.spec.vpc_accessible_services, null)
+        })
+        status = !can(v.status) ? null : merge(v.status, {
+          access_levels           = try(v.status.access_levels, [])
+          egress_policies         = try(v.status.egress_policies, [])
+          ingress_policies        = try(v.status.ingress_policies, [])
+          restricted_services     = try(v.status.restricted_services, [])
+          resources               = try(v.status.resources, [])
+          vpc_accessible_services = try(v.status.vpc_accessible_services, null)
+        })
+        use_explicit_dry_run_spec = try(v.use_explicit_dry_run_spec, false)
       }
-      if try(v.type != "bridge", true)
     }
   }
-  restricted_services = try(yamldecode(file(var.factories_config.restricted_services)), [])
   # TODO: add checks that emulate the variable validations
 }

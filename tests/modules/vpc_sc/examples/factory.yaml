@@ -91,8 +91,8 @@ values:
           resources:
           - projects/1234567890
       resources:
-      - projects/11111
-      - projects/111111
+      - projects/1111
+      - projects/2222
       restricted_services:
       - storage.googleapis.com
       vpc_accessible_services:

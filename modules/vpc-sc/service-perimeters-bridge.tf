@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 # google_access_context_manager_service_perimeters resource
 
 locals {
-  bridge_perimeters = merge(local.data.service_perimeters_bridge, var.service_perimeters_bridge)
+  bridge_perimeters = merge(local.data.bridges, var.service_perimeters_bridge)
 }
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
@@ -33,16 +33,22 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
 
   dynamic "spec" {
-    for_each = (each.value.spec_resources == null ? [] : [""])
+    for_each = each.value.spec_resources == null ? [] : [""]
     content {
-      resources = each.value.spec_resources == null ? [] : each.value.spec_resources
+      resources = flatten([
+        for r in each.value.spec_resources :
+        lookup(var.factories_config.context.resource_sets, r, [r])
+      ])
     }
   }
 
   dynamic "status" {
-    for_each = (each.value.status_resources == null ? [] : [""])
+    for_each = each.value.status_resources == null ? [] : [""]
     content {
-      resources = each.value.status_resources == null ? [] : each.value.status_resources
+      resources = flatten([
+        for r in each.value.status_resources :
+        lookup(var.factories_config.context.resource_sets, r, [r])
+      ])
     }
   }
 

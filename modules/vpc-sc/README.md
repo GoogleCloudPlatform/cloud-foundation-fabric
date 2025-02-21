@@ -199,7 +199,7 @@ module "test" {
     r1 = {
       status = {
         access_levels       = ["a1", "a2"]
-        resources           = ["projects/11111", "projects/111111"]
+        resources           = ["projects/1111", "projects/2222"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
         ingress_policies    = ["sa-tf-test"]
@@ -216,14 +216,7 @@ module "test" {
 
 ## Factories
 
-This module implements support for four distinct factories, used to create and manage access levels, egress policies, ingress policies and perimeters via YAML files.
-For access levels, egress policies, ingress policies, the YAML files syntax is a 1:1 match for the corresponding variables, and the factory data is merged at runtime with any data set in variables, which take precedence in case of key overlaps.
-
-For perimeters the YAML files also use the same syntaxe, with some differences:
-
-- the type of perimeter (regular or bridge) is indicated by the type property. Regular is the default.
-- dynamic resource membership for regular perimeters can also be achieved by providing the `dynamic_projects_map` variable with perimeter name to resource mapping. At run time the static members in yaml file is merged with the dynamic value.
-- dynmaic resource memebership for bridge perimeters can be achieved by providing the `perimeters` property with a list of bridged perimters. The resulting resource list will be the merge of static resources in yaml files and resources in the corresponding perimeters.
+This module implements support for gice distinct factories, used to create and manage perimeters, bridges, access levels, egress policies, and ingress policies via YAML files.
 
 JSON Schema files for each factory object are available in the [`schemas`](./schemas/) folder, and can be used to validate input YAML data with [`validate-yaml`](https://github.com/gerald1248/validate-yaml) or any of the available tools and libraries.
 
@@ -243,7 +236,7 @@ module "test" {
       description = "Main perimeter"
       status = {
         access_levels       = ["geo-it", "identity-user1"]
-        resources           = ["projects/11111", "projects/111111"]
+        resources           = ["projects/1111", "projects/2222"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
         ingress_policies    = ["sa-tf-test-geo", "sa-tf-test"]
@@ -337,13 +330,14 @@ module "test" {
 ```
 
 ```yaml
-  description: Main perimeter
+description: Main perimeter
+status:
   access_levels:
     - "geo-it"
     - "identity-user1"
   resources:
-    - "projects/11111"
-    - "projects/111111"
+    - "projects/1111"
+    - "projects/2222"
   restricted_services:
     - "storage.googleapis.com"
   egress_policies:
@@ -441,7 +435,7 @@ module "test" {
     default = {
       status = {
         access_levels    = ["geo-it"]
-        resources        = ["projects/11111"]
+        resources        = ["projects/1111"]
         egress_policies  = ["factory-egress-policy"]
         ingress_policies = ["variable-policy", "factory-ingress-policy"]
       }
