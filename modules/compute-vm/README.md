@@ -953,12 +953,13 @@ module "sole-tenancy" {
 | [instance](outputs.tf#L36) | Instance resource. | ✓ |
 | [internal_ip](outputs.tf#L42) | Instance main interface internal IP address. |  |
 | [internal_ips](outputs.tf#L50) | Instance interfaces internal IP addresses. |  |
-| [self_link](outputs.tf#L58) | Instance self links. |  |
-| [service_account](outputs.tf#L63) | Service account resource. |  |
-| [service_account_email](outputs.tf#L68) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L73) | Service account email. |  |
-| [template](outputs.tf#L82) | Template resource. |  |
-| [template_name](outputs.tf#L87) | Template name. |  |
+| [login_command](outputs.tf#L58) | Command to SSH into the machine. |  |
+| [self_link](outputs.tf#L63) | Instance self links. |  |
+| [service_account](outputs.tf#L68) | Service account resource. |  |
+| [service_account_email](outputs.tf#L73) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L78) | Service account email. |  |
+| [template](outputs.tf#L87) | Template resource. |  |
+| [template_name](outputs.tf#L92) | Template name. |  |
 
 ## Fixtures
 
