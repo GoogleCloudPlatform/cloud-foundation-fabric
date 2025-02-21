@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-02-12 13:19:03+00:00 to: None since: v37.3.0 -->
 
+## [37.4.0] - 2025-02-21
+
 ### BREAKING CHANGES
 
 - `modules/workstation-cluster`: changed the interface for configuration timeouts to object, timeouts are now specified as numbers. [[#2911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2911)]
@@ -12,13 +14,15 @@ All notable changes to this project will be documented in this file.
 - `modules/iam-service-account`: Removed service account key generation functionality [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)]
 - `modules/net-lb-app-ext`: Adds the two missing fields for locality_lb_policy and locality_lb_policies with field and block set, validation for both and tests. [[#2898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2898)]
 
-
 ### BLUEPRINTS
 
 - [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)] Remove Service Account key generation ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-18 17:02:39+00:00 -->
 
 ### MODULES
 
+- [[#2916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2916)] Add support for custom error response policies to net_lb_app_ext module ([peter-norton](https://github.com/peter-norton)) <!-- 2025-02-20 19:32:24+00:00 -->
+- [[#2915](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2915)] Fix dns_keys output in dns module ([nathou](https://github.com/nathou)) <!-- 2025-02-20 09:56:58+00:00 -->
+- [[#2913](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2913)] Add generated_id backends output to net-lb-app-ext ([danistrebel](https://github.com/danistrebel)) <!-- 2025-02-19 17:16:06+00:00 -->
 - [[#2911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2911)] **incompatible change:** Add support for max workstations, refactor timeouts in workstation-cluster module ([ludoo](https://github.com/ludoo)) <!-- 2025-02-19 09:45:38+00:00 -->
 - [[#2910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2910)] **incompatible change:** Add ssl_mode support to cloudsql-instance replicas ([sruffilli](https://github.com/sruffilli)) <!-- 2025-02-19 09:31:36+00:00 -->
 - [[#2907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2907)] **incompatible change:** Remove Service Account key generation ([wiktorn](https://github.com/wiktorn)) <!-- 2025-02-18 17:02:39+00:00 -->
@@ -2826,7 +2830,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.4.0...HEAD
+[37.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...v37.4.0
 [37.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...v37.3.0
 [37.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.1.0...v37.2.0
 [37.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.0.0...v37.1.0
