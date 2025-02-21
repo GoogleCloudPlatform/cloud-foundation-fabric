@@ -90,6 +90,8 @@ values:
             service_name: '*'
           resources:
           - projects/1234567890
+          - projects/321
+          - projects/654
       resources:
       - projects/1111
       - projects/2222

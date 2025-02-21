@@ -230,9 +230,14 @@ module "test" {
     access_levels    = "data/access-levels"
     egress_policies  = "data/egress-policies"
     ingress_policies = "data/ingress-policies"
+    context = {
+      resource_sets = {
+        foo_projects = ["projects/321", "projects/654"]
+      }
+    }
   }
   service_perimeters_regular = {
-    "perimeter-north" = {
+    perimeter-north = {
       description = "Main perimeter"
       status = {
         access_levels       = ["geo-it", "identity-user1"]
@@ -310,6 +315,7 @@ to:
     - service_name: "*"
   resources:
     - projects/1234567890
+    - foo_projects
 # tftest-file id=i2 path=data/ingress-policies/sa-tf-test-geo.yaml schema=ingress-policy.schema.json
 ```
 
@@ -324,6 +330,11 @@ module "test" {
     egress_policies  = "data/egress-policies"
     ingress_policies = "data/ingress-policies"
     perimeters       = "data/perimeters"
+    context = {
+      resource_sets = {
+        foo_projects = ["projects/321", "projects/654"]
+      }
+    }
   }
 }
 # tftest modules=1 resources=3 files=a1,a2,e1,i1,i2,r1 inventory=factory.yaml

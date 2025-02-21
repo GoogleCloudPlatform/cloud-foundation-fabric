@@ -251,7 +251,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 }
               }
               dynamic "sources" {
-                for_each = policy.value.from.resources
+                for_each = flatten([
+                  for r in policy.value.from.resources :
+                  lookup(var.factories_config.context.resource_sets, r, [r])
+                ])
                 iterator = resource
                 content {
                   resource = resource.value
@@ -322,7 +325,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
           dynamic "ingress_to" {
             for_each = policy.value.to == null ? [] : [""]
             content {
-              resources = policy.value.to.resources
+              resources = flatten([
+                for r in policy.value.to.resources :
+                lookup(var.factories_config.context.resource_sets, r, [r])
+              ])
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o

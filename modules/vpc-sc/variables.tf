@@ -252,7 +252,7 @@ variable "service_perimeters_regular" {
       restricted_services = optional(list(string))
       vpc_accessible_services = optional(object({
         allowed_services   = list(string)
-        enable_restriction = bool
+        enable_restriction = optional(bool, true)
       }))
     }))
     use_explicit_dry_run_spec = optional(bool, false)
