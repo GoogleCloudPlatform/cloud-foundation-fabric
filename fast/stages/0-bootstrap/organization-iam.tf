@@ -192,7 +192,7 @@ locals {
   bootstrap_user = strcontains(var.bootstrap_user, ":") ? var.bootstrap_user : "user:${var.bootstrap_user}"
 
   # bootstrap user bindings
-   iam_user_bootstrap_bindings = var.bootstrap_user == null ? {} : {
+  iam_user_bootstrap_bindings = var.bootstrap_user == null ? {} : {
     (local.bootstrap_user) = {
       authoritative = [
         "roles/logging.admin",
