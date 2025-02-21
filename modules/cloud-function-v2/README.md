@@ -343,14 +343,15 @@ module "cf-http" {
 | [function](outputs.tf#L29) | Cloud function resources. |  |
 | [function_name](outputs.tf#L34) | Cloud function name. |  |
 | [id](outputs.tf#L39) | Fully qualified function id. |  |
-| [service_account](outputs.tf#L44) | Service account resource. |  |
-| [service_account_email](outputs.tf#L49) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L54) | Service account email. |  |
-| [trigger_service_account](outputs.tf#L62) | Service account resource. |  |
-| [trigger_service_account_email](outputs.tf#L67) | Service account email. |  |
-| [trigger_service_account_iam_email](outputs.tf#L72) | Service account email. |  |
-| [uri](outputs.tf#L80) | Cloud function service uri. |  |
-| [vpc_connector](outputs.tf#L85) | VPC connector resource if created. |  |
+| [invoke_command](outputs.tf#L44) | Command to invoke Cloud Run Function. |  |
+| [service_account](outputs.tf#L53) | Service account resource. |  |
+| [service_account_email](outputs.tf#L58) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L63) | Service account email. |  |
+| [trigger_service_account](outputs.tf#L71) | Service account resource. |  |
+| [trigger_service_account_email](outputs.tf#L76) | Service account email. |  |
+| [trigger_service_account_iam_email](outputs.tf#L81) | Service account email. |  |
+| [uri](outputs.tf#L89) | Cloud function service uri. |  |
+| [vpc_connector](outputs.tf#L94) | VPC connector resource if created. |  |
 
 ## Fixtures
 
