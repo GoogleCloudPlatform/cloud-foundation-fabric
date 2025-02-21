@@ -94,17 +94,15 @@ locals {
       k => {
         description = try(v.description, null)
         spec_resources = (
-          try(v.dry_run, false)
-          ? distinct(concat(v.resources,
-          flatten([for p in v.perimeters : var.dynamic_projects_map[p]])))
-          : null
+          try(v.dry_run, false) ?
+          distinct(concat(v.resources, flatten([for p in v.perimeters : var.dynamic_projects_map[p]]))) :
+          null
         )
 
         status_resources = (
-          !try(v.dry_run, false)
-          ? distinct(concat(v.resources,
-          flatten([for p in v.perimeters : var.dynamic_projects_map[p]])))
-          : null
+          !try(v.dry_run, false) ?
+          distinct(concat(v.resources, flatten([for p in v.perimeters : var.dynamic_projects_map[p]]))) :
+          null
         )
 
         use_explicit_dry_run_spec = try(v.dry_run, false)
