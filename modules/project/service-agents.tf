@@ -40,11 +40,12 @@ locals {
           # If universe variable is set, enfore the use of the service-PROJECT_NUMBER@gcp-sa-ekms.UNVIVERSE-system.iam.gserviceaccount.com 
           # instead of service-PROJECT_NUMBER@gcp-sa-kms.UNVIVERSE-system.iam.gserviceaccount.com
           # as in the TPC universes, the partner KMS is enforced by design
-          var.universe != null && api == "cloudkms.googleapis.com" ?
-          format("service-%s@gcp-sa-ekms.%siam.gserviceaccount.com", local.project.number, local._universe_domain) :
-          (var.universe == null || api != "cloudservices" ?
-            templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain }) :
-            format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+          var.universe != null && api == "cloudkms.googleapis.com" 
+          ? format("service-%s@gcp-sa-ekms.%siam.gserviceaccount.com", local.project.number, local._universe_domain) :
+          : (
+            var.universe == null || api != "cloudservices"
+            ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
+            : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
           )
         )
       })
