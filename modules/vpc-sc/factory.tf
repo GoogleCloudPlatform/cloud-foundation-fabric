@@ -22,7 +22,7 @@ locals {
     }
   }
   _data_paths = {
-    for k in ["access_levels", "egress_policies", "ingress_policies"] : k => (
+    for k in ["access_levels", "bridges", "egress_policies", "ingress_policies", "perimeters"] : k => (
       var.factories_config[k] == null
       ? null
       : pathexpand(var.factories_config[k])
@@ -32,7 +32,6 @@ locals {
     access_levels = {
       for k, v in local._data.access_levels : k => {
         combining_function = try(v.combining_function, null)
-        description        = try(v.description, null)
         conditions = [
           for c in try(v.conditions, []) : merge({
             device_policy          = null
@@ -44,6 +43,8 @@ locals {
             vpc_subnets            = {}
           }, c)
         ]
+        description = try(v.description, null)
+        title       = try(v.title, null)
       }
     }
     egress_policies = {
@@ -87,6 +88,40 @@ locals {
           ]
           resources = try(v.to.resources, [])
         }
+      }
+    }
+    bridges = {
+      for k, v in local._data.bridges :
+      k => {
+        description               = try(v.description, null)
+        title                     = try(v.title, null)
+        spec_resources            = try(v.spec_resources, null)
+        status_resources          = try(v.resources, null)
+        use_explicit_dry_run_spec = try(v.use_explicit_dry_run_spec, false)
+      }
+    }
+    perimeters = {
+      for k, v in local._data.perimeters :
+      k => {
+        description = try(v.description, null)
+        title       = try(v.title, null)
+        spec = !can(v.spec) ? null : merge(v.spec, {
+          access_levels           = try(v.spec.access_levels, [])
+          egress_policies         = try(v.spec.egress_policies, [])
+          ingress_policies        = try(v.spec.ingress_policies, [])
+          restricted_services     = try(v.spec.restricted_services, [])
+          resources               = try(v.spec.resources, [])
+          vpc_accessible_services = try(v.spec.vpc_accessible_services, null)
+        })
+        status = !can(v.status) ? null : merge(v.status, {
+          access_levels           = try(v.status.access_levels, [])
+          egress_policies         = try(v.status.egress_policies, [])
+          ingress_policies        = try(v.status.ingress_policies, [])
+          restricted_services     = try(v.status.restricted_services, [])
+          resources               = try(v.status.resources, [])
+          vpc_accessible_services = try(v.status.vpc_accessible_services, null)
+        })
+        use_explicit_dry_run_spec = try(v.use_explicit_dry_run_spec, false)
       }
     }
   }
