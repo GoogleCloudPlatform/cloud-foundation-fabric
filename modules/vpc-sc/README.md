@@ -215,7 +215,7 @@ module "test" {
 
 ## Factories
 
-This module implements support for gice distinct factories, used to create and manage perimeters, bridges, access levels, egress policies, and ingress policies via YAML files.
+This module implements support for five distinct factories, used to create and manage perimeters, bridges, access levels, egress policies, and ingress policies via YAML files.
 
 JSON Schema files for each factory object are available in the [`schemas`](./schemas/) folder, and can be used to validate input YAML data with [`validate-yaml`](https://github.com/gerald1248/validate-yaml) or any of the available tools and libraries.
 
