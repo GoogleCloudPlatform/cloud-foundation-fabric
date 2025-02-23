@@ -99,6 +99,15 @@ variable "fast_stage_2" {
     ])
     error_message = "Invalid CI/CD repository type."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.fast_stage_2 : (length(coalesce(v.short_name, k)) <= 6)
+    ])
+    error_message = <<-EOM
+      For stages with names longer than 6 characters, use 'short_name' to provide shorter a name
+      that is at most 6 characters long.
+    EOM
+  }
 }
 
 variable "fast_stage_3" {
@@ -174,5 +183,14 @@ variable "fast_stage_3" {
       )
     ])
     error_message = "Invalid CI/CD repository type."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.fast_stage_3 : (length(coalesce(v.short_name, k)) <= 6)
+    ])
+    error_message = <<-EOM
+      For stages with names longer than 6 characters, use 'short_name' to provide shorter a name
+      that is at most 6 characters long.
+    EOM
   }
 }
