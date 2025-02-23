@@ -740,10 +740,16 @@ To create a new policy set its configuration in the `instance_schedule` variable
 
 ```hcl
 module "project" {
-  source         = "./fabric/modules/project"
-  name           = var.project_id
-  project_create = false
-  services = ["compute.googleapis.com"]
+  source = "./fabric/modules/project"
+  name   = var.project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name             = var.project_id
+      number           = var.project_number
+      services_enabled = ["compute.googleapis.com"]
+    }
+  }
   iam_bindings_additive = {
     compute-admin-service-agent = {
       member = module.project.service_agents["compute"].iam_email
@@ -772,9 +778,9 @@ module "instance" {
       vm_stop  = "0 17 * * *"
     }
   }
-  depends_on = [module.project]  # ensure that grants are complete before creating schedule / instance
+  depends_on = [module.project] # ensure that grants are complete before creating schedule / instance
 }
-# tftest inventory=instance-schedule-create.yaml e2e skip
+# tftest inventory=instance-schedule-create.yaml e2e
 ```
 
 ### Snapshot Schedules
