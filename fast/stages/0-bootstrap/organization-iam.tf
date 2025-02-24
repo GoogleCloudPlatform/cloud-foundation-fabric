@@ -201,10 +201,10 @@ locals {
          "roles/resourcemanager.projectCreator",
          "roles/resourcemanager.tagAdmin"
       ]
-      additive = (
-        local.billing_mode != "org" ? [] : [
-          "roles/billing.admin"
-        ]
+       additive = (
+         local.billing_mode != "org" ? [] : [
+           "roles/billing.admin"
+         ]
       )
     }
   }
