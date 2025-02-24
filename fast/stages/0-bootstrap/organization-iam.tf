@@ -193,13 +193,13 @@ locals {
 
   # bootstrap user bindings
   iam_user_bootstrap_bindings = var.bootstrap_user == null ? {} : {
-    (local.bootstrap_user) = {
-      authoritative = [
-        "roles/logging.admin",
-        "roles/owner",
-        "roles/resourcemanager.organizationAdmin",
-        "roles/resourcemanager.projectCreator",
-        "roles/resourcemanager.tagAdmin"
+     (local.bootstrap_user) = {
+       authoritative = [
+         "roles/logging.admin",
+         "roles/owner",
+         "roles/resourcemanager.organizationAdmin",
+         "roles/resourcemanager.projectCreator",
+         "roles/resourcemanager.tagAdmin"
       ]
       additive = (
         local.billing_mode != "org" ? [] : [
