@@ -65,10 +65,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
-              identities = [
+              identities = flatten([
                 for i in policy.value.from.identities :
-                lookup(var.factories_config.context.identity_type, i, [i])
-              ]
+                lookup(var.factories_config.context.identity_sets, i, [i])
+              ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
                 ? "SOURCE_RESTRICTION_ENABLED"
