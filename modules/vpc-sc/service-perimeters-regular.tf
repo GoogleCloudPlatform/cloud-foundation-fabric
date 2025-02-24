@@ -65,7 +65,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
-              identities    = policy.value.from.identities
+              identities = [
+                for i in policy.value.from.identities :
+                lookup(var.factories_config.context.identity_type, i, [i])
+              ]
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
                 ? "SOURCE_RESTRICTION_ENABLED"
@@ -138,7 +141,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
-              identities    = policy.value.from.identities
+              identities = flatten([
+                for i in policy.value.from.identities :
+                lookup(var.factories_config.context.identity_sets, i, [i])
+              ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
                 iterator = s
@@ -234,7 +240,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
-              identities    = policy.value.from.identities
+              identities = flatten([
+                for i in policy.value.from.identities :
+                lookup(var.factories_config.context.identity_sets, i, [i])
+              ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
                 ? "SOURCE_RESTRICTION_ENABLED"
@@ -303,7 +312,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
-              identities    = policy.value.from.identities
+              identities = flatten([
+                for i in policy.value.from.identities :
+                lookup(var.factories_config.context.identity_sets, i, [i])
+              ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
                 iterator = s

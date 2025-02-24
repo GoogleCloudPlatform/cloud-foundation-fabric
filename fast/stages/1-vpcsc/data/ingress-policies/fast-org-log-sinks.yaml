@@ -1,0 +1,10 @@
+from:
+  access_levels:
+    - "*"
+  identities:
+    - org_logging_writer_identities
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - logging_project

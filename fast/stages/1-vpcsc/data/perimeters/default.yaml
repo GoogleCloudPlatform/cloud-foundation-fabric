@@ -1,0 +1,10 @@
+use_explicit_dry_run_spec: true
+spec:
+  access_levels:
+    - geo
+  resources:
+    - discovered_projects
+  ingress_policies:
+    - fast-org-log-sinks
+  restricted_services:
+    - restricted_services
