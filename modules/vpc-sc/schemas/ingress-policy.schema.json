@@ -33,7 +33,7 @@
         "identities": {
           "type": "array",
           "items": {
-            "type": "string",
+            "type": "string"
           }
         },
         "resources": {
