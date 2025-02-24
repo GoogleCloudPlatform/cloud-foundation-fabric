@@ -154,7 +154,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                   lookup(var.factories_config.context.resource_sets, r, [r])
                 ])
                 content {
-                  resource = sources.key
+                  resource = sources.value
                 }
               }
             }
@@ -315,9 +315,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                 }
               }
               dynamic "sources" {
-                for_each = toset(policy.value.from.resources)
+                for_each = flatten([
+                  for r in policy.value.from.resources :
+                  lookup(var.factories_config.context.resource_sets, r, [r])
+                ])
                 content {
-                  resource = sources.key
+                  resource = sources.value
                 }
               }
             }
