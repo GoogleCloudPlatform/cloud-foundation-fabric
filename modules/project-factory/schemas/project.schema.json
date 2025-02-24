@@ -326,8 +326,7 @@
         "additionalProperties": false,
         "properties": {
           "description": {
-            "type": "string",
-            "default": "Managed by the Terraform project module."
+            "type": "string"
           },
           "iam": {
             "$ref": "#/$defs/iam"
@@ -348,8 +347,7 @@
               "additionalProperties": false,
               "properties": {
                 "description": {
-                  "type": "string",
-                  "default": "Managed by the Terraform project module."
+                  "type": "string"
                 },
                 "iam": {
                   "$ref": "#/$defs/iam"
