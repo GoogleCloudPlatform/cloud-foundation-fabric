@@ -17,28 +17,28 @@
 # tfdoc:file:description Locals and project-level resources.
 
 locals {
-  environment = var.environments[var.stage_config.environment]
+  environment = var.environments[var.config.environment]
   exp_tag = {
-    key   = split("/", var.data_exposure_config.tag_name)[0]
-    value = split("/", var.data_exposure_config.tag_name)[1]
+    key   = split("/", var.exposure_config.tag_name)[0]
+    value = split("/", var.exposure_config.tag_name)[1]
   }
-  folder_id = var.folder_ids[var.stage_config.name]
+  folder_id = var.folder_ids[var.config.name]
   prefix    = "${var.prefix}-${local.environment.short_name}"
-  location  = lookup(var.regions, var.default_location, var.default_location)
+  location  = lookup(var.regions, var.location, var.location)
 }
 
 module "central-project" {
   source                = "../../../modules/project"
   billing_account       = var.billing_account.id
   name                  = coalesce(var.central_project_config.name, "dp-central-0")
-  parent                = var.folder_ids[var.stage_config.name]
+  parent                = var.folder_ids[var.config.name]
   prefix                = local.prefix
   iam                   = var.central_project_config.iam
   iam_bindings          = var.central_project_config.iam_bindings
   iam_bindings_additive = var.central_project_config.iam_bindings_additive
   iam_by_principals     = var.central_project_config.iam_by_principals
   labels = {
-    environment = var.stage_config.environment
+    environment = var.config.environment
   }
   services = var.central_project_config.services
   tags = merge(var.secure_tags, {
@@ -70,7 +70,7 @@ module "central-project" {
 module "central-tag-templates" {
   source     = "../../../modules/data-catalog-tag-template"
   project_id = module.central-project.project_id
-  region     = local.region
+  region     = local.location
   factories_config = {
     tag_templates = var.factories_config.policy_tags
     context = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-locals {
+/* locals {
   _data_products = flatten([
     for k, v in local.data_domains : [
       for pk, pv in v.data_products : merge(pv, {
@@ -136,3 +136,4 @@ module "bigquery-dataset" {
     )
   }
 }
+ */

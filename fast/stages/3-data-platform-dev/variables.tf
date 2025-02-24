@@ -18,7 +18,7 @@
 # TODO: refactor tag template module for template-level IAM
 
 # dd0
-#  - config.yaml
+#  - _config.yaml
 #  - products
 #    - dp0.yaml
 #    - dp1.yaml
@@ -58,88 +58,19 @@ variable "central_project_config" {
   default  = {}
 }
 
-variable "data_domains" {
-  description = "Data domain definitions."
-  type = map(object({
-    short_name = optional(string)
-    data_products = optional(map(object({
-      short_name = optional(string)
-      exposed_resources = optional(object({
-        bigquery = optional(map(object({})), {})
-        gcs = optional(map(object({
-          location      = optional(string)
-          storage_class = optional(string)
-        })), {})
-      }), {})
-      iam = optional(map(list(string)), {})
-      iam_bindings = optional(map(object({
-        members = list(string)
-        role    = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_bindings_additive = optional(map(object({
-        member = string
-        role   = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_by_principals = optional(map(list(string)), {})
-      # networking_config = optional(object({}))
-      services = optional(list(string))
-    })), {})
-    folder_config = map(object({
-      name         = string
-      iam          = optional(map(list(string)), {})
-      iam_bindings = optional(map(list(string)), {})
-      iam_bindings_additive = optional(map(object({
-        member = string
-        role   = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_by_principals = optional(map(list(string)), {})
-    }))
-    # networking_config = optional(object({}))
-    project_config = optional(object({
-      iam = optional(map(list(string)), {})
-      iam_bindings = optional(map(object({
-        members = list(string)
-        role    = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_bindings_additive = optional(map(object({
-        member = string
-        role   = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_by_principals = optional(map(list(string)), {})
-      name              = optional(string)
-      services          = optional(list(string))
-    }), {})
-  }))
-  nullable = false
-  default  = {}
+variable "config" {
+  description = "Stage configuration used to find environment and resource ids, and to generate names."
+  type = object({
+    environment = string
+    name        = string
+  })
+  default = {
+    environment = "dev"
+    name        = "data-platform-dev"
+  }
 }
 
-variable "data_exposure_config" {
+variable "exposure_config" {
   description = "Data exposure configuration."
   type = object({
     tag_name = optional(string, "exposure/allow")
@@ -148,20 +79,13 @@ variable "data_exposure_config" {
   default  = {}
   validation {
     condition = (
-      var.data_exposure_config.tag_name != null &&
+      var.exposure_config.tag_name != null &&
       length(regexall(
-        "^[a-z][a-z0-9-]+/[a-z][a-z0-9]+", var.data_exposure_config.tag_name
+        "^[a-z][a-z0-9-]+/[a-z][a-z0-9]+", var.exposure_config.tag_name
       )) > 0
     )
     error_message = "Invalid tag name, required format is 'tag_key/tag_value'."
   }
-}
-
-variable "default_location" {
-  description = "Default location used when no location is specified."
-  type        = string
-  nullable    = false
-  default     = "primary"
 }
 
 variable "factories_config" {
@@ -172,6 +96,13 @@ variable "factories_config" {
   })
   nullable = false
   default  = {}
+}
+
+variable "location" {
+  description = "Default location used when no location is specified."
+  type        = string
+  nullable    = false
+  default     = "primary"
 }
 
 variable "policy_tags" {
@@ -231,17 +162,5 @@ variable "secure_tags" {
       for k, v in var.secure_tags : v != null
     ])
     error_message = "Use an empty map instead of null as value."
-  }
-}
-
-variable "stage_config" {
-  description = "FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management."
-  type = object({
-    environment = string
-    name        = string
-  })
-  default = {
-    environment = "dev"
-    name        = "data-platform-dev"
   }
 }
