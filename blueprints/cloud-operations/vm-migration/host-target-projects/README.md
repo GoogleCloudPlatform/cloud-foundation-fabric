@@ -59,5 +59,5 @@ module "test-target-project" {
   name            = "test-target-project"
 }
 
-# tftest modules=5 resources=28
+# tftest modules=5 resources=27
 ```

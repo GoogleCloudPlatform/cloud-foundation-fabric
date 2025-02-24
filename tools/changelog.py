@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ import logging
 import requests
 
 import iso8601
+import marko
 
 HEADING = (
     '# Changelog\n\n'
@@ -89,8 +90,8 @@ CHANGE_URL = f'[{{name}}]: {URL}/compare/v{{release_from}}...{{release_to}}'
 FileRelease = collections.namedtuple('FileRelease',
                                      'name published content link',
                                      defaults=([], None))
-PullRequest = collections.namedtuple('PullRequest',
-                                     'id base author title merged_at labels')
+PullRequest = collections.namedtuple(
+    'PullRequest', 'id base author title merged_at labels upgrade_notes')
 
 
 class Error(Exception):
@@ -139,9 +140,10 @@ def format_pull(pull, group=None):
           f'([{pull.author}]({url}/{pull.author})) <!-- {pull.merged_at} -->')
 
 
-def format_release(pull_groups, release_as, release_to, release_from, date_to,
-                   date_from):
+def format_release(pull_groups, upgrade_notes, release_as, release_to,
+                   release_from, date_to, date_from):
   'Format release changelog heading and text.'
+  pull_url = f'https://github.com/{ORG}/{REPO}/pull'
   if release_as:
     # if we're releasing date to is today
     date_to = datetime.date.today()
@@ -151,6 +153,13 @@ def format_release(pull_groups, release_as, release_to, release_from, date_to,
   else:
     buffer = [(f'## [{_strip_relname(release_to or release_as)}] - '
                f'{date_to.strftime("%Y-%m-%d")} {comment}')]
+  if upgrade_notes:
+    buffer.append('\n### BREAKING CHANGES\n')
+    for pr in upgrade_notes:
+      for note in pr.upgrade_notes:
+        buffer.append(f'- {note} [[#{pr.id}]({pull_url}/{pr.id})]')
+    buffer.append('')
+
   for group in sorted(pull_groups.keys(), key=lambda s: s or ''):
     if group is not None:
       buffer.append(f'### {group.upper()}\n')
@@ -158,6 +167,22 @@ def format_release(pull_groups, release_as, release_to, release_from, date_to,
       buffer.append(format_pull(pull, group))
     buffer.append('')
   return '\n'.join(buffer)
+
+
+def get_upgrade_notes(body):
+  notes = []
+  if body is None:
+    return notes
+  parser = marko.parser.Parser()
+  doc = parser.parse(body)
+  for child in doc.children:
+    if not isinstance(child, marko.block.FencedCode):
+      continue
+    if child.lang != "upgrade-note":
+      continue
+    note = child.children[0].children.strip(" \n\t")
+    notes.append(note)
+  return notes
 
 
 def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
@@ -172,12 +197,16 @@ def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
     for r in pulls:
       pull_id = r['number']
       merged_at = r['merged_at']
+      body = r['body']
+      upgrade_notes = get_upgrade_notes(r['body'])
+
       if merged_at is None:
         unmerged += 1
         continue
       pull = PullRequest(pull_id, r['base']['ref'], r['user']['login'],
                          r['title'], iso8601.parse_date(merged_at),
-                         [l['name'].lower() for l in r['labels']])
+                         [l['name'].lower() for l in r['labels']],
+                         upgrade_notes)
       if pull.id in exclude_pulls:
         excluded += 1
         continue
@@ -321,8 +350,9 @@ def main(token, changelog_file='CHANGELOG.md', exclude_pull=None,
                   exclude_pull))
     logging.info(f'number of pulls: {len(pulls)}')
     pull_groups = group_pulls(pulls)
-    rel_changes = format_release(pull_groups, release_as, release_to,
-                                 release_from, date_to, date_from)
+    upgrade_notes = [pr for pr in pulls if pr.upgrade_notes]
+    rel_changes = format_release(pull_groups, upgrade_notes, release_as,
+                                 release_to, release_from, date_to, date_from)
     if not write:
       print(rel_changes)
       raise SystemExit(0)

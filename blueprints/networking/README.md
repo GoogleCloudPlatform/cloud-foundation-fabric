@@ -30,12 +30,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 <br clear="left">
 
-### Internal Network LB as next hop
-
-<a href="./ilb-next-hop/" title="Internal Network LB as next hop"><img src="./ilb-next-hop/diagram.png" align="left" width="280px"></a> This [blueprint](./ilb-next-hop/) allows testing [Internal Network LB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview) using simple Linux gateway VMS between two VPCs, to emulate virtual appliances. An optional additional Internal Network LB can be enabled to test multiple load balancer configurations and hashing.
-
-<br clear="left">
-
 <!--
 ### Nginx-based reverse proxy cluster
 

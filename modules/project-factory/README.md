@@ -101,9 +101,9 @@ Automation resources are defined via the `automation` attribute in project confi
 
 - a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
 - an optional `service_accounts` list where each element defines a service account in the controlling project
-- an optional `buckets` map where each key defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+- an optional `bucket` which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
 
-Service accounts and buckets are be prefixed with the project name, and use the key specified in the YAML file as a suffix.
+Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while buckets use a default `tf-state` suffix.
 
 ```yaml
 # file name: prod-app-example-0
@@ -128,17 +128,16 @@ automation:
     # sa name: foo-prod-app-example-0-ro
     ro:
       description: Read-only automation sa for app example 0.
-  buckets:
-    # bucket name: foo-prod-app-example-0-state
-    state:
-      description: Terraform state bucket for app example 0.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - rw
-          - ro
-          - group:devops@example.org
+  bucket:
+    # bucket name: foo-prod-app-example-0-tf-state
+    description: Terraform state bucket for app example 0.
+    iam:
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - rw
+        - ro
+        - group:devops@example.org
 ```
 
 ## Billing budgets
@@ -195,26 +194,34 @@ automation:
 
 Interpolations leverage contexts from two separate sources: an internal set for resources managed by the project factory (folders, service accounts, etc.), and an external user-defined set passed in via the `factories_config.context` variable.
 
-The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up. 
+The following table lists the available context interpolations. External contexts are passed in via the `factories_config.contexts` variable. IAM principals are interpolated in all IAM attributes except `iam_by_principal`. First two columns show for which attribute of which resource context is interpolated. `external contexts` column show in which map passed as `var.factories_config.context` key will be looked up.
 
 * Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
-* IAM principals are resolved within context of managed project
+* IAM principals are resolved within context of managed project or use `${project}/${service_account}` to refer service account from other projects managed by the same project factory instance.
 
-| resource            | attribute       | external contexts   | internal contexts          |
-| ------------------- | --------------- | ------------------- | -------------------------- |
-| folder              | parent          | `folder_ids`        | internally created folders |
-| folder              | IAM principals  | `iam_principals`    |                            |
-| folder              | tag bindings    | `tag_values`        |                            |
-| project             | parent          | `folder_ids`        | internally created folders |
-| project             | Shared VPC host | `vpc_host_projects` |                            |
-| project             | Shared VPC IAM  | `iam_principals`    |                            |
-| project             | tag bindings    | `tag_values`        |                            |
-| project             | IAM principals  | `iam_principals`    | project service accounts   |
-|                     |                 |                     | IaC service accounts       |
-| bucket              | IAM principals  | `iam_principals`    | project service accounts   |
-| service account     | IAM projects    | `vpc_host_projects` |                            |
-| IaC bucket          | IAM principals  | `iam_principals`    | IaC service accounts       |
-| IaC service account | IAM principals  | `iam_principals`    |                            |
+| resource            | attribute       | external contexts   | internal contexts                  |
+|---------------------|-----------------|---------------------|------------------------------------|
+| folder              | parent          | `folder_ids`        | implicit through folder structure  |
+| folder              | IAM principals  | `iam_principals`    |                                    |
+| folder              | tag bindings    | `tag_values`        |                                    |
+| project             | parent          | `folder_ids`        | internally created folders         |
+| project             | Shared VPC host | `vpc_host_projects` |                                    |
+| project             | Shared VPC IAM  | `iam_principals`    | project service accounts           |
+|                     |                 |                     | IaC service accounts               |
+|                     |                 |                     | other project service accounts     |
+|                     |                 |                     | other project IaC service accounts |
+| project             | tag bindings    | `tag_values`        |                                    |
+| project             | IAM principals  | `iam_principals`    | project service accounts           |
+|                     |                 |                     | IaC service accounts               |
+|                     |                 |                     | other project service accounts     |
+|                     |                 |                     | other project IaC service accounts |
+| bucket              | IAM principals  | `iam_principals`    | project service accounts           |
+|                     |                 |                     | IaC service accounts               |
+|                     |                 |                     | other project service accounts     |
+|                     |                 |                     | other project IaC service accounts |
+| service account     | IAM projects    | `vpc_host_projects` |                                    |
+| IaC bucket          | IAM principals  | `iam_principals`    | IaC service accounts               |
+| IaC service account | IAM principals  | `iam_principals`    |                                    |
 
 ## Example
 
@@ -278,7 +285,7 @@ module "project-factory" {
     }
   }
 }
-# tftest modules=16 resources=56 files=0,1,2,3,4,5,6,7,8 inventory=example.yaml
+# tftest files=0,1,2,3,4,5,6,7,8,9 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -395,17 +402,16 @@ automation:
       description: Team B app 0 read/write automation sa.
     ro:
       description: Team B app 0 read-only automation sa.
-  buckets:
-    state:
-      description: Team B app 0 Terraform state bucket.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - gcp-devops
-          - group:team-b-admins@example.org
-          - rw
-          - ro
+  bucket:
+    description: Team B app 0 Terraform state bucket.
+    iam:
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - gcp-devops
+        - group:team-b-admins@example.org
+        - rw
+        - ro
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
@@ -431,6 +437,31 @@ update_rules:
     monitoring_notification_channels:
     - billing-default
 # tftest-file id=8 path=data/budgets/test-100.yaml schema=budget.schema.json
+```
+
+Granting permissions to service accounts defined in other project through interpolation:
+
+```yaml
+billing_account: 012345-67890A-BCDEF0
+labels:
+ app: app-0
+ team: team-b
+parent: team-b/app-0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
+iam:
+  "roles/run.admin":
+    - dev-ta-app0-be/app-0-be # interpolate to app-0-be service account in project defined in file dev-ta-app0-be
+  "roles/run.developer":
+    - app-0-be # interpolate to app-0-be service account within the same project
+service_accounts:
+  app-0-be:
+    display_name: "Backend instances."
+    iam_self_roles:
+      - roles/logging.logWriter
+      - roles/monitoring.metricWriter
+# tftest-file id=9 path=data/projects/dev-tb-app0-1.yaml schema=project.schema.json
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -464,7 +495,7 @@ update_rules:
 | [buckets](outputs.tf#L17) | Bucket names. |  |
 | [folders](outputs.tf#L24) | Folder ids. |  |
 | [projects](outputs.tf#L29) | Created projects. |  |
-| [service_accounts](outputs.tf#L51) | Service account emails. |  |
+| [service_accounts](outputs.tf#L52) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
 

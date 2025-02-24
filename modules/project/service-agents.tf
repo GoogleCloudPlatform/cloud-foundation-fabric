@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    local.available_services, var.service_agents_config.services_enabled
+    local.available_services, try(var.project_reuse.project_attributes.services_enabled, [])
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
@@ -37,9 +37,16 @@ locals {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
         email = (
-          var.universe == null || api != "cloudservices"
-          ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
-          : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+          # If universe variable is set, enfore the use of the service-PROJECT_NUMBER@gcp-sa-ekms.UNVIVERSE-system.iam.gserviceaccount.com
+          # instead of service-PROJECT_NUMBER@gcp-sa-kms.UNVIVERSE-system.iam.gserviceaccount.com
+          # as in the TPC universes, the partner KMS is enforced by design
+          var.universe != null && api == "cloudkms.googleapis.com"
+          ? format("service-%s@gcp-sa-ekms.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+          : (
+            var.universe == null || api != "cloudservices"
+            ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
+            : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+          )
         )
       })
     }
@@ -107,13 +114,13 @@ locals {
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
-  count      = contains(local.services, "storage.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count      = contains(local.services, "bigquery.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }

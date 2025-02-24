@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v37.3.0
+# Fabric release: v38.0.0
 
 terraform {
   required_version = ">= 1.10.2"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 6.19.0, < 7.0.0" # tftest
+      version = ">= 6.21.0, < 7.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 6.19.0, < 7.0.0" # tftest
+      version = ">= 6.21.0, < 7.0.0" # tftest
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v37.3.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v38.0.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v37.3.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/iam-service-account:v38.0.0-tf"
   }
 }

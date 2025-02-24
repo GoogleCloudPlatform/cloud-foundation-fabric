@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-# ${project_id}
+# ${project_id} ${project_number}
 
 terraform {
   backend "gcs" {
     bucket                      = "${bucket}"
-    impersonate_service_account = "${sa}"
+    impersonate_service_account = "${service_account}"
   }
 }
 provider "google" {
-  impersonate_service_account = "${sa}"
+  impersonate_service_account = "${service_account}"
 }
 provider "google-beta" {
-  impersonate_service_account = "${sa}"
+  impersonate_service_account = "${service_account}"
 }

@@ -13,6 +13,8 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [End to end example](#end-to-end-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Issues](#issues)
+- [Recipes](#recipes)
+- [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -349,8 +351,8 @@ module "ilb" {
 ```
 
 ## Deploying changes to load balancer configurations
-For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
+For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 ## Issues
 
@@ -359,7 +361,15 @@ There are some corner cases where Terraform raises a cycle error on apply, for e
 <!--
 One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
 -->
+
+## Recipes
+
+- [Internal load balancer as next hop](./recipe-ilb-next-hop/)
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [Internal Network Load Balancer as Next Hop](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-lb-int/recipe-ilb-next-hop)
+
 ## Variables
 
 | name | description | type | required | default |

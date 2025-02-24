@@ -34,6 +34,10 @@ iam.managed.allowedPolicyMembers:
           ]
         }
 
+iam.disableAuditLoggingExemption:
+  rules:
+    - enforce: true
+
 iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts:
   rules:
     - enforce: true
@@ -51,3 +55,13 @@ iam.serviceAccountKeyExposureResponse:
     - allow:
         values:
           - DISABLE_KEY
+
+iam.workloadIdentityPoolAwsAccounts:
+  rules:
+    - deny:
+        all: true
+
+iam.workloadIdentityPoolProviders:
+  rules:
+    - deny:
+        all: true
