@@ -41,52 +41,6 @@ variable "data_defaults" {
     }), { host_project = null })
     storage_location = optional(string)
     tag_bindings     = optional(map(string), {})
-    tags = optional(map(object({
-      description = optional(string, "Managed by the Terraform project module.")
-      iam         = optional(map(list(string)), {})
-      iam_bindings = optional(map(object({
-        members = list(string)
-        role    = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      iam_bindings_additive = optional(map(object({
-        member = string
-        role   = string
-        condition = optional(object({
-          expression  = string
-          title       = string
-          description = optional(string)
-        }))
-      })), {})
-      id = optional(string)
-      values = optional(map(object({
-        description = optional(string, "Managed by the Terraform project module.")
-        iam         = optional(map(list(string)), {})
-        iam_bindings = optional(map(object({
-          members = list(string)
-          role    = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        iam_bindings_additive = optional(map(object({
-          member = string
-          role   = string
-          condition = optional(object({
-            expression  = string
-            title       = string
-            description = optional(string)
-          }))
-        })), {})
-        id = optional(string)
-      })), {})
-    })), {})
     # non-project resources
     service_accounts = optional(map(object({
       display_name   = optional(string, "Terraform-managed.")
