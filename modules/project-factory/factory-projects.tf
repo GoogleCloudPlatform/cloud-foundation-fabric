@@ -145,6 +145,24 @@ locals {
         try(v.tag_bindings, null),
         var.data_defaults.tag_bindings
       )
+      tags = {
+        for tag_name, tag_data in try(v.tags, {}) : tag_name => {
+          description           = try(tag_data.description, "Managed by the Terraform project-factory module.")
+          id                    = try(tag_data.id, null)
+          iam                   = try(tag_data.iam, {})
+          iam_bindings          = try(tag_data.iam_bindings, {})
+          iam_bindings_additive = try(tag_data.iam_bindings_additive, {})
+          values = {
+            for value_name, value_data in try(tag_data.values, {}) : value_name => {
+              description           = try(value_data.description, "Managed by the Terraform project-factory module.")
+              id                    = try(value_data.id, null)
+              iam                   = try(value_data.iam, {})
+              iam_bindings          = try(value_data.iam_bindings, {})
+              iam_bindings_additive = try(value_data.iam_bindings_additive, {})
+            }
+          }
+        }
+      }
       vpc_sc = (
         var.data_overrides.vpc_sc != null
         ? var.data_overrides.vpc_sc

@@ -515,6 +515,6 @@ counts:
   google_storage_project_service_account: 4
   google_tags_tag_binding: 1
   modules: 20
-  resources: 70
+  resources: 74
 
 outputs: {}

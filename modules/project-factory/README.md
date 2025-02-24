@@ -378,6 +378,16 @@ shared_vpc_service_config:
       - container-engine
 billing_budgets:
   - test-100
+tags:
+  my-tag-key-1:
+    values:
+      my-value-1:
+        description: My value 1
+      my-value-2:
+        description: My value 3
+        iam:
+          roles/resourcemanager.tagUser:
+            - user:user@example.com
 # tftest-file id=6 path=data/projects/dev-ta-app0-be.yaml schema=project.schema.json
 ```
 

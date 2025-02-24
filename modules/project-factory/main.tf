@@ -87,6 +87,7 @@ module "projects" {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
+  tags   = each.value.tags
   vpc_sc = each.value.vpc_sc
 }
 
