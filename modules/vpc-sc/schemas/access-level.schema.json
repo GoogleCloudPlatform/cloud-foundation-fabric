@@ -75,7 +75,6 @@
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^(?:serviceAccount:|user:)"
             }
           },
           "negate": {

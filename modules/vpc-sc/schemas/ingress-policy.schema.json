@@ -34,7 +34,6 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:serviceAccount:|user:|group:|principal:)"
           }
         },
         "resources": {
