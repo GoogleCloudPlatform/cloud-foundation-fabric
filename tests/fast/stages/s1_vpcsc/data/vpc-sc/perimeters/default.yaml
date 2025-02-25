@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/egress-policy.schema.json
+# yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/perimeters.schema.json
 
-from:
-  identities:
-    - user:user@fast.example.com
-to:
-  operations:
-    - service_name: compute.googleapis.com
-      method_selectors:
-        - "*"
-    - service_name: monitoring.googleapis.com
-      method_selectors:
-        - "*"
+use_explicit_dry_run_spec: true
+spec:
+  access_levels:
+    - geo_it
+    - identity_me
+  ingress_policies:
+    - fast-org-log-sinks
+    - test
+  egress_policies:
+    - test
+  restricted_services:
+    - restricted_services
   resources:
-    - "*"
+    - projects/1234567890
