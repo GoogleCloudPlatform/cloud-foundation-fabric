@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,11 +189,15 @@ locals {
     }
   }
   # Check if boostrap_user comes from WIF
-  bootstrap_user = strcontains(var.bootstrap_user, ":") ? var.bootstrap_user : "user:${var.bootstrap_user}"
+  bootstrap_principal = var.bootstrap_user == null ? null : (
+    strcontains(var.bootstrap_user, ":")
+    ? var.bootstrap_user
+    : "user:${var.bootstrap_user}"
+  )
 
   # bootstrap user bindings
   iam_user_bootstrap_bindings = var.bootstrap_user == null ? {} : {
-    (local.bootstrap_user) = {
+    (local.bootstrap_principal) = {
       authoritative = [
         "roles/logging.admin",
         "roles/owner",
