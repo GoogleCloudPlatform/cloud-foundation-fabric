@@ -88,3 +88,13 @@ variable "tags" {
     error_message = "Use an empty map instead of null as value."
   }
 }
+
+variable "universe" {
+  description = "Target GCP universe."
+  type = object({
+    domain               = string
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
+}
