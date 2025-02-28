@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/data-domain.schema.json
+# yaml-language-server: $schema=../../../schemas/data-product.schema.json
 
-name: Test 0
-short_name: t0
+short_name: p0
+services:
+  - storage.googleapis.com
+exposed_resources:
+  storage_buckets:
+    foo:
+      location: europe-west8

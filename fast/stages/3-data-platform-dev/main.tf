@@ -23,14 +23,17 @@ locals {
     value = split("/", var.exposure_config.tag_name)[1]
   }
   folder_id = var.folder_ids[var.config.name]
-  prefix    = "${var.prefix}-${local.environment.short_name}"
   location  = lookup(var.regions, var.location, var.location)
+  prefix = (
+    "${var.prefix}-${local.environment.short_name}-${var.config.short_name}"
+  )
+  prefix_bq = replace(local.prefix, "-", "_")
 }
 
 module "central-project" {
   source                = "../../../modules/project"
   billing_account       = var.billing_account.id
-  name                  = coalesce(var.central_project_config.name, "dp-central-0")
+  name                  = var.central_project_config.short_name
   parent                = var.folder_ids[var.config.name]
   prefix                = local.prefix
   iam                   = var.central_project_config.iam

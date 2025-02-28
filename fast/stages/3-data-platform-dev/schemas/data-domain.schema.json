@@ -3,20 +3,20 @@
   "title": "Data Domain",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "name"
+  ],
   "properties": {
+    "name": {
+      "type": "string"
+    },
     "short_name": {
       "type": "string"
     },
     "folder_config": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "name"
-      ],
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "iam": {
           "$ref": "#/$defs/iam"
         },

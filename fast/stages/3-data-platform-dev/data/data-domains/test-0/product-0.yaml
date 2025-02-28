@@ -14,7 +14,7 @@
 
 # yaml-language-server: $schema=../../../schemas/data-product.schema.json
 
-short_name: t0p0
+short_name: p0
 services:
   - storage.googleapis.com
 exposed_resources:

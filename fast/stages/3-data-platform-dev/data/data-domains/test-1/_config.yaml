@@ -14,5 +14,5 @@
 
 # yaml-language-server: $schema=../../../schemas/data-domain.schema.json
 
-name: Test 0
-short_name: t0
+name: Test 1
+short_name: t1

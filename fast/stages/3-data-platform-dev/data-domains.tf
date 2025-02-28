@@ -14,92 +14,41 @@
  * limitations under the License.
  */
 
-/* locals {
-  _data_products = flatten([
-    for k, v in local.data_domains : [
-      for pk, pv in v.data_products : merge(pv, {
-        data_domain = k
-        key         = "${k}-${pk}"
-        name        = pk
-        short_name  = "${v.short_name}-${coalesce(v.short_name, pk)}"
-      })
-    ]
-  ])
-  _dp_bqds = flatten([
-    for k, v in local.data_products : [
-      for bk, bv in pv.exposed_resources.bigquery : merge(bv, {
-        data_product     = k
-        data_product_key = v.key
-        key              = "${v.key}-${bk}"
-        location         = coalesce(v.location, local.default_location)
-        name             = bk
-        short_name       = replace("${v.short_name}_${bk}", "-", "_")
-      })
-    ]
-  ])
-  _dp_buckets = flatten([
-    for k, v in local.data_products : [
-      for bk, bv in pv.exposed_resources.gcs : merge(bv, {
-        data_product     = k
-        data_product_key = v.key
-        key              = "${v.key}-${bk}"
-        location         = coalesce(v.location, local.default_location)
-        name             = bk
-        short_name       = "${v.short_name}-${bk}"
-      })
-    ]
-  ])
-  data_domains = {
-    for k, v in var.data_domains : k => merge(v, {
-      short_name = coalesce(v.short_name, k)
-    })
-  }
-  data_products = {
-    for v in local._data_products : v.key => v
-  }
-  dp_bqds = {
-    for v in local._dp_bqds : v.key => v
-  }
-  dp_buckets = {
-    for v in local._dp_buckets : v.key => v
-  }
-}
-
-module "dd-folder" {
+module "dd-folders" {
   source                = "../../../modules/folder"
   for_each              = local.data_domains
-  parent                = var.folder_ids[var.stage_config.name]
-  name                  = each.value.folder_config.name
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_by_principals     = each.value.iam_by_principals
+  parent                = var.folder_ids[var.config.name]
+  name                  = each.value.name
+  iam                   = each.value.folder_config.iam
+  iam_bindings          = each.value.folder_config.iam_bindings
+  iam_bindings_additive = each.value.folder_config.iam_bindings_additive
+  iam_by_principals     = each.value.folder_config.iam_by_principals
 }
 
-module "dd-project" {
+module "dd-projects" {
   source                = "../../../modules/project"
   for_each              = local.data_domains
   billing_account       = var.billing_account.id
-  name                  = "dp-${each.value.short_name}-central-0"
-  parent                = module.dd-folder[each.key].id
-  prefix                = var.prefix
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_by_principals     = each.value.iam_by_principals
+  name                  = "${each.value.short_name}-central-0"
+  parent                = module.dd-folders[each.key].id
+  prefix                = local.prefix
+  iam                   = each.value.project_config.iam
+  iam_bindings          = each.value.project_config.iam_bindings
+  iam_bindings_additive = each.value.project_config.iam_bindings_additive
+  iam_by_principals     = each.value.project_config.iam_by_principals
   labels = {
     data_domain = each.key
   }
-  services = each.value.services
+  services = each.value.project_config.services
 }
 
-module "dp-project" {
+module "dp-projects" {
   source                = "../../../modules/project"
   for_each              = local.data_products
   billing_account       = var.billing_account.id
-  name                  = "dp-${each.value.short_name}-0"
-  parent                = module.dd-folder[each.value.dd].id
-  prefix                = var.prefix
+  name                  = "${each.value.dd_short_name}-${each.value.short_name}-0"
+  parent                = module.dd-folders[each.value.dd].id
+  prefix                = local.prefix
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
@@ -111,29 +60,33 @@ module "dp-project" {
   services = each.value.services
 }
 
-module "dp-bucket" {
-  source     = "../../../modules/gcs"
-  for_each   = local.dp_buckets
-  project_id = module.dp_project[each.value.data_product_key].project_id
-  prefix     = var.prefix
-  name       = "dp-${each.value.short_name}-0"
+module "dp-buckets" {
+  source = "../../../modules/gcs"
+  for_each = {
+    for v in local.dp_buckets : "${v.dp}-${v.key}" => v
+  }
+  project_id = module.dp-projects[each.value.dp].project_id
+  prefix     = local.prefix
+  name       = "${each.value.short_name}-0"
   location   = each.value.location
   tag_bindings = {
     exposure = (
-      module.central_project.tag_values["${var.data_exposure_config.tag_name}"]
+      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
     )
   }
 }
 
-module "bigquery-dataset" {
-  source     = "../../../modules/bigquery-dataset"
-  project_id = module.dp_project[each.value.data_product_key].project_id
-  id         = "dp_${each.value.short_name}_0"
+module "dp-datasets" {
+  source = "../../../modules/bigquery-dataset"
+  for_each = {
+    for v in local.dp_datasets : "${v.dp}-${v.key}" => v
+  }
+  project_id = module.dp-projects[each.value.dp].project_id
+  id         = "${local.prefix_bq}_${each.value.short_name}_0"
   location   = each.value.location
   tag_bindings = {
     exposure = (
-      module.central_project.tag_values["${var.data_exposure_config.tag_name}"]
+      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
     )
   }
 }
- */

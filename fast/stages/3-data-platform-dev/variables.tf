@@ -46,13 +46,13 @@ variable "central_project_config" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
-    name              = optional(string)
     services = optional(list(string), [
       # TODO: define default list of services
       "datacatalog.googleapis.com",
       "logging.googleapis.com",
       "monitoring.googleapis.com"
     ])
+    short_name = optional(string, "central-0")
   })
   nullable = false
   default  = {}
@@ -63,6 +63,7 @@ variable "config" {
   type = object({
     environment = string
     name        = string
+    short_name  = optional(string, "dp")
   })
   default = {
     environment = "dev"
