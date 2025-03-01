@@ -29,6 +29,7 @@ locals {
   )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
   _projects = merge(
+    var.factories_data.projects,
     {
       for f in try(fileset(local._project_path, "**/*.yaml"), []) :
       basename(trimsuffix(f, ".yaml")) => yamldecode(file("${local._project_path}/${f}"))
