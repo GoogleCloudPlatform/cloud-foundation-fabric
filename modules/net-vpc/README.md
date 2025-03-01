@@ -304,7 +304,7 @@ module "vpc" {
     }
   ]
 }
-# tftest inventory=psa-prefix-services.yaml e2e
+# tftest inventory=psa-prefix-services.yaml isolated e2e
 ```
 
 ### Private Service Networking with peering routes and peered Cloud DNS domains
@@ -360,7 +360,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=10 inventory=psa-multiple-providers.yaml e2e
+# tftest modules=1 resources=10 inventory=psa-multiple-providers.yaml isolated e2e
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
