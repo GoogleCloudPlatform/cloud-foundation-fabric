@@ -49,6 +49,9 @@ locals {
         iam_bindings          = try(v.project_config.iam_bindings, {})
         iam_bindings_additive = try(v.project_config.iam_bindings_additive, {})
         iam_by_principals     = try(v.project_config.iam_by_principals, {})
+        shared_vpc_service_config = try(
+          v.project_config.shared_vpc_service_config, null
+        )
       }
     }
   }
@@ -70,6 +73,9 @@ locals {
       iam_bindings          = lookup(v, "iam_bindings", {})
       iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
       iam_by_principals     = lookup(v, "iam_by_principals", {})
+      shared_vpc_service_config = try(
+        v.shared_vpc_service_config, null
+      )
     })
   }
   dp_buckets = flatten([

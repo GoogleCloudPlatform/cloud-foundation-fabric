@@ -39,7 +39,8 @@ module "dd-projects" {
   labels = {
     data_domain = each.key
   }
-  services = each.value.project_config.services
+  services                  = each.value.project_config.services
+  shared_vpc_service_config = each.value.project_config.shared_vpc_service_config
 }
 
 module "dp-projects" {
@@ -57,7 +58,8 @@ module "dp-projects" {
     data_domain  = each.value.dd
     data_product = each.key
   }
-  services = each.value.services
+  services                  = each.value.services
+  shared_vpc_service_config = each.value.shared_vpc_service_config
 }
 
 module "dp-buckets" {
