@@ -25,9 +25,9 @@ locals {
       for f in try(fileset("${local._dd_path}/${k}", "**/*.yaml"), []) : merge(
         yamldecode(file("${local._dd_path}/${k}/${f}")),
         {
-          dd            = k
-          dd_short_name = v.short_name
-          key           = trimsuffix(basename(f), ".yaml")
+          dd  = k
+          dds = v.short_name
+          key = trimsuffix(basename(f), ".yaml")
         }
       ) if !endswith(f, "_config.yaml")
     ]
@@ -53,10 +53,11 @@ locals {
           v.project_config.shared_vpc_service_config, null
         )
       }
+      service_accounts = lookup(v, "service_accounts", {})
     }
   }
   data_products = {
-    for v in local._dp : "${v.dd}-${v.key}" => merge(v, {
+    for v in local._dp : "${v.dd}/${v.key}" => merge(v, {
       short_name = lookup(v, "short_name", v.key)
       services = distinct(concat(
         lookup(v, "services", []),
@@ -73,16 +74,31 @@ locals {
       iam_bindings          = lookup(v, "iam_bindings", {})
       iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
       iam_by_principals     = lookup(v, "iam_by_principals", {})
+      service_accounts      = lookup(v, "service_accounts", {})
       shared_vpc_service_config = try(
         v.shared_vpc_service_config, null
       )
     })
   }
+  dd_service_accounts = flatten([
+    for k, v in local.data_domains : [
+      for sk, sv in v.service_accounts : {
+        dd                    = k
+        key                   = "${k}/${sk}"
+        name                  = "${v.short_name}-${sk}"
+        description           = lookup(v, "description", null)
+        iam                   = lookup(sv, "iam", {})
+        iam_bindings          = lookup(sv, "iam_bindings", {})
+        iam_bindings_additive = lookup(sv, "iam_bindings_additive", {})
+        iam_storage_roles     = lookup(sv, "iam_storage_roles", {})
+      }
+    ]
+  ])
   dp_buckets = flatten([
     for k, v in local.data_products : [
       for bk, bv in v.exposed_buckets : {
-        dd            = v.dd
         dp            = k
+        dps           = "${v.dds}-${v.short_name}"
         key           = bk
         short_name    = lookup(bv, "short_name", bk)
         location      = lookup(bv, "location", var.location)
@@ -93,11 +109,25 @@ locals {
   dp_datasets = flatten([
     for k, v in local.data_products : [
       for dk, dv in v.exposed_datasets : {
-        dd         = v.dd
         dp         = k
+        dps        = replace("${v.dds}-${v.short_name}", "-", "_")
         key        = dk
         short_name = replace(lookup(dv, "short_name", dk), "-", "_")
         location   = lookup(dv, "location", var.location)
+      }
+    ]
+  ])
+  dp_service_accounts = flatten([
+    for k, v in local.data_products : [
+      for sk, sv in v.service_accounts : {
+        dp                    = k
+        dps                   = "${v.dds}-${v.short_name}"
+        key                   = sk
+        description           = lookup(v, "description", null)
+        iam                   = lookup(sv, "iam", {})
+        iam_bindings          = lookup(sv, "iam_bindings", {})
+        iam_bindings_additive = lookup(sv, "iam_bindings_additive", {})
+        iam_storage_roles     = lookup(sv, "iam_storage_roles", {})
       }
     ]
   ])

@@ -51,6 +51,33 @@
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
     },
+    "service_accounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
+            "iam_storage_roles": {
+              "$ref": "#/$defs/iam_storage_roles"
+            }
+          }
+        }
+      }
+    },
     "services": {
       "type": "array",
       "items": {
@@ -225,6 +252,18 @@
           "items": {
             "type": "string",
             "pattern": "^(?:roles/|[a-z_]+)"
+          }
+        }
+      }
+    },
+    "iam_storage_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
