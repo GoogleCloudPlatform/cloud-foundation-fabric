@@ -75,9 +75,22 @@ module "central-tag-templates" {
   project_id = module.central-project.project_id
   region     = local.location
   factories_config = {
-    tag_templates = var.factories_config.policy_tags
+    tag_templates = var.factories_config.tag_templates
     context = {
       regions = var.regions
     }
+  }
+}
+
+module "central-policy-tags" {
+  source     = "../../../modules/data-catalog-policy-tag"
+  project_id = module.central-project.project_id
+  name       = "tags"
+  location   = var.location
+  #TODO Add factory support and remove hardcoded tags
+  tags = {
+    low    = {}
+    medium = {}
+    high   = {}
   }
 }

@@ -48,6 +48,7 @@ variable "central_project_config" {
     iam_by_principals = optional(map(list(string)), {})
     services = optional(list(string), [
       # TODO: define default list of services
+      "bigquery.googleapis.com",
       "datacatalog.googleapis.com",
       "logging.googleapis.com",
       "monitoring.googleapis.com"
@@ -92,8 +93,9 @@ variable "exposure_config" {
 variable "factories_config" {
   description = "Configuration for the resource factories."
   type = object({
-    data_domains = optional(string, "data/data-domains")
-    policy_tags  = optional(string, "data/policy_tags")
+    data_domains  = optional(string, "data/data-domains")
+    policy_tags   = optional(string, "data/policy-tags")
+    tag_templates = optional(string, "data/tag-templates")
   })
   nullable = false
   default  = {}
@@ -103,7 +105,7 @@ variable "location" {
   description = "Default location used when no location is specified."
   type        = string
   nullable    = false
-  default     = "primary"
+  default     = "europe-west1"
 }
 
 variable "policy_tags" {
