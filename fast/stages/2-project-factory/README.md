@@ -279,7 +279,7 @@ services:
   # enable all services used by service accounts in this project
 ```
 
-Once a controlling project is in place, it can be used in any other project declaration to host service accounts and buckets for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
+Once a controlling project is in place, it can be used in any other project declaration to host service accounts and bucket for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
 
 ```yaml
 # team or application-level project with automation resources
@@ -304,18 +304,17 @@ automation:
     # resulting sa name: xxx-dev-ta-app-0-ro
     ro:
       description: Read-only automation sa for team a app 0.
-  buckets:
+  bucket:
     # resulting bucket name: xxx-dev-ta-app-0-state
-    state:
-      description: Terraform state bucket for team a app 0.
-      iam:
-        # service accounts can use short name substitutions from context
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - rw
-          - ro
-          - group:devops@example.org
+    description: Terraform state bucket for team a app 0.
+    iam:
+      # service accounts can use short name substitutions from context
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - rw
+        - ro
+        - group:devops@example.org
 ```
 
 ## Alternative patterns
