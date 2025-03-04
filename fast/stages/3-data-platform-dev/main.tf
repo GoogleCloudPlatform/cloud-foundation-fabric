@@ -28,6 +28,14 @@ locals {
     "${var.prefix}-${local.environment.short_name}-${var.config.short_name}"
   )
   prefix_bq = replace(local.prefix, "-", "_")
+  service_accounts_iam = merge(
+    {
+      for k, v in module.dd-service-accounts : k => v.iam_email
+    },
+    {
+      for k, v in module.dp-service-accounts : k => v.iam_email
+    }
+  )
 }
 
 module "central-project" {

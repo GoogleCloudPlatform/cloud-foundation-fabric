@@ -15,22 +15,61 @@
  */
 
 module "dp-projects" {
-  source                = "../../../modules/project"
-  for_each              = local.data_products
-  billing_account       = var.billing_account.id
-  name                  = "${each.value.dds}-${each.value.short_name}-0"
-  parent                = module.dd-folders[each.value.dd].id
-  prefix                = local.prefix
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_by_principals     = each.value.iam_by_principals
+  source          = "../../../modules/project"
+  for_each        = local.data_products
+  billing_account = var.billing_account.id
+  name            = "${each.value.dds}-${each.value.short_name}-0"
+  parent          = module.dd-folders[each.value.dd].id
+  prefix          = local.prefix
   labels = {
     data_domain  = each.value.dd
     data_product = replace(each.key, "/", "_")
   }
   services                  = each.value.services
   shared_vpc_service_config = each.value.shared_vpc_service_config
+}
+
+module "dp-projects-iam" {
+  source   = "../../../modules/project"
+  for_each = local.data_products
+  name     = module.dp-projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name   = module.dp-projects[each.key].name
+      number = module.dp-projects[each.key].number
+    }
+  }
+  iam = {
+    for k, v in each.value.iam : k => [
+      for m in v : try(
+        local.service_accounts_iam[m],
+        local.service_accounts_iam["${each.key}/${m}"],
+        m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : try(
+          local.service_accounts_iam[m],
+          local.service_accounts_iam["${each.key}/${m}"],
+          m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.iam_bindings_additive : k => merge(v, {
+      member = try(
+        local.service_accounts_iam[v.member],
+        local.service_accounts_iam["${each.key}/${v.member}"],
+        v.member
+      )
+    })
+  }
+  iam_by_principals = each.value.iam_by_principals
 }
 
 module "dp-buckets" {

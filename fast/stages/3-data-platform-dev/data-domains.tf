@@ -26,21 +26,60 @@ module "dd-folders" {
 }
 
 module "dd-projects" {
-  source                = "../../../modules/project"
-  for_each              = local.data_domains
-  billing_account       = var.billing_account.id
-  name                  = "${each.value.short_name}-shared-0"
-  parent                = module.dd-folders[each.key].id
-  prefix                = local.prefix
-  iam                   = each.value.project_config.iam
-  iam_bindings          = each.value.project_config.iam_bindings
-  iam_bindings_additive = each.value.project_config.iam_bindings_additive
-  iam_by_principals     = each.value.project_config.iam_by_principals
+  source          = "../../../modules/project"
+  for_each        = local.data_domains
+  billing_account = var.billing_account.id
+  name            = "${each.value.short_name}-shared-0"
+  parent          = module.dd-folders[each.key].id
+  prefix          = local.prefix
   labels = {
     data_domain = each.key
   }
   services                  = each.value.project_config.services
   shared_vpc_service_config = each.value.project_config.shared_vpc_service_config
+}
+
+module "dd-projects-iam" {
+  source   = "../../../modules/project"
+  for_each = local.data_domains
+  name     = module.dd-projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name   = module.dd-projects[each.key].name
+      number = module.dd-projects[each.key].number
+    }
+  }
+  iam = {
+    for k, v in each.value.project_config.iam : k => [
+      for m in v : try(
+        local.service_accounts_iam[m],
+        local.service_accounts_iam["${each.key}/${m}"],
+        m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.project_config.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : try(
+          local.service_accounts_iam[m],
+          local.service_accounts_iam["${each.key}/${m}"],
+          m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.project_config.iam_bindings_additive : k => merge(v, {
+      member = try(
+        local.service_accounts_iam[v.member],
+        local.service_accounts_iam["${each.key}/${v.member}"],
+        v.member
+      )
+    })
+  }
+  iam_by_principals = each.value.project_config.iam_by_principals
 }
 
 module "dd-service-accounts" {

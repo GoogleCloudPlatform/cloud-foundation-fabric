@@ -22,6 +22,11 @@ exposed_resources:
   storage_buckets:
     foo:
       location: europe-west8
+iam:
+  roles/editor:
+    - rw
+  roles/viewer:
+    - ro
 service_accounts:
   rw:
     name: automation-rw
