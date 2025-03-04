@@ -27,7 +27,7 @@ module "dp-projects" {
   iam_by_principals     = each.value.iam_by_principals
   labels = {
     data_domain  = each.value.dd
-    data_product = each.key
+    data_product = replace(each.key, "/", "_")
   }
   services                  = each.value.services
   shared_vpc_service_config = each.value.shared_vpc_service_config

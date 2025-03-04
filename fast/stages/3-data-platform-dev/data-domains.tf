@@ -29,7 +29,7 @@ module "dd-projects" {
   source                = "../../../modules/project"
   for_each              = local.data_domains
   billing_account       = var.billing_account.id
-  name                  = "${each.value.short_name}-central-0"
+  name                  = "${each.value.short_name}-shared-0"
   parent                = module.dd-folders[each.key].id
   prefix                = local.prefix
   iam                   = each.value.project_config.iam

@@ -12,13 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/data-product.schema.json
+# yaml-language-server: $schema=../../schemas/tag-template.schema.json
 
-short_name: p0
-services:
-  - cloudresourcemanager.googleapis.com
-  - storage.googleapis.com
-exposed_resources:
-  storage_buckets:
-    foo:
-      location: europe-west8
+display_name: Demo Tag Template
+fields:
+  source:
+    display_name: Source of data asset
+    is_required: true
+    type:
+      primitive_type: STRING
+  pii_type:
+    display_name: PII type
+    type:
+      enum_type_values:
+        - EMAIL
+        - SOCIAL SECURITY NUMBER
+        - NONE
+force_delete: true
