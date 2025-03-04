@@ -46,7 +46,8 @@ module "dd-projects" {
 module "dd-service-accounts" {
   source                = "../../../modules/iam-service-account"
   for_each              = { for v in local.dd_service_accounts : v.key => v }
-  project_id            = module.dp-projects[each.value.dd].project_id
+  project_id            = module.dd-projects[each.value.dd].project_id
+  prefix                = local.prefix
   name                  = each.value.name
   description           = each.value.description
   iam                   = each.value.iam

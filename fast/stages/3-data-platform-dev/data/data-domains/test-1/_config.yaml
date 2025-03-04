@@ -16,3 +16,8 @@
 
 name: Test 1
 short_name: t1
+service_accounts:
+  rw:
+    description: Automation (rw).
+  ro:
+    description: Automation (ro).

@@ -85,7 +85,7 @@ locals {
       for sk, sv in v.service_accounts : {
         dd                    = k
         key                   = "${k}/${sk}"
-        name                  = "${v.short_name}-${sk}"
+        name                  = lookup(sv, "name", "${v.short_name}-${sk}")
         description           = lookup(v, "description", null)
         iam                   = lookup(sv, "iam", {})
         iam_bindings          = lookup(sv, "iam_bindings", {})
@@ -120,9 +120,11 @@ locals {
   dp_service_accounts = flatten([
     for k, v in local.data_products : [
       for sk, sv in v.service_accounts : {
-        dp                    = k
-        dps                   = "${v.dds}-${v.short_name}"
-        key                   = sk
+        dp  = k
+        key = "${k}/${sk}"
+        name = lookup(
+          sv, "name", "${v.dds}-${v.short_name}-${sk}"
+        )
         description           = lookup(v, "description", null)
         iam                   = lookup(sv, "iam", {})
         iam_bindings          = lookup(sv, "iam_bindings", {})

@@ -21,3 +21,9 @@ exposed_resources:
   storage_buckets:
     foo:
       location: europe-west8
+service_accounts:
+  rw:
+    name: automation-rw
+    description: Automation (rw).
+  ro:
+    description: Automation (ro).

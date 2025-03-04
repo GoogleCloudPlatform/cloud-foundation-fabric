@@ -63,3 +63,16 @@ module "dp-datasets" {
     )
   }
 }
+
+module "dp-service-accounts" {
+  source                = "../../../modules/iam-service-account"
+  for_each              = { for v in local.dp_service_accounts : v.key => v }
+  project_id            = module.dp-projects[each.value.dp].project_id
+  prefix                = local.prefix
+  name                  = each.value.name
+  description           = each.value.description
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_storage_roles     = each.value.iam_storage_roles
+}

@@ -140,6 +140,9 @@
             },
             "iam_storage_roles": {
               "$ref": "#/$defs/iam_storage_roles"
+            },
+            "name": {
+              "type": "string"
             }
           }
         }
