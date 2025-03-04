@@ -55,7 +55,7 @@ module "dd-projects-iam" {
       for m in v : try(
         local.service_accounts_iam[m],
         local.service_accounts_iam["${each.key}/${m}"],
-        m
+        strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
       )
     ]
   }
@@ -65,7 +65,7 @@ module "dd-projects-iam" {
         for m in v.members : try(
           local.service_accounts_iam[m],
           local.service_accounts_iam["${each.key}/${m}"],
-          m
+          strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
         )
       ]
     })
@@ -75,7 +75,7 @@ module "dd-projects-iam" {
       member = try(
         local.service_accounts_iam[v.member],
         local.service_accounts_iam["${each.key}/${v.member}"],
-        v.member
+        strcontains(v.member, ":") ? v.member : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
       )
     })
   }
