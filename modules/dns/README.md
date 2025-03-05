@@ -10,6 +10,7 @@ For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https:
 - [Peering Zone](#peering-zone)
 - [Routing Policies](#routing-policies)
 - [Reverse Lookup Zone](#reverse-lookup-zone)
+- [Reverse Lookup Managed Zone](#reverse-lookup-managed-zone)
 - [Public Zone](#public-zone)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -138,8 +139,30 @@ module "private-dns" {
       client_networks = [var.vpc.self_link]
     }
   }
+  recordsets = {
+    "PTR 10.0.0.10.in-addr.arpa." = { ttl = 300, records = ["test.example.com."] }
+  }
 }
-# tftest modules=1 resources=1 inventory=reverse-zone.yaml e2e
+# tftest inventory=reverse-zone.yaml e2e
+```
+
+## Reverse Lookup Managed Zone
+A managed reverse lookup zone is a private zone with a special attribute that instructs Cloud DNS to perform a PTR lookup against Compute Engine DNS data
+
+```hcl
+module "private-dns" {
+  source     = "./fabric/modules/dns"
+  project_id = var.project_id
+  name       = "test-example"
+  zone_config = {
+    domain = "0.0.10.in-addr.arpa."
+    private = {
+      client_networks = [var.vpc.self_link]
+      reverse_managed = true
+    }
+  }
+}
+# tftest inventory=reverse-zone-managed.yaml e2e
 ```
 
 ## Public Zone
@@ -173,7 +196,7 @@ module "public-dns" {
 | [force_destroy](variables.tf#L23) | Set this to true to delete all records in the zone upon zone destruction. | <code>bool</code> |  | <code>null</code> |
 | [iam](variables.tf#L29) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [recordsets](variables.tf#L45) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code title="map&#40;object&#40;&#123;&#10;  ttl     &#61; optional&#40;number, 300&#41;&#10;  records &#61; optional&#40;list&#40;string&#41;&#41;&#10;  geo_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;    location &#61; string&#10;    records  &#61; optional&#40;list&#40;string&#41;&#41;&#10;    health_checked_targets &#61; optional&#40;list&#40;object&#40;&#123;&#10;      load_balancer_type &#61; string&#10;      ip_address         &#61; string&#10;      port               &#61; string&#10;      ip_protocol        &#61; string&#10;      network_url        &#61; string&#10;      project            &#61; string&#10;      region             &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  wrr_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;    weight  &#61; number&#10;    records &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [zone_config](variables.tf#L102) | DNS zone configuration. | <code title="object&#40;&#123;&#10;  domain &#61; string&#10;  forwarding &#61; optional&#40;object&#40;&#123;&#10;    forwarders      &#61; optional&#40;map&#40;string&#41;&#41;&#10;    client_networks &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  peering &#61; optional&#40;object&#40;&#123;&#10;    client_networks &#61; list&#40;string&#41;&#10;    peer_network    &#61; string&#10;  &#125;&#41;&#41;&#10;  public &#61; optional&#40;object&#40;&#123;&#10;    dnssec_config &#61; optional&#40;object&#40;&#123;&#10;      non_existence &#61; optional&#40;string, &#34;nsec3&#34;&#41;&#10;      state         &#61; string&#10;      key_signing_key &#61; optional&#40;object&#40;&#10;        &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;        &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 2048 &#125;&#10;      &#41;&#10;      zone_signing_key &#61; optional&#40;object&#40;&#10;        &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;        &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 1024 &#125;&#10;      &#41;&#10;    &#125;&#41;&#41;&#10;    enable_logging &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  private &#61; optional&#40;object&#40;&#123;&#10;    client_networks             &#61; list&#40;string&#41;&#10;    service_directory_namespace &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [zone_config](variables.tf#L102) | DNS zone configuration. | <code title="object&#40;&#123;&#10;  domain &#61; string&#10;  forwarding &#61; optional&#40;object&#40;&#123;&#10;    forwarders      &#61; optional&#40;map&#40;string&#41;&#41;&#10;    client_networks &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  peering &#61; optional&#40;object&#40;&#123;&#10;    client_networks &#61; list&#40;string&#41;&#10;    peer_network    &#61; string&#10;  &#125;&#41;&#41;&#10;  public &#61; optional&#40;object&#40;&#123;&#10;    dnssec_config &#61; optional&#40;object&#40;&#123;&#10;      non_existence &#61; optional&#40;string, &#34;nsec3&#34;&#41;&#10;      state         &#61; string&#10;      key_signing_key &#61; optional&#40;object&#40;&#10;        &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;        &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 2048 &#125;&#10;      &#41;&#10;      zone_signing_key &#61; optional&#40;object&#40;&#10;        &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;        &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 1024 &#125;&#10;      &#41;&#10;    &#125;&#41;&#41;&#10;    enable_logging &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  private &#61; optional&#40;object&#40;&#123;&#10;    client_networks             &#61; list&#40;string&#41;&#10;    service_directory_namespace &#61; optional&#40;string&#41;&#10;    reverse_managed             &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
