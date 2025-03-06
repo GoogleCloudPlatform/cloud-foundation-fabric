@@ -61,7 +61,7 @@ locals {
       for k in local._repository_files :
       "${k.project}/${k.name}" => k
       if !endswith(k.name, ".tf") || (
-        !startswith(k.name, "0") && k.name != "globals.tf"
+        !startswith(k.name, "0") && !startswith(k.name, "1") && !startswith(k.name, "2") && k.name != "globals.tf"
       )
     },
     {
