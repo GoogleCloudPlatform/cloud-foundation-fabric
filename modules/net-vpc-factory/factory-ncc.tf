@@ -15,35 +15,35 @@
  */
 
 locals {
-  ncc_hubs = { for k, v in local._network_projects : "${k}/${v.ncc_hub_configs.name}" =>
+  ncc_hubs = { for k, v in local._network_projects : "${k}/${v.ncc_hub_config.name}" =>
     {
-      name            = v.ncc_hub_configs.name
+      name            = v.ncc_hub_config.name
       project_id      = module.projects[k].id
-      description     = try(v.ncc_hub_configs.description, "Terraform-managed")
-      export_psc      = try(v.ncc_hub_configs.export_psc, true)
-      preset_topology = try(v.ncc_hub_configs.preset_topology, "MESH")
+      description     = try(v.ncc_hub_config.description, "Terraform-managed")
+      export_psc      = try(v.ncc_hub_config.export_psc, true)
+      preset_topology = try(v.ncc_hub_config.preset_topology, "MESH")
     }
-    if try(v.ncc_hub_configs != null, false)
+    if try(v.ncc_hub_config != null, false)
   }
 
   ncc_groups = merge(flatten([for k, v in local._network_projects :
     {
-      for gk, gv in try(v.ncc_hub_configs.groups, {}) : "${k}/${v.ncc_hub_configs.name}/${gk}" =>
+      for gk, gv in try(v.ncc_hub_config.groups, {}) : "${k}/${v.ncc_hub_config.name}/${gk}" =>
       {
         name        = gk
         project     = module.projects[k].id
-        hub         = google_network_connectivity_hub.hub["${k}/${v.ncc_hub_configs.name}"].id
+        hub         = google_network_connectivity_hub.hub["${k}/${v.ncc_hub_config.name}"].id
         description = try(gv.description, "Terraform-managed")
         labels      = try(gv.labels, {})
         auto_accept = [for project_key in try(gv.auto_accept, []) : module.projects[project_key].id]
       }
     }
-    if try(v.ncc_hub_configs != null, false)
+    if try(v.ncc_hub_config != null, false)
   ])...)
 
   ncc_vpn_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for vpn_key, vpn_config in try(vpc_config.vpn_configs, {}) : {
           "${factory_key}/${vpc_key}/${vpn_key}" = {
             name             = replace("${factory_key}/${vpc_key}/${vpn_key}", "/", "-")
@@ -62,7 +62,7 @@ locals {
 
   ncc_vpc_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : {
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
         project_id            = module.projects[factory_key].id
         network_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
         labels                = try(vpc_config.ncc_configs.labels, {})

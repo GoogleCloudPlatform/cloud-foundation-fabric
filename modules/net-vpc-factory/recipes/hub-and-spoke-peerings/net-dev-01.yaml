@@ -14,7 +14,7 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
+vpc_config:
   dev-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500

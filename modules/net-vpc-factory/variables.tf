@@ -14,17 +14,51 @@
  * limitations under the License.
  */
 
+variable "billing_account" {
+  description = "Billing account id."
+  type        = string
+}
+
+
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    vpcs                 = optional(string, "examples/hub-and-spoke-ncc")
+    vpcs                 = optional(string, "recipes/hub-and-spoke-ncc")
     firewall_policy_name = optional(string, "net-default")
   })
-  nullable = false
+  default = {
+    vpcs = "recipes/hub-and-spoke-ncc"
+  }
 }
 
-variable "vpc_configs" {
-  description = "Consolidated configuration for the VPC and its associated resources."
+variable "iam_admin_delegated" {
+  type    = map(list(string))
+  default = {}
+}
+
+variable "iam_viewer" {
+  type    = map(list(string))
+  default = {}
+}
+
+variable "parent_id" {
+  description = "Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX"
+  type        = string
+}
+
+variable "prefix" {
+  description = "Prefix used for projects."
+  type        = string
+}
+
+variable "vpc_config" {
+  description = "Consolidated configuration for project, VPCs and their associated resources."
   type = map(object({
     project_config = object({
       name                    = string
@@ -84,7 +118,7 @@ variable "vpc_configs" {
       iam_by_principals_additive = optional(map(list(string)), {})
       iam_by_principals          = optional(map(list(string)), {})
     })
-    ncc_hub_configs = optional(object({
+    ncc_hub_config = optional(object({
       name            = string
       description     = optional(string, "Terraform-managed.")
       preset_topology = optional(string, "MESH")
@@ -95,7 +129,7 @@ variable "vpc_configs" {
         auto_accept = optional(list(string), [])
       })))
     }))
-    vpc_configs = optional(map(object({
+    vpc_config = optional(map(object({
       auto_create_subnetworks = optional(bool, false)
       create_googleapis_routes = optional(object({
         private      = optional(bool, true)

@@ -17,7 +17,7 @@
 locals {
   dns_zone_entries = flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for zone_key, zone in try(vpc_config.dns_zones, {}) : {
           key = "${factory_key}/${vpc_key}/${zone_key}"
           value = merge(
@@ -78,7 +78,7 @@ locals {
 }
 
 module "dns-zones" {
-  source        = "../../../modules/dns"
+  source        = "../dns"
   for_each      = local.dns_zones
   project_id    = each.value.project_id
   name          = each.value.name

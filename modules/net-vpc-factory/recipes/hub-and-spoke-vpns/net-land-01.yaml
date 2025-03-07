@@ -14,25 +14,18 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-ncc_hub_configs:
-  name: hub
-  groups: 
-    default:
-      auto_accept: 
-        - net-prod-01
-        - net-dev-01
-vpc_configs:
+vpc_config:
   test: 
     delete_default_routes_on_create: true
     mtu: 1500
     auto_create_subnetworks: true
   hub: 
     delete_default_routes_on_create: true
-    mtu: 1500
+    mtu: 1500 
     routers:
       vpn-router:
         region: europe-west8
-        asn: 64514
+        asn: 64514    
     dns_zones:
       onprem-fwd:
         zone_config:
@@ -55,12 +48,10 @@ vpc_configs:
     subnets_factory_config: 
       subnets_folder: data/subnets/hub
     firewall_factory_config:
-      rules_folder: data/firewall/hub     
+      rules_folder: data/firewall/hub 
     vpn_configs:
       to-onprem:
-        region: europe-west8
-        ncc-spoke-config: 
-          hub: net-land-01/hub        
+        region: europe-west8     
         peer_gateways:
           default:
             external:
@@ -86,4 +77,50 @@ vpc_configs:
             bgp_session_range: "169.254.2.2/30"
             peer_external_gateway_interface: 0
             shared_secret: "mySecret"
+            vpn_gateway_interface: 1
+      to-dev:
+        region: europe-west12
+        peer_gateways:
+          default:
+            gcp: net-dev-01/dev-spoke/to-hub # pray for the best
+        router_config:
+          create: false
+          name: net-land-01/hub/vpn-router
+        tunnels:
+          remote-0:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.2
+              asn: 64520
+            bgp_session_range: "169.254.2.1/30"
+            vpn_gateway_interface: 0
+          remote-1:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.6
+              asn: 64520
+            bgp_session_range: "169.254.2.5/30"
+            vpn_gateway_interface: 1
+      to-prod:
+        region: europe-west12
+        peer_gateways:
+          default:
+            gcp: net-prod-01/prod-spoke/to-hub
+        router_config:
+          create: false
+          name: net-land-01/hub/vpn-router
+        tunnels:
+          remote-0:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.3.2
+              asn: 64523
+            bgp_session_range: "169.254.3.1/30"
+            vpn_gateway_interface: 0
+          remote-1:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.3.6
+              asn: 64523
+            bgp_session_range: "169.254.3.5/30"
             vpn_gateway_interface: 1

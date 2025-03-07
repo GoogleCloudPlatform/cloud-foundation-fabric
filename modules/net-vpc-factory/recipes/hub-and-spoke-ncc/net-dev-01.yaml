@@ -14,7 +14,7 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
+vpc_config:
   dev-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
@@ -25,11 +25,11 @@ vpc_configs:
           peering:
             peer_network: net-land-01/hub
             client_networks:
-              - net-dev-01/dev-spoke  
+              - net-dev-01/dev-spoke      
     subnets_factory_config: 
       subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
       rules_folder: data/firewall/dev-spoke        
-    peering_configs:
-      to-hub:
-        peer_network: net-land-01/hub
+    ncc_configs:
+      hub: net-land-01/hub
+      group: net-land-01/hub/default

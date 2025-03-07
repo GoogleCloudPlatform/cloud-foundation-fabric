@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 project_config:
-  name: net-dev-01
+  name: net-prod-01
   services: 
     - container.googleapis.com
     - compute.googleapis.com
@@ -14,10 +14,14 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
-  dev-spoke: 
+vpc_config:
+  prod-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64523
     dns_zones:
       root-peering:
         zone_config:
@@ -25,31 +29,32 @@ vpc_configs:
           peering:
             peer_network: net-land-01/hub
             client_networks:
-              - net-dev-01/dev-spoke      
+              - net-prod-01/prod-spoke     
     subnets_factory_config: 
-      subnets_folder: data/subnets/dev-spoke
+      subnets_folder: data/subnets/prod-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/dev-spoke    
+      rules_folder: data/firewall/prod-spoke        
     vpn_configs:
       to-hub:
         region: europe-west12
         peer_gateways:
           default:
-            gcp: net-land-01/hub/to-dev
+            gcp: net-land-01/hub/to-prod
         router_config:
-          asn: 64520
+          create: false
+          name: net-prod-01/prod-spoke/vpn-router
         tunnels:
           remote-0:
             shared_secret: foobar
             bgp_peer:
-              address: 169.254.2.1
-              asn: 64521
-            bgp_session_range: "169.254.2.2/30"
+              address: 169.254.3.1
+              asn: 64522
+            bgp_session_range: "169.254.3.2/30"
             vpn_gateway_interface: 0
           remote-1:
             shared_secret: foobar
             bgp_peer:
-              address: 169.254.2.5
-              asn: 64521
-            bgp_session_range: "169.254.2.6/30"
+              address: 169.254.3.5
+              asn: 64522
+            bgp_session_range: "169.254.3.6/30"
             vpn_gateway_interface: 1

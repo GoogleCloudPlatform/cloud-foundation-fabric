@@ -16,7 +16,7 @@
 
 locals {
   _vpcs_preprocess = [for factory_key, factory_config in local._network_projects : {
-    for k, v in try(factory_config.vpc_configs, {}) : "${factory_key}/${k}" => {
+    for k, v in try(factory_config.vpc_config, {}) : "${factory_key}/${k}" => {
       project_id                        = module.projects[factory_key].id
       name                              = k
       auto_create_subnetworks           = try(v.auto_create_subnetworks, false)
@@ -41,12 +41,12 @@ locals {
 
   vpcs = merge(
     merge(local._vpcs_preprocess...),
-    var.vpc_configs
+    var.vpc_config
   )
 }
 
 module "vpcs" {
-  source                            = "../../../modules/net-vpc"
+  source                            = "../net-vpc"
   for_each                          = local.vpcs
   project_id                        = each.value.project_id
   name                              = each.value.name
@@ -68,7 +68,7 @@ module "vpcs" {
 }
 
 module "firewall" {
-  source               = "../../../modules/net-vpc-firewall"
+  source               = "../net-vpc-firewall"
   for_each             = { for k, v in local.vpcs : k => v if v.firewall_factory_config != null }
   project_id           = each.value.project_id
   network              = each.value.name

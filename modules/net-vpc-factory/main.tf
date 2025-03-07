@@ -31,11 +31,12 @@ locals {
       "${coalesce(local._network_factory_path, "-")}/${f}"
     ))
   }
+  # TODO: check
+  # env_tag_values = {
+  #   for k, v in var.environments : k => var.tag_values["environment/${v.tag_name}"]
+  # }
+  # has_env_folders = var.folder_ids.networking-dev != null
 
-  env_tag_values = {
-    for k, v in var.environments : k => var.tag_values["environment/${v.tag_name}"]
-  }
-  has_env_folders = var.folder_ids.networking-dev != null
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",
@@ -44,18 +45,14 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]))
-  iam_delegated_principals = try(
-    var.stage_config["networking"].iam_delegated_principals, {}
-  )
-  iam_viewer_principals = try(
-    var.stage_config["networking"].iam_viewer_principals, {}
-  )
+  iam_delegated_principals = var.iam_admin_delegated
+  iam_viewer_principals    = var.iam_viewer
 }
 
 module "folder" {
-  source        = "../../../modules/folder"
+  source        = "../folder"
   folder_create = false
-  id            = var.folder_ids.networking
+  id            = var.parent_id
   contacts = (
     var.essential_contacts == null
     ? {}
@@ -68,60 +65,11 @@ module "folder" {
 }
 
 # module "firewall-policy-default" {
-#   source    = "../../../modules/net-firewall-policy"
+#   source    = "../net-firewall-policy"
 #   name      = var.factories_config.firewall_policy_name
 #   parent_id = module.folder.id
 #   factories_config = {
 #     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
 #     ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
-#   }
-# }
-
-# module "projects" {
-#   source          = "../../../modules/project"
-#   billing_account = var.billing_account.id
-#   name            = "net-project-0"
-#   parent = coalesce(
-#     var.folder_ids.networking-prod,
-#     var.folder_ids.networking
-#   )
-#   prefix = var.prefix
-#   services = [
-#     "container.googleapis.com",
-#     "compute.googleapis.com",
-#     "dns.googleapis.com",
-#     "iap.googleapis.com",
-#     "networkmanagement.googleapis.com",
-#     "networksecurity.googleapis.com",
-#     "servicenetworking.googleapis.com",
-#     "stackdriver.googleapis.com",
-#     "vpcaccess.googleapis.com"
-#   ]
-#   shared_vpc_host_config = {
-#     enabled = true
-#   }
-#   #metric_scopes = [module.net-project.project_id]
-#   # optionally delegate a fixed set of IAM roles to selected principals
-#   iam = {
-#     (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
-#   }
-#   iam_bindings = (
-#     lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
-#       sa_delegated_grants = {
-#         role    = "roles/resourcemanager.projectIamAdmin"
-#         members = try(local.iam_delegated_principals["dev"], [])
-#         condition = {
-#           title       = "dev_stage3_sa_delegated_grants"
-#           description = "${var.environments["dev"].name} host project delegated grants."
-#           expression = format(
-#             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-#             local.iam_delegated
-#           )
-#         }
-#       }
-#     }
-#   )
-#   tag_bindings = local.has_env_folders ? {} : {
-#     environment = local.env_tag_values["dev"]
 #   }
 # }

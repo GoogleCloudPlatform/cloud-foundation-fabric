@@ -17,36 +17,37 @@
 locals {
   projects = { for k, v in local._network_projects : k => merge(
     {
-      billing_account        = try(v.project_config.billing_account, var.billing_account.id)
+      billing_account        = try(v.project_config.billing_account, var.billing_account)
       prefix                 = try(v.project_config.prefix, var.prefix)
-      parent                 = try(v.project_config.parent, var.folder_ids.networking)
+      parent                 = try(v.project_config.parent, var.parent_id)
       shared_vpc_host_config = try(v.project_config.shared_vpc_host_config, null)
-      iam = merge(try(v.project_config.iam, {}), {
-        (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
-      })
-      iam_bindings = merge(try(v.project_config.iam_bindings, {}), (
-        lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
-          sa_delegated_grants = {
-            role    = "roles/resourcemanager.projectIamAdmin"
-            members = try(local.iam_delegated_principals["dev"], [])
-            condition = {
-              title       = "dev_stage3_sa_delegated_grants"
-              description = "${var.environments["dev"].name} host project delegated grants."
-              expression = format(
-                "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-                local.iam_delegated
-              )
-            }
-          }
-        }
-      ))
+      # TODO: check
+      # iam = merge(try(v.project_config.iam, {}), {
+      #   (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
+      # })
+      # iam_bindings = merge(try(v.project_config.iam_bindings, {}), (
+      #   lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
+      #     sa_delegated_grants = {
+      #       role    = "roles/resourcemanager.projectIamAdmin"
+      #       members = try(local.iam_delegated_principals["dev"], [])
+      #       condition = {
+      #         title       = "dev_stage3_sa_delegated_grants"
+      #         description = "${var.environments["dev"].name} host project delegated grants."
+      #         expression = format(
+      #           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      #           local.iam_delegated
+      #         )
+      #       }
+      #     }
+      #   }
+      # ))
     },
     v.project_config)
   }
 }
 
 module "projects" {
-  source                 = "../../../modules/project"
+  source                 = "../project"
   for_each               = local.projects
   billing_account        = each.value.billing_account
   name                   = each.value.name
@@ -54,10 +55,11 @@ module "projects" {
   prefix                 = each.value.prefix
   services               = each.value.services
   shared_vpc_host_config = each.value.shared_vpc_host_config
-  iam                    = each.value.iam
-  iam_bindings           = each.value.iam_bindings
+  # iam                    = each.value.iam
+  # iam_bindings           = each.value.iam_bindings
   #TODO(sruffilli): implement metric_scopes and tag_bindings
-  tag_bindings = local.has_env_folders ? {} : {
-    environment = local.env_tag_values["dev"]
-  }
+  #TODO: check
+  # tag_bindings = local.has_env_folders ? {} : {
+  #   environment = local.env_tag_values["dev"]
+  # }
 }

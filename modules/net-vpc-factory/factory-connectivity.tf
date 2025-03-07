@@ -17,7 +17,7 @@
 locals {
   peerings = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for k, v in try(vpc_config.peering_configs, {}) : {
           "${factory_key}/${vpc_key}/${k}" = {
             project                             = factory_key
@@ -36,7 +36,7 @@ locals {
 
   routers = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for router_key, router_config in try(vpc_config.routers, {}) : {
           "${factory_key}/${vpc_key}/${router_key}" = merge(router_config, {
             vpc_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
@@ -54,7 +54,7 @@ locals {
 
   vpns = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_configs, {}) : [
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for k, v in try(vpc_config.vpn_configs, {}) : {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {
             vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name
@@ -121,7 +121,7 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway" {
 
 #TODO(sruffilli) How do we manage reusing the same CR for multiple VPNs? It smells like a hard-ish nut to crack.
 module "vpn-ha" {
-  source             = "../../../modules/net-vpn-ha"
+  source             = "../net-vpn-ha"
   for_each           = local.vpns
   project_id         = each.value.project_id
   name               = replace(each.key, "/", "-")

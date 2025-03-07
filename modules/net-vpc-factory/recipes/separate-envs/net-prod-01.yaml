@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 project_config:
-  name: net-land-01
+  name: net-prod-01
   services: 
     - container.googleapis.com
     - compute.googleapis.com
@@ -14,47 +14,18 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
-  test: 
+vpc_config:
+  prod-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
-    auto_create_subnetworks: true
-    peering_configs:
-      to-hub:
-        peer_network: net-land-01/hub
-  hub: 
-    delete_default_routes_on_create: true
-    mtu: 1500
-    dns_zones:
-      onprem-fwd:
-        zone_config:
-          domain: .
-          forwarding:
-            forwarders: 
-              "8.8.8.8": default
-              "1.1.1.1": default
-            client_networks:
-              - net-land-01/hub  
-      dot-test:
-        zone_config:
-          domain: test.
-          private:
-            client_networks:
-              - net-land-01/hub
-        recordsets:
-          "A localhost": 
-            records: ["127.0.0.1"]
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64514      
     subnets_factory_config: 
-      subnets_folder: data/subnets/hub
+      subnets_folder: data/subnets/prod-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/hub     
-    peering_configs:
-      to-prod:
-        peer_network: net-prod-01/prod-spoke
-      to-dev:
-        peer_network: net-dev-01/dev-spoke
-      to-test:
-        peer_network: net-land-01/test      
+      rules_folder: data/firewall/prod-spoke        
     vpn_configs:
       to-onprem:
         region: europe-west8
@@ -65,7 +36,8 @@ vpc_configs:
               interfaces: 
                 - 8.8.8.8
         router_config:
-          asn: 64514
+          create: false
+          name: net-prod-01/prod-spoke/vpn-router
         tunnels:
           remote-0:
             bgp_peer:

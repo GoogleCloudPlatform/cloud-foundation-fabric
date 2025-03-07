@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 project_config:
-  name: net-prod-01
+  name: net-dev-01
   services: 
     - container.googleapis.com
     - compute.googleapis.com
@@ -14,14 +14,18 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
-  prod-spoke: 
+vpc_config:
+  dev-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64514        
     subnets_factory_config: 
-      subnets_folder: data/subnets/prod-spoke
+      subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/prod-spoke        
+      rules_folder: data/firewall/dev-spoke        
     vpn_configs:
       to-onprem:
         region: europe-west8
@@ -32,7 +36,8 @@ vpc_configs:
               interfaces: 
                 - 8.8.8.8
         router_config:
-          asn: 64514
+          create: false
+          name: net-dev-01/dev-spoke/vpn-router
         tunnels:
           remote-0:
             bgp_peer:
