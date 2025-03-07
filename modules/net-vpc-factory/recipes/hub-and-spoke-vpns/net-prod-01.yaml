@@ -36,7 +36,7 @@ vpc_config:
       rules_folder: data/firewall/prod-spoke        
     vpn_configs:
       to-hub:
-        region: europe-west12
+        region: europe-west8
         peer_gateways:
           default:
             gcp: net-land-01/hub/to-prod
