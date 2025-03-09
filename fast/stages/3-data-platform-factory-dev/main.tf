@@ -140,6 +140,13 @@ module "projects" {
       projects_data_path = var.factories_config.data_domains
     }
   )
+  factories_data = {
+    projects = { for k, v in local.data_domains : v.project_config.name => merge(
+      v.project_config,
+      { service_accounts = v.service_accounts }
+      )
+    }
+  }
 }
 
 module "dp-buckets" {
