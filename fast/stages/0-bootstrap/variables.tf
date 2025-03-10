@@ -121,6 +121,12 @@ variable "environments" {
     ])
     error_message = "Environment names can only contain letters numbers dashes or spaces."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : (length(coalesce(v.short_name, k)) <= 4)
+    ])
+    error_message = "If environment key is longer than 4 characters, provide short_name that is at most 4 characters long."
+  }
 }
 
 variable "essential_contacts" {

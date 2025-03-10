@@ -13,10 +13,12 @@
 # limitations under the License.
 
 values:
-  module.sole-tenancy.google_compute_instance.default[0]:
-    boot_disk:
-    - initialize_params:
-      - image: projects/cos-cloud/global/images/family/cos-stable
+  module.project.google_project_iam_member.bindings["compute-admin-service-agent"]:
+    condition: []
+    member: serviceAccount:service-123@compute-system.iam.gserviceaccount.com
+    project: project-id
+    role: roles/compute.instanceAdmin.v1
+
   module.instance.google_compute_resource_policy.schedule[0]:
     description: Schedule policy for schedule-test.
     instance_schedule_policy:
@@ -29,6 +31,7 @@ values:
       - schedule: 0 17 * * *
     name: schedule-test
     region: europe-west8
+    project: project-id
 
 counts:
   google_compute_instance: 1

@@ -36,10 +36,16 @@ module "bucket" {
 
 ```hcl
 module "project" {
-  source         = "./fabric/modules/project"
-  name           = var.project_id
-  project_create = false
-  services       = ["storage.googleapis.com"]
+  source = "./fabric/modules/project"
+  name   = var.project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name             = var.project_id
+      number           = var.project_number
+      services_enabled = ["storage.googleapis.com"]
+    }
+  }
 }
 
 module "kms" {
@@ -70,7 +76,7 @@ module "bucket" {
   encryption_key = module.kms.keys.bucket_key.id
 }
 
-# tftest modules=3 skip e2e
+# tftest modules=2 e2e
 ```
 
 ## Retention policy, soft delete policy and logging
@@ -123,10 +129,16 @@ module "bucket" {
 
 ```hcl
 module "project" {
-  source         = "./fabric/modules/project"
-  name           = var.project_id
-  project_create = false
-  services       = ["storage.googleapis.com"]
+  source = "./fabric/modules/project"
+  name   = var.project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name             = var.project_id
+      number           = var.project_number
+      services_enabled = ["storage.googleapis.com"]
+    }
+  }
 }
 
 module "bucket-gcs-notification" {
@@ -144,7 +156,7 @@ module "bucket-gcs-notification" {
     custom_attributes = {}
   }
 }
-# tftest skip e2e
+# tftest e2e
 ```
 
 ## Object upload

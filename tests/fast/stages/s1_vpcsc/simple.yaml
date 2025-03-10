@@ -28,7 +28,7 @@ values:
     source: null
     temporary_hold: null
     timeouts: null
-  module.vpc-sc[0].google_access_context_manager_access_level.basic["geo_it"]:
+  module.vpc-sc.google_access_context_manager_access_level.basic["geo_it"]:
     basic:
     - combining_function: AND
       conditions:
@@ -44,7 +44,7 @@ values:
     description: null
     timeouts: null
     title: geo_it
-  module.vpc-sc[0].google_access_context_manager_access_level.basic["identity_me"]:
+  module.vpc-sc.google_access_context_manager_access_level.basic["identity_me"]:
     basic:
     - combining_function: AND
       conditions:
@@ -60,12 +60,12 @@ values:
     description: null
     timeouts: null
     title: identity_me
-  module.vpc-sc[0].google_access_context_manager_access_policy.default[0]:
+  module.vpc-sc.google_access_context_manager_access_policy.default[0]:
     parent: organizations/123456789012
     scopes: null
     timeouts: null
     title: default
-  module.vpc-sc[0].google_access_context_manager_service_perimeter.regular["default"]:
+  module.vpc-sc.google_access_context_manager_service_perimeter.regular["default"]:
     description: null
     perimeter_type: PERIMETER_TYPE_REGULAR
     spec:

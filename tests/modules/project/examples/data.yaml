@@ -118,9 +118,9 @@ values:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
-    project: test-test-project
+    project: test-project
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-test-project
+    project: test-project
     user_project: null
   module.project.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
@@ -128,7 +128,7 @@ values:
   module.project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     deletion_policy: null
     host_project: test-host
-    service_project: test-test-project
+    service_project: test-project
     timeouts: null
   module.project.google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
@@ -141,7 +141,7 @@ values:
     disabled: null
     filter: resource.type=gce_instance
     name: no-gce-instances
-    project: test-test-project
+    project: test-project
   module.project.google_logging_project_sink.sink["debug"]:
     custom_writer_identity: null
     description: debug (Terraform-managed).
@@ -153,7 +153,7 @@ values:
       name: no-compute
     filter: severity=DEBUG
     name: debug
-    project: test-test-project
+    project: test-project
     unique_writer_identity: true
   module.project.google_logging_project_sink.sink["info"]:
     bigquery_options:
@@ -164,7 +164,7 @@ values:
     exclusions: []
     filter: severity=INFO
     name: info
-    project: test-test-project
+    project: test-project
     unique_writer_identity: true
   module.project.google_logging_project_sink.sink["notice"]:
     custom_writer_identity: null
@@ -174,7 +174,7 @@ values:
     exclusions: []
     filter: severity=NOTICE
     name: notice
-    project: test-test-project
+    project: test-project
     unique_writer_identity: true
   module.project.google_logging_project_sink.sink["warnings"]:
     custom_writer_identity: null
@@ -184,12 +184,12 @@ values:
     exclusions: []
     filter: severity=WARNING
     name: warnings
-    project: test-test-project
+    project: test-project
     unique_writer_identity: true
   module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/compute.disableGuestAttributesAccess
-    parent: projects/test-test-project
+    name: projects/test-project/policies/compute.disableGuestAttributesAccess
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -203,8 +203,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/compute.skipDefaultNetworkCreation
-    parent: projects/test-test-project
+    name: projects/test-project/policies/compute.skipDefaultNetworkCreation
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -218,8 +218,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/compute.trustedImageProjects
-    parent: projects/test-test-project
+    name: projects/test-project/policies/compute.trustedImageProjects
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -236,8 +236,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/compute.vmExternalIpAccess
-    parent: projects/test-test-project
+    name: projects/test-project/policies/compute.vmExternalIpAccess
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -251,8 +251,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/iam.allowedPolicyMemberDomains
-    parent: projects/test-test-project
+    name: projects/test-project/policies/iam.allowedPolicyMemberDomains
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -270,8 +270,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/iam.disableServiceAccountKeyCreation
-    parent: projects/test-test-project
+    name: projects/test-project/policies/iam.disableServiceAccountKeyCreation
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -285,8 +285,8 @@ values:
     timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
     dry_run_spec: []
-    name: projects/test-test-project/policies/iam.disableServiceAccountKeyUpload
-    parent: projects/test-test-project
+    name: projects/test-project/policies/iam.disableServiceAccountKeyUpload
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -313,7 +313,7 @@ values:
     - exempted_members:
       - group:organization-admins@example.org
       log_type: ADMIN_READ
-    project: test-test-project
+    project: test-project
     service: allServices
   module.project.google_project_iam_audit_config.default["storage.googleapis.com"]:
     audit_log_config:
@@ -321,39 +321,39 @@ values:
       log_type: DATA_READ
     - exempted_members: []
       log_type: DATA_WRITE
-    project: test-test-project
+    project: test-project
     service: storage.googleapis.com
   module.project.google_project_iam_binding.authoritative["roles/apigee.serviceAgent"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/apigee.serviceAgent
   module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
     members:
     - group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/cloudasset.owner
   module.project.google_project_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
     condition: []
     members:
     - group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/cloudsupport.techSupportEditor
   module.project.google_project_iam_binding.authoritative["roles/editor"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/editor
   module.project.google_project_iam_binding.authoritative["roles/iam.securityReviewer"]:
     condition: []
     members:
     - group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/iam.securityReviewer
   module.project.google_project_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
     - group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/logging.admin
   module.project.google_project_iam_binding.bindings["iam_admin_conditional"]:
     condition:
@@ -363,12 +363,12 @@ values:
       title: delegated_network_user_one
     members:
     - group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/resourcemanager.projectIamAdmin
   module.project.google_project_iam_member.bindings["group-owner"]:
     condition: []
     member: group:organization-admins@example.org
-    project: test-test-project
+    project: test-project
     role: roles/owner
   module.project.google_project_iam_member.bucket-sinks-binding["debug"]:
     condition:
@@ -376,23 +376,23 @@ values:
     role: roles/logging.bucketWriter
   module.project.google_project_iam_member.service_agents["apigee"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/apigee.serviceAgent
   module.project.google_project_iam_member.service_agents["compute-system"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/compute.serviceAgent
   module.project.google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/container.serviceAgent
   module.project.google_project_iam_member.service_agents["gkenode"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/container.defaultNodeServiceAgent
   module.project.google_project_iam_member.service_agents["serverless-robot-prod"]:
     condition: []
-    project: test-test-project
+    project: test-project
     role: roles/run.serviceAgent
   module.project.google_project_iam_member.shared_vpc_host_robots["roles/cloudasset.owner:cloudservices"]:
     condition: []
@@ -425,55 +425,55 @@ values:
   module.project.google_project_service.project_services["apigee.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: apigee.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: bigquery.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: compute.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: container.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: logging.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["run.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: run.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["storage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-test-project
+    project: test-project
     service: storage.googleapis.com
     timeouts: null
   module.project.google_project_service_identity.default["apigee.googleapis.com"]:
-    project: test-test-project
+    project: test-project
     service: apigee.googleapis.com
     timeouts: null
   module.project.google_project_service_identity.default["container.googleapis.com"]:
-    project: test-test-project
+    project: test-project
     service: container.googleapis.com
     timeouts: null
   module.project.google_project_service_identity.default["run.googleapis.com"]:
-    project: test-test-project
+    project: test-project
     service: run.googleapis.com
     timeouts: null
   module.project.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:

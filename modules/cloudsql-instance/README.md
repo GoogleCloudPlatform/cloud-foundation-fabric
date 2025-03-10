@@ -77,7 +77,7 @@ module "db" {
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=3 resources=15 inventory=simple.yaml e2e
+# tftest modules=3 resources=15 inventory=simple.yaml isolated e2e
 ```
 
 ### Cross-regional read replica
@@ -227,7 +227,7 @@ module "db" {
   terraform_deletion_protection = false
 }
 
-# tftest modules=4 resources=21 e2e
+# tftest modules=4 resources=21 isolated e2e
 ```
 
 ### Instance with PSC enabled

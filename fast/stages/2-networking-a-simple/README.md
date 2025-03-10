@@ -109,7 +109,7 @@ This is a summary of the main options:
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
 - [NCC](https://cloud.google.com/network-connectivity/docs/network-connectivity-center)
   - Pros: full bandwidth with no configurations, no extra latency, transitivity between spokes, feature (PSC transitivity, Private NAT, rich roadmap)
-  - Cons: traffic between spokes incour charges, PSA transitivity currently not supported, architectures involving NVAs can't currently easily be implemented
+  - Cons: traffic between spokes incour charges, architectures involving NVAs can't currently easily be implemented
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-b-nva](../2-networking-b-nva/)
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component

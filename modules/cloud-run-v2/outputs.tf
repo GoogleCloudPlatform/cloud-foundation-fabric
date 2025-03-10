@@ -19,6 +19,20 @@ output "id" {
   value       = var.create_job ? google_cloud_run_v2_job.job[0].id : google_cloud_run_v2_service.service[0].id
 }
 
+output "invoke_command" {
+  description = "Command to invoke Cloud Run Service / submit job."
+  value = (
+    var.create_job ? <<-EOT
+    gcloud run jobs execute --project ${var.project_id} --region ${var.region} --wait ${google_cloud_run_v2_job.job[0].name} --args=
+  EOT
+    : <<-EOT
+    curl -H "Authorization: bearer $(gcloud auth print-identity-token)" \
+        ${google_cloud_run_v2_service.service[0].uri} \
+        -X POST -d 'data'
+  EOT
+  )
+}
+
 output "job" {
   description = "Cloud Run Job."
   value       = var.create_job ? google_cloud_run_v2_job.job[0] : null

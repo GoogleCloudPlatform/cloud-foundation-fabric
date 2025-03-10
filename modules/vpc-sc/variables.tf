@@ -133,6 +133,7 @@ variable "factories_config" {
     context = optional(object({
       resource_sets = optional(map(list(string)), {})
       service_sets  = optional(map(list(string)), {})
+      identity_sets = optional(map(list(string)), {})
     }), {})
   })
   nullable = false

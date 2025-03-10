@@ -1,4 +1,4 @@
-# Google Cloud Artifact Registry Module
+# Google Cloud Binary Authroization Module
 
 This module simplifies the creation of a Binary Authorization policy, attestors and attestor IAM bindings.
 
