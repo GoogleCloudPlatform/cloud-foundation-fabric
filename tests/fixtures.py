@@ -391,7 +391,24 @@ def e2e_validator_fixture(request):
   return inner
 
 
-@pytest.fixture(scope='session', name='e2e_tfvars_path')
+@pytest.fixture(scope='session', name='e2e_tfvars_path_session')
+def e2e_tfvars_path_session():
+  """Session scoped fixture preparing end-to-end environment
+
+  Creates a GCP project for each thread. Tests reuse the same GCP project.
+  """
+  yield from e2e_tfvars_path()
+
+
+@pytest.fixture(scope='function', name='e2e_tfvars_path_function')
+def e2e_tfvars_path_function():
+  """Function scoped fixture preparing end-to-end environment
+
+  Creates a separate GCP project for each of E2E test run.
+  """
+  yield from e2e_tfvars_path()
+
+
 def e2e_tfvars_path():
   """Fixture preparing end-to-end test environment
 

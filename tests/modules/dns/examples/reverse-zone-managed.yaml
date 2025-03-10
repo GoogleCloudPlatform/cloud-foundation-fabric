@@ -1,4 +1,3 @@
-# coding=utf-8
 # Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-google-cloud-pubsub
-requests==2.32.2
-jwt==1.3.1
-google-auth
-google-cloud-secret-manager
-jinja2
-google-cloud-storage
-click==8.1.3
-google-cloud-dlp
-google-cloud-logging
+values:
+  module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
+    description: Terraform managed.
+    dns_name: 0.0.10.in-addr.arpa.
+    name: test-example
+    project: project-id
+    reverse_lookup: true
+    visibility: private
+
+counts:
+  google_dns_managed_zone: 1

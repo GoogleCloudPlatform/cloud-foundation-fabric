@@ -59,9 +59,9 @@ output "service_accounts" {
 # generate tfvars file for subsequent stages
 
 resource "local_file" "providers" {
-  for_each        = { for v in local.project_provider_data : v.key => v }
+  for_each        = var.outputs_location == null ? {} : { for v in local.project_provider_data : v.key => v }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/${var.stage_name}/${each.key}-providers.tf"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${var.stage_name}/${each.key}-providers.tf"
   content         = templatefile("templates/providers.tf.tpl", each.value)
 }
 

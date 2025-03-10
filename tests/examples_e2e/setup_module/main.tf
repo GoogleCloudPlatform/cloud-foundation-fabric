@@ -229,6 +229,16 @@ resource "google_project_service_identity" "jit_si" {
   depends_on = [google_project_service.project_service]
 }
 
+data "google_storage_project_service_account" "gcs_sa" {
+  project    = google_project.project.project_id
+  depends_on = [google_project_service.project_service]
+}
+
+data "google_bigquery_default_service_account" "bq_sa" {
+  project    = google_project.project.project_id
+  depends_on = [google_project_service.project_service]
+}
+
 resource "google_project_iam_binding" "agents" {
   for_each = {
     for k, v in local.jit_services : k => v if v != null

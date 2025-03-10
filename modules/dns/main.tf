@@ -63,7 +63,7 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
   description    = var.description
   force_destroy  = var.force_destroy
   visibility     = local.visibility
-  reverse_lookup = try(var.zone_config.private, null) != null && endswith(var.zone_config.domain, ".in-addr.arpa.")
+  reverse_lookup = var.zone_config.private == null ? false : var.zone_config.private.reverse_managed
 
   dynamic "dnssec_config" {
     for_each = try(var.zone_config.public.dnssec_config, null) == null ? [] : [""]
