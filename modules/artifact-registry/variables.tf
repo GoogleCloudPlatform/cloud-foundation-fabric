@@ -72,6 +72,7 @@ variable "format" {
     docker = optional(object({
       remote = optional(object({
         public_repository = optional(string)
+        common_repository = optional(string)
         custom_repository = optional(string)
 
         disable_upstream_validation = optional(bool)
@@ -185,11 +186,14 @@ variable "format" {
   }
   validation {
     condition = alltrue([
-      for k, v in var.format :
-      (try(v.remote.public_repository, null) == null) != (try(v.remote.custom_repository, null) == null)
+      for k, v in var.format : (
+        (try(v.remote.public_repository, null) == null ? 0 : 1) +
+        (try(v.remote.custom_repository, null) == null ? 0 : 1) +
+        (try(v.remote.common_repository, null) == null ? 0 : 1)
+      ) == 1
       if try(v.remote, null) != null
     ])
-    error_message = "Remote repositories must specify exactly one of public_repository and custom_repository."
+    error_message = "Remote repositories must specify exactly one of public_repository, custom_repository and common_repository."
   }
 }
 
