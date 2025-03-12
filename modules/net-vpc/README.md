@@ -555,7 +555,7 @@ VPC routes can be configured through the `routes` variable.
 ```hcl
 locals {
   route_types = {
-    gateway    = "global/gateways/default-internet-gateway"
+    gateway    = "default-internet-gateway"
     instance   = "zones/europe-west1-b/test"
     ip         = "192.168.0.128"
     ilb        = "regions/europe-west1/forwardingRules/test"
@@ -581,7 +581,7 @@ module "vpc" {
       priority      = 100
       tags          = ["tag-a"]
       next_hop_type = "gateway",
-      next_hop      = "global/gateways/default-internet-gateway"
+      next_hop      = "default-internet-gateway"
     }
   }
   create_googleapis_routes = null
