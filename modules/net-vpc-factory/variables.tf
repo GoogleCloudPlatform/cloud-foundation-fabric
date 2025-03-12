@@ -210,6 +210,47 @@ variable "vpc_config" {
       }), {})
       mtu  = optional(number)
       name = string
+      nat_config = optional(map(object({
+        region         = string
+        router_create  = optional(bool, true)
+        router_name    = optional(string)
+        router_network = optional(string)
+        router_asn     = optional(number)
+        type           = optional(string, "PUBLIC")
+        addresses      = optional(list(string), [])
+        endpoint_types = optional(list(string))
+        logging_filter = optional(string)
+        config_port_allocation = optional(object({
+          enable_endpoint_independent_mapping = optional(bool, true)
+          enable_dynamic_port_allocation      = optional(bool, false)
+          min_ports_per_vm                    = optional(number)
+          max_ports_per_vm                    = optional(number, 65536)
+        }), {})
+        config_source_subnetworks = optional(object({
+          all                 = optional(bool, true)
+          primary_ranges_only = optional(bool)
+          subnetworks = optional(list(object({
+            self_link        = string
+            all_ranges       = optional(bool, true)
+            primary_range    = optional(bool, false)
+            secondary_ranges = optional(list(string))
+          })), [])
+        }), {})
+        config_timeouts = optional(object({
+          icmp            = optional(number)
+          tcp_established = optional(number)
+          tcp_time_wait   = optional(number)
+          tcp_transitory  = optional(number)
+          udp             = optional(number)
+        }), {})
+        rules = optional(list(object({
+          description   = optional(string)
+          match         = string
+          source_ips    = optional(list(string))
+          source_ranges = optional(list(string))
+        })), [])
+
+      })))
       network_attachments = optional(map(object({
         subnet                = string
         automatic_connection  = optional(bool, false)
@@ -233,7 +274,7 @@ variable "vpc_config" {
           tags                    = optional(list(string))
         }), {})
       })), {})
-      psa_configs = optional(list(object({
+      psa_config = optional(list(object({
         deletion_policy  = optional(string, null)
         ranges           = map(string)
         export_routes    = optional(bool, false)
@@ -271,7 +312,7 @@ variable "vpc_config" {
         cidr_tpl_file = optional(string)
         rules_folder  = optional(string)
       }), {})
-      vpn_configs = optional(map(object({
+      vpn_config = optional(map(object({
         name   = string
         region = string
         peer_gateways = map(object({
@@ -326,7 +367,7 @@ variable "vpc_config" {
           vpn_gateway_interface           = number
         }))
       })), {})
-      peering_configs = optional(map(object({
+      peering_config = optional(map(object({
         peer_network = string
         routes_config = optional(object({
           export        = optional(bool, true)
@@ -335,7 +376,7 @@ variable "vpc_config" {
           public_import = optional(bool)
         }), {})
       })), {})
-      ncc_configs = optional(object({
+      ncc_config = optional(object({
         hub                   = string
         description           = optional(string, "Terraform-managed.")
         labels                = optional(map(string))

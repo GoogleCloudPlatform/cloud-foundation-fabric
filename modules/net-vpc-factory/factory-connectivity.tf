@@ -18,7 +18,7 @@ locals {
   peerings = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
-        for k, v in try(vpc_config.peering_configs, {}) : {
+        for k, v in try(vpc_config.peering_config, {}) : {
           "${factory_key}/${vpc_key}/${k}" = {
             project                             = factory_key
             name                                = replace("${vpc_key}/${k}", "/", "-")
@@ -55,7 +55,7 @@ locals {
   vpns = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
-        for k, v in try(vpc_config.vpn_configs, {}) : {
+        for k, v in try(vpc_config.vpn_config, {}) : {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {
             vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name
             vpn_name   = replace("${factory_key}/${vpc_key}/${k}", "/", "-")

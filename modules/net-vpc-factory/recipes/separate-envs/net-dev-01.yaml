@@ -2,7 +2,7 @@
 
 project_config:
   name: net-dev-01
-  services: 
+  services:
     - container.googleapis.com
     - compute.googleapis.com
     - dns.googleapis.com
@@ -15,25 +15,34 @@ project_config:
   shared_vpc_host_config:
     enabled: true
 vpc_config:
-  dev-spoke: 
-    delete_default_routes_on_create: true
+  dev-spoke:
+    delete_default_routes_on_create: false
     mtu: 1500
+    nat_config:
+      nat-ew8:
+        region: europe-west8
     routers:
       vpn-router:
         region: europe-west8
-        asn: 64514        
-    subnets_factory_config: 
+        asn: 64514
+    subnets_factory_config:
       subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/dev-spoke        
-    vpn_configs:
+      rules_folder: data/firewall/dev-spoke
+    routes:
+      gateway:
+        dest_range: "8.8.8.8/32"
+        priority: 100
+        next_hop_type: "gateway"
+        next_hop: "global/gateways/default-internet-gateway"
+    vpn_config:
       to-onprem:
         region: europe-west8
         peer_gateways:
           default:
             external:
               redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
-              interfaces: 
+              interfaces:
                 - 8.8.8.8
         router_config:
           create: false

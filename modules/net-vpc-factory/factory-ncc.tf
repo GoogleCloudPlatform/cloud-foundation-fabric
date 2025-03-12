@@ -44,7 +44,7 @@ locals {
   ncc_vpn_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
-        for vpn_key, vpn_config in try(vpc_config.vpn_configs, {}) : {
+        for vpn_key, vpn_config in try(vpc_config.vpn_config, {}) : {
           "${factory_key}/${vpc_key}/${vpn_key}" = {
             name             = replace("${factory_key}/${vpc_key}/${vpn_key}", "/", "-")
             project_id       = module.projects[factory_key].id
@@ -62,17 +62,17 @@ locals {
 
   ncc_vpc_spokes = merge(flatten([
     for factory_key, factory_config in local._network_projects : {
-      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_configs, {
+      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_config, {
         project_id            = module.projects[factory_key].id
         network_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
-        labels                = try(vpc_config.ncc_configs.labels, {})
-        hub                   = google_network_connectivity_hub.hub[vpc_config.ncc_configs.hub].id
-        description           = try(vpc_config.ncc_configs.description, "Terraform-managed")
-        exclude_export_ranges = try(vpc_config.ncc_configs.exclude_export_ranges, null)
-        include_export_ranges = try(vpc_config.ncc_configs.include_export_ranges, null)
-        group                 = try(google_network_connectivity_group.default[vpc_config.ncc_configs.group].id, null)
+        labels                = try(vpc_config.ncc_config.labels, {})
+        hub                   = google_network_connectivity_hub.hub[vpc_config.ncc_config.hub].id
+        description           = try(vpc_config.ncc_config.description, "Terraform-managed")
+        exclude_export_ranges = try(vpc_config.ncc_config.exclude_export_ranges, null)
+        include_export_ranges = try(vpc_config.ncc_config.include_export_ranges, null)
+        group                 = try(google_network_connectivity_group.default[vpc_config.ncc_config.group].id, null)
       })
-      if try(vpc_config.ncc_configs != null, false)
+      if try(vpc_config.ncc_config != null, false)
     }
   ])...)
 

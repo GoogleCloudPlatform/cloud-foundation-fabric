@@ -29,13 +29,13 @@ locals {
       mtu                               = try(v.mtu, null)
       network_attachments               = try(v.network_attachments, {})
       policy_based_routes               = try(v.policy_based_routes, {})
-      psa_configs                       = try(v.psa_configs, [])
+      psa_config                        = try(v.psa_config, [])
       routes                            = try(v.routes, {})
       routing_mode                      = try(v.routing_mode, "GLOBAL")
       subnets_factory_config            = try(v.subnets_factory_config, {})
       firewall_factory_config           = try(v.firewall_factory_config, {})
-      peering_configs                   = try(v.peering_configs, {})
-      vpn_configs                       = try(v.vpn_configs, {})
+      peering_config                    = try(v.peering_config, {})
+      vpn_config                        = try(v.vpn_config, {})
     }
   }]
 
@@ -61,7 +61,7 @@ module "vpcs" {
   mtu                               = each.value.mtu
   network_attachments               = each.value.network_attachments
   policy_based_routes               = each.value.policy_based_routes
-  psa_configs                       = each.value.psa_configs
+  psa_configs                       = each.value.psa_config
   routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
   depends_on                        = [module.projects]
