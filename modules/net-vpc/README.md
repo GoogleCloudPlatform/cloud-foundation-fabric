@@ -5,26 +5,27 @@ This module allows creation and management of VPC networks including subnetworks
 ## Examples
 
 <!-- BEGIN TOC -->
-- [Examples](#examples)
-  - [Simple VPC](#simple-vpc)
-  - [Subnet Options](#subnet-options)
-  - [Subnet IAM](#subnet-iam)
-  - [Peering](#peering)
-  - [Shared VPC](#shared-vpc)
-  - [Private Service Networking](#private-service-networking)
-  - [Private Service Networking with peering routes and peered Cloud DNS domains](#private-service-networking-with-peering-routes-and-peered-cloud-dns-domains)
-  - [Private Service Networking with multiple service providers](#private-service-networking-with-multiple-service-providers)
-  - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
-  - [PSC Network Attachments](#psc-network-attachments)
-  - [DNS Policies](#dns-policies)
-  - [Subnet Factory](#subnet-factory)
-  - [Custom Routes](#custom-routes)
-  - [Policy Based Routes](#policy-based-routes)
-  - [Private Google Access routes](#private-google-access-routes)
-  - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
-  - [IPv6](#ipv6)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [VPC module](#vpc-module)
+  - [Examples](#examples)
+    - [Simple VPC](#simple-vpc)
+    - [Subnet Options](#subnet-options)
+    - [Subnet IAM](#subnet-iam)
+    - [Peering](#peering)
+    - [Shared VPC](#shared-vpc)
+    - [Private Service Networking](#private-service-networking)
+    - [Private Service Networking with peering routes and peered Cloud DNS domains](#private-service-networking-with-peering-routes-and-peered-cloud-dns-domains)
+    - [Private Service Networking with multiple service providers](#private-service-networking-with-multiple-service-providers)
+    - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
+    - [PSC Network Attachments](#psc-network-attachments)
+    - [DNS Policies](#dns-policies)
+    - [Subnet Factory](#subnet-factory)
+    - [Custom Routes](#custom-routes)
+    - [Policy Based Routes](#policy-based-routes)
+    - [Private Google Access routes](#private-google-access-routes)
+    - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
+    - [IPv6](#ipv6)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 <!-- END TOC -->
 
 ### Simple VPC
@@ -555,7 +556,7 @@ VPC routes can be configured through the `routes` variable.
 ```hcl
 locals {
   route_types = {
-    gateway    = "global/gateways/default-internet-gateway"
+    gateway    = "default-internet-gateway"
     instance   = "zones/europe-west1-b/test"
     ip         = "192.168.0.128"
     ilb        = "regions/europe-west1/forwardingRules/test"
@@ -581,7 +582,7 @@ module "vpc" {
       priority      = 100
       tags          = ["tag-a"]
       next_hop_type = "gateway",
-      next_hop      = "global/gateways/default-internet-gateway"
+      next_hop      = "default-internet-gateway"
     }
   }
   create_googleapis_routes = null
