@@ -15,25 +15,6 @@
  */
 
 locals {
-  peerings = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
-      for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
-        for k, v in try(vpc_config.peering_config, {}) : {
-          "${factory_key}/${vpc_key}/${k}" = {
-            project                             = factory_key
-            name                                = replace("${vpc_key}/${k}", "/", "-")
-            local_network                       = module.vpcs["${factory_key}/${vpc_key}"].self_link
-            peer_network                        = module.vpcs[v.peer_network].self_link
-            export_custom_routes                = try(v.routes_config.export, true)
-            import_custom_routes                = try(v.routes_config.import, true)
-            export_subnet_routes_with_public_ip = try(v.routes_config.public_export, null)
-            import_subnet_routes_with_public_ip = try(v.routes_config.public_import, null)
-          }
-        }
-      ]
-    ]
-  ])...)
-
   routers = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
@@ -74,19 +55,6 @@ locals {
   ])...)
 }
 
-#TODO(sruffilli): implement stack_type
-resource "google_compute_network_peering" "local_network_peering" {
-  for_each                            = local.peerings
-  name                                = each.value.name
-  network                             = each.value.local_network
-  peer_network                        = each.value.peer_network
-  export_custom_routes                = each.value.export_custom_routes
-  import_custom_routes                = each.value.import_custom_routes
-  export_subnet_routes_with_public_ip = each.value.export_subnet_routes_with_public_ip
-  import_subnet_routes_with_public_ip = each.value.import_subnet_routes_with_public_ip
-}
-
-
 resource "google_compute_router" "router" {
   for_each = local.routers
   name     = replace(each.key, "/", "-")
@@ -119,7 +87,6 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway" {
   depends_on = [module.vpcs]
 }
 
-#TODO(sruffilli) How do we manage reusing the same CR for multiple VPNs? It smells like a hard-ish nut to crack.
 module "vpn-ha" {
   source             = "../net-vpn-ha"
   for_each           = local.vpns

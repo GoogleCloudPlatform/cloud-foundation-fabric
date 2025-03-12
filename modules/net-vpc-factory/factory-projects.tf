@@ -15,48 +15,47 @@
  */
 
 locals {
+  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_config.
+  _network_projects = {
+    for f in local._network_factory_files :
+    split(".", f)[0] => yamldecode(file(
+      "${coalesce(local._network_factory_path, "-")}/${f}"
+    ))
+  }
+
   projects = { for k, v in local._network_projects : k => merge(
     {
-      billing_account        = try(v.project_config.billing_account, var.billing_account)
-      prefix                 = try(v.project_config.prefix, var.prefix)
-      parent                 = try(v.project_config.parent, var.parent_id)
-      shared_vpc_host_config = try(v.project_config.shared_vpc_host_config, null)
-      # TODO: check
-      # iam = merge(try(v.project_config.iam, {}), {
-      #   (var.custom_roles.project_iam_viewer) = try(local.iam_viewer_principals["dev"], [])
-      # })
-      # iam_bindings = merge(try(v.project_config.iam_bindings, {}), (
-      #   lookup(local.iam_delegated_principals, "dev", null) == null ? {} : {
-      #     sa_delegated_grants = {
-      #       role    = "roles/resourcemanager.projectIamAdmin"
-      #       members = try(local.iam_delegated_principals["dev"], [])
-      #       condition = {
-      #         title       = "dev_stage3_sa_delegated_grants"
-      #         description = "${var.environments["dev"].name} host project delegated grants."
-      #         expression = format(
-      #           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      #           local.iam_delegated
-      #         )
-      #       }
-      #     }
-      #   }
-      # ))
+      billing_account            = try(v.project_config.billing_account, var.billing_account)
+      prefix                     = try(v.project_config.prefix, var.prefix)
+      parent                     = try(v.project_config.parent, var.parent_id)
+      shared_vpc_host_config     = try(v.project_config.shared_vpc_host_config, null)
+      iam                        = try(v.project_config.iam, {})
+      iam_bindings               = try(v.project_config.iam_bindings, {})
+      iam_bindings_additive      = try(v.project_config.iam_bindings_additive, {})
+      iam_by_principals          = try(v.project_config.iam_by_principals, {})
+      iam_by_principals_additive = try(v.project_config.iam_by_principals_additive, {})
+      services                   = try(v.project_config.services, [])
+      org_policies               = try(v.project_config.org_policies, {})
     },
     v.project_config)
   }
 }
 
 module "projects" {
-  source                 = "../project"
-  for_each               = local.projects
-  billing_account        = each.value.billing_account
-  name                   = each.value.name
-  parent                 = each.value.parent
-  prefix                 = each.value.prefix
-  services               = each.value.services
-  shared_vpc_host_config = each.value.shared_vpc_host_config
-  # iam                    = each.value.iam
-  # iam_bindings           = each.value.iam_bindings
+  source                     = "../project"
+  for_each                   = local.projects
+  billing_account            = each.value.billing_account
+  name                       = each.value.name
+  parent                     = each.value.parent
+  prefix                     = each.value.prefix
+  services                   = each.value.services
+  shared_vpc_host_config     = each.value.shared_vpc_host_config
+  iam                        = each.value.iam
+  iam_bindings               = each.value.iam_bindings
+  iam_bindings_additive      = each.value.iam_bindings_additive
+  iam_by_principals          = each.value.iam_by_principals
+  iam_by_principals_additive = each.value.iam_by_principals_additive
+  org_policies               = each.value.org_policies
   #TODO(sruffilli): implement metric_scopes and tag_bindings
   #TODO: check
   # tag_bindings = local.has_env_folders ? {} : {

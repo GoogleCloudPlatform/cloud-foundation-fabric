@@ -24,18 +24,6 @@ locals {
     fileset(local._network_factory_path, "**/*.yaml"),
     []
   )
-  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_config.
-  _network_projects = {
-    for f in local._network_factory_files :
-    split(".", f)[0] => yamldecode(file(
-      "${coalesce(local._network_factory_path, "-")}/${f}"
-    ))
-  }
-  # TODO: check
-  # env_tag_values = {
-  #   for k, v in var.environments : k => var.tag_values["environment/${v.tag_name}"]
-  # }
-  # has_env_folders = var.folder_ids.networking-dev != null
 
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/composer.sharedVpcAgent",
