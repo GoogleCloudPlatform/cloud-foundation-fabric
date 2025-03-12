@@ -60,7 +60,7 @@ vpc_config:
         dest_range: "8.8.8.8/32"
         priority: 100
         next_hop_type: "gateway"
-        next_hop: "global/gateways/default-internet-gateway"
+        next_hop: "default-internet-gateway"
     peering_config:
       to-prod:
         peer_network: net-prod-01/prod-spoke
