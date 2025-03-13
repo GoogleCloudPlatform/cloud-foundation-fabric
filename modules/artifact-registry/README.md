@@ -26,7 +26,21 @@ module "docker_artifact_registry" {
     "roles/artifactregistry.admin" = ["group:cicd@example.com"]
   }
 }
-# tftest modules=1 resources=2
+
+module "docker_artifact_registry_remote" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = var.project_id
+  location   = "us-west1"
+  name       = "remote"
+  format = {
+    docker = {
+      remote = {
+        common_repository = module.docker_artifact_registry.id
+      }
+    }
+  }
+}
+# tftest modules=2 resources=3
 ```
 
 ## Remote and Virtual Repositories
