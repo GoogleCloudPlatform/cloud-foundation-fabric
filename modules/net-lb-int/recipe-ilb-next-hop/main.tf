@@ -23,9 +23,12 @@ locals {
 }
 
 module "project" {
-  source         = "../../../modules/project"
-  name           = var.project_id
-  project_create = var.project_create
+  source = "../../../modules/project"
+  name   = var.project_id
+  project_reuse = {
+    use_data_source    = var._testing == null
+    project_attributes = var._testing
+  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

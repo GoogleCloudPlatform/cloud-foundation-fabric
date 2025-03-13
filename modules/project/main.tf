@@ -26,31 +26,39 @@ locals {
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
-  project_id  = "${local.universe_prefix}${local.prefix}${var.name}"
   project = (
-    var.project_create ?
-    {
+    var.project_reuse == null
+    ? {
       project_id = try(google_project.project[0].project_id, null)
       number     = try(google_project.project[0].number, null)
       name       = try(google_project.project[0].name, null)
     }
-    : {
-      project_id = local.project_id
-      number     = try(data.google_project.project[0].number, null)
-      name       = try(data.google_project.project[0].name, null)
-    }
+    : (
+      try(var.project_reuse.use_data_source, null) == false
+      ? {
+        project_id = local.project_id
+        number     = try(var.project_reuse.project_attributes.number, null)
+        name       = try(var.project_reuse.project_attributes.name, null)
+      }
+      : {
+        project_id = local.project_id
+        number     = try(data.google_project.project[0].number, null)
+        name       = try(data.google_project.project[0].name, null)
+      }
+    )
   )
+  project_id         = "${local.universe_prefix}${local.prefix}${var.name}"
   universe_prefix    = var.universe == null ? "" : "${var.universe.prefix}:"
   available_services = tolist(setsubtract(var.services, try(var.universe.unavailable_services, [])))
 }
 
 data "google_project" "project" {
-  count      = var.project_create ? 0 : 1
+  count      = try(var.project_reuse.use_data_source, null) == true ? 1 : 0
   project_id = local.project_id
 }
 
 resource "google_project" "project" {
-  count               = var.project_create ? 1 : 0
+  count               = var.project_reuse == null ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
   project_id          = local.project_id

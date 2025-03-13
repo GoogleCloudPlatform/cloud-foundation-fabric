@@ -32,8 +32,8 @@ module "project_landing" {
     ? var.projects_create.parent
     : null
   )
-  prefix         = var.prefix
-  project_create = var.projects_create != null
+  prefix        = var.prefix
+  project_reuse = var.projects_create != null ? null : {}
 
   services = [
     "compute.googleapis.com",

@@ -1,0 +1,525 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.organization.google_org_policy_custom_constraint.constraint["custom.disableKubeletReadOnlyPort"]:
+    action_type: DENY
+    condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled
+      == true
+    description: Disallows the use of Kubelet read-only port 10255 to enhance security
+    display_name: Disable Kubelet Read-Only Port 10255
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.disableKubeletReadOnlyPort
+    parent: organizations/123456789012
+    resource_types:
+    - container.googleapis.com/Cluster
+  module.organization.google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.disableCreateDefaultServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["cloudbuild.useBuildServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.useBuildServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["cloudbuild.useComputeServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/cloudbuild.useComputeServiceAccount
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableGuestAttributesAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableInternetNetworkEndpointGroup"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableInternetNetworkEndpointGroup
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableNestedVirtualization"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableNestedVirtualization
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableSerialPortAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.disableVpcExternalIpv6"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.disableVpcExternalIpv6
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.managed.restrictProtocolForwardingCreationForTypes"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.managed.restrictProtocolForwardingCreationForTypes
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedSchemes":["INTERNAL"]}'
+        values: []
+  module.organization.google_org_policy_policy.default["compute.requireOsLogin"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.requireOsLogin
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.restrictLoadBalancerCreationForTypes
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - in:INTERNAL
+          denied_values: null
+  module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.setNewProjectDefaultToZonalDNSOnly
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.skipDefaultNetworkCreation
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.trustedImageProjects
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - is:projects/centos-cloud
+          - is:projects/cos-cloud
+          - is:projects/debian-cloud
+          - is:projects/fedora-cloud
+          - is:projects/fedora-coreos-cloud
+          - is:projects/opensuse-cloud
+          - is:projects/rhel-cloud
+          - is:projects/rhel-sap-cloud
+          - is:projects/rocky-linux-cloud
+          - is:projects/suse-cloud
+          - is:projects/suse-sap-cloud
+          - is:projects/ubuntu-os-cloud
+          - is:projects/ubuntu-os-pro-cloud
+          - is:projects/windows-cloud
+          - is:projects/windows-sql-cloud
+          - is:projects/confidential-vm-images
+          - is:projects/backupdr-images
+          - is:projects/deeplearning-platform-release
+          - is:projects/serverless-vpc-access-images
+          denied_values: null
+  module.organization.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/compute.vmExternalIpAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["custom.disableKubeletReadOnlyPort"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/custom.disableKubeletReadOnlyPort
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["essentialcontacts.allowedContactDomains"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/essentialcontacts.allowedContactDomains
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: '!resource.matchTag(''123456789012/org-policies'', ''allowed-essential-contacts-domains-all'')
+
+            '
+          location: null
+          title: Restrict essential contacts domains
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - '@fast.example.com'
+          denied_values: null
+      - allow_all: 'TRUE'
+        condition:
+        - description: null
+          expression: 'resource.matchTag(''123456789012/org-policies'', ''allowed-essential-contacts-domains-all'')
+
+            '
+          location: null
+          title: Allow essential contacts from any domain
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.disableAuditLoggingExemption"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.disableAuditLoggingExemption
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.managed.allowedPolicyMembers"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.managed.allowedPolicyMembers
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: 'resource.matchTag(''123456789012/org-policies'', ''allowed-policy-member-domains-all'')
+
+            '
+          location: null
+          title: Allow any member domain
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: '{"allowedPrincipalSets":["//cloudresourcemanager.googleapis.com/organizations/123456789012"]}'
+        values: []
+  module.organization.google_org_policy_policy.default["iam.managed.disableServiceAccountKeyCreation"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.managed.disableServiceAccountKeyCreation
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.managed.disableServiceAccountKeyUpload"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.managed.disableServiceAccountKeyUpload
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.serviceAccountKeyExposureResponse"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.serviceAccountKeyExposureResponse
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - DISABLE_KEY
+          denied_values: null
+  module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.workloadIdentityPoolAwsAccounts
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.workloadIdentityPoolProviders
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["run.allowedIngress"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/run.allowedIngress
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - is:internal-and-cloud-load-balancing
+          denied_values: null
+  module.organization.google_org_policy_policy.default["sql.restrictAuthorizedNetworks"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/sql.restrictAuthorizedNetworks
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["sql.restrictPublicIp"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/sql.restrictPublicIp
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["storage.publicAccessPrevention"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.publicAccessPrevention
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["storage.secureHttpTransport"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.secureHttpTransport
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+  module.organization.google_org_policy_policy.default["storage.uniformBucketLevelAccess"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.uniformBucketLevelAccess
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []

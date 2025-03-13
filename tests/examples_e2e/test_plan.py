@@ -20,7 +20,8 @@ from ..examples.utils import get_tftest_directive
 BASE_PATH = Path(__file__).parent
 
 
-def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
+def test_example(e2e_validator, tmp_path, examples_e2e,
+                 e2e_tfvars_path_session):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH.parent / 'examples' /
                                          'variables.tf')
@@ -29,7 +30,7 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
       '-', '_') / 'assets'
   if assets_path.exists():
     (tmp_path / 'assets').symlink_to(assets_path)
-  (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
+  (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path_session)
 
   # add files the same way as it is done for examples
   directive = get_tftest_directive(examples_e2e.code)
@@ -39,3 +40,14 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
 
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])
+
+
+# use a function scoped fixture, so for each test gets a brand-new test project
+# Some tests (especially PSA), which use abandon strategy when removing, leave the project in
+# unclean state, which may prevent successful completion of the next test.
+# This allows marking such cases as isolated, and those tests will get a separate project, which won't be reused
+# for other tests
+def test_isolated_example(e2e_validator, tmp_path, examples_e2e,
+                          e2e_tfvars_path_function):
+  return test_example(e2e_validator, tmp_path, examples_e2e,
+                      e2e_tfvars_path_function)

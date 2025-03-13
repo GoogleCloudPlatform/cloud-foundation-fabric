@@ -26,11 +26,16 @@ values:
     auto_create_network: false
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
     labels: null
     name: test-project
     org_id: null
     project_id: test-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.dataset.google_bigquery_dataset.default:
     dataset_id: bq_sink
@@ -39,6 +44,8 @@ values:
     default_table_expiration_ms: null
     delete_contents_on_destroy: true
     description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     external_dataset_reference: []
     friendly_name: null
     labels: null
@@ -46,15 +53,20 @@ values:
     max_time_travel_hours: '168'
     project: project-id
     resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.gcs.google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption: []
     force_destroy: true
+    hierarchical_namespace: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -64,6 +76,8 @@ values:
     requester_pays: null
     retention_policy: []
     storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     uniform_bucket_level_access: true
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
@@ -73,18 +87,27 @@ values:
     auto_create_network: false
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
     labels: null
     name: test-host
     org_id: null
     project_id: test-host
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms.google_kms_crypto_key.default["key-global"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     name: key-global
     purpose: ENCRYPT_DECRYPT
     rotation_period: null
     skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms.google_kms_key_ring.default[0]:
     location: global
@@ -96,8 +119,6 @@ values:
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project
-  module.project.data.google_project.project[0]:
-    project_id: test-project
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
     project: test-project
     user_project: null
@@ -177,6 +198,7 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
     timeouts: null
   module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
@@ -191,6 +213,7 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
     timeouts: null
   module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
@@ -205,6 +228,7 @@ values:
         condition: []
         deny_all: null
         enforce: null
+        parameters: null
         values:
         - allowed_values:
           - projects/my-project
@@ -222,6 +246,7 @@ values:
         condition: []
         deny_all: 'TRUE'
         enforce: null
+        parameters: null
         values: []
     timeouts: null
   module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
@@ -236,6 +261,7 @@ values:
         condition: []
         deny_all: null
         enforce: null
+        parameters: null
         values:
         - allowed_values:
           - C0xxxxxxx
@@ -254,6 +280,7 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
     timeouts: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
@@ -272,11 +299,13 @@ values:
           title: condition
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
         values: []
       - allow_all: null
         condition: []
         deny_all: null
         enforce: 'FALSE'
+        parameters: null
         values: []
     timeouts: null
   module.project.google_project_iam_audit_config.default["allServices"]:
@@ -360,7 +389,7 @@ values:
   module.project.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: test-project
-    role: roles/container.nodeServiceAgent
+    role: roles/container.defaultNodeServiceAgent
   module.project.google_project_iam_member.service_agents["serverless-robot-prod"]:
     condition: []
     project: test-project
@@ -457,12 +486,17 @@ values:
     condition: []
     role: roles/storage.objectCreator
   module.pubsub.google_pubsub_topic.default:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
     kms_key_name: null
     labels: null
     message_retention_duration: null
     name: pubsub_sink
     project: project-id
+    schema_settings: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
 
 counts:
@@ -479,7 +513,7 @@ counts:
   google_logging_project_exclusion: 1
   google_logging_project_sink: 4
   google_org_policy_policy: 7
-  google_project: 3
+  google_project: 2
   google_project_iam_audit_config: 2
   google_project_iam_binding: 7
   google_project_iam_member: 14
@@ -491,7 +525,7 @@ counts:
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 8
-  resources: 64
+  resources: 63
 
 
 outputs: {}

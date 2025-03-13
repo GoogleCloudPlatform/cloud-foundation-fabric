@@ -1,0 +1,73 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/fast-stage2.schema.json
+
+short_name: net
+folder_config:
+  name: Networking
+  create_env_folders: true
+  iam_by_principals:
+    rw:
+      - roles/logging.admin
+      - roles/owner
+      - roles/resourcemanager.folderAdmin
+      - roles/resourcemanager.projectCreator
+      - roles/compute.xpnAdmin
+      - roles/resourcemanager.tagUser
+    ro:
+      - roles/viewer
+      - roles/resourcemanager.folderViewer
+      - roles/resourcemanager.tagViewer
+    project-factory-rw:
+      - service_project_network_admin
+    project-factory-ro:
+      - roles/compute.networkViewer
+      - project_iam_viewer
+    gcp-network-admins:
+      - roles/editor
+  # project factory delegated IAM grant
+  iam_bindings:
+    project_factory:
+      role: roles/resourcemanager.projectIamAdmin
+      members:
+        - project-factory-rw
+      condition:
+        title: Project factory delegated IAM grant.
+        expression: |
+          api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+            'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
+            'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
+          ])
+  # iam_bindings_additive for stage 3 are added here when needed
+  # refer to each stage 3 documentation for snippets and examples
+organization_config:
+  iam_bindings_additive:
+    sa_net_rw_fw_policy_admin:
+      member: rw
+      role: roles/compute.orgFirewallPolicyAdmin
+    sa_net_rw_ngfw_enterprise_admin:
+      member: rw
+      role: ngfw_enterprise_admin
+    sa_net_rw_xpn_admin:
+      member: rw
+      role: roles/compute.xpnAdmin
+    sa_net_ro_fw_policy_user:
+      member: ro
+      role: roles/compute.orgFirewallPolicyUser
+    sa_net_ro_ngfw_enterprise_viewer:
+      member: ro
+      role: ngfw_enterprise_viewer
+# stage_3_config for IAM delegation are added here when needed
+# refer to each stage 3 documentation for snippets and examples

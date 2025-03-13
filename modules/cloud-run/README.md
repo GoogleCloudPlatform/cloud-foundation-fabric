@@ -450,10 +450,11 @@ module "cloud_run" {
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L18) | Fully qualified service id. |  |
-| [service](outputs.tf#L23) | Cloud Run service. |  |
-| [service_account](outputs.tf#L28) | Service account resource. |  |
-| [service_account_email](outputs.tf#L33) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L38) | Service account email. |  |
-| [service_name](outputs.tf#L46) | Cloud Run service name. |  |
-| [vpc_connector](outputs.tf#L52) | VPC connector resource if created. |  |
+| [invoke_command](outputs.tf#L23) | Command to invoke Cloud Run Service / submit job. |  |
+| [service](outputs.tf#L32) | Cloud Run service. |  |
+| [service_account](outputs.tf#L37) | Service account resource. |  |
+| [service_account_email](outputs.tf#L42) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L47) | Service account email. |  |
+| [service_name](outputs.tf#L55) | Cloud Run service name. |  |
+| [vpc_connector](outputs.tf#L61) | VPC connector resource if created. |  |
 <!-- END TFDOC -->

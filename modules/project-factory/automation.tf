@@ -17,16 +17,13 @@
 # tfdoc:file:description Automation projects locals and resources.
 
 locals {
-  automation_buckets = flatten([
-    for k, v in local.projects : [
-      for ks, kv in try(v.automation.buckets, {}) : merge(kv, {
-        automation_project = v.automation.project
-        name               = ks
-        prefix             = v.prefix
-        project            = k
-      })
-    ]
-  ])
+  automation_buckets = {
+    for k, v in local.projects :
+    k => merge(try(v.automation.bucket, {}), {
+      automation_project = v.automation.project
+      prefix             = v.prefix
+    }) if try(v.automation.bucket, null) != null
+  }
   automation_sa = flatten([
     for k, v in local.projects : [
       for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
@@ -38,20 +35,20 @@ locals {
     ]
   ])
 }
-
-module "automation-buckets" {
-  source = "../gcs"
-  for_each = {
-    for k in local.automation_buckets : "${k.project}/${k.name}" => k
-  }
+output "foo" { value = local.automation_buckets }
+module "automation-bucket" {
+  source   = "../gcs"
+  for_each = local.automation_buckets
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
-  name           = "${each.value.project}-${each.value.name}"
+  name           = "${each.key}-tf-state"
   encryption_key = lookup(each.value, "encryption_key", null)
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
-        module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
+        module.automation-service-accounts["${each.key}/${vv}"].iam_email,
         var.factories_config.context.iam_principals[vv],
         vv
       )
@@ -61,7 +58,7 @@ module "automation-buckets" {
     for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
       members = [
         for vv in v.members : try(
-          module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
+          module.automation-service-accounts["${each.key}/${vv}"].iam_email,
           var.factories_config.context.iam_principals[vv],
           vv
         )
@@ -71,7 +68,7 @@ module "automation-buckets" {
   iam_bindings_additive = {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       member = try(
-        module.automation-service-accounts["${each.value.project}/${v.member}"].iam_email,
+        module.automation-service-accounts["${each.key}/${v.member}"].iam_email,
         var.factories_config.context.iam_principals[v.member],
         v.member
       )
@@ -83,9 +80,15 @@ module "automation-buckets" {
     lookup(each.value, "location", null),
     var.data_defaults.storage_location
   )
-  storage_class               = lookup(each.value, "storage_class", "STANDARD")
-  uniform_bucket_level_access = lookup(each.value, "uniform_bucket_level_access", true)
-  versioning                  = lookup(each.value, "versioning", false)
+  storage_class = lookup(
+    each.value, "storage_class", "STANDARD"
+  )
+  uniform_bucket_level_access = lookup(
+    each.value, "uniform_bucket_level_access", true
+  )
+  versioning = lookup(
+    each.value, "versioning", false
+  )
 }
 
 module "automation-service-accounts" {
@@ -93,6 +96,8 @@ module "automation-service-accounts" {
   for_each = {
     for k in local.automation_sa : "${k.project}/${k.name}" => k
   }
+  # we cannot use interpolation here as we would get a cycle
+  # from the IAM dependency in the outputs of the main project
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
   name        = "${each.value.project}-${each.value.name}"

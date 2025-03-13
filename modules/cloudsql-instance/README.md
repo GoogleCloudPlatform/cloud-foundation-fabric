@@ -17,6 +17,7 @@ Note that this module assumes that some options are the same for both the primar
   - [Query Insights](#query-insights)
   - [Maintenance Config](#maintenance-config)
   - [SSL Config](#ssl-config)
+  - [Password Validation Policy and Root Password Config](#password-validation-policy-and-root-password-config)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -76,7 +77,7 @@ module "db" {
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=3 resources=15 inventory=simple.yaml e2e
+# tftest modules=3 resources=15 inventory=simple.yaml isolated e2e
 ```
 
 ### Cross-regional read replica
@@ -226,7 +227,7 @@ module "db" {
   terraform_deletion_protection = false
 }
 
-# tftest modules=4 resources=21 e2e
+# tftest modules=4 resources=21 isolated e2e
 ```
 
 ### Instance with PSC enabled
@@ -361,6 +362,45 @@ module "db" {
 }
 # tftest modules=1 resources=1 e2e
 ```
+
+### Password Validation Policy and Root Password Config
+
+Provide parameters to configure `password_validation_policy` if required.  The `root_password` can also be provided: either an explicit password OR a flag to enable a randomly-generated password.
+
+```hcl
+module "db" {
+  source     = "./fabric/modules/cloudsql-instance"
+  project_id = var.project_id
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
+  }
+  name             = "db"
+  region           = var.region
+  database_version = "MYSQL_8_0"
+  tier             = "db-g1-small"
+
+  gcp_deletion_protection       = false
+  terraform_deletion_protection = false
+
+  root_password = {
+    # password = "ExplitPassword123!"
+    random_password = true
+  }
+
+  password_validation_policy = {
+    enabled                     = true
+    default_complexity          = true
+    disallow_username_substring = true
+    min_length                  = 20
+    reuse_interval              = 5
+  }
+}
+# tftest modules=1 resources=2 e2e
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -371,7 +411,7 @@ module "db" {
 | [network_config](variables.tf#L184) | Network configuration for the instance. Only one between private_network and psc_config can be used. | <code title="object&#40;&#123;&#10;  authorized_networks &#61; optional&#40;map&#40;string&#41;&#41;&#10;  connectivity &#61; object&#40;&#123;&#10;    public_ipv4 &#61; optional&#40;bool, false&#41;&#10;    psa_config &#61; optional&#40;object&#40;&#123;&#10;      private_network &#61; string&#10;      allocated_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;        primary &#61; optional&#40;string&#41;&#10;        replica &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    psc_allowed_consumer_projects    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    enable_private_path_for_services &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L231) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L236) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L279) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L287) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
 | [activation_policy](variables.tf#L16) | This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS. | <code>string</code> |  | <code>&#34;ALWAYS&#34;</code> |
 | [availability_type](variables.tf#L27) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
 | [backup_configuration](variables.tf#L33) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled                        &#61; optional&#40;bool, false&#41;&#10;  binary_log_enabled             &#61; optional&#40;bool, false&#41;&#10;  start_time                     &#61; optional&#40;string, &#34;23:00&#34;&#41;&#10;  location                       &#61; optional&#40;string&#41;&#10;  log_retention_days             &#61; optional&#40;number, 7&#41;&#10;  point_in_time_recovery_enabled &#61; optional&#40;bool&#41;&#10;  retention_count                &#61; optional&#40;number, 7&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled                        &#61; false&#10;  binary_log_enabled             &#61; false&#10;  start_time                     &#61; &#34;23:00&#34;&#10;  location                       &#61; null&#10;  log_retention_days             &#61; 7&#10;  point_in_time_recovery_enabled &#61; null&#10;  retention_count                &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -392,11 +432,11 @@ module "db" {
 | [password_validation_policy](variables.tf#L207) | Password validation policy configuration for instances. | <code title="object&#40;&#123;&#10;  enabled &#61; optional&#40;bool, true&#41;&#10;  change_interval             &#61; optional&#40;number&#41;&#10;  default_complexity          &#61; optional&#40;bool&#41;&#10;  disallow_username_substring &#61; optional&#40;bool&#41;&#10;  min_length                  &#61; optional&#40;number&#41;&#10;  reuse_interval              &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L221) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
 | [replicas](variables.tf#L241) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [root_password](variables.tf#L251) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
-| [ssl](variables.tf#L257) | Setting to enable SSL, set config and certificates. | <code title="object&#40;&#123;&#10;  client_certificates &#61; optional&#40;list&#40;string&#41;&#41;&#10;  ssl_mode &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [terraform_deletion_protection](variables.tf#L272) | Prevent terraform from deleting instances. | <code>bool</code> |  | <code>true</code> |
-| [time_zone](variables.tf#L284) | The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format. | <code>string</code> |  | <code>null</code> |
-| [users](variables.tf#L290) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [root_password](variables.tf#L251) | Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server. | <code title="object&#40;&#123;&#10;  password        &#61; optional&#40;string&#41;&#10;  random_password &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ssl](variables.tf#L265) | Setting to enable SSL, set config and certificates. | <code title="object&#40;&#123;&#10;  client_certificates &#61; optional&#40;list&#40;string&#41;&#41;&#10;  mode &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [terraform_deletion_protection](variables.tf#L280) | Prevent terraform from deleting instances. | <code>bool</code> |  | <code>true</code> |
+| [time_zone](variables.tf#L292) | The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format. | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L298) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

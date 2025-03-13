@@ -118,8 +118,8 @@ variable "workstation_configs" {
       role   = string
       member = string
     })), {})
-    idle_timeout = optional(string)
-    labels       = optional(map(string))
+    labels           = optional(map(string))
+    max_workstations = optional(number)
     persistent_directories = optional(list(object({
       mount_path = optional(string)
       gce_pd = optional(object({
@@ -130,8 +130,11 @@ variable "workstation_configs" {
         reclaim_policy  = optional(string)
       }))
     })), [])
-    running_timeout = optional(string)
-    replica_zones   = optional(list(string))
+    replica_zones = optional(list(string))
+    timeouts = optional(object({
+      idle    = optional(number)
+      running = optional(number)
+    }), {})
     workstations = optional(map(object({
       annotations  = optional(map(string))
       display_name = optional(string)

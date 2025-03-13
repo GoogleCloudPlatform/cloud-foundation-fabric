@@ -26,7 +26,7 @@ module "project" {
   name            = var.project_id
   parent          = var.root_node
   billing_account = var.billing_account
-  project_create  = var.project_create
+  project_reuse   = var.project_create ? null : {}
   services = [
     "compute.googleapis.com"
   ]

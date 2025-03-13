@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
+billing_account: 012345-67890A-BCDEF0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
 
-short_name: pf
-environment: prod
-stage2_iam:
-  networking:
-    iam_admin_delegated: true
-  security:
-    iam_admin_delegated: true
+service_accounts:
+  app-be-0: {}
+  app-fe-1:
+    display_name: GCE frontend service account.
+    iam_self_roles:
+      - roles/storage.objectViewer
+    iam_project_roles:
+      my-host-project:
+        - roles/compute.networkUser
+  terraform-rw: {}
+buckets:
+  state:
+    location: europe-west8
+    iam:
+      roles/storage.admin:
+        - terraform-rw

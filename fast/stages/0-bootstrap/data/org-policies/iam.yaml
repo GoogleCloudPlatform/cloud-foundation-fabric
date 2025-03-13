@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,27 @@
 
 # yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
+iam.allowedPolicyMemberDomains:
+  rules:
+    - allow:
+        values:
+          - ${organization.customer_id}
+      condition:
+        title: Restrict member domains
+        expression: |
+          !resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
+    - allow:
+        all: true
+      condition:
+        title: Allow any member domain
+        expression: |
+          resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
+
 iam.automaticIamGrantsForDefaultServiceAccounts:
+  rules:
+    - enforce: true
+
+iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
 
@@ -35,3 +55,13 @@ iam.serviceAccountKeyExposureResponse:
     - allow:
         values:
           - DISABLE_KEY
+
+iam.workloadIdentityPoolAwsAccounts:
+  rules:
+    - deny:
+        all: true
+
+iam.workloadIdentityPoolProviders:
+  rules:
+    - deny:
+        all: true

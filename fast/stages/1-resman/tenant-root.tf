@@ -32,10 +32,10 @@ module "root-folder" {
 }
 
 module "automation-project" {
-  source         = "../../../modules/project"
-  count          = var.root_node != null ? 1 : 0
-  name           = var.automation.project_id
-  project_create = false
+  source        = "../../../modules/project"
+  count         = var.root_node != null ? 1 : 0
+  name          = var.automation.project_id
+  project_reuse = {}
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {

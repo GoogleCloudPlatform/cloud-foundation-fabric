@@ -19,4 +19,11 @@ from ..examples.conftest import \
 
 def pytest_generate_tests(metafunc):
   """Find all README.md files and collect code examples tagged for testing."""
-  _examples_generate_test(metafunc, "examples_e2e", lambda x: 'e2e' in x)
+  match metafunc.function.__name__.lower():
+  # split examples by isolated tag. Those tagged with `isolated` test with `test_isolated_examples`
+    case "test_example":
+      _examples_generate_test(metafunc, "examples_e2e", lambda x:
+                              ('e2e' in x and 'isolated' not in x))
+    case "test_isolated_example":
+      _examples_generate_test(metafunc, "examples_e2e", lambda x:
+                              ('e2e' in x and 'isolated' in x))

@@ -64,7 +64,7 @@ def _prepare_root_module(path):
 
 
 def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
-                 **tf_vars):
+                 extra_dirs=None, **tf_vars):
   """
   Run a Terraform plan on the module located at `module_path`.
 
@@ -105,7 +105,12 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     extra_files = [(module_path / filename).resolve()
                    for x in extra_files or []
                    for filename in glob.glob(x, root_dir=module_path)]
+    extra_dirs = [
+        (module_path / dirname).resolve() for dirname in extra_dirs or []
+    ]
     tf.setup(extra_files=extra_files, upgrade=True)
+    for extra_dir in extra_dirs:
+      os.symlink(extra_dir, tf.tfdir / extra_dir.name)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
 
@@ -148,20 +153,21 @@ def plan_summary_fixture(request):
   """
 
   def inner(module_path, basedir=None, tf_var_files=None, extra_files=None,
-            **tf_vars):
+            extra_dirs=None, **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
     return plan_summary(module_path=module_path, basedir=basedir,
                         tf_var_files=tf_var_files, extra_files=extra_files,
-                        **tf_vars)
+                        extra_dirs=extra_dirs, **tf_vars)
 
   return inner
 
 
 def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
-                   extra_files=None, **tf_vars):
+                   extra_files=None, extra_dirs=None, **tf_vars):
   summary = plan_summary(module_path=module_path, tf_var_files=tf_var_files,
-                         extra_files=extra_files, basedir=basedir, **tf_vars)
+                         extra_files=extra_files, extra_dirs=extra_dirs,
+                         basedir=basedir, **tf_vars)
 
   # allow single single string for inventory_paths
   if not isinstance(inventory_paths, list):
@@ -385,7 +391,24 @@ def e2e_validator_fixture(request):
   return inner
 
 
-@pytest.fixture(scope='session', name='e2e_tfvars_path')
+@pytest.fixture(scope='session', name='e2e_tfvars_path_session')
+def e2e_tfvars_path_session():
+  """Session scoped fixture preparing end-to-end environment
+
+  Creates a GCP project for each thread. Tests reuse the same GCP project.
+  """
+  yield from e2e_tfvars_path()
+
+
+@pytest.fixture(scope='function', name='e2e_tfvars_path_function')
+def e2e_tfvars_path_function():
+  """Function scoped fixture preparing end-to-end environment
+
+  Creates a separate GCP project for each of E2E test run.
+  """
+  yield from e2e_tfvars_path()
+
+
 def e2e_tfvars_path():
   """Fixture preparing end-to-end test environment
 

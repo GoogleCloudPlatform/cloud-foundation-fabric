@@ -88,10 +88,16 @@ module "tenant-automation-project" {
 
 
 module "tenant-automation-project-iam" {
-  source         = "../../../modules/project"
-  for_each       = local.fast_tenants
-  name           = module.tenant-automation-project[each.key].project_id
-  project_create = false
+  source   = "../../../modules/project"
+  for_each = local.fast_tenants
+  name     = module.tenant-automation-project[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    project_attributes = {
+      name   = module.tenant-automation-project[each.key].name
+      number = module.tenant-automation-project[each.key].number
+    }
+  }
   # human (groups) IAM bindings
   iam_by_principals = {
     (each.value.principals.gcp-devops) = [

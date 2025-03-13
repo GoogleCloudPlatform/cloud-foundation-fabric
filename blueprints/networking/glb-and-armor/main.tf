@@ -33,7 +33,7 @@ module "project" {
   services = [
     "compute.googleapis.com"
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
 }
 
 

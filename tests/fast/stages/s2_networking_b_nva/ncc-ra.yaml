@@ -30,7 +30,7 @@ counts:
   google_compute_shared_vpc_host_project: 3
   google_compute_subnetwork: 10
   google_compute_vpn_tunnel: 4
-  google_dns_managed_zone: 9
+  google_dns_managed_zone: 10
   google_dns_policy: 4
   google_dns_record_set: 3
   google_dns_response_policy: 1
@@ -48,6 +48,6 @@ counts:
   google_project_service_identity: 19
   google_storage_bucket_object: 1
   google_tags_tag_binding: 3
-  modules: 37
+  modules: 38
   random_id: 6
-  resources: 256
+  resources: 257

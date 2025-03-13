@@ -19,7 +19,8 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
-  google_org_policy_policy: 24
+  google_org_policy_custom_constraint: 1
+  google_org_policy_policy: 34
   google_organization_iam_binding: 27
   google_organization_iam_custom_role: 13
   google_organization_iam_member: 29
@@ -40,7 +41,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 234
+  resources: 245
 
 outputs:
   automation: __missing__

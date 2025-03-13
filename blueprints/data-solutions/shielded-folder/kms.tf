@@ -60,8 +60,10 @@ module "sec-project" {
   name            = var.project_config.project_ids["sec-core"]
   parent          = module.folder.id
   billing_account = var.project_config.billing_account_id
-  project_create = (
+  project_reuse = (
     var.project_config.billing_account_id != null && var.enable_features.encryption
+    ? null
+    : {}
   )
   prefix = (
     var.project_config.billing_account_id == null ? null : var.prefix

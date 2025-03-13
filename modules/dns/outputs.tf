@@ -16,7 +16,7 @@
 
 output "dns_keys" {
   description = "DNSKEY and DS records of DNSSEC-signed managed zones."
-  value       = try(data.google_dns_keys.dns_keys, null)
+  value       = try(data.google_dns_keys.dns_keys[0], null)
 }
 
 output "domain" {

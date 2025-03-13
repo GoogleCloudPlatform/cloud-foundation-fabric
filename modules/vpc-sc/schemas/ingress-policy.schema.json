@@ -8,6 +8,9 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "title": {
+      "type": "string"
+    },
     "from": {
       "type": "object",
       "additionalProperties": false,

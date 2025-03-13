@@ -15,9 +15,9 @@
  */
 
 module "consumer-project" {
-  source         = "../../../modules/project"
-  name           = var.consumer_project_id
-  project_create = var.project_create_config != null
+  source        = "../../../modules/project"
+  name          = var.consumer_project_id
+  project_reuse = var.project_create_config != null ? null : {}
 
   billing_account = try(var.project_create_config.billing_account, null)
   parent          = try(var.project_create_config.parent, null)

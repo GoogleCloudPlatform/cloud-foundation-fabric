@@ -304,7 +304,7 @@ module "vpc" {
     }
   ]
 }
-# tftest inventory=psa-prefix-services.yaml e2e
+# tftest inventory=psa-prefix-services.yaml isolated e2e
 ```
 
 ### Private Service Networking with peering routes and peered Cloud DNS domains
@@ -360,7 +360,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=10 inventory=psa-multiple-providers.yaml e2e
+# tftest modules=1 resources=10 inventory=psa-multiple-providers.yaml isolated e2e
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -555,7 +555,7 @@ VPC routes can be configured through the `routes` variable.
 ```hcl
 locals {
   route_types = {
-    gateway    = "global/gateways/default-internet-gateway"
+    gateway    = "default-internet-gateway"
     instance   = "zones/europe-west1-b/test"
     ip         = "192.168.0.128"
     ilb        = "regions/europe-west1/forwardingRules/test"
@@ -581,7 +581,7 @@ module "vpc" {
       priority      = 100
       tags          = ["tag-a"]
       next_hop_type = "gateway",
-      next_hop      = "global/gateways/default-internet-gateway"
+      next_hop      = "default-internet-gateway"
     }
   }
   create_googleapis_routes = null

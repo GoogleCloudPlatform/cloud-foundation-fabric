@@ -33,7 +33,7 @@ module "host-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com",
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
   iam_bindings_additive = {
     admin_sa_key_admin = {
       role   = "roles/iam.serviceAccountKeyAdmin"
@@ -55,17 +55,16 @@ module "host-project" {
 }
 
 module "m4ce-service-account" {
-  source       = "../../../../modules/iam-service-account"
-  project_id   = module.host-project.project_id
-  name         = "m4ce-sa"
-  generate_key = true
+  source     = "../../../../modules/iam-service-account"
+  project_id = module.host-project.project_id
+  name       = "m4ce-sa"
 }
 
 module "target-projects" {
-  for_each       = toset(var.migration_target_projects)
-  source         = "../../../../modules/project"
-  name           = each.key
-  project_create = false
+  for_each      = toset(var.migration_target_projects)
+  source        = "../../../../modules/project"
+  name          = each.key
+  project_reuse = {}
   services = [
     "servicemanagement.googleapis.com",
     "servicecontrol.googleapis.com",

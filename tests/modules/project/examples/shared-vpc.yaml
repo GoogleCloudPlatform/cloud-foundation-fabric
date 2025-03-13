@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ values:
   module.service-project.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: test-service
-    role: roles/container.nodeServiceAgent
+    role: roles/container.defaultNodeServiceAgent
   module.service-project.google_project_iam_member.service_agents["serverless-robot-prod"]:
     condition: []
     project: test-service
