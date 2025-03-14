@@ -38,7 +38,7 @@ variable "data_defaults" {
       service_agent_subnet_iam = optional(map(list(string)), {})
       service_iam_grants       = optional(list(string), [])
       network_subnet_users     = optional(map(list(string)), {})
-    }), { host_project = null })
+    }))
     storage_location = optional(string)
     tag_bindings     = optional(map(string), {})
     # non-project resources
@@ -222,7 +222,7 @@ variable "factories_data" {
           location                    = string
           description                 = optional(string)
           prefix                      = optional(string)
-          storage_class               = optional(string)
+          storage_class               = optional(string, "STANDARD")
           uniform_bucket_level_access = optional(bool, true)
           versioning                  = optional(bool)
           iam                         = optional(map(list(string)), {})
@@ -281,7 +281,7 @@ variable "factories_data" {
         location                    = string
         description                 = optional(string)
         prefix                      = optional(string)
-        storage_class               = optional(string)
+        storage_class               = optional(string, "STANDARD")
         uniform_bucket_level_access = optional(bool, true)
         versioning                  = optional(bool)
         iam                         = optional(map(list(string)), {})

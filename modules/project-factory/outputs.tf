@@ -53,3 +53,6 @@ output "service_accounts" {
   description = "Service account emails."
   value       = module.service-accounts
 }
+output "foo" {
+  value = local.projects
+}
