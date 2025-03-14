@@ -12,34 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+# yaml-language-server: $schema=../../../../../../cloud-foundation-fabric/modules/project-factory/schemas/project.schema.json
 
 # TODO: edit and uncomment the following line to create the project in a folder
-# parent: shared
 
-name: prod-os-apt-0
+parent: shared
+name: prod-shared-mongodb-0
 services:
-  - accesscontextmanager.googleapis.com
-  - artifactregistry.googleapis.com
+  - compute.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
 
 automation:
   # TODO: edit the automation project and optionally edit resource names
-  project: prod-pf-iac-0
+  project: foo-prod-shared-iac-0
   service_accounts:
     rw:
-      description: Read/write automation service account for apt registries.
+      description: Read/write automation service account for MongoDB.
   bucket:
-    description: Terraform state bucket for apt registries.
+    description: Terraform state bucket for MongoDB.
     iam:
       roles/storage.objectCreator:
         - rw
       roles/storage.objectViewer:
         - rw
 iam:
-  roles/viewer:
-    - prod-os-apt-0/rw
-  roles/artifactregistry.admin:
-    - prod-os-apt-0/rw
-  # TODO: add instance service accounts that need access to the registries
-  # roles/artifactregistry.writer:
-  #   - serviceAccount:foo@bar
+  roles/compute.admin:
+    - prod-shared-mongodb-0/rw
+shared_vpc_service_config:
+  host_project: dev-spoke-0
+  network_users:
+    - rw
