@@ -32,6 +32,15 @@ values:
     private_ip_google_access: true
     project: project-id
     region: europe-west1
+  ? module.vpc.google_compute_subnetwork.subnetwork["europe-west1/hybrid"]
+  : description: Terraform-managed.
+    ip_cidr_range: 10.0.4.0/24
+    log_config: []
+    name: hybrid
+    private_ip_google_access: true
+    project: project-id
+    region: europe-west1
+    allow_subnet_cidr_routes_overlap: true
   ? module.vpc.google_compute_subnetwork.subnetwork["europe-west1/with-flow-logs"]
   : description: Terraform-managed.
     ip_cidr_range: 10.0.3.0/24
@@ -64,4 +73,4 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_subnetwork: 4
+  google_compute_subnetwork: 5
