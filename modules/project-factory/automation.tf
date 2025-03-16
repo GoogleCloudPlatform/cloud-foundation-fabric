@@ -65,7 +65,13 @@ module "automation-bucket" {
           # project/automation/rw project/sa
           var.factories_config.context.iam_principals[vv],
           # fully specified principal
-          vv
+          vv,
+          # passthrough + error handling using tonumber until Terraform gets fail/raise function
+          (
+            strcontains(vv, ":")
+            ? vv
+            : tonumber("[Error] Invalid member: '${vv}' in automation bucket '${each.key}'")
+          )
         )
       ]
     })
