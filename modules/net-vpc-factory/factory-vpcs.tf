@@ -41,7 +41,7 @@ locals {
 
   vpcs = merge(
     merge(local._vpcs_preprocess...),
-    var.vpc_config
+    var.network_project_config
   )
 }
 

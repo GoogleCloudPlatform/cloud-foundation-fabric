@@ -57,7 +57,7 @@ variable "prefix" {
   type        = string
 }
 
-variable "vpc_config" {
+variable "network_project_config" {
   description = "Consolidated configuration for project, VPCs and their associated resources."
   type = map(object({
     project_config = object({

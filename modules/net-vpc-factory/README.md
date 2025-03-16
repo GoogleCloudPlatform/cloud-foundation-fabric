@@ -34,7 +34,7 @@ Each file defines a single project, which can either be created by the factory o
 
 ## Projects
 
-`var.project_config` implements a large subset of the [project module](../project/) variable interface, which allows amongst the rest for project creation or reuse, services enablement and IAM/Organization policies definition.
+`var.network_project_config.project_config` (and/or the `project_config` of each YAML file) implements a large subset of the [project module](../project/) variable interface, which allows amongst the rest for project creation or reuse, services enablement and IAM/Organization policies definition.
 
 Below a valid YAML file which simply creates a project, enables a few services, configures the project as a host project and adds an authoritative role binding:
 
@@ -57,6 +57,28 @@ project_config:
 ```
 
 ## VPCs
+
+`var.network_project_config.vpc_config` implements a large subset of the [net-vpc module](../net-vpc/) variable interface, which allows amongst the rest for the creation of VPCs, subnets, and routes.
+
+Below a valid YAML file which simply creates a project, enables a few services, configures the project as a host project and adds an authoritative role binding:
+
+```yaml
+project_config:
+  name: net-dev-01
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+    - networkmanagement.googleapis.com
+    - networksecurity.googleapis.com
+    - servicenetworking.googleapis.com
+    - stackdriver.googleapis.com
+    - vpcaccess.googleapis.com
+  shared_vpc_host_config:
+    enabled: true
+  iam:
+    roles/owner:
+      - group:foobar-admins@example.com
+```
 
 ## Connectivity
 
