@@ -96,7 +96,7 @@ module "db" {
   name             = "db"
   prefix           = "myprefix"
   region           = var.region
-  database_version = "POSTGRES_13"
+  database_version = "POSTGRES_16"
   tier             = "db-g1-small"
 
   replicas = {
