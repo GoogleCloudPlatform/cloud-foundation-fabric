@@ -124,6 +124,7 @@ variable "enable_features" {
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
+    enterprise_cluster       = optional(bool)
   })
   default = {}
 }

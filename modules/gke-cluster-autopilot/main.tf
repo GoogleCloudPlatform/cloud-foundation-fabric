@@ -339,6 +339,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.vertical_pod_autoscaling
     }
   }
+  dynamic "enterprise_config" {
+    for_each = var.enable_features.enterprise_cluster != null ? [""] : []
+    content {
+      desired_tier = var.enable_features.enterprise_cluster ? "ENTERPRISE" : "STANDARD"
+    }
+  }
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
