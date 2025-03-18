@@ -77,5 +77,5 @@ module "test" {
   prefix             = "test"
   root_node          = "organizations/0123456789"
 }
-# tftest modules=11 resources=56
+# tftest modules=11 resources=57
 ```
