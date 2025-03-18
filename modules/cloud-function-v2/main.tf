@@ -39,13 +39,10 @@ locals {
     null
   )
   vpc_connector = (
-    var.vpc_connector == null
-    ? null
-    : (
-      try(var.vpc_connector.create, false) == false
-      ? var.vpc_connector.name
-      : google_vpc_access_connector.connector[0].id
-    )
+    var.vpc_connector.create == false
+    && var.vpc_connector.name
+    ? google_vpc_access_connector.connector[0].id
+    : null
   )
 }
 
