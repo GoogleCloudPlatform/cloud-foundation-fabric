@@ -191,7 +191,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - put the values coming from user's inventory the right
     #   side of any comparison operators.
     # - include a descriptive error message to the assert
-    # print(yaml.dump({'values': summary.values}))
+    print(yaml.dump({'values': summary.values}))
     # print("", yaml.dump({'counts': summary.counts}))
 
     if 'values' in inventory:
