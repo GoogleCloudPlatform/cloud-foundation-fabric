@@ -86,7 +86,7 @@ module "addresses" {
     }
   }
 }
-# tftest modules=2 resources=7 fixtures=fixtures/net-vpc-ipv6.tf inventory=ipv6.yaml e2e
+# tftest modules=2 resources=8 fixtures=fixtures/net-vpc-ipv6.tf inventory=ipv6.yaml e2e
 ```
 
 ### PSA addresses
@@ -123,6 +123,7 @@ module "addresses" {
 ```
 
 To create PSC address targeting a service regional provider use the `service_attachment` property.
+
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
@@ -142,6 +143,7 @@ module "addresses" {
 ```
 
 Specify `vpc-sc` or `all-apis` in `psc_service_attachment_link` to targe Google APIs.
+
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
@@ -179,8 +181,6 @@ module "addresses" {
 }
 # tftest modules=2 resources=3 fixtures=fixtures/cloudsql-instance.tf inventory=psc-global.yaml e2e
 ```
-
-
 
 ### IPSec Interconnect addresses
 

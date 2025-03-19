@@ -363,7 +363,7 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_route: 2
+  google_compute_route: 3
   google_compute_subnetwork: 1
   google_container_cluster: 1
   google_gke_hub_feature: 1
@@ -374,6 +374,6 @@ counts:
   google_project_service: 7
   google_project_service_identity: 5
   modules: 4
-  resources: 27
+  resources: 28
 
 outputs: {}
