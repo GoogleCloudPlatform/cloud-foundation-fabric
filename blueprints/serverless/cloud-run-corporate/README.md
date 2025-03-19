@@ -253,7 +253,7 @@ module "test" {
   prj_onprem_id = "onprem-project-id"
 }
 
-# tftest modules=15 resources=62
+# tftest modules=15 resources=64
 ```
 
 ```hcl
@@ -277,7 +277,7 @@ module "test" {
   tf_identity = "user@example.org"
 }
 
-# tftest modules=15 resources=44
+# tftest modules=15 resources=46
 ```
 
 ```hcl
@@ -296,5 +296,5 @@ module "test" {
   custom_domain = "cloud-run-corporate.example.org"
 }
 
-# tftest modules=14 resources=57
+# tftest modules=14 resources=58
 ```

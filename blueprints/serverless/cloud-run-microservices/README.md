@@ -88,7 +88,7 @@ This use case deploys two Cloud Run services in the same project. Service B is p
 
 Service A uses an application with a GUI to test connectivity. You can find its source code in:
 
-https://github.com/willypalacin/vpc-network-tester/tree/main
+<https://github.com/willypalacin/vpc-network-tester/tree/main>
 
 You will need to [build an image and push it to Artifact Registry](https://cloud.google.com/artifact-registry/docs/docker/store-docker-container-images), setting the corresponding Terraform variable to its URL. Add the main project ID in `terraform.tfvars`. E.g.:
 
@@ -201,7 +201,7 @@ module "test" {
   }
 }
 
-# tftest modules=7 resources=29
+# tftest modules=7 resources=30
 ```
 
 ```hcl
@@ -225,5 +225,5 @@ module "test" {
   }
 }
 
-# tftest modules=10 resources=42
+# tftest modules=10 resources=43
 ```

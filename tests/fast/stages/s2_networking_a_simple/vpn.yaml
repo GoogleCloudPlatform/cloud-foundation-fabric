@@ -19,7 +19,7 @@ counts:
   google_compute_firewall_policy_rule: 4
   google_compute_ha_vpn_gateway: 5
   google_compute_network: 3
-  google_compute_route: 9
+  google_compute_route: 12
   google_compute_router: 8
   google_compute_router_interface: 12
   google_compute_router_nat: 3
@@ -45,4 +45,4 @@ counts:
   google_tags_tag_binding: 3
   modules: 30
   random_id: 17
-  resources: 240
+  resources: 243

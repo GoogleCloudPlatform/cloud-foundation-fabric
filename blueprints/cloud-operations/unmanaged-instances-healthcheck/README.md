@@ -8,28 +8,27 @@ The blueprint contains the following components:
 
 - [Cloud Scheduler](https://cloud.google.com/scheduler) to initiate a healthcheck on a schedule.
 - [Serverless VPC Connector](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) to allow Cloud Functions TCP level access to private GCE instances.
-- **Healthchecker** Cloud Function to perform TCP checks against GCE instances. 
+- **Healthchecker** Cloud Function to perform TCP checks against GCE instances.
 - **Restarter** PubSub topic to keep track of instances which are to be restarted.
 - **Restarter** Cloud Function to perform GCE instance reset for instances which are failing TCP healthcheck.
-
 
 The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
 ### Healthchecker configuration
+
 Healthchecker cloud function has the following configuration options:
 
 - `FILTER` to filter list of GCE instances the health check will be targeted to. For instance `(name = nginx-*) AND (labels.env = dev)`
-- `GRACE_PERIOD` time period to prevent instance check of newly created instanced allowing services to start on the instance. 
+- `GRACE_PERIOD` time period to prevent instance check of newly created instanced allowing services to start on the instance.
 - `MAX_PARALLELISM` - max amount of healthchecks performed in parallel, be aware that every check requires an open TCP connection which is limited.
-- `PUBSUB_TOPIC` topic to publish the message with instance metadata. 
-- `RECHECK_INTERVAL` time period for performing recheck, when a check is failed it will be rechecked before marking as unhealthy. 
+- `PUBSUB_TOPIC` topic to publish the message with instance metadata.
+- `RECHECK_INTERVAL` time period for performing recheck, when a check is failed it will be rechecked before marking as unhealthy.
 - `TCP_PORT` port used for health checking
 - `TIMEOUT` the timeout time of a TCP probe.
 
 **_NOTE:_** In the current example `healthchecker` is used along with the `restarter` cloud function, but restarter can be replaced with another function like [Pubsub2Inbox](https://github.com/GoogleCloudPlatform/professional-services/tree/main/tools/pubsub2inbox) for email notifications.
-
 
 ## Running the blueprint
 
@@ -41,17 +40,21 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
 ## Testing the blueprint
+
 Configure `gcloud` with the project used for the deployment
+
 ```bash
 gcloud config set project <MY-PROJECT-ID>
 ```
 
 Wait until cloud scheduler executes the healthchecker function
+
 ```bash
 gcloud scheduler jobs describe healthchecker-schedule
 ```
 
 Check the healthchecker function logs to ensure instance is checked and healthy
+
 ```bash
 gcloud functions logs read cf-healthchecker --region=europe-west1
 
@@ -61,11 +64,13 @@ gcloud functions logs read cf-healthchecker --region=europe-west1
 ```
 
 Stop `nginx` service on the test instance
+
 ```
 gcloud compute ssh --zone europe-west1-b  nginx-test -- 'sudo systemctl stop nginx'
 ```
 
 Wait a few minutes to allow scheduler to execute another healthcheck and examine the function logs
+
 ```bash
 gcloud functions logs read cf-healthchecker --region=europe-west1
 
@@ -78,6 +83,7 @@ gcloud functions logs read cf-healthchecker --region=europe-west1
 ```
 
 Examine `cf-restarter` function logs
+
 ```bash
 gcloud functions logs read cf-restarter --region=europe-west1
 
@@ -88,6 +94,7 @@ gcloud functions logs read cf-restarter --region=europe-west1
 ```
 
 Verify that `nginx` service is running again and uptime shows that instance has been reset
+
 ```bash
 gcloud compute ssh --zone europe-west1-b  nginx-test -- 'sudo systemctl status nginx'
 gcloud compute ssh --zone europe-west1-b  nginx-test -- 'uptime'
@@ -128,5 +135,5 @@ module "test" {
   billing_account = "123456-123456-123456"
   project_create  = true
 }
-# tftest modules=11 resources=46
+# tftest modules=11 resources=47
 ```

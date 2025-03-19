@@ -22,7 +22,7 @@ counts:
   google_compute_instance: 4
   google_compute_network: 4
   google_compute_network_peering: 4
-  google_compute_route: 7
+  google_compute_route: 10
   google_compute_router: 8
   google_compute_router_interface: 12
   google_compute_router_nat: 2
@@ -50,4 +50,4 @@ counts:
   google_tags_tag_binding: 3
   modules: 38
   random_id: 6
-  resources: 257
+  resources: 260
