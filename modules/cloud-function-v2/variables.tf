@@ -219,7 +219,8 @@ variable "vpc_connector" {
     name            = optional(string)
     egress_settings = optional(string)
   })
-  default = {}
+  nullable = false
+  default  = {}
 }
 
 variable "vpc_connector_config" {

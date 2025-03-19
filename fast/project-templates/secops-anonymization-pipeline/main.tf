@@ -222,7 +222,7 @@ module "function" {
   }
   vpc_connector = (
     var.cloud_function_config.vpc_connector == null
-    ? null
+    ? {}
     : {
       create          = false
       name            = var.cloud_function_config.vpc_connector.name
