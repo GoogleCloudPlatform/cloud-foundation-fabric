@@ -148,7 +148,7 @@ counts:
   google_compute_global_address: 1
   google_compute_network: 1
   google_compute_network_peering_routes_config: 1
-  google_compute_route: 2
+  google_compute_route: 3
   google_iap_brand: 1
   google_iap_client: 1
   google_looker_instance: 1
@@ -158,7 +158,7 @@ counts:
   google_project_service_identity: 2
   google_service_networking_connection: 1
   modules: 3
-  resources: 16
+  resources: 17
 
 outputs: {}
 

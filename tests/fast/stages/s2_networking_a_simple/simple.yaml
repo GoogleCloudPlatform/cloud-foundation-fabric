@@ -21,7 +21,7 @@ counts:
   google_compute_ha_vpn_gateway: 1
   google_compute_network: 3
   google_compute_network_peering: 4
-  google_compute_route: 9
+  google_compute_route: 12
   google_compute_router: 4
   google_compute_router_interface: 2
   google_compute_router_nat: 3
@@ -47,4 +47,4 @@ counts:
   google_tags_tag_binding: 3
   modules: 28
   random_id: 3
-  resources: 193
+  resources: 196
