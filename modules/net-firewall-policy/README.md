@@ -121,7 +121,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=9 inventory=global-net.yaml
+# tftest modules=2 resources=10 inventory=global-net.yaml
 ```
 
 ### Regional Network policy
@@ -160,7 +160,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=7 inventory=regional-net.yaml
+# tftest modules=2 resources=8 inventory=regional-net.yaml
 ```
 
 ### Factory
@@ -292,7 +292,7 @@ module "firewall-policy" {
     ingress_rules_file_path = "configs/ingress-spg.yaml"
   }
 }
-# tftest modules=2 resources=8 files=ingress-spg inventory=factory-spg.yaml
+# tftest modules=2 resources=9 files=ingress-spg inventory=factory-spg.yaml
 ```
 
 ```yaml

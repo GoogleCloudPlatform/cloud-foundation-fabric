@@ -121,11 +121,9 @@ values:
     description: Managed by Terraform.
     exclude_public_ca_set: false
     location: europe-west4
-    min_tls_version: null
     name: secure-web-proxy
     project: my-project
     timeouts: null
-    tls_feature_profile: null
     trust_config: null
   module.secure-web-proxy.google_network_services_gateway.default:
     addresses:

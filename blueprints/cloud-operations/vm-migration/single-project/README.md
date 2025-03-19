@@ -20,6 +20,7 @@ This sample creates several distinct groups of resources:
   - One [service account](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
   - Grant [migration admin roles](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user or group
   - Grant [migration viewer role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user or group
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -49,5 +50,5 @@ module "test" {
   migration_admin  = "user:admin@example.com"
   migration_viewer = "user:viewer@example.com"
 }
-# tftest modules=5 resources=26
+# tftest modules=5 resources=27
 ```
