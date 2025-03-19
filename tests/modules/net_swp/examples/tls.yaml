@@ -124,7 +124,6 @@ values:
     name: secure-web-proxy
     project: my-project
     timeouts: null
-    tls_feature_profile: null
     trust_config: null
   module.secure-web-proxy.google_network_services_gateway.default:
     addresses:
