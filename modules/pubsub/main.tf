@@ -90,6 +90,12 @@ resource "google_pubsub_subscription" "default" {
     content {
       push_endpoint = each.value.push.endpoint
       attributes    = each.value.push.attributes
+      dynamic "no_wrapper" {
+        for_each = each.value.push.no_wrapper ? [""] : []
+        content {
+          write_metadata = false
+        }
+      }
       dynamic "oidc_token" {
         for_each = each.value.push.oidc_token == null ? [] : [""]
         content {
