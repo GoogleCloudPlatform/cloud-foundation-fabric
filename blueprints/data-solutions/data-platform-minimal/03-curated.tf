@@ -65,8 +65,7 @@ locals {
       local.groups_iam.data-engineers
     ]
   }
-  # this only works because the service account module uses a static output
-  iam_cur_additive = {
+  iam_distinct_tuples = distinct([
     for k in flatten([
       for role, members in local.iam_cur : [
         for member in members : {
@@ -74,7 +73,11 @@ locals {
           member = member
         }
       ]
-    ]) : "${k.member}-${k.role}" => k
+    ]) : k
+  ])
+  # this only works because the service account module uses a static output
+  iam_cur_additive = {
+    for k in local.iam_distinct_tuples : "${k.member}-${k.role}" => k
   }
 }
 
