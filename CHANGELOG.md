@@ -5,14 +5,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-02-21 08:47:20+00:00 to: None since: v38.0.0 -->
 
+## [38.1.0] - 2025-03-22
+
 ### BREAKING CHANGES
 
 - `modules/cloud-function-v2`: Make function compatible with direct egress settings - allow to specify function egress settings without using a VPC connector. [[#2967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2967)]
 - `modules/dns`: Reverse zones are by default created as unmanaged now. To keep your zone as managed, please set `var.zone_config.private.reverse_managed` to `true` [[#2942](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2942)]
 
-
 ### BLUEPRINTS
 
+- [[#2971](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2971)] Bump google.golang.org/grpc from 1.53.0 to 1.56.3 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-03-19 11:51:08+00:00 -->
+- [[#2970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2970)] Bump google.golang.org/protobuf from 1.28.1 to 1.33.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-03-19 11:37:12+00:00 -->
+- [[#2969](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2969)] Bump golang.org/x/net from 0.33.0 to 0.36.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-03-19 11:23:21+00:00 -->
 - [[#2966](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2966)] Add custom routes for directpath to net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2025-03-19 10:22:48+00:00 -->
 - [[#2965](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2965)] Revert "Fix broken upgrades of TF provider for routes" ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-18 10:06:46+00:00 -->
 - [[#2964](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2964)] Fix broken upgrades of TF provider for routes ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-18 08:41:57+00:00 -->
@@ -31,7 +35,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
-- [[#2968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2968)] net-swp: Add example with transparent proxy and E2E test ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-19 11:00:21+00:00 -->
+- [[#2981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2981)] Add dependency on VPC-SC resources to project factory ([LFicteam](https://github.com/LFicteam)) <!-- 2025-03-21 22:20:36+00:00 -->
+- [[#2974](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2974)] Fix push subscription in pubsub module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-03-20 19:22:43+00:00 -->
+- [[#2973](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2973)] Add support for any ports to net-lb-app modules ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-20 10:28:17+00:00 -->
+- [[#2968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2968)] Add transparent proxy example and e2e test to net-swp module ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-19 11:00:21+00:00 -->
 - [[#2967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2967)] Allow to specify function egress settings without using a VPC connector ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-03-19 10:38:33+00:00 -->
 - [[#2966](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2966)] Add custom routes for directpath to net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2025-03-19 10:22:48+00:00 -->
 - [[#2965](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2965)] Revert "Fix broken upgrades of TF provider for routes" ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-18 10:06:46+00:00 -->
@@ -2943,7 +2950,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...HEAD
+[38.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.0.0...v38.1.0
 [38.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.4.0...v38.0.0
 [37.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...v37.4.0
 [37.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.2.0...v37.3.0
