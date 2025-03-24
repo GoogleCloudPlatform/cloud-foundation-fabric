@@ -85,18 +85,53 @@ This module supports various connectivity options:
 
 ### VPC Peering
 
-VPC peering allows you to connect VPC networks so that resources in different networks can communicate with each other using internal IP addresses.
+#TODO: wafflewaffle
+
+Hub:
 
 ```yaml
 project_config:
-  name: prj-01
+  name: net-land-01
   services:
     - compute.googleapis.com
 vpc_config:
-  net-00:
+  hub:
+    mtu: 1500
+    peering_config:
+      to-prod:
+        peer_network: net-prod-01/prod-spoke
+      to-dev:
+        peer_network: net-dev-01/dev-spoke
+```
+
+Dev Spoke:
+
+```yaml
+project_config:
+  name: net-dev-01
+  services:
+    - compute.googleapis.com
+vpc_config:
+  dev-spoke:
+    mtu: 1500
     peering_config:
       to-hub:
-        peer_network: prj-hub-01/hub-vpc
+        peer_network: net-land-01/hub
+```
+
+Prod Spoke:
+
+```yaml
+project_config:
+  name: net-prod-01
+  services:
+    - compute.googleapis.com
+vpc_config:
+  prod-spoke:
+    mtu: 1500
+    peering_config:
+      to-hub:
+        peer_network: net-land-01/hub
 ```
 
 ### Cloud VPN
@@ -161,7 +196,7 @@ vpc_config:
 This examples demonstrates connecting a GCP VPC to a GCP VPC via HA-VPN.
 In this examples, project `net-land-01` has a VPC named `hub`, and project `net-dev-01` has a VPC named `dev-spoke`, and the two VPCs are connected together via a HA VPN. In order to do so, the `vpc_config.vpn_config.to-hub.peer_gateways.default.gcp` on each side is configured by cross-referencing the VPN gateway in the other side, whose reference is `$project_id/$vpc_name/$vpn_name`.
 
-HUB: 
+Hub: 
 
 ```yaml
 project_config:
@@ -201,7 +236,7 @@ vpc_config:
             vpn_gateway_interface: 1
 ```
 
-DEV-SPOKE:
+Dev Spoke:
 
 ```yaml
 project_config:
