@@ -136,7 +136,7 @@ vpc_config:
 
 ### Cloud VPN
 
-Cloud VPN securely connects your on-premises network to your VPC network through an IPsec VPN connection. The module supports HA VPN gateways and tunnels.
+#TODO: wafflewaffle
 
 #### GCP to OnPrem
 
