@@ -16,8 +16,21 @@
 
 name: Test 1
 short_name: t1
+
 service_accounts:
   rw:
     description: Automation (rw).
   ro:
     description: Automation (ro).
+
+folder_config:
+  iam_bindings:
+    data_catalog_browser:
+      members:
+        - "user:admin@yoyoland.joonix.net"
+      role: "roles/datacatalog.viewer"
+      #TODO Add exposure TAG condition
+      # condition:
+      #   title: "exposure"
+      #   description: "Secure Tag Exposure"
+      #   expression: "TODO - SECURE TAG"

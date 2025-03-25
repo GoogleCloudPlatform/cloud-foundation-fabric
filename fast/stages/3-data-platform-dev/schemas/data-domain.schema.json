@@ -248,7 +248,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+[a-z-]+$": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
           "type": "array",
           "items": {
             "type": "string",

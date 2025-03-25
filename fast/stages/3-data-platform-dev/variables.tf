@@ -105,7 +105,7 @@ variable "location" {
   description = "Default location used when no location is specified."
   type        = string
   nullable    = false
-  default     = "europe-west1"
+  default     = "europe-west8"
 }
 
 variable "policy_tags" {

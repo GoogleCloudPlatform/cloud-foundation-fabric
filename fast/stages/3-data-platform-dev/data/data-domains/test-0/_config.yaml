@@ -16,3 +16,28 @@
 
 name: Test 0
 short_name: t0
+
+folder_config:
+  # iam_by_principals:
+  #   "group:data-consumer-bi@yoyoland.joonix.net":
+  #     - "roles/datacatalog.viewer"
+  #     - "roles/dataplex.catalogViewer"
+  #     - "roles/datalineage.viewer"
+
+  iam_bindings:
+    bigquery_metadata_viewer:
+      members:
+        - "group:data-consumer-bi@yoyoland.joonix.net"
+      role: "roles/bigquery.metadataViewer"
+      condition:
+        title: "exposure"
+        description: "Secure Tag Exposure"
+        expression: "resource.hasTagKeyId('tagKeys/281478712003464')"
+    bigquery_data_viewer:
+      members:
+        - "group:data-consumer-bi@yoyoland.joonix.net"
+      role: "roles/bigquery.metadataViewer"
+      condition:
+        title: "exposure"
+        description: "Secure Tag Exposure"
+        expression: "resource.hasTagKeyId('tagKeys/281478712003464')"

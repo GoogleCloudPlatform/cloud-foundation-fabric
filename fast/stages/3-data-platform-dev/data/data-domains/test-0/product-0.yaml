@@ -16,9 +16,82 @@
 
 short_name: p0
 services:
+  - bigquery.googleapis.com
   - cloudresourcemanager.googleapis.com
+  - dataplex.googleapis.com
+  - datacatalog.googleapis.com
   - storage.googleapis.com
 exposed_resources:
-  storage_buckets:
-    foo:
+  bigquery_datasets:
+    exposure:
       location: europe-west8
+  storage_buckets:
+    exposure:
+      location: europe-west8
+
+iam_by_principals:
+  "group:dp-product-a-0@yoyoland.joonix.net":
+    # - "roles/writer" #TODO trim
+    - "roles/datacatalog.tagEditor"
+    - roles/bigquery.admin
+
+iam_bindings:
+  bigquery_data_viewer:
+    members:
+      - "group:data-consumer-bi@yoyoland.joonix.net"
+    role: "roles/bigquery.dataViewer"
+    condition:
+      title: "exposure"
+      description: "Secure Tag Exposure"
+      expression: "resource.hasTagKeyId('tagKeys/281478712003464')"
+#
+#
+#
+# CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers (
+#     id NUMERIC,
+#     name STRING,
+#     surname STRING
+# );
+
+# DELETE FROM yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers WHERE TRUE;
+# INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers VALUES (1,'Giovanni','Rossi');
+# INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers VALUES (2,'Alberto','Bianchi');
+
+# CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders (
+#     id NUMERIC,
+#     customer_id NUMERIC,
+#     item STRING,
+#     quantity NUMERIC,
+#     price NUMERIC
+# );
+
+# DELETE FROM yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders WHERE TRUE;
+# INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (1,1,'Umbrella',1,10);
+# INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (2,1,'Car',1,1000);
+# INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (3,2,'Car',1,1200);
+
+# CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders AS
+# SELECT
+#     c.id AS customer_id,
+#     c.name,
+#     c.surname,
+#     o.id AS order_id,
+#     o.item,
+#     o.quantity,
+#     o.price
+# FROM
+#     yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers AS c
+# JOIN
+#     yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders AS o ON c.id = o.customer_id;
+
+# CREATE OR REPLACE VIEW yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_exposure_0.customer_order_view AS
+# SELECT
+#     customer_id,
+#     name,
+#     surname,
+#     order_id,
+#     item,
+#     quantity,
+#     price
+# FROM
+#     yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders;

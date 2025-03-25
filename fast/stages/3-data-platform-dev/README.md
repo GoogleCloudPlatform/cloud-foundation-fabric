@@ -42,6 +42,11 @@ Actors:
 
 - Add Data Domain team
 
+Conditions for roles:
+
+- GCS Name = resource.name.startsWith('projects/_/buckets/example-bucket')
+- projects/project-id/datasets/dataset-id
+
 ## CUJ
 
 - As Data Platform Owner:

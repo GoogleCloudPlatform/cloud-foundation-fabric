@@ -18,7 +18,13 @@ output "project_ids" {
   description = "Project id."
   value = merge(
     {
-      shared = module.central-project.project_id
+      central = module.central-project.project_id
+      data_domains = { for k, v in module.dd-projects : k => {
+        project_id               = v.project_id
+        folder_id                = one([for kk, vv in module.dd-folders : vv.id if strcontains(kk, k)])
+        data_products_project_id = { for kkk, vvv in module.dp-projects : kkk => one([vvv.project_id]) if strcontains(kkk, k) }
+        }
+      }
     }
   )
 }
