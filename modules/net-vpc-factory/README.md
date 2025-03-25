@@ -280,7 +280,7 @@ vpc_config:
 
 ### Network Connectivity Center (NCC)
 
-This minimal example demonstrates how to create an NCC hub, and how to connect multiple spokes to it. On the `net-land-01` project, `ncc_hub_config.groups.default.auto_accept` is configured to automatically accept the required spoke projects.
+This minimal example demonstrates how to create an NCC hub, and how to connect multiple spokes to it. On the `net-land-01` project, `ncc_hub_config.groups.default.auto_accept` is configured to automatically accept the listed spoke projects.
 On the spokes definition, `vpc_config.$env-spoke.ncc_config` cross references the hub and the default group.
 
 NCC Hub:
@@ -333,6 +333,82 @@ vpc_config:
 ```
 
 ## DNS
+
+This module supports the creation of forwarding zones, peering zones, public and private zones, and recordsets within these zones. `vpc_config.$vpc.dns_zones` implements a large subset of the [net-dns](../dns/) module variable interface.
+
+Below a few configuration examples:
+
+### Private Zone
+
+This example demonstrates how to create a private zone for the internal.example.com domain, and how to add a record set to it.
+
+```yaml
+project_config:
+  name: net-land-01
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+vpc_config:
+  hub:
+    dns_zones:
+      internal-example:
+        zone_config:
+          domain: internal.example.com.
+          private:
+            client_networks:
+              - net-land-01/hub
+        recordsets:
+          "A localhost":
+            records: ["127.0.0.1"]
+```
+
+### Forwarding Zone
+
+This example demonstrates how to create a forwarding zone that forwards queries for the `example.com` domain to on-premises DNS servers.
+
+```yaml
+project_config:
+  name: net-land-01
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+vpc_config:
+  hub:
+    dns_zones:
+      onprem-fwd:
+        zone_config:
+          domain: example.com.
+          forwarding:
+            forwarders:
+              "10.0.0.1": default
+              "10.0.0.2": default
+            client_networks:
+              - net-land-01/hub
+```
+
+### Peering Zone
+
+This example demonstrates how to create a peering zone that allows the dev-spoke VPC to resolve names in the net-land-01 project's hub VPC.
+
+```yaml
+project_config:
+  name: net-dev-01
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+vpc_config:
+  dev-spoke:
+    dns_zones:
+      root-peering:
+        zone_config:
+          domain: .
+          peering:
+            peer_network: net-land-01/hub
+            client_networks:
+              - net-dev-01/dev-spoke
+```
+
+All of the above combined implements a DNS hub-and-spoke design, where the DNS configuration is mostly centralised in the `net-land-01/hub` VPC, including private zones and forwarding to onprem, and spokes (in this case `net-dev-01/dev-spoke`) "delegate" the root zone (`.`, which is DNS for "*") to the central location via DNS peering.
 
 ## Firewalls
 
