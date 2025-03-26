@@ -165,8 +165,17 @@ variable "nodepool_config" {
     }))
     queued_provisioning = optional(bool, false)
     upgrade_settings = optional(object({
-      max_surge       = number
-      max_unavailable = number
+      max_surge       = optional(number)
+      max_unavailable = optional(number)
+      strategy        = optional(string)
+      blue_green_settings = optional(object({
+        node_pool_soak_duration = optional(string)
+        standard_rollout_policy = optional(object({
+          batch_percentage    = optional(number)
+          batch_node_count    = optional(number)
+          batch_soak_duration = optional(string)
+        }))
+      }))
     }))
   })
   default = null

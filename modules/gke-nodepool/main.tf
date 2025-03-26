@@ -127,9 +127,9 @@ resource "google_container_node_pool" "nodepool" {
         [try(var.pod_range.secondary_pod_range.enable_private_nodes, false)]
       ))
 
-      create_pod_range     = try(var.pod_range.secondary_pod_range.create, false)
-      pod_ipv4_cidr_block  = try(var.pod_range.secondary_pod_range.cidr, null)
-      pod_range            = try(var.pod_range.secondary_pod_range.name, null)
+      create_pod_range    = try(var.pod_range.secondary_pod_range.create, false)
+      pod_ipv4_cidr_block = try(var.pod_range.secondary_pod_range.cidr, null)
+      pod_range           = try(var.pod_range.secondary_pod_range.name, null)
 
       dynamic "additional_node_network_configs" {
         for_each = var.additional_node_network_configs != null ? var.additional_node_network_configs : []
@@ -155,6 +155,21 @@ resource "google_container_node_pool" "nodepool" {
     content {
       max_surge       = try(var.nodepool_config.upgrade_settings.max_surge, null)
       max_unavailable = try(var.nodepool_config.upgrade_settings.max_unavailable, null)
+      strategy        = try(var.nodepool_config.upgrade_settings.strategy, "SURGE")
+      dynamic "blue_green_settings" {
+        for_each = try(var.nodepool_config.upgrade_settings.blue_green_settings, null) != null ? [""] : []
+        content {
+          node_pool_soak_duration = try(var.nodepool_config.upgrade_settings.blue_green_settings.node_pool_soak_duration, null)
+          dynamic "standard_rollout_policy" {
+            for_each = try(var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy, null) != null ? [""] : []
+            content {
+              batch_percentage    = try(var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_percentage, null)
+              batch_node_count    = try(var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_node_count, null)
+              batch_soak_duration = try(var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_soak_duration, null)
+            }
+          }
+        }
+      }
     }
   }
 
