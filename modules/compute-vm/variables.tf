@@ -173,12 +173,15 @@ variable "gpu" {
           "nvidia-tesla-p4",
           "nvidia-tesla-t4",
           "nvidia-l4",
-          "nvidia-a2"
+          "nvidia-a2",
+          "nvidia-tesla-t4-vws",
+          "nvidia-tesla-p100-vws",
+          "nvidia-tesla-p4-vws"
         ],
         try(var.gpu.type, "-")
       )
     )
-    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2."
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2, nvidia-tesla-t4-vws, nvidia-tesla-p100-vws, nvidia-tesla-p4-vws."
   }
 }
 
@@ -302,6 +305,10 @@ variable "options" {
     }))
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
+    graceful_shutdown = optional(object({
+      enabled           = optional(bool, false)
+      max_duration_secs = optional(number)
+    }))
     max_run_duration = optional(object({
       nanos   = optional(number)
       seconds = number
@@ -444,5 +451,3 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
-
-
