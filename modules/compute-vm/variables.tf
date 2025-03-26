@@ -168,20 +168,23 @@ variable "gpu" {
         [
           "nvidia-tesla-a100",
           "nvidia-tesla-p100",
-          "nvidia-tesla-v100",
-          "nvidia-tesla-k80",
-          "nvidia-tesla-p4",
-          "nvidia-tesla-t4",
-          "nvidia-l4",
-          "nvidia-a2",
-          "nvidia-tesla-t4-vws",
           "nvidia-tesla-p100-vws",
-          "nvidia-tesla-p4-vws"
+          "nvidia-tesla-v100",
+          "nvidia-tesla-p4",
+          "nvidia-tesla-p4-vws",
+          "nvidia-tesla-t4",
+          "nvidia-tesla-t4-vws",
+          "nvidia-l4",
+          "nvidia-l4-vws",
+          "nvidia-a100-80gb",
+          "nvidia-h100-80gb",
+          "nvidia-h100-mega-80gb",
+          "nvidia-h200-141gb"
         ],
         try(var.gpu.type, "-")
       )
     )
-    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2, nvidia-tesla-t4-vws, nvidia-tesla-p100-vws, nvidia-tesla-p4-vws."
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-p100-vws, nvidia-tesla-v100, nvidia-tesla-p4, nvidia-tesla-p4-vws, nvidia-tesla-t4, nvidia-tesla-t4-vws, nvidia-l4, nvidia-l4-vws,  nvidia-a100-80gb, nvidia-h100-80gb, nvidia-h100-mega-80gb, nvidia-h200-141gb."
   }
 }
 
