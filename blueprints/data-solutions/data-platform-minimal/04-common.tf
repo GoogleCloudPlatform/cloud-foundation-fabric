@@ -77,6 +77,7 @@ module "common-project" {
   services = [
     "cloudresourcemanager.googleapis.com",
     "datacatalog.googleapis.com",
+    "dataplex.googleapis.com",
     "dlp.googleapis.com",
     "iam.googleapis.com",
     "serviceusage.googleapis.com",
