@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
+
 locals {
   ncc_hubs = { for k, v in local._network_projects : "${k}/${v.ncc_hub_config.name}" =>
     {
@@ -64,7 +66,7 @@ locals {
     for factory_key, factory_config in local._network_projects : {
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_config, {
         project_id            = module.projects[factory_key].id
-        network_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
+        network_self_link     = module.vpc["${factory_key}/${vpc_key}"].self_link
         labels                = try(vpc_config.ncc_config.labels, {})
         hub                   = google_network_connectivity_hub.hub[vpc_config.ncc_config.hub].id
         description           = try(vpc_config.ncc_config.description, "Terraform-managed")

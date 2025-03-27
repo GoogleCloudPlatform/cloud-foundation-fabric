@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
 locals {
   #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_config.
   _network_projects = {

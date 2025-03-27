@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
+
 locals {
   dns_zone_entries = flatten([
     for factory_key, factory_config in local._network_projects : [
@@ -43,16 +45,16 @@ locals {
                     service_directory_namespace = try(zone.zone_config.private.service_directory_namespace, null)
                     client_networks = [
                       for net in zone.zone_config.private.client_networks :
-                      try(module.vpcs[net].self_link, net)
+                      try(module.vpc[net].self_link, net)
                     ]
                   }
                 } : {},
                 contains(keys(try(zone.zone_config, {})), "peering") ? {
                   peering = {
-                    peer_network = try(module.vpcs[zone.zone_config.peering.peer_network].self_link, zone.zone_config.peering.peer_network),
+                    peer_network = try(module.vpc[zone.zone_config.peering.peer_network].self_link, zone.zone_config.peering.peer_network),
                     client_networks = [
                       for net in zone.zone_config.peering.client_networks :
-                      try(module.vpcs[net].self_link, net)
+                      try(module.vpc[net].self_link, net)
                     ]
                   }
                 } : {},
@@ -61,7 +63,7 @@ locals {
                     forwarders = try(zone.zone_config.forwarding.forwarders, {}),
                     client_networks = [
                       for net in zone.zone_config.forwarding.client_networks :
-                      try(module.vpcs[net].self_link, net)
+                      try(module.vpc[net].self_link, net)
                     ]
                   }
                 } : {}
@@ -87,5 +89,5 @@ module "dns-zones" {
   iam           = each.value.iam
   zone_config   = each.value.zone_config
   recordsets    = each.value.recordsets
-  depends_on    = [module.vpcs]
+  depends_on    = [module.vpc]
 }

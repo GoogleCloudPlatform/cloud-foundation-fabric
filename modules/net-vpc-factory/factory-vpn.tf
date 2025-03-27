@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
+
 locals {
   routers = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for router_key, router_config in try(vpc_config.routers, {}) : {
           "${factory_key}/${vpc_key}/${router_key}" = merge(router_config, {
-            vpc_self_link     = module.vpcs["${factory_key}/${vpc_key}"].self_link
+            vpc_self_link     = module.vpc["${factory_key}/${vpc_key}"].self_link
             project_id        = module.projects[factory_key].id
             custom_advertise  = try(router_config.custom_advertise, {})
             advertise_mode    = try(router_config.custom_advertise != null, false) ? "CUSTOM" : "DEFAULT"
@@ -38,7 +40,7 @@ locals {
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for k, v in try(vpc_config.vpn_config, {}) : {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {
-            vpc_name   = module.vpcs["${factory_key}/${vpc_key}"].name
+            vpc_name   = module.vpc["${factory_key}/${vpc_key}"].name
             vpn_name   = replace("${factory_key}/${vpc_key}/${k}", "/", "-")
             project_id = module.projects[factory_key].id
             },
@@ -77,14 +79,14 @@ resource "google_compute_router" "router" {
   }
 }
 
-resource "google_compute_ha_vpn_gateway" "ha_gateway" {
+resource "google_compute_ha_vpn_gateway" "default" {
   for_each   = local.vpns
   project    = each.value.project_id
   region     = each.value.region
   name       = replace(each.key, "/", "-")
   network    = each.value.vpc_name
   stack_type = "IPV4_ONLY"
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc]
 }
 
 module "vpn-ha" {
@@ -96,14 +98,14 @@ module "vpn-ha" {
   region             = each.value.region
   router_config      = each.value.router_config
   tunnels            = each.value.tunnels
-  vpn_gateway        = google_compute_ha_vpn_gateway.ha_gateway[each.key].id
+  vpn_gateway        = google_compute_ha_vpn_gateway.default[each.key].id
   vpn_gateway_create = null
   peer_gateways = {
     for k, gw in each.value.peer_gateways : k => {
       for gw_type, value in gw : gw_type => (
         #TODO(sruffilli): create a lookup table instead, that only does this replacement if value exists, 
         #to allow passing an arbitrary gateway id
-        gw_type == "gcp" ? google_compute_ha_vpn_gateway.ha_gateway[value].id : value
+        gw_type == "gcp" ? google_compute_ha_vpn_gateway.default[value].id : value
       )
     }
   }

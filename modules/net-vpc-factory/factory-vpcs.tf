@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
+
 locals {
   _vpcs_preprocess = [for factory_key, factory_config in local._network_projects : {
     for k, v in try(factory_config.vpc_config, {}) : "${factory_key}/${k}" => {
@@ -45,7 +47,12 @@ locals {
   )
 }
 
-module "vpcs" {
+moved {
+  from = module.vpcs
+  to   = module.vpc
+}
+
+module "vpc" {
   source                            = "../net-vpc"
   for_each                          = local.vpcs
   project_id                        = each.value.project_id
@@ -74,5 +81,5 @@ module "firewall" {
   network              = each.value.name
   factories_config     = each.value.firewall_factory_config
   default_rules_config = { disabled = true }
-  depends_on           = [module.vpcs]
+  depends_on           = [module.vpc]
 }

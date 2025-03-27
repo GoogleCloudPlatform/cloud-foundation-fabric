@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:TODO.
+
 locals {
   peerings = merge(flatten([
     for factory_key, factory_config in local._network_projects : [
@@ -22,8 +24,8 @@ locals {
           "${factory_key}/${vpc_key}/${k}" = {
             project                             = factory_key
             name                                = replace("${vpc_key}/${k}", "/", "-")
-            local_network                       = module.vpcs["${factory_key}/${vpc_key}"].self_link
-            peer_network                        = module.vpcs[v.peer_network].self_link
+            local_network                       = module.vpc["${factory_key}/${vpc_key}"].self_link
+            peer_network                        = module.vpc[v.peer_network].self_link
             export_custom_routes                = try(v.routes_config.export, true)
             import_custom_routes                = try(v.routes_config.import, true)
             export_subnet_routes_with_public_ip = try(v.routes_config.public_export, null)
