@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
+
+name: prod-default
+region: europe-west12
+ip_cidr_range: 10.69.0.0/24
+description: Default europe-west12 subnet for prod
