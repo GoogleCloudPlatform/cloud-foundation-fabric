@@ -78,6 +78,15 @@ repos:
     name: Check links in markdown files
     language: system
     entry: tools/check_links.py --no-show-summary --scan-files
+  - id: duplicate-diff
+    name: duplicate-diff
+    entry: python3 tools/duplicate-diff.py
+    language: python
+    language_version: python3
+    files: '.*(\.sh|\.tf|\.tftpl|\.tpl)$'
+    pass_filenames: true
+    require_serial: true
+
 
 # - repo: https://github.com/adrienverge/yamllint
 #   rev: v1.34.0
