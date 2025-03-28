@@ -1,1 +1,0 @@
-/home/ludomagno/dev/tf-playground/fast-config/ludo/providers/2-project-factory/prod-shared-mongodb-0-automation/rw-providers.tf
