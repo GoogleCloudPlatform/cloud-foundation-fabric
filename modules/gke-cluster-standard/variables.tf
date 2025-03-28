@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,12 +176,12 @@ variable "enable_addons" {
   type = object({
     cloudrun                       = optional(bool, false)
     config_connector               = optional(bool, false)
-    dns_cache                      = optional(bool, false)
-    gce_persistent_disk_csi_driver = optional(bool, false)
-    gcp_filestore_csi_driver       = optional(bool, false)
-    gcs_fuse_csi_driver            = optional(bool, false)
-    horizontal_pod_autoscaling     = optional(bool, false)
-    http_load_balancing            = optional(bool, false)
+    dns_cache                      = optional(bool, true)
+    gce_persistent_disk_csi_driver = optional(bool, true)
+    gcp_filestore_csi_driver       = optional(bool, true)
+    gcs_fuse_csi_driver            = optional(bool, true)
+    horizontal_pod_autoscaling     = optional(bool, true)
+    http_load_balancing            = optional(bool, true)
     istio = optional(object({
       enable_tls = bool
     }))
@@ -189,10 +189,7 @@ variable "enable_addons" {
     network_policy = optional(bool, false)
     stateful_ha    = optional(bool, false)
   })
-  default = {
-    horizontal_pod_autoscaling = true
-    http_load_balancing        = true
-  }
+  default  = {}
   nullable = false
 }
 
@@ -202,7 +199,7 @@ variable "enable_features" {
     beta_apis                         = optional(list(string))
     binary_authorization              = optional(bool, false)
     cilium_clusterwide_network_policy = optional(bool, false)
-    cost_management                   = optional(bool, false)
+    cost_management                   = optional(bool, true)
     dns = optional(object({
       provider = optional(string)
       scope    = optional(string)
@@ -212,8 +209,8 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2          = optional(bool, false)
-    fqdn_network_policy   = optional(bool, false)
+    dataplane_v2          = optional(bool, true)
+    fqdn_network_policy   = optional(bool, true)
     gateway_api           = optional(bool, false)
     groups_for_rbac       = optional(string)
     image_streaming       = optional(bool, false)
@@ -239,10 +236,9 @@ variable "enable_features" {
     }))
     vertical_pod_autoscaling = optional(bool, false)
     workload_identity        = optional(bool, true)
+    enterprise_cluster       = optional(bool)
   })
-  default = {
-    workload_identity = true
-  }
+  default = {}
   validation {
     condition = (
       var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true

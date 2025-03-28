@@ -1,6 +1,6 @@
 # Load testing an application running on an autopilot cluster
 
-This blueprint creates an Autopilot cluster with Google-managed Prometheus enabled and installs an application that scales as the traffic that is hitting the load balancer exposing it grows. It also installs the tooling required to distributed load test with [locust](https://locust.io) on that application and the monitoring tooling required to observe how things evolve in the cluster during the load test. Ansible is used to install the application and all the tooling on a management VM. 
+This blueprint creates an Autopilot cluster with Google-managed Prometheus enabled and installs an application that scales as the traffic that is hitting the load balancer exposing it grows. It also installs the tooling required to distributed load test with [locust](https://locust.io) on that application and the monitoring tooling required to observe how things evolve in the cluster during the load test. Ansible is used to install the application and all the tooling on a management VM.
 
 The diagram below depicts the architecture.
 
@@ -22,7 +22,7 @@ The diagram below depicts the architecture.
     terraform apply -var project_id=my-project-id
     ```
 
-4. Copy the IP addresses for grafana, the locust master.    
+4. Copy the IP addresses for grafana, the locust master.
 
 4. Change to the ansible directory and run the following command
 
@@ -31,7 +31,6 @@ The diagram below depicts the architecture.
     ```
 
 5. Open to the locust master web interface url in your browser and start the load test
-
 
 6. SSH to the management VM
 
@@ -43,7 +42,7 @@ The diagram below depicts the architecture.
 
     ```
     kubectl get pods -A -o wide
-    ```    
+    ```
   
 8. Run the following command to see how the application pods scale
 
@@ -90,5 +89,5 @@ module "test" {
   }
   project_id = "my-project"
 }
-# tftest modules=11 resources=42
+# tftest modules=11 resources=43
 ```

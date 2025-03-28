@@ -15,24 +15,32 @@
 values:
   module.db.google_sql_database_instance.primary:
     clone: []
-    database_version: POSTGRES_13
+    database_version: POSTGRES_16
     name: myprefix-db
     project: project-id
     region: europe-west8
+    settings:
+    - edition: ENTERPRISE
+
   module.db.google_sql_database_instance.replicas["replica1"]:
     clone: []
-    database_version: POSTGRES_13
+    database_version: POSTGRES_16
     master_instance_name: myprefix-db
     name: myprefix-replica1
     project: project-id
     region: europe-west3
+    settings:
+    - edition: ENTERPRISE
+
   module.db.google_sql_database_instance.replicas["replica2"]:
     clone: []
-    database_version: POSTGRES_13
+    database_version: POSTGRES_16
     master_instance_name: myprefix-db
     name: myprefix-replica2
     project: project-id
     region: us-central1
+    settings:
+    - edition: ENTERPRISE
 
 counts:
   google_sql_database_instance: 3

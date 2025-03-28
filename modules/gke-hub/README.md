@@ -105,7 +105,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=27 inventory=full.yaml
+# tftest modules=4 resources=28 inventory=full.yaml
 ```
 
 ## Multi-cluster mesh on GKE
@@ -289,7 +289,7 @@ module "hub" {
   ]
 }
 
-# tftest modules=8 resources=43
+# tftest modules=8 resources=44
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

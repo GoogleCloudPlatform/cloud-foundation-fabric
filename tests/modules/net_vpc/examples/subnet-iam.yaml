@@ -98,11 +98,11 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_route: 2
+  google_compute_route: 3
   google_compute_subnetwork: 2
   google_compute_subnetwork_iam_binding: 2
   google_compute_subnetwork_iam_member: 1
   modules: 1
-  resources: 8
+  resources: 9
 
 outputs: {}

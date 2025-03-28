@@ -26,7 +26,6 @@ The resources created in this blueprint are shown in the high level diagram belo
 
 <img src="diagram.png" width="640px">
 
-
 ## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fasset-inventory-feed-remediation), then go through the following steps to create resources:
@@ -82,5 +81,5 @@ module "test" {
   project_id     = "project-1"
 }
 
-# tftest modules=7 resources=28
+# tftest modules=7 resources=29
 ```

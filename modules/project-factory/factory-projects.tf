@@ -130,6 +130,7 @@ locals {
         try(v.shared_vpc_service_config, null) != null
         ? merge(
           {
+            host_project             = null
             network_users            = []
             service_agent_iam        = {}
             service_agent_subnet_iam = {}
@@ -169,6 +170,7 @@ locals {
         : (
           try(v.vpc_sc, null) != null
           ? merge({
+            perimeter_name    = null
             perimeter_bridges = []
             is_dry_run        = false
           }, v.vpc_sc)

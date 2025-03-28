@@ -132,5 +132,5 @@ module "psc-glb-and-armor-test" {
   producer_b_project_id = "project-3"
   region                = "europe-west2"
 }
-# tftest modules=14 resources=64
+# tftest modules=14 resources=67
 ```

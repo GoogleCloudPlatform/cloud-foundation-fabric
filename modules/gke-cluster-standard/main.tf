@@ -552,6 +552,12 @@ resource "google_container_cluster" "cluster" {
       workload_pool = "${var.project_id}.svc.id.goog"
     }
   }
+  dynamic "enterprise_config" {
+    for_each = var.enable_features.enterprise_cluster != null ? [""] : []
+    content {
+      desired_tier = var.enable_features.enterprise_cluster ? "ENTERPRISE" : "STANDARD"
+    }
+  }
   lifecycle {
     ignore_changes = [node_config]
   }

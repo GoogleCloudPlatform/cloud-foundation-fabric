@@ -54,7 +54,7 @@ resource "google_compute_global_forwarding_rule" "default" {
     var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   )
   port_range = join(",", (
-    var.protocol == "HTTPS" ? [443] : coalesce(each.value.ports, [80])
+    coalesce(each.value.ports, var.protocol == "HTTPS" ? [443] : [80])
   ))
   labels = var.labels
   target = local.fwd_rule_target
