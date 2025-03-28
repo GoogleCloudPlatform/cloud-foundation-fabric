@@ -14,12 +14,6 @@ variable "atlas_config" {
   })
 }
 
-variable "location" {
-  description = "Region where the registries will be created."
-  type        = string
-  default     = "europe-west8"
-}
-
 variable "name" {
   description = "Prefix used for all resource names."
   type        = string
@@ -30,4 +24,13 @@ variable "name" {
 variable "project_id" {
   description = "Project id where the registries will be created."
   type        = string
+}
+
+variable "vpc_config" {
+  description = "VPC configuration."
+  type = object({
+    psc_cidr_block = string
+    network_id     = string
+    subnetwork_id  = string
+  })
 }

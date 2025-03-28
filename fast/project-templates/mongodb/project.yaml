@@ -32,7 +32,7 @@ automation:
   bucket:
     description: Terraform state bucket for MongoDB.
     iam:
-      roles/storage.objectCreator:
+      roles/storage.objectAdmin:
         - rw
       roles/storage.objectViewer:
         - rw
