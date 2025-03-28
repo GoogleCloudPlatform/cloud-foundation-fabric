@@ -43,10 +43,10 @@ vpc_config = {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [atlas_config](variables.tf#L1) | MongoDB Atlas configuration. | <code title="object&#40;&#123;&#10;  cluster_name     &#61; string&#10;  organization_id  &#61; string&#10;  project_name     &#61; string&#10;  region           &#61; string&#10;  database_version &#61; optional&#40;string&#41;&#10;  instance_size    &#61; optional&#40;string&#41;&#10;  provider &#61; object&#40;&#123;&#10;    private_key &#61; string&#10;    public_key  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L24) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L29) | VPC configuration. | <code title="object&#40;&#123;&#10;  psc_cidr_block &#61; string&#10;  network_name   &#61; string&#10;  subnetwork_id  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L17) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+| [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code title="object&#40;&#123;&#10;  cluster_name     &#61; string&#10;  organization_id  &#61; string&#10;  project_name     &#61; string&#10;  region           &#61; string&#10;  database_version &#61; optional&#40;string&#41;&#10;  instance_size    &#61; optional&#40;string&#41;&#10;  provider &#61; object&#40;&#123;&#10;    private_key &#61; string&#10;    public_key  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L40) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L45) | VPC configuration. | <code title="object&#40;&#123;&#10;  psc_cidr_block &#61; string&#10;  network_name   &#61; string&#10;  subnetwork_id  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L33) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 <!-- END TFDOC -->
 ## Test
 

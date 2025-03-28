@@ -62,20 +62,6 @@ output "psa_addresses" {
   }
 }
 
-output "psc_addresses" {
-  description = "Allocated internal addresses for PSC endpoints."
-  value = merge(
-    {
-      for address in google_compute_global_address.psc :
-      address.name => address
-    },
-    {
-      for address in google_compute_address.psc :
-      address.name => address
-    }
-  )
-}
-
 output "psc" {
   description = "Allocated resources for PSC endpoints."
   value = merge(
@@ -106,6 +92,20 @@ output "psc" {
           name = try(google_compute_forwarding_rule.psc_consumer[k].name, null)
         }
       }
+    }
+  )
+}
+
+output "psc_addresses" {
+  description = "Allocated internal addresses for PSC endpoints."
+  value = merge(
+    {
+      for address in google_compute_global_address.psc :
+      address.name => address
+    },
+    {
+      for address in google_compute_address.psc :
+      address.name => address
     }
   )
 }
