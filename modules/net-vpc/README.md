@@ -105,7 +105,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=8 inventory=subnet-options.yaml e2e
+# tftest modules=1 resources=9 inventory=subnet-options.yaml e2e
 ```
 
 ### Subnet IAM
