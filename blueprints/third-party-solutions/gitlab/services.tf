@@ -35,11 +35,10 @@ module "db" {
   name              = var.cloudsql_config.name
   availability_type = var.gitlab_config.ha_required ? "REGIONAL" : "ZONAL"
   network_config = {
-    authorized_networks = {}
     connectivity = {
-      psa_configs = [{
+      psa_config = {
         private_network = var.network_config.network_self_link
-      }]
+      }
     }
   }
   database_version = var.cloudsql_config.database_version
