@@ -52,7 +52,7 @@ vpc_config = {
 
 ```hcl
 module "test" {
-  source     = "./fabric/fast/project-templates/mongodb"
+  source = "./fabric/fast/project-templates/mongodb"
   atlas_config = {
     cluster_name     = "test-0"
     organization_id  = "fmoajt0b2fwdvp9yvu7m7zl2"
@@ -72,5 +72,5 @@ module "test" {
     psc_cidr_block = "10.8.11.192/26"
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=2 resources=104
 ```
