@@ -18,7 +18,7 @@ counts:
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 4
   google_compute_network: 3
-  google_compute_route: 9
+  google_compute_route: 12
   google_compute_router: 2
   google_compute_router_nat: 2
   google_compute_shared_vpc_host_project: 3
@@ -42,4 +42,4 @@ counts:
   google_storage_bucket_object: 1
   google_tags_tag_binding: 3
   modules: 23
-  resources: 176
+  resources: 179

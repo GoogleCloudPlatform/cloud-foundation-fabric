@@ -313,6 +313,21 @@ resource "google_compute_instance" "default" {
         values   = affinity.value.values
       }
     }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
+      }
+    }
+
   }
 
   dynamic "scratch_disk" {
@@ -517,6 +532,20 @@ resource "google_compute_instance_template" "default" {
         key      = affinity.key
         operator = affinity.value.in ? "IN" : "NOT_IN"
         values   = affinity.value.values
+      }
+    }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
       }
     }
   }

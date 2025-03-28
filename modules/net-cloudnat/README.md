@@ -113,7 +113,9 @@ module "nat" {
 }
 # tftest modules=2 resources=5 inventory=rules.yaml e2e
 ```
+
 ## Hybrid NAT
+
 ```hcl
 module "vpc1" {
   source     = "./fabric/modules/net-vpc"
@@ -164,10 +166,11 @@ module "vpc1-nat" {
     }
   ]
 }
-# tftest modules=2 resources=7 inventory=hybrid.yaml
+# tftest modules=2 resources=8 inventory=hybrid.yaml
 ```
 
 ## NAT for Proxy net or Secure Web Proxy
+
 By default NAT is provided only for VMs (`ENDPOINT_TYPE_VM`). You can also define endpoint type for managed proxy (`ENDPOINT_TYPE_MANAGED_PROXY_LB`) or Secure Web Proxy (`ENDPOINT_TYPE_SWG`). Currently only one `endpoint_type` can be provided per NAT instance.
 
 ```hcl

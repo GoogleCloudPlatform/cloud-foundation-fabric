@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,11 +121,11 @@ values:
     description: Managed by Terraform.
     exclude_public_ca_set: false
     location: europe-west4
-    min_tls_version: null
+    min_tls_version: TLS_VERSION_UNSPECIFIED
     name: secure-web-proxy
     project: my-project
     timeouts: null
-    tls_feature_profile: null
+    tls_feature_profile: PROFILE_UNSPECIFIED
     trust_config: null
   module.secure-web-proxy.google_network_services_gateway.default:
     addresses:

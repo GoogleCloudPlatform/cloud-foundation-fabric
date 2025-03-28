@@ -23,6 +23,8 @@ variable "auto_create_subnetworks" {
 variable "create_googleapis_routes" {
   description = "Toggle creation of googleapis private/restricted routes. Disabled when vpc creation is turned off, or when set to null."
   type = object({
+    directpath   = optional(bool, true)
+    directpath-6 = optional(bool, false)
     private      = optional(bool, true)
     private-6    = optional(bool, false)
     restricted   = optional(bool, true)

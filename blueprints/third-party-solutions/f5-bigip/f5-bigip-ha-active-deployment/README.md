@@ -7,10 +7,12 @@ This blueprint shows how to the deploy [F5 BigIP Virtual Edition (VE)](https://w
 </p>
 
 Calling the [f5-bigip-ha-active blueprint](../f5-bigip-ha-active/README.md), we deploy:
+
 - 2 F5 BigIP VMs, each in an unmanaged instance group, in a dedicated zone
 - 1 internal network passthrough load balancer in `L3_default` mode, pointing to the F5 instance groups. By default, the load balancer will expose two forwarding rules (IPs): one for IPv4, one for IPv6
 
 Additionally, we deploy directly through this blueprint:
+
 - 1 project containing all the other resources (optional)
 - 1 dataplane VPC where all VM NICs are attached, equipped with Cloud NAT (so that the backend VMs can access the Internet). One subnet is dedicated to clients. One subnet is dedicated to F5 VMs and backend VMs
 - 1 management VPC used by F5 VMs only, equipped with Cloud NAT (for F5 management connectivity)
@@ -52,10 +54,12 @@ gcloud compute ssh YOUR_F5_VM_NAME \
 Once tunnels are established, from your machine:
 
 Connect to the machine in zone `a` using:
+
 - SSH: `127.0.0.1`, port `221`
 - GUI: `127.0.0.1`, port `4431`
 
 Connect to the machine in zone `b` using:
+
 - SSH: `127.0.0.1`, port `222`
 - GUI: `127.0.0.1`, port `4432`
 
@@ -109,6 +113,7 @@ Please, note there are a few caveats:
 | [forwarding_rule_configss](outputs.tf#L22) | The GCP forwarding rules configurations. |  |
 <!-- END TFDOC -->
 ## Test
+
 ```hcl
 module "f5-deployment" {
   source         = "./fabric/blueprints/third-party-solutions/f5-bigip/f5-bigip-ha-active-deployment"
@@ -117,5 +122,5 @@ module "f5-deployment" {
   project_id     = "test-project"
   region         = "europe-west1"
 }
-# tftest modules=21 resources=46
+# tftest modules=21 resources=48
 ```

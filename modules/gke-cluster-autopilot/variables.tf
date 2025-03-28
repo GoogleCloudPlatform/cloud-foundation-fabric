@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ variable "enable_features" {
   type = object({
     beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, false)
+    cost_management      = optional(bool, true)
     dns = optional(object({
       provider = optional(string)
       scope    = optional(string)
@@ -124,6 +124,7 @@ variable "enable_features" {
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
+    enterprise_cluster       = optional(bool)
   })
   default = {}
 }

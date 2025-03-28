@@ -151,5 +151,5 @@ module "test" {
   project_id              = "project-1"
   enforce_security_policy = true
 }
-# tftest modules=12 resources=29
+# tftest modules=12 resources=30
 ```
