@@ -33,13 +33,15 @@ automation:
     description: Terraform state bucket for MongoDB.
     iam:
       roles/storage.objectAdmin:
-        - rw
+        - automation/rw
       roles/storage.objectViewer:
-        - rw
+        - automation/rw
 iam:
   roles/compute.admin:
-    - prod-shared-mongodb-0/rw
+    - automation/rw
+  roles/servicedirectory.admin:
+    - automation/rw
 shared_vpc_service_config:
   host_project: dev-spoke-0
   network_users:
-    - rw
+    - automation/rw

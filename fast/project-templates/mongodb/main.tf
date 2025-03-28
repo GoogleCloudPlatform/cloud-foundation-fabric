@@ -20,7 +20,7 @@ locals {
     var.vpc_config.subnetwork_id
   )[0]
 }
-output "foo" { value = local.region }
+
 resource "mongodbatlas_project" "default" {
   name   = var.atlas_config.project_name
   org_id = var.atlas_config.organization_id
@@ -45,7 +45,7 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
   project_id          = mongodbatlas_privatelink_endpoint.default.project_id
   private_link_id     = mongodbatlas_privatelink_endpoint.default.private_link_id
   provider_name       = "GCP"
-  endpoint_service_id = var.vpc_config.network_id
+  endpoint_service_id = var.vpc_config.network_name
   gcp_project_id      = var.project_id
   dynamic "endpoints" {
     for_each = module.addresses.psc

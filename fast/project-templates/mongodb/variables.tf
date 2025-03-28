@@ -30,7 +30,7 @@ variable "vpc_config" {
   description = "VPC configuration."
   type = object({
     psc_cidr_block = string
-    network_id     = string
+    network_name   = string
     subnetwork_id  = string
   })
 }
