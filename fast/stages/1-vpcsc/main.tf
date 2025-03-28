@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,25 @@
  */
 
 locals {
-  fast_ingress_policies = var.logging == null ? {} : {
-    fast-org-log-sinks = {
-      from = {
-        access_levels = ["*"]
-        identities    = values(var.logging.writer_identities)
-      }
-      to = {
-        operations = [{ service_name = "*" }]
-        resources  = ["projects/${var.logging.project_number}"]
-      }
-    }
-  }
-  perimeters = {
-    for k, v in var.perimeters : k => merge(v, {
-      restricted_services = (
-        v.restricted_services == null
-        ? local.restricted_services
-        : v.restricted_services
-      )
-      resources = distinct(concat(
-        v.resources,
-        k != "default" || var.resource_discovery.enabled != true ? [] : [
-          for v in module.vpc-sc-discovery[0].project_numbers :
-          "projects/${v}"
-        ]
-      ))
+  discovered_projects = var.resource_discovery.enabled != true ? [] : [
+    for v in module.vpc-sc-discovery[0].project_numbers :
+    "projects/${v}"
+  ]
+  restricted_services = yamldecode(file("data/restricted-services.yaml"))
+
+  # extend context with our own data
+  context = {
+    identity_sets = merge(var.factories_config.context.identity_sets, {
+      org_logging_writer_identities = distinct(values(var.logging.writer_identities))
+    })
+    resource_sets = merge(var.factories_config.context.resource_sets, {
+      discovered_projects = local.discovered_projects
+      logging_project     = ["projects/${var.logging.project_number}"]
+    })
+    service_sets = merge(var.factories_config.context.service_sets, {
+      restricted_services = local.restricted_services
     })
   }
-  restricted_services = yamldecode(file("data/restricted-services.yaml"))
 }
 
 module "vpc-sc-discovery" {
@@ -56,26 +46,19 @@ module "vpc-sc-discovery" {
 }
 
 module "vpc-sc" {
-  source = "../../../modules/vpc-sc"
-  # only enable if the default perimeter is defined
-  count         = var.perimeters.default == null ? 0 : 1
+  source        = "../../../modules/vpc-sc"
   access_policy = var.access_policy
   access_policy_create = var.access_policy != null ? null : {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
-  access_levels    = var.access_levels
-  egress_policies  = var.egress_policies
-  factories_config = var.factories_config
-  ingress_policies = merge(
-    local.fast_ingress_policies,
-    var.ingress_policies
-  )
-  service_perimeters_regular = {
-    for k, v in local.perimeters : k => {
-      spec                      = v.dry_run ? v : null
-      status                    = !v.dry_run ? v : null
-      use_explicit_dry_run_spec = v.dry_run
+  access_levels   = var.access_levels
+  egress_policies = var.egress_policies
+  factories_config = merge(
+    var.factories_config, {
+      context = local.context
     }
-  }
+  )
+  ingress_policies           = var.ingress_policies
+  service_perimeters_regular = var.perimeters
 }
