@@ -66,8 +66,17 @@ variable "prefix" {
   }
 }
 
+variable "project_create_config" {
+  description = "Create project instead of using an existing one."
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+  })
+  default = null
+}
+
 variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
+  description = "Project id that references existing project."
   type        = string
 }
 
