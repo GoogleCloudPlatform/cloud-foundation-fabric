@@ -210,6 +210,8 @@ def get_secops_export_folders_for_date(bucket_name, export_date):
   export_ids = []
 
   for blob in storage_client.list_blobs(bucket_name):
+    if "_$folder$" in blob.name:
+      continue
     if blob.time_created.strftime(
         "%Y-%m-%d") == export_date and blob.name.split(
             '/')[0] not in export_ids:
