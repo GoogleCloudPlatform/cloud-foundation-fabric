@@ -21,6 +21,24 @@ locals {
   )[0]
 }
 
+module "addresses" {
+  source     = "../../../modules/net-address"
+  project_id = var.project_id
+  psc_addresses = {
+    for i in range(50) : "${var.name}-${i}" => {
+      address          = cidrhost(var.vpc_config.psc_cidr_block, i)
+      region           = local.region
+      subnet_self_link = var.vpc_config.subnetwork_id
+      service_attachment = {
+        psc_service_attachment_link = (
+          mongodbatlas_privatelink_endpoint.default.service_attachment_names[i]
+        )
+        global_access = true
+      }
+    }
+  }
+}
+
 resource "mongodbatlas_project" "default" {
   name   = var.atlas_config.project_name
   org_id = var.atlas_config.organization_id
@@ -52,24 +70,6 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
     content {
       ip_address    = endpoints.value.address.address
       endpoint_name = endpoints.value.forwarding_rule.name
-    }
-  }
-}
-
-module "addresses" {
-  source     = "../../../modules/net-address"
-  project_id = var.project_id
-  psc_addresses = {
-    for i in range(50) : "${var.name}-${i}" => {
-      address          = cidrhost(var.vpc_config.psc_cidr_block, i)
-      region           = local.region
-      subnet_self_link = var.vpc_config.subnetwork_id
-      service_attachment = {
-        psc_service_attachment_link = (
-          mongodbatlas_privatelink_endpoint.default.service_attachment_names[i]
-        )
-        global_access = true
-      }
     }
   }
 }

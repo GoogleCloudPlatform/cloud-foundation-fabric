@@ -1,6 +1,6 @@
 # MongoDB Atlas
 
-This simple setup allows creating and configuring a managed MongoDB cluster, and connecting it to a local VPC network via Private Endpoints.
+This simple setup allows creating and configuring a managed [MongoDB Atlas](https://cloud.google.com/mongodb) cluster, and connecting it to a local VPC network via Private Endpoints.
 
 ## Prerequisites
 
@@ -15,7 +15,13 @@ This Terraform can of course be deployed using any pre-existing project. In that
 
 ## Variable Configuration
 
-This is an example of running this stage. Note that the `apt_remote_registries` has a default value that can be used when no IAM is needed at the registry level, and the default set of remotes is fine.
+Configuration is mostly done via the `atlas_config` and `vpc_config` variables. Note that:
+
+- VPC configuration can be set to reference a Shared VPC Host network like shown below, or an in-project network if that is preferred
+- the PSC CIDR block is used to allocate the required 50 endpoint addresses in the VPC, so it needs to be large enough to accommodate them
+- the Atlas region must match the GCP subnetwork region
+
+Bringing up a cluster and the associated connectivity from scratch will require approximately 30 minutes.
 
 ```hcl
 atlas_config = {
@@ -47,12 +53,20 @@ vpc_config = {
 | [project_id](variables.tf#L40) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
 | [vpc_config](variables.tf#L45) | VPC configuration. | <code title="object&#40;&#123;&#10;  psc_cidr_block &#61; string&#10;  network_name   &#61; string&#10;  subnetwork_id  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L33) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [atlas_cluster](outputs.tf#L17) | MongoDB Atlas cluster. |  |
+| [atlas_project](outputs.tf#L31) | MongoDB Atlas project. |  |
+| [endpoints](outputs.tf#L40) | MongoDB Atlas endpoints. |  |
 <!-- END TFDOC -->
 ## Test
 
 ```hcl
 module "test" {
-  source = "./fabric/fast/project-templates/mongodb"
+  source = "./fabric/fast/project-templates/data-mongodb"
   atlas_config = {
     cluster_name     = "test-0"
     organization_id  = "fmoajt0b2fwdvp9yvu7m7zl2"

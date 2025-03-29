@@ -12,19 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../../cloud-foundation-fabric/modules/project-factory/schemas/project.schema.json
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
 
-# TODO: edit and uncomment the following line to create the project in a folder
-
+# edit parent to suit desired folder where project is created
 parent: shared
 name: prod-shared-mongodb-0
 services:
   - compute.googleapis.com
   - logging.googleapis.com
   - monitoring.googleapis.com
-
+# if automation resources are not used, grant these roles to the principal
+# that will be used to apply this Terraform setup
+iam:
+  roles/compute.admin:
+    - automation/rw
+  roles/servicedirectory.admin:
+    - automation/rw
 automation:
-  # TODO: edit the automation project and optionally edit resource names
   project: foo-prod-shared-iac-0
   service_accounts:
     rw:
@@ -36,11 +40,7 @@ automation:
         - automation/rw
       roles/storage.objectViewer:
         - automation/rw
-iam:
-  roles/compute.admin:
-    - automation/rw
-  roles/servicedirectory.admin:
-    - automation/rw
+# edit or comment shared VPC service host
 shared_vpc_service_config:
   host_project: dev-spoke-0
   network_users:
