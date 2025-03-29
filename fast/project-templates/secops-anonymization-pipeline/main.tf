@@ -140,16 +140,16 @@ module "function" {
     path = "${path.module}/source"
   }
   environment_variables = merge({
-    GCP_PROJECT                      = module.project.project_id
-    SKIP_ANONYMIZATION               = var.skip_anonymization
-    SECOPS_SOURCE_PROJECT        = var.secops_config.source_tenant.gcp_project
-    SECOPS_TARGET_PROJECT        = var.secops_config.target_tenant.gcp_project
-    SECOPS_SOURCE_CUSTOMER_ID        = var.secops_config.source_tenant.customer_id
-    SECOPS_TARGET_CUSTOMER_ID        = var.secops_config.target_tenant.customer_id
-    SECOPS_TARGET_FORWARDER_ID       = var.secops_config.target_tenant.forwarder_id
-    SECOPS_REGION                    = var.secops_config.region
-    SECOPS_EXPORT_BUCKET             = module.export-bucket.name
-    LOG_EXECUTION_ID                 = "true"
+    GCP_PROJECT                = module.project.project_id
+    SKIP_ANONYMIZATION         = var.skip_anonymization
+    SECOPS_SOURCE_PROJECT      = var.secops_config.source_tenant.gcp_project
+    SECOPS_TARGET_PROJECT      = var.secops_config.target_tenant.gcp_project
+    SECOPS_SOURCE_CUSTOMER_ID  = var.secops_config.source_tenant.customer_id
+    SECOPS_TARGET_CUSTOMER_ID  = var.secops_config.target_tenant.customer_id
+    SECOPS_TARGET_FORWARDER_ID = var.secops_config.target_tenant.forwarder_id
+    SECOPS_REGION              = var.secops_config.region
+    SECOPS_EXPORT_BUCKET       = module.export-bucket.name
+    LOG_EXECUTION_ID           = "true"
     }, var.skip_anonymization ? {} : {
     SECOPS_OUTPUT_BUCKET       = module.anonymized-bucket.0.name
     DLP_DEIDENTIFY_TEMPLATE_ID = local.dlp_config.deidentify_template_id
