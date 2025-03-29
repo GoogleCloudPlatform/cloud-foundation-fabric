@@ -20,13 +20,14 @@ locals {
     deidentify_template_id = google_data_loss_prevention_deidentify_template.dlp_deidentify_template.0.id
     inspect_template_id    = google_data_loss_prevention_inspect_template.dlp_inspect_template.0.id
   } : var.dlp_config
-  secops_anonymization_export_secret_id = "secops-export-secret-json"
-  secops_anonymization_import_secret_id = "secops-import-secret-json"
 }
 
 module "project" {
   source = "../../../modules/project"
   name   = var.project_id
+  project_reuse = {
+    use_data_source = true
+  }
   services = concat([
     "secretmanager.googleapis.com",
     "run.googleapis.com",
@@ -41,50 +42,12 @@ module "project" {
     "roles/dlp.reader"                        = [module.function.service_account_iam_email]
     "roles/dlp.jobsEditor"                    = [module.function.service_account_iam_email]
     "roles/serviceusage.serviceUsageConsumer" = [module.function.service_account_iam_email]
+    "roles/chronicle.editor"                  = [module.function.service_account_iam_email]
   }
   iam_bindings_additive = {
     function-log-writer = {
       member = module.function.service_account_iam_email
       role   = "roles/logging.logWriter"
-    }
-  }
-}
-
-module "secrets" {
-  source     = "../../../modules/secret-manager"
-  project_id = module.project.project_id
-  secrets = {
-    (local.secops_anonymization_export_secret_id) = {
-      locations = [var.regions.primary]
-    }
-    (local.secops_anonymization_import_secret_id) = {
-      locations = [var.regions.primary]
-    }
-  }
-  versions = {
-    (local.secops_anonymization_export_secret_id) = {
-      latest = {
-        enabled = true,
-        data    = base64decode(var.secops_config.source_tenant.export_sa_key_base64)
-      }
-    }
-    (local.secops_anonymization_import_secret_id) = {
-      latest = {
-        enabled = true,
-        data    = base64decode(var.secops_config.target_tenant.ingestion_sa_key_base64)
-      }
-    }
-  }
-  iam = {
-    (local.secops_anonymization_export_secret_id) = {
-      "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${module.function.service_account_email}"
-      ]
-    }
-    (local.secops_anonymization_import_secret_id) = {
-      "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${module.function.service_account_email}"
-      ]
     }
   }
 }
@@ -179,11 +142,12 @@ module "function" {
   environment_variables = merge({
     GCP_PROJECT                      = module.project.project_id
     SKIP_ANONYMIZATION               = var.skip_anonymization
-    SECOPS_SOURCE_SA_KEY_SECRET_PATH = "/app/secrets/source/latest"
-    SECOPS_TARGET_SA_KEY_SECRET_PATH = "/app/secrets/target/latest"
+    SECOPS_SOURCE_PROJECT        = var.secops_config.source_tenant.gcp_project
+    SECOPS_TARGET_PROJECT        = var.secops_config.target_tenant.gcp_project
+    SECOPS_SOURCE_CUSTOMER_ID        = var.secops_config.source_tenant.customer_id
     SECOPS_TARGET_CUSTOMER_ID        = var.secops_config.target_tenant.customer_id
+    SECOPS_TARGET_FORWARDER_ID       = var.secops_config.target_tenant.forwarder_id
     SECOPS_REGION                    = var.secops_config.region
-    SECOPS_ALPHA_APIS_REGION         = var.secops_config.alpha_apis_region
     SECOPS_EXPORT_BUCKET             = module.export-bucket.name
     LOG_EXECUTION_ID                 = "true"
     }, var.skip_anonymization ? {} : {
@@ -202,24 +166,7 @@ module "function" {
       "serviceAccount:${module.scheduler-sa.email}"
     ]
   }
-  secrets = {
-    "/app/secrets/source" = {
-      is_volume  = true
-      project_id = module.project.number
-      secret     = local.secops_anonymization_export_secret_id
-      versions = [
-        "latest:latest"
-      ]
-    }
-    "/app/secrets/target" = {
-      is_volume  = true
-      project_id = module.project.number
-      secret     = local.secops_anonymization_import_secret_id
-      versions = [
-        "latest:latest"
-      ]
-    }
-  }
+  secrets = {}
   vpc_connector = (
     var.cloud_function_config.vpc_connector == null
     ? {}

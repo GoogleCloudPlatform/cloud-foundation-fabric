@@ -87,15 +87,14 @@ variable "secops_config" {
   description = "SecOps config."
   type = object({
     region            = string
-    alpha_apis_region = string
     source_tenant = object({
+      customer_id             = string
       gcp_project          = string
-      export_sa_key_base64 = string
     })
     target_tenant = object({
       gcp_project             = string
       customer_id             = string
-      ingestion_sa_key_base64 = string
+      forwarder_id            = string
     })
   })
 }
