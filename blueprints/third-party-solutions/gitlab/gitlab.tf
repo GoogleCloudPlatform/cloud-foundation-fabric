@@ -42,6 +42,8 @@ locals {
     gitlab_cert_name   = var.gitlab_config.hostname
     gitlab_ssl_key     = indent(6, base64encode(local.gitlab_ssl_key))
     gitlab_ssl_crt     = indent(6, base64encode(local.gitlab_ssl_crt))
+    region             = var.region
+    repo_url           = module.registry-remote.url
   })
 }
 

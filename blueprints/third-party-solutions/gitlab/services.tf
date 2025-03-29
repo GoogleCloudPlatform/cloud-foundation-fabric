@@ -89,3 +89,20 @@ module "gitlab_object_storage" {
     ]
   }
 }
+
+module "registry-remote" {
+  source     = "../../../modules/artifact-registry"
+  project_id = var.project_id
+  location   = var.region
+  name       = "remote"
+  format = {
+    docker = {
+      remote = {
+        public_repository = "DOCKER_HUB"
+      }
+    }
+  }
+  iam = {
+    "roles/artifactregistry.reader" = [module.gitlab-sa.iam_email]
+  }
+}

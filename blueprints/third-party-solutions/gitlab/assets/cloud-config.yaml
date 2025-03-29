@@ -92,7 +92,7 @@ write_files:
       Wants=gitlab-data.service gcr-online.target docker.socket docker-events-collector.service
       [Service]
       Environment="HOME=/home/gitlab"
-      ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
+      ExecStartPre=/usr/bin/docker-credential-gcr configure-docker --registries ${region}-docker.pkg.dev
       ExecStartPre=mkdir -p /run/gitlab
       ExecStart=/usr/bin/docker run --rm --name=gitlab  \
         --hostname ${gitlab_config.hostname} \
@@ -106,7 +106,7 @@ write_files:
         -v /run/gitlab/logs:/var/log/gitlab \
         -v /run/gitlab/data:/var/opt/gitlab \
         -v /run/gitlab/sshd_config:/assets/sshd_config \
-        gitlab/gitlab-ce
+        ${repo_url}/gitlab/gitlab-ce
       ExecStop=/usr/bin/docker stop gitlab
 
 runcmd:
