@@ -319,6 +319,54 @@
         }
       }
     },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "iam": {
+            "$ref": "#/$defs/iam"
+          },
+          "iam_bindings": {
+            "$ref": "#/$defs/iam_bindings"
+          },
+          "iam_bindings_additive": {
+            "$ref": "#/$defs/iam_bindings_additive"
+          },
+          "id": {
+            "type": "string"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "vpc_sc": {
       "type": "object",
       "additionalItems": false,

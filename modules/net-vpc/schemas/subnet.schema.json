@@ -17,6 +17,9 @@
     "enable_private_access": {
       "type": "boolean"
     },
+    "allow_subnet_cidr_routes_overlap": {
+      "type": "boolean"
+    },
     "flow_logs_config": {
       "type": "object",
       "additionalProperties": false,
