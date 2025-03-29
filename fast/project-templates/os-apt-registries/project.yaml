@@ -17,30 +17,29 @@
 # TODO: edit and uncomment the following line to create the project in a folder
 # parent: shared
 
-name: os-apt-0
+name: prod-os-apt-0
 services:
   - accesscontextmanager.googleapis.com
   - artifactregistry.googleapis.com
 
 automation:
   # TODO: edit the automation project and optionally edit resource names
-  project: pf-automation-0
+  project: prod-pf-iac-0
   service_accounts:
     rw:
       description: Read/write automation service account for apt registries.
-  buckets:
-    tf-state:
-      description: Terraform state bucket for apt registries.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - rw
+  bucket:
+    description: Terraform state bucket for apt registries.
+    iam:
+      roles/storage.objectCreator:
+        - rw
+      roles/storage.objectViewer:
+        - rw
 iam:
   roles/viewer:
-    - rw
+    - prod-os-apt-0/rw
   roles/artifactregistry.admin:
-    - rw
+    - prod-os-apt-0/rw
   # TODO: add instance service accounts that need access to the registries
   # roles/artifactregistry.writer:
   #   - serviceAccount:foo@bar

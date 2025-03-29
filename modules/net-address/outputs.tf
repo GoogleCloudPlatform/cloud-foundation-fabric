@@ -62,6 +62,40 @@ output "psa_addresses" {
   }
 }
 
+output "psc" {
+  description = "Allocated resources for PSC endpoints."
+  value = merge(
+    {
+      for k, v in local.global_psc :
+      k => {
+        address = {
+          address = google_compute_global_address.psc[k].address
+          id      = google_compute_global_address.psc[k].id
+          name    = google_compute_global_address.psc[k].name
+        }
+        forwarding_rule = {
+          id   = try(google_compute_global_forwarding_rule.psc_consumer[k].id, null)
+          name = try(google_compute_global_forwarding_rule.psc_consumer[k].name, null)
+        }
+      }
+    },
+    {
+      for k, v in local.regional_psc :
+      k => {
+        address = {
+          address = google_compute_address.psc[k].address
+          id      = google_compute_address.psc[k].id
+          name    = google_compute_address.psc[k].name
+        }
+        forwarding_rule = {
+          id   = try(google_compute_forwarding_rule.psc_consumer[k].id, null)
+          name = try(google_compute_forwarding_rule.psc_consumer[k].name, null)
+        }
+      }
+    }
+  )
+}
+
 output "psc_addresses" {
   description = "Allocated internal addresses for PSC endpoints."
   value = merge(
