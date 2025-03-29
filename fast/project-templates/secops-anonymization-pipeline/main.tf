@@ -23,7 +23,7 @@ locals {
 }
 
 module "project" {
-  source = "../../../modules/project"
+  source          = "../../../modules/project"
   name            = var.project_id
   billing_account = try(var.project_create_config.billing_account, null)
   parent          = try(var.project_create_config.parent, null)
