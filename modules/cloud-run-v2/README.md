@@ -417,6 +417,27 @@ module "cloud_run" {
 # tftest modules=2 resources=6 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub-sa-create.yaml e2e
 ```
 
+## Cloud Run Invoker IAM Disable
+
+To disables IAM permission check for `run.routes.invoke` for callers of this service set the `invoker_iam_disabled` variable of the module to `true` (default `false`). There should be no requirement to pass the `roles/run.invoker` to the IAM block to enable public access. This allows for the org policy `domain restricted sharing` org policy remain enabled. 
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  invoker_iam_disabled = true
+  deletion_protection    = false
+}
+# tftest modules=1 resources=1 inventory=service-invoker-iam-disable.yaml e2e
+```
+
 ## Cloud Run Service Account
 
 To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` (default).
