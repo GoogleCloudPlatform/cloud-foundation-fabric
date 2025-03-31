@@ -483,6 +483,7 @@ service_accounts:
 | [automation.tf](./automation.tf) | Automation projects locals and resources. | <code>gcs</code> · <code>iam-service-account</code> |
 | [factory-budgets.tf](./factory-budgets.tf) | Billing budget factory locals. |  |
 | [factory-folders.tf](./factory-folders.tf) | Folder hierarchy factory locals. |  |
+| [factory-projects-object.tf](./factory-projects-object.tf) | None |  |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory locals. |  |
 | [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |
 | [main.tf](./main.tf) | Projects and billing budgets factory resources. | <code>billing-account</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |
