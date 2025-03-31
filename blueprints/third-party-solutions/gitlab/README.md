@@ -291,7 +291,7 @@ terraform output ssh_to_bastion
 
 A gcloud command like the following should be available
 
-```bash 
+```bash
 gcloud compute ssh squid-vm --project ${project} --zone europe-west8-b -- -L 3128:127.0.0.1:3128 -N -q -f
 ```
 
@@ -385,5 +385,5 @@ module "test" {
   project_id = "my-project"
   region     = "europe-west8"
 }
-# tftest modules=14 resources=58
+# tftest modules=15 resources=58
 ```
