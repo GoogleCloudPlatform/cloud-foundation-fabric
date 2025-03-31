@@ -465,6 +465,21 @@ values:
         - allowed_values:
           - is:internal-and-cloud-load-balancing
           denied_values: null
+  module.organization.google_org_policy_policy.default["run.managed.requireInvokerIam"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/run.managed.requireInvokerIam
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["sql.restrictAuthorizedNetworks"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/sql.restrictAuthorizedNetworks
