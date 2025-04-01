@@ -105,9 +105,10 @@ resource "google_container_cluster" "cluster" {
   dynamic "dns_config" {
     for_each = var.enable_features.dns != null ? [""] : []
     content {
-      cluster_dns        = var.enable_features.dns.provider
-      cluster_dns_scope  = var.enable_features.dns.scope
-      cluster_dns_domain = var.enable_features.dns.domain
+      additional_pod_ranges_config = var.enable_features.dns.additive_vpc_scope_dns_domain
+      cluster_dns                  = var.enable_features.dns.provider
+      cluster_dns_scope            = var.enable_features.dns.scope
+      cluster_dns_domain           = var.enable_features.dns.domain
     }
   }
   dynamic "enable_k8s_beta_apis" {

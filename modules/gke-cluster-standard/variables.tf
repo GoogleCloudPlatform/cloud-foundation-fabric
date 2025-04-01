@@ -202,9 +202,10 @@ variable "enable_features" {
     cilium_clusterwide_network_policy = optional(bool, false)
     cost_management                   = optional(bool, true)
     dns = optional(object({
-      provider = optional(string)
-      scope    = optional(string)
-      domain   = optional(string)
+      additive_vpc_scope_dns_domain = optional(string)
+      provider                      = optional(string)
+      scope                         = optional(string)
+      domain                        = optional(string)
     }))
     database_encryption = optional(object({
       state    = string
