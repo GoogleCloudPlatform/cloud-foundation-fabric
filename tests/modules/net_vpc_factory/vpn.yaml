@@ -1,15 +1,23 @@
-values: {}
-
 counts:
-  modules: 0
-  resources: 0
-
-outputs:
-  host_project_ids: {}
-  host_project_numbers: {}
-  subnet_ids: {}
-  subnet_proxy_only_self_links: {}
-  subnet_psc_self_links: {}
-  vpc_self_links: {}
-  vpn_gateway_endpoints: {}
-
+  google_compute_external_vpn_gateway: 1
+  google_compute_firewall: 3
+  google_compute_ha_vpn_gateway: 5
+  google_compute_network: 4
+  google_compute_route: 15
+  google_compute_router: 6
+  google_compute_router_interface: 10
+  google_compute_router_nat: 3
+  google_compute_router_peer: 10
+  google_compute_shared_vpc_host_project: 3
+  google_compute_subnetwork: 3
+  google_compute_vpn_tunnel: 10
+  google_dns_managed_zone: 4
+  google_dns_policy: 4
+  google_dns_record_set: 1
+  google_project: 3
+  google_project_iam_member: 21
+  google_project_service: 27
+  google_project_service_identity: 21
+  modules: 22
+  random_id: 15
+  resources: 169
