@@ -21,7 +21,7 @@
 #   data_defaults = ...
 # })
 # outputs:
-# projects - map
+# local._projects_output - map
 locals {
   __projects_config = {
     data_defaults = merge({
@@ -158,6 +158,11 @@ locals {
           ),
         null)
       }
+      iam                        = try(v.iam, {})
+      iam_bindings               = try(v.iam_bindings, {})
+      iam_bindings_additive      = try(v.iam_bindings_additive, {})
+      iam_by_principals_additive = try(v.iam_by_principals_additive, {})
+      iam_by_principals          = try(v.iam_by_principals, {})
       labels = coalesce(
         try(v.labels, null),
         local.__projects_config.data_defaults.labels
