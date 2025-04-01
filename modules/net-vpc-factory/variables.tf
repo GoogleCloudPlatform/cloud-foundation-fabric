@@ -30,16 +30,6 @@ variable "factories_config" {
   }
 }
 
-variable "parent_id" {
-  description = "Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX"
-  type        = string
-}
-
-variable "prefix" {
-  description = "Prefix used for projects."
-  type        = string
-}
-
 variable "network_project_config" {
   description = "Consolidated configuration for project, VPCs and their associated resources."
   type = map(object({
@@ -372,3 +362,12 @@ variable "network_project_config" {
   default = null
 }
 
+variable "parent_id" {
+  description = "Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX"
+  type        = string
+}
+
+variable "prefix" {
+  description = "Prefix used for projects."
+  type        = string
+}
