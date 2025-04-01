@@ -13,3 +13,10 @@
 # limitations under the License.
 
 module: modules/net-vpc-factory
+common_tfvars:
+  - common.tfvars
+tests:
+  peering:
+  vpn:
+  ncc:
+  # projects:

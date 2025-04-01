@@ -1,0 +1,24 @@
+counts:
+  google_compute_external_vpn_gateway: 1
+  google_compute_firewall: 3
+  google_compute_ha_vpn_gateway: 1
+  google_compute_network: 4
+  google_compute_network_peering: 6
+  google_compute_route: 15
+  google_compute_router: 4
+  google_compute_router_interface: 2
+  google_compute_router_nat: 3
+  google_compute_router_peer: 2
+  google_compute_shared_vpc_host_project: 3
+  google_compute_subnetwork: 3
+  google_compute_vpn_tunnel: 2
+  google_dns_managed_zone: 4
+  google_dns_policy: 4
+  google_dns_record_set: 1
+  google_project: 3
+  google_project_iam_member: 21
+  google_project_service: 27
+  google_project_service_identity: 21
+  modules: 18
+  random_id: 3
+  resources: 133

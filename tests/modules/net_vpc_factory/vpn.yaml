@@ -1,0 +1,15 @@
+values: {}
+
+counts:
+  modules: 0
+  resources: 0
+
+outputs:
+  host_project_ids: {}
+  host_project_numbers: {}
+  subnet_ids: {}
+  subnet_proxy_only_self_links: {}
+  subnet_psc_self_links: {}
+  vpc_self_links: {}
+  vpn_gateway_endpoints: {}
+
