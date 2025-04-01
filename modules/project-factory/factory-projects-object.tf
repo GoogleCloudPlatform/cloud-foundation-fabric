@@ -116,7 +116,7 @@ locals {
     )
   }
   _projects_output = {
-    for k, v in local._projects_input : lookup(v, "name", k) => merge(v, {
+    for k, v in local._projects_input : k => merge(v, {
       billing_account = try(coalesce(
         local.__projects_config.data_overrides.billing_account,
         try(v.billing_account, null),
@@ -171,6 +171,7 @@ locals {
         try(v.metric_scopes, null),
         local.__projects_config.data_defaults.metric_scopes
       )
+      name         = lookup(v, "name", k)
       org_policies = try(v.org_policies, {})
       parent = coalesce(
         local.__projects_config.data_overrides.parent,
