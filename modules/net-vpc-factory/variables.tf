@@ -363,7 +363,7 @@ variable "network_project_config" {
 }
 
 variable "parent_id" {
-  description = "Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX"
+  description = "Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX."
   type        = string
 }
 
