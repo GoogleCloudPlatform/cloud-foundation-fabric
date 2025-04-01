@@ -180,7 +180,7 @@ vpc_config:
 
 ### Routes
 
-Static routes and Policy-Based Routes (PBRs) are configured within the vpc_config.<vpc_name> block.
+Static routes and Policy-Based Routes (PBRs) are configured within the `vpc_config.<vpc_name>.routes` and `vpc_config.<vpc_name>.policy_based_routes blocks.
 
 ```hcl
 module "net-vpc-factory" {
@@ -200,14 +200,6 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   net-00:
-    delete_default_routes_on_create: false
-    nat_config:
-      nat-ew8:
-        region: europe-west8
-    subnets_factory_config:
-      subnets_folder: data/subnets/foobar
-    firewall_factory_config:
-      rules_folder: data/firewall/foobar
     routes:
       default-internet:
         dest_range: 0.0.0.0/0
@@ -228,7 +220,7 @@ Refer to the [net-vpc](../net-vpc/) module documentation for details on routes a
 
 ### Private Service Access (PSA)
 
-PSA configuration for services like Cloud SQL is managed via `vpc_config.<vpc_name>.psa_config`.
+PSA configuration is managed via `vpc_config.<vpc_name>.psa_config`.
 
 ```hcl
 module "net-vpc-factory" {
@@ -248,7 +240,6 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   net-00:
-    delete_default_routes_on_create: false
     psa_config:
       - ranges:
           global-psa-range: 10.100.0.0/24
@@ -357,7 +348,6 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   net-00:
-    delete_default_routes_on_create: false
     routers:
       vpn-router:
         region: europe-west8
