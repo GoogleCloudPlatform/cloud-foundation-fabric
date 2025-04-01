@@ -11,12 +11,12 @@ The code is meant to be executed by a high level service accounts with powerful 
 
 This factory module acts as a wrapper around several core Terraform modules:
 
-`../project`: For managing GCP projects.
-`../net-vpc`: For managing VPC networks, subnets, routes, PSA, etc.
-`../net-vpc-firewall`: For managing VPC firewall rules.
-`../net-vpn-ha`: For managing Cloud HA VPN connections.
-`../net-cloudnat`: For managing Cloud NAT instances.
-`../dns`: For managing Cloud DNS zones and record sets.
+- [`../project`](../project/): For managing GCP projects.
+- [`../net-vpc`](../net-vpc): For managing VPC networks, subnets, routes, PSA, etc.
+- [`../net-vpc-firewall`](../net-vpc-firewall/): For managing VPC firewall rules.
+- [`../net-vpn-ha`](../net-vpn-ha): For managing Cloud HA VPN connections.
+- [`../net-cloudnat`](../net-cloudnat/): For managing Cloud NAT instances.
+- [`../dns`](../dns): For managing Cloud DNS zones and record sets.
 
 <!-- BEGIN TOC -->
 - [Factory configuration](#factory-configuration)

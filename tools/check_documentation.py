@@ -96,7 +96,6 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         diff = ''.join([header] + [x for x in ndiff if x[0] != ' '])
 
       elif current_toc and new_toc != current_toc['toc']:
-        print(new_toc)
         state = State.FAIL_STALE_TOC
         header = f'----- {readme_rel} diff -----\n'
         ndiff = difflib.ndiff(current_toc['toc'].splitlines(keepends=True),
