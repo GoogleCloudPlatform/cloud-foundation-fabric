@@ -14,6 +14,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
   - [PubSub](#pubsub)
   - [Audit logs](#audit-logs)
   - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
+- [Cloud Run Invoker IAM Disable](#cloud-run-invoker-iam-disable)
 - [Cloud Run Service Account](#cloud-run-service-account)
 - [Creating Cloud Run Jobs](#creating-cloud-run-jobs)
 - [Tag bindings](#tag-bindings)
