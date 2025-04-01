@@ -14,7 +14,7 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
+vpc_config:
   prod-spoke: 
     delete_default_routes_on_create: true
     mtu: 1500
@@ -33,6 +33,6 @@ vpc_configs:
       subnets_folder: data/subnets/prod-spoke
     firewall_factory_config:
       rules_folder: data/firewall/prod-spoke        
-    ncc_configs:
+    ncc_config:
       hub: net-land-01/hub
       group: net-land-01/hub/default

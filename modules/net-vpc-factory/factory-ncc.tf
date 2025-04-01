@@ -113,7 +113,7 @@ resource "google_network_connectivity_group" "default" {
   name        = each.value.name
   hub         = each.value.hub
   labels      = each.value.labels
-  description = "A sample hub group"
+  description = each.value.description
   dynamic "auto_accept" {
     for_each = try(each.value.auto_accept != null, false) ? [""] : []
     content {
@@ -128,7 +128,7 @@ resource "google_network_connectivity_spoke" "tunnels" {
   project     = each.value.project_id
   name        = each.value.name
   location    = each.value.location
-  description = "A sample spoke with a linked VPN Tunnel"
+  description = each.value.description
   labels      = each.value.labels
   hub         = each.value.hub
   linked_vpn_tunnels {

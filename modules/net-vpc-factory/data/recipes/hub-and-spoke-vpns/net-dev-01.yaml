@@ -2,7 +2,7 @@
 
 project_config:
   name: net-dev-01
-  services: 
+  services:
     - container.googleapis.com
     - compute.googleapis.com
     - dns.googleapis.com
@@ -14,8 +14,8 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
-  dev-spoke: 
+vpc_config:
+  dev-spoke:
     delete_default_routes_on_create: true
     mtu: 1500
     dns_zones:
@@ -25,12 +25,12 @@ vpc_configs:
           peering:
             peer_network: net-land-01/hub
             client_networks:
-              - net-dev-01/dev-spoke      
-    subnets_factory_config: 
+              - net-dev-01/dev-spoke
+    subnets_factory_config:
       subnets_folder: data/subnets/dev-spoke
     firewall_factory_config:
-      rules_folder: data/firewall/dev-spoke    
-    vpn_configs:
+      rules_folder: data/firewall/dev-spoke
+    vpn_config:
       to-hub:
         region: europe-west12
         peer_gateways:

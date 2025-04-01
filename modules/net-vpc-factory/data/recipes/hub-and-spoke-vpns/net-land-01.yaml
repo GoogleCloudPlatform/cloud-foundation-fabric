@@ -2,7 +2,7 @@
 
 project_config:
   name: net-land-01
-  services: 
+  services:
     - container.googleapis.com
     - compute.googleapis.com
     - dns.googleapis.com
@@ -14,24 +14,24 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-vpc_configs:
-  test: 
+vpc_config:
+  test:
     delete_default_routes_on_create: true
     mtu: 1500
     auto_create_subnetworks: true
-  hub: 
+  hub:
     delete_default_routes_on_create: true
-    mtu: 1500 
+    mtu: 1500
     dns_zones:
       onprem-fwd:
         zone_config:
           domain: .
           forwarding:
-            forwarders: 
+            forwarders:
               "8.8.8.8": default
               "1.1.1.1": default
             client_networks:
-              - net-land-01/hub  
+              - net-land-01/hub
       dot-test:
         zone_config:
           domain: test.
@@ -39,20 +39,20 @@ vpc_configs:
             client_networks:
               - net-land-01/hub
         recordsets:
-          "A localhost": 
-            records: ["127.0.0.1"]    
-    subnets_factory_config: 
+          "A localhost":
+            records: ["127.0.0.1"]
+    subnets_factory_config:
       subnets_folder: data/subnets/hub
     firewall_factory_config:
-      rules_folder: data/firewall/hub 
-    vpn_configs:
+      rules_folder: data/firewall/hub
+    vpn_config:
       to-onprem:
         region: europe-west8
         peer_gateways:
           default:
             external:
               redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
-              interfaces: 
+              interfaces:
                 - 8.8.8.8
         router_config:
           asn: 64514
@@ -69,7 +69,7 @@ vpc_configs:
         region: europe-west12
         peer_gateways:
           default:
-            gcp: net-dev-01/dev-spoke/to-hub # pray for the best
+            gcp: net-dev-01/dev-spoke/to-hub
         router_config:
           asn: 64521
         tunnels:

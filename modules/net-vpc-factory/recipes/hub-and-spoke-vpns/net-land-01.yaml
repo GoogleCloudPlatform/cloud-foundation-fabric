@@ -91,7 +91,7 @@ vpc_config:
         region: europe-west8
         peer_gateways:
           default:
-            gcp: net-dev-01/dev-spoke/to-hub # pray for the best
+            gcp: net-dev-01/dev-spoke/to-hub
         router_config:
           create: false
           name: net-land-01/hub/vpn-router

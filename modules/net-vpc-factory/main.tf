@@ -24,40 +24,4 @@ locals {
     fileset(local._network_factory_path, "**/*.yaml"),
     []
   )
-
-  iam_delegated = join(",", formatlist("'%s'", [
-    "roles/composer.sharedVpcAgent",
-    "roles/compute.networkUser",
-    "roles/compute.networkViewer",
-    "roles/container.hostServiceAgentUser",
-    "roles/multiclusterservicediscovery.serviceAgent",
-    "roles/vpcaccess.user",
-  ]))
-  iam_delegated_principals = var.iam_admin_delegated
-  iam_viewer_principals    = var.iam_viewer
 }
-
-module "folder" {
-  source        = "../folder"
-  folder_create = false
-  id            = var.parent_id
-  contacts = (
-    var.essential_contacts == null
-    ? {}
-    : { (var.essential_contacts) = ["ALL"] }
-  )
-  # firewall_policy = {
-  #   name   = "default"
-  #   policy = module.firewall-policy-default.id
-  # }
-}
-
-# module "firewall-policy-default" {
-#   source    = "../net-firewall-policy"
-#   name      = var.factories_config.firewall_policy_name
-#   parent_id = module.folder.id
-#   factories_config = {
-#     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-#     ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
-#   }
-# }

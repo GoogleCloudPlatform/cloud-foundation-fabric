@@ -46,9 +46,10 @@ locals {
             },
             {
               router_config = merge(v.router_config,
-                try(v.router_config.create, false) == false ? {
+                try(v.router_config.create, false) == false && can(v.router_config.name) ? {
                   name = try(google_compute_router.router[v.router_config.name].name, v.router_config.name)
-              } : {})
+                } : {}
+              )
             }
           )
         }

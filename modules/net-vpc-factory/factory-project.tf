@@ -16,7 +16,6 @@
 
 # tfdoc:file:TODO.
 locals {
-  #TODO(sruffilli): yaml file name should be == project name, unless overridden explicitly by a "name" attribute in project_config.
   _network_projects = {
     for f in local._network_factory_files :
     split(".", f)[0] => yamldecode(file(

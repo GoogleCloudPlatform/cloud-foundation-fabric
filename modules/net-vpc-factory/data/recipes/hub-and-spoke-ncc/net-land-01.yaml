@@ -2,7 +2,7 @@
 
 project_config:
   name: net-land-01
-  services: 
+  services:
     - container.googleapis.com
     - compute.googleapis.com
     - dns.googleapis.com
@@ -14,19 +14,19 @@ project_config:
     - vpcaccess.googleapis.com
   shared_vpc_host_config:
     enabled: true
-ncc_hub_configs:
+ncc_hub_config:
   name: hub
-  groups: 
+  groups:
     default:
-      auto_accept: 
+      auto_accept:
         - net-prod-01
         - net-dev-01
-vpc_configs:
-  test: 
+vpc_config:
+  test:
     delete_default_routes_on_create: true
     mtu: 1500
     auto_create_subnetworks: true
-  hub: 
+  hub:
     delete_default_routes_on_create: true
     mtu: 1500
     routers:
@@ -38,11 +38,11 @@ vpc_configs:
         zone_config:
           domain: .
           forwarding:
-            forwarders: 
+            forwarders:
               "8.8.8.8": default
               "1.1.1.1": default
             client_networks:
-              - net-land-01/hub  
+              - net-land-01/hub
       dot-test:
         zone_config:
           domain: test.
@@ -50,22 +50,22 @@ vpc_configs:
             client_networks:
               - net-land-01/hub
         recordsets:
-          "A localhost": 
-            records: ["127.0.0.1"]    
-    subnets_factory_config: 
+          "A localhost":
+            records: ["127.0.0.1"]
+    subnets_factory_config:
       subnets_folder: data/subnets/hub
     firewall_factory_config:
-      rules_folder: data/firewall/hub     
-    vpn_configs:
+      rules_folder: data/firewall/hub
+    vpn_config:
       to-onprem:
         region: europe-west8
-        ncc-spoke-config: 
-          hub: net-land-01/hub        
+        ncc-spoke-config:
+          hub: net-land-01/hub
         peer_gateways:
           default:
             external:
               redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
-              interfaces: 
+              interfaces:
                 - 8.8.8.8
         router_config:
           create: false
