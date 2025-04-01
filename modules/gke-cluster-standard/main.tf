@@ -392,10 +392,15 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "master_authorized_networks_config" {
-    for_each = try(var.access_config.ip_access.authorized_ranges, null) != null ? [""] : []
+    for_each = (
+      try(var.access_config.ip_access.authorized_ranges, null) != null ||
+      try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null) != null
+    ) ? [""] : []
     content {
+      gcp_public_cidrs_access_enabled = try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null)
+
       dynamic "cidr_blocks" {
-        for_each = var.access_config.ip_access.authorized_ranges
+        for_each = try(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
         content {
           cidr_block   = range.value
