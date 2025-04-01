@@ -433,8 +433,8 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  invoker_iam_disabled   = true
-  deletion_protection    = false
+  invoker_iam_disabled  = true
+  deletion_protection   = false
 }
 # tftest modules=1 resources=1 inventory=service-invoker-iam-disable.yaml e2e
 ```
