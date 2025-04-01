@@ -19,13 +19,6 @@ variable "billing_account" {
   type        = string
 }
 
-
-variable "essential_contacts" {
-  description = "Email used for essential contacts, unset if null."
-  type        = string
-  default     = null
-}
-
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
@@ -35,16 +28,6 @@ variable "factories_config" {
   default = {
     vpcs = "recipes/hub-and-spoke-ncc"
   }
-}
-
-variable "iam_admin_delegated" {
-  type    = map(list(string))
-  default = {}
-}
-
-variable "iam_viewer" {
-  type    = map(list(string))
-  default = {}
 }
 
 variable "parent_id" {

@@ -693,6 +693,10 @@ All of the above combined implements a DNS hub-and-spoke design, where the DNS c
 
 - PSC Endpoints management
 - BUG: do not use filename as main key, use project_id instead!
+- Implement 
+  - iam_admin_delegated
+  - iam_viewer
+  - essential_contacts
 
 ## Tests
 
