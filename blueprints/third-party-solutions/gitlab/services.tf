@@ -35,11 +35,10 @@ module "db" {
   name              = var.cloudsql_config.name
   availability_type = var.gitlab_config.ha_required ? "REGIONAL" : "ZONAL"
   network_config = {
-    authorized_networks = {}
     connectivity = {
-      psa_configs = [{
+      psa_config = {
         private_network = var.network_config.network_self_link
-      }]
+      }
     }
   }
   database_version = var.cloudsql_config.database_version
@@ -88,5 +87,22 @@ module "gitlab_object_storage" {
     "roles/storage.objectUser" = [
       "serviceAccount:${module.gitlab-sa.email}",
     ]
+  }
+}
+
+module "registry-remote" {
+  source     = "../../../modules/artifact-registry"
+  project_id = var.project_id
+  location   = var.region
+  name       = "remote"
+  format = {
+    docker = {
+      remote = {
+        public_repository = "DOCKER_HUB"
+      }
+    }
+  }
+  iam = {
+    "roles/artifactregistry.reader" = [module.gitlab-sa.iam_email]
   }
 }
