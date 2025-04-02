@@ -78,9 +78,10 @@ locals {
       },
       try(local._projects_config.data_defaults, {})
     )
+    # data_overrides default to null's, to mark that they should not override
     data_overrides = merge({
       billing_account = null
-      contacts        = {}
+      contacts        = null
       factories_config = merge({
         custom_roles  = null
         observability = null
@@ -95,27 +96,25 @@ locals {
       )
       parent                     = null
       prefix                     = null
-      service_encryption_key_ids = {}
+      service_encryption_key_ids = null
       storage_location           = null
-      tag_bindings               = {}
-      services                   = []
-      service_accounts           = {}
-      vpc_sc = merge({
-        perimeter_name    = null
-        perimeter_bridges = []
-        is_dry_run        = false
-        }, try(local._projects_config.data_overrides.vpc_sc, {
-          perimeter_name    = null
-          perimeter_bridges = []
-          is_dry_run        = false
-        })
-      )
-      logging_data_access = {}
+      tag_bindings               = null
+      services                   = null
+      service_accounts           = null
+      vpc_sc                     = try(local._projects_config.data_overrides.vpc_sc, null)
+      logging_data_access        = null
       },
       try(local._projects_config.data_overrides, {})
     )
   }
   _projects_output = {
+    # Semantics of the merges are:
+    # * if data_overrides.<field> is not null, use this value
+    # * if  _projects_inputs.<field> is not null, use this value
+    # * use data_default value, which if not set, will provide "empty" type
+    # This logic is easily implemented using coalesce, even on maps and list and allows to
+    # set data_overrides.<field> to "", [] or {} to ensure, that empty value is always passed, or do
+    # the same in _projects_input to prevent falling back to default value
     for k, v in local._projects_input : k => merge(v, {
       billing_account = try(coalesce( # type: string
         local.__projects_config.data_overrides.billing_account,
