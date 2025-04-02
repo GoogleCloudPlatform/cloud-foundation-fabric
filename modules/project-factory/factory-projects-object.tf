@@ -172,15 +172,19 @@ locals {
       )
       name         = lookup(v, "name", k)    # type: string
       org_policies = try(v.org_policies, {}) # type: map(object({...}))
-      parent = coalesce(                     # type: string
-        local.__projects_config.data_overrides.parent,
-        try(v.parent, null),
-        local.__projects_config.data_defaults.parent
+      parent = try(                          # type: string, nullable
+        coalesce(
+          local.__projects_config.data_overrides.parent,
+          try(v.parent, null),
+          local.__projects_config.data_defaults.parent
+        ), null
       )
-      prefix = coalesce( # type: string
-        local.__projects_config.data_overrides.prefix,
-        try(v.prefix, null),
-        local.__projects_config.data_defaults.prefix
+      prefix = try( # type: string, nullable
+        coalesce(
+          local.__projects_config.data_overrides.prefix,
+          try(v.prefix, null),
+          local.__projects_config.data_defaults.prefix
+        ), null
       )
       service_encryption_key_ids = coalesce( # type: map(list(string))
         local.__projects_config.data_overrides.service_encryption_key_ids,
