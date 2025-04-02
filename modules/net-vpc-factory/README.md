@@ -7,7 +7,7 @@ The code is meant to be executed by a high level service accounts with powerful 
 - Project Creator on the nodes (folder or org) where projects will be defined if projects are created by the factory, or
 - Owner on the projects used to deploy the infrastructure
 - XPN Admin on the nodes (folder or org) where projects are deployed, in case projects will be marked as "host projects"
-- TODO(sruffilli) Finalize the list of required roles 
+- TODO(sruffilli) Finalize the list of required roles
 
 This factory module acts as a wrapper around several core Terraform modules:
 
@@ -18,9 +18,13 @@ This factory module acts as a wrapper around several core Terraform modules:
 - [`../net-cloudnat`](../net-cloudnat/): For managing Cloud NAT instances.
 - [`../dns`](../dns): For managing Cloud DNS zones and record sets.
 
+## TOC
+
 <!-- BEGIN TOC -->
+- [TOC](#toc)
 - [Factory configuration](#factory-configuration)
   - [Configuration Methods](#configuration-methods)
+  - [Cross-Referencing Resources](#cross-referencing-resources)
 - [Projects](#projects)
 - [VPCs](#vpcs)
   - [Subnets](#subnets)
@@ -65,12 +69,23 @@ Each file defines a single project, which can either be created by the factory o
 - **YAML Factory:** The primary method is to define project and network configurations within individual YAML files placed in the directory specified by `var.factories_config.vpcs`. This factory approach allows for modular and organized management of complex setups.
 - **Direct Variable Input (Discouraged):** The module also defines a complex variable `var.network_project_config`. While it's *technically possible* to populate this variable directly (e.g., in a `.tfvars` file), this is **not the recommended approach**. It bypasses the intended factory pattern and makes managing multiple project configurations cumbersome. The variable definition primarily serves as **documentation** for the structure expected within the YAML configuration files.
 
+### Cross-Referencing Resources
+
+A key capability of this factory is establishing relationships between resources defined across different VPCs or projects. This is achieved through cross-referencing using logical keys within the YAML configuration.These keys strictly follow the pattern `project_key/vpc_key` for VPCs or `project_key/vpc_key/resource_name` for resources like VPN gateways, routers, or NCC hubs/groups. During Terraform execution, the factory code translates these logical keys into the actual resource IDs or self-links required by the underlying modules. This powerful mechanism avoids hardcoding resource IDs and enables the declarative definition of complex topologies. It's extensively used in configurations for:
+
+VPC Peering: Specifying the peer_network (e.g., `peer_network: net-land-01/hub`).
+
+DNS Peering/Forwarding: Defining peer_network or client_networks for DNS zones (e.g., `client_networks: [net-dev-01/dev-spoke]`).
+
+GCP-to-GCP HA VPN: Referencing the peer HA VPN gateway using its logical key (e.g., `peer_gateways.default.gcp: net-dev-01/dev-spoke/to-hub`).
+
+Network Connectivity Center (NCC): Linking spokes to hubs (`ncc_config.hub: net-land-01/hub`) and groups (`ncc_config.group: net-land-01/hub/default`), or auto-accepting spokes in hub groups (`auto_accept: [net-prod-01, net-dev-01]`).
 
 ## Projects
 
 The `project_config` block within each YAML file implements a large subset of the [project module](../project/) variable interface, which allows amongst the rest for project creation or reuse, services enablement and IAM/Organization policies definition.
 
-Below a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project and adds an authoritative 
+Below a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project and adds an authoritative
 role binding:
 
 ```hcl
@@ -675,7 +690,7 @@ All of the above combined implements a DNS hub-and-spoke design, where the DNS c
 
 - PSC Endpoints management
 - BUG: do not use filename as main key, use project_id instead!
-- Implement 
+- Implement
   - iam_admin_delegated
   - iam_viewer
   - essential_contacts

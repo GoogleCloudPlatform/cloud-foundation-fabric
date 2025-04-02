@@ -17,7 +17,7 @@ common_tfvars:
   - common.tfvars
 tests:
   ncc:
+  only_projects:
   peering:
-  projects:
   separate_envs:
   vpn:
