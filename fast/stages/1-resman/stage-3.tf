@@ -177,7 +177,7 @@ module "stage3-sa-rw" {
   prefix = "${var.prefix}-${var.environments[each.value.environment].short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-rw["${each.key}-prod"].iam_email, null)
+      try(module.cicd-sa-rw[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
@@ -201,7 +201,7 @@ module "stage3-sa-ro" {
   prefix = "${var.prefix}-${each.value.environment}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.cicd-sa-ro["${each.key}-prod"].iam_email, null)
+      try(module.cicd-sa-ro[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
