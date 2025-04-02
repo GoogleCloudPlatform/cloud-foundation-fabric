@@ -45,6 +45,11 @@ values:
       - enabled: false
     allow_net_admin: null
     binary_authorization: []
+    control_plane_endpoints_config:
+    - dns_endpoint_config:
+      - allow_external_traffic: false
+      ip_endpoints_config:
+      - enabled: true
     cost_management_config:
     - enabled: true
     datapath_provider: ADVANCED_DATAPATH
@@ -89,7 +94,7 @@ values:
     - cidr_blocks:
       - cidr_block: 10.0.0.0/8
         display_name: internal-vms
-      gcp_public_cidrs_access_enabled: true
+      gcp_public_cidrs_access_enabled: false
     min_master_version: null
     monitoring_config:
     - enable_components:
