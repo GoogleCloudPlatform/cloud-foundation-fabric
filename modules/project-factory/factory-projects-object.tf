@@ -117,18 +117,18 @@ locals {
   }
   _projects_output = {
     for k, v in local._projects_input : k => merge(v, {
-      billing_account = try(coalesce(
+      billing_account = try(coalesce( # type: string
         local.__projects_config.data_overrides.billing_account,
         try(v.billing_account, null),
         local.__projects_config.data_defaults.billing_account
       ), null)
-      contacts = coalesce(
+      contacts = coalesce( # type: map
         local.__projects_config.data_overrides.contacts,
         try(v.contacts, null),
         local.__projects_config.data_defaults.contacts
       )
-      factories_config = {
-        custom_roles = try(
+      factories_config = {  # type: object
+        custom_roles = try( # type: string
           coalesce(
             local.__projects_config.data_overrides.factories_config.custom_roles,
             try(v.factories_config.custom_roles, null),
@@ -136,21 +136,21 @@ locals {
           ),
           null
         )
-        observability = try(
+        observability = try( # type: string
           coalesce(
             local.__projects_config.data_overrides.factories_config.observability,
             try(v.factories_config.observability, null),
             local.__projects_config.data_defaults.factories_config.observability
           ),
         null)
-        org_policies = try(
+        org_policies = try( # type: string
           coalesce(
             local.__projects_config.data_overrides.factories_config.org_policies,
             try(v.factories_config.org_policies, null),
             local.__projects_config.data_defaults.factories_config.org_policies
           ),
         null)
-        quotas = try(
+        quotas = try( # type: string
           coalesce(
             local.__projects_config.data_overrides.factories_config.quotas,
             try(v.factories_config.quotas, null),
@@ -158,42 +158,42 @@ locals {
           ),
         null)
       }
-      iam                        = try(v.iam, {})
-      iam_bindings               = try(v.iam_bindings, {})
-      iam_bindings_additive      = try(v.iam_bindings_additive, {})
-      iam_by_principals_additive = try(v.iam_by_principals_additive, {})
-      iam_by_principals          = try(v.iam_by_principals, {})
-      labels = coalesce(
+      iam                        = try(v.iam, {})                        # type: map(list(string))
+      iam_bindings               = try(v.iam_bindings, {})               # type: map(object({...}))
+      iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
+      iam_by_principals_additive = try(v.iam_by_principals_additive, {}) # type: map(list(string))
+      iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
+      labels = coalesce(                                                 # type: map(string)
         try(v.labels, null),
         local.__projects_config.data_defaults.labels
       )
-      metric_scopes = coalesce(
+      metric_scopes = coalesce( # type: list(string)
         try(v.metric_scopes, null),
         local.__projects_config.data_defaults.metric_scopes
       )
-      name         = lookup(v, "name", k)
-      org_policies = try(v.org_policies, {})
-      parent = coalesce(
+      name         = lookup(v, "name", k)    # type: string
+      org_policies = try(v.org_policies, {}) # type: map(object({...}))
+      parent = coalesce(                     # type: string
         local.__projects_config.data_overrides.parent,
         try(v.parent, null),
         local.__projects_config.data_defaults.parent
       )
-      prefix = coalesce(
+      prefix = coalesce( # type: string
         local.__projects_config.data_overrides.prefix,
         try(v.prefix, null),
         local.__projects_config.data_defaults.prefix
       )
-      service_encryption_key_ids = coalesce(
+      service_encryption_key_ids = coalesce( # type: map(list(string))
         local.__projects_config.data_overrides.service_encryption_key_ids,
         try(v.service_encryption_key_ids, null),
         local.__projects_config.data_defaults.service_encryption_key_ids
       )
-      services = coalesce(
+      services = coalesce( # type: list(string)
         local.__projects_config.data_overrides.services,
         try(v.services, null),
         local.__projects_config.data_defaults.services
       )
-      shared_vpc_host_config = (
+      shared_vpc_host_config = ( # type: object({...})
         try(v.shared_vpc_host_config, null) != null
         ? merge(
           { service_projects = [] },
@@ -201,7 +201,7 @@ locals {
         )
         : null
       )
-      shared_vpc_service_config = (
+      shared_vpc_service_config = ( # type: object({...})
         try(v.shared_vpc_service_config, null) != null
         ? merge(
           {
@@ -216,12 +216,12 @@ locals {
         )
         : local.__projects_config.data_defaults.shared_vpc_service_config
       )
-      tag_bindings = coalesce(
+      tag_bindings = coalesce( # type: map(string)
         local.__projects_config.data_overrides.tag_bindings,
         try(v.tag_bindings, null),
         local.__projects_config.data_defaults.tag_bindings
       )
-      vpc_sc = (
+      vpc_sc = ( # type: object
         local.__projects_config.data_overrides.vpc_sc != null
         ? local.__projects_config.data_overrides.vpc_sc
         : (
@@ -234,14 +234,11 @@ locals {
           : local.__projects_config.data_defaults.vpc_sc
         )
       )
-      logging_data_access = coalesce(
+      logging_data_access = coalesce( # type: map(object({...}))
         local.__projects_config.data_overrides.logging_data_access,
         try(v.logging_data_access, null),
         local.__projects_config.data_defaults.logging_data_access
       )
-      # non-project resources
-      # buckets          = try(v.buckets, {})
-      # service_accounts = try(v.service_accounts, {})
     })
   }
 }
