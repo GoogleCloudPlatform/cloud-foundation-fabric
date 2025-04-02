@@ -88,6 +88,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               external_resources = policy.value.to.external_resources
               resources          = policy.value.to.resources
+              roles              = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -146,6 +147,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
+              roles     = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -235,6 +237,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               external_resources = policy.value.to.external_resources
               resources          = policy.value.to.resources
+              roles              = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -294,6 +297,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
+              roles     = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
