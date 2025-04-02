@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc-factory
-common_tfvars:
-  - common.tfvars
-tests:
-  ncc:
-  peering:
-  projects:
-  separate_envs:
-  vpn:
+counts:
+  google_project: 3
+  google_project_iam_member: 21
+  google_project_service: 27
+  google_project_service_identity: 21
+  modules: 3
+  resources: 72
