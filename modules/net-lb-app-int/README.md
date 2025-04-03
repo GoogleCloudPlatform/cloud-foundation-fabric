@@ -336,6 +336,8 @@ module "ilb-l7" {
 
 #### Serverless NEG creation
 
+This is a simple example where both the Cloud Run service and the load balancer are in the same project.
+
 ```hcl
 module "ilb-l7" {
   source     = "./fabric/modules/net-lb-app-int"
@@ -348,11 +350,50 @@ module "ilb-l7" {
         group = "my-neg"
       }]
       health_checks = []
+      protocol      = "HTTPS"
     }
   }
   health_check_configs = {}
   neg_configs = {
     my-neg = {
+      cloudrun = {
+        region = "europe-west1"
+        target_service = {
+          name = "my-run-service"
+        }
+      }
+    }
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=5
+```
+
+For cross-project referencing, both the load balancer and the cloud run projects need to be service projects of the same Shared VPC host. Then specify the Cloud Run project for both the backend service and NEG.
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "my-neg"
+      }]
+      health_checks = []
+      protocol      = "HTTPS"
+      project_id    = "cr-project-id"
+    }
+  }
+  health_check_configs = {}
+  neg_configs = {
+    my-neg = {
+      project_id = "cr-project-id"
       cloudrun = {
         region = "europe-west1"
         target_service = {
@@ -715,6 +756,7 @@ module "ilb-l7" {
 ```
 
 ## Deploying changes to load balancer configurations
+
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
