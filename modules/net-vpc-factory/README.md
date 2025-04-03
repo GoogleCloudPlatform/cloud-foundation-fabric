@@ -32,16 +32,20 @@ This factory module acts as a wrapper around several core Terraform modules:
   - [Cloud NAT](#cloud-nat)
   - [Routes](#routes)
   - [Private Service Access (PSA)](#private-service-access-psa)
+  - [VPC DNS Policy](#vpc-dns-policy)
 - [Connectivity](#connectivity)
   - [VPC Peering](#vpc-peering)
   - [Cloud VPN](#cloud-vpn)
     - [GCP to OnPrem](#gcp-to-onprem)
     - [GCP to GCP VPN](#gcp-to-gcp-vpn)
   - [Network Connectivity Center (NCC)](#network-connectivity-center-ncc)
+    - [NCC VPC Spokes](#ncc-vpc-spokes)
+    - [NCC VPN Spokes](#ncc-vpn-spokes)
 - [DNS](#dns)
   - [Private Zone](#private-zone)
   - [Forwarding Zone](#forwarding-zone)
   - [Peering Zone](#peering-zone)
+  - [Public Zone with DNSSEC](#public-zone-with-dnssec)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [TODO](#todo)
@@ -85,8 +89,8 @@ Network Connectivity Center (NCC): Linking spokes to hubs (`ncc_config.hub: net-
 
 The `project_config` block within each YAML file implements a large subset of the [project module](../project/) variable interface, which allows amongst the rest for project creation or reuse, services enablement and IAM/Organization policies definition.
 
-Below a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project and adds an authoritative
-role binding:
+Below a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project, adds an authoritative
+role binding and sets an Organization Policy at the project level:
 
 ```hcl
 module "net-vpc-factory" {
@@ -115,6 +119,12 @@ project_config:
   iam:
     roles/owner:
       - group:prj-admins@example.com
+  org_policies:
+    compute.restrictLoadBalancerCreationForTypes:
+      rules:
+        - allow:
+            values:
+              - EXTERNAL_HTTP_HTTPS
 # tftest-file id=project-config path=recipes/examples/project-config.yaml
 ```
 
@@ -263,6 +273,35 @@ vpc_config:
 ```
 
 Refer to the [net-vpc](../net-vpc) module documentation for details on psa_config.
+
+### VPC DNS Policy
+
+Configure VPC-level DNS behavior, such as enabling inbound query forwarding or logging, using the `dns_policy` block.
+
+```hcl
+module "net-vpc-factory" {
+  source           = "./fabric/modules/net-vpc-factory"
+  billing_account  = "123456-789012-345678"
+  parent_id        = "folders/123456789012"
+  prefix           = "myprefix"
+  factories_config = { vpcs = "recipes/examples" }
+}
+# tftest files=vpc-dns-policy
+```
+
+```yaml
+project_config:
+  name: vpc-dns-policy
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+vpc_config:
+  net-dns-policy-demo:
+    dns_policy:
+      inbound: true
+      logging: true
+# tftest-file id=vpc-dns-policy path=recipes/examples/vpc-dns-policy.yaml
+```
 
 ## Connectivity
 
@@ -487,6 +526,8 @@ vpc_config:
 
 ### Network Connectivity Center (NCC)
 
+#### NCC VPC Spokes
+
 This minimal example demonstrates how to create an NCC hub, and how to connect multiple spokes to it. On the `net-land-01` project, `ncc_hub_config.groups.default.auto_accept` is configured to automatically accept the listed spoke projects.
 On the spokes definition, `vpc_config.$env-spoke.ncc_config` cross references the hub and the default group.
 
@@ -548,6 +589,72 @@ vpc_config:
       hub: net-land-01/hub
       group: net-land-01/hub/default
 # tftest-file id=ncc-prod path=recipes/examples/net-prod-01.yaml
+```
+
+#### NCC VPN Spokes
+
+This example shows how to connect an HA VPN gateway, typically used for on-premises or other cloud connections, as a spoke in an NCC Hub. This enables transitive routing between VPC spokes and the VPN connection via the NCC Hub.
+
+The key is the `ncc-spoke-config` block within the `vpn_config` definition on the hub project (`net-land-01/hub`).
+
+```hcl
+module "net-vpc-factory" {
+  source           = "./fabric/modules/net-vpc-factory"
+  billing_account  = "123456-789012-345678"
+  parent_id        = "folders/123456789012"
+  prefix           = "myprefix"
+  factories_config = { vpcs = "recipes/examples" }
+}
+# tftest files=ncc-vpn
+```
+
+```yaml
+project_config:
+  name: net-land-01
+  services:
+    - compute.googleapis.com
+    - networkmanagement.googleapis.com
+ncc_hub_config:
+  name: hub
+vpc_config:
+  hub:
+    mtu: 1500
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64514
+    vpn_config:
+      to-onprem:
+        ncc-spoke-config:
+          hub: net-land-01/hub
+        region: europe-west8
+        peer_gateways:
+          default:
+            external:
+              redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+              interfaces:
+                - 8.8.8.8
+        router_config:
+          create: false
+          name: net-land-01/hub/vpn-router
+        tunnels:
+          remote-0:
+            bgp_peer:
+              address: 169.254.128.1
+              asn: 64513
+            bgp_session_range: "169.254.128.2/30"
+            peer_external_gateway_interface: 0
+            shared_secret: "mySecret"
+            vpn_gateway_interface: 0
+          remote-1:
+            bgp_peer:
+              address: 169.254.128.5
+              asn: 64513
+            bgp_session_range: "169.254.128.6/30"
+            peer_external_gateway_interface: 0
+            shared_secret: "mySecret"
+            vpn_gateway_interface: 1
+# tftest-file id=ncc-vpn path=recipes/examples/net-land-01.yaml
 ```
 
 ## DNS
@@ -663,6 +770,43 @@ vpc_config:
 ```
 
 All of the above combined implements a DNS hub-and-spoke design, where the DNS configuration is mostly centralised in the `net-land-01/hub` VPC, including private zones and forwarding to onprem, and spokes (in this case `net-dev-01/dev-spoke`) "delegate" the root zone (`.`, which is DNS for "*") to the central location via DNS peering.
+
+### Public Zone with DNSSEC
+
+This example demonstrates creating a public DNS zone and enabling DNSSEC.
+
+```hcl
+module "net-vpc-factory" {
+  source           = "./fabric/modules/net-vpc-factory"
+  billing_account  = "123456-789012-345678"
+  parent_id        = "folders/123456789012"
+  prefix           = "myprefix"
+  factories_config = { vpcs = "recipes/examples" }
+}
+# tftest files=dns-public-dnssec
+```
+
+```yaml
+project_config:
+  name: net-dns-public
+  services:
+    - compute.googleapis.com
+    - dns.googleapis.com
+vpc_config:
+  hub:
+    dns_zones:
+      public-example-com:
+        zone_config:
+          domain: my-public-domain.example.com.
+          public:
+            dnssec_config:
+              state: "on"
+        recordsets:
+          "A www":
+            records: ["192.0.2.1"]
+# tftest-file id=dns-public-dnssec path=recipes/examples/net-dns-public.yaml
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

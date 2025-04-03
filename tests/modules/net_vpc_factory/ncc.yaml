@@ -30,11 +30,11 @@ counts:
   google_dns_record_set: 1
   google_network_connectivity_group: 1
   google_network_connectivity_hub: 1
-  google_network_connectivity_spoke: 2
+  google_network_connectivity_spoke: 3
   google_project: 3
   google_project_iam_member: 21
   google_project_service: 27
   google_project_service_identity: 21
   modules: 17
   random_id: 3
-  resources: 129
+  resources: 130

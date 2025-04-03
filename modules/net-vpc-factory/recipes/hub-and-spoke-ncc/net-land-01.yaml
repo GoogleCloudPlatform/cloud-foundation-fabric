@@ -64,6 +64,8 @@ vpc_config:
         next_hop: "default-internet-gateway"
     vpn_config:
       to-onprem:
+        ncc-spoke-config:
+          hub: net-land-01/hub
         region: europe-west8
         peer_gateways:
           default:
