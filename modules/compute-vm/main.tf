@@ -351,9 +351,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = local.tags_combined == null ? [] : [""]
+    for_each = var.tag_bindings_immutable == null ? [] : [""]
     content {
-      resource_manager_tags = local.tags_combined
+      resource_manager_tags = var.tag_bindings_immutable
     }
   }
 
@@ -389,7 +389,7 @@ resource "google_compute_instance_template" "default" {
   can_ip_forward        = var.can_ip_forward
   metadata              = var.metadata
   labels                = var.labels
-  resource_manager_tags = local.tags_combined
+  resource_manager_tags = var.tag_bindings_immutable
 
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []
@@ -410,7 +410,7 @@ resource "google_compute_instance_template" "default" {
     boot                  = true
     disk_size_gb          = var.boot_disk.initialize_params.size
     disk_type             = var.boot_disk.initialize_params.type
-    resource_manager_tags = var.tag_bindings
+    resource_manager_tags = var.tag_bindings_immutable
     source_image          = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
@@ -459,7 +459,7 @@ resource "google_compute_instance_template" "default" {
       disk_name = (
         config.value.source_type != "attach" ? config.value.name : null
       )
-      resource_manager_tags = var.tag_bindings
+      resource_manager_tags = var.tag_bindings_immutable
       type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []

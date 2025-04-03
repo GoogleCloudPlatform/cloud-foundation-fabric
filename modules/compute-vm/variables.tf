@@ -90,7 +90,7 @@ variable "boot_disk" {
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       size  = optional(number, 10)
       type  = optional(string, "pd-balanced")
-    }))
+    }), {})
     use_independent_disk = optional(bool, false)
   })
   default = {
@@ -131,6 +131,7 @@ variable "create_template" {
   type        = bool
   default     = false
 }
+
 variable "description" {
   description = "Description of a Compute Instance."
   type        = string
@@ -295,6 +296,13 @@ variable "network_interfaces" {
   }))
 }
 
+variable "network_tag_bindings" {
+  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "options" {
   description = "Instance options."
   type = object({
@@ -355,6 +363,12 @@ variable "options" {
 variable "project_id" {
   description = "Project id."
   type        = string
+}
+
+variable "project_number" {
+  description = "Project number. Used in tag bindings to avoid a permadiff."
+  type        = string
+  default     = null
 }
 
 variable "scratch_disks" {
@@ -433,17 +447,24 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and disks (or to the instance template) after creation, and modifiable without impacting the main resource lifecycle."
+  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle."
   type        = map(string)
   nullable    = false
   default     = {}
 }
 
 variable "tag_bindings_immutable" {
-  description = "Immutable resource manager tag bindings, in arbitrary key => tag key or value id format. These are set on theinstance or instance template at creation time, and trigger recreation if changed."
+  description = "Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed."
   type        = map(string)
   nullable    = true
   default     = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.tag_bindings_immutable, {}) :
+      startswith(k, "tagKeys/") && startswith(v, "tagValues/")
+    ])
+    error_message = "Incorrect format for immutable tag bindings."
+  }
 }
 
 variable "tags" {
