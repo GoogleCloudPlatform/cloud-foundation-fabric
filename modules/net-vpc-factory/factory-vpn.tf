@@ -18,7 +18,7 @@
 
 locals {
   routers = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
+    for factory_key, factory_config in local.network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for router_key, router_config in try(vpc_config.routers, {}) : {
           "${factory_key}/${vpc_key}/${router_key}" = merge(router_config, {
@@ -36,7 +36,7 @@ locals {
   ])...)
 
   vpns = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
+    for factory_key, factory_config in local.network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for k, v in try(vpc_config.vpn_config, {}) : {
           "${factory_key}/${vpc_key}/${k}" = merge(v, {

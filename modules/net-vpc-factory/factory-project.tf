@@ -16,14 +16,8 @@
 
 # tfdoc:file:TODO.
 locals {
-  _network_projects = {
-    for f in local._network_factory_files :
-    split(".", f)[0] => yamldecode(file(
-      "${coalesce(local._network_factory_path, "-")}/${f}"
-    ))
-  }
 
-  projects = { for k, v in local._network_projects : k => merge(
+  projects = { for k, v in local.network_projects : k => merge(
     {
       billing_account            = try(v.project_config.billing_account, var.billing_account)
       prefix                     = try(v.project_config.prefix, var.prefix)

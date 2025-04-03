@@ -17,7 +17,7 @@
 # tfdoc:file:TODO.
 
 locals {
-  _vpcs_preprocess = [for factory_key, factory_config in local._network_projects : {
+  _vpcs_preprocess = [for factory_key, factory_config in local.network_projects : {
     for k, v in try(factory_config.vpc_config, {}) : "${factory_key}/${k}" => {
       project_id                        = module.projects[factory_key].id
       name                              = k

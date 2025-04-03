@@ -2,7 +2,7 @@
 
 The factory is implemented as a thin data translation layer for the underlying modules, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
 
-The code is meant to be executed by a high level service accounts with powerful permissions:
+The code is meant to be executed by a service account or a user with a wide set of permissions:
 
 - Project Creator on the nodes (folder or org) where projects will be defined if projects are created by the factory, or
 - Owner on the projects used to deploy the infrastructure
@@ -343,7 +343,7 @@ This example demonstrates connecting an on-premises network to a GCP VPC via HA-
 In this example, the configuration `vpc_config.net-00.routers` creates a router named `vpn-router` in europe-west8, and `vpc_config.net-00.vpn_config.to-onprem.router_config.name` refers to it, using the key `<project_key>/<vpc_key>/<router_key>` (e.g., prj-01/net-00/vpn-router.
 Per module `net-vpn-ha`, omitting the `router_config` configuration results in the router being automatically created and managed by the VPN module itself.
 
-Note that - given the limit of 5 Cloud Routers per VPC per region, we recommend creating fewer routers as required and using them across multiple VPNs/Interconnects by setting and referencing the pre-created router.
+Note that - given the limit of 5 Cloud Routers per VPC per region - we recommend creating fewer routers as required and using them across multiple VPNs/Interconnects by setting and referencing the pre-created router.
 
 ```hcl
 module "net-vpc-factory" {
@@ -689,8 +689,7 @@ All of the above combined implements a DNS hub-and-spoke design, where the DNS c
 ## TODO
 
 - PSC Endpoints management
-- BUG: do not use filename as main key, use project_id instead!
-- Implement
+- Implement (?)
   - iam_admin_delegated
   - iam_viewer
   - essential_contacts

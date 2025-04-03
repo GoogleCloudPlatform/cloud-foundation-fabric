@@ -18,7 +18,7 @@
 
 locals {
   dns_zone_entries = flatten([
-    for factory_key, factory_config in local._network_projects : [
+    for factory_key, factory_config in local.network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for zone_key, zone in try(vpc_config.dns_zones, {}) : {
           key = "${factory_key}/${vpc_key}/${zone_key}"

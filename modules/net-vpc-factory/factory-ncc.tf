@@ -17,7 +17,7 @@
 # tfdoc:file:TODO.
 
 locals {
-  ncc_hubs = { for k, v in local._network_projects : "${k}/${v.ncc_hub_config.name}" =>
+  ncc_hubs = { for k, v in local.network_projects : "${k}/${v.ncc_hub_config.name}" =>
     {
       name            = v.ncc_hub_config.name
       project_id      = module.projects[k].id
@@ -28,7 +28,7 @@ locals {
     if try(v.ncc_hub_config != null, false)
   }
 
-  ncc_groups = merge(flatten([for k, v in local._network_projects :
+  ncc_groups = merge(flatten([for k, v in local.network_projects :
     {
       for gk, gv in try(v.ncc_hub_config.groups, {}) : "${k}/${v.ncc_hub_config.name}/${gk}" =>
       {
@@ -44,7 +44,7 @@ locals {
   ])...)
 
   ncc_vpn_spokes = merge(flatten([
-    for factory_key, factory_config in local._network_projects : [
+    for factory_key, factory_config in local.network_projects : [
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : [
         for vpn_key, vpn_config in try(vpc_config.vpn_config, {}) : {
           "${factory_key}/${vpc_key}/${vpn_key}" = {
@@ -63,7 +63,7 @@ locals {
   ])...)
 
   ncc_vpc_spokes = merge(flatten([
-    for factory_key, factory_config in local._network_projects : {
+    for factory_key, factory_config in local.network_projects : {
       for vpc_key, vpc_config in try(factory_config.vpc_config, {}) : "${factory_key}/${vpc_key}" => merge(vpc_config.ncc_config, {
         project_id            = module.projects[factory_key].id
         network_self_link     = module.vpc["${factory_key}/${vpc_key}"].self_link
