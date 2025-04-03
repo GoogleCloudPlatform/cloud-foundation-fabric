@@ -60,14 +60,6 @@ locals {
       )
     )
   }
-  tags_combined = (
-    var.tag_bindings == null && var.tag_bindings_firewall == null
-    ? null
-    : merge(
-      coalesce(var.tag_bindings, {}),
-      coalesce(var.tag_bindings_firewall, {})
-    )
-  )
   termination_action = (
     var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
@@ -245,7 +237,7 @@ resource "google_compute_instance" "default" {
         image                 = var.boot_disk.initialize_params.image
         size                  = var.boot_disk.initialize_params.size
         type                  = var.boot_disk.initialize_params.type
-        resource_manager_tags = var.tag_bindings
+        resource_manager_tags = var.tag_bindings_immutable
       }
     }
   }

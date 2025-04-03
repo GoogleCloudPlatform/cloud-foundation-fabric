@@ -433,14 +433,16 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Resource manager tag bindings for this instance, in tag key => tag value format."
+  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and disks (or to the instance template) after creation, and modifiable without impacting the main resource lifecycle."
   type        = map(string)
-  default     = null
+  nullable    = false
+  default     = {}
 }
 
-variable "tag_bindings_firewall" {
-  description = "Firewall (network scoped) tag bindings for this instance, in tag key => tag value format."
+variable "tag_bindings_immutable" {
+  description = "Immutable resource manager tag bindings, in arbitrary key => tag key or value id format. These are set on theinstance or instance template at creation time, and trigger recreation if changed."
   type        = map(string)
+  nullable    = true
   default     = null
 }
 
