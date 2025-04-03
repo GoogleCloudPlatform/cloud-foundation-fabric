@@ -30,30 +30,8 @@ locals {
     ? try(google_service_account.service_account[0], null)
     : try(data.google_service_account.service_account[0], null)
   )
-  service_account_credential_templates = {
-    for file, _ in local.public_keys_data : file => jsonencode(
-      {
-        type : "service_account",
-        project_id : var.project_id,
-        private_key_id : split("/", google_service_account_key.upload_key[file].id)[5]
-        private_key : "REPLACE_ME_WITH_PRIVATE_KEY_DATA"
-        client_email : local.resource_email_static
-        client_id : local.service_account.unique_id,
-        auth_uri : "https://accounts.google.com/o/oauth2/auth",
-        token_uri : "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url : "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url : "https://www.googleapis.com/robot/v1/metadata/x509/${urlencode(local.resource_email_static)}"
-      }
-    )
-  }
-  public_keys_data = (
-    var.public_keys_directory != ""
-    ? {
-      for file in fileset("${path.root}/${var.public_keys_directory}", "*.pem")
-    : file => filebase64("${path.root}/${var.public_keys_directory}/${file}") }
-    : {}
-  )
 
+  # universe-related locals
   universe               = try(regex("^([^:]*):[a-z]", var.project_id)[0], "")
   project_id_no_universe = element(split(":", var.project_id), 1)
   sa_domain              = join(".", compact([local.project_id_no_universe, local.universe]))
@@ -67,15 +45,10 @@ data "google_service_account" "service_account" {
 }
 
 resource "google_service_account" "service_account" {
-  count        = var.service_account_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "${local.prefix}${local.name}"
-  display_name = var.display_name
-  description  = var.description
-}
-
-resource "google_service_account_key" "upload_key" {
-  for_each           = local.public_keys_data
-  service_account_id = local.service_account.email
-  public_key_data    = each.value
+  count                        = var.service_account_create ? 1 : 0
+  project                      = var.project_id
+  account_id                   = "${local.prefix}${local.name}"
+  display_name                 = var.display_name
+  description                  = var.description
+  create_ignore_already_exists = var.create_ignore_already_exists
 }
