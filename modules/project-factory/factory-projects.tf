@@ -60,7 +60,8 @@ locals {
   buckets = flatten([
     for k, v in local.projects : [
       for name, opts in v.buckets : {
-        project               = k
+        project_key           = k
+        project_name          = v.name
         name                  = name
         description           = lookup(opts, "description", "Terraform-managed.")
         encryption_key        = lookup(opts, "encryption_key", null)
@@ -88,10 +89,10 @@ locals {
     ]
   ])
   service_accounts = flatten([
-    for k, v in local.projects : [
-      for name, opts in v.service_accounts : {
-        project = k
-        name    = name
+    for k, project in local.projects : [
+      for name, opts in project.service_accounts : {
+        project_key = k
+        name        = name
         display_name = coalesce(
           try(var.data_overrides.service_accounts.display_name, null),
           try(opts.display_name, null),

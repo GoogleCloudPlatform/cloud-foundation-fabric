@@ -83,6 +83,7 @@ variable "data_merges" {
 variable "data_overrides" {
   description = "Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`."
   type = object({
+    # data overrides default to null to mark that they should not override
     billing_account = optional(string)
     contacts        = optional(map(list(string)))
     factories_config = optional(object({
@@ -111,7 +112,7 @@ variable "data_overrides" {
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
       DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })), {})
+    })))
   })
   nullable = false
   default  = {}
