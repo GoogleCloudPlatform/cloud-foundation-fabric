@@ -34,6 +34,8 @@ values:
     runtime_database_encryption_key_name: '123456789'
     runtime_type: CLOUD
     disable_vpc_peering: true
+  google_apigee_nat_address.apigee_nat["europe-west1"]:
+    activate: true
 
 counts:
   google_apigee_environment: 1
