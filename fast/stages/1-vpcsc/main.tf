@@ -19,7 +19,7 @@ locals {
     for v in module.vpc-sc-discovery[0].project_numbers :
     "projects/${v}"
   ]
-  restricted_services = yamldecode(file("data/restricted-services.yaml"))
+  restricted_services = yamldecode(file(var.factories_config.restricted_services))
 
   # extend context with our own data
   context = {
