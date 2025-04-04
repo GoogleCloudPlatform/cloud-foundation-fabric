@@ -120,7 +120,7 @@ variable "factories_config" {
     egress_policies     = optional(string, "data/egress-policies")
     ingress_policies    = optional(string, "data/ingress-policies")
     perimeters          = optional(string, "data/perimeters")
-    restricted_services = optional(string, "data/restricted-services")
+    restricted_services = optional(string, "data/restricted-services.yaml")
     context = optional(object({
       identity_sets = optional(map(list(string)), {})
       resource_sets = optional(map(list(string)), {})
