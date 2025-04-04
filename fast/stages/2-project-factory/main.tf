@@ -45,6 +45,7 @@ module "projects" {
         var.groups,
         var.factories_config.context.iam_principals
       )
+      perimeters = var.perimeters
       tag_values = merge(
         var.tag_values,
         var.factories_config.context.tag_values

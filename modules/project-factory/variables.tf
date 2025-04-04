@@ -130,6 +130,7 @@ variable "factories_config" {
       # TODO: add KMS keys
       folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
+      perimeters            = optional(map(string), {})
       tag_values            = optional(map(string), {})
       vpc_host_projects     = optional(map(string), {})
       notification_channels = optional(map(string), {})

@@ -25,3 +25,9 @@ organization_config:
         description: Org policy tag scoped grant for project factory.
         expression: |
           resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
+    sa_pf_vpcsc_ro:
+      member: ro
+      role: roles/accesscontextmanager.policyReader
+    sa_pf_vpcsc_rw:
+      member: rw
+      role: roles/accesscontextmanager.policyEditor

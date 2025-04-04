@@ -17,11 +17,11 @@
 locals {
   tfvars = {
     perimeters = {
-      for k, v in try(module.vpc-sc[0].service_perimeters_regular, {}) :
+      for k, v in try(module.vpc-sc.service_perimeters_regular, {}) :
       k => v.id
     }
     perimeters_bridge = {
-      for k, v in try(module.vpc-sc[0].service_perimeters_bridge, {}) :
+      for k, v in try(module.vpc-sc.service_perimeters_bridge, {}) :
       k => v.id
     }
   }
