@@ -73,7 +73,7 @@ module "service-account-with-tags" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L118) | Name of the service account to create. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L133) | Project id where service account will be created. | <code>string</code> | ✓ |  |
-| [create_ignore_already_exists](variables.tf#L17) |  | <code>bool</code> |  | <code>null</code> |
+| [create_ignore_already_exists](variables.tf#L17) | If set to true, skip service account creation if a service account with the same email already exists. | <code>bool</code> |  | <code>null</code> |
 | [description](variables.tf#L27) | Optional description. | <code>string</code> |  | <code>null</code> |
 | [display_name](variables.tf#L33) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | [iam](variables.tf#L39) | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

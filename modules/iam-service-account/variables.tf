@@ -15,7 +15,7 @@
  */
 
 variable "create_ignore_already_exists" {
-  description = ""
+  description = "If set to true, skip service account creation if a service account with the same email already exists."
   type        = bool
   default     = null
   validation {
