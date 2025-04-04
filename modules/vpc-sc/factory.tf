@@ -65,6 +65,7 @@ locals {
             }, o)
           ]
           resources = try(v.to.resources, [])
+          roles     = try(v.to.roles, [])
         }
       }
     }
@@ -86,6 +87,7 @@ locals {
             }, o)
           ]
           resources = try(v.to.resources, [])
+          roles     = try(v.to.roles, [])
         }
       }
     }

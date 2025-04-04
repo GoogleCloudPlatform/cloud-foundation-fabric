@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,12 +81,12 @@ resource "google_container_cluster" "cluster" {
       service_account   = var.node_config.service_account
     }
   }
-  dynamic "control_plane_endpoints_config" {
-    for_each = var.access_config.dns_access == true ? [""] : []
-    content {
-      dns_endpoint_config {
-        allow_external_traffic = true
-      }
+  control_plane_endpoints_config {
+    dns_endpoint_config {
+      allow_external_traffic = var.access_config.dns_access == true
+    }
+    ip_endpoints_config {
+      enabled = var.access_config.ip_access != null
     }
   }
   dynamic "database_encryption" {
@@ -105,9 +105,10 @@ resource "google_container_cluster" "cluster" {
   dynamic "dns_config" {
     for_each = var.enable_features.dns != null ? [""] : []
     content {
-      cluster_dns        = var.enable_features.dns.provider
-      cluster_dns_scope  = var.enable_features.dns.scope
-      cluster_dns_domain = var.enable_features.dns.domain
+      additive_vpc_scope_dns_domain = var.enable_features.dns.additive_vpc_scope_dns_domain
+      cluster_dns                   = var.enable_features.dns.provider
+      cluster_dns_scope             = var.enable_features.dns.scope
+      cluster_dns_domain            = var.enable_features.dns.domain
     }
   }
   dynamic "enable_k8s_beta_apis" {
@@ -277,18 +278,23 @@ resource "google_container_cluster" "cluster" {
     for_each = var.access_config.private_nodes == true ? [""] : []
     content {
       enable_private_nodes = true
-      enable_private_endpoint = (
-        var.access_config.ip_access.disable_public_endpoint
+      enable_private_endpoint = try(
+        var.access_config.ip_access.disable_public_endpoint,
+        # this should be null, but when ip_access is disabled, the API
+        # returns true. We return true to avoid a permadiff
+        true
       )
       private_endpoint_subnetwork = try(
         var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
         null
       )
-      master_global_access_config {
-        enabled = try(
-          var.access_config.ip_access.private_endpoint_config.global_access,
-          null
-        )
+      dynamic "master_global_access_config" {
+        for_each = try(var.access_config.ip_access.private_endpoint_config.global_access, false) == true ? [""] : []
+        content {
+          enabled = (
+            var.access_config.ip_access.private_endpoint_config.global_access
+          )
+        }
       }
     }
   }

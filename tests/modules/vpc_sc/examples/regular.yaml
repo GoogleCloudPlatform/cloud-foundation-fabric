@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ values:
         negate: null
         regions: []
         required_access_levels: []
+        vpc_network_sources: []
     custom: []
+    description: null
     name: accessPolicies/12345678/accessLevels/a1
     parent: accessPolicies/12345678
+    timeouts: null
     title: a1
   module.test.google_access_context_manager_access_level.basic["a2"]:
     basic:
@@ -39,11 +42,15 @@ values:
         negate: null
         regions: []
         required_access_levels: []
+        vpc_network_sources: []
     custom: []
+    description: null
     name: accessPolicies/12345678/accessLevels/a2
     parent: accessPolicies/12345678
+    timeouts: null
     title: a2
   module.test.google_access_context_manager_service_perimeter.regular["r1"]:
+    description: null
     name: accessPolicies/12345678/servicePerimeters/r1
     parent: accessPolicies/12345678
     perimeter_type: PERIMETER_TYPE_REGULAR
@@ -54,6 +61,8 @@ values:
         - identities:
           - serviceAccount:foo@myproject.iam.gserviceaccount.com
           identity_type: null
+          source_restriction: SOURCE_RESTRICTION_DISABLED
+          sources: []
         egress_to:
         - external_resources: null
           operations:
@@ -63,20 +72,41 @@ values:
             service_name: storage.googleapis.com
           resources:
           - projects/123456789
+          roles: null
+        title: gcs-sa-foo
       ingress_policies:
       - ingress_from:
         - identities:
-          - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
-          - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-2@myproject.iam.gserviceaccount.com
           identity_type: null
           sources:
-          - resource: null
+          - access_level: '*'
+            resource: null
         ingress_to:
         - operations:
           - method_selectors: []
             service_name: '*'
           resources:
           - '*'
+          roles:
+          - roles/storage.objectViewer
+        title: sa-roles
+      - ingress_from:
+        - identities:
+          - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
+          - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+          roles: null
+        title: sa-tf-test
       resources:
       - projects/11111
       - projects/111111
@@ -86,6 +116,7 @@ values:
       - allowed_services:
         - storage.googleapis.com
         enable_restriction: true
+    timeouts: null
     title: r1
     use_explicit_dry_run_spec: false
 
