@@ -203,7 +203,7 @@ vpc_config:
 
 ### Routes
 
-Static routes and Policy-Based Routes (PBRs) are configured within the `vpc_config.<vpc_name>.routes` and `vpc_config.<vpc_name>.policy_based_routes blocks.
+Static routes and Policy-Based Routes (PBRs) are configured within the `vpc_config.<vpc_name>.routes` and `vpc_config.<vpc_name>.policy_based_routes` blocks.
 
 ```hcl
 module "net-vpc-factory" {
