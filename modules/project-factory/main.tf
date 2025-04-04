@@ -87,8 +87,20 @@ module "projects" {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  tags   = each.value.tags
-  vpc_sc = each.value.vpc_sc
+  tags = each.value.tags
+  vpc_sc = each.value.vpc_sc == null ? null : {
+    perimeter_name = (
+      each.value.vpc_sc.perimeter_name == null
+      ? null
+      : lookup(
+        var.factories_config.context.perimeters,
+        each.value.vpc_sc.perimeter_name,
+        each.value.vpc_sc.perimeter_name
+      )
+    )
+    perimeter_bridges = each.value.vpc_sc.perimeter_bridges
+    is_dry_run        = each.value.vpc_sc.is_dry_run
+  }
 }
 
 module "projects-iam" {
