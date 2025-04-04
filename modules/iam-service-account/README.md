@@ -51,7 +51,7 @@ module "service-account-with-tags" {
     foo = "tagValues/123456789"
   }
 }
-# tftest modules=1 resources=4 inventory=tags.yaml
+# tftest modules=1 resources=2 inventory=tags.yaml
 ```
 
 
