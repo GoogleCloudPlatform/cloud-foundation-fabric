@@ -325,6 +325,25 @@ module "service-accounts" {
   project_id   = module.projects[each.value.project].project_id
   name         = each.value.name
   display_name = each.value.display_name
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      for vv in v : try(
+        # automation service account (rw)
+        local.context.iam_principals["${each.key}/automation/${vv}"],
+        # automation service account (automation/rw)
+        local.context.iam_principals["${each.key}/${vv}"],
+        # other automation service account (project/automation/rw)
+        local.context.iam_principals[vv],
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        (
+          strcontains(vv, ":")
+          ? vv
+          : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
+        )
+      )
+    ]
+  }
+
   iam_project_roles = merge(
     {
       for k, v in each.value.iam_project_roles :
