@@ -38,6 +38,6 @@ values:
 counts:
   google_apigee_environment: 1
   google_apigee_instance: 1
-  google_apigee_instance_attachment: 2
+  google_apigee_instance_attachment: 1
   google_apigee_organization: 1
   google_apigee_nat_address: 1
