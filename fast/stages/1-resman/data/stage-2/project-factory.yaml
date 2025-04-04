@@ -27,7 +27,7 @@ organization_config:
           resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
     sa_pf_vpcsc_ro:
       member: ro
-      role: roles/accesscontextmanager.policyViewer
+      role: roles/accesscontextmanager.policyReader
     sa_pf_vpcsc_rw:
       member: rw
-      role: roles/accesscontextmanager.policyAdmin
+      role: roles/accesscontextmanager.policyEditor
