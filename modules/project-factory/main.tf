@@ -343,7 +343,6 @@ module "service-accounts" {
       )
     ]
   }
-
   iam_project_roles = merge(
     {
       for k, v in each.value.iam_project_roles :
