@@ -37,7 +37,6 @@ locals {
   sa_domain              = join(".", compact([local.project_id_no_universe, local.universe]))
 }
 
-
 data "google_service_account" "service_account" {
   count      = var.service_account_create ? 0 : 1
   project    = var.project_id
@@ -51,4 +50,10 @@ resource "google_service_account" "service_account" {
   display_name                 = var.display_name
   description                  = var.description
   create_ignore_already_exists = var.create_ignore_already_exists
+}
+
+resource "google_tags_tag_binding" "binding" {
+  for_each  = var.tag_bindings
+  parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/serviceAccounts/${local.service_account.unique_id}"
+  tag_value = each.value
 }

@@ -135,9 +135,22 @@ variable "project_id" {
   type        = string
 }
 
+variable "project_number" {
+  description = "Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings."
+  type        = string
+  default     = null
+}
+
 variable "service_account_create" {
   description = "Create service account. When set to false, uses a data source to reference an existing service account."
   type        = bool
   default     = true
   nullable    = false
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this service accounts, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
