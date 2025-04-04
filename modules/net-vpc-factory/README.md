@@ -71,11 +71,11 @@ Each file defines a single project, which can either be created by the factory o
 ### Configuration Methods
 
 - **YAML Factory:** The primary method is to define project and network configurations within individual YAML files placed in the directory specified by `var.factories_config.vpcs`. This factory approach allows for modular and organized management of complex setups.
-- **Direct Variable Input (Discouraged):** The module also defines a complex variable `var.network_project_config`. While it's *technically possible* to populate this variable directly (e.g., in a `.tfvars` file), this is **not the recommended approach**. It bypasses the intended factory pattern and makes managing multiple project configurations cumbersome. The variable definition primarily serves as **documentation** for the structure expected within the YAML configuration files.
+- **Direct Variable Input (Discouraged):** The module also defines `var.network_project_config`. While it's *technically possible* to populate this variable directly in a .tfvars file, this is **not the recommended approach**. It bypasses the intended factory pattern and makes managing multiple project configurations cumbersome. The variable definition primarily serves as **documentation** for the structure expected within the YAML configuration files.
 
 ### Cross-Referencing Resources
 
-A key capability of this factory is establishing relationships between resources defined across different VPCs or projects. This is achieved through cross-referencing using logical keys within the YAML configuration.These keys strictly follow the pattern `project_key/vpc_key` for VPCs or `project_key/vpc_key/resource_name` for resources like VPN gateways, routers, or NCC hubs/groups. During Terraform execution, the factory code translates these logical keys into the actual resource IDs or self-links required by the underlying modules. This powerful mechanism avoids hardcoding resource IDs and enables the declarative definition of complex topologies. It's extensively used in configurations for:
+A key capability of this factory is establishing relationships between resources defined across different VPCs or projects. This is achieved through cross-referencing using logical keys within the YAML configuration. These keys strictly follow the pattern `project_key/vpc_key/resource_key` for resources like VPCs, VPN gateways, routers, or NCC hubs/groups. During Terraform execution, the factory code translates these logical keys into the actual resource IDs or self-links required by the underlying modules. This  mechanism avoids hardcoding resource IDs and enables the declarative definition of complex topologies. It's extensively used in configurations for:
 
 VPC Peering: Specifying the peer_network (e.g., `peer_network: net-land-01/hub`).
 
@@ -130,7 +130,7 @@ project_config:
 
 ## VPCs
 
-The vpc_config block within each project's YAML file defines one or more VPCs to be created in that project. It implements a large subset of the [net-vpc module](../net-vpc/) variable interface, allowing for the creation of VPCs, subnets, routes, etc.
+The `vpc_config` block within each project's YAML file defines one or more VPCs to be created in that project. It implements a large subset of the [net-vpc module](../net-vpc/) variable interface, allowing for the creation of VPCs, subnets, routes, etc.
 
 Below a valid YAML file excerpt with a minimal set of configurations creating a project and two VPCs, and pointing to sub-factories for subnets and firewall rules:
 
@@ -152,13 +152,11 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   net-00:
-    delete_default_routes_on_create: false
     subnets_factory_config:
       subnets_folder: data/subnets/net-00
     firewall_factory_config:
       rules_folder: data/firewall/net-00
   net-01:
-    delete_default_routes_on_create: false
 # tftest-file id=vpc-config path=recipes/examples/vpc-config.yaml
 ```
 
@@ -377,12 +375,12 @@ The example below implements a Hub-and-spoke design, where spokes are connected 
 
 #### GCP to OnPrem
 
-This example demonstrates connecting an on-premises network to a GCP VPC via HA-VPN. The `vpn_config` implements the same interface as module [net-vpn-ha](../net-vpn-ha/).
+This example demonstrates connecting an on-premises network to GCP via HA-VPN. The `vpn_config` implements the same interface as module [net-vpn-ha](../net-vpn-ha/).
 
 In this example, the configuration `vpc_config.net-00.routers` creates a router named `vpn-router` in europe-west8, and `vpc_config.net-00.vpn_config.to-onprem.router_config.name` refers to it, using the key `<project_key>/<vpc_key>/<router_key>` (e.g., prj-01/net-00/vpn-router.
 Per module `net-vpn-ha`, omitting the `router_config` configuration results in the router being automatically created and managed by the VPN module itself.
 
-Note that - given the limit of 5 Cloud Routers per VPC per region - we recommend creating fewer routers as required and using them across multiple VPNs/Interconnects by setting and referencing the pre-created router.
+Note that - given the limit of 5 Cloud Routers per VPC per region - we recommend creating routers as required and using them across multiple VPNs/Interconnects by setting and referencing the pre-created router.
 
 ```hcl
 module "net-vpc-factory" {
@@ -440,8 +438,8 @@ vpc_config:
 
 #### GCP to GCP VPN
 
-This examples demonstrates connecting a GCP VPC to a GCP VPC via HA-VPN.
-In this examples, project `net-land-01` has a VPC named `hub`, and project `net-dev-01` has a VPC named `dev-spoke`, and the two VPCs are connected together via a HA VPN. In order to do so, the `vpc_config.vpn_config.to-hub.peer_gateways.default.gcp` on each side is configured by cross-referencing the VPN gateway in the other side, whose reference is `$project_id/$vpc_name/$vpn_name`.
+This examples demonstrates VPC to VPC connectivity via HA VPN.
+In this examples, project `net-land-01` has a VPC named `hub` and project `net-dev-01` has a VPC named `dev-spoke`; the two VPCs are connected together via HA VPN. In order to do so, the `vpc_config.vpn_config.to-hub.peer_gateways.default.gcp` on each side is configured by cross-referencing the VPN gateway in the other side, whose reference is `<project_id>/<vpc_name>/<vpn_name>`.
 
 ```hcl
 module "net-vpc-factory" {
@@ -528,7 +526,7 @@ vpc_config:
 
 #### NCC VPC Spokes
 
-This minimal example demonstrates how to create an NCC hub, and how to connect multiple spokes to it. On the `net-land-01` project, `ncc_hub_config.groups.default.auto_accept` is configured to automatically accept the listed spoke projects.
+This example demonstrates how to create an NCC hub, and how to connect multiple spokes to it. On the `net-land-01` project, `ncc_hub_config.groups.default.auto_accept` is configured to automatically accept the listed spoke projects.
 On the spokes definition, `vpc_config.$env-spoke.ncc_config` cross references the hub and the default group.
 
 NCC Hub:
@@ -593,7 +591,7 @@ vpc_config:
 
 #### NCC VPN Spokes
 
-This example shows how to connect an HA VPN gateway, typically used for on-premises or other cloud connections, as a spoke in an NCC Hub. This enables transitive routing between VPC spokes and the VPN connection via the NCC Hub.
+This example shows how to connect HA VPN tunnels, typically used for on-premises or other cloud connections, as spokes in an NCC Hub. This enables transitive routing between VPC spokes and the VPN connection via the NCC Hub.
 
 The key is the `ncc-spoke-config` block within the `vpn_config` definition on the hub project (`net-land-01/hub`).
 
