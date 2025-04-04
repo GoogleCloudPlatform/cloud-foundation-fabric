@@ -97,6 +97,7 @@ locals {
           try(var.data_defaults.service_accounts.display_name, null),
           "Terraform-managed."
         )
+        iam                    = try(opts.iam, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})

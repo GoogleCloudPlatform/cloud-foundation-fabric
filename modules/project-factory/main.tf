@@ -87,8 +87,20 @@ module "projects" {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  tags   = each.value.tags
-  vpc_sc = each.value.vpc_sc
+  tags = each.value.tags
+  vpc_sc = each.value.vpc_sc == null ? null : {
+    perimeter_name = (
+      each.value.vpc_sc.perimeter_name == null
+      ? null
+      : lookup(
+        var.factories_config.context.perimeters,
+        each.value.vpc_sc.perimeter_name,
+        each.value.vpc_sc.perimeter_name
+      )
+    )
+    perimeter_bridges = each.value.vpc_sc.perimeter_bridges
+    is_dry_run        = each.value.vpc_sc.is_dry_run
+  }
 }
 
 module "projects-iam" {
@@ -313,6 +325,24 @@ module "service-accounts" {
   project_id   = module.projects[each.value.project].project_id
   name         = each.value.name
   display_name = each.value.display_name
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      for vv in v : try(
+        # automation service account (rw)
+        local.context.iam_principals["${each.key}/automation/${vv}"],
+        # automation service account (automation/rw)
+        local.context.iam_principals["${each.key}/${vv}"],
+        # other automation service account (project/automation/rw)
+        local.context.iam_principals[vv],
+        # passthrough + error handling using tonumber until Terraform gets fail/raise function
+        (
+          strcontains(vv, ":")
+          ? vv
+          : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
+        )
+      )
+    ]
+  }
   iam_project_roles = merge(
     {
       for k, v in each.value.iam_project_roles :
