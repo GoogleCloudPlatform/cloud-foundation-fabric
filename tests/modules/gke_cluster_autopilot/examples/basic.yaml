@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,10 @@ values:
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
+      ip_endpoints_config:
+      - enabled: true
+    cost_management_config:
+    - enabled: true
     deletion_protection: true
     description: null
     dns_config: []
@@ -85,6 +89,7 @@ values:
     - cidr_blocks:
       - cidr_block: 10.0.0.0/8
         display_name: internal-vms
+      gcp_public_cidrs_access_enabled: false
     min_master_version: null
     monitoring_config:
     - enable_components:
@@ -116,3 +121,10 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     user_managed_keys_config: []
+
+counts:
+  google_container_cluster: 1
+  modules: 1
+  resources: 1
+
+outputs: {}
