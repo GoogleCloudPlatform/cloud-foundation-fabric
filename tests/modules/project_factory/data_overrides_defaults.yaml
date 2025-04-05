@@ -59,6 +59,5 @@ counts:
 outputs:
   buckets: {}
   folders: {}
-  foo: {}
   projects: __missing__
   service_accounts: {}
