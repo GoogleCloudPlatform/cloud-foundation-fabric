@@ -33,7 +33,7 @@ locals {
     trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
   }
   _projects_input = {
-    # will raise error, if the same filename is raised multiple times
+    # will raise error, if the same filename is used multiple times
     # and project name is not set via name in YAML
     for k, v in merge(local._hierarchy_projects_full_path, local._projects_full_path) :
     lookup(v, "name", basename(k)) => v
