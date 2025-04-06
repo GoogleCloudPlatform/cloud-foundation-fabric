@@ -101,8 +101,18 @@ locals {
       tag_bindings               = null
       services                   = null
       service_accounts           = null
-      vpc_sc                     = try(local._projects_config.data_overrides.vpc_sc, null)
-      logging_data_access        = null
+      vpc_sc = try(
+        merge(
+          {
+            perimeter_name    = null
+            perimeter_bridges = []
+            is_dry_run        = false
+          },
+          local._projects_config.data_overrides.vpc_sc
+        ),
+        null
+      )
+      logging_data_access = null
       },
       try(local._projects_config.data_overrides, {})
     )
