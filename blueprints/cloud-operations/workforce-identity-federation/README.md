@@ -1,0 +1,1 @@
+# Configuring Workforce Identity Federation to access Google Cloud resources with federated identity

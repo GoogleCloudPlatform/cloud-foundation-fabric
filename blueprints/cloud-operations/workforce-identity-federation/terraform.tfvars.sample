@@ -1,0 +1,16 @@
+organization = {
+  id = 123456789123
+}
+
+prefix = "myco"
+
+workforce_identity_pools = {
+  "wif-pool" = {
+    providers = {
+      "okta-saml" = {
+        issuer = "okta"
+        saml_metadata_url = "https://login.altostrat.com/app/lksjdnfvkjndkmmjnskfvkj/sso/saml/metadata"
+      }
+    }
+  }
+}

@@ -82,6 +82,12 @@ This [blueprint](./onprem-sa-key-management) shows how to manage IAM Service Acc
 
 <br clear="left">
 
+## Configuring Workforce Identity Federation to access Google Cloud resources with federated identity
+
+<a href="./workforce-identity-federation" title="Configuring Workforce Identity Federation to access Google Cloud resources with federated identity"><img src="./workforce-identity-federation/architecture.png" align="left" width="280px"></a> This [blueprint](./workforce-identity-federation) shows how to set up everything, both in Azure and Google Cloud, so a workload in Azure can access Google Cloud resources without a service account key. This will be possible by configuring workload identity federation to trust access tokens generated for a specific application in an Azure Active Directory (AAD) tenant.
+
+<br clear="left">
+
 ## Configuring Workload Identity Federation from apps running on Azure
 
 <a href="./workload-identity-federation" title="Configuring Workload Identity Federation from apps running on Azure"><img src="./workload-identity-federation/host-target-projects/architecture.png" align="left" width="280px"></a> This [blueprint](./workload-identity-federation) shows how to set up everything, both in Azure and Google Cloud, so a workload in Azure can access Google Cloud resources without a service account key. This will be possible by configuring workload identity federation to trust access tokens generated for a specific application in an Azure Active Directory (AAD) tenant.
