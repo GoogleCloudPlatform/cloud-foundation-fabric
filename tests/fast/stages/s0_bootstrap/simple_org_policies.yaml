@@ -245,9 +245,13 @@ values:
           - is:projects/windows-cloud
           - is:projects/windows-sql-cloud
           - is:projects/confidential-vm-images
+          - is:projects/confidential-space-images
           - is:projects/backupdr-images
           - is:projects/deeplearning-platform-release
           - is:projects/serverless-vpc-access-images
+          - is:projects/gke-node-images
+          - is:projects/gke-windows-node-images
+          - is:projects/ubuntu-os-gke-cloud
           denied_values: null
   module.organization.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     dry_run_spec: []
