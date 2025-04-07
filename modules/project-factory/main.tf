@@ -242,11 +242,11 @@ module "buckets" {
     for k, v in each.value.iam : k => [
       for vv in v : try(
         # project service accounts (sa)
-        module.service-accounts["${each.value.project}/${vv}"].iam_email,
+        module.service-accounts["${each.value.project_key}/${vv}"].iam_email,
         # automation service account (rw)
-        local.context.iam_principals["${each.value.project}/automation/${vv}"],
+        local.context.iam_principals["${each.value.project_key}/automation/${vv}"],
         # automation service account (automation/rw)
-        local.context.iam_principals["${each.value.project}/${vv}"],
+        local.context.iam_principals["${each.value.project_key}/${vv}"],
         # other projects service accounts (project/sa)
         module.service-accounts[vv].iam_email,
         # other automation service account (project/automation/rw)
@@ -255,7 +255,7 @@ module "buckets" {
         (
           strcontains(vv, ":")
           ? vv
-          : tonumber("[Error] Invalid member: '${vv}' in project '${each.value.project}'")
+          : tonumber("[Error] Invalid member: '${vv}' in project '${each.value.project_key}'")
         )
       )
     ]
