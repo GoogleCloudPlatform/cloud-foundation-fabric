@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project-factory
+billing_account: 012345-67890A-BCDEF0
 
-tests:
-  bucket_iam:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/bucket_iam
-  shared_vpc_network_user:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/shared_vpc_network_user/projects
-  data_overrides_defaults:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/data_overrides_defaults/projects
+contacts: # this should be overridden by value
+    admin-default@example.org:
+      - "ALL"
+
+tag_bindings: # this should be overridden with empty value
+  name1: project_id1
+
+services:
+  - run.googleapis.com

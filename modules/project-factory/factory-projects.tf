@@ -17,10 +17,10 @@
 # tfdoc:file:description Projects factory locals.
 
 locals {
-  _hierarchy_projects = (
+  _hierarchy_projects_full_path = (
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
-      basename(trimsuffix(f, ".yaml")) => merge(
+      trimsuffix(f, ".yaml") => merge(
         { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
       )
@@ -28,13 +28,16 @@ locals {
     }
   )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
-  _projects_input = merge(
-    {
-      for f in try(fileset(local._project_path, "**/*.yaml"), []) :
-      basename(trimsuffix(f, ".yaml")) => yamldecode(file("${local._project_path}/${f}"))
-    },
-    local._hierarchy_projects
-  )
+  _projects_full_path = {
+    for f in try(fileset(local._project_path, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
+  }
+  _projects_input = {
+    # will raise error, if the same filename is used multiple times
+    # and project name is not set via name in YAML
+    for k, v in merge(local._hierarchy_projects_full_path, local._projects_full_path) :
+    lookup(v, "name", basename(k)) => v
+  }
   _project_budgets = flatten([
     for k, v in local._projects_input : [
       for b in try(v.billing_budgets, []) : {
@@ -59,7 +62,8 @@ locals {
   buckets = flatten([
     for k, v in local.projects : [
       for name, opts in v.buckets : {
-        project               = k
+        project_key           = k
+        project_name          = v.name
         name                  = name
         description           = lookup(opts, "description", "Terraform-managed.")
         encryption_key        = lookup(opts, "encryption_key", null)
@@ -87,10 +91,10 @@ locals {
     ]
   ])
   service_accounts = flatten([
-    for k, v in local.projects : [
-      for name, opts in v.service_accounts : {
-        project = k
-        name    = name
+    for k, project in local.projects : [
+      for name, opts in project.service_accounts : {
+        project_key = k
+        name        = name
         display_name = coalesce(
           try(var.data_overrides.service_accounts.display_name, null),
           try(opts.display_name, null),
