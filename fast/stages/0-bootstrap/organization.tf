@@ -208,12 +208,11 @@ module "organization" {
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
-      bq_partitioned_table = attrs.type == "bigquery"
-      destination          = local.log_sink_destinations[name].id
-      filter               = attrs.filter
-      type                 = attrs.type
-      disabled             = attrs.disabled
-      exclusions           = attrs.exclusions
+      destination = module.log-export-project.project_id
+      filter      = attrs.filter
+      type        = "project"
+      disabled    = attrs.disabled
+      exclusions  = attrs.exclusions
     }
   }
   tags = {

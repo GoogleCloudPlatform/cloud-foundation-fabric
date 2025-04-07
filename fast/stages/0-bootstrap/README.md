@@ -153,7 +153,7 @@ Because of limitations of API availability, manual steps have to be followed to 
 
 ### Organization-level logging
 
-We create organization-level log sinks early in the bootstrap process to ensure a proper audit trail is in place from the very beginning. By default, we provide log filters to capture [Cloud Audit Logs](https://cloud.google.com/logging/docs/audit), [VPC Service Controls violations](https://cloud.google.com/vpc-service-controls/docs/troubleshooting#vpc-sc-errors) and [Workspace Logs](https://cloud.google.com/logging/docs/audit/configure-gsuite-audit-logs) into logging buckets in the top-level audit logging project.
+We create organization-level log sinks early in the bootstrap process to ensure a proper audit trail is in place from the very beginning. By default, we provide log filters to send [Cloud Audit Logs](https://cloud.google.com/logging/docs/audit), [VPC Service Controls violations](https://cloud.google.com/vpc-service-controls/docs/troubleshooting#vpc-sc-errors) and [Workspace Logs](https://cloud.google.com/logging/docs/audit/configure-gsuite-audit-logs) to the top-level logging project. The top-level logging project creates additional sinks to route incoming logs to the destinations specified in `var.logging_sinks`.
 
 An organization-level sink captures IAM data access logs, including authentication and impersonation events for service accounts. To manage logging costs, the default configuration enables IAM data access logging only within the automation project (where sensitive service accounts reside). For enhanced security across the entire organization, consider enabling these logs at the organization level.
 

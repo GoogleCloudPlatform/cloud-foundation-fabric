@@ -256,9 +256,9 @@ variable "log_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.log_sinks :
-      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
   }
 }
 

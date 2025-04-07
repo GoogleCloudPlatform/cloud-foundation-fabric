@@ -69,6 +69,30 @@ module "log-export-project" {
   ]
 }
 
+module "log-export-project-sinks" {
+  source = "../../../modules/project"
+  name   = module.log-export-project.project_id
+  project_reuse = {
+    user_data_source = false
+    project_attributes = {
+      name   = module.log-export-project.name
+      number = module.log-export-project.number
+    }
+  }
+
+  logging_sinks = {
+    for name, attrs in var.log_sinks : name => {
+      bq_partitioned_table = attrs.type == "bigquery"
+      destination          = local.log_sink_destinations[name].id
+      filter               = attrs.filter
+      type                 = attrs.type
+      disabled             = attrs.disabled
+      exclusions           = attrs.exclusions
+      iam                  = false
+    }
+  }
+}
+
 # one log export per type, with conditionals to skip those not needed
 
 module "log-export-dataset" {
