@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project-factory
+billing_account: 012345-67890A-BCDEF0
 
-tests:
-  bucket_iam:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/bucket_iam
-  shared_vpc_network_user:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/shared_vpc_network_user/projects
-  data_overrides_defaults:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/data_overrides_defaults/projects
+# take defaults + overrides only

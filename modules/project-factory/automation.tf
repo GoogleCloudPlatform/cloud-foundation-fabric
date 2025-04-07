@@ -35,7 +35,7 @@ locals {
     ]
   ])
 }
-output "foo" { value = local.automation_buckets }
+
 module "automation-bucket" {
   source   = "../gcs"
   for_each = local.automation_buckets
