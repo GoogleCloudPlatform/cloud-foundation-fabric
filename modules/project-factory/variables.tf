@@ -83,6 +83,7 @@ variable "data_merges" {
 variable "data_overrides" {
   description = "Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`."
   type = object({
+    # data overrides default to null to mark that they should not override
     billing_account = optional(string)
     contacts        = optional(map(list(string)))
     factories_config = optional(object({
@@ -111,7 +112,7 @@ variable "data_overrides" {
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
       DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })), {})
+    })))
   })
   nullable = false
   default  = {}
@@ -130,6 +131,7 @@ variable "factories_config" {
       # TODO: add KMS keys
       folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
+      perimeters            = optional(map(string), {})
       tag_values            = optional(map(string), {})
       vpc_host_projects     = optional(map(string), {})
       notification_channels = optional(map(string), {})

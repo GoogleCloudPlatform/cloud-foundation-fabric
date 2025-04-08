@@ -71,6 +71,25 @@ variable "locations" {
   default  = {}
 }
 
+variable "perimeters" {
+  # tfdoc:variable:source 1-vpcsc
+  description = "Optional VPC-SC perimeter ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Optional organization policy tag values."
+  type = object({
+    key_name = optional(string, "org-policies")
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

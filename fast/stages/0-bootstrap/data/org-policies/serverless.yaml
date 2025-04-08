@@ -24,6 +24,10 @@ run.allowedIngress:
         values:
           - is:internal-and-cloud-load-balancing
 
+run.managed.requireInvokerIam:
+  rules:
+    - enforce: true
+
 # run.allowedVPCEgress:
 #   rules:
 #   - allow:

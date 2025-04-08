@@ -49,9 +49,9 @@ values:
     parent: accessPolicies/12345678
     timeouts: null
     title: identity-user1
-  module.test.google_access_context_manager_service_perimeter.regular["r1"]:
-    description: null
-    name: accessPolicies/12345678/servicePerimeters/r1
+  module.test.google_access_context_manager_service_perimeter.regular["perimeter-north"]:
+    description: Main perimeter
+    name: accessPolicies/12345678/servicePerimeters/perimeter-north
     parent: accessPolicies/12345678
     perimeter_type: PERIMETER_TYPE_REGULAR
     spec: []
@@ -62,7 +62,7 @@ values:
           - serviceAccount:bar@myproject.iam.gserviceaccount.com
           - serviceAccount:foo@myproject.iam.gserviceaccount.com
           identity_type: null
-          source_restriction: 'SOURCE_RESTRICTION_DISABLED'
+          source_restriction: SOURCE_RESTRICTION_DISABLED
           sources: []
         egress_to:
         - external_resources: null
@@ -104,9 +104,11 @@ values:
             service_name: '*'
           resources:
           - projects/1234567890
+          - projects/321
+          - projects/654
       resources:
-      - projects/11111
-      - projects/111111
+      - projects/1111
+      - projects/2222
       restricted_services:
       - storage.googleapis.com
       vpc_accessible_services:
@@ -114,7 +116,7 @@ values:
         - storage.googleapis.com
         enable_restriction: true
     timeouts: null
-    title: r1
+    title: perimeter-north
     use_explicit_dry_run_spec: false
 
 counts:

@@ -24,7 +24,7 @@ resource "google_access_context_manager_access_level" "basic" {
   for_each    = merge(local.data.access_levels, var.access_levels)
   parent      = "accessPolicies/${local.access_policy}"
   name        = "accessPolicies/${local.access_policy}/accessLevels/${each.key}"
-  title       = each.key
+  title       = coalesce(each.value.title, each.key)
   description = each.value.description
 
   basic {
@@ -34,8 +34,11 @@ resource "google_access_context_manager_access_level" "basic" {
       for_each = toset(each.value.conditions)
       iterator = c
       content {
-        ip_subnetworks         = c.value.ip_subnetworks
-        members                = c.value.members
+        ip_subnetworks = c.value.ip_subnetworks
+        members = flatten([
+          for i in c.value.members :
+          lookup(var.factories_config.context.identity_sets, i, [i])
+        ])
         negate                 = c.value.negate
         regions                = c.value.regions
         required_access_levels = coalesce(c.value.required_access_levels, [])
