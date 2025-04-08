@@ -17,16 +17,13 @@ import json
 import os
 import click
 import logging
-import sys
 import google.cloud.logging
-from google.auth.transport.requests import AuthorizedSession
-from google.oauth2 import service_account
 from jinja2 import Template
 from shared import utils
 from google.cloud import dlp_v2
 from google.cloud import storage
-from datetime import date, timedelta
-from shared import secops
+from datetime import date, timedelta, datetime
+from secops import SecOpsClient
 
 client = google.cloud.logging.Client()
 client.setup_logging()
@@ -37,11 +34,6 @@ logging.basicConfig(
     format='[%(levelname)-8s] - %(asctime)s - %(message)s')
 logging.root.setLevel(logging.DEBUG)
 
-SCOPES = [
-    "https://www.googleapis.com/auth/chronicle-backstory",
-    "https://www.googleapis.com/auth/malachite-ingestion"
-]
-
 SECOPS_REGION = os.environ.get("SECOPS_REGION")
 GCP_PROJECT_ID = os.environ.get("GCP_PROJECT")
 SECOPS_EXPORT_BUCKET = os.environ.get("SECOPS_EXPORT_BUCKET")
@@ -51,25 +43,15 @@ SECOPS_TARGET_PROJECT = os.environ.get("SECOPS_TARGET_PROJECT")
 SECOPS_SOURCE_CUSTOMER_ID = os.environ.get("SECOPS_SOURCE_CUSTOMER_ID")
 SECOPS_TARGET_CUSTOMER_ID = os.environ.get("SECOPS_TARGET_CUSTOMER_ID")
 SECOPS_TARGET_FORWARDER_ID = os.environ.get("SECOPS_TARGET_FORWARDER_ID")
-
-SKIP_ANONYMIZATION = False if (os.environ.get(
-    "SKIP_ANONYMIZATION", "false").lower() == "false") else True
+SKIP_ANONYMIZATION = False if (os.environ.get("SKIP_ANONYMIZATION", "false").lower() == "false") else True
 DLP_DEIDENTIFY_TEMPLATE_ID = os.environ.get("DLP_DEIDENTIFY_TEMPLATE_ID")
 DLP_INSPECT_TEMPLATE_ID = os.environ.get("DLP_INSPECT_TEMPLATE_ID")
 DLP_REGION = os.environ.get("DLP_REGION")
 
 
 def import_logs(export_date):
-  # Initialize with default credentials - will automatically use the service account
-  # assigned to your Google Cloud resource
-  client = secops.SecOpsClient()
-
-  # Initialize Chronicle client
-  chronicle = client.chronicle(
-      customer_id=SECOPS_TARGET_CUSTOMER_ID,  # Your Chronicle instance ID
-      project_id=SECOPS_TARGET_PROJECT,             # Your GCP project ID
-      region=SECOPS_REGION                               # Chronicle API region
-  )
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_TARGET_CUSTOMER_ID, project_id=SECOPS_TARGET_PROJECT, region=SECOPS_REGION)
 
   storage_client = storage.Client()
   BUCKET = SECOPS_OUTPUT_BUCKET if not SKIP_ANONYMIZATION else SECOPS_EXPORT_BUCKET
@@ -87,13 +69,13 @@ def import_logs(export_date):
           for line in f:
             logs.append(line.rstrip('\n'))
             if len(logs) == 1000:
-              response = chronicle.ingest_logs(logs=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+              response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
               LOGGER.debug(response)
               logs = []
 
           # Send any remaining entries
           if len(logs) > 0:
-              response = chronicle.ingest_logs(logs=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+              response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
               LOGGER.debug(response)
 
     # delete both export and anonymized buckets after ingesting logs
@@ -119,35 +101,27 @@ def trigger_export(export_date: str, export_start_datetime: str,
     :return:
   """
 
-
-  # Initialize with default credentials - will automatically use the service account
-  # assigned to your Google Cloud resource
-  client = secops.SecOpsClient()
-
-  # Initialize Chronicle client
-  chronicle = client.chronicle(
-      customer_id=SECOPS_SOURCE_CUSTOMER_ID,  # Your Chronicle instance ID
-      project_id=SECOPS_SOURCE_PROJECT,             # Your GCP project ID
-      region=SECOPS_REGION                               # Chronicle API region
-  )
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID, project_id=SECOPS_SOURCE_PROJECT, region=SECOPS_REGION)
 
   export_ids = []
+
+  if export_start_datetime and export_end_datetime:
+      start_time, end_time = datetime.strptime(export_start_datetime, "%Y-%m-%dT%H:%M:%SZ"), datetime.strptime(export_end_datetime, "%Y-%m-%dT%H:%M:%SZ")
+  else:
+      start_time, end_time = utils.format_date_time_range(date_input=export_date)
+  gcs_bucket = f"projects/{GCP_PROJECT_ID}/buckets/{SECOPS_EXPORT_BUCKET}"
+
   try:
-    if log_types is None:
-      export_response = chronicle.create_data_export(
-          project=GCP_PROJECT_ID, export_date=export_date,
-          export_start_datetime=export_start_datetime,
-          export_end_datetime=export_end_datetime)
+    if log_types is None or log_types == "":
+      export_response = chronicle.create_data_export(start_time=start_time, end_time=end_time, gcs_bucket=gcs_bucket, export_all_logs=True)
       LOGGER.info(export_response)
       export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
       export_ids.append(export_id)
       LOGGER.info(f"Triggered export with ID: {export_id}")
     else:
       for log_type in log_types.split(","):
-        export_response = chronicle.create_data_export(
-            project=GCP_PROJECT_ID, export_date=export_date,
-            export_start_datetime=export_start_datetime,
-            export_end_datetime=export_end_datetime, log_type=log_type)
+        export_response = chronicle.create_data_export(start_time=start_time, end_time=end_time, gcs_bucket=gcs_bucket, log_type=log_type)
         export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
         export_ids.append(export_id)
         LOGGER.info(f"Triggered export with ID: {export_id}")
@@ -164,22 +138,14 @@ def anonymize_data(export_date):
   :param export_date: date for which data should be anonymized
   :return:
   """
-  # Initialize with default credentials - will automatically use the service account
-  # assigned to your Google Cloud resource
-  client = secops.SecOpsClient()
 
-  # Initialize Chronicle client
-  chronicle = client.chronicle(
-      customer_id=SECOPS_SOURCE_CUSTOMER_ID,  # Your Chronicle instance ID
-      project_id=SECOPS_SOURCE_PROJECT,             # Your GCP project ID
-      region=SECOPS_REGION                               # Chronicle API region
-  )
-  export_ids = utils.get_secops_export_folders_for_date(SECOPS_EXPORT_BUCKET,
-                                                        export_date=export_date)
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID, project_id=SECOPS_SOURCE_PROJECT, region=SECOPS_REGION)
+  export_ids = utils.get_secops_export_folders_for_date(SECOPS_EXPORT_BUCKET, export_date=export_date)
 
   export_finished = True
   for export_id in export_ids:
-    export = chronicle.get_data_export(name=export_id)
+    export = chronicle.get_data_export(data_export_id=export_id)
     LOGGER.info(f"Export response: {export}.")
     if "dataExportStatus"in export and export["dataExportStatus"]["stage"] == "FINISHED_SUCCESS":
       export_state = export["dataExportStatus"]["stage"]
@@ -261,21 +227,13 @@ def main(request):
 
 
 @click.command()
-@click.option('--export-date', '-d', required=False, type=str,
-              help='Date for secops export and anonymization.')
-@click.option('--export-start-datetime', '-d', required=False, type=str,
-              help='Start datetime for secops export and anonymization.')
-@click.option('--export-end-datetime', '-d', required=False, type=str,
-              help='End datetime for secops export and anonymization.')
+@click.option('--export-date', '-d', required=False, type=str, help='Date for secops export and anonymization.')
+@click.option('--export-start-datetime', '-d', required=False, type=str, help='Start datetime for secops export and anonymization.')
+@click.option('--export-end-datetime', '-d', required=False, type=str, help='End datetime for secops export and anonymization.')
 @click.option('--log-type', type=str, multiple=True)
-@click.option(
-    '--action',
-    type=click.Choice(['TRIGGER-EXPORT', 'ANONYMIZE-DATA',
-                       'IMPORT-DATA']), required=True)
-@click.option('--debug', is_flag=True, default=False,
-              help='Turn on debug logging.')
-def main_cli(export_date, export_start_datetime, export_end_datetime,
-             log_type: list, action: str, debug=False):
+@click.option('--action', type=click.Choice(['TRIGGER-EXPORT', 'ANONYMIZE-DATA', 'IMPORT-DATA']), required=True)
+@click.option('--debug', is_flag=True, default=False, help='Turn on debug logging.')
+def main_cli(export_date, export_start_datetime, export_end_datetime, log_type: list, action: str, debug=False):
   """
     CLI entry point.
     :param date: date for secops export and anonymization
@@ -288,7 +246,7 @@ def main_cli(export_date, export_start_datetime, export_end_datetime,
       trigger_export(export_date=export_date,
                      export_start_datetime=export_start_datetime,
                      export_end_datetime=export_end_datetime,
-                     log_types=log_type)
+                     log_types=','.join(log_type))
     case "ANONYMIZE-DATA":
       anonymize_data(export_date=export_date)
     case "IMPORT-DATA":

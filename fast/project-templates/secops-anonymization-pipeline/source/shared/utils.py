@@ -17,28 +17,12 @@ import os
 import logging
 import math
 import csv
-from google.cloud import secretmanager, storage, exceptions
+from google.cloud import storage
 from datetime import datetime, timedelta, timezone, time
 
 LOGGER = logging.getLogger('secops')
 """Utility functions required for ingestion scripts."""
 MAX_FILE_SIZE = 61440000  # Max size supported by DLP
-
-
-def get_value_from_secret_manager(resource_path: str) -> str:
-  """Retrieve the value of the secret from the Google Cloud Secret Manager.
-
-    Args:
-      resource_path (str): Path of the secret with version included. Ex.:
-        "projects/<project_id>/secrets/<secret_name>/versions/1",
-        "projects/<project_id>/secrets/<secret_name>/versions/latest"
-
-    Returns:
-      str: Payload for secret.
-    """
-  client = secretmanager.SecretManagerServiceClient()
-  response = client.access_secret_version(name=resource_path)
-  return response.payload.data.decode("UTF-8")
 
 
 def format_date_time_range(date_input):
@@ -56,15 +40,10 @@ def format_date_time_range(date_input):
     """
   date_obj = datetime.strptime(date_input, "%Y-%m-%d")
 
-  start_of_day = datetime.combine(date_obj.date(), time.min,
-                                  tzinfo=timezone.utc)
+  start_of_day = datetime.combine(date_obj.date(), time.min,tzinfo=timezone.utc)
   end_of_day = start_of_day + timedelta(days=1, seconds=-1)
 
-  # Format both datetime objects
-  formatted_start = start_of_day.strftime("%Y-%m-%dT%H:%M:%SZ")
-  formatted_end = end_of_day.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-  return formatted_start, formatted_end
+  return start_of_day, end_of_day
 
 
 def list_anonymized_folders(bucket_name, folder_name):
@@ -94,16 +73,10 @@ def delete_folder(bucket_name, folder_name):
       bucket_name: The name of the bucket.
       folder_name: The name of the folder to delete.
     """
-
   storage_client = storage.Client()
   bucket = storage_client.bucket(bucket_name)
-
-  # List all blobs with the given prefix (folder name)
   blobs = list(bucket.list_blobs(prefix=folder_name))
-
-  # Delete the blobs in parallel
   bucket.delete_blobs(blobs)
-
   print(f"Folder {folder_name} deleted from bucket {bucket_name}")
 
 
@@ -212,9 +185,7 @@ def get_secops_export_folders_for_date(bucket_name, export_date):
   for blob in storage_client.list_blobs(bucket_name):
     if "_$folder$" in blob.name:
       continue
-    if blob.time_created.strftime(
-        "%Y-%m-%d") == export_date and blob.name.split(
-            '/')[0] not in export_ids:
+    if blob.time_created.strftime("%Y-%m-%d") == export_date and blob.name.split('/')[0] not in export_ids:
       export_ids.append(blob.name.split('/')[0])
 
   return export_ids
