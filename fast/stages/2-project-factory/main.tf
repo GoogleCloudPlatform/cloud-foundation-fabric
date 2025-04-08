@@ -47,6 +47,10 @@ module "projects" {
       )
       perimeters = var.perimeters
       tag_values = merge(
+        {
+          for k, v in var.org_policy_tags.values :
+          "${var.org_policy_tags.key_name}/${k}" => v
+        },
         var.tag_values,
         var.factories_config.context.tag_values
       )
