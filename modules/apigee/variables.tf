@@ -79,6 +79,7 @@ variable "instances" {
     disk_encryption_key           = optional(string)
     display_name                  = optional(string)
     enable_nat                    = optional(bool, false)
+    activate_nat                  = optional(bool, false)
     environments                  = optional(list(string), [])
     name                          = optional(string)
     runtime_ip_cidr_range         = optional(string)
