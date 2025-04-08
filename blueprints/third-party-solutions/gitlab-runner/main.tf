@@ -15,16 +15,18 @@
  */
 
 locals {
-  role_id            = module.project.custom_role_ids[local.role_name]
-  role_name          = "gitlabRunnerManagerRole"
+  role_id            = module.project.custom_roles[local.role_name]
+  role_name          = "gitlabRunnerManagerRoleV2"
   runner_config_type = [for key, value in var.gitlab_runner_config.executors_config : key if value != null][0]
-  runner_startup_script_config = {
-    gitlab_hostname        = var.gitlab_config.hostname
-    gitlab_ca_cert         = base64encode(var.gitlab_config.ca_cert_pem)
-    gitlab_token_secret_id = local.gitlab_runner_auth_token_secret_id
-    gitlab_runner_config   = base64encode(templatefile("${path.module}/assets/config/${local.runner_config_type}_config.toml.tpl", var.gitlab_runner_config.executors_config[local.runner_config_type]))
-    gitlab_executor_type   = replace(local.runner_config_type, "_", "-")
-  }
+  cloud_config = templatefile("${path.module}/assets/cloud-config.yaml", {
+    gitlab_hostname      = var.gitlab_config.hostname
+    gitlab_ca_cert       = base64encode(var.gitlab_config.ca_cert_pem)
+    gitlab_token         = var.gitlab_runner_config.authentication_token
+    gitlab_runner_config = base64encode(templatefile("${path.module}/assets/config/${local.runner_config_type}_config.toml.tpl", var.gitlab_runner_config.executors_config[local.runner_config_type]))
+    gitlab_executor_type = replace(local.runner_config_type, "_", "-")
+    region               = var.region
+    repo_url             = var.artifact_registry_remote
+  })
 }
 
 module "project" {
@@ -33,7 +35,7 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   prefix          = var.project_create == null ? null : var.prefix
   name            = var.project_id
-  project_create  = var.project_create != null
+  project_reuse   = var.project_create != null ? null : {}
   custom_roles = {
     (local.role_name) = [
       "compute.instanceGroupManagers.get",
@@ -42,9 +44,9 @@ module "project" {
       "compute.instances.setMetadata"
     ]
   }
-  iam = {
-    (local.role_id) = ["serviceAccount:${module.runner-sa.email}"]
-  }
+  #  iam = {
+  #    (local.role_id) = ["serviceAccount:${module.runner-sa.email}"]
+  #  }
   services = [
     "compute.googleapis.com",
     "storage.googleapis.com",

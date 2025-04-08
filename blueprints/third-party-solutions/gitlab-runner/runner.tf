@@ -15,13 +15,13 @@
  */
 
 locals {
-  gitlab_runner_auth_token_secret_id = "gitlab_runner_auth_token"
+  gitlab_runner_auth_token_secret_id = "gitlab_runner_v2_auth_token"
 }
 
 module "runner-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
-  name       = "gitlab-runner-sa"
+  name       = "gitlab-runner-sa-v2"
 }
 
 module "runner-mig-sa" {
@@ -65,7 +65,8 @@ module "gitlab-runner" {
   project_id = module.project.project_id
   boot_disk = {
     initialize_params = {
-      size = var.vm_config.boot_disk_size
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+      size  = var.vm_config.boot_disk_size
     }
   }
   instance_type = var.vm_config.instance_type
@@ -79,7 +80,8 @@ module "gitlab-runner" {
     }
   ]
   metadata = {
-    startup-script = templatefile("${path.module}/assets/startup-script.sh.tpl", local.runner_startup_script_config)
+    user-data              = local.cloud_config
+    google-logging-enabled = "true"
   }
   service_account = {
     email = module.runner-sa.email

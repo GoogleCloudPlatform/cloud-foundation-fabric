@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+variable "artifact_registry_remote" {
+  description = "Artifact Registry remote URL."
+  type        = string
+}
+
 variable "admin_principals" {
   description = "Users, groups and/or service accounts that are assigned roles, in IAM format (`group:foo@example.com`)."
   type        = list(string)

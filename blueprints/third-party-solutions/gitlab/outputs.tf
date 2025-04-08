@@ -23,6 +23,10 @@ locals {
   }
 }
 
+output "artifact_registry_remote" {
+  value = module.registry-remote.url
+}
+
 output "gitlab_ilb_ip" {
   description = "Gitlab Internal Load Balancer IP Address."
   value       = module.ilb.forwarding_rule_addresses[""]
