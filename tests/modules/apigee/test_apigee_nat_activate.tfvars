@@ -18,7 +18,7 @@ environments = {
 instances = {
   europe-west1 = {
     environments = ["europe-west1"]
-    enable_nat = true
+    enable_nat   = true
     activate_nat = true
   }
 }
