@@ -21,9 +21,9 @@
 module "prod-dns-priv-example" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
-  name       = "prod-gcp-example-com"
+  name       = "prod-${replace(var.dns.gcp_domain, ".", "-")}"
   zone_config = {
-    domain = "prod.gcp.example.com."
+    domain = "prod.${var.dns.gcp_domain}."
     private = {
       client_networks = [
         # module.dmz-vpc.self_link
