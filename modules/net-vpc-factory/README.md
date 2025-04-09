@@ -4,10 +4,11 @@ The factory is implemented as a thin data translation layer for the underlying m
 
 The code is meant to be executed by a service account or a user with a wide set of permissions:
 
-- Project Creator on the nodes (folder or org) where projects will be defined if projects are created by the factory, or
-- Owner on the projects used to deploy the infrastructure
-- XPN Admin on the nodes (folder or org) where projects are deployed, in case projects will be marked as "host projects"
-- TODO(sruffilli) Finalize the list of required roles
+- roles/resourcemanager.projectCreator (only if creating projects)
+- roles/billing.user (only if creating projects)
+- roles/resourcemanager.folderViewer (if parent is folder)
+- roles/orgpolicy.policyAdmin (at the organization level, in case you're configuring Org Policies)
+- roles/compute.xpnAdmin (at the parent folder level, if Shared VPC is used)
 
 This factory module acts as a wrapper around several core Terraform modules:
 
