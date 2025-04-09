@@ -195,19 +195,19 @@ module "projects-iam" {
 module "buckets" {
   source = "../gcs"
   for_each = {
-    for k in local.buckets : "${k.project}/${k.name}" => k
+    for k in local.buckets : "${k.project_key}/${k.name}" => k
   }
-  project_id     = module.projects[each.value.project].project_id
+  project_id     = module.projects[each.value.project_key].project_id
   prefix         = each.value.prefix
-  name           = "${each.value.project}-${each.value.name}"
+  name           = "${each.value.project_name}-${each.value.name}"
   encryption_key = each.value.encryption_key
   iam = {
     for k, v in each.value.iam : k => [
       for vv in v : try(
         # project service accounts
-        module.service-accounts["${each.value.project}/${vv}"].iam_email,
+        module.service-accounts["${each.value.project_key}/${vv}"].iam_email,
         # automation service account
-        local.context.iam_principals["${each.value.project}/${vv}"],
+        local.context.iam_principals["${each.value.project_key}/${vv}"],
         # other projects service accounts
         module.service-accounts[vv].iam_email,
         # other automation service account
@@ -265,9 +265,9 @@ module "buckets" {
 module "service-accounts" {
   source = "../iam-service-account"
   for_each = {
-    for k in local.service_accounts : "${k.project}/${k.name}" => k
+    for k in local.service_accounts : "${k.project_key}/${k.name}" => k
   }
-  project_id   = module.projects[each.value.project].project_id
+  project_id   = module.projects[each.value.project_key].project_id
   name         = each.value.name
   display_name = each.value.display_name
   iam_project_roles = merge(
@@ -276,7 +276,7 @@ module "service-accounts" {
       lookup(var.factories_config.context.vpc_host_projects, k, k) => v
     },
     each.value.iam_self_roles == null ? {} : {
-      (module.projects[each.value.project].project_id) = each.value.iam_self_roles
+      (module.projects[each.value.project_key].project_id) = each.value.iam_self_roles
     }
   )
 }
