@@ -75,7 +75,7 @@ Each file defines a single project, which can either be created by the factory o
 
 ### Cross-Referencing Resources
 
-A key capability of this factory is establishing relationships between resources defined across different VPCs or projects. This is achieved through cross-referencing using logical keys within the YAML configuration. These keys strictly follow the pattern `project_key/vpc_key/resource_key` for resources like VPCs, VPN gateways, routers, or NCC hubs/groups. During Terraform execution, the factory code translates these logical keys into the actual resource IDs or self-links required by the underlying modules. This  mechanism avoids hardcoding resource IDs and enables the declarative definition of complex topologies. It's extensively used in configurations for:
+A key capability of this factory is establishing relationships between resources defined across different VPCs or projects. This is achieved through cross-referencing using logical keys within the YAML configuration. These keys strictly follow the pattern `project_key/vpc_key/resource_key` for resources like VPCs, VPN gateways, routers, or NCC hubs/groups. During Terraform execution, the factory code translates these logical keys into the actual resource IDs or self-links required by the underlying modules. This mechanism avoids hardcoding resource IDs and enables the declarative definition of complex topologies. It's extensively used in configurations for:
 
 VPC Peering: Specifying the peer_network (e.g., `peer_network: net-land-01/hub`).
 
@@ -87,9 +87,9 @@ Network Connectivity Center (NCC): Linking spokes to hubs (`ncc_config.hub: net-
 
 ## Projects
 
-The `project_config` block within each YAML file implements a large subset of the [project module](../project/) variable interface, which allows amongst the rest for project creation or reuse, services enablement and IAM/Organization policies definition.
+The `project_config` block within each YAML file implements a large subset of the [project module](../project/) variable interface, which allows for project creation or reuse, services enablement and IAM/Organization policies definition.
 
-Below a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project, adds an authoritative
+Below is a valid YAML file which simply creates a project, enables a minimal set of services, configures the project as a host project, adds an authoritative
 role binding and sets an Organization Policy at the project level:
 
 ```hcl
@@ -125,14 +125,14 @@ project_config:
         - allow:
             values:
               - EXTERNAL_HTTP_HTTPS
-# tftest-file id=project-config path=recipes/examples/project-config.yaml
+# tftest-file id=project-config path=recipes/examples/project-config.yaml schema=network-project.schema.json
 ```
 
 ## VPCs
 
 The `vpc_config` block within each project's YAML file defines one or more VPCs to be created in that project. It implements a large subset of the [net-vpc module](../net-vpc/) variable interface, allowing for the creation of VPCs, subnets, routes, etc.
 
-Below a valid YAML file excerpt with a minimal set of configurations creating a project and two VPCs, and pointing to sub-factories for subnets and firewall rules:
+Below is a valid YAML file excerpt with a minimal set of configurations creating a project and two VPCs, and pointing to sub-factories for subnets and firewall rules:
 
 ```hcl
 module "net-vpc-factory" {
@@ -156,8 +156,7 @@ vpc_config:
       subnets_folder: data/subnets/net-00
     firewall_factory_config:
       rules_folder: data/firewall/net-00
-  net-01:
-# tftest-file id=vpc-config path=recipes/examples/vpc-config.yaml
+# tftest-file id=vpc-config path=recipes/examples/vpc-config.yaml schema=network-project.schema.json
 ```
 
 ### Subnets
@@ -198,7 +197,7 @@ vpc_config:
       subnets_folder: data/subnets/foobar
     firewall_factory_config:
       rules_folder: data/firewall/foobar
-# tftest-file id=nat-config path=recipes/examples/nat-config.yaml
+# tftest-file id=nat-config path=recipes/examples/nat-config.yaml schema=network-project.schema.json
 ```
 
 ### Routes
@@ -236,7 +235,7 @@ vpc_config:
           dest_range: 0.0.0.0/0
         next_hop_ilb_ip: 10.0.100.5
         priority: 100
-# tftest-file id=routes-config path=recipes/examples/routes-config.yaml
+# tftest-file id=routes-config path=recipes/examples/routes-config.yaml schema=network-project.schema.json
 ```
 
 Refer to the [net-vpc](../net-vpc/) module documentation for details on routes and policy_based_routes.
@@ -267,7 +266,7 @@ vpc_config:
       - ranges:
           global-psa-range: 10.100.0.0/24
         peered_domains: ["onprem.example."]
-# tftest-file id=psa-config path=recipes/examples/psa-config.yaml
+# tftest-file id=psa-config path=recipes/examples/psa-config.yaml schema=network-project.schema.json
 ```
 
 Refer to the [net-vpc](../net-vpc) module documentation for details on psa_config.
@@ -298,7 +297,7 @@ vpc_config:
     dns_policy:
       inbound: true
       logging: true
-# tftest-file id=vpc-dns-policy path=recipes/examples/vpc-dns-policy.yaml
+# tftest-file id=vpc-dns-policy path=recipes/examples/vpc-dns-policy.yaml schema=network-project.schema.json
 ```
 
 ## Connectivity
@@ -329,12 +328,12 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   hub:
-    peering_configs:
+    peering_config:
       to-prod:
         peer_network: net-prod-01/prod-spoke
       to-dev:
         peer_network: net-dev-01/dev-spoke
-# tftest-file id=peerings-hub path=recipes/examples/net-land-01.yaml
+# tftest-file id=peerings-hub path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 Dev Spoke:
@@ -346,11 +345,11 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   dev-spoke:
-    peering_configs:
+    peering_config:
       to-hub:
         peer_network: net-land-01/hub
 
-# tftest-file id=peerings-dev path=recipes/examples/net-dev-01.yaml
+# tftest-file id=peerings-dev path=recipes/examples/net-dev-01.yaml schema=network-project.schema.json
 ```
 
 Prod Spoke:
@@ -362,11 +361,11 @@ project_config:
     - compute.googleapis.com
 vpc_config:
   prod-spoke:
-    peering_configs:
+    peering_config:
       to-hub:
         peer_network: net-land-01/hub
 
-# tftest-file id=peerings-prod path=recipes/examples/net-prod-01.yaml
+# tftest-file id=peerings-prod path=recipes/examples/net-prod-01.yaml schema=network-project.schema.json
 ```
 
 ### Cloud VPN
@@ -433,12 +432,12 @@ vpc_config:
             peer_external_gateway_interface: 0
             shared_secret: "mySecret"
             vpn_gateway_interface: 1
-# tftest-file id=vpn-config path=recipes/examples/vpn-config.yaml
+# tftest-file id=vpn-config path=recipes/examples/vpn-config.yaml schema=network-project.schema.json
 ```
 
 #### GCP to GCP VPN
 
-This examples demonstrates VPC to VPC connectivity via HA VPN.
+These examples demonstrates VPC to VPC connectivity via HA VPN.
 In this examples, project `net-land-01` has a VPC named `hub` and project `net-dev-01` has a VPC named `dev-spoke`; the two VPCs are connected together via HA VPN. In order to do so, the `vpc_config.vpn_config.to-hub.peer_gateways.default.gcp` on each side is configured by cross-referencing the VPN gateway in the other side, whose reference is `<project_id>/<vpc_name>/<vpn_name>`.
 
 ```hcl
@@ -484,7 +483,7 @@ vpc_config:
               asn: 64520
             bgp_session_range: "169.254.2.5/30"
             vpn_gateway_interface: 1
-# tftest-file id=vpn-hub path=recipes/examples/net-land-01.yaml
+# tftest-file id=vpn-hub path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 Dev Spoke:
@@ -519,7 +518,7 @@ vpc_config:
               asn: 64521
             bgp_session_range: "169.254.2.6/30"
             vpn_gateway_interface: 1
-# tftest-file id=vpn-spoke path=recipes/examples/net-dev-01.yaml
+# tftest-file id=vpn-spoke path=recipes/examples/net-dev-01.yaml schema=network-project.schema.json
 ```
 
 ### Network Connectivity Center (NCC)
@@ -555,7 +554,7 @@ ncc_hub_config:
       auto_accept:
         - net-prod-01
         - net-dev-01
-# tftest-file id=ncc-hub path=recipes/examples/net-land-01.yaml
+# tftest-file id=ncc-hub path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 Dev Spoke:
@@ -570,7 +569,7 @@ vpc_config:
   dev-spoke:
     ncc_config:
       hub: net-land-01/hub
-# tftest-file id=ncc-dev path=recipes/examples/net-dev-01.yaml
+# tftest-file id=ncc-dev path=recipes/examples/net-dev-01.yaml schema=network-project.schema.json
 ```
 
 Prod Spoke:
@@ -586,14 +585,14 @@ vpc_config:
     ncc_config:
       hub: net-land-01/hub
       group: net-land-01/hub/default
-# tftest-file id=ncc-prod path=recipes/examples/net-prod-01.yaml
+# tftest-file id=ncc-prod path=recipes/examples/net-prod-01.yaml schema=network-project.schema.json
 ```
 
 #### NCC VPN Spokes
 
 This example shows how to connect HA VPN tunnels, typically used for on-premises or other cloud connections, as spokes in an NCC Hub. This enables transitive routing between VPC spokes and the VPN connection via the NCC Hub.
 
-The key is the `ncc-spoke-config` block within the `vpn_config` definition on the hub project (`net-land-01/hub`).
+The key is the `ncc_spoke_config` block within the `vpn_config` definition on the hub project (`net-land-01/hub`).
 
 ```hcl
 module "net-vpc-factory" {
@@ -623,7 +622,7 @@ vpc_config:
         asn: 64514
     vpn_config:
       to-onprem:
-        ncc-spoke-config:
+        ncc_spoke_config:
           hub: net-land-01/hub
         region: europe-west8
         peer_gateways:
@@ -652,7 +651,7 @@ vpc_config:
             peer_external_gateway_interface: 0
             shared_secret: "mySecret"
             vpn_gateway_interface: 1
-# tftest-file id=ncc-vpn path=recipes/examples/net-land-01.yaml
+# tftest-file id=ncc-vpn path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 ## DNS
@@ -694,7 +693,7 @@ vpc_config:
         recordsets:
           "A localhost":
             records: ["127.0.0.1"]
-# tftest-file id=dns-private path=recipes/examples/net-land-01.yaml
+# tftest-file id=dns-private path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 ### Forwarding Zone
@@ -730,7 +729,7 @@ vpc_config:
               "10.0.0.2": default
             client_networks:
               - net-land-01/hub
-# tftest-file id=dns-fwd path=recipes/examples/net-land-01.yaml
+# tftest-file id=dns-fwd path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 ### Peering Zone
@@ -764,7 +763,7 @@ vpc_config:
             peer_network: net-land-01/hub
             client_networks:
               - net-dev-01/dev-spoke
-# tftest-file id=dns-peering path=recipes/examples/net-land-01.yaml
+# tftest-file id=dns-peering path=recipes/examples/net-land-01.yaml schema=network-project.schema.json
 ```
 
 All of the above combined implements a DNS hub-and-spoke design, where the DNS configuration is mostly centralised in the `net-land-01/hub` VPC, including private zones and forwarding to onprem, and spokes (in this case `net-dev-01/dev-spoke`) "delegate" the root zone (`.`, which is DNS for "*") to the central location via DNS peering.
@@ -802,19 +801,18 @@ vpc_config:
         recordsets:
           "A www":
             records: ["192.0.2.1"]
-# tftest-file id=dns-public-dnssec path=recipes/examples/net-dns-public.yaml
+# tftest-file id=dns-public-dnssec path=recipes/examples/net-dns-public.yaml schema=network-project.schema.json
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
-| [parent_id](variables.tf#L365) | Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L370) | Prefix used for projects. | <code>string</code> | ✓ |  |
+| [parent_id](variables.tf#L371) | Root node for the projects created by the factory. Must be either organizations/XXXXXXXX or folders/XXXXXXXX. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L376) | Prefix used for projects. | <code>string</code> | ✓ |  |
 | [factories_config](variables.tf#L22) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  vpcs                 &#61; optional&#40;string, &#34;recipes&#47;hub-and-spoke-ncc&#34;&#41;&#10;  firewall_policy_name &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  vpcs &#61; &#34;recipes&#47;hub-and-spoke-ncc&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [network_project_config](variables.tf#L33) | Consolidated configuration for project, VPCs and their associated resources. | <code title="map&#40;object&#40;&#123;&#10;  project_config &#61; object&#40;&#123;&#10;    name                    &#61; string&#10;    prefix                  &#61; optional&#40;string&#41;&#10;    parent                  &#61; optional&#40;string&#41;&#10;    billing_account         &#61; optional&#40;string&#41;&#10;    deletion_policy         &#61; optional&#40;string, &#34;DELETE&#34;&#41;&#10;    default_service_account &#61; optional&#40;string, &#34;keep&#34;&#41;&#10;    auto_create_network     &#61; optional&#40;bool, false&#41;&#10;    project_create          &#61; optional&#40;bool, true&#41;&#10;    shared_vpc_host_config &#61; optional&#40;object&#40;&#123;&#10;      enabled          &#61; bool&#10;      service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;    services &#61; optional&#40;list&#40;string&#41;, &#41;&#10;    org_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;      inherit_from_parent &#61; optional&#40;bool&#41;&#10;      reset               &#61; optional&#40;bool&#41;&#10;      rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        allow &#61; optional&#40;object&#40;&#123;&#10;          all    &#61; optional&#40;bool&#41;&#10;          values &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        deny &#61; optional&#40;object&#40;&#123;&#10;          all    &#61; optional&#40;bool&#41;&#10;          values &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        enforce &#61; optional&#40;bool&#41;&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          description &#61; optional&#40;string&#41;&#10;          expression  &#61; optional&#40;string&#41;&#10;          location    &#61; optional&#40;string&#41;&#10;          title       &#61; optional&#40;string&#41;&#10;        &#125;&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;&#41;, &#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_by_principals_additive &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_by_principals          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#10;  ncc_hub_config &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    description     &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    preset_topology &#61; optional&#40;string, &#34;MESH&#34;&#41;&#10;    export_psc      &#61; optional&#40;bool, true&#41;&#10;    groups &#61; optional&#40;map&#40;object&#40;&#123;&#10;      labels      &#61; optional&#40;map&#40;string&#41;&#41;&#10;      description &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      auto_accept &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;    auto_create_subnetworks &#61; optional&#40;bool, false&#41;&#10;    create_googleapis_routes &#61; optional&#40;object&#40;&#123;&#10;      private      &#61; optional&#40;bool, true&#41;&#10;      private-6    &#61; optional&#40;bool, false&#41;&#10;      restricted   &#61; optional&#40;bool, true&#41;&#10;      restricted-6 &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    delete_default_routes_on_create &#61; optional&#40;bool, false&#41;&#10;    description                     &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    dns_policy &#61; optional&#40;object&#40;&#123;&#10;      inbound &#61; optional&#40;bool&#41;&#10;      logging &#61; optional&#40;bool&#41;&#10;      outbound &#61; optional&#40;object&#40;&#123;&#10;        private_ns &#61; list&#40;string&#41;&#10;        public_ns  &#61; list&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    dns_zones &#61; optional&#40;map&#40;object&#40;&#123;&#10;      force_destroy &#61; optional&#40;bool&#41;&#10;      description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;      iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      zone_config &#61; object&#40;&#123;&#10;        domain &#61; string&#10;        forwarding &#61; optional&#40;object&#40;&#123;&#10;          forwarders      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;          client_networks &#61; optional&#40;list&#40;string&#41;, &#41;&#10;        &#125;&#41;&#41;&#10;        peering &#61; optional&#40;object&#40;&#123;&#10;          client_networks &#61; optional&#40;list&#40;string&#41;, &#41;&#10;          peer_network    &#61; string&#10;        &#125;&#41;&#41;&#10;        public &#61; optional&#40;object&#40;&#123;&#10;          dnssec_config &#61; optional&#40;object&#40;&#123;&#10;            non_existence &#61; optional&#40;string, &#34;nsec3&#34;&#41;&#10;            state         &#61; string&#10;            key_signing_key &#61; optional&#40;object&#40;&#10;              &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;              &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 2048 &#125;&#10;            &#41;&#10;            zone_signing_key &#61; optional&#40;object&#40;&#10;              &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;              &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 1024 &#125;&#10;            &#41;&#10;          &#125;&#41;&#41;&#10;          enable_logging &#61; optional&#40;bool, false&#41;&#10;        &#125;&#41;&#41;&#10;        private &#61; optional&#40;object&#40;&#123;&#10;          client_networks             &#61; optional&#40;list&#40;string&#41;, &#41;&#10;          service_directory_namespace &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#10;      recordsets &#61; optional&#40;map&#40;object&#40;&#123;&#10;        ttl     &#61; optional&#40;number, 300&#41;&#10;        records &#61; optional&#40;list&#40;string&#41;&#41;&#10;        geo_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;          location &#61; string&#10;          records  &#61; optional&#40;list&#40;string&#41;&#41;&#10;          health_checked_targets &#61; optional&#40;list&#40;object&#40;&#123;&#10;            load_balancer_type &#61; string&#10;            ip_address         &#61; string&#10;            port               &#61; string&#10;            ip_protocol        &#61; string&#10;            network_url        &#61; string&#10;            project            &#61; string&#10;            region             &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        wrr_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;          weight  &#61; number&#10;          records &#61; list&#40;string&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    firewall_policy_enforcement_order &#61; optional&#40;string, &#34;AFTER_CLASSIC_FIREWALL&#34;&#41;&#10;    ipv6_config &#61; optional&#40;object&#40;&#123;&#10;      enable_ula_internal &#61; optional&#40;bool&#41;&#10;      internal_range      &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    mtu  &#61; optional&#40;number&#41;&#10;    name &#61; string&#10;    nat_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      region         &#61; string&#10;      router_create  &#61; optional&#40;bool, true&#41;&#10;      router_name    &#61; optional&#40;string&#41;&#10;      router_network &#61; optional&#40;string&#41;&#10;      router_asn     &#61; optional&#40;number&#41;&#10;      type           &#61; optional&#40;string, &#34;PUBLIC&#34;&#41;&#10;      addresses      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      endpoint_types &#61; optional&#40;list&#40;string&#41;&#41;&#10;      logging_filter &#61; optional&#40;string&#41;&#10;      config_port_allocation &#61; optional&#40;object&#40;&#123;&#10;        enable_endpoint_independent_mapping &#61; optional&#40;bool, true&#41;&#10;        enable_dynamic_port_allocation      &#61; optional&#40;bool, false&#41;&#10;        min_ports_per_vm                    &#61; optional&#40;number&#41;&#10;        max_ports_per_vm                    &#61; optional&#40;number, 65536&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      config_source_subnetworks &#61; optional&#40;object&#40;&#123;&#10;        all                 &#61; optional&#40;bool, true&#41;&#10;        primary_ranges_only &#61; optional&#40;bool&#41;&#10;        subnetworks &#61; optional&#40;list&#40;object&#40;&#123;&#10;          self_link        &#61; string&#10;          all_ranges       &#61; optional&#40;bool, true&#41;&#10;          primary_range    &#61; optional&#40;bool, false&#41;&#10;          secondary_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;, &#91;&#93;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      config_timeouts &#61; optional&#40;object&#40;&#123;&#10;        icmp            &#61; optional&#40;number&#41;&#10;        tcp_established &#61; optional&#40;number&#41;&#10;        tcp_time_wait   &#61; optional&#40;number&#41;&#10;        tcp_transitory  &#61; optional&#40;number&#41;&#10;        udp             &#61; optional&#40;number&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        description   &#61; optional&#40;string&#41;&#10;        match         &#61; string&#10;        source_ips    &#61; optional&#40;list&#40;string&#41;&#41;&#10;        source_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#10;&#10;    &#125;&#41;&#41;&#41;&#10;    network_attachments &#61; optional&#40;map&#40;object&#40;&#123;&#10;      subnet                &#61; string&#10;      automatic_connection  &#61; optional&#40;bool, false&#41;&#10;      description           &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      producer_accept_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;      producer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    policy_based_routes &#61; optional&#40;map&#40;object&#40;&#123;&#10;      description         &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      labels              &#61; optional&#40;map&#40;string&#41;&#41;&#10;      priority            &#61; optional&#40;number&#41;&#10;      next_hop_ilb_ip     &#61; optional&#40;string&#41;&#10;      use_default_routing &#61; optional&#40;bool, false&#41;&#10;      filter &#61; optional&#40;object&#40;&#123;&#10;        ip_protocol &#61; optional&#40;string&#41;&#10;        dest_range  &#61; optional&#40;string&#41;&#10;        src_range   &#61; optional&#40;string&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      target &#61; optional&#40;object&#40;&#123;&#10;        interconnect_attachment &#61; optional&#40;string&#41;&#10;        tags                    &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    psa_config &#61; optional&#40;list&#40;object&#40;&#123;&#10;      deletion_policy  &#61; optional&#40;string, null&#41;&#10;      ranges           &#61; map&#40;string&#41;&#10;      export_routes    &#61; optional&#40;bool, false&#41;&#10;      import_routes    &#61; optional&#40;bool, false&#41;&#10;      peered_domains   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      range_prefix     &#61; optional&#40;string&#41;&#10;      service_producer &#61; optional&#40;string, &#34;servicenetworking.googleapis.com&#34;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    routers &#61; optional&#40;map&#40;object&#40;&#123;&#10;      region &#61; string&#10;      asn    &#61; optional&#40;number&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      keepalive &#61; optional&#40;number&#41;&#10;      name      &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    routes &#61; optional&#40;map&#40;object&#40;&#123;&#10;      description   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      dest_range    &#61; string&#10;      next_hop_type &#61; string&#10;      next_hop      &#61; string&#10;      priority      &#61; optional&#40;number&#41;&#10;      tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    routing_mode &#61; optional&#40;string, &#34;GLOBAL&#34;&#41;&#10;    subnets_factory_config &#61; optional&#40;object&#40;&#123;&#10;      context &#61; optional&#40;object&#40;&#123;&#10;        regions &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      subnets_folder &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    firewall_factory_config &#61; optional&#40;object&#40;&#123;&#10;      cidr_tpl_file &#61; optional&#40;string&#41;&#10;      rules_folder  &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    vpn_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      name   &#61; string&#10;      region &#61; string&#10;      peer_gateways &#61; map&#40;object&#40;&#123;&#10;        external &#61; optional&#40;object&#40;&#123;&#10;          redundancy_type &#61; string&#10;          interfaces      &#61; list&#40;string&#41;&#10;          description     &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;          name            &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        gcp &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      router_config &#61; object&#40;&#123;&#10;        asn    &#61; optional&#40;number&#41;&#10;        create &#61; optional&#40;bool, true&#41;&#10;        custom_advertise &#61; optional&#40;object&#40;&#123;&#10;          all_subnets &#61; bool&#10;          ip_ranges   &#61; map&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        keepalive     &#61; optional&#40;number&#41;&#10;        name          &#61; optional&#40;string&#41;&#10;        override_name &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#10;      tunnels &#61; map&#40;object&#40;&#123;&#10;        bgp_peer &#61; object&#40;&#123;&#10;          address        &#61; string&#10;          asn            &#61; number&#10;          route_priority &#61; optional&#40;number, 1000&#41;&#10;          custom_advertise &#61; optional&#40;object&#40;&#123;&#10;            all_subnets &#61; bool&#10;            ip_ranges   &#61; map&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;            name &#61; string&#10;            key  &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          ipv6 &#61; optional&#40;object&#40;&#123;&#10;            nexthop_address      &#61; optional&#40;string&#41;&#10;            peer_nexthop_address &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          name &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#10;        bgp_session_range               &#61; string&#10;        ike_version                     &#61; optional&#40;number, 2&#41;&#10;        name                            &#61; optional&#40;string&#41;&#10;        peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;        peer_router_interface_name      &#61; optional&#40;string&#41;&#10;        peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;        router                          &#61; optional&#40;string&#41;&#10;        shared_secret                   &#61; optional&#40;string&#41;&#10;        vpn_gateway_interface           &#61; number&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    peering_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      peer_network &#61; string&#10;      routes_config &#61; optional&#40;object&#40;&#123;&#10;        export        &#61; optional&#40;bool, true&#41;&#10;        import        &#61; optional&#40;bool, true&#41;&#10;        public_export &#61; optional&#40;bool&#41;&#10;        public_import &#61; optional&#40;bool&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    ncc_config &#61; optional&#40;object&#40;&#123;&#10;      hub                   &#61; string&#10;      description           &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      labels                &#61; optional&#40;map&#40;string&#41;&#41;&#10;      group                 &#61; optional&#40;string&#41;&#10;      exclude_export_ranges &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;      include_export_ranges &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [network_project_config](variables.tf#L33) | Consolidated configuration for project, VPCs and their associated resources. | <code title="map&#40;object&#40;&#123;&#10;  project_config &#61; object&#40;&#123;&#10;    name                    &#61; string&#10;    prefix                  &#61; optional&#40;string&#41;&#10;    parent                  &#61; optional&#40;string&#41;&#10;    billing_account         &#61; optional&#40;string&#41;&#10;    deletion_policy         &#61; optional&#40;string, &#34;DELETE&#34;&#41;&#10;    default_service_account &#61; optional&#40;string, &#34;keep&#34;&#41;&#10;    auto_create_network     &#61; optional&#40;bool, false&#41;&#10;    project_create          &#61; optional&#40;bool, true&#41;&#10;    shared_vpc_host_config &#61; optional&#40;object&#40;&#123;&#10;      enabled          &#61; bool&#10;      service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;    services &#61; optional&#40;list&#40;string&#41;, &#41;&#10;    org_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;      inherit_from_parent &#61; optional&#40;bool&#41;&#10;      reset               &#61; optional&#40;bool&#41;&#10;      rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        allow &#61; optional&#40;object&#40;&#123;&#10;          all    &#61; optional&#40;bool&#41;&#10;          values &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        deny &#61; optional&#40;object&#40;&#123;&#10;          all    &#61; optional&#40;bool&#41;&#10;          values &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        enforce &#61; optional&#40;bool&#41;&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          description &#61; optional&#40;string&#41;&#10;          expression  &#61; optional&#40;string&#41;&#10;          location    &#61; optional&#40;string&#41;&#10;          title       &#61; optional&#40;string&#41;&#10;        &#125;&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;&#41;, &#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_by_principals_additive &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_by_principals          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#10;  ncc_hub_config &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    description     &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    preset_topology &#61; optional&#40;string, &#34;MESH&#34;&#41;&#10;    export_psc      &#61; optional&#40;bool, true&#41;&#10;    groups &#61; optional&#40;map&#40;object&#40;&#123;&#10;      labels      &#61; optional&#40;map&#40;string&#41;&#41;&#10;      description &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      auto_accept &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;    auto_create_subnetworks &#61; optional&#40;bool, false&#41;&#10;    create_googleapis_routes &#61; optional&#40;object&#40;&#123;&#10;      private      &#61; optional&#40;bool, true&#41;&#10;      private-6    &#61; optional&#40;bool, false&#41;&#10;      restricted   &#61; optional&#40;bool, true&#41;&#10;      restricted-6 &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    delete_default_routes_on_create &#61; optional&#40;bool, false&#41;&#10;    description                     &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    dns_policy &#61; optional&#40;object&#40;&#123;&#10;      inbound &#61; optional&#40;bool&#41;&#10;      logging &#61; optional&#40;bool&#41;&#10;      outbound &#61; optional&#40;object&#40;&#123;&#10;        private_ns &#61; list&#40;string&#41;&#10;        public_ns  &#61; list&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    dns_zones &#61; optional&#40;map&#40;object&#40;&#123;&#10;      force_destroy &#61; optional&#40;bool&#41;&#10;      description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;      iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      zone_config &#61; object&#40;&#123;&#10;        domain &#61; string&#10;        forwarding &#61; optional&#40;object&#40;&#123;&#10;          forwarders      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;          client_networks &#61; optional&#40;list&#40;string&#41;, &#41;&#10;        &#125;&#41;&#41;&#10;        peering &#61; optional&#40;object&#40;&#123;&#10;          client_networks &#61; optional&#40;list&#40;string&#41;, &#41;&#10;          peer_network    &#61; string&#10;        &#125;&#41;&#41;&#10;        public &#61; optional&#40;object&#40;&#123;&#10;          dnssec_config &#61; optional&#40;object&#40;&#123;&#10;            non_existence &#61; optional&#40;string, &#34;nsec3&#34;&#41;&#10;            state         &#61; string&#10;            key_signing_key &#61; optional&#40;object&#40;&#10;              &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;              &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 2048 &#125;&#10;            &#41;&#10;            zone_signing_key &#61; optional&#40;object&#40;&#10;              &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;              &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 1024 &#125;&#10;            &#41;&#10;          &#125;&#41;&#41;&#10;          enable_logging &#61; optional&#40;bool, false&#41;&#10;        &#125;&#41;&#41;&#10;        private &#61; optional&#40;object&#40;&#123;&#10;          client_networks             &#61; optional&#40;list&#40;string&#41;, &#41;&#10;          service_directory_namespace &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#10;      recordsets &#61; optional&#40;map&#40;object&#40;&#123;&#10;        ttl     &#61; optional&#40;number, 300&#41;&#10;        records &#61; optional&#40;list&#40;string&#41;&#41;&#10;        geo_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;          location &#61; string&#10;          records  &#61; optional&#40;list&#40;string&#41;&#41;&#10;          health_checked_targets &#61; optional&#40;list&#40;object&#40;&#123;&#10;            load_balancer_type &#61; string&#10;            ip_address         &#61; string&#10;            port               &#61; string&#10;            ip_protocol        &#61; string&#10;            network_url        &#61; string&#10;            project            &#61; string&#10;            region             &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        wrr_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;          weight  &#61; number&#10;          records &#61; list&#40;string&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    firewall_policy_enforcement_order &#61; optional&#40;string, &#34;AFTER_CLASSIC_FIREWALL&#34;&#41;&#10;    ipv6_config &#61; optional&#40;object&#40;&#123;&#10;      enable_ula_internal &#61; optional&#40;bool&#41;&#10;      internal_range      &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    mtu  &#61; optional&#40;number&#41;&#10;    name &#61; string&#10;    nat_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      region         &#61; string&#10;      router_create  &#61; optional&#40;bool, true&#41;&#10;      router_name    &#61; optional&#40;string&#41;&#10;      router_network &#61; optional&#40;string&#41;&#10;      router_asn     &#61; optional&#40;number&#41;&#10;      type           &#61; optional&#40;string, &#34;PUBLIC&#34;&#41;&#10;      addresses      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      endpoint_types &#61; optional&#40;list&#40;string&#41;&#41;&#10;      logging_filter &#61; optional&#40;string&#41;&#10;      config_port_allocation &#61; optional&#40;object&#40;&#123;&#10;        enable_endpoint_independent_mapping &#61; optional&#40;bool, true&#41;&#10;        enable_dynamic_port_allocation      &#61; optional&#40;bool, false&#41;&#10;        min_ports_per_vm                    &#61; optional&#40;number&#41;&#10;        max_ports_per_vm                    &#61; optional&#40;number, 65536&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      config_source_subnetworks &#61; optional&#40;object&#40;&#123;&#10;        all                 &#61; optional&#40;bool, true&#41;&#10;        primary_ranges_only &#61; optional&#40;bool&#41;&#10;        subnetworks &#61; optional&#40;list&#40;object&#40;&#123;&#10;          self_link        &#61; string&#10;          all_ranges       &#61; optional&#40;bool, true&#41;&#10;          primary_range    &#61; optional&#40;bool, false&#41;&#10;          secondary_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;, &#91;&#93;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      config_timeouts &#61; optional&#40;object&#40;&#123;&#10;        icmp            &#61; optional&#40;number&#41;&#10;        tcp_established &#61; optional&#40;number&#41;&#10;        tcp_time_wait   &#61; optional&#40;number&#41;&#10;        tcp_transitory  &#61; optional&#40;number&#41;&#10;        udp             &#61; optional&#40;number&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        description   &#61; optional&#40;string&#41;&#10;        match         &#61; string&#10;        source_ips    &#61; optional&#40;list&#40;string&#41;&#41;&#10;        source_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#10;&#10;    &#125;&#41;&#41;&#41;&#10;    network_attachments &#61; optional&#40;map&#40;object&#40;&#123;&#10;      subnet                &#61; string&#10;      automatic_connection  &#61; optional&#40;bool, false&#41;&#10;      description           &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      producer_accept_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;      producer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    policy_based_routes &#61; optional&#40;map&#40;object&#40;&#123;&#10;      description         &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      labels              &#61; optional&#40;map&#40;string&#41;&#41;&#10;      priority            &#61; optional&#40;number&#41;&#10;      next_hop_ilb_ip     &#61; optional&#40;string&#41;&#10;      use_default_routing &#61; optional&#40;bool, false&#41;&#10;      filter &#61; optional&#40;object&#40;&#123;&#10;        ip_protocol &#61; optional&#40;string&#41;&#10;        dest_range  &#61; optional&#40;string&#41;&#10;        src_range   &#61; optional&#40;string&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      target &#61; optional&#40;object&#40;&#123;&#10;        interconnect_attachment &#61; optional&#40;string&#41;&#10;        tags                    &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    psa_config &#61; optional&#40;list&#40;object&#40;&#123;&#10;      deletion_policy  &#61; optional&#40;string, null&#41;&#10;      ranges           &#61; map&#40;string&#41;&#10;      export_routes    &#61; optional&#40;bool, false&#41;&#10;      import_routes    &#61; optional&#40;bool, false&#41;&#10;      peered_domains   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      range_prefix     &#61; optional&#40;string&#41;&#10;      service_producer &#61; optional&#40;string, &#34;servicenetworking.googleapis.com&#34;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    routers &#61; optional&#40;map&#40;object&#40;&#123;&#10;      region &#61; string&#10;      asn    &#61; optional&#40;number&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets &#61; bool&#10;        ip_ranges   &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      keepalive &#61; optional&#40;number&#41;&#10;      name      &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    routes &#61; optional&#40;map&#40;object&#40;&#123;&#10;      description   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      dest_range    &#61; string&#10;      next_hop_type &#61; string&#10;      next_hop      &#61; string&#10;      priority      &#61; optional&#40;number&#41;&#10;      tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    routing_mode &#61; optional&#40;string, &#34;GLOBAL&#34;&#41;&#10;    subnets_factory_config &#61; optional&#40;object&#40;&#123;&#10;      context &#61; optional&#40;object&#40;&#123;&#10;        regions &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      subnets_folder &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    firewall_factory_config &#61; optional&#40;object&#40;&#123;&#10;      cidr_tpl_file &#61; optional&#40;string&#41;&#10;      rules_folder  &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    vpn_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      name   &#61; string&#10;      region &#61; string&#10;      ncc_spoke_config &#61; optional&#40;object&#40;&#123;&#10;        hub         &#61; string&#10;        description &#61; string&#10;        labels      &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      peer_gateways &#61; map&#40;object&#40;&#123;&#10;        external &#61; optional&#40;object&#40;&#123;&#10;          redundancy_type &#61; string&#10;          interfaces      &#61; list&#40;string&#41;&#10;          description     &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;          name            &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        gcp &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      router_config &#61; object&#40;&#123;&#10;        asn    &#61; optional&#40;number&#41;&#10;        create &#61; optional&#40;bool, true&#41;&#10;        custom_advertise &#61; optional&#40;object&#40;&#123;&#10;          all_subnets &#61; bool&#10;          ip_ranges   &#61; map&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        keepalive     &#61; optional&#40;number&#41;&#10;        name          &#61; optional&#40;string&#41;&#10;        override_name &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#10;      tunnels &#61; map&#40;object&#40;&#123;&#10;        bgp_peer &#61; object&#40;&#123;&#10;          address        &#61; string&#10;          asn            &#61; number&#10;          route_priority &#61; optional&#40;number, 1000&#41;&#10;          custom_advertise &#61; optional&#40;object&#40;&#123;&#10;            all_subnets &#61; bool&#10;            ip_ranges   &#61; map&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;            name &#61; string&#10;            key  &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          ipv6 &#61; optional&#40;object&#40;&#123;&#10;            nexthop_address      &#61; optional&#40;string&#41;&#10;            peer_nexthop_address &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          name &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#10;        bgp_session_range               &#61; string&#10;        ike_version                     &#61; optional&#40;number, 2&#41;&#10;        name                            &#61; optional&#40;string&#41;&#10;        peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;        peer_router_interface_name      &#61; optional&#40;string&#41;&#10;        peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;        router                          &#61; optional&#40;string&#41;&#10;        shared_secret                   &#61; optional&#40;string&#41;&#10;        vpn_gateway_interface           &#61; number&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    peering_config &#61; optional&#40;map&#40;object&#40;&#123;&#10;      peer_network &#61; string&#10;      routes_config &#61; optional&#40;object&#40;&#123;&#10;        export        &#61; optional&#40;bool, true&#41;&#10;        import        &#61; optional&#40;bool, true&#41;&#10;        public_export &#61; optional&#40;bool&#41;&#10;        public_import &#61; optional&#40;bool&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    ncc_config &#61; optional&#40;object&#40;&#123;&#10;      hub                   &#61; string&#10;      description           &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;      labels                &#61; optional&#40;map&#40;string&#41;&#41;&#10;      group                 &#61; optional&#40;string&#41;&#10;      exclude_export_ranges &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;      include_export_ranges &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

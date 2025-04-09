@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description Dedicated project factory.
 locals {
 
   projects = { for k, v in local.network_projects : k => merge(

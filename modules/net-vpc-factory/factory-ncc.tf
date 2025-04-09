@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description NCC factory.
 
 locals {
   ncc_hubs = { for k, v in local.network_projects : "${k}/${v.ncc_hub_config.name}" =>
@@ -50,14 +50,14 @@ locals {
           "${factory_key}/${vpc_key}/${vpn_key}" = {
             name             = replace("${factory_key}/${vpc_key}/${vpn_key}", "/", "-")
             project_id       = module.projects[factory_key].id
-            hub              = google_network_connectivity_hub.hub[vpn_config.ncc-spoke-config.hub].id
+            hub              = google_network_connectivity_hub.hub[vpn_config.ncc_spoke_config.hub].id
             location         = vpn_config.region
-            description      = lookup(vpn_config.ncc-spoke-config, "description", "Terraform-managed.")
-            labels           = lookup(vpn_config.ncc-spoke-config, "labels", {})
+            description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
+            labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
             tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha["${factory_key}/${vpc_key}/${vpn_key}"].tunnel_self_links[t]]
           }
         }
-        if try(vpn_config.ncc-spoke-config != null, false)
+        if try(vpn_config.ncc_spoke_config != null, false)
       ]
     ]
   ])...)

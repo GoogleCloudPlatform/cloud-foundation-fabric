@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description DNS factory.
 
 locals {
   dns_zone_entries = flatten([

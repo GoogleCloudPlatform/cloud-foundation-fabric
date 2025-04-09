@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description VPC and firewall factory.
 
 locals {
   _vpcs_preprocess = [for factory_key, factory_config in local.network_projects : {
@@ -45,11 +45,6 @@ locals {
     merge(local._vpcs_preprocess...),
     var.network_project_config
   )
-}
-
-moved {
-  from = module.vpcs
-  to   = module.vpc
 }
 
 module "vpc" {

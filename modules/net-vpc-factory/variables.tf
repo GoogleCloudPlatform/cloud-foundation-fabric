@@ -286,8 +286,14 @@ variable "network_project_config" {
         rules_folder  = optional(string)
       }), {})
       vpn_config = optional(map(object({
+        #TOFIX: are we even using name?
         name   = string
         region = string
+        ncc_spoke_config = optional(object({
+          hub         = string
+          description = string
+          labels      = map(string)
+        }))
         peer_gateways = map(object({
           external = optional(object({
             redundancy_type = string

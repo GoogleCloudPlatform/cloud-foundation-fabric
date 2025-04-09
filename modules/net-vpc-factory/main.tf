@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Networking folder and hierarchical policy.
+# tfdoc:file:description Read and process YaML factory files and variables.
 locals {
   _network_factory_path = try(
     pathexpand(var.factories_config.vpcs), null
@@ -35,5 +35,4 @@ locals {
   }
 
   network_projects = merge(local._network_projects, var.network_project_config)
-
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description Peering factory.
 
 locals {
   peerings = merge(flatten([

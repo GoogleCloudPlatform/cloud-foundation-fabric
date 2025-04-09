@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:TODO.
+# tfdoc:file:description Cloud NAT factory.
 
 locals {
   nat_configs = merge(flatten([

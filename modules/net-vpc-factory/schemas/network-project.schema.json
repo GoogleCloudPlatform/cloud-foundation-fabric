@@ -175,9 +175,7 @@
     "vpcConfigEntry": {
       "type": "object",
       "additionalProperties": false,
-      // REMOVED: "required": ["name"],
       "properties": {
-        // REMOVED: "name": { "type": "string" },
         "auto_create_subnetworks": {
           "type": "boolean"
         },
@@ -399,7 +397,7 @@
         "recordsets": {
           "type": "object",
           "patternProperties": {
-            "^[a-zA-Z0-9_.- ]+$": {
+            "^[a-zA-Z0-9_. -]+$": {
               "$ref": "#/$defs/dnsRecordSet"
             }
           },
@@ -984,7 +982,6 @@
     "vpnConfig": {
       "type": "object",
       "additionalProperties": false,
-      // Changed: removed "name" from required properties
       "required": [
         "region",
         "peer_gateways",
@@ -992,10 +989,23 @@
         "tunnels"
       ],
       "properties": {
-        // Changed: removed "name" property definition
-        // "name": { "type": "string" },
         "region": {
           "type": "string"
+        },
+        "ncc_spoke_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hub": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "labels": {
+              "$ref": "#/$defs/stringMap"
+            }
+          }
         },
         "peer_gateways": {
           "type": "object",
