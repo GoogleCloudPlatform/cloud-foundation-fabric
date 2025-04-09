@@ -42,7 +42,9 @@ variable "alert_config" {
 variable "dns" {
   description = "DNS configuration."
   type = object({
-    resolvers = optional(list(string), [])
+    gcp_domain    = optional(string, "gcp.example.com")
+    onprem_domain = optional(string, "onprem.example.com")
+    resolvers     = optional(list(string), [])
   })
   default  = {}
   nullable = false
