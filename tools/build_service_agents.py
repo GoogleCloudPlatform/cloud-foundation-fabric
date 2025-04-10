@@ -73,7 +73,7 @@ E2E_SERVICES = [
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "sqladmin.googleapis.com",
-    "stackdriver.googleapis.com",    
+    "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
     "vpcaccess.googleapis.com",
