@@ -71,13 +71,13 @@ vpc_config:
             shared_secret: foobar
             bgp_peer:
               address: 169.254.2.1
-              asn: 64521
+              asn: 64514
             bgp_session_range: "169.254.2.2/30"
             vpn_gateway_interface: 0
           remote-1:
             shared_secret: foobar
             bgp_peer:
               address: 169.254.2.5
-              asn: 64521
+              asn: 64514
             bgp_session_range: "169.254.2.6/30"
             vpn_gateway_interface: 1

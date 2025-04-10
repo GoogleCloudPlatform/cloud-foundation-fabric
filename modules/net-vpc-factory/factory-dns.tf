@@ -31,12 +31,6 @@ locals {
               iam           = try(zone.iam, null)
               recordsets    = try(zone.recordsets, null)
             },
-            # TODO(sruffilli)(?) I don't like how this is implemented, however I can't think of a better way
-            # The different zone_config flavors have a different structure (as they should), and I need to try to replace
-            # values for peer_network and client_networks with reference to module.vpc[foobar].self_link.
-            # Which is easy in principle, however the naive approach which parses everything and only updates
-            # those fields doesn't work, as either you try to reference a non-existing field, or end up creating 
-            # null private/peering/forwarding members, which isn't supported by the upstream module.
             {
               zone_config = merge(
                 { domain = try(zone.zone_config.domain, null) },

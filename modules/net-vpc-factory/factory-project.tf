@@ -50,9 +50,4 @@ module "projects" {
   iam_by_principals          = each.value.iam_by_principals
   iam_by_principals_additive = each.value.iam_by_principals_additive
   org_policies               = each.value.org_policies
-  #TODO(sruffilli): implement metric_scopes and tag_bindings
-  #TODO: check
-  # tag_bindings = local.has_env_folders ? {} : {
-  #   environment = local.env_tag_values["dev"]
-  # }
 }

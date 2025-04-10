@@ -1019,6 +1019,13 @@
         "router_config": {
           "$ref": "#/$defs/vpnRouterConfig"
         },
+        "stack_type": {
+          "type": "string",
+          "enum": [
+            "IPV4_ONLY",
+            "IPV4_IPV6"
+          ]
+        },
         "tunnels": {
           "type": "object",
           "patternProperties": {
@@ -1235,6 +1242,13 @@
               "type": "boolean"
             }
           }
+        },
+        "stack_type": {
+          "type": "string",
+          "enum": [
+            "IPV4_ONLY",
+            "IPV4_IPV6"
+          ]
         }
       }
     },

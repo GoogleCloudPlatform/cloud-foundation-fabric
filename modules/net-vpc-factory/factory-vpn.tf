@@ -47,7 +47,7 @@ locals {
             {
               router_config = merge(v.router_config,
                 try(v.router_config.create, false) == false && can(v.router_config.name) ? {
-                  name = try(google_compute_router.router[v.router_config.name].name, v.router_config.name)
+                  name = try(google_compute_router.default[v.router_config.name].name, v.router_config.name)
                 } : {}
               )
             }
@@ -58,7 +58,7 @@ locals {
   ])...)
 }
 
-resource "google_compute_router" "router" {
+resource "google_compute_router" "default" {
   for_each = local.routers
   name     = replace(each.key, "/", "-")
   project  = each.value.project_id
@@ -86,7 +86,7 @@ resource "google_compute_ha_vpn_gateway" "default" {
   region     = each.value.region
   name       = replace(each.key, "/", "-")
   network    = each.value.vpc_name
-  stack_type = "IPV4_ONLY"
+  stack_type = try(each.value.stack_type, null)
   depends_on = [module.vpc]
 }
 
@@ -104,9 +104,7 @@ module "vpn-ha" {
   peer_gateways = {
     for k, gw in each.value.peer_gateways : k => {
       for gw_type, value in gw : gw_type => (
-        #TODO(sruffilli): create a lookup table instead, that only does this replacement if value exists, 
-        #to allow passing an arbitrary gateway id
-        gw_type == "gcp" ? google_compute_ha_vpn_gateway.default[value].id : value
+        gw_type == "gcp" ? try(google_compute_ha_vpn_gateway.default[value].id, value) : value
       )
     }
   }

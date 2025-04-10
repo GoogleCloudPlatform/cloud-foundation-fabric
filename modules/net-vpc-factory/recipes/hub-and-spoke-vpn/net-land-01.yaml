@@ -43,6 +43,10 @@ vpc_config:
       vpn-router:
         region: europe-west8
         asn: 64514
+        custom_advertise:
+          all_subnets: false
+          ip_ranges:
+            "10.0.0.0/8": "rfc1918_10"
     dns_zones:
       onprem-fwd:
         zone_config:

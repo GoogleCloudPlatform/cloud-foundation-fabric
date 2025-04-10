@@ -34,7 +34,7 @@ locals {
       {
         name        = gk
         project     = module.projects[k].id
-        hub         = google_network_connectivity_hub.hub["${k}/${v.ncc_hub_config.name}"].id
+        hub         = google_network_connectivity_hub.default["${k}/${v.ncc_hub_config.name}"].id
         description = try(gv.description, "Terraform-managed")
         labels      = try(gv.labels, {})
         auto_accept = [for project_key in try(gv.auto_accept, []) : module.projects[project_key].id]
@@ -50,7 +50,7 @@ locals {
           "${factory_key}/${vpc_key}/${vpn_key}" = {
             name             = replace("${factory_key}/${vpc_key}/${vpn_key}", "/", "-")
             project_id       = module.projects[factory_key].id
-            hub              = google_network_connectivity_hub.hub[vpn_config.ncc_spoke_config.hub].id
+            hub              = google_network_connectivity_hub.default[vpn_config.ncc_spoke_config.hub].id
             location         = vpn_config.region
             description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
             labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
@@ -68,7 +68,7 @@ locals {
         project_id            = module.projects[factory_key].id
         network_self_link     = module.vpc["${factory_key}/${vpc_key}"].self_link
         labels                = try(vpc_config.ncc_config.labels, {})
-        hub                   = google_network_connectivity_hub.hub[vpc_config.ncc_config.hub].id
+        hub                   = google_network_connectivity_hub.default[vpc_config.ncc_config.hub].id
         description           = try(vpc_config.ncc_config.description, "Terraform-managed")
         exclude_export_ranges = try(vpc_config.ncc_config.exclude_export_ranges, null)
         include_export_ranges = try(vpc_config.ncc_config.include_export_ranges, null)
@@ -80,8 +80,7 @@ locals {
 
 }
 
-# TODO(sruffilli): rename ALL THE THINGS to default
-resource "google_network_connectivity_hub" "hub" {
+resource "google_network_connectivity_hub" "default" {
   for_each        = local.ncc_hubs
   name            = each.value.name
   description     = each.value.description
@@ -90,7 +89,7 @@ resource "google_network_connectivity_hub" "hub" {
   project         = each.value.project_id
 }
 
-resource "google_network_connectivity_spoke" "default" {
+resource "google_network_connectivity_spoke" "vpcs" {
   for_each    = local.ncc_vpc_spokes
   project     = each.value.project_id
   name        = replace(each.key, "/", "-")
@@ -103,7 +102,7 @@ resource "google_network_connectivity_spoke" "default" {
     exclude_export_ranges = each.value.exclude_export_ranges
     include_export_ranges = each.value.include_export_ranges
   }
-  depends_on = [google_network_connectivity_hub.hub]
+  depends_on = [google_network_connectivity_hub.default]
   group      = each.value.group
 }
 
@@ -120,7 +119,7 @@ resource "google_network_connectivity_group" "default" {
       auto_accept_projects = each.value.auto_accept
     }
   }
-  depends_on = [google_network_connectivity_hub.hub]
+  depends_on = [google_network_connectivity_hub.default]
 }
 
 resource "google_network_connectivity_spoke" "tunnels" {

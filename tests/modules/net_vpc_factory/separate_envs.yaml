@@ -14,7 +14,7 @@
 
 counts:
   google_compute_external_vpn_gateway: 2
-  google_compute_firewall: 2
+  google_compute_firewall: 6
   google_compute_ha_vpn_gateway: 2
   google_compute_network: 2
   google_compute_route: 8
@@ -32,4 +32,4 @@ counts:
   google_project_service_identity: 21
   modules: 11
   random_id: 4
-  resources: 110
+  resources: 114

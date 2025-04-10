@@ -314,6 +314,7 @@ variable "network_project_config" {
           name          = optional(string)
           override_name = optional(string)
         })
+        stack_type = optional(string)
         tunnels = map(object({
           bgp_peer = object({
             address        = string
@@ -353,7 +354,9 @@ variable "network_project_config" {
           import        = optional(bool, true)
           public_export = optional(bool)
           public_import = optional(bool)
-        }), {})
+          }
+        ), {})
+        stack_type = optional(string)
       })), {})
       ncc_config = optional(object({
         hub                   = string
