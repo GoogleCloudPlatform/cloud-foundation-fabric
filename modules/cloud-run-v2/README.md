@@ -254,7 +254,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest modules=4 resources=56 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
+# tftest modules=4 resources=59 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
 ## Using Customer-Managed Encryption Key
