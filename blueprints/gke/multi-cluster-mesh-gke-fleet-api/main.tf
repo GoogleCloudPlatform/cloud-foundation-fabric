@@ -72,12 +72,11 @@ module "fleet_project" {
     "anthos.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "container.googleapis.com",
-    "gkehub.googleapis.com",
     "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "logging.googleapis.com",
     "mesh.googleapis.com",
     "monitoring.googleapis.com",
-    "stackdriver.googleapis.com"
   ]
   iam = {
     "roles/container.admin"                     = [module.mgmt_server.service_account_iam_email]

@@ -29,8 +29,8 @@ module "host-project" {
     "compute.googleapis.com",
     "iam.googleapis.com",
     "logging.googleapis.com",
-    "servicemanagement.googleapis.com",
     "servicecontrol.googleapis.com",
+    "servicemanagement.googleapis.com",
     "vmmigration.googleapis.com",
   ]
   project_reuse = var.project_create != null ? null : {}

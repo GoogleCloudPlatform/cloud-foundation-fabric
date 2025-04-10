@@ -63,10 +63,10 @@ module "project" {
     "run.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
-    "sqladmin.googleapis.com",
+    "servicenetworking.googleapis.com",
     "sql-component.googleapis.com",
+    "sqladmin.googleapis.com",
     "vpcaccess.googleapis.com",
-    "servicenetworking.googleapis.com"
   ]
 }
 

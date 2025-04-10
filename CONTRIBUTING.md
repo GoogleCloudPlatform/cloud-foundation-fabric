@@ -154,7 +154,8 @@ module "project" {
   billing_account = local.billing_account
   services        = [
     "container.googleapis.com",
-    "stackdriver.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com"
     "storage.googleapis.com",
   ]
   iam = {
