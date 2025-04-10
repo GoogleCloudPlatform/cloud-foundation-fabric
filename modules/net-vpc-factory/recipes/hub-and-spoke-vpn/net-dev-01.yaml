@@ -1,0 +1,83 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/network-project.schema.json
+
+project_config:
+  name: net-dev-01
+  services:
+    - container.googleapis.com
+    - compute.googleapis.com
+    - dns.googleapis.com
+    - iap.googleapis.com
+    - networkmanagement.googleapis.com
+    - networksecurity.googleapis.com
+    - servicenetworking.googleapis.com
+    - stackdriver.googleapis.com
+    - vpcaccess.googleapis.com
+  shared_vpc_host_config:
+    enabled: true
+vpc_config:
+  dev-spoke:
+    delete_default_routes_on_create: false
+    mtu: 1500
+    nat_config:
+      nat-ew8:
+        region: europe-west8
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64520
+    dns_zones:
+      root-peering:
+        zone_config:
+          domain: .
+          peering:
+            peer_network: net-land-01/hub
+            client_networks:
+              - net-dev-01/dev-spoke
+    subnets_factory_config:
+      subnets_folder: data/subnets/dev-spoke
+    firewall_factory_config:
+      rules_folder: data/firewall/dev-spoke
+    routes:
+      gateway:
+        dest_range: "8.8.8.8/32"
+        priority: 100
+        next_hop_type: "gateway"
+        next_hop: "default-internet-gateway"
+    vpn_config:
+      to-hub:
+        region: europe-west8
+        peer_gateways:
+          default:
+            gcp: net-land-01/hub/to-dev
+        router_config:
+          create: false
+          name: net-dev-01/dev-spoke/vpn-router
+        tunnels:
+          remote-0:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.1
+              asn: 64514
+            bgp_session_range: "169.254.2.2/30"
+            vpn_gateway_interface: 0
+          remote-1:
+            shared_secret: foobar
+            bgp_peer:
+              address: 169.254.2.5
+              asn: 64514
+            bgp_session_range: "169.254.2.6/30"
+            vpn_gateway_interface: 1
