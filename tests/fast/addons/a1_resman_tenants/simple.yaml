@@ -28,7 +28,7 @@ counts:
   google_project: 4
   google_project_iam_audit_config: 2
   google_project_iam_binding: 32
-  google_project_iam_member: 34
+  google_project_iam_member: 36
   google_project_service: 54
   google_project_service_identity: 10
   google_service_account: 16

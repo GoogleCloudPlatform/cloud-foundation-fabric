@@ -38,7 +38,7 @@ counts:
   google_monitoring_dashboard: 6
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 16
+  google_project_iam_member: 17
   google_project_service: 20
   google_project_service_identity: 16
   google_storage_bucket_object: 1

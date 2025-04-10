@@ -155,7 +155,7 @@ module "project" {
   services        = [
     "container.googleapis.com",
     "logging.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
     "storage.googleapis.com",
   ]
   iam = {

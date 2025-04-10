@@ -32,6 +32,6 @@ module "project" {
     "dns.googleapis.com",
     "networkconnectivity.googleapis.com",
     "logging.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
   ]
 }

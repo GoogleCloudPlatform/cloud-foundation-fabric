@@ -81,7 +81,7 @@ variable "project_services" {
   default = [
     "container.googleapis.com",
     "logging.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
   ]
 }
 

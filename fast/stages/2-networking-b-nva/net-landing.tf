@@ -59,8 +59,8 @@ module "landing-project" {
     "networkconnectivity.googleapis.com",
     "networkmanagement.googleapis.com",
     "logging.googleapis.com",
-"monitoring.googleapis.com"
-    "vmwareengine.googleapis.com"
+    "monitoring.googleapis.com",
+    "vmwareengine.googleapis.com",
   ]
   shared_vpc_host_config = {
     enabled = true

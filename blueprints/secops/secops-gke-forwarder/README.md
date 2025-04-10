@@ -33,9 +33,9 @@ git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 Before you deploy the architecture, you will need at least the following
 information/configurations in place (for more precise configuration see the Variables section):
 
-* The project ID
-* The VPC host project
-* VPC and subnets should already exist
+- The project ID
+- The VPC host project
+- VPC and subnets should already exist
 
 #### Step 2: Prepare the variables
 
@@ -147,7 +147,7 @@ module "test" {
     }
   }
 }
-# tftest modules=5 resources=34 files=credentials,config
+# tftest modules=5 resources=37 files=credentials,config
 ```
 
 ```

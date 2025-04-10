@@ -27,7 +27,7 @@ counts:
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
-  google_project_iam_member: 16
+  google_project_iam_member: 17
   google_project_service: 31
   google_project_service_identity: 7
   google_service_account: 6
@@ -113,4 +113,3 @@ outputs:
   workload_identity_pool:
     pool: null
     providers: {}
-
