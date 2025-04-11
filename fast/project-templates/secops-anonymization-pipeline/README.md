@@ -22,6 +22,8 @@ The following diagram illustrates the high-level design of the solution, which c
 
 The use case is a SecOps deployment composed of 2 tenants (one for production and one for development/testing). There might be the need to export production data from the prod tenant and import them back in DEV (possibly anonymizing it) for rules and/or parser development, that is why this pipeline might be convenient for speeding up the data migration process.
 
+The solution is based on a custom Python script responsible for implementing the aforementioned logic. The script leverages the new [SecOps API Wrapper](https://github.com/google/secops-wrapper) available also in [PyPi](https://pypi.org/project/secops/). 
+
 ### Pipeline Steps
 
 - **SecOps Export**: Triggered via the corresponding TRIGGER-EXPORT action. Call [SecOps Export API](https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.dataExports) to trigger raw logs export on a GCS bucket based on either all the log types or one o more of them for a specific time frame. By default, the export will be for the previous day, otherwise the following parameters can be specified to change the time frame:
@@ -92,6 +94,7 @@ terraform apply
 #### Step 5: Test solution
 
 Test the solution triggering an export from the Cloud Scheduler page, after few hours (accoding to the size of the export) logs should be available on secops-export bucket. Please check for any issue during export using the corresponding APIs and the export ID.
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

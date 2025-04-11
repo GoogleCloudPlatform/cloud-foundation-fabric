@@ -17,22 +17,15 @@
 # tfdoc:file:description Dedicated project factory.
 locals {
 
-  projects = { for k, v in local.network_projects : k => merge(
-    {
-      billing_account            = try(v.project_config.billing_account, var.billing_account)
-      prefix                     = try(v.project_config.prefix, var.prefix)
-      parent                     = try(v.project_config.parent, var.parent_id)
-      shared_vpc_host_config     = try(v.project_config.shared_vpc_host_config, null)
-      iam                        = try(v.project_config.iam, {})
-      iam_bindings               = try(v.project_config.iam_bindings, {})
-      iam_bindings_additive      = try(v.project_config.iam_bindings_additive, {})
-      iam_by_principals          = try(v.project_config.iam_by_principals, {})
-      iam_by_principals_additive = try(v.project_config.iam_by_principals_additive, {})
-      services                   = try(v.project_config.services, [])
-      org_policies               = try(v.project_config.org_policies, {})
-    },
-    v.project_config)
+  _projects_input = { for k, v in local.network_projects : k => v.project_config }
+  _projects_config = {
+    data_defaults = {
+      billing_account = var.billing_account
+      prefix          = var.prefix
+      parent          = var.parent_id
+    }
   }
+  projects = local._projects_output
 }
 
 module "projects" {
