@@ -41,7 +41,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 248
+  resources: 250
 
 outputs:
   automation: __missing__
