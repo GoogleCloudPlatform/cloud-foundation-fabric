@@ -146,6 +146,18 @@ check "prefix_validator" {
   }
 }
 
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization policy tags."
+  type = object({
+    key_id   = optional(string)
+    key_name = optional(string, "org-policies")
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."

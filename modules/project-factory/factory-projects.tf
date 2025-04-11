@@ -59,7 +59,6 @@ locals {
   project_budgets = {
     for v in local._project_budgets : v.budget => v.project...
   }
-
   buckets = flatten([
     for k, v in local.projects : [
       for name, opts in v.buckets : {
@@ -102,6 +101,7 @@ locals {
           try(var.data_defaults.service_accounts.display_name, null),
           "Terraform-managed."
         )
+        iam                    = try(opts.iam, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})

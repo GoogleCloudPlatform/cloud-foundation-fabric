@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.automation-service-accounts["service1/ro"].google_service_account.service_account[0]:
+  module.automation-service-accounts["service1/automation/ro"].google_service_account.service_account[0]:
     account_id: my-prefix-service1-ro
     create_ignore_already_exists: null
     description: Service read-only automation sa.
@@ -23,7 +23,7 @@ values:
     member: serviceAccount:my-prefix-service1-ro@service-iac.iam.gserviceaccount.com
     project: service-iac
     timeouts: null
-  module.automation-service-accounts["service1/rw"].google_service_account.service_account[0]:
+  module.automation-service-accounts["service1/automation/rw"].google_service_account.service_account[0]:
     account_id: my-prefix-service1-rw
     create_ignore_already_exists: null
     description: Service read/write automation sa.

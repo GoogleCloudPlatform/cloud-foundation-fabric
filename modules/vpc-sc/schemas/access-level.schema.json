@@ -74,8 +74,7 @@
           "members": {
             "type": "array",
             "items": {
-              "type": "string",
-              "pattern": "^(?:serviceAccount:|user:)"
+              "type": "string"
             }
           },
           "negate": {
