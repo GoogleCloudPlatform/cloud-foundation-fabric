@@ -17,14 +17,8 @@
 locals {
   folder_ids = merge(
     # stage 2
-    !var.fast_stage_2.networking.enabled ? {} : merge(
-      { networking = module.net-folder[0].id },
-      { for k, v in module.net-folder-envs : "networking-${k}" => v.id }
-    ),
-    !var.fast_stage_2.security.enabled ? {} : merge(
-      { security = module.sec-folder[0].id },
-      { for k, v in module.sec-folder-envs : "security-${k}" => v.id }
-    ),
+    { for k, v in module.stage2-folder : k => v.id },
+    { for k, v in module.stage2-folder-env : k => v.id },
     # stage 3
     { for k, v in module.stage3-folder : k => v.id },
     # top-level folders
@@ -43,24 +37,21 @@ locals {
         }
       },
       {
-        for k, v in var.fast_stage_2 : k => {
+        for k, v in local.stage2 : k => {
           short_name = v.short_name
-          # rw service accounts for stage 3s that need delegated IAM on stage 2s
-          iam_delegated_principals = {
-            for ek, _ in var.environments : ek => [
-              for sk, sv in local.stage3 :
-              "serviceAccount:${local.stage_service_accounts[sk]}"
-              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
-            ]
+          iam_admin_delegated = {
+            for kk in v.stage3_config.iam_admin_delegated :
+            kk.environment => lookup(
+              local.principals_iam, kk.principal, kk.principal
+            )...
           }
-          iam_viewer_principals = {
-            for ek, _ in var.environments : ek => [
-              for sk, sv in local.stage3 :
-              "serviceAccount:${local.stage_service_accounts["${sk}-r"]}"
-              if sv.environment == ek && try(sv.stage2_iam[k].iam_admin_delegated, false)
-            ]
+          iam_viewer = {
+            for kk in v.stage3_config.iam_viewer :
+            kk.environment => lookup(
+              local.principals_iam, kk.principal, kk.principal
+            )...
           }
-        } if v.enabled == true
+        }
       }
     )
     folder_ids       = local.folder_ids
@@ -93,6 +84,11 @@ output "providers" {
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers
+}
+
+output "service_accounts" {
+  description = "Service accounts."
+  value       = local.service_accounts
 }
 
 # ready to use variable values for subsequent stages

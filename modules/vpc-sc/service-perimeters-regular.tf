@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,22 +49,46 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "egress_policies" {
         for_each = spec.value.egress_policies == null ? {} : {
           for k in spec.value.egress_policies :
-          k => lookup(local.egress_policies, k, null)
-          if contains(keys(local.egress_policies), k)
+          k => local.egress_policies[k]
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
               identities    = policy.value.from.identities
+              source_restriction = (
+                length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
+                ? "SOURCE_RESTRICTION_ENABLED"
+                : "SOURCE_RESTRICTION_DISABLED"
+              )
+              dynamic "sources" {
+                for_each = policy.value.from.access_levels
+                iterator = access_level
+                content {
+                  access_level = try(
+                    google_access_context_manager_access_level.basic[access_level.value].id,
+                    access_level.value
+                  )
+                }
+              }
+              dynamic "sources" {
+                for_each = policy.value.from.resources
+                iterator = resource
+                content {
+                  resource = resource.value
+                }
+              }
             }
           }
           dynamic "egress_to" {
             for_each = policy.value.to == null ? [] : [""]
             content {
-              resources = policy.value.to.resources
+              external_resources = policy.value.to.external_resources
+              resources          = policy.value.to.resources
+              roles              = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -92,11 +116,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "ingress_policies" {
         for_each = spec.value.ingress_policies == null ? {} : {
           for k in spec.value.ingress_policies :
-          k => lookup(local.ingress_policies, k, null)
-          if contains(keys(local.ingress_policies), k)
+          k => local.ingress_policies[k]
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -123,6 +147,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
+              roles     = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -173,22 +198,46 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "egress_policies" {
         for_each = status.value.egress_policies == null ? {} : {
           for k in status.value.egress_policies :
-          k => lookup(local.egress_policies, k, null)
-          if contains(keys(local.egress_policies), k)
+          k => local.egress_policies[k]
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
               identity_type = policy.value.from.identity_type
               identities    = policy.value.from.identities
+              source_restriction = (
+                length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
+                ? "SOURCE_RESTRICTION_ENABLED"
+                : "SOURCE_RESTRICTION_DISABLED"
+              )
+              dynamic "sources" {
+                for_each = policy.value.from.access_levels
+                iterator = access_level
+                content {
+                  access_level = try(
+                    google_access_context_manager_access_level.basic[access_level.value].id,
+                    access_level.value
+                  )
+                }
+              }
+              dynamic "sources" {
+                for_each = policy.value.from.resources
+                iterator = resource
+                content {
+                  resource = resource.value
+                }
+              }
             }
           }
           dynamic "egress_to" {
             for_each = policy.value.to == null ? [] : [""]
             content {
-              resources = policy.value.to.resources
+              external_resources = policy.value.to.external_resources
+              resources          = policy.value.to.resources
+              roles              = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o
@@ -216,11 +265,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       dynamic "ingress_policies" {
         for_each = status.value.ingress_policies == null ? {} : {
           for k in status.value.ingress_policies :
-          k => lookup(local.ingress_policies, k, null)
-          if contains(keys(local.ingress_policies), k)
+          k => local.ingress_policies[k]
         }
         iterator = policy
         content {
+          title = coalesce(policy.value.title, policy.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -248,6 +297,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
+              roles     = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
                 iterator = o

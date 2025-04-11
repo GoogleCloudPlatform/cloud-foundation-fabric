@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@
 
 locals {
   log_sink_destinations = merge(
+    {
+      for k, v in var.log_sinks : k => {
+        id = module.log-export-project.project_id
+      } if v.type == "project"
+    },
     # use the same dataset for all sinks with `bigquery` as  destination
     {
       for k, v in var.log_sinks :
@@ -43,6 +48,7 @@ module "log-export-project" {
     var.project_parent_ids.logging, "organizations/${var.organization.id}"
   )
   prefix          = var.prefix
+  universe        = var.universe
   billing_account = var.billing_account.id
   contacts = (
     var.bootstrap_user != null || var.essential_contacts == null

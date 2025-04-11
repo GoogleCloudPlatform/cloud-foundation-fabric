@@ -30,11 +30,11 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]))
-  iam_delegated_principals = try(
-    var.stage_config["networking"].iam_delegated_principals, {}
+  iam_admin_delegated = try(
+    var.stage_config["networking"].iam_admin_delegated, {}
   )
-  iam_viewer_principals = try(
-    var.stage_config["networking"].iam_viewer_principals, {}
+  iam_viewer = try(
+    var.stage_config["networking"].iam_viewer, {}
   )
   # combine all regions from variables and subnets
   regions = distinct(concat(

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -250,12 +250,12 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
-  dynamic "control_plane_endpoints_config" {
-    for_each = var.access_config.dns_access == true ? [""] : []
-    content {
-      dns_endpoint_config {
-        allow_external_traffic = true
-      }
+  control_plane_endpoints_config {
+    dns_endpoint_config {
+      allow_external_traffic = var.access_config.dns_access == true
+    }
+    ip_endpoints_config {
+      enabled = var.access_config.ip_access != null
     }
   }
   dynamic "database_encryption" {
@@ -268,9 +268,10 @@ resource "google_container_cluster" "cluster" {
   dynamic "dns_config" {
     for_each = var.enable_features.dns != null ? [""] : []
     content {
-      cluster_dns        = var.enable_features.dns.provider
-      cluster_dns_scope  = var.enable_features.dns.scope
-      cluster_dns_domain = var.enable_features.dns.domain
+      additive_vpc_scope_dns_domain = var.enable_features.dns.additive_vpc_scope_dns_domain
+      cluster_dns                   = var.enable_features.dns.provider
+      cluster_dns_scope             = var.enable_features.dns.scope
+      cluster_dns_domain            = var.enable_features.dns.domain
     }
   }
   dynamic "enable_k8s_beta_apis" {
@@ -393,10 +394,15 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "master_authorized_networks_config" {
-    for_each = try(var.access_config.ip_access.authorized_ranges, null) != null ? [""] : []
+    for_each = (
+      try(var.access_config.ip_access.authorized_ranges, null) != null ||
+      try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null) != null
+    ) ? [""] : []
     content {
+      gcp_public_cidrs_access_enabled = try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null)
+
       dynamic "cidr_blocks" {
-        for_each = var.access_config.ip_access.authorized_ranges
+        for_each = try(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
         content {
           cidr_block   = range.value
@@ -477,18 +483,23 @@ resource "google_container_cluster" "cluster" {
     for_each = var.access_config.private_nodes == true ? [""] : []
     content {
       enable_private_nodes = true
-      enable_private_endpoint = (
-        var.access_config.ip_access.disable_public_endpoint
+      enable_private_endpoint = try(
+        var.access_config.ip_access.disable_public_endpoint,
+        # this should be null, but when ip_access is disabled, the API
+        # returns true. We return true to avoid a permadiff
+        true
       )
       private_endpoint_subnetwork = try(
         var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
         null
       )
-      master_global_access_config {
-        enabled = try(
-          var.access_config.ip_access.private_endpoint_config.global_access,
-          null
-        )
+      dynamic "master_global_access_config" {
+        for_each = try(var.access_config.ip_access.private_endpoint_config.global_access, false) == true ? [""] : []
+        content {
+          enabled = (
+            var.access_config.ip_access.private_endpoint_config.global_access
+          )
+        }
       }
     }
   }
@@ -551,6 +562,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.workload_identity ? [""] : []
     content {
       workload_pool = "${var.project_id}.svc.id.goog"
+    }
+  }
+  dynamic "enterprise_config" {
+    for_each = var.enable_features.enterprise_cluster != null ? [""] : []
+    content {
+      desired_tier = var.enable_features.enterprise_cluster ? "ENTERPRISE" : "STANDARD"
     }
   }
   lifecycle {

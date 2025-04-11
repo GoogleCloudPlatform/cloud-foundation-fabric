@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "create_ignore_already_exists" {
+  description = "If set to true, skip service account creation if a service account with the same email already exists."
+  type        = bool
+  default     = null
+  validation {
+    condition     = !(var.create_ignore_already_exists == true && var.service_account_create == false)
+    error_message = "Cannot set create_ignore_already_exists when service_account_create is false."
+  }
+}
+
 variable "description" {
   description = "Optional description."
   type        = string
@@ -24,12 +34,6 @@ variable "display_name" {
   description = "Display name of the service account to create."
   type        = string
   default     = "Terraform-managed."
-}
-
-variable "generate_key" {
-  description = "Generate a key for service account."
-  type        = bool
-  default     = false
 }
 
 variable "iam" {
@@ -131,14 +135,22 @@ variable "project_id" {
   type        = string
 }
 
-variable "public_keys_directory" {
-  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
+variable "project_number" {
+  description = "Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "service_account_create" {
   description = "Create service account. When set to false, uses a data source to reference an existing service account."
   type        = bool
   default     = true
+  nullable    = false
+}
+
+variable "tag_bindings" {
+  description = "Tag bindings for this service accounts, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

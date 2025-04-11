@@ -125,7 +125,7 @@ output "number" {
 
 output "project_id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = local.project_id
   depends_on = [
     google_project.project,
     data.google_project.project,

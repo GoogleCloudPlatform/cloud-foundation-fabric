@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,17 +41,22 @@ locals {
             negate                 = null
             regions                = []
             required_access_levels = []
+            vpc_subnets            = {}
           }, c)
         ]
       }
     }
     egress_policies = {
       for k, v in local._data.egress_policies : k => {
+        title = try(v.title, null)
         from = merge({
+          access_levels = []
           identity_type = null
           identities    = []
+          resources     = []
         }, try(v.from, {}))
         to = {
+          external_resources = try(v.to.external_resources, null)
           operations = [
             for o in try(v.to.operations, []) : merge({
               method_selectors     = []
@@ -59,13 +64,14 @@ locals {
               service_name         = null
             }, o)
           ]
-          resources              = try(v.to.resources, [])
-          resource_type_external = try(v.to.resource_type_external, false)
+          resources = try(v.to.resources, [])
+          roles     = try(v.to.roles, [])
         }
       }
     }
     ingress_policies = {
       for k, v in local._data.ingress_policies : k => {
+        title = try(v.title, null)
         from = merge({
           access_levels = []
           identity_type = null
@@ -81,6 +87,7 @@ locals {
             }, o)
           ]
           resources = try(v.to.resources, [])
+          roles     = try(v.to.roles, [])
         }
       }
     }

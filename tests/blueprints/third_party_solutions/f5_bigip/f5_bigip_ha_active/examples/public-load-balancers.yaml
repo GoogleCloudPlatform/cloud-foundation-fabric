@@ -103,7 +103,7 @@ values:
     allow_psc_global_access: null
     description: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV4
+    ip_version: __missing__
     load_balancing_scheme: EXTERNAL
     name: test-nlb-ext-ipv4
     ports: null

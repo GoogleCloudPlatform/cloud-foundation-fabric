@@ -35,7 +35,7 @@ module "project" {
     "compute.googleapis.com",
     "iap.googleapis.com"
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
 }
 
 # Cloud Run service

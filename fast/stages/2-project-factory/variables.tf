@@ -35,3 +35,16 @@ variable "factories_config" {
   nullable = false
   default  = {}
 }
+
+variable "outputs_location" {
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
+  type        = string
+  default     = null
+}
+
+variable "stage_name" {
+  description = "FAST stage name. Used to separate output files across different factories."
+  type        = string
+  nullable    = false
+  default     = "2-project-factory"
+}

@@ -10,23 +10,19 @@ authenticating end users**, and it is only used to provision the looker core ins
 You'll still be forced to create a new oauth and update the looker core instance from the console (or gcloud) as there
 is no terraform support for these resources.
 
-
 > [!WARNING]
 > Please be aware that, at the time of this writing, deleting the looker core instance via terraform is not possible due
-> to https://github.com/hashicorp/terraform-provider-google/issues/19467. The work-around is to delete the instance from the
+> to <https://github.com/hashicorp/terraform-provider-google/issues/19467>. The work-around is to delete the instance from the
 > console (or gcloud with force option) and remove the corresponding resource from the terraform state.
 
-<!-- TOC -->
-
-* [Looker Core module](#looker-core-module)
-    * [Examples](#examples)
-        * [Simple example](#simple-example)
-        * [Looker Core private instance with PSA](#looker-core-private-instance-with-psa)
-        * [Looker Core full example](#looker-core-full-example)
-    * [Variables](#variables)
-    * [Outputs](#outputs)
-
-<!-- TOC -->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple example](#simple-example)
+  - [Looker Core private instance with PSA](#looker-core-private-instance-with-psa)
+  - [Looker Core full example](#looker-core-full-example)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Examples
 
@@ -91,7 +87,7 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=3 resources=16 inventory=psa.yaml
+# tftest modules=3 resources=17 inventory=psa.yaml
 ```
 
 ### Looker Core full example
@@ -162,8 +158,9 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=4 resources=22 inventory=full.yaml
+# tftest modules=4 resources=23 inventory=full.yaml
 ```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

@@ -57,8 +57,7 @@ module "test-target-project" {
   source          = "./fabric/modules/project"
   billing_account = "1234-ABCD-1234"
   name            = "test-target-project"
-  project_create  = true
 }
 
-# tftest modules=5 resources=28
+# tftest modules=5 resources=27
 ```

@@ -107,8 +107,20 @@ resource "google_artifact_registry_repository" "registry" {
           # }
         }
       }
+      dynamic "common_repository" {
+        for_each = (
+          local.format_string == "docker" && try(local.format_obj.remote.common_repository, null) != null
+          ? [""] : []
+        )
+        content {
+          uri = local.format_obj.remote.common_repository
+        }
+      }
       dynamic "docker_repository" {
-        for_each = local.format_string == "docker" ? [""] : []
+        for_each = (
+          local.format_string == "docker" && try(local.format_obj.remote.common_repository, null) == null
+          ? [""] : []
+        )
         content {
           public_repository = local.format_obj.remote.public_repository
           dynamic "custom_repository" {

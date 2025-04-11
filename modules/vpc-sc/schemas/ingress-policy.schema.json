@@ -8,6 +8,9 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "title": {
+      "type": "string"
+    },
     "from": {
       "type": "object",
       "additionalProperties": false,
@@ -73,6 +76,12 @@
           }
         },
         "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"

@@ -61,7 +61,7 @@ values:
     allow_global_access: true
     allow_psc_global_access: null
     ip_protocol: L3_DEFAULT
-    ip_version: IPV4
+    ip_version: __missing__
     load_balancing_scheme: INTERNAL
     name: test-ilb-l4
     network: projects/my-project/global/networks/dataplane

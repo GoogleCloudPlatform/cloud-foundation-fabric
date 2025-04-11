@@ -218,7 +218,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=8 resources=62
+# tftest modules=8 resources=63
 ```
 
 ### Apigee X in service project with peering disabled and exposed using Global LB
@@ -376,7 +376,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=6 resources=48
+# tftest modules=6 resources=49
 ```
 
 ### Apigee X in standalone project with peering disabled and exposed using Global External Application LB
@@ -453,7 +453,7 @@ module "apigee-x-foundations" {
   }
   enable_monitoring = true
 }
-# tftest modules=6 resources=63
+# tftest modules=6 resources=64
 ```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->

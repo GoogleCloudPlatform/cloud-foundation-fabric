@@ -1,0 +1,113 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/network-project.schema.json
+
+project_config:
+  name: net-land-01
+  services:
+    - container.googleapis.com
+    - compute.googleapis.com
+    - dns.googleapis.com
+    - iap.googleapis.com
+    - networkmanagement.googleapis.com
+    - networksecurity.googleapis.com
+    - servicenetworking.googleapis.com
+    - stackdriver.googleapis.com
+    - vpcaccess.googleapis.com
+  shared_vpc_host_config:
+    enabled: true
+vpc_config:
+  test:
+    delete_default_routes_on_create: false
+    mtu: 1500
+    auto_create_subnetworks: true
+    peering_config:
+      to-hub:
+        peer_network: net-land-01/hub
+  hub:
+    delete_default_routes_on_create: false
+    mtu: 1500
+    nat_config:
+      nat-ew8:
+        region: europe-west8
+    routers:
+      vpn-router:
+        region: europe-west8
+        asn: 64514
+    dns_zones:
+      onprem-fwd:
+        zone_config:
+          domain: .
+          forwarding:
+            forwarders:
+              "8.8.8.8": default
+              "1.1.1.1": default
+            client_networks:
+              - net-land-01/hub
+      dot-test:
+        zone_config:
+          domain: test.
+          private:
+            client_networks:
+              - net-land-01/hub
+        recordsets:
+          "A localhost":
+            records: ["127.0.0.1"]
+    subnets_factory_config:
+      subnets_folder: data/subnets/hub
+    firewall_factory_config:
+      rules_folder: data/firewall/hub
+    routes:
+      gateway:
+        dest_range: "8.8.8.8/32"
+        priority: 100
+        next_hop_type: "gateway"
+        next_hop: "default-internet-gateway"
+    peering_config:
+      to-prod:
+        peer_network: net-prod-01/prod-spoke
+      to-dev:
+        peer_network: net-dev-01/dev-spoke
+      to-test:
+        peer_network: net-land-01/test
+    vpn_config:
+      to-onprem:
+        region: europe-west8
+        peer_gateways:
+          default:
+            external:
+              redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+              interfaces:
+                - 8.8.8.8
+        router_config:
+          create: false
+          name: net-land-01/hub/vpn-router
+        tunnels:
+          remote-0:
+            bgp_peer:
+              address: 169.254.128.1
+              asn: 64513
+            bgp_session_range: "169.254.128.2/30"
+            peer_external_gateway_interface: 0
+            shared_secret: "mySecret"
+            vpn_gateway_interface: 0
+          remote-1:
+            bgp_peer:
+              address: 169.254.128.5
+              asn: 64513
+            bgp_session_range: "169.254.128.6/30"
+            peer_external_gateway_interface: 0
+            shared_secret: "mySecret"
+            vpn_gateway_interface: 1

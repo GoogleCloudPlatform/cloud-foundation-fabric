@@ -49,17 +49,22 @@ resource "google_workstations_workstation_cluster" "cluster" {
 }
 
 resource "google_workstations_workstation_config" "configs" {
-  for_each               = var.workstation_configs
-  provider               = google-beta
-  project                = google_workstations_workstation_cluster.cluster.project
-  workstation_config_id  = each.key
-  workstation_cluster_id = google_workstations_workstation_cluster.cluster.workstation_cluster_id
-  location               = google_workstations_workstation_cluster.cluster.location
-  idle_timeout           = each.value.idle_timeout
-  running_timeout        = each.value.running_timeout
-  replica_zones          = each.value.replica_zones
-  annotations            = each.value.annotations
-  labels                 = each.value.labels
+  for_each                = var.workstation_configs
+  provider                = google-beta
+  project                 = google_workstations_workstation_cluster.cluster.project
+  workstation_config_id   = each.key
+  workstation_cluster_id  = google_workstations_workstation_cluster.cluster.workstation_cluster_id
+  location                = google_workstations_workstation_cluster.cluster.location
+  max_usable_workstations = each.value.max_workstations
+  idle_timeout = (
+    each.value.timeouts.idle == null ? null : "${each.value.timeouts.idle}s"
+  )
+  running_timeout = (
+    each.value.timeouts.running == null ? null : "${each.value.timeouts.running}s"
+  )
+  replica_zones = each.value.replica_zones
+  annotations   = each.value.annotations
+  labels        = each.value.labels
   dynamic "host" {
     for_each = each.value.gce_instance == null ? [] : [""]
     content {

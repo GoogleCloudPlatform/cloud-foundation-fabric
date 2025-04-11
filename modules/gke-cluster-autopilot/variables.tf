@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ variable "access_config" {
   type = object({
     dns_access = optional(bool, true)
     ip_access = optional(object({
-      authorized_ranges       = optional(map(string), {})
-      disable_public_endpoint = optional(bool, true)
+      authorized_ranges               = optional(map(string), {})
+      disable_public_endpoint         = optional(bool, true)
+      gcp_public_cidrs_access_enabled = optional(bool, false)
       private_endpoint_config = optional(object({
         endpoint_subnetwork = optional(string)
         global_access       = optional(bool, true)
       }), {})
-    }), {})
+    }))
     private_nodes = optional(bool, true)
   })
   nullable = false
@@ -92,11 +93,12 @@ variable "enable_features" {
   type = object({
     beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, false)
+    cost_management      = optional(bool, true)
     dns = optional(object({
-      provider = optional(string)
-      scope    = optional(string)
-      domain   = optional(string)
+      additive_vpc_scope_dns_domain = optional(string)
+      provider                      = optional(string)
+      scope                         = optional(string)
+      domain                        = optional(string)
     }))
     database_encryption = optional(object({
       state    = string
@@ -124,6 +126,7 @@ variable "enable_features" {
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
+    enterprise_cluster       = optional(bool)
   })
   default = {}
 }

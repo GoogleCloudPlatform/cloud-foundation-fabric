@@ -33,7 +33,7 @@ module "project" {
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account, null)
   name            = var.project_id
-  project_create  = var.project_create != null
+  project_reuse   = var.project_create != null ? null : {}
   services = [
     "compute.googleapis.com",
     "monitoring.googleapis.com",

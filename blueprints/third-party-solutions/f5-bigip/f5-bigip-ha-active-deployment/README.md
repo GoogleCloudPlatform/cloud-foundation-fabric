@@ -7,10 +7,12 @@ This blueprint shows how to the deploy [F5 BigIP Virtual Edition (VE)](https://w
 </p>
 
 Calling the [f5-bigip-ha-active blueprint](../f5-bigip-ha-active/README.md), we deploy:
+
 - 2 F5 BigIP VMs, each in an unmanaged instance group, in a dedicated zone
 - 1 internal network passthrough load balancer in `L3_default` mode, pointing to the F5 instance groups. By default, the load balancer will expose two forwarding rules (IPs): one for IPv4, one for IPv6
 
 Additionally, we deploy directly through this blueprint:
+
 - 1 project containing all the other resources (optional)
 - 1 dataplane VPC where all VM NICs are attached, equipped with Cloud NAT (so that the backend VMs can access the Internet). One subnet is dedicated to clients. One subnet is dedicated to F5 VMs and backend VMs
 - 1 management VPC used by F5 VMs only, equipped with Cloud NAT (for F5 management connectivity)
@@ -52,10 +54,12 @@ gcloud compute ssh YOUR_F5_VM_NAME \
 Once tunnels are established, from your machine:
 
 Connect to the machine in zone `a` using:
+
 - SSH: `127.0.0.1`, port `221`
 - GUI: `127.0.0.1`, port `4431`
 
 Connect to the machine in zone `b` using:
+
 - SSH: `127.0.0.1`, port `222`
 - GUI: `127.0.0.1`, port `4432`
 
@@ -91,15 +95,15 @@ Please, note there are a few caveats:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L82) | The name prefix used for resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L93) | The project id where we deploy the resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L98) | The region where we deploy the F5 IPs. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L89) | The name prefix used for resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L100) | The project id where we deploy the resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L105) | The region where we deploy the F5 IPs. | <code>string</code> | ✓ |  |
 | [backend_vm_configs](variables.tf#L17) | The sample backend VMs configuration. Keys are the zones where VMs are deployed. | <code title="map&#40;object&#40;&#123;&#10;  address        &#61; string&#10;  instance_type  &#61; string&#10;  startup_script &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  a &#61; &#123;&#10;    address        &#61; &#34;192.168.100.101&#34;&#10;    instance_type  &#61; &#34;e2-micro&#34;&#10;    startup_script &#61; &#34;apt update &#38;&#38; apt install -y nginx&#34;&#10;  &#125;&#10;  b &#61; &#123;&#10;    address        &#61; &#34;192.168.100.102&#34;&#10;    instance_type  &#61; &#34;e2-micro&#34;&#10;    startup_script &#61; &#34;apt update &#38;&#38; apt install -y nginx&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [forwarding_rules_config](variables.tf#L38) | The optional configurations of the GCP load balancers forwarding rules. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  &#34;ipv4&#34; &#61; &#123;&#10;    address  &#61; &#34;192.168.100.100&#34;&#10;    protocol &#61; &#34;TCP&#34;&#10;  &#125;&#10;  &#34;ipv6&#34; &#61; &#123;&#10;    ip_version &#61; &#34;IPV6&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [instance_dedicated_configs](variables.tf#L52) | The F5 VMs configuration. The map keys are the zones where the VMs are deployed. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  a &#61; &#123;&#10;    license_key &#61; &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#10;    network_config &#61; &#123;&#10;      alias_ip_range_address &#61; &#34;192.168.101.0&#47;24&#34;&#10;      alias_ip_range_name    &#61; &#34;f5-a&#34;&#10;    &#125;&#10;  &#125;&#10;  b &#61; &#123;&#10;    license_key &#61; &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#10;    network_config &#61; &#123;&#10;      alias_ip_range_address &#61; &#34;192.168.102.0&#47;24&#34;&#10;      alias_ip_range_name    &#61; &#34;f5-b&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [instance_shared_config](variables.tf#L73) | The F5 VMs shared configurations. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  enable_ipv6    &#61; true&#10;  ssh_public_key &#61; &#34;.&#47;data&#47;mykey.pub&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_create](variables.tf#L87) | Whether to automatically create a project. | <code>bool</code> |  | <code>false</code> |
-| [vpc_config](variables.tf#L103) | VPC and subnet ids, in case existing VPCs are used. | <code title="object&#40;&#123;&#10;  backend_vms_cidr &#61; string &#35; used by F5s. Not configured on the VPC.&#10;  dataplane &#61; object&#40;&#123;&#10;    subnets &#61; map&#40;object&#40;&#123;&#10;      cidr                &#61; optional&#40;string&#41;&#10;      secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41; &#35; name -&#62; cidr&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  management &#61; object&#40;&#123;&#10;    subnets &#61; map&#40;object&#40;&#123;&#10;      cidr                &#61; optional&#40;string&#41;&#10;      secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41; &#35; name -&#62; cidr&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  backend_vms_cidr &#61; &#34;192.168.200.0&#47;24&#34;&#10;  dataplane &#61; &#123;&#10;    subnets &#61; &#123;&#10;      clients &#61; &#123;&#10;        cidr &#61; &#34;192.168.0.0&#47;24&#34;&#10;      &#125;&#10;      dataplane &#61; &#123;&#10;        cidr &#61; &#34;192.168.100.0&#47;24&#34;&#10;        secondary_ip_ranges &#61; &#123;&#10;          f5-a &#61; &#34;192.168.101.0&#47;24&#34;&#10;          f5-b &#61; &#34;192.168.102.0&#47;24&#34;&#10;        &#125;&#10;      &#125;&#10;    &#125;&#10;  &#125;&#10;  management &#61; &#123;&#10;    subnets &#61; &#123;&#10;      management &#61; &#123;&#10;        cidr &#61; &#34;192.168.250.0&#47;24&#34;&#10;      &#125;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [forwarding_rules_config](variables.tf#L38) | The optional configurations of the GCP load balancers forwarding rules. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; optional&#40;string&#41;&#10;  external      &#61; optional&#40;bool, false&#41;&#10;  global_access &#61; optional&#40;bool, true&#41;&#10;  ipv6          &#61; optional&#40;bool, false&#41;&#10;  protocol      &#61; optional&#40;string, &#34;L3_DEFAULT&#34;&#41;&#10;  subnetwork    &#61; optional&#40;string&#41; &#35; used for IPv6 NLBs&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;ipv4&#34; &#61; &#123;&#10;    address  &#61; &#34;192.168.100.100&#34;&#10;    protocol &#61; &#34;TCP&#34;&#10;  &#125;&#10;  &#34;ipv6&#34; &#61; &#123;&#10;    ipv6 &#61; true&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [instance_dedicated_configs](variables.tf#L59) | The F5 VMs configuration. The map keys are the zones where the VMs are deployed. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  a &#61; &#123;&#10;    license_key &#61; &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#10;    network_config &#61; &#123;&#10;      alias_ip_range_address &#61; &#34;192.168.101.0&#47;24&#34;&#10;      alias_ip_range_name    &#61; &#34;f5-a&#34;&#10;    &#125;&#10;  &#125;&#10;  b &#61; &#123;&#10;    license_key &#61; &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#10;    network_config &#61; &#123;&#10;      alias_ip_range_address &#61; &#34;192.168.102.0&#47;24&#34;&#10;      alias_ip_range_name    &#61; &#34;f5-b&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [instance_shared_config](variables.tf#L80) | The F5 VMs shared configurations. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  enable_ipv6    &#61; true&#10;  ssh_public_key &#61; &#34;.&#47;data&#47;mykey.pub&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create](variables.tf#L94) | Whether to automatically create a project. | <code>bool</code> |  | <code>false</code> |
+| [vpc_config](variables.tf#L110) | VPC and subnet ids, in case existing VPCs are used. | <code title="object&#40;&#123;&#10;  backend_vms_cidr &#61; string &#35; used by F5s. Not configured on the VPC.&#10;  dataplane &#61; object&#40;&#123;&#10;    subnets &#61; map&#40;object&#40;&#123;&#10;      cidr                &#61; optional&#40;string&#41;&#10;      secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41; &#35; name -&#62; cidr&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  management &#61; object&#40;&#123;&#10;    subnets &#61; map&#40;object&#40;&#123;&#10;      cidr                &#61; optional&#40;string&#41;&#10;      secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41; &#35; name -&#62; cidr&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  backend_vms_cidr &#61; &#34;192.168.200.0&#47;24&#34;&#10;  dataplane &#61; &#123;&#10;    subnets &#61; &#123;&#10;      clients &#61; &#123;&#10;        cidr &#61; &#34;192.168.0.0&#47;24&#34;&#10;      &#125;&#10;      dataplane &#61; &#123;&#10;        cidr &#61; &#34;192.168.100.0&#47;24&#34;&#10;        secondary_ip_ranges &#61; &#123;&#10;          f5-a &#61; &#34;192.168.101.0&#47;24&#34;&#10;          f5-b &#61; &#34;192.168.102.0&#47;24&#34;&#10;        &#125;&#10;      &#125;&#10;    &#125;&#10;  &#125;&#10;  management &#61; &#123;&#10;    subnets &#61; &#123;&#10;      management &#61; &#123;&#10;        cidr &#61; &#34;192.168.250.0&#47;24&#34;&#10;      &#125;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
@@ -108,8 +112,8 @@ Please, note there are a few caveats:
 | [f5_management_ips](outputs.tf#L17) | The F5 management interfaces IP addresses. |  |
 | [forwarding_rule_configss](outputs.tf#L22) | The GCP forwarding rules configurations. |  |
 <!-- END TFDOC -->
-
 ## Test
+
 ```hcl
 module "f5-deployment" {
   source         = "./fabric/blueprints/third-party-solutions/f5-bigip/f5-bigip-ha-active-deployment"
@@ -118,5 +122,5 @@ module "f5-deployment" {
   project_id     = "test-project"
   region         = "europe-west1"
 }
-# tftest modules=21 resources=46
+# tftest modules=21 resources=48
 ```

@@ -331,8 +331,8 @@ module "cf-http" {
 | [service_account](variables.tf#L185) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L191) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | [trigger_config](variables.tf#L197) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string, &#34;RETRY_POLICY_DO_NOT_RETRY&#34;&#41; &#35; default to avoid permadiff&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L215) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L225) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number, 2&#41;&#10;  &#125;&#41;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number, 300&#41;&#10;    min &#61; optional&#40;number, 200&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L215) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; optional&#40;bool, false&#41;&#10;  name            &#61; optional&#40;string&#41;&#10;  egress_settings &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_connector_config](variables.tf#L226) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number, 2&#41;&#10;  &#125;&#41;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number, 300&#41;&#10;    min &#61; optional&#40;number, 200&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -343,14 +343,15 @@ module "cf-http" {
 | [function](outputs.tf#L29) | Cloud function resources. |  |
 | [function_name](outputs.tf#L34) | Cloud function name. |  |
 | [id](outputs.tf#L39) | Fully qualified function id. |  |
-| [service_account](outputs.tf#L44) | Service account resource. |  |
-| [service_account_email](outputs.tf#L49) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L54) | Service account email. |  |
-| [trigger_service_account](outputs.tf#L62) | Service account resource. |  |
-| [trigger_service_account_email](outputs.tf#L67) | Service account email. |  |
-| [trigger_service_account_iam_email](outputs.tf#L72) | Service account email. |  |
-| [uri](outputs.tf#L80) | Cloud function service uri. |  |
-| [vpc_connector](outputs.tf#L85) | VPC connector resource if created. |  |
+| [invoke_command](outputs.tf#L44) | Command to invoke Cloud Run Function. |  |
+| [service_account](outputs.tf#L53) | Service account resource. |  |
+| [service_account_email](outputs.tf#L58) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L63) | Service account email. |  |
+| [trigger_service_account](outputs.tf#L71) | Service account resource. |  |
+| [trigger_service_account_email](outputs.tf#L76) | Service account email. |  |
+| [trigger_service_account_iam_email](outputs.tf#L81) | Service account email. |  |
+| [uri](outputs.tf#L89) | Cloud function service uri. |  |
+| [vpc_connector](outputs.tf#L94) | VPC connector resource if created. |  |
 
 ## Fixtures
 

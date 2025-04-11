@@ -39,4 +39,4 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_route: 2
+  google_compute_route: 3

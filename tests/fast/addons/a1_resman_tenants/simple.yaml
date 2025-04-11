@@ -25,7 +25,7 @@ counts:
   google_logging_project_bucket_config: 4
   google_org_policy_policy: 6
   google_organization_iam_member: 6
-  google_project: 6
+  google_project: 4
   google_project_iam_audit_config: 2
   google_project_iam_binding: 32
   google_project_iam_member: 34
@@ -43,4 +43,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 4
   modules: 50
-  resources: 291
+  resources: 289
