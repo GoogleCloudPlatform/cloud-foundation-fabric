@@ -72,8 +72,8 @@ variable "backend_service_configs" {
       drop_traffic_if_unhealthy = optional(bool)
     }))
     iap_config = optional(object({
-      oauth2_client_id            = string
-      oauth2_client_secret        = string
+      oauth2_client_id            = optional(string)
+      oauth2_client_secret        = optional(string)
       oauth2_client_secret_sha256 = optional(string)
     }))
     outlier_detection = optional(object({
