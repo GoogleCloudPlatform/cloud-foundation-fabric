@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.secops.google_chronicle_reference_list.reference_list["private_ip_ranges"]:
+  module.secops.google_chronicle_reference_list.default["private_ip_ranges"]:
     description: Private CIDR ranges
     entries:
       - value: 10.0.0.0/8
@@ -31,7 +31,7 @@ values:
     reference_list_id: private_ip_ranges
     syntax_type: REFERENCE_LIST_SYNTAX_TYPE_CIDR
     timeouts: null
-  module.secops.google_chronicle_rule.rule["network_traffic_to_specific_country"]:
+  module.secops.google_chronicle_rule.default["network_traffic_to_specific_country"]:
     deletion_policy: FORCE
     instance: customer-id
     location: europe
@@ -65,7 +65,7 @@ values:
       \  $target_user_userid = array_distinct($network.target.user.userid)\n\ncondition:\n\
       \  $network\n}\n# tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral\n"
     timeouts: null
-  module.secops.google_chronicle_rule_deployment.rule_deployment["network_traffic_to_specific_country"]:
+  module.secops.google_chronicle_rule_deployment.default["network_traffic_to_specific_country"]:
     alerting: true
     archived: false
     enabled: true

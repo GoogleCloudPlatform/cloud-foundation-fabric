@@ -15,7 +15,7 @@
  */
 
 variable "factories_config" {
-  description = "Paths to  YAML config and folders for rules and reference lists that enables factory functionality."
+  description = "Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys."
   type = object({
     rules                = optional(string)
     rules_defs           = optional(string, "data/rules")
@@ -49,10 +49,10 @@ variable "reference_lists_config" {
 variable "rules_config" {
   description = "SecOps Detection rules configuration."
   type = map(object({
-    enabled  = bool
-    alerting = bool
-    archived = bool
-    run_frequency : string
+    enabled  = optional(bool, true)
+    alerting = optional(bool, false)
+    archived = optional(bool, false)
+    run_frequency : optional(string)
   }))
   default = {}
   validation {

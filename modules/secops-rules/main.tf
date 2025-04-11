@@ -25,12 +25,13 @@ locals {
     CIDR   = "REFERENCE_LIST_SYNTAX_TYPE_CIDR"
   }
   secops_rules = {
-    for file_name in fileset(var.factories_config.rules_defs, "*.yaral") : replace(file_name, ".yaral", "") => file("${var.factories_config.rules_defs}/${file_name}")
+    for file_name in fileset(var.factories_config.rules_defs, "*.yaral") :
+    replace(file_name, ".yaral", "") => file("${var.factories_config.rules_defs}/${file_name}")
   }
   secops_rule_deployment = try(yamldecode(file(var.factories_config.rules)), var.rules_config)
 }
 
-resource "google_chronicle_reference_list" "reference_list" {
+resource "google_chronicle_reference_list" "default" {
   for_each          = local.reference_lists
   project           = var.project_id
   location          = var.tenant_config.region
@@ -46,7 +47,7 @@ resource "google_chronicle_reference_list" "reference_list" {
   syntax_type = local.reference_list_type_mapping[each.value.type]
 }
 
-resource "google_chronicle_rule" "rule" {
+resource "google_chronicle_rule" "default" {
   for_each        = local.secops_rule_deployment
   project         = var.project_id
   location        = var.tenant_config.region
@@ -54,16 +55,16 @@ resource "google_chronicle_rule" "rule" {
   text            = local.secops_rules[each.key]
   deletion_policy = "FORCE"
   depends_on = [
-    google_chronicle_reference_list.reference_list
+    google_chronicle_reference_list.default
   ]
 }
 
-resource "google_chronicle_rule_deployment" "rule_deployment" {
+resource "google_chronicle_rule_deployment" "default" {
   for_each      = local.secops_rule_deployment
   project       = var.project_id
   location      = var.tenant_config.region
   instance      = var.tenant_config.customer_id
-  rule          = google_chronicle_rule.rule[each.key].rule_id
+  rule          = google_chronicle_rule.default[each.key].rule_id
   enabled       = each.value.enabled
   alerting      = each.value.alerting
   archived      = each.value.archived

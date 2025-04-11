@@ -5,13 +5,12 @@ This module allows creation and management of [custom rules](https://cloud.googl
 - rule definition (yaral code) and reference list entries are managed as files in data folder as per the `factories_config` variable and sample code
 - rule and reference list deployments can leverage both `rules_config` and `reference_lists_config` variables or YAML file still specified in the `factories_config` variable.
 
-<!-- TOC -->
-* [SecOps Rules](#secops-rules)
-  * [Examples](#examples)
-    * [Sample SecOps Rules and reference list deployment](#sample-secops-rules-and-reference-list-deployment)
-    * [SecOps Rules Factory](#secops-rules-factory)
-  * [Variables](#variables)
-<!-- TOC -->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Sample SecOps Rules and reference list deployment](#sample-secops-rules-and-reference-list-deployment)
+  - [SecOps Rules Factory](#secops-rules-factory)
+- [Variables](#variables)
+<!-- END TOC -->
 
 ## Examples
 
@@ -212,7 +211,7 @@ fe80::/10
 |---|---|:---:|:---:|:---:|
 | [project_id](variables.tf#L29) | Project used for resources. | <code>string</code> | ✓ |  |
 | [tenant_config](variables.tf#L66) | SecOps Tenant configuration. | <code title="object&#40;&#123;&#10;  customer_id &#61; string&#10;  region      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [factories_config](variables.tf#L17) | Paths to  YAML config and folders for rules and reference lists that enables factory functionality. | <code title="object&#40;&#123;&#10;  rules                &#61; optional&#40;string&#41;&#10;  rules_defs           &#61; optional&#40;string, &#34;data&#47;rules&#34;&#41;&#10;  reference_lists      &#61; optional&#40;string&#41;&#10;  reference_lists_defs &#61; optional&#40;string, &#34;data&#47;reference_lists&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L17) | Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys. | <code title="object&#40;&#123;&#10;  rules                &#61; optional&#40;string&#41;&#10;  rules_defs           &#61; optional&#40;string, &#34;data&#47;rules&#34;&#41;&#10;  reference_lists      &#61; optional&#40;string&#41;&#10;  reference_lists_defs &#61; optional&#40;string, &#34;data&#47;reference_lists&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [reference_lists_config](variables.tf#L34) | SecOps Reference lists configuration. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  type        &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [rules_config](variables.tf#L49) | SecOps Detection rules configuration. | <code title="map&#40;object&#40;&#123;&#10;  enabled  &#61; bool&#10;  alerting &#61; bool&#10;  archived &#61; bool&#10;  run_frequency : string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [rules_config](variables.tf#L49) | SecOps Detection rules configuration. | <code title="map&#40;object&#40;&#123;&#10;  enabled  &#61; optional&#40;bool, true&#41;&#10;  alerting &#61; optional&#40;bool, false&#41;&#10;  archived &#61; optional&#40;bool, false&#41;&#10;  run_frequency : optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 <!-- END TFDOC -->
