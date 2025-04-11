@@ -43,10 +43,10 @@ module "secops" {
     reference_lists_defs = "./data/reference_lists"
   }
 }
-# tftest modules=1 resources=3 files=reference,rule inventory=basic.yaml e2e
+# tftest modules=1 resources=3 files=reference,rule inventory=basic.yaml
 ```
 
-```txt
+```
 rule network_traffic_to_specific_country {
 
 meta:
@@ -97,7 +97,7 @@ condition:
 # tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral
 ```
 
-```txt
+```
 10.0.0.0/8
 172.16.0.0/12
 192.168.0.0/16
@@ -105,7 +105,6 @@ condition:
 ::1/128
 fc00::/7
 fe80::/10
-
 # tftest-file id=reference path=data/reference_lists/private_ip_ranges.txt
 ```
 
@@ -114,7 +113,7 @@ fe80::/10
 The module includes a secops rules and reference list factory (see [Resource Factories](../../blueprints/factories/)) for the configuration of rules and reference lists leveraging YAML configuration files. Each configuration file for rules and reference lists contains more than one rule with a structure that reflects the `rules_config` and `reference_lists_config` variables. Again rules and reference list definition is available in the corresponding yaral and txt files in the data folder.
 
 ```hcl
-module "secops-rules" {
+module "secops" {
   source        = "./fabric/modules/secops-rules"
   project_id    = var.project_id
   tenant_config = var.secops_tenant_config
@@ -126,6 +125,7 @@ module "secops-rules" {
   }
 }
 # tftest modules=1 resources=3 files=1,2,reference,rule inventory=factory.yaml
+
 ```
 
 ```yaml
@@ -144,7 +144,7 @@ private_ip_ranges:
 # tftest-file id=2 path=secops_reference_lists.yaml
 ```
 
-```txt
+```
 rule network_traffic_to_specific_country {
 
 meta:
@@ -195,7 +195,7 @@ condition:
 # tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral
 ```
 
-```txt
+```
 10.0.0.0/8
 172.16.0.0/12
 192.168.0.0/16
@@ -203,7 +203,6 @@ condition:
 ::1/128
 fc00::/7
 fe80::/10
-
 # tftest-file id=reference path=data/reference_lists/private_ip_ranges.txt
 ```
 <!-- BEGIN TFDOC -->

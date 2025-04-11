@@ -38,7 +38,7 @@ resource "google_chronicle_reference_list" "reference_list" {
   reference_list_id = each.key
   description       = each.value.description
   dynamic "entries" {
-    for_each = toset(local.reference_lists_entries[each.key])
+    for_each = local.reference_lists_entries[each.key]
     content {
       value = entries.value
     }

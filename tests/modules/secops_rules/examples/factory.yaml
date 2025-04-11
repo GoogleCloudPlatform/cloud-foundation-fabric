@@ -13,28 +13,28 @@
 # limitations under the License.
 
 values:
-  module.secops-rules.google_chronicle_reference_list.reference_list["private_ip_ranges"]:
+  module.secops.google_chronicle_reference_list.reference_list["private_ip_ranges"]:
     description: Private CIDR ranges
     entries:
-      - value: ''
-      - value: '# tftest-file id=reference path=data/reference_lists/private_ip_ranges.txt'
       - value: 10.0.0.0/8
-      - value: 127.0.0.1/32
       - value: 172.16.0.0/12
       - value: 192.168.0.0/16
+      - value: 127.0.0.1/32
       - value: ::1/128
       - value: fc00::/7
       - value: fe80::/10
+      - value: '# tftest-file id=reference path=data/reference_lists/private_ip_ranges.txt'
+      - value: ''
     instance: customer-id
-    location: region
+    location: europe
     project: project-id
     reference_list_id: private_ip_ranges
     syntax_type: REFERENCE_LIST_SYNTAX_TYPE_CIDR
     timeouts: null
-  module.secops-rules.google_chronicle_rule.rule["network_traffic_to_specific_country"]:
+  module.secops.google_chronicle_rule.rule["network_traffic_to_specific_country"]:
     deletion_policy: FORCE
     instance: customer-id
-    location: region
+    location: europe
     project: project-id
     scope: null
     text: "rule network_traffic_to_specific_country {\n\nmeta:\n  author = \"Google\
@@ -63,24 +63,14 @@ values:
       \ = array_distinct($network.target.process.parent_process.product_specific_process_id)\n\
       \  $principal_user_userid = array_distinct($network.principal.user.userid)\n\
       \  $target_user_userid = array_distinct($network.target.user.userid)\n\ncondition:\n\
-      \  $network\n}\n# tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral\
-      \ \n"
+      \  $network\n}\n# tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral\n"
     timeouts: null
-  module.secops-rules.google_chronicle_rule_deployment.rule_deployment["network_traffic_to_specific_country"]:
+  module.secops.google_chronicle_rule_deployment.rule_deployment["network_traffic_to_specific_country"]:
     alerting: true
     archived: false
     enabled: true
     instance: customer-id
-    location: region
+    location: europe
     project: project-id
     run_frequency: DAILY
     timeouts: null
-
-counts:
-  google_chronicle_reference_list: 1
-  google_chronicle_rule: 1
-  google_chronicle_rule_deployment: 1
-  modules: 1
-  resources: 3
-
-outputs: {}

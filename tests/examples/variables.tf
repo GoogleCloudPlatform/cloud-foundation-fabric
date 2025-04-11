@@ -61,6 +61,13 @@ variable "regions" {
   }
 }
 
+variable "secops_tenant_config" {
+  default = {
+    customer_id = "customer-id"
+    region      = "europe"
+  }
+}
+
 variable "service_account" {
   default = {
     id        = "service_account_id"
