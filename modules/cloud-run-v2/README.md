@@ -254,7 +254,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest modules=4 resources=56 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
+# tftest modules=4 resources=59 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
 ## Using Customer-Managed Encryption Key
@@ -420,7 +420,7 @@ module "cloud_run" {
 
 ## Cloud Run Invoker IAM Disable
 
-To disables IAM permission check for `run.routes.invoke` for callers of this service set the `invoker_iam_disabled` variable of the module to `true` (default `false`). There should be no requirement to pass the `roles/run.invoker` to the IAM block to enable public access. This allows for the org policy `domain restricted sharing` org policy remain enabled. 
+To disables IAM permission check for `run.routes.invoke` for callers of this service set the `invoker_iam_disabled` variable of the module to `true` (default `false`). There should be no requirement to pass the `roles/run.invoker` to the IAM block to enable public access. This allows for the org policy `domain restricted sharing` org policy remain enabled.
 
 ```hcl
 module "cloud_run" {

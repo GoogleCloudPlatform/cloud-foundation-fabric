@@ -17,7 +17,7 @@ FAST uses the concept of stages, which individually perform precise tasks but ta
 From the perspective of FAST's overall design, stages also work as contracts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain. The diagram below shows the relationships between stages.
 
 <p align="center">
-  <img src="stages.svg" alt="Stages diagram">
+  <img src="stages.png" alt="Stages diagram">
 </p>
 
 Please refer to the [stages](./stages/) section for further details on each stage. For details on tenant-level stages which introduce a deeper level of autonomy via nested FAST setups rooted in a top-level folder, refer to the [multitenant](#multitenant-organizations) section below.
@@ -43,12 +43,6 @@ One of our objectives with FAST is to provide a lightweight reference design for
 ### Multitenant organizations
 
 FAST has built-in support for multitenancy implemented in [an add-on stage](./addons/1-resman-tenants/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
-
-The following diagram is a high-level overview of stages used with multitenancy.
-
-<p align="center">
-  <img src="tenants-stages.svg" alt="Stages for multitenancy.">
-</p>
 
 ## Implementation
 

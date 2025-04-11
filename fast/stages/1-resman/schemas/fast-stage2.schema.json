@@ -144,6 +144,15 @@
         },
         "parent_id": {
           "type": "string"
+        },
+        "tag_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z0-9_-]+$": {
+              "type": "string"
+            }
+          }
         }
       }
     },

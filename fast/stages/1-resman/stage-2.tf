@@ -53,6 +53,7 @@ locals {
           iam_by_principals     = try(v.folder_config.iam_by_principals, {})
           org_policies          = try(v.folder_config.org_policies, {})
           parent_id             = try(v.folder_config.parent_id, null)
+          tag_bindings          = try(v.folder_config.tag_bindings, {})
         }
         organization_config = {
           iam                   = try(v.organization_config.iam, {})
@@ -194,9 +195,13 @@ module "stage2-folder" {
     ]
   }
   org_policies = each.value.folder_config.org_policies
-  tag_bindings = {
+  tag_bindings = merge({
     context = local.tag_values["context/${each.key}"].id
-  }
+    }, {
+    for k, v in each.value.folder_config.tag_bindings : k => try(
+      local.tag_values[v].id, v
+    )
+  })
   depends_on = [module.top-level-folder]
 }
 

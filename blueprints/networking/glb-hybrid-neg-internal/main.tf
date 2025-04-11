@@ -40,7 +40,7 @@ module "project_landing" {
     "networkmanagement.googleapis.com",
     # Logging and Monitoring
     "logging.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
   ]
 }
 
