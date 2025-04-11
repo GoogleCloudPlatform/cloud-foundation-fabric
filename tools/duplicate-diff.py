@@ -19,9 +19,9 @@ import sys
 
 duplicates = [
     [
-        # "modules/net-vpc-factory/factory-projects-object.tf",
-        # data factory
+        "modules/net-vpc-factory/factory-projects-object.tf",
         "modules/project-factory/factory-projects-object.tf",
+        # data factory
     ],
 ]
 
