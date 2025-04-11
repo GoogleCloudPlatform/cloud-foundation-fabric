@@ -63,20 +63,24 @@ def import_logs(export_date):
       log_type = folder.split("-")[0]
 
       for log_file in utils.list_log_files(BUCKET, f"{export_id}/{folder}"):
-        blob = bucket.blob(log_file)  # Directly get the blob object
-        with blob.open("r") as f:
-          logs = []
-          for line in f:
-            logs.append(line.rstrip('\n'))
-            if len(logs) == 1000:
-              response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
-              LOGGER.debug(response)
-              logs = []
+        try:
+          blob = bucket.blob(log_file)  # Directly get the blob object
+          with blob.open("r") as f:
+            logs = []
+            for line in f:
+              logs.append(line.rstrip('\n'))
+              if len(logs) == 1000:
+                response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+                LOGGER.debug(response)
+                logs = []
 
-          # Send any remaining entries
-          if len(logs) > 0:
-              response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
-              LOGGER.debug(response)
+            # Send any remaining entries
+            if len(logs) > 0:
+                response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+                LOGGER.debug(response)
+        except Exception as e:
+          LOGGER.error(f"Error during log ingestion': {e}")
+          raise SystemExit(f'Error during log ingestion: {e}')
 
     # delete both export and anonymized buckets after ingesting logs
     utils.delete_folder(BUCKET, export_id)
@@ -177,10 +181,13 @@ def anonymize_data(export_date):
             "inspect_job": dlp_job
         }
 
-        dlp_client = dlp_v2.DlpServiceClient(
-            client_options={'quota_project_id': GCP_PROJECT_ID})
-        response = dlp_client.create_dlp_job(request=job_request)
-        LOGGER.info(response)
+        try:
+          dlp_client = dlp_v2.DlpServiceClient(client_options={'quota_project_id': GCP_PROJECT_ID})
+          response = dlp_client.create_dlp_job(request=job_request)
+          LOGGER.info(response)
+        except Exception as e:
+          LOGGER.error(f"Error during export': {e}")
+          raise SystemExit(f'Error during secops export: {e}')
 
   else:
     LOGGER.error("Export is not finished yet, please try again later.")
