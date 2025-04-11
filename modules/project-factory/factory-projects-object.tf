@@ -180,9 +180,9 @@ locals {
         try(v.metric_scopes, null),
         local.__projects_config.data_defaults.metric_scopes
       )
-      name         = lookup(v, "name", k)    # type: string
-      org_policies = try(v.org_policies, {}) # type: map(object({...}))
-      parent = try(                          # type: string, nullable
+      name         = lookup(v, "name", basename(k)) # type: string
+      org_policies = try(v.org_policies, {})        # type: map(object({...}))
+      parent = try(                                 # type: string, nullable
         coalesce(
           local.__projects_config.data_overrides.parent,
           try(v.parent, null),
@@ -253,5 +253,12 @@ locals {
         local.__projects_config.data_defaults.logging_data_access
       )
     })
+  }
+  # tflint-ignore: terraform_unused_declarations
+  _projects_uniqunees_validation = {
+    # will raise error, if the same project (derived from file name, or provided in the YAML file)
+    # is sued more than once
+    for k, v in local._projects_output :
+    "${v.prefix}-${v.name}" => k
   }
 }
