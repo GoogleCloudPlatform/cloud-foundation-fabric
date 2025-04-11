@@ -29,7 +29,6 @@ variable "fast_stage_2" {
     folder_config = optional(object({
       name               = string
       parent_id          = optional(string)
-      tag_bindings       = optional(map(string), {})
       create_env_folders = optional(bool, true)
       iam                = optional(map(list(string)), {})
       iam_bindings       = optional(map(list(string)), {})
@@ -64,6 +63,7 @@ variable "fast_stage_2" {
           }), {})
         })), [])
       })), {})
+      tag_bindings = optional(map(string), {})
     }))
     organization_config = optional(object({
       iam_bindings_additive = optional(map(object({
