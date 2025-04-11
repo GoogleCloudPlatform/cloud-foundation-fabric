@@ -113,6 +113,7 @@ resource "google_apigee_nat_address" "apigee_nat" {
   }
   name        = each.key
   instance_id = each.value
+  activate    = var.instances[each.key].activate_nat
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {

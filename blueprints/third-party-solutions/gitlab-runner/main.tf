@@ -48,10 +48,11 @@ module "project" {
   services = [
     "compute.googleapis.com",
     "storage.googleapis.com",
-    "stackdriver.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "dns.googleapis.com",
     "iam.googleapis.com",
-    "secretmanager.googleapis.com"
+    "secretmanager.googleapis.com",
   ]
   shared_vpc_service_config = {
     attach       = true

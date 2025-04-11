@@ -23,13 +23,14 @@ module "project" {
   project_reuse   = var.project_create != null ? null : {}
   services = [
     "compute.googleapis.com",
-    "memcache.googleapis.com",
-    "redis.googleapis.com",
-    "sqladmin.googleapis.com",
-    "sql-component.googleapis.com",
-    "stackdriver.googleapis.com",
     "dns.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "memcache.googleapis.com",
+    "redis.googleapis.com",
+    "sql-component.googleapis.com",
+    "sqladmin.googleapis.com",
+    "monitoring.googleapis.com",
   ]
   shared_vpc_service_config = {
     attach       = true

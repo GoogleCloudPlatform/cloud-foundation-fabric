@@ -39,15 +39,16 @@ module "project" {
   services = [
     "aiplatform.googleapis.com",
     "bigquery.googleapis.com",
-    "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
     "compute.googleapis.com",
+    "logging.googleapis.com",
     "ml.googleapis.com",
+    "monitoring.googleapis.com",
     "notebooks.googleapis.com",
     "servicenetworking.googleapis.com",
-    "stackdriver.googleapis.com",
+    "storage-component.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com"
   ]
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true

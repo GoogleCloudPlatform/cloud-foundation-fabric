@@ -31,6 +31,7 @@ module "project" {
     "compute.googleapis.com",
     "dns.googleapis.com",
     "networkconnectivity.googleapis.com",
-    "stackdriver.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
   ]
 }

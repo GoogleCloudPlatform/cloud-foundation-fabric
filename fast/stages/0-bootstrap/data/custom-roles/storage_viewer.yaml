@@ -28,7 +28,6 @@ includedPermissions:
   - storage.managedFolders.list
   - storage.multipartUploads.list
   - storage.multipartUploads.listParts
-  - storage.objects.create
   - storage.objects.get
   - storage.objects.getIamPolicy
   - storage.objects.list
