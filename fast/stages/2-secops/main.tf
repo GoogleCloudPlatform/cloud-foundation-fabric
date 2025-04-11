@@ -20,18 +20,13 @@ locals {
     "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   ]))
   iam_admin_delegated = try(
-    var.stage_config["security"].iam_admin_delegated, {}
+    var.stage_config["secops"].iam_admin_delegated, {}
   )
   iam_viewer = try(
-    var.stage_config["security"].iam_viewer, {}
+    var.stage_config["secops"].iam_viewer, {}
   )
   project_services = [
-    "certificatemanager.googleapis.com",
-    "cloudkms.googleapis.com",
-    # "networkmanagement.googleapis.com",
-    # "networksecurity.googleapis.com",
-    "privateca.googleapis.com",
-    "secretmanager.googleapis.com",
+    "chronicle.googleapis.com",
     "stackdriver.googleapis.com"
   ]
 }
@@ -39,7 +34,7 @@ locals {
 module "folder" {
   source        = "../../../modules/folder"
   folder_create = false
-  id            = var.folder_ids.security
+  id            = var.folder_ids.secops
   contacts = (
     var.essential_contacts == null
     ? {}
@@ -50,7 +45,7 @@ module "folder" {
 module "project" {
   source   = "../../../modules/project"
   for_each = var.environments
-  name     = "${each.value.short_name}-sec-core-0"
+  name     = "${each.value.short_name}-secops-0"
   parent = coalesce(
     var.folder_ids["security-${each.key}"], var.folder_ids.security
   )

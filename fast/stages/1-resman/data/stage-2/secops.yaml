@@ -14,9 +14,9 @@
 
 # yaml-language-server: $schema=../../schemas/fast-stage2.schema.json
 
-short_name: sec
+short_name: so
 folder_config:
-  name: Security
+  name: SecOps
   iam_by_principals:
     rw:
       - roles/logging.admin
@@ -28,28 +28,14 @@ folder_config:
       - roles/viewer
       - roles/resourcemanager.folderViewer
       - roles/resourcemanager.tagViewer
-    project-factory-rw:
-      - roles/cloudkms.cryptoKeyEncrypterDecrypter
-    project-factory-ro:
-      - roles/cloudkms.viewer
-      - project_iam_viewer
-    gcp-security-admins:
+    gcp-secops-admins:
       - roles/editor
 
-  # project factory delegated IAM grant
-  iam_bindings:
-    project_factory:
-      role: roles/resourcemanager.projectIamAdmin
-      members:
-        - project-factory-rw
-      condition:
-        title: Project factory delegated IAM grant.
-        expression: |
-          api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
-            'roles/cloudkms.cryptoKeyEncrypterDecrypter'
-          ])
 organization_config:
   iam_bindings_additive:
-    sa_sec_cloudasset:
+    sa_so_rw_wif:
       member: rw
-      role: roles/cloudasset.viewer
+      role: roles/iam.workforcePoolAdmin
+    sa_so_ro_wif:
+      member: ro
+      role: roles/iam.workforcePoolViewer

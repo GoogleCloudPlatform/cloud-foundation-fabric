@@ -66,9 +66,9 @@ variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
   type = object({
-    security      = string
-    security-dev  = optional(string)
-    security-prod = optional(string)
+    secops      = string
+    secops-dev  = optional(string)
+    secops-prod = optional(string)
   })
 }
 
