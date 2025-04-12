@@ -15,8 +15,9 @@
  */
 
 locals {
+  _custom_constraints_factory_data_path = pathexpand(coalesce(var.factories_config.org_policy_custom_constraints, "-"))
   _custom_constraints_factory_data_raw = merge([
-    for f in try(fileset(var.factories_config.org_policy_custom_constraints, "*.yaml"), []) :
+    for f in try(fileset(local._custom_constraints_factory_data_path, "*.yaml"), []) :
     yamldecode(file("${var.factories_config.org_policy_custom_constraints}/${f}"))
   ]...)
   _custom_constraints_factory_data = {

@@ -16,11 +16,12 @@
 
 locals {
   # descriptive_name cannot contain colons, so we omit the universe from the default
+  _observability_factory_data_path = pathexpand(coalesce(var.factories_config.observability, "-"))
   descriptive_name = (
     var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
   )
   observability_factory_data_raw = [
-    for f in try(fileset(var.factories_config.observability, "*.yaml"), []) :
+    for f in try(fileset(local._observability_factory_data_path, "*.yaml"), []) :
     yamldecode(file("${var.factories_config.observability}/${f}"))
   ]
   parent_type = var.parent == null ? null : split("/", var.parent)[0]

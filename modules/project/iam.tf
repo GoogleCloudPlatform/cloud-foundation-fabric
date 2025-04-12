@@ -20,8 +20,9 @@
 # - external users need to have accepted the invitation email to join
 
 locals {
+  _custom_roles_path = pathexpand(coalesce(var.factories_config.custom_roles, "-"))
   _custom_roles = {
-    for f in try(fileset(var.factories_config.custom_roles, "*.yaml"), []) :
+    for f in try(fileset(local._custom_roles_path, "*.yaml"), []) :
     replace(f, ".yaml", "") => yamldecode(
       file("${var.factories_config.custom_roles}/${f}")
     )

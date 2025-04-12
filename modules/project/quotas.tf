@@ -15,8 +15,9 @@
  */
 
 locals {
+  _quota_factory_data_path = pathexpand(coalesce(var.factories_config.quotas, "-"))
   _quota_factory_data_raw = merge([
-    for f in try(fileset(var.factories_config.quotas, "*.yaml"), []) :
+    for f in try(fileset(local._quota_factory_data_path, "*.yaml"), []) :
     yamldecode(file("${var.factories_config.quotas}/${f}"))
   ]...)
   # simulate applying defaults to data coming from yaml files

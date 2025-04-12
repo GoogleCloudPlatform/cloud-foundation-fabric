@@ -15,7 +15,8 @@
  */
 
 locals {
-  reference_lists = try(yamldecode(file(var.factories_config.reference_lists)), var.reference_lists_config)
+  _secops_rules_path = pathexpand(coalesce(var.factories_config.rules_defs, "-"))
+  reference_lists    = try(yamldecode(file(var.factories_config.reference_lists)), var.reference_lists_config)
   reference_lists_entries = {
     for k, v in local.reference_lists : k => split("\n", file("${var.factories_config.reference_lists_defs}/${k}.txt"))
   }
@@ -25,7 +26,7 @@ locals {
     CIDR   = "REFERENCE_LIST_SYNTAX_TYPE_CIDR"
   }
   secops_rules = {
-    for file_name in fileset(var.factories_config.rules_defs, "*.yaral") :
+    for file_name in fileset(local._secops_rules_path, "*.yaral") :
     replace(file_name, ".yaral", "") => file("${var.factories_config.rules_defs}/${file_name}")
   }
   secops_rule_deployment = try(yamldecode(file(var.factories_config.rules)), var.rules_config)

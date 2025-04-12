@@ -15,8 +15,9 @@
  */
 
 locals {
+  _factory_tag_template_path = pathexpand(coalesce(var.factories_config.tags, "-"))
   _factory_tag_template = {
-    for f in try(fileset(var.factories_config.tags, "*.yaml"), []) :
+    for f in try(fileset(local._factory_tag_template_path, "*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${var.factories_config.tags}/${f}"))
   }
 
