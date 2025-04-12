@@ -95,7 +95,8 @@ jobs:
         run: |
           yapf -p -d -r \
             tools/*.py \
-            blueprints
+            blueprints \
+            fast
 
       - name: Check blueprint metadata
         id: metadata
