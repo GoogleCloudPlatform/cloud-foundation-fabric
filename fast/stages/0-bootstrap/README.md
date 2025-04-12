@@ -596,18 +596,22 @@ The repository design we support is fairly simple, with a repository for modules
 This is an example of configuring the bootstrap and resource management repositories in this stage. CI/CD configuration is optional, so the entire variable or any of its attributes can be set to null if not needed.
 
 ```tfvars
-cicd_repositories = {
+cicd_config = {
   bootstrap = {
-    branch            = null
     identity_provider = "github-sample"
-    name              = "my-gh-org/fast-bootstrap"
-    type              = "github"
+    repository = {
+      branch = null
+      name   = "my-gh-org/fast-bootstrap"
+      type   = "github"
+    }
   }
   resman = {
-    branch            = "main"
     identity_provider = "github-sample"
-    name              = "my-gh-org/fast-resman"
-    type              = "github"
+    repository = {
+      branch = "main"
+      name   = "my-gh-org/fast-resman"
+      type   = "github"
+    }
   }
 }
 ```
