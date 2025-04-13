@@ -45,6 +45,11 @@ locals {
     ? google_service_account.service_account[0].email
     : var.service_account
   )
+  source_location = (
+    local.bundle_type == "gcs"
+    ? var.bundle_config.path
+    : "gs://${local.bucket}/${google_storage_bucket_object.bundle[0].name}"
+  )
 }
 
 resource "google_cloud_run_v2_service" "function" {
@@ -56,8 +61,8 @@ resource "google_cloud_run_v2_service" "function" {
   ingress             = var.ingress
 
   build_config {
-    source_location       = local.bucket
-    function_target       = var.name
+    source_location       = local.source_location
+    function_target       = var.function_config.entry_point
     image_uri             = var.image_uri
     base_image            = local.base_image_uri
     worker_pool           = var.build_worker_pool

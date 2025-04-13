@@ -75,7 +75,7 @@ data "archive_file" "bundle" {
 # upload to GCS
 
 resource "google_storage_bucket_object" "bundle" {
-  count = local.bundle_type != "gcs" ? 1 : 0
+  count = local.bundle_type == "gcs" ? 0 : 1
   name = try(
     "bundle-${data.archive_file.bundle[0].output_md5}.zip",
     basename(var.bundle_config.path)
