@@ -5,8 +5,8 @@ data "google_project" "service_project" {
 }
 
 resource "google_project_service" "managed_kafka_api" {
-  project = var.project_id
-  service = "managedkafka.googleapis.com"
+  project            = var.project_id
+  service            = "managedkafka.googleapis.com"
   disable_on_destroy = false
 }
 
@@ -34,18 +34,18 @@ resource "time_sleep" "wait_for_api_and_iam" {
 resource "google_managed_kafka_cluster" "kafka_cluster" {
   depends_on = [time_sleep.wait_for_api_and_iam]
   project    = var.project_id
-  cluster_id = var.kafka_cluster_id
-  location   = var.kafka_region
+  cluster_id = var.kafka_config.cluster_id
+  location   = var.kafka_config.region
 
   capacity_config {
-    vcpu_count   = var.kafka_vcpu_count
-    memory_bytes = var.kafka_memory_bytes
+    vcpu_count   = var.kafka_config.vcpu_count
+    memory_bytes = var.kafka_config.memory_bytes
   }
 
   gcp_config {
     access_config {
       dynamic "network_configs" {
-        for_each = var.kafka_subnetworks
+        for_each = var.kafka_config.subnetworks
         content {
           subnet = network_configs.value
         }
@@ -54,7 +54,7 @@ resource "google_managed_kafka_cluster" "kafka_cluster" {
   }
 
   rebalance_config {
-    mode = var.kafka_rebalance_mode
+    mode = var.kafka_config.rebalance_mode
   }
 
   labels = var.labels
@@ -66,7 +66,7 @@ resource "google_managed_kafka_topic" "topics" {
   )
   topic_id           = each.value.topic_id
   cluster            = google_managed_kafka_cluster.kafka_cluster.cluster_id
-  location           = var.kafka_region
+  location           = var.kafka_config.region
   project            = var.project_id
   partition_count    = each.value.partition_count
   replication_factor = each.value.replication_factor

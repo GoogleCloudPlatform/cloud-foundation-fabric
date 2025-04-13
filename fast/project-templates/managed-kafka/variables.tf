@@ -4,37 +4,22 @@ variable "project_id" {
   description = "The ID of the Google Cloud project where the Kafka cluster will be deployed"
 }
 
-variable "kafka_cluster_id" {
-  type        = string
-  description = "Unique ID for the Kafka cluster"
-}
+variable "kafka_config" {
+  type = object({
+    cluster_id     = string
+    region         = string
+    vcpu_count     = optional(number, 4)           # Default to 4 vCPUs
+    memory_bytes   = optional(number, 21474836480) # Default to 20 GB (in bytes)
+    subnetworks    = list(string)
+    rebalance_mode = optional(string, "NO_REBALANCE")
+  })
+  description = "Configuration for the Kafka cluster"
 
-variable "kafka_region" {
-  type        = string
-  description = "The region where the Kafka cluster will be deployed"
+  validation {
+    condition     = contains(["MODE_UNSPECIFIED", "NO_REBALANCE", "AUTO_REBALANCE_ON_SCALE_UP"], var.kafka_config.rebalance_mode)
+    error_message = "The rebalance_mode must be one of: MODE_UNSPECIFIED, NO_REBALANCE, AUTO_REBALANCE_ON_SCALE_UP."
+  }
 }
-
-variable "kafka_vcpu_count" {
-  type        = number
-  description = "The number of vCPUs for the Kafka cluster"
-}
-
-variable "kafka_memory_bytes" {
-  type        = number
-  description = "The amount of memory in bytes for the Kafka cluster"
-}
-
-variable "kafka_subnetworks" {
-  type        = list(string)
-  description = "List of subnetworks for the Kafka cluster"
-}
-
-variable "kafka_rebalance_mode" {
-  type        = string
-  default     = "AUTO_REBALANCE_ON_SCALE_UP"
-  description = "The rebalance mode for the Kafka cluster"
-}
-
 
 variable "labels" {
   type        = map(string)
@@ -42,12 +27,10 @@ variable "labels" {
   description = "Additional labels for the Kafka cluster"
 }
 
-
 variable "network_project_ids" {
   type        = list(string)
   description = "List of project IDs where the subnets are located"
 }
-
 
 variable "topics" {
   type = list(object({
