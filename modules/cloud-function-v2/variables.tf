@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,14 +81,20 @@ variable "bundle_config" {
   }
 }
 
+variable "deletion_protection" {
+  description = "Deletion protection setting for this Cloud Run service."
+  type        = string
+  default     = null
+}
+
 variable "description" {
   description = "Optional description."
   type        = string
   default     = "Terraform managed."
 }
 
-variable "docker_repository_id" {
-  description = "User managed repository created in Artifact Registry."
+variable "encryption_key" {
+  description = "The full resource name of the Cloud KMS CryptoKey."
   type        = string
   default     = null
 }
@@ -101,23 +107,41 @@ variable "environment_variables" {
   }
 }
 
+variable "eventarc_triggers" {
+  description = "Event arc triggers for different sources."
+  type = object({
+    audit_log = optional(map(object({
+      method  = string
+      service = string
+    })))
+    pubsub                 = optional(map(string))
+    service_account_email  = optional(string)
+    service_account_create = optional(bool, false)
+  })
+  default = {}
+  validation {
+    condition     = var.eventarc_triggers.audit_log == null || (var.eventarc_triggers.audit_log != null && (var.eventarc_triggers.service_account_email != null || var.eventarc_triggers.service_account_create))
+    error_message = "When setting var.eventarc_triggers.audit_log provide either service_account_email or set service_account_create to true"
+  }
+}
+
 variable "function_config" {
   description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout."
   type = object({
-    entry_point     = optional(string, "main")
-    instance_count  = optional(number, 1)
-    memory_mb       = optional(number, 256) # Memory in MB
-    cpu             = optional(string, "0.166")
-    runtime         = optional(string, "python310")
-    timeout_seconds = optional(number, 180)
+    entry_point        = optional(string, "main")
+    max_instance_count = optional(number, 1)
+    memory             = optional(string, "512Mi")
+    cpu                = optional(string, "1")
+    runtime            = optional(string, "python312")
+    timeout            = optional(string, "180s")
   })
   default = {
-    entry_point     = "main"
-    instance_count  = 1
-    memory_mb       = 256
-    cpu             = "0.166"
-    runtime         = "python310"
-    timeout_seconds = 180
+    entry_point    = "main"
+    instance_count = 1
+    memory         = "512Mi"
+    cpu            = "1"
+    runtime        = "python312"
+    timeout        = "180s"
   }
 }
 
@@ -127,16 +151,27 @@ variable "iam" {
   default     = {}
 }
 
-variable "ingress_settings" {
-  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY ."
+variable "image_uri" {
+  description = "The Cloud Run image URI."
   type        = string
-  default     = null
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
-variable "kms_key" {
-  description = "Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key."
+variable "ingress" {
+  description = "Ingress settings."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.ingress == null ? true : contains(
+        ["INGRESS_TRAFFIC_ALL", "INGRESS_TRAFFIC_INTERNAL_ONLY",
+      "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"], var.ingress)
+    )
+    error_message = <<EOF
+    Ingress should be one of INGRESS_TRAFFIC_ALL, INGRESS_TRAFFIC_INTERNAL_ONLY,
+    INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER.
+    EOF
+  }
 }
 
 variable "labels" {
@@ -173,10 +208,9 @@ variable "region" {
 variable "secrets" {
   description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
   type = map(object({
-    is_volume  = bool
-    project_id = string
-    secret     = string
-    versions   = list(string)
+    is_volume = bool
+    secret    = string
+    version   = optional(string, "latest")
   }))
   nullable = false
   default  = {}
@@ -194,30 +228,62 @@ variable "service_account_create" {
   default     = false
 }
 
-variable "trigger_config" {
-  description = "Function trigger configuration. Leave null for HTTP trigger."
-  type = object({
-    event_type   = string
-    pubsub_topic = optional(string)
-    region       = optional(string)
-    event_filters = optional(list(object({
-      attribute = string
-      value     = string
-      operator  = optional(string)
-    })), [])
-    service_account_email  = optional(string)
-    service_account_create = optional(bool, false)
-    retry_policy           = optional(string, "RETRY_POLICY_DO_NOT_RETRY") # default to avoid permadiff
-  })
-  default = null
+variable "tag_bindings" {
+  description = "Tag bindings for this service, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
-variable "vpc_connector" {
+variable "volumes" {
+  description = "Named volumes in containers in name => attributes format."
+  type = map(object({
+    secret = optional(object({
+      name         = string
+      default_mode = optional(string)
+      path         = optional(string)
+      version      = optional(string)
+      mode         = optional(string)
+    }))
+    cloud_sql_instances = optional(list(string))
+    empty_dir_size      = optional(string)
+    gcs = optional(object({
+      # needs revision.gen2_execution_environment
+      bucket       = string
+      is_read_only = optional(bool)
+    }))
+    nfs = optional(object({
+      server       = string
+      path         = optional(string)
+      is_read_only = optional(bool)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.volumes :
+      sum([for kk, vv in v : vv == null ? 0 : 1]) == 1
+    ])
+    error_message = "Only one type of volume can be defined at a time."
+  }
+}
+
+variable "volume_mounts" {
+  description = "The volume mounts."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "vpc_access" {
   description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
   type = object({
-    create          = optional(bool, false)
-    name            = optional(string)
-    egress_settings = optional(string)
+    connector = optional(string)
+    egress    = optional(string, "ALL_TRAFFIC")
+    network   = optional(string)
+    subnet    = optional(string)
+    tags      = optional(list(string))
   })
   nullable = false
   default  = {}

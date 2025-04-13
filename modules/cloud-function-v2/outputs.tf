@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,24 +28,24 @@ output "bucket_name" {
 
 output "function" {
   description = "Cloud function resources."
-  value       = google_cloudfunctions2_function.function
+  value       = google_cloud_run_v2_service.function
 }
 
 output "function_name" {
-  description = "Cloud function name."
-  value       = google_cloudfunctions2_function.function.name
+  description = "Cloud Run Function name."
+  value       = google_cloud_run_v2_service.function.build_config[0].function_target
 }
 
 output "id" {
-  description = "Fully qualified function id."
-  value       = google_cloudfunctions2_function.function.id
+  description = "Cloud Run Function id."
+  value       = google_cloud_run_v2_service.function.id
 }
 
 output "invoke_command" {
   description = "Command to invoke Cloud Run Function."
-  value       = var.trigger_config != null ? null : <<-EOT
+  value       = var.eventarc_triggers != null ? null : <<-EOT
     curl -H "Authorization: bearer $(gcloud auth print-identity-token)" \
-        ${google_cloudfunctions2_function.function.service_config[0].uri} \
+        ${google_cloud_run_v2_service.function.urls[0]} \
         -X POST -d 'data'
   EOT
 }
@@ -88,10 +88,14 @@ output "trigger_service_account_iam_email" {
 
 output "uri" {
   description = "Cloud function service uri."
-  value       = google_cloudfunctions2_function.function.service_config[0].uri
+  value       = google_cloud_run_v2_service.function.urls[0]
 }
 
-output "vpc_connector" {
-  description = "VPC connector resource if created."
-  value       = try(google_vpc_access_connector.connector[0].id, null)
+output "vpc_access" {
+  description = "VPC access configuration."
+  value = {
+    egress        = var.vpc_access.egress
+    subnet        = var.vpc_access.subnet
+    vpc_connector = try(google_vpc_access_connector.connector[0].id, null)
+  }
 }
