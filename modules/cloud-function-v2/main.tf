@@ -70,6 +70,7 @@ resource "google_cloud_run_v2_service" "function" {
     service_account       = var.build_service_account
   }
   template {
+    encryption_key        = var.encryption_key
     execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
     service_account       = var.service_account
     timeout               = var.function_config.timeout
