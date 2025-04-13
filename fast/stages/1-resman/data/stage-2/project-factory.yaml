@@ -17,6 +17,9 @@
 short_name: pf
 organization_config:
   iam_bindings_additive:
+    sa_pf_billing_budget_ro:
+      member: ro
+      role: billing_viewer
     sa_pf_conditional_org_policy:
       member: rw
       role: roles/orgpolicy.policyAdmin
