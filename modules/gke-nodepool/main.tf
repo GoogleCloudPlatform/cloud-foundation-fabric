@@ -127,9 +127,9 @@ resource "google_container_node_pool" "nodepool" {
         [try(var.pod_range.secondary_pod_range.enable_private_nodes, false)]
       ))
 
-      create_pod_range     = try(var.pod_range.secondary_pod_range.create, false)
-      pod_ipv4_cidr_block  = try(var.pod_range.secondary_pod_range.cidr, null)
-      pod_range            = try(var.pod_range.secondary_pod_range.name, null)
+      create_pod_range    = try(var.pod_range.secondary_pod_range.create, false)
+      pod_ipv4_cidr_block = try(var.pod_range.secondary_pod_range.cidr, null)
+      pod_range           = try(var.pod_range.secondary_pod_range.name, null)
 
       dynamic "additional_node_network_configs" {
         for_each = var.additional_node_network_configs != null ? var.additional_node_network_configs : []
