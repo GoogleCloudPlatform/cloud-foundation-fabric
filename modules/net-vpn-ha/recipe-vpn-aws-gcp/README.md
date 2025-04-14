@@ -2,7 +2,7 @@
 
 This recipe demonstrates how to create highly available VPN connections between Google Cloud and Amazon Web Services (AWS) for direct communication between VPC networks across the two cloud platforms using a Virtual Private Gateway in AWS. For more details on this architecture have a look [here](https://cloud.google.com/network-connectivity/docs/vpn/tutorials/create-ha-vpn-connections-google-cloud-aws)
 
-The architecture deplouyed by this recipe is the one depicted below:
+The architecture deployed by this recipe is the one depicted below:
 
 ![Architecture](./diagram.png)
 <!-- BEGIN TFDOC -->
