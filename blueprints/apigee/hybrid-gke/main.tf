@@ -24,8 +24,8 @@ module "project" {
     ? var.project_create.parent
     : null
   )
-  project_create = var.project_create != null
-  name           = var.project_id
+  project_reuse = var.project_create != null ? null : {}
+  name          = var.project_id
   services = [
     "apigee.googleapis.com",
     "apigeeconnect.googleapis.com",

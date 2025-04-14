@@ -17,10 +17,10 @@
 # tfdoc:file:description Projects factory locals.
 
 locals {
-  _hierarchy_projects = (
+  _hierarchy_projects_full_path = (
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
-      basename(trimsuffix(f, ".yaml")) => merge(
+      trimsuffix(f, ".yaml") => merge(
         { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
       )
@@ -28,149 +28,70 @@ locals {
     }
   )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
-  _projects = merge(
-    {
-      for f in try(fileset(local._project_path, "**/*.yaml"), []) :
-      basename(trimsuffix(f, ".yaml")) => yamldecode(file("${local._project_path}/${f}"))
-    },
-    local._hierarchy_projects
-  )
+  _projects_full_path = {
+    for f in try(fileset(local._project_path, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
+  }
+
+  _projects_input = merge(local._hierarchy_projects_full_path, local._projects_full_path)
   _project_budgets = flatten([
-    for k, v in local._projects : [
+    for k, v in local._projects_input : [
       for b in try(v.billing_budgets, []) : {
         budget  = b
         project = lookup(v, "name", k)
       }
     ]
   ])
+  _projects_config = {
+    data_overrides = var.data_overrides
+    data_defaults  = var.data_defaults
+  }
+  projects = {
+    for k, v in local._projects_output : k => merge({
+      buckets          = try(v.buckets, {})
+      service_accounts = try(v.service_accounts, {})
+    }, v)
+  }
   project_budgets = {
     for v in local._project_budgets : v.budget => v.project...
   }
-  projects = {
-    for k, v in local._projects : lookup(v, "name", k) => merge(v, {
-      billing_account = try(coalesce(
-        var.data_overrides.billing_account,
-        try(v.billing_account, null),
-        var.data_defaults.billing_account
-      ), null)
-      contacts = coalesce(
-        var.data_overrides.contacts,
-        try(v.contacts, null),
-        var.data_defaults.contacts
-      )
-      factories_config = {
-        custom_roles = try(
-          coalesce(
-            var.data_overrides.factories_config.custom_roles,
-            try(v.factories_config.custom_roles, null),
-            var.data_defaults.factories_config.custom_roles
-          ),
-          null
-        )
-        observability = try(
-          coalesce(
-            var.data_overrides.factories_config.observability,
-            try(v.factories_config.observability, null),
-            var.data_defaults.factories_config.observability
-          ),
-        null)
-        org_policies = try(
-          coalesce(
-            var.data_overrides.factories_config.org_policies,
-            try(v.factories_config.org_policies, null),
-            var.data_defaults.factories_config.org_policies
-          ),
-        null)
-        quotas = try(
-          coalesce(
-            var.data_overrides.factories_config.quotas,
-            try(v.factories_config.quotas, null),
-            var.data_defaults.factories_config.quotas
-          ),
-        null)
-      }
-      labels = coalesce(
-        try(v.labels, null),
-        var.data_defaults.labels
-      )
-      metric_scopes = coalesce(
-        try(v.metric_scopes, null),
-        var.data_defaults.metric_scopes
-      )
-      org_policies = try(v.org_policies, {})
-      parent = coalesce(
-        var.data_overrides.parent,
-        try(v.parent, null),
-        var.data_defaults.parent
-      )
-      prefix = coalesce(
-        var.data_overrides.prefix,
-        try(v.prefix, null),
-        var.data_defaults.prefix
-      )
-      service_encryption_key_ids = coalesce(
-        var.data_overrides.service_encryption_key_ids,
-        try(v.service_encryption_key_ids, null),
-        var.data_defaults.service_encryption_key_ids
-      )
-      services = coalesce(
-        var.data_overrides.services,
-        try(v.services, null),
-        var.data_defaults.services
-      )
-      shared_vpc_host_config = (
-        try(v.shared_vpc_host_config, null) != null
-        ? merge(
-          { service_projects = [] },
-          v.shared_vpc_host_config
-        )
-        : null
-      )
-      shared_vpc_service_config = (
-        try(v.shared_vpc_service_config, null) != null
-        ? merge(
-          {
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-          },
-          v.shared_vpc_service_config
-        )
-        : var.data_defaults.shared_vpc_service_config
-      )
-      tag_bindings = coalesce(
-        var.data_overrides.tag_bindings,
-        try(v.tag_bindings, null),
-        var.data_defaults.tag_bindings
-      )
-      vpc_sc = (
-        var.data_overrides.vpc_sc != null
-        ? var.data_overrides.vpc_sc
-        : (
-          try(v.vpc_sc, null) != null
-          ? merge({
-            perimeter_bridges = []
-            is_dry_run        = false
-          }, v.vpc_sc)
-          : var.data_defaults.vpc_sc
-        )
-      )
-      logging_data_access = coalesce(
-        var.data_overrides.logging_data_access,
-        try(v.logging_data_access, null),
-        var.data_defaults.logging_data_access
-      )
-      # non-project resources
-      service_accounts = try(v.service_accounts, {})
-    })
-  }
-  service_accounts = flatten([
+
+  buckets = flatten([
     for k, v in local.projects : [
-      for name, opts in v.service_accounts : {
-        project = k
-        name    = name
+      for name, opts in v.buckets : {
+        project_key           = k
+        project_name          = v.name
+        name                  = name
+        description           = lookup(opts, "description", "Terraform-managed.")
+        encryption_key        = lookup(opts, "encryption_key", null)
+        iam                   = lookup(opts, "iam", {})
+        iam_bindings          = lookup(opts, "iam_bindings", {})
+        iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
+        labels                = lookup(opts, "labels", {})
+        location              = lookup(opts, "location", null)
+        prefix = coalesce(
+          var.data_overrides.prefix,
+          try(v.prefix, null),
+          var.data_defaults.prefix
+        )
+        storage_class = lookup(
+          opts, "storage_class", "STANDARD"
+        )
+        uniform_bucket_level_access = lookup(
+          opts, "uniform_bucket_level_access", true
+        )
+        versioning = lookup(
+          opts, "versioning", false
+        )
+
+      }
+    ]
+  ])
+  service_accounts = flatten([
+    for k, project in local.projects : [
+      for name, opts in project.service_accounts : {
+        project_key = k
+        name        = name
         display_name = coalesce(
           try(var.data_overrides.service_accounts.display_name, null),
           try(opts.display_name, null),

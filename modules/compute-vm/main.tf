@@ -15,6 +15,7 @@
  */
 
 locals {
+  advanced_mf = var.options.advanced_machine_features
   attached_disks = {
     for disk in var.attached_disks :
     (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
@@ -59,14 +60,6 @@ locals {
       )
     )
   }
-  tags_combined = (
-    var.tag_bindings == null && var.tag_bindings_firewall == null
-    ? null
-    : merge(
-      coalesce(var.tag_bindings, {}),
-      coalesce(var.tag_bindings_firewall, {})
-    )
-  )
   termination_action = (
     var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
@@ -165,6 +158,20 @@ resource "google_compute_instance" "default" {
   metadata                  = var.metadata
   resource_policies         = local.ischedule_attach
 
+  dynamic "advanced_machine_features" {
+    for_each = local.advanced_mf != null ? [""] : []
+    content {
+      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
+      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
+      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
+      threads_per_core             = local.advanced_mf.threads_per_core
+      turbo_mode = (
+        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+      )
+      visible_core_count = local.advanced_mf.visible_core_count
+    }
+  }
+
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal
     iterator = config
@@ -230,7 +237,7 @@ resource "google_compute_instance" "default" {
         image                 = var.boot_disk.initialize_params.image
         size                  = var.boot_disk.initialize_params.size
         type                  = var.boot_disk.initialize_params.type
-        resource_manager_tags = var.tag_bindings
+        resource_manager_tags = var.tag_bindings_immutable
       }
     }
   }
@@ -298,6 +305,21 @@ resource "google_compute_instance" "default" {
         values   = affinity.value.values
       }
     }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
+      }
+    }
+
   }
 
   dynamic "scratch_disk" {
@@ -329,9 +351,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = local.tags_combined == null ? [] : [""]
+    for_each = var.tag_bindings_immutable == null ? [] : [""]
     content {
-      resource_manager_tags = local.tags_combined
+      resource_manager_tags = var.tag_bindings_immutable
     }
   }
 
@@ -367,14 +389,28 @@ resource "google_compute_instance_template" "default" {
   can_ip_forward        = var.can_ip_forward
   metadata              = var.metadata
   labels                = var.labels
-  resource_manager_tags = local.tags_combined
+  resource_manager_tags = var.tag_bindings_immutable
+
+  dynamic "advanced_machine_features" {
+    for_each = local.advanced_mf != null ? [""] : []
+    content {
+      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
+      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
+      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
+      threads_per_core             = local.advanced_mf.threads_per_core
+      turbo_mode = (
+        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+      )
+      visible_core_count = local.advanced_mf.visible_core_count
+    }
+  }
 
   disk {
     auto_delete           = var.boot_disk.auto_delete
     boot                  = true
     disk_size_gb          = var.boot_disk.initialize_params.size
     disk_type             = var.boot_disk.initialize_params.type
-    resource_manager_tags = var.tag_bindings
+    resource_manager_tags = var.tag_bindings_immutable
     source_image          = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
@@ -423,7 +459,7 @@ resource "google_compute_instance_template" "default" {
       disk_name = (
         config.value.source_type != "attach" ? config.value.name : null
       )
-      resource_manager_tags = var.tag_bindings
+      resource_manager_tags = var.tag_bindings_immutable
       type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
@@ -488,6 +524,20 @@ resource "google_compute_instance_template" "default" {
         key      = affinity.key
         operator = affinity.value.in ? "IN" : "NOT_IN"
         values   = affinity.value.values
+      }
+    }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
       }
     }
   }

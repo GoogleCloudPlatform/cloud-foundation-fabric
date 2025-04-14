@@ -21,15 +21,15 @@ counts:
   google_compute_ha_vpn_gateway: 1
   google_compute_network: 3
   google_compute_network_peering: 4
-  google_compute_route: 9
+  google_compute_route: 12
   google_compute_router: 4
   google_compute_router_interface: 2
   google_compute_router_nat: 3
   google_compute_router_peer: 2
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 7
+  google_compute_subnetwork: 5
   google_compute_vpn_tunnel: 2
-  google_dns_managed_zone: 9
+  google_dns_managed_zone: 10
   google_dns_policy: 3
   google_dns_record_set: 3
   google_dns_response_policy: 1
@@ -39,13 +39,12 @@ counts:
   google_monitoring_dashboard: 3
   google_monitoring_monitored_project: 2
   google_project: 3
-  google_project_iam_binding: 4
+  google_project_iam_binding: 2
   google_project_iam_member: 20
   google_project_service: 26
   google_project_service_identity: 20
-  google_storage_bucket_object: 2
+  google_storage_bucket_object: 1
   google_tags_tag_binding: 3
-  google_vpc_access_connector: 2
-  modules: 29
+  modules: 28
   random_id: 3
-  resources: 199
+  resources: 196

@@ -14,28 +14,36 @@
  * limitations under the License.
  */
 
+output "ca_chains" {
+  description = "The CA chains in PEM format."
+  value = {
+    for k, v in google_privateca_certificate_authority.default :
+    k => join("\n", v.pem_ca_certificates)
+  }
+}
+
 output "ca_ids" {
   description = "The CA ids."
   value = {
-    for k, v in google_privateca_certificate_authority.cas
-    : k => v.id
+    for k, v in google_privateca_certificate_authority.default :
+    k => v.id
   }
 }
 
 output "ca_pool" {
   description = "The CA pool."
-  value       = try(google_privateca_ca_pool.ca_pool[0], null)
+  value       = one(google_privateca_ca_pool.default)
 }
 
 output "ca_pool_id" {
   description = "The CA pool id."
-  value       = local.ca_pool_id
+  value       = local.pool_id
 }
 
 output "cas" {
   description = "The CAs."
   value = {
-    for k, v in google_privateca_certificate_authority.cas
-    : k => v
+    for k, v in google_privateca_certificate_authority.default :
+    k => v
   }
 }

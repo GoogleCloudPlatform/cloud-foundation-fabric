@@ -55,6 +55,11 @@ output "internal_ips" {
   ]
 }
 
+output "login_command" {
+  description = "Command to SSH into the machine."
+  value       = "gcloud compute ssh --project ${var.project_id} --zone ${var.zone} ${var.name}"
+}
+
 output "self_link" {
   description = "Instance self links."
   value       = try(google_compute_instance.default[0].self_link, null)

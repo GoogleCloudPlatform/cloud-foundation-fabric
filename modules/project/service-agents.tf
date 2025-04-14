@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    var.services, var.service_agents_config.services_enabled
+    local.available_services, try(var.project_reuse.project_attributes.services_enabled, [])
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
@@ -26,22 +26,39 @@ locals {
     for agent in local._service_agents_data :
     coalesce(agent.api, "cloudservices") => agent... # cloudservices api is null
   }
+  _universe_domain = (
+    var.universe == null
+    ? ""
+    : "${var.universe.prefix}-system."
+  )
   # map of service agent name => agent details for this project
-  _project_service_agents = merge([
+  _project_service_agents_0 = merge([
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
-        email     = format(agent.identity, local.project.number)
-        iam_email = "serviceAccount:${format(agent.identity, local.project.number)}"
+        email = (
+          var.universe == null || api != "cloudservices"
+          ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
+          : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+        )
       })
     }
   ]...)
+  _project_service_agents = {
+    for k, v in local._project_service_agents_0 :
+    k => merge(v, {
+      iam_email  = "serviceAccount:${v.email}"
+      create_jit = v.api == null ? false : contains(local.available_services, v.api)
+    })
+  }
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it
   primary_service_agents = [
-    for agent in local._project_service_agents :
-    agent.api
-    if agent.is_primary && var.service_agents_config.create_primary_agents
+    for agent in local._project_service_agents : agent.api if(
+      agent.is_primary &&
+      var.service_agents_config.create_primary_agents &&
+      agent.create_jit
+    )
   ]
   # list of roles that should be granted to service agents for the
   # current project, if the user requested it
@@ -90,13 +107,13 @@ locals {
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
-  count      = contains(local.services, "storage.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count      = contains(local.services, "bigquery.googleapis.com") ? 1 : 0
+  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }

@@ -15,28 +15,35 @@
  */
 
 locals {
-  _ca_pool_id_list = try(split("/", var.ca_pool_config.ca_pool_id), [])
-  ca_pool_id = coalesce(
-    var.ca_pool_config.ca_pool_id,
-    try(google_privateca_ca_pool.ca_pool[0].id, null)
+  pool_id = try(
+    var.ca_pool_config.use_pool.id,
+    google_privateca_ca_pool.default[0].id
   )
-  ca_pool_name = coalesce(
-    try(element(local._ca_pool_id_list, length(local._ca_pool_id_list) - 1), null),
-    try(google_privateca_ca_pool.ca_pool[0].name, null)
-  )
+  pool_name = reverse(split("/", local.pool_id))[0]
 }
 
-resource "google_privateca_ca_pool" "ca_pool" {
-  count    = var.ca_pool_config.ca_pool_id == null ? 1 : 0
-  name     = var.ca_pool_config.name
+moved {
+  from = google_privateca_ca_pool.ca_pool
+  to   = google_privateca_ca_pool.default
+}
+
+resource "google_privateca_ca_pool" "default" {
+  # setting existing pool id overrides creation
+  count    = try(var.ca_pool_config.use_pool.id, null) != null ? 0 : 1
+  name     = var.ca_pool_config.create_pool.name
   project  = var.project_id
   location = var.location
-  tier     = var.ca_pool_config.tier
+  tier     = var.ca_pool_config.create_pool.tier
 }
 
-resource "google_privateca_certificate_authority" "cas" {
+moved {
+  from = google_privateca_certificate_authority.cas
+  to   = google_privateca_certificate_authority.default
+}
+
+resource "google_privateca_certificate_authority" "default" {
   for_each                               = var.ca_configs
-  pool                                   = local.ca_pool_name
+  pool                                   = local.pool_name
   certificate_authority_id               = each.key
   project                                = var.project_id
   location                               = var.location

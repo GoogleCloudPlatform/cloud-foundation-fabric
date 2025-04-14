@@ -69,7 +69,7 @@ variable "gitlab_config" {
 variable "gitlab_instance_config" {
   description = "Gitlab Compute Engine instance config."
   type = object({
-    instance_type = optional(string, "n1-highcpu-8")
+    instance_type = optional(string, "n2-highcpu-8")
     name          = optional(string, "gitlab-0")
     network_tags  = optional(list(string), [])
     replica_zone  = optional(string)

@@ -86,7 +86,7 @@ variable "forwarding_rules_config" {
   type = map(object({
     address     = optional(string)
     description = optional(string)
-    ip_version  = optional(string)
+    ipv6        = optional(bool, false)
     name        = optional(string)
     ports       = optional(list(string), null)
     protocol    = optional(string, "TCP")

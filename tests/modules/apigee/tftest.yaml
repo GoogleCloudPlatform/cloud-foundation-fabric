@@ -28,3 +28,4 @@ tests:
   organization_only_psc_mode:
   organization_only_vpc_mode:
   organization_retention:
+  test_apigee_nat_activate:

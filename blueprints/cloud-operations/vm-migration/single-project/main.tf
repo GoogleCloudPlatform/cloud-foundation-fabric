@@ -33,7 +33,7 @@ module "landing-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com"
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
   iam_bindings_additive = {
     admin_sa_key_admin = {
       role   = "roles/iam.serviceAccountKeyAdmin"
@@ -55,10 +55,9 @@ module "landing-project" {
 }
 
 module "m4ce-service-account" {
-  source       = "../../../../modules/iam-service-account"
-  project_id   = module.landing-project.project_id
-  name         = "m4ce-sa"
-  generate_key = true
+  source     = "../../../../modules/iam-service-account"
+  project_id = module.landing-project.project_id
+  name       = "m4ce-sa"
 }
 
 module "landing-vpc" {

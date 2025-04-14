@@ -35,7 +35,7 @@ module "project" {
     "compute.googleapis.com",
     "iap.googleapis.com"
   ]
-  project_create = var.project_create != null
+  project_reuse = var.project_create != null ? null : {}
 }
 
 # Cloud Run service
@@ -71,7 +71,11 @@ module "glb" {
   count      = local.gclb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "glb"
-  address    = google_compute_global_address.default[0].address
+  forwarding_rules_config = {
+    "" = {
+      address = google_compute_global_address.default[0].address
+    }
+  }
   backend_service_configs = {
     default = {
       backends = [

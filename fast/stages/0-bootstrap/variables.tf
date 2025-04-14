@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,54 +41,41 @@ variable "bootstrap_user" {
   default     = null
 }
 
-variable "cicd_repositories" {
+variable "cicd_config" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
     resman = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
-    }))
-    tenants = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
     vpcsc = optional(object({
-      name              = string
-      type              = string
-      branch            = optional(string)
-      identity_provider = optional(string)
+      identity_provider = string
+      repository = object({
+        name   = string
+        branch = optional(string)
+        type   = optional(string, "github")
+      })
     }))
   })
-  default = null
+  nullable = false
+  default  = {}
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.name, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null name."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || try(v.identity_provider, null) != null
-    ])
-    error_message = "Non-null repositories need a non-null provider."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in coalesce(var.cicd_repositories, {}) :
+      for k, v in coalesce(var.cicd_config, {}) :
       v == null || (
-        contains(["github", "gitlab", "terraform"], coalesce(try(v.type, null), "null"))
+        contains(["github", "gitlab", "terraform"], coalesce(try(v.repository.type, null), "null"))
       )
     ])
     error_message = "Invalid repository type, supported types: 'github', 'gitlab', or 'terraform'."
@@ -134,6 +121,12 @@ variable "environments" {
     ])
     error_message = "Environment names can only contain letters numbers dashes or spaces."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : (length(coalesce(v.short_name, k)) <= 4)
+    ])
+    error_message = "If environment key is longer than 4 characters, provide short_name that is at most 4 characters long."
+  }
 }
 
 variable "essential_contacts" {
@@ -145,9 +138,10 @@ variable "essential_contacts" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles     = optional(string, "data/custom-roles")
-    org_policies     = optional(string, "data/org-policies")
-    org_policies_iac = optional(string, "data/org-policies-iac")
+    custom_constraints = optional(string, "data/custom-constraints")
+    custom_roles       = optional(string, "data/custom-roles")
+    org_policies       = optional(string, "data/org-policies")
+    org_policies_iac   = optional(string, "data/org-policies-iac")
   })
   nullable = false
   default  = {}
@@ -262,9 +256,9 @@ variable "log_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.log_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
 }
 
@@ -272,12 +266,8 @@ variable "org_policies_config" {
   description = "Organization policies customization."
   type = object({
     iac_policy_member_domains = optional(list(string))
-    constraints = optional(object({
-      allowed_essential_contact_domains = optional(list(string), [])
-      allowed_policy_member_domains     = optional(list(string), [])
-    }), {})
-    import_defaults = optional(bool, false)
-    tag_name        = optional(string, "org-policies")
+    import_defaults           = optional(bool, false)
+    tag_name                  = optional(string, "org-policies")
     tag_values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
       iam         = optional(map(list(string)), {})
@@ -352,6 +342,16 @@ variable "resource_names" {
   })
   nullable = false
   default  = {}
+}
+
+variable "universe" {
+  description = "Target GCP universe."
+  type = object({
+    domain               = string
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "workforce_identity_providers" {

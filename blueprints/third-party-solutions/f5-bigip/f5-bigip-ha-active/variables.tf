@@ -19,7 +19,7 @@ variable "forwarding_rules_config" {
     address       = optional(string)
     external      = optional(bool, false)
     global_access = optional(bool, true)
-    ip_version    = optional(string, "IPV4")
+    ipv6          = optional(bool, false)
     protocol      = optional(string, "L3_DEFAULT")
     subnetwork    = optional(string) # used for IPv6 NLBs
   }))

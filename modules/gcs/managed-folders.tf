@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ locals {
 
 resource "google_storage_managed_folder" "folder" {
   for_each      = local.managed_folders
-  bucket        = google_storage_bucket.bucket.name
+  bucket        = local.bucket.name
   name          = each.key
   force_destroy = each.value.force_destroy
 }
@@ -70,7 +70,7 @@ resource "google_storage_managed_folder_iam_binding" "authoritative" {
   }
   role           = each.value.role
   members        = each.value.members
-  bucket         = google_storage_bucket.bucket.name
+  bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 }
 
@@ -78,7 +78,7 @@ resource "google_storage_managed_folder_iam_binding" "bindings" {
   for_each       = local.managed_folder_iam_bindings
   role           = each.value.role
   members        = each.value.members
-  bucket         = google_storage_bucket.bucket.name
+  bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 
   dynamic "condition" {
@@ -95,7 +95,7 @@ resource "google_storage_managed_folder_iam_member" "members" {
   for_each       = local.managed_folder_iam_bindings_additive
   role           = each.value.role
   member         = each.value.member
-  bucket         = google_storage_bucket.bucket.name
+  bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 
   dynamic "condition" {

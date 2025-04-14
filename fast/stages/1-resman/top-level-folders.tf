@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,24 +86,42 @@ module "top-level-folder" {
   iam = {
     for role, members in each.value.iam :
     lookup(var.custom_roles, role, role) => [
-      for member in members : lookup(local.top_level_sa, member, member)
+      for member in members :
+      (each.value.automation != null && member == "self")
+      ? module.top-level-sa[each.key].iam_email
+      : lookup(local.principals_iam, member, member)
     ]
   }
   iam_bindings = {
-    for k, v in each.value.iam_bindings : k => merge(v, {
-      member = lookup(local.top_level_sa, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
-    })
+    for k, v in each.value.iam_bindings : k => {
+      members = [
+        for member in v.members :
+        (each.value.automation != null && member == "self")
+        ? module.top-level-sa[each.key].iam_email
+        : lookup(local.top_level_sa, member, member)
+      ]
+      role = lookup(var.custom_roles, v.role, v.role)
+    }
   }
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
-      member = lookup(local.top_level_sa, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      member = (
+        each.value.automation != null && v.member == "self"
+        ? module.top-level-sa[each.key].iam_email
+        : lookup(local.principals_iam, v.member, v.member)
+      )
+      role = lookup(var.custom_roles, v.role, v.role)
     })
   }
-  # we don't replace here to avoid dynamic values in keys
-  iam_by_principals = each.value.iam_by_principals
-  org_policies      = each.value.org_policies
+  iam_by_principals = {
+    for k, v in each.value.iam_by_principals :
+    (
+      (each.value.automation != null && k == "self")
+      ? module.top-level-sa[each.key].iam_email
+      : lookup(local.principals_iam, k, k)
+    ) => [for r in v : lookup(var.custom_roles, r, r)]
+  }
+  org_policies = each.value.org_policies
   tag_bindings = merge(
     # explicit tag bindings
     {

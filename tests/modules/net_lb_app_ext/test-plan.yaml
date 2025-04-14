@@ -28,7 +28,8 @@ counts:
 outputs:
   address: __missing__
   backend_service_ids: __missing__
-  forwarding_rule: __missing__
+  backend_service_generated_ids: __missing__
+  forwarding_rules: __missing__
   group_ids: __missing__
   health_check_ids: __missing__
   neg_ids: __missing__

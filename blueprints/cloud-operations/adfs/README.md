@@ -42,7 +42,7 @@ Once the resources have been created, do the following:
 
         https://adfs.my-domain.org/adfs/ls/IdpInitiatedSignOn.aspx
 
-2. Enter the username and password of one of the users provisioned. The username has to be in the format: username@my-domain.org
+2. Enter the username and password of one of the users provisioned. The username has to be in the format: <username@my-domain.org>
 3. Verify that you have successfully signed in.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
@@ -89,5 +89,5 @@ module "test" {
   ad_dns_domain_name   = "example.com"
   adfs_dns_domain_name = "adfs.example.com"
 }
-# tftest modules=5 resources=25
+# tftest modules=5 resources=26
 ```

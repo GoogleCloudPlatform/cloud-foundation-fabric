@@ -29,7 +29,7 @@ module "project-service" {
   name            = var.project_config.project_ids.service
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_reuse   = var.project_config.billing_account_id != null ? null : {}
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   services = [
     "compute.googleapis.com",
@@ -54,7 +54,7 @@ module "project-kms" {
   name            = var.project_config.project_ids.encryption
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_reuse   = var.project_config.billing_account_id != null ? null : {}
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   services = [
     "cloudkms.googleapis.com",

@@ -39,10 +39,10 @@ locals {
     null
   )
   vpc_connector = (
-    var.vpc_connector == null
+    var.vpc_connector.name == null
     ? null
     : (
-      try(var.vpc_connector.create, false) == false
+      var.vpc_connector.create == false
       ? var.vpc_connector.name
       : google_vpc_access_connector.connector[0].id
     )
@@ -50,7 +50,7 @@ locals {
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count          = try(var.vpc_connector.create, false) == true ? 1 : 0
+  count          = var.vpc_connector.create == true ? 1 : 0
   project        = var.project_id
   name           = var.vpc_connector.name
   region         = var.region
@@ -121,8 +121,7 @@ resource "google_cloudfunctions2_function" "function" {
     all_traffic_on_latest_revision = true
     service_account_email          = local.service_account_email
     vpc_connector                  = local.vpc_connector
-    vpc_connector_egress_settings = try(
-    var.vpc_connector.egress_settings, null)
+    vpc_connector_egress_settings  = var.vpc_connector.egress_settings
 
     dynamic "secret_environment_variables" {
       for_each = { for k, v in var.secrets : k => v if !v.is_volume }

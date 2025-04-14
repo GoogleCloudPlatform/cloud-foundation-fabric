@@ -83,14 +83,22 @@ variable "prefix" {
   }
 }
 
+variable "security_profile_groups" {
+  # tfdoc:variable:source 2-networking-ngfw
+  description = "Security profile group ids used for policy rule substitutions."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "stage_config" {
   # tfdoc:variable:source 1-resman
   description = "FAST stage configuration."
   type = object({
     networking = optional(object({
-      short_name               = optional(string)
-      iam_delegated_principals = optional(map(list(string)), {})
-      iam_viewer_principals    = optional(map(list(string)), {})
+      short_name          = optional(string)
+      iam_admin_delegated = optional(map(list(string)), {})
+      iam_viewer          = optional(map(list(string)), {})
     }), {})
   })
   default  = {}

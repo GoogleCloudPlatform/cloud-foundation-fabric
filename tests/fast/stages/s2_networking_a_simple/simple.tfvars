@@ -9,10 +9,8 @@ custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
-  resolvers      = ["10.10.10.10"]
-  enable_logging = true
+  resolvers = ["10.10.10.10"]
 }
-enable_cloud_nat = true
 environments = {
   dev = {
     is_default = false
@@ -78,6 +76,23 @@ tag_values = {
   "environment/development" = "tagValues/12345"
   "environment/production"  = "tagValues/12346"
 }
+vpc_configs = {
+  dev = {
+    cloudnat = {
+      enable = true
+    }
+  }
+  landing = {
+    cloudnat = {
+      enable = true
+    }
+  }
+  prod = {
+    cloudnat = {
+      enable = true
+    }
+  }
+}
 # spoke_configs defaults to peering
 vpn_onprem_primary_config = {
   peer_external_gateways = {
@@ -114,4 +129,3 @@ vpn_onprem_primary_config = {
     }
   }
 }
-

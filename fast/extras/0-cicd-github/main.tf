@@ -42,33 +42,13 @@ locals {
     for k, v in var.repositories :
     k => v.create_options == null ? k : github_repository.default[k].name
   }
-  repository_files = merge(
-    {
-      for k in local._repository_files :
-      "${k.repository}/${k.name}" => k
-      if !endswith(k.name, ".tf") || (
-        !startswith(k.name, "0") && k.name != "globals.tf"
-      )
-    },
-    {
-      for k, v in var.repositories :
-      "${k}/templates/providers.tf.tpl" => {
-        repository = k
-        file       = "../../assets/templates/providers.tf.tpl"
-        name       = "templates/providers.tf.tpl"
-      }
-      if v.populate_from != null
-    },
-    {
-      for k, v in var.repositories :
-      "${k}/templates/workflow-github.yaml" => {
-        repository = k
-        file       = "../../assets/templates/workflow-github.yaml"
-        name       = "templates/workflow-github.yaml"
-      }
-      if v.populate_from != null
-    }
-  )
+  repository_files = {
+    for k in local._repository_files :
+    "${k.repository}/${k.name}" => k
+    if !endswith(k.name, ".tf") || (
+      !startswith(k.name, "0") && k.name != "globals.tf"
+    )
+  }
 }
 
 resource "github_repository" "default" {

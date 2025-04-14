@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
-
 variable "backend_buckets_config" {
   description = "Backend buckets configuration."
   type = map(object({
@@ -57,6 +51,27 @@ variable "description" {
   description = "Optional description used for resources."
   type        = string
   default     = "Terraform managed."
+}
+
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address     = optional(string)
+    description = optional(string)
+    ipv6        = optional(bool, false)
+    name        = optional(string)
+    ports       = optional(list(number), null)
+  }))
+  default = {
+    "" = {}
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.forwarding_rules_config :
+      v.ports == null || (length(coalesce(v.ports, [])) <= 1)
+    ])
+    error_message = "Application Load Balancer supports at most one port per forwarding rule."
+  }
 }
 
 variable "group_configs" {
@@ -184,12 +199,6 @@ variable "neg_configs" {
     ])
     error_message = "Cloud Function NEGs need either target function or target urlmask defined."
   }
-}
-
-variable "ports" {
-  description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
-  type        = list(string)
-  default     = null
 }
 
 variable "project_id" {

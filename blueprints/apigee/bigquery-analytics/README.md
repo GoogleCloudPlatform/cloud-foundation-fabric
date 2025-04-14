@@ -11,8 +11,8 @@ In addition to this it also creates the setup depicted in the diagram below to e
 Find below a description on how the analytics export to BigQuery works:
 
 1. A Cloud Scheduler Job runs daily at a selected time, publishing a message to a Pub/Sub topic.
-2. The message published triggers the execution of a function that makes a call to the Apigee Analytics Export API to export the analytical data available for the previous day. 
-3. The export function is passed the Apigee organization, environments, datastore name as environment variables. The service account used to run the function needs to be granted the Apigee Admin role on the project. The Apigee Analytics engine asynchronously exports the analytical data to a GCS bucket. This requires the _Apigee Service Agent_ service account to be granted the _Storage Admin_ role on the project. 
+2. The message published triggers the execution of a function that makes a call to the Apigee Analytics Export API to export the analytical data available for the previous day.
+3. The export function is passed the Apigee organization, environments, datastore name as environment variables. The service account used to run the function needs to be granted the Apigee Admin role on the project. The Apigee Analytics engine asynchronously exports the analytical data to a GCS bucket. This requires the _Apigee Service Agent_ service account to be granted the _Storage Admin_ role on the project.
 4. A notification of the files created on GCS is received in a Pub/Sub topic that triggers the execution of the cloud function in charge of loading the data from GCS to the right BigQuery table partition. This function is passed the name of the BigQuery dataset, its location and the name of the table inside that dataset as environment variables. The service account used to run the function needs to be granted the _Storage Object Viewer_ role on the GCS bucket, the _BigQuery Job User_ role on the project and the _BigQuery Data Editor_ role on the table.
 
 Note: This setup only works if you are not using custom analytics.
@@ -103,5 +103,5 @@ module "test" {
     europe-west1 = "10.0.0.0/28"
   }
 }
-# tftest modules=10 resources=72
+# tftest modules=10 resources=73
 ```

@@ -14,50 +14,8 @@
         "project": {
           "type": "string"
         },
-        "buckets": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z0-9-]+$": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "description": {
-                  "type": "string"
-                },
-                "iam": {
-                  "$ref": "#/$defs/iam"
-                },
-                "iam_bindings": {
-                  "$ref": "#/$defs/iam_bindings"
-                },
-                "iam_bindings_additive": {
-                  "$ref": "#/$defs/iam_bindings_additive"
-                },
-                "labels": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
-                },
-                "location": {
-                  "type": "string"
-                },
-                "prefix": {
-                  "type": "string"
-                },
-                "storage_class": {
-                  "type": "string"
-                },
-                "uniform_bucket_level_access": {
-                  "type": "boolean"
-                },
-                "versioning": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
+        "bucket": {
+          "$ref": "#/$defs/bucket"
         },
         "service_accounts": {
           "type": "object",
@@ -111,6 +69,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "buckets": {
+      "$ref": "#/$defs/buckets"
     },
     "contacts": {
       "type": "object",
@@ -381,6 +342,54 @@
     }
   },
   "$defs": {
+    "bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "uniform_bucket_level_access": {
+          "type": "boolean"
+        },
+        "versioning": {
+          "type": "boolean"
+        }
+      }
+    },
+    "buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/bucket"
+        }
+      }
+    },
     "iam": {
       "type": "object",
       "additionalProperties": false,

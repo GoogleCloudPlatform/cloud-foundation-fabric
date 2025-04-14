@@ -1,0 +1,141 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
+
+compute.disableInternetNetworkEndpointGroup:
+  rules:
+  - enforce: true
+
+compute.disableGuestAttributesAccess:
+  rules:
+    - enforce: true
+
+compute.disableNestedVirtualization:
+  rules:
+  - enforce: true
+
+compute.disableSerialPortAccess:
+  rules:
+  - enforce: true
+
+compute.disableVpcExternalIpv6:
+  rules:
+  - enforce: true
+
+compute.requireOsLogin:
+  rules:
+    - enforce: true
+
+compute.restrictLoadBalancerCreationForTypes:
+  rules:
+    - allow:
+        values:
+          - in:INTERNAL
+
+compute.skipDefaultNetworkCreation:
+  rules:
+    - enforce: true
+
+compute.setNewProjectDefaultToZonalDNSOnly:
+  rules:
+  - enforce: true
+
+# only allow GCP images by default
+compute.trustedImageProjects:
+  rules:
+  - allow:
+      values:
+        - "is:projects/centos-cloud"
+        - "is:projects/cos-cloud"
+        - "is:projects/debian-cloud"
+        - "is:projects/fedora-cloud"
+        - "is:projects/fedora-coreos-cloud"
+        - "is:projects/opensuse-cloud"
+        - "is:projects/rhel-cloud"
+        - "is:projects/rhel-sap-cloud"
+        - "is:projects/rocky-linux-cloud"
+        - "is:projects/suse-cloud"
+        - "is:projects/suse-sap-cloud"
+        - "is:projects/ubuntu-os-cloud"
+        - "is:projects/ubuntu-os-pro-cloud"
+        - "is:projects/windows-cloud"
+        - "is:projects/windows-sql-cloud"
+        - "is:projects/confidential-vm-images"
+        - "is:projects/backupdr-images"
+        - "is:projects/deeplearning-platform-release"
+        - "is:projects/serverless-vpc-access-images"
+
+compute.vmExternalIpAccess:
+  rules:
+    - deny:
+        all: true
+
+# compute.disableInternetNetworkEndpointGroup:
+#   rules:
+#   - enforce: true
+
+# compute.restrictCloudNATUsage:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictDedicatedInterconnectUsage:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictPartnerInterconnectUsage:
+#   rules:
+#   - deny:
+#       all: true
+
+compute.managed.restrictProtocolForwardingCreationForTypes:
+  rules:
+  - enforce: true
+    parameters: |
+      {"allowedSchemes": ["INTERNAL"]}
+
+# compute.restrictSharedVpcHostProjects:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictSharedVpcSubnetworks:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictVpcPeering:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictVpnPeerIPs:
+#   rules:
+#   - deny:
+#       all: true
+
+# compute.restrictXpnProjectLienRemoval:
+#   rules:
+#   - enforce: true
+
+# compute.vmCanIpForward:
+#   rules:
+#   - deny:
+#       all: true

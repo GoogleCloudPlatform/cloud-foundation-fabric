@@ -26,15 +26,15 @@ counts:
   google_compute_network: 4
   google_compute_network_peering: 4
   google_compute_region_backend_service: 4
-  google_compute_route: 15
+  google_compute_route: 18
   google_compute_router: 4
   google_compute_router_interface: 4
   google_compute_router_nat: 2
   google_compute_router_peer: 4
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 12
+  google_compute_subnetwork: 10
   google_compute_vpn_tunnel: 4
-  google_dns_managed_zone: 9
+  google_dns_managed_zone: 10
   google_dns_policy: 4
   google_dns_record_set: 3
   google_dns_response_policy: 1
@@ -48,9 +48,8 @@ counts:
   google_project_iam_member: 19
   google_project_service: 25
   google_project_service_identity: 19
-  google_storage_bucket_object: 2
+  google_storage_bucket_object: 1
   google_tags_tag_binding: 3
-  google_vpc_access_connector: 2
-  modules: 43
+  modules: 42
   random_id: 6
-  resources: 247
+  resources: 246

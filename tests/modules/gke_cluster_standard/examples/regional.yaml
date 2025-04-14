@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ values:
       config_connector_config:
       - enabled: false
       dns_cache_config:
-      - enabled: false
+      - enabled: true
       gce_persistent_disk_csi_driver_config:
-      - enabled: false
+      - enabled: true
       gcp_filestore_csi_driver_config:
-      - enabled: false
+      - enabled: true
       gcs_fuse_csi_driver_config:
-      - enabled: false
+      - enabled: true
       gke_backup_agent_config:
       - enabled: false
       horizontal_pod_autoscaling:
@@ -48,6 +48,11 @@ values:
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
+      ip_endpoints_config:
+      - enabled: true
+    cost_management_config:
+    - enabled: true
+    datapath_provider: ADVANCED_DATAPATH
     default_max_pods_per_node: 32
     deletion_protection: true
     description: null
@@ -57,7 +62,7 @@ values:
       goog-terraform-provisioned: 'true'
     enable_autopilot: null
     enable_cilium_clusterwide_network_policy: false
-    enable_fqdn_network_policy: false
+    enable_fqdn_network_policy: true
     enable_intranode_visibility: false
     enable_k8s_beta_apis: []
     enable_kubernetes_alpha: false
@@ -89,6 +94,7 @@ values:
     - cidr_blocks:
       - cidr_block: 10.0.0.0/8
         display_name: internal-vms
+      gcp_public_cidrs_access_enabled: false
     min_master_version: null
     monitoring_config:
     - enable_components:
@@ -111,6 +117,7 @@ values:
       linux_node_config: []
       local_nvme_ssd_block_config: []
       local_ssd_encryption_mode: null
+      max_run_duration: null
       node_group: null
       preemptible: false
       reservation_affinity: []

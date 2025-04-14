@@ -90,7 +90,7 @@ variable "boot_disk" {
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       size  = optional(number, 10)
       type  = optional(string, "pd-balanced")
-    }))
+    }), {})
     use_independent_disk = optional(bool, false)
   })
   default = {
@@ -131,6 +131,7 @@ variable "create_template" {
   type        = bool
   default     = false
 }
+
 variable "description" {
   description = "Description of a Compute Instance."
   type        = string
@@ -168,17 +169,23 @@ variable "gpu" {
         [
           "nvidia-tesla-a100",
           "nvidia-tesla-p100",
+          "nvidia-tesla-p100-vws",
           "nvidia-tesla-v100",
-          "nvidia-tesla-k80",
           "nvidia-tesla-p4",
+          "nvidia-tesla-p4-vws",
           "nvidia-tesla-t4",
+          "nvidia-tesla-t4-vws",
           "nvidia-l4",
-          "nvidia-a2"
+          "nvidia-l4-vws",
+          "nvidia-a100-80gb",
+          "nvidia-h100-80gb",
+          "nvidia-h100-mega-80gb",
+          "nvidia-h200-141gb"
         ],
         try(var.gpu.type, "-")
       )
     )
-    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-v100, nvidia-tesla-k80, nvidia-tesla-p4, nvidia-tesla-t4, nvidia-l4, nvidia-a2."
+    error_message = "GPU type must be one of the allowed values: nvidia-tesla-a100, nvidia-tesla-p100, nvidia-tesla-p100-vws, nvidia-tesla-v100, nvidia-tesla-p4, nvidia-tesla-p4-vws, nvidia-tesla-t4, nvidia-tesla-t4-vws, nvidia-l4, nvidia-l4-vws,  nvidia-a100-80gb, nvidia-h100-80gb, nvidia-h100-mega-80gb, nvidia-h200-141gb."
   }
 }
 
@@ -289,11 +296,30 @@ variable "network_interfaces" {
   }))
 }
 
+variable "network_tag_bindings" {
+  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "options" {
   description = "Instance options."
   type = object({
+    advanced_machine_features = optional(object({
+      enable_nested_virtualization = optional(bool)
+      enable_turbo_mode            = optional(bool)
+      enable_uefi_networking       = optional(bool)
+      performance_monitoring_unit  = optional(string)
+      threads_per_core             = optional(number)
+      visible_core_count           = optional(number)
+    }))
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
+    graceful_shutdown = optional(object({
+      enabled           = optional(bool, false)
+      max_duration_secs = optional(number)
+    }))
     max_run_duration = optional(object({
       nanos   = optional(number)
       seconds = number
@@ -312,16 +338,37 @@ variable "options" {
     termination_action        = null
   }
   validation {
-    condition = (var.options.termination_action == null
+    condition = (
+      var.options.termination_action == null
       ||
-    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+      contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1"))
+    )
     error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
+  }
+  validation {
+    condition = (
+      try(var.options.advanced_machine_features.performance_monitoring_unit, null) == null
+      ||
+      contains(["ARCHITECTURAL", "ENHANCED", "STANDARD"], coalesce(
+        try(
+          var.options.advanced_machine_features.performance_monitoring_unit, null
+        ), "-"
+        )
+      )
+    )
+    error_message = "Allowed values for options.advanced_machine_features.performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
   }
 }
 
 variable "project_id" {
   description = "Project id."
   type        = string
+}
+
+variable "project_number" {
+  description = "Project number. Used in tag bindings to avoid a permadiff."
+  type        = string
+  default     = null
 }
 
 variable "scratch_disks" {
@@ -400,15 +447,24 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Resource manager tag bindings for this instance, in tag key => tag value format."
+  description = "Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle."
   type        = map(string)
-  default     = null
+  nullable    = false
+  default     = {}
 }
 
-variable "tag_bindings_firewall" {
-  description = "Firewall (network scoped) tag bindings for this instance, in tag key => tag value format."
+variable "tag_bindings_immutable" {
+  description = "Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed."
   type        = map(string)
+  nullable    = true
   default     = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.tag_bindings_immutable, {}) :
+      startswith(k, "tagKeys/") && startswith(v, "tagValues/")
+    ])
+    error_message = "Incorrect format for immutable tag bindings."
+  }
 }
 
 variable "tags" {
@@ -421,5 +477,3 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
-
-

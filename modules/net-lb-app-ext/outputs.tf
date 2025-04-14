@@ -15,8 +15,18 @@
  */
 
 output "address" {
-  description = "Forwarding rule address."
-  value       = google_compute_global_forwarding_rule.default.ip_address
+  description = "Forwarding rule addresses."
+  value = {
+    for k, v in google_compute_global_forwarding_rule.default :
+    k => v.ip_address
+  }
+}
+
+output "backend_service_generated_ids" {
+  description = "Generated Ids for backend service resources."
+  value = {
+    for k, v in google_compute_backend_service.default : k => v.generated_id
+  }
 }
 
 output "backend_service_ids" {
@@ -33,7 +43,7 @@ output "backend_service_names" {
   }
 }
 
-output "forwarding_rule" {
+output "forwarding_rules" {
   description = "Forwarding rule resource."
   value       = google_compute_global_forwarding_rule.default
 }
@@ -59,9 +69,11 @@ output "health_check_ids" {
   }
 }
 
-output "id" {
-  description = "Fully qualified forwarding rule id."
-  value       = google_compute_global_forwarding_rule.default.id
+output "ids" {
+  description = "Fully qualified forwarding rule ids."
+  value = {
+    for k, v in google_compute_global_forwarding_rule.default : k => v.id
+  }
 }
 
 output "neg_ids" {

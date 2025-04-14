@@ -41,6 +41,7 @@ includedPermissions:
   - networksecurity.securityProfiles.update
   - networksecurity.securityProfiles.use
   - networksecurity.tlsInspectionPolicies.create
+  - networksecurity.tlsInspectionPolicies.delete
   - networksecurity.tlsInspectionPolicies.get
   - networksecurity.tlsInspectionPolicies.list
   - networksecurity.tlsInspectionPolicies.update

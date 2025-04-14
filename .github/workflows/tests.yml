@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ env:
   TFTEST_COPY: 1
   DEFAULT_TERRAFORM_FLAVOUR: terraform
   DEFAULT_TERRAFORM_VERSION: ${{ inputs.terraform_version || '1.10.2' }}
-  DEFAULT_TOFU_VERSION: "1.8.0"
+  DEFAULT_TOFU_VERSION: "1.9.0"
 
 jobs:
   compute-matrix:
@@ -127,6 +127,28 @@ jobs:
         if: always()
         with:
           MODULE: Blueprint Examples
+
+  examples-project-templates:
+    runs-on: ubuntu-latest
+    needs: setup-tf-providers
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Call composite action fabric-tests
+        uses: ./.github/actions/fabric-tests
+        with:
+          PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
+          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
+
+      - name: Run tests on documentation examples
+        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k fast/project-templates/ tests/examples
+
+      - name: Create report
+        uses: ./.github/actions/post-fabric-tests
+        if: always()
+        with:
+          MODULE: Project Templates Examples
 
   examples-modules:
     runs-on: ubuntu-latest

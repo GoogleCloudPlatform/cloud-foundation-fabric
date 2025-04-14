@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,20 +31,49 @@ locals {
       rules = [
         for r in try(v.rules, []) : {
           allow = can(r.allow) ? {
-            all    = try(r.allow.all, null)
-            values = try(r.allow.values, null)
+            all = try(r.allow.all, null)
+            values = (
+              can(r.allow.values)
+              ? [for x in r.allow.values : templatestring(x, var.factories_config.context.org_policies)]
+              : null
+            )
           } : null
           deny = can(r.deny) ? {
-            all    = try(r.deny.all, null)
-            values = try(r.deny.values, null)
+            all = try(r.deny.all, null)
+            values = (
+              can(r.deny.values)
+              ? [for x in r.deny.values : templatestring(x, var.factories_config.context.org_policies)]
+              : null
+            )
           } : null
           enforce = try(r.enforce, null)
           condition = {
-            description = try(r.condition.description, null)
-            expression  = try(r.condition.expression, null)
-            location    = try(r.condition.location, null)
-            title       = try(r.condition.title, null)
+            description = (
+              can(r.condition.description)
+              ? templatestring(r.condition.description, var.factories_config.context.org_policies)
+              : null
+            )
+            expression = (
+              can(r.condition.expression)
+              ? templatestring(r.condition.expression, var.factories_config.context.org_policies)
+              : null
+            )
+            location = (
+              can(r.condition.location)
+              ? templatestring(r.condition.location, var.factories_config.context.org_policies)
+              : null
+            )
+            title = (
+              can(r.condition.title)
+              ? templatestring(r.condition.title, var.factories_config.context.org_policies)
+              : null
+            )
           }
+          parameters = (
+            can(r.parameters)
+            ? templatestring(r.parameters, var.factories_config.context.org_policies)
+            : null
+          )
         }
       ]
     }
@@ -89,8 +118,9 @@ resource "google_org_policy_policy" "default" {
         for_each = spec.value.rules
         iterator = rule
         content {
-          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
           enforce = (
             spec.value.is_boolean_policy && rule.value.enforce != null
             ? upper(tostring(rule.value.enforce))
@@ -127,8 +157,9 @@ resource "google_org_policy_policy" "default" {
         for_each = spec.value.rules
         iterator = rule
         content {
-          allow_all = try(rule.value.allow.all, false) == true ? "TRUE" : null
-          deny_all  = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          allow_all  = try(rule.value.allow.all, false) == true ? "TRUE" : null
+          deny_all   = try(rule.value.deny.all, false) == true ? "TRUE" : null
+          parameters = rule.value.parameters
           enforce = (
             spec.value.is_boolean_policy && rule.value.enforce != null
             ? upper(tostring(rule.value.enforce))

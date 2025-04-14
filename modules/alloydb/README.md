@@ -22,6 +22,7 @@ Note that this module assumes that some options are the same for both the primar
 <!-- TOC -->
 
 ## Examples
+
 ### Simple example
 
 This example shows how to setup a project, VPC and AlloyDB cluster and instance.
@@ -67,7 +68,7 @@ module "alloydb" {
   instance_name = "db"
   location      = var.region
 }
-# tftest modules=3 resources=16 inventory=simple.yaml e2e
+# tftest modules=3 resources=17 inventory=simple.yaml e2e
 ```
 
 ### Cross region replication
@@ -95,10 +96,9 @@ module "alloydb" {
 
 In a cross-region replication scenario (like in the previous example) this module also supports
 
-- [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
+* [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
 
-- [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
-
+* [promoting the secondary instance](https://cloud.google.com/alloydb/docs/cross-region-replication/work-with-cross-region-replication#promote-secondary-cluster) to become a primary instance via the `var.cross_region_replication.promote_secondary` flag.
 
 ### PSC instance
 
@@ -173,7 +173,7 @@ module "kms" {
   project_id = module.project.project_id
   keyring = {
     location = var.region
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-regional" = {

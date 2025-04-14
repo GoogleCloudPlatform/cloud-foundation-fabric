@@ -21,9 +21,7 @@ This [blueprint](./cloudsql-multiregion/) creates a [Cloud SQL instance](https:/
 
 ### Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
 
-<a href="./composer-2/" title="# Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
-"><img src="./composer-2/diagram.png" align="left" width="280px"></a>
-This [blueprint](./composer-2/) creates a [Cloud Composer](https://cloud.google.com/composer/) version 2 instance on a VPC with a dedicated service account. The solution supports as inputs: a Shared VPC and Cloud KMS CMEK keys.
+This blueprint is deprecated. To create a Cloud Composer instance please consult [Minimal Data Platform](#minimal-data-platform) blueprint.
 
 <br clear="left">
 
@@ -79,6 +77,6 @@ This [blueprint](./shielded-folder/) implements an opinionated folder configurat
 
 ### BigQuery ML and Vertex AI Pipeline
 
-<a href="./bq-ml/" title="BigQuery ML and Vertex AI Pipeline"><img src="./bq-ml/images/diagram.png" align="left" width="280px"></a>
+<a href="./bq-ml/" title="BigQuery ML and Vertex AI Pipeline"><img src="./bq-ml/diagram.png" align="left" width="280px"></a>
 This [blueprint](./bq-ml/) provides the necessary infrastructure to create a complete development environment for building and deploying machine learning models using BigQuery ML and Vertex AI. With this blueprint, you can deploy your models to a Vertex AI endpoint or use them within BigQuery ML.
 <br clear="left">

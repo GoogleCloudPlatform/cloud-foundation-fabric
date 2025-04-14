@@ -41,6 +41,15 @@ output "id" {
   value       = google_cloudfunctions2_function.function.id
 }
 
+output "invoke_command" {
+  description = "Command to invoke Cloud Run Function."
+  value       = var.trigger_config != null ? null : <<-EOT
+    curl -H "Authorization: bearer $(gcloud auth print-identity-token)" \
+        ${google_cloudfunctions2_function.function.service_config[0].uri} \
+        -X POST -d 'data'
+  EOT
+}
+
 output "service_account" {
   description = "Service account resource."
   value       = try(google_service_account.service_account[0], null)

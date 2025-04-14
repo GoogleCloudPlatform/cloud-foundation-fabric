@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ variable "factories_config" {
     custom_roles                  = optional(string)
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
+    context = optional(object({
+      org_policies = optional(map(map(string)), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -69,6 +72,7 @@ variable "org_policies" {
         location    = optional(string)
         title       = optional(string)
       }), {})
+      parameters = optional(string)
     })), [])
   }))
   default  = {}

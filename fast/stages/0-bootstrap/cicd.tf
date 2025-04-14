@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Workload Identity Federation configurations for CI/CD.
+# tfdoc:file:description CI/CD locals and resources.
 
 locals {
+  _cicd_configs = merge(
+    # stages
+    {
+      for k, v in var.cicd_config : k => merge(v, {
+        level = k == "bootstrap" ? 0 : 1
+        stage = k
+      }) if v != null
+    },
+    # addons
+    {
+      for k, v in var.fast_addon : k => merge(v.cicd_config, {
+        level = 1
+        stage = substr(v.parent_stage, 2, -1)
+      }) if v.cicd_config != null
+    }
+  )
   cicd_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     k => {
@@ -32,45 +48,21 @@ locals {
     }
   }
   cicd_repositories = {
-    for k, v in coalesce(var.cicd_repositories, {}) : k => v
-    if(
-      v != null
-      &&
-      contains(
-        keys(local.workload_identity_providers),
-        coalesce(try(v.identity_provider, null), ":")
-      )
-      &&
-      fileexists(
-        format("${path.module}/templates/workflow-%s.yaml", try(v.type, ""))
-      )
+    for k, v in local._cicd_configs : k => v if(
+      contains(keys(local.workload_identity_providers), v.identity_provider) &&
+      fileexists("${path.module}/templates/workflow-${v.repository.type}.yaml")
     )
   }
-  cicd_workflow_providers = {
-    bootstrap   = "0-bootstrap-providers.tf"
-    bootstrap_r = "0-bootstrap-r-providers.tf"
-    resman      = "1-resman-providers.tf"
-    resman_r    = "1-resman-r-providers.tf"
-    tenants     = "1-tenant-factory-providers.tf"
-    tenants_r   = "1-tenant-factory-r-providers.tf"
-    vpcsc       = "1-vpcsc-providers.tf"
-    vpcsc_r     = "1-vpcsc-r-providers.tf"
-  }
-  cicd_workflow_var_files = {
-    bootstrap = []
-    resman = [
-      "0-bootstrap.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    tenants = [
-      "0-bootstrap.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-    vpcsc = [
-      "0-bootstrap.auto.tfvars.json",
-      "0-globals.auto.tfvars.json"
-    ]
-  }
+  cicd_workflow_providers = merge(
+    {
+      for k, v in local.cicd_repositories :
+      k => "${v.level}-${k}-providers.tf"
+    },
+    {
+      for k, v in local.cicd_repositories :
+      "${k}-r" => "${v.level}-${k}-r-providers.tf"
+    }
+  )
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
@@ -86,17 +78,17 @@ module "automation-tf-cicd-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
+      each.value.repository.branch == null
       ? format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
+        local.workload_identity_providers_defs[each.value.repository.type].principal_repo,
         google_iam_workload_identity_pool.default[0].name,
-        each.value.name
+        each.value.repository.name
       )
       : format(
-        local.workload_identity_providers_defs[each.value.type].principal_branch,
+        local.workload_identity_providers_defs[each.value.repository.type].principal_branch,
         google_iam_workload_identity_pool.default[0].name,
-        each.value.name,
-        each.value.branch
+        each.value.repository.name,
+        each.value.repository.branch
       )
     ]
   }
@@ -120,9 +112,9 @@ module "automation-tf-cicd-r-sa" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        local.workload_identity_providers_defs[each.value.type].principal_repo,
+        local.workload_identity_providers_defs[each.value.repository.type].principal_repo,
         google_iam_workload_identity_pool.default[0].name,
-        each.value.name
+        each.value.repository.name
       )
     ]
   }

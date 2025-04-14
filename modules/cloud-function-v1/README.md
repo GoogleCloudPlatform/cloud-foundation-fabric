@@ -324,7 +324,7 @@ module "kms" {
   project_id = module.project.project_id
   keyring = {
     location = var.regions.secondary
-    name     = "keyring"
+    name     = "${var.prefix}-keyring"
   }
   keys = {
     "key-regional" = {
@@ -410,10 +410,11 @@ module "cf-http" {
 | [function](outputs.tf#L29) | Cloud function resources. |  |
 | [function_name](outputs.tf#L34) | Cloud function name. |  |
 | [id](outputs.tf#L39) | Fully qualified function id. |  |
-| [service_account](outputs.tf#L44) | Service account resource. |  |
-| [service_account_email](outputs.tf#L49) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L54) | Service account email. |  |
-| [vpc_connector](outputs.tf#L62) | VPC connector resource if created. |  |
+| [invoke_command](outputs.tf#L44) | Command to invoke Cloud Function. |  |
+| [service_account](outputs.tf#L53) | Service account resource. |  |
+| [service_account_email](outputs.tf#L58) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L63) | Service account email. |  |
+| [vpc_connector](outputs.tf#L71) | VPC connector resource if created. |  |
 
 ## Fixtures
 

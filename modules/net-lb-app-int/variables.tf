@@ -152,9 +152,13 @@ variable "network_tier_premium" {
 }
 
 variable "ports" {
-  description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
+  description = "Optional ports for HTTP load balancer."
   type        = list(string)
   default     = null
+  validation {
+    condition     = length(coalesce(var.ports, [])) <= 1
+    error_message = "Application Load Balancer supports at most one port per forwarding rule."
+  }
 }
 
 variable "project_id" {

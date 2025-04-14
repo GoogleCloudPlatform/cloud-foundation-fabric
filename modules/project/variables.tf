@@ -60,7 +60,6 @@ variable "default_service_account" {
   }
 }
 
-
 variable "deletion_policy" {
   description = "Deletion policy setting for this project."
   default     = "DELETE"
@@ -87,6 +86,7 @@ variable "factories_config" {
     quotas        = optional(string)
     context = optional(object({
       notification_channels = optional(map(string), {})
+      org_policies          = optional(map(map(string)), {})
     }), {})
   })
   nullable = false
@@ -132,6 +132,7 @@ variable "org_policies" {
         location    = optional(string)
         title       = optional(string)
       }), {})
+      parameters = optional(string)
     })), [])
   }))
   default  = {}
@@ -158,10 +159,24 @@ variable "prefix" {
   }
 }
 
-variable "project_create" {
-  description = "Create project. When set to false, uses a data source to reference existing project."
-  type        = bool
-  default     = true
+variable "project_reuse" {
+  description = "Reuse existing project if not null. If name and number are not passed in, a data source is used."
+  type = object({
+    use_data_source = optional(bool, true)
+    project_attributes = optional(object({
+      name             = string
+      number           = number
+      services_enabled = optional(list(string), [])
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      try(var.project_reuse.use_data_source, null) != false ||
+      try(var.project_reuse.project_attributes, null) != null
+    )
+    error_message = "Reuse datasource can be disabled only if project attributes are set."
+  }
 }
 
 variable "service_agents_config" {
@@ -169,7 +184,6 @@ variable "service_agents_config" {
   type = object({
     create_primary_agents = optional(bool, true)
     grant_default_roles   = optional(bool, true)
-    services_enabled      = optional(list(string), [])
   })
   default  = {}
   nullable = false
@@ -247,6 +261,15 @@ variable "skip_delete" {
   #   condition     = var.skip_delete != null
   #   error_message = "skip_delete is deprecated. Use deletion_policy."
   # }
+}
+
+variable "universe" {
+  description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
+  type = object({
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "vpc_sc" {

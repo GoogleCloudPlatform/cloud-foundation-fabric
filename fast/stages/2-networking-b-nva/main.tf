@@ -29,11 +29,11 @@ locals {
     "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]))
-  iam_delegated_principals = try(
-    var.stage_config["networking"].iam_delegated_principals, {}
+  iam_admin_delegated = try(
+    var.stage_config["networking"].iam_admin_delegated, {}
   )
-  iam_viewer_principals = try(
-    var.stage_config["networking"].iam_viewer_principals, {}
+  iam_viewer = try(
+    var.stage_config["networking"].iam_viewer, {}
   )
   # select the NVA ILB as next hop for spoke VPC routing depending on net mode
   nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
@@ -76,10 +76,11 @@ module "folder" {
 
 module "firewall-policy-default" {
   source    = "../../../modules/net-firewall-policy"
-  name      = var.factories_config.firewall_policy_name
+  name      = var.factories_config.firewall.hierarchical.policy_name
   parent_id = module.folder.id
   factories_config = {
-    cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
-    ingress_rules_file_path = "${var.factories_config.data_dir}/hierarchical-ingress-rules.yaml"
+    cidr_file_path          = var.factories_config.firewall.cidr_file
+    egress_rules_file_path  = var.factories_config.firewall.hierarchical.egress_rules
+    ingress_rules_file_path = var.factories_config.firewall.hierarchical.ingress_rules
   }
 }
