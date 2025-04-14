@@ -15,7 +15,7 @@
  */
 
 locals {
-  has_env_folders = var.folder_ids.security-dev != null
+  has_env_folders = var.folder_ids.secops-dev != null
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   ]))
@@ -47,7 +47,7 @@ module "project" {
   for_each = var.environments
   name     = "${each.value.short_name}-secops-0"
   parent = coalesce(
-    var.folder_ids["security-${each.key}"], var.folder_ids.security
+    var.folder_ids["secops-${each.key}"], var.folder_ids.secops
   )
   prefix          = var.prefix
   billing_account = var.billing_account.id
@@ -64,18 +64,18 @@ module "project" {
   }
   iam_bindings = (
     lookup(local.iam_admin_delegated, each.key, null) == null ? {} : {
-    sa_delegated_grants = {
-      role    = "roles/resourcemanager.projectIamAdmin"
-      members = try(local.iam_admin_delegated[each.key], [])
-      condition = {
-        title       = "${each.key}_stage3_sa_delegated_grants"
-        description = "${var.environments[each.key].name} project delegated grants."
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          local.iam_delegated
-        )
+      sa_delegated_grants = {
+        role    = "roles/resourcemanager.projectIamAdmin"
+        members = try(local.iam_admin_delegated[each.key], [])
+        condition = {
+          title       = "${each.key}_stage3_sa_delegated_grants"
+          description = "${var.environments[each.key].name} project delegated grants."
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            local.iam_delegated
+          )
+        }
       }
     }
-  }
   )
 }

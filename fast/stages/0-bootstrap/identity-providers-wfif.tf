@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Workload Identity Federation provider definitions.
+# tfdoc:file:description Workforce Identity Federation provider definitions.
 
 locals {
   workforce_identity_providers = {
     for k, v in var.workforce_identity_providers : k => merge(
       v,
       lookup(local.workforce_identity_providers_defs, v.issuer, {})
-    )
-  }
-  workload_identity_providers = {
-    for k, v in var.workload_identity_providers : k => merge(
-      v,
-      lookup(local.workload_identity_providers_defs, v.issuer, {})
     )
   }
 }
@@ -55,43 +49,5 @@ resource "google_iam_workforce_pool_provider" "default" {
   workforce_pool_id = google_iam_workforce_pool.default[0].workforce_pool_id
   saml {
     idp_metadata_xml = each.value.saml.idp_metadata_xml
-  }
-}
-
-resource "google_iam_workload_identity_pool" "default" {
-  provider = google-beta
-  count    = length(local.workload_identity_providers) > 0 ? 1 : 0
-  project  = module.automation-project.project_id
-  workload_identity_pool_id = templatestring(
-    var.resource_names["wif-bootstrap"], { prefix = var.prefix }
-  )
-}
-
-resource "google_iam_workload_identity_pool_provider" "default" {
-  provider = google-beta
-  for_each = local.workload_identity_providers
-  project  = module.automation-project.project_id
-  workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default[0].workload_identity_pool_id
-  )
-  workload_identity_pool_provider_id = templatestring(
-    var.resource_names["wif-provider_template"], {
-      prefix = var.prefix
-      key    = each.key
-  })
-  attribute_condition = each.value.attribute_condition
-  attribute_mapping   = each.value.attribute_mapping
-  oidc {
-    # Setting an empty list configures allowed_audiences to the url of the provider
-    allowed_audiences = each.value.custom_settings.audiences
-    # If users don't provide an issuer_uri, we set the public one for the platform chosen.
-    issuer_uri = (
-      each.value.custom_settings.issuer_uri != null
-      ? each.value.custom_settings.issuer_uri
-      : try(each.value.issuer_uri, null)
-    )
-    # OIDC JWKs in JSON String format. If no value is provided, they key is
-    # fetched from the `.well-known` path for the issuer_uri
-    jwks_json = each.value.custom_settings.jwks_json
   }
 }

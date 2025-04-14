@@ -26,12 +26,10 @@ locals {
 }
 
 resource "google_iam_workforce_pool" "default" {
-  count    = length(local.workforce_identity_providers) > 0 ? 1 : 0
-  parent   = "organizations/${var.organization.id}"
-  location = "global"
-  workforce_pool_id = templatestring(
-    var.resource_names["wf-bootstrap"], { prefix = var.prefix }
-  )
+  count             = length(local.workforce_identity_providers) > 0 ? 1 : 0
+  parent            = "organizations/${var.organization.id}"
+  location          = "global"
+  workforce_pool_id = "secops"
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
@@ -42,11 +40,8 @@ resource "google_iam_workforce_pool_provider" "default" {
   disabled            = each.value.disabled
   display_name        = each.value.display_name
   location            = google_iam_workforce_pool.default[0].location
-  provider_id = templatestring(var.resource_names["wf-provider_template"], {
-    prefix = var.prefix
-    key    = each.key
-  })
-  workforce_pool_id = google_iam_workforce_pool.default[0].workforce_pool_id
+  provider_id         = each.key
+  workforce_pool_id   = google_iam_workforce_pool.default[0].workforce_pool_id
   saml {
     idp_metadata_xml = each.value.saml.idp_metadata_xml
   }

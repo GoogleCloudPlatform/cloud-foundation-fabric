@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Output files persistence to local filesystem.
+
 locals {
-  tfvars = {
-    secops_project_ids = {
-      for k, v in module.project : k => v.id
-    }
-  }
+  outputs_location = try(pathexpand(var.outputs_location), "")
 }
 
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/2-secops.auto.tfvars.json"
+  filename        = "${local.outputs_location}/tfvars/2-secops.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
-  name    = "tfvars/2-security.auto.tfvars.json"
+  name    = "tfvars/1-resman.auto.tfvars.json"
   content = jsonencode(local.tfvars)
-}
-
-output "tfvars" {
-  description = "Terraform variable files for the following stages."
-  sensitive   = true
-  value       = local.tfvars
 }

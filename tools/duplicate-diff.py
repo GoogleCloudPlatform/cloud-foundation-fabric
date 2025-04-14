@@ -23,6 +23,14 @@ duplicates = [
         "modules/project-factory/factory-projects-object.tf",
         # data factory
     ],
+    [
+        "fast/stages/0-bootstrap/identity-providers-wfif.tf",
+        "fast/stages/2-secops/identity-providers-wfif.tf",
+    ],
+    [
+        "fast/stages/0-bootstrap/identity-providers-wfif-defs.tf",
+        "fast/stages/2-secops/identity-providers-wfif-defs.tf",
+    ]
 ]
 
 for group in duplicates:
