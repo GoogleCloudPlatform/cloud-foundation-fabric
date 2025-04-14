@@ -15,6 +15,17 @@
  */
 
 locals {
+  image_uri = "${var.region}-docker.pkg.dev/${var.project_id}/cloud-run-source-deploy/${var.name}"
+  runtime_uris = {
+    dotnet8   = "${local.runtime_uris_base_path}/dotnet8"
+    go123     = "${local.runtime_uris_base_path}/go123"
+    java21    = "${local.runtime_uris_base_path}/java21"
+    nodejs22  = "${local.runtime_uris_base_path}/nodejs22"
+    php83     = "${local.runtime_uris_base_path}/php83"
+    python312 = "${local.runtime_uris_base_path}/python312"
+    ruby33    = "${local.runtime_uris_base_path}/ruby33"
+  }
+  runtime_uris_base_path = "${var.region}-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes"
   base_image_uri = lookup(
     local.runtime_uris,
     var.function_config.runtime,
@@ -29,17 +40,7 @@ locals {
       : null
     )
   )
-  prefix                 = var.prefix == null ? "" : "${var.prefix}-"
-  runtime_uris_base_path = "us-central1-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes"
-  runtime_uris = {
-    dotnet8   = "${local.runtime_uris_base_path}/dotnet8"
-    go123     = "${local.runtime_uris_base_path}/go123"
-    java21    = "${local.runtime_uris_base_path}/java21"
-    nodejs22  = "${local.runtime_uris_base_path}/nodejs22"
-    php83     = "${local.runtime_uris_base_path}/php83"
-    python312 = "${local.runtime_uris_base_path}/python312"
-    ruby33    = "${local.runtime_uris_base_path}/ruby33"
-  }
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
     ? google_service_account.service_account[0].email
@@ -61,13 +62,14 @@ resource "google_cloud_run_v2_service" "function" {
   ingress             = var.ingress
 
   build_config {
-    source_location       = local.source_location
-    function_target       = var.function_config.entry_point
-    image_uri             = var.image_uri
-    base_image            = local.base_image_uri
-    worker_pool           = var.build_worker_pool
-    environment_variables = var.build_environment_variables
-    service_account       = var.build_service_account
+    source_location          = local.source_location
+    function_target          = var.function_config.entry_point
+    # image_uri                = local.image_uri
+    base_image               = local.base_image_uri
+    enable_automatic_updates = true
+    worker_pool              = var.build_worker_pool
+    environment_variables    = var.build_environment_variables
+    service_account          = var.build_service_account
   }
   template {
     encryption_key        = var.encryption_key
@@ -75,7 +77,7 @@ resource "google_cloud_run_v2_service" "function" {
     service_account       = var.service_account
     timeout               = var.function_config.timeout
     containers {
-      image          = var.image_uri
+      image          = local.image_uri
       base_image_uri = local.base_image_uri
       dynamic "env" {
         for_each = coalesce(var.environment_variables, tomap({}))

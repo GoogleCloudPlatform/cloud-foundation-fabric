@@ -235,6 +235,13 @@ variable "tag_bindings" {
   default     = {}
 }
 
+variable "volume_mounts" {
+  description = "The volume mounts."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "volumes" {
   description = "Named volumes in containers in name => attributes format."
   type = map(object({
@@ -267,13 +274,6 @@ variable "volumes" {
     ])
     error_message = "Only one type of volume can be defined at a time."
   }
-}
-
-variable "volume_mounts" {
-  description = "The volume mounts."
-  type        = map(string)
-  nullable    = false
-  default     = {}
 }
 
 variable "vpc_access" {
