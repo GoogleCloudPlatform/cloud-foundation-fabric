@@ -16,8 +16,9 @@ The architecture deployed by this recipe is the one depicted below:
 | [gcp_asn](variables.tf#L42) | Google ASN. | <code>string</code> | ✓ |  |
 | [gcp_region](variables.tf#L47) | GCP Region. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L52) | Project ID. | <code>string</code> | ✓ |  |
-| [shared_secret](variables.tf#L57) | Shared secret. | <code>string</code> | ✓ |  |
+| [shared_secret](variables.tf#L63) | Shared secret. | <code>string</code> | ✓ |  |
 | [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code title="object&#40;&#123;&#10;  name             &#61; string&#10;  number           &#61; number&#10;  services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [propagate_routes](variables.tf#L57) | Flag indicating whether routed received by AWS's Virtual Private Gateway should be propagated to main route table. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 
@@ -27,7 +28,6 @@ The architecture deployed by this recipe is the one depicted below:
 | [gateway](outputs.tf#L22) | VPN gateway resource (only if auto-created). |  |
 | [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
