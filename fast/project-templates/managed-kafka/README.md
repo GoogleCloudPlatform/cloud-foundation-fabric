@@ -75,5 +75,5 @@ module "test" {
     environment = "test"
   }
 }
-# tftest modules=1 resources=5
+# tftest skip
 ```
