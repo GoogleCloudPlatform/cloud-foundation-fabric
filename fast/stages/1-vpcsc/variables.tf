@@ -88,6 +88,7 @@ variable "egress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}
@@ -140,6 +141,7 @@ variable "ingress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}

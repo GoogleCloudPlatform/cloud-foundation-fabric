@@ -47,6 +47,13 @@ variable "description" {
   default     = "Terraform-managed registry"
 }
 
+variable "enable_vulnerability_scanning" {
+  description = "Whether vulnerability scanning should be enabled in the repository."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "encryption_key" {
   description = "The KMS key name to use for encryption at rest."
   type        = string

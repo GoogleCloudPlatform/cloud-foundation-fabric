@@ -291,7 +291,7 @@ terraform output ssh_to_bastion
 
 A gcloud command like the following should be available
 
-```bash 
+```bash
 gcloud compute ssh squid-vm --project ${project} --zone europe-west8-b -- -L 3128:127.0.0.1:3128 -N -q -f
 ```
 
@@ -317,7 +317,7 @@ gitlab-rake “gitlab:password:reset”
 | [gitlab.tf](./gitlab.tf) | None | <code>compute-vm</code> · <code>iam-service-account</code> · <code>net-lb-int</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [services.tf](./services.tf) | None | <code>cloudsql-instance</code> · <code>gcs</code> | <code>google_redis_instance</code> |
+| [services.tf](./services.tf) | None | <code>artifact-registry</code> · <code>cloudsql-instance</code> · <code>gcs</code> | <code>google_redis_instance</code> |
 | [ssl.tf](./ssl.tf) | None |  | <code>tls_cert_request</code> · <code>tls_locally_signed_cert</code> · <code>tls_private_key</code> · <code>tls_self_signed_cert</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -325,7 +325,7 @@ gitlab-rake “gitlab:password:reset”
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [gitlab_instance_config](variables.tf#L69) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n1-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string&#41;&#10;  zone          &#61; optional&#40;string&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [gitlab_instance_config](variables.tf#L69) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n2-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string&#41;&#10;  zone          &#61; optional&#40;string&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [network_config](variables.tf#L89) | Shared VPC network configurations to use for Gitlab Runner VM. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [prefix](variables.tf#L98) | Prefix used for resource names. | <code>string</code> | ✓ |  |  |
 | [project_id](variables.tf#L117) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |  |
@@ -385,5 +385,5 @@ module "test" {
   project_id = "my-project"
   region     = "europe-west8"
 }
-# tftest modules=14 resources=58
+# tftest modules=15 resources=60
 ```

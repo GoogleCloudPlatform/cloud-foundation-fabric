@@ -1,0 +1,76 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.secops.google_chronicle_reference_list.default["private_ip_ranges"]:
+    description: Private CIDR ranges
+    entries:
+      - value: 10.0.0.0/8
+      - value: 172.16.0.0/12
+      - value: 192.168.0.0/16
+      - value: 127.0.0.1/32
+      - value: ::1/128
+      - value: fc00::/7
+      - value: fe80::/10
+      - value: '# tftest-file id=reference path=data/reference_lists/private_ip_ranges.txt'
+      - value: ''
+    instance: customer-id
+    location: europe
+    project: project-id
+    reference_list_id: private_ip_ranges
+    syntax_type: REFERENCE_LIST_SYNTAX_TYPE_CIDR
+    timeouts: null
+  module.secops.google_chronicle_rule.default["network_traffic_to_specific_country"]:
+    deletion_policy: FORCE
+    instance: customer-id
+    location: europe
+    project: project-id
+    scope: null
+    text: "rule network_traffic_to_specific_country {\n\nmeta:\n  author = \"Google\
+      \ Cloud Security\"\n  description = \"Identify network traffic based on target\
+      \ country\"\n  type = \"alert\"\n  tags = \"geoip enrichment\"\n  data_source\
+      \ = \"microsoft windows events\"\n  severity = \"Low\"\n  priority = \"Low\"\
+      \n\nevents:\n  $network.metadata.event_type = \"NETWORK_CONNECTION\"\n  //Specify\
+      \ a country of interest to monitor or add additional countries using an or statement\n\
+      \  $network.target.ip_geo_artifact.location.country_or_region = \"France\" nocase\n\
+      \  $network.target.ip = $ip\n\nmatch:\n  $ip over 30m\n\noutcome:\n  $risk_score\
+      \ = max(35)\n  $event_count = count_distinct($network.metadata.id)\n\n  // added\
+      \ to populate alert graph with additional context\n  $principal_ip = array_distinct($network.principal.ip)\n\
+      \n  // Commented out target.ip because it is already represented in graph as\
+      \ match variable. If match changes, can uncomment to add to results\n  //$target_ip\
+      \ = array_distinct($network.target.ip)\n  $principal_process_pid = array_distinct($network.principal.process.pid)\n\
+      \  $principal_process_command_line = array_distinct($network.principal.process.command_line)\n\
+      \  $principal_process_file_sha256 = array_distinct($network.principal.process.file.sha256)\n\
+      \  $principal_process_file_full_path = array_distinct($network.principal.process.file.full_path)\n\
+      \  $principal_process_product_specfic_process_id = array_distinct($network.principal.process.product_specific_process_id)\n\
+      \  $principal_process_parent_process_product_specfic_process_id = array_distinct($network.principal.process.parent_process.product_specific_process_id)\n\
+      \  $target_process_pid = array_distinct($network.target.process.pid)\n  $target_process_command_line\
+      \ = array_distinct($network.target.process.command_line)\n  $target_process_file_sha256\
+      \ = array_distinct($network.target.process.file.sha256)\n  $target_process_file_full_path\
+      \ = array_distinct($network.target.process.file.full_path)\n  $target_process_product_specfic_process_id\
+      \ = array_distinct($network.target.process.product_specific_process_id)\n  $target_process_parent_process_product_specfic_process_id\
+      \ = array_distinct($network.target.process.parent_process.product_specific_process_id)\n\
+      \  $principal_user_userid = array_distinct($network.principal.user.userid)\n\
+      \  $target_user_userid = array_distinct($network.target.user.userid)\n\ncondition:\n\
+      \  $network\n}\n# tftest-file id=rule path=data/rules/network_traffic_to_specific_country.yaral\n"
+    timeouts: null
+  module.secops.google_chronicle_rule_deployment.default["network_traffic_to_specific_country"]:
+    alerting: true
+    archived: false
+    enabled: true
+    instance: customer-id
+    location: europe
+    project: project-id
+    run_frequency: LIVE
+    timeouts: null

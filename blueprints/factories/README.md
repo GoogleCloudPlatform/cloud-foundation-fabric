@@ -74,3 +74,5 @@ The second factory type is implemented as a standalone module that internally re
 
 - **projects**
   - [`project-factory`](../../modules/project-factory/)
+- **VPCs**
+  - [`net-vpc-factory`](../../modules/net-vpc-factory/)

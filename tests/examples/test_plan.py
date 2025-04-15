@@ -105,7 +105,7 @@ def _test_terraform_example(plan_validator, example):
     result = subprocess.run(
         f'{binary} fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
         stdout=subprocess.PIPE, encoding='utf-8')
-    assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
+    assert result.returncode == 0, f'terraform example code in README.md not formatted correctly\n{result.stdout}'
 
 
 def _test_yaml_example(example):

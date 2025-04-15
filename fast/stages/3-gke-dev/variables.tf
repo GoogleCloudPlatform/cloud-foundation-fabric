@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ variable "clusters" {
     access_config = optional(object({
       dns_access = optional(bool, true)
       ip_access = optional(object({
-        authorized_ranges       = optional(map(string), {})
-        disable_public_endpoint = optional(bool, true)
+        authorized_ranges               = optional(map(string), {})
+        disable_public_endpoint         = optional(bool, true)
+        gcp_public_cidrs_access_enabled = optional(bool, false)
         private_endpoint_config = optional(object({
           endpoint_subnetwork = optional(string)
           global_access       = optional(bool, true)
         }), {})
-      }), {})
+      }))
       private_nodes = optional(bool, true)
     }), {})
     cluster_autoscaling = optional(any)
