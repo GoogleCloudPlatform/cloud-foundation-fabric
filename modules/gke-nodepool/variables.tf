@@ -83,14 +83,18 @@ variable "node_config" {
     gvnic                = optional(bool, false)
     image_type           = optional(string)
     kubelet_config = optional(object({
-      cpu_manager_policy   = string
-      cpu_cfs_quota        = optional(bool)
-      cpu_cfs_quota_period = optional(string)
-      pod_pids_limit       = optional(number)
+      cpu_manager_policy                     = string
+      cpu_cfs_quota                          = optional(bool)
+      cpu_cfs_quota_period                   = optional(string)
+      pod_pids_limit                         = optional(number)
+      insecure_kubelet_readonly_port_enabled = optional(bool, false)
     }))
     linux_node_config = optional(object({
       sysctls     = optional(map(string))
       cgroup_mode = optional(string)
+    }))
+    windows_node_config = optional(object({
+      osversion = optional(string, "OS_VERSION_LTSC2022")
     }))
     local_ssd_count       = optional(number)
     machine_type          = optional(string)
@@ -104,6 +108,10 @@ variable "node_config" {
     }))
     spot                          = optional(bool)
     workload_metadata_config_mode = optional(string)
+    advanced_machine_features = optional(object({
+      threads_per_core             = number
+      enable_nested_virtualization = optional(bool, false)
+    }))
   })
   default  = {}
   nullable = false

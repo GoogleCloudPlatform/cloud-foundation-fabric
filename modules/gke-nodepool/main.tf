@@ -219,10 +219,11 @@ resource "google_container_node_pool" "nodepool" {
     dynamic "kubelet_config" {
       for_each = var.node_config.kubelet_config != null ? [""] : []
       content {
-        cpu_manager_policy   = var.node_config.kubelet_config.cpu_manager_policy
-        cpu_cfs_quota        = var.node_config.kubelet_config.cpu_cfs_quota
-        cpu_cfs_quota_period = var.node_config.kubelet_config.cpu_cfs_quota_period
-        pod_pids_limit       = var.node_config.kubelet_config.pod_pids_limit
+        cpu_manager_policy                     = var.node_config.kubelet_config.cpu_manager_policy
+        cpu_cfs_quota                          = var.node_config.kubelet_config.cpu_cfs_quota
+        cpu_cfs_quota_period                   = var.node_config.kubelet_config.cpu_cfs_quota_period
+        pod_pids_limit                         = var.node_config.kubelet_config.pod_pids_limit
+        insecure_kubelet_readonly_port_enabled = var.node_config.kubelet_config.insecure_kubelet_readonly_port_enabled ? "TRUE" : "FALSE"
       }
     }
     dynamic "linux_node_config" {
@@ -232,12 +233,25 @@ resource "google_container_node_pool" "nodepool" {
         cgroup_mode = try(var.node_config.linux_node_config.cgroup_mode, "CGROUP_MODE_UNSPECIFIED")
       }
     }
+    dynamic "windows_node_config" {
+      for_each = var.node_config.windows_node_config != null ? [""] : []
+      content {
+        osversion = var.node_config.windows_node_config.osversion
+      }
+    }
     dynamic "reservation_affinity" {
       for_each = var.reservation_affinity != null ? [""] : []
       content {
         consume_reservation_type = var.reservation_affinity.consume_reservation_type
         key                      = var.reservation_affinity.key
         values                   = var.reservation_affinity.values
+      }
+    }
+    dynamic "advanced_machine_features" {
+      for_each = var.node_config.advanced_machine_features != null ? [""] : []
+      content {
+        threads_per_core             = var.node_config.advanced_machine_features.threads_per_core
+        enable_nested_virtualization = var.node_config.advanced_machine_features.enable_nested_virtualization
       }
     }
     dynamic "sandbox_config" {
