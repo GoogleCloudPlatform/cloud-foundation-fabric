@@ -12,16 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "archive_file" "bundle" {}
-resource "azuread_user" "default" {}
-resource "azurerm_resource_group" "default" {}
-#resource "github_branch" "default" { provider = github }
-resource "google_service_account" "sa1" {}
-resource "google_service_account" "sa2" { provider = google-beta }
-resource "local_file" "default" {}
-resource "random_pet" "default" {}
-resource "time_static" "default" {}
-resource "tls_private_key" "default" {}
-resource "vsphere_role" "default" {}
-resource "kubernetes_secret" "default" {}
-resource "aws_vpc" "default" {}
+# Fabric release: v38.1.0
+
+terraform {
+  required_version = ">= 1.10.2"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 6.28.0, < 7.0.0" # tftest
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 6.28.0, < 7.0.0" # tftest
+    }
+  }
+  provider_meta "google" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gcs:v38.1.0-tf"
+  }
+  provider_meta "google-beta" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gcs:v38.1.0-tf"
+  }
+}
