@@ -17,16 +17,15 @@
 locals {
   secops_api_key_secret_key   = "secops-feeds-api-key"
   secops_workspace_int_sa_key = "secops-workspace-ing-sa-key"
+  secops_project_id           = coalesce(try(var.secops_project_ids[var.stage.environment], null), var.project_id)
   secops_feeds_api_path       = "projects/${module.project.project_id}/locations/${var.secops_tenant_config.region}/instances/${var.secops_tenant_config.customer_id}/feeds"
   workspace_log_ingestion     = var.workspace_integration_config != null
 }
 
 module "project" {
-  source          = "../../../modules/project"
-  name            = var.secops_project_ids[var.stage.environment]
-  billing_account = try(var.project_create_config.billing_account, null)
-  parent          = try(var.project_create_config.parent, null)
-  project_reuse   = var.project_create_config != null ? null : {}
+  source        = "../../../modules/project"
+  name          = local.secops_project_id
+  project_reuse = {}
   org_policies = var.workspace_integration_config != null ? {
     "iam.disableServiceAccountKeyCreation" = {
       rules = [{ enforce = false }]
@@ -103,7 +102,7 @@ resource "google_apikeys_key" "feed_api_key" {
 
 module "secops-rules" {
   source     = "../../../modules/secops-rules"
-  project_id = var.secops_project_ids[var.stage.environment]
+  project_id = local.secops_project_id
   tenant_config = {
     region      = var.secops_tenant_config.region
     customer_id = var.secops_tenant_config.customer_id

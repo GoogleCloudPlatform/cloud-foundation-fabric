@@ -23,7 +23,7 @@ variable "factories_config" {
     reference_lists_defs = optional(string, "data/reference_lists")
   })
   nullable = false
-  default  = {
+  default = {
     rules                = "./data/secops_rules.yaml"
     rules_defs           = "./data/rules"
     reference_lists      = "./data/secops_reference_lists.yaml"
@@ -105,13 +105,10 @@ variable "stage" {
   }
 }
 
-variable "project_create_config" {
-  description = "Create project instead of using an existing one."
-  type = object({
-    billing_account = string
-    parent          = optional(string)
-  })
-  default = null
+variable "project_id" {
+  description = "Project id that references existing SecOps project. Use this variable when running this stage in isolation."
+  type        = string
+  default     = null
 }
 
 variable "regions" {
