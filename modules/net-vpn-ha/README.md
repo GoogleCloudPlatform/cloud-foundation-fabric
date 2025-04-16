@@ -2,6 +2,17 @@
 
 This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/overview#ha-vpn).
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [GCP to GCP](#gcp-to-gcp)
+  - [GCP to on-prem](#gcp-to-on-prem)
+  - [IPv6 (dual-stack)](#ipv6-dual-stack)
+- [Recipes](#recipes)
+- [Recipes](#recipes)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Examples
 
 ### GCP to GCP
@@ -204,7 +215,16 @@ module "vpn_ha" {
 ```
 
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
+
+## Recipes
+
+- [HA VPN connections between Google Cloud and AWS](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-vpn-ha/recipe-vpn-aws-gcp)
+
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [HA VPN connections between Google Cloud and AWS](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-vpn-ha/recipe-vpn-aws-gcp)
+
 ## Variables
 
 | name | description | type | required | default |
