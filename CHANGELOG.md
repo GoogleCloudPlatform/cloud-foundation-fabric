@@ -5,13 +5,55 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-03-22 12:29:37+00:00 to: None since: v38.1.0 -->
 
+### BREAKING CHANGES
+
+- `modules/iam-service-account`: removed `public_keys_directory` variable. Use bare `google_service_account_key` resources if this functionality is needed. [[#3008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3008)]
+- `modules/gke-cluster-standard`, `modules/gke-cluster-autopilot`: Default value for `access_config.ip_access` changed from `{}` to `null`; explicitly set to keep IP access enabled. [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)]
+
+
+### BLUEPRINTS
+
+- [[#2982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2982)] Module: net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2025-04-10 09:44:40+00:00 -->
+- [[#3008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3008)] Add support to attach tags to service accounts ([juliocc](https://github.com/juliocc)) <!-- 2025-04-04 12:31:19+00:00 -->
+- [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)] Allow disabling GKE IP endpoints and setting GKE VPC scope DNS domain ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:03:58+00:00 -->
+- [[#2989](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2989)] Fix Cloud SQL deployment and use local remote docker hub for pulling gitlab docker image ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-04-01 12:20:24+00:00 -->
+
+### FAST
+
+- [[#3035](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3035)] Add managed Kafka  ([franpinedab](https://github.com/franpinedab)) <!-- 2025-04-15 18:15:46+00:00 -->
+- [[#3013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3013)] SecOps Anonymization improvements ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-04-11 13:14:06+00:00 -->
+- [[#3020](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3020)] [FAST] Remove object creator permission from storage viewer custom role ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-09 14:39:20+00:00 -->
+- [[#3000](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3000)] Add roles support to VPC-SC ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:39:04+00:00 -->
+- [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)] Allow disabling GKE IP endpoints and setting GKE VPC scope DNS domain ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:03:58+00:00 -->
+
 ### MODULES
 
+- [[#3040](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3040)] Add vulnerability scanning to artifact registry module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-14 16:33:35+00:00 -->
+- [[#3034](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3034)] Added recipe HA VPN between AWS and GCP ([apichick](https://github.com/apichick)) <!-- 2025-04-14 10:47:21+00:00 -->
+- [[#3031](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3031)] Use path as keys in project factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-11 20:50:50+00:00 -->
+- [[#3029](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3029)] Allow IAP configuration with default IdP ([stribioli](https://github.com/stribioli)) <!-- 2025-04-11 16:19:17+00:00 -->
+- [[#3023](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3023)] secops-rules module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-04-11 13:44:31+00:00 -->
+- [[#3024](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3024)] Use factory-projects-object to normalize inputs for project module in net-vpc-factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-11 08:53:08+00:00 -->
+- [[#2982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2982)] Module: net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2025-04-10 09:44:40+00:00 -->
+- [[#2999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2999)] Added variable for activating nat and implementation in google_apigee… ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-04-08 12:31:33+00:00 -->
+- [[#2998](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2998)] Fix handling of data_overrides in project factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-06 18:17:22+00:00 -->
+- [[#3008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3008)] Add support to attach tags to service accounts ([juliocc](https://github.com/juliocc)) <!-- 2025-04-04 12:31:19+00:00 -->
+- [[#3006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3006)] Better lifecycle management description in VPC-SC module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-04 07:06:26+00:00 -->
+- [[#3004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3004)] Add support for non-destructive tag bindings to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-03 16:20:00+00:00 -->
+- [[#3003](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3003)] Cross-project serverless neg example for internal app load balancer ([ludoo](https://github.com/ludoo)) <!-- 2025-04-03 08:53:48+00:00 -->
+- [[#3000](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3000)] Add roles support to VPC-SC ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:39:04+00:00 -->
+- [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)] Allow disabling GKE IP endpoints and setting GKE VPC scope DNS domain ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:03:58+00:00 -->
+- [[#2994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2994)] Fr/timhiatt/invoker iam disable ([timbohiatt](https://github.com/timbohiatt)) <!-- 2025-04-01 09:41:08+00:00 -->
+- [[#2993](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2993)] feat: add gcp_public_cidrs_access_enabled to gke modules ([domcyrus](https://github.com/domcyrus)) <!-- 2025-04-01 06:17:44+00:00 -->
 - [[#2987](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2987)] Project object c14n in separate file ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-30 08:39:08+00:00 -->
 - [[#2984](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2984)] compute-vm: Add graceful shutdown configuration and some missing GPUs. ([rosmo](https://github.com/rosmo)) <!-- 2025-03-26 12:51:54+00:00 -->
 
 ### TOOLS
 
+- [[#3034](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3034)] Added recipe HA VPN between AWS and GCP ([apichick](https://github.com/apichick)) <!-- 2025-04-14 10:47:21+00:00 -->
+- [[#3024](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3024)] Use factory-projects-object to normalize inputs for project module in net-vpc-factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-11 08:53:08+00:00 -->
+- [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)] Allow disabling GKE IP endpoints and setting GKE VPC scope DNS domain ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:03:58+00:00 -->
+- [[#2996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2996)] Improve failure message for tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-01 08:40:32+00:00 -->
 - [[#2987](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2987)] Project object c14n in separate file ([wiktorn](https://github.com/wiktorn)) <!-- 2025-03-30 08:39:08+00:00 -->
 
 ## [38.1.0] - 2025-03-22
