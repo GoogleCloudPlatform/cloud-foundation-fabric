@@ -27,7 +27,7 @@ locals {
   }
   secops_rules = {
     for file_name in fileset(local._secops_rules_path, "*.yaral") :
-    replace(file_name, ".yaral", "") => file("${var.factories_config.rules_defs}/${file_name}")
+    replace(file_name, ".yaral", "") => file("${local._secops_rules_path}/${file_name}")
   }
   secops_rule_deployment = try(yamldecode(file(var.factories_config.rules)), var.rules_config)
 }

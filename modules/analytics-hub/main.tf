@@ -20,7 +20,7 @@ locals {
   _factory_listings = {
     for f in try(fileset(local._factory_listings_path, "*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(
-      file("${var.factories_config.listings}/${f}")
+      file("${local._factory_listings_path}/${f}")
     )
   }
   factory_listings = merge(local._factory_listings, var.listings)
