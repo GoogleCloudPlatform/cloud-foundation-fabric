@@ -139,6 +139,12 @@ variable "ingress" {
   }
 }
 
+variable "invoker_iam_disabled" {
+  description = "Disables IAM permission check for run.routes.invoke for callers of this service."
+  type        = bool
+  default     = false
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)

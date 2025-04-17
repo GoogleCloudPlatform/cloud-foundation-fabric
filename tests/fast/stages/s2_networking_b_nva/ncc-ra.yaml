@@ -22,7 +22,7 @@ counts:
   google_compute_instance: 4
   google_compute_network: 4
   google_compute_network_peering: 4
-  google_compute_route: 7
+  google_compute_route: 10
   google_compute_router: 8
   google_compute_router_interface: 12
   google_compute_router_nat: 2
@@ -43,11 +43,11 @@ counts:
   google_network_connectivity_spoke: 4
   google_project: 3
   google_project_iam_binding: 2
-  google_project_iam_member: 19
-  google_project_service: 25
-  google_project_service_identity: 19
+  google_project_iam_member: 22
+  google_project_service: 28
+  google_project_service_identity: 22
   google_storage_bucket_object: 1
   google_tags_tag_binding: 3
   modules: 38
   random_id: 6
-  resources: 257
+  resources: 269

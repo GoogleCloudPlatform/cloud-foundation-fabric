@@ -66,8 +66,17 @@ variable "prefix" {
   }
 }
 
+variable "project_create_config" {
+  description = "Create project instead of using an existing one."
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+  })
+  default = null
+}
+
 variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
+  description = "Project id that references existing project."
   type        = string
 }
 
@@ -86,16 +95,15 @@ variable "regions" {
 variable "secops_config" {
   description = "SecOps config."
   type = object({
-    region            = string
-    alpha_apis_region = string
+    region = string
     source_tenant = object({
-      gcp_project          = string
-      export_sa_key_base64 = string
+      customer_id = string
+      gcp_project = string
     })
     target_tenant = object({
-      gcp_project             = string
-      customer_id             = string
-      ingestion_sa_key_base64 = string
+      gcp_project  = string
+      customer_id  = string
+      forwarder_id = string
     })
   })
 }

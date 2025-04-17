@@ -54,8 +54,8 @@ values:
     - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
-  module.project-factory.module.automation-service-accounts["dev-tb-app0-0/ro"].google_service_account.service_account[0]:
-    account_id: test-pf-dev-tb-app0-0-ro
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-ro
     create_ignore_already_exists: null
     description: Team B app 0 read-only automation sa.
     disabled: false
@@ -64,8 +64,8 @@ values:
     member: serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
-  module.project-factory.module.automation-service-accounts["dev-tb-app0-0/rw"].google_service_account.service_account[0]:
-    account_id: test-pf-dev-tb-app0-0-rw
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/rw"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-rw
     create_ignore_already_exists: null
     description: Team B app 0 read/write automation sa.
     disabled: false
@@ -257,6 +257,26 @@ values:
   : project: test-pf-dev-ta-app0-be
     service: container.googleapis.com
     timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_key.default["my-tag-key-1"]:
+    description: Managed by the Terraform project-factory module.
+    parent: projects/test-pf-dev-ta-app0-be
+    purpose: null
+    purpose_data: null
+    short_name: my-tag-key-1
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value.default["my-tag-key-1/my-value-1"]:
+    description: My value 1
+    short_name: my-value-1
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value.default["my-tag-key-1/my-value-2"]:
+    description: My value 3
+    short_name: my-value-2
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - user:user@example.com
+    role: roles/resourcemanager.tagUser
   module.project-factory.module.projects["dev-tb-app0-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-tb-app0-0
     user_project: null

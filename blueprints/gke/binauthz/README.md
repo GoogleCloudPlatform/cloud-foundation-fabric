@@ -6,7 +6,7 @@ The diagram below depicts the architecture used in the blueprint.
 
 ![Architecture](diagram.png)
 
-The CI and CD pipelines are implemented as Cloud Build triggers that run with a user-specified service account. 
+The CI and CD pipelines are implemented as Cloud Build triggers that run with a user-specified service account.
 
 The CI pipeline does the following:
 
@@ -31,14 +31,14 @@ Once the resources have been created, do the following to verify that everything
 1. Fetch the cluster credentials
 
         gcloud container clusters get-credentials cluster --project <PROJECT_ID>
-    
+
 2. Apply the manifest tenant-setup.yaml available in your work directory.
 
         kubectl apply -f tenant-setup.yaml
 
    By applying that manifest the following is created:
 
-    * A namespace called "apis". This is the namespace where the application will be deployed. 
+    * A namespace called "apis". This is the namespace where the application will be deployed.
     * A Role and a RoleBinding in previously created namespace so the service account that has been configured for the CD pipeline trigger in Cloud Build is able to deploy the kubernetes application to that namespace.
 
 3. Change to the image subdirectory in your work directory
@@ -95,7 +95,6 @@ Once the resources have been created, do the following to verify that everything
                 - containerPort: 80
         EOF
 
-
 9. Go to the Kubernetes Engine > Workloads section to check that that the Binary Authorization admissions controller webhook did not block the deployment.
 
 The application deployed to the cluster is an RESTful API that enables managing Google Cloud storage buckets in the project. Workload identity is used so the app can interact with the Google Cloud Storage API.
@@ -136,5 +135,5 @@ module "test" {
   }
   project_id = "my-project"
 }
-# tftest modules=14 resources=60
+# tftest modules=14 resources=61
 ```

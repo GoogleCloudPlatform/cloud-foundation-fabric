@@ -200,6 +200,9 @@
             "display_name": {
               "type": "string"
             },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
             "iam_self_roles": {
               "type": "array",
               "items": {

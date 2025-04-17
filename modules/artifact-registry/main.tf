@@ -21,17 +21,21 @@ locals {
 }
 
 resource "google_artifact_registry_repository" "registry" {
-  provider      = google-beta
-  project       = var.project_id
-  location      = var.location
-  description   = var.description
-  format        = upper(local.format_string)
-  labels        = var.labels
-  repository_id = var.name
-  mode          = "${upper(local.mode_string)}_REPOSITORY"
-  kms_key_name  = var.encryption_key
-
+  provider               = google-beta
+  project                = var.project_id
+  location               = var.location
+  description            = var.description
+  format                 = upper(local.format_string)
+  labels                 = var.labels
+  repository_id          = var.name
+  mode                   = "${upper(local.mode_string)}_REPOSITORY"
+  kms_key_name           = var.encryption_key
   cleanup_policy_dry_run = var.cleanup_policy_dry_run
+
+  vulnerability_scanning_config {
+    enablement_config = var.enable_vulnerability_scanning ? "INHERITED" : "DISABLED"
+  }
+
   dynamic "cleanup_policies" {
     for_each = var.cleanup_policies == null ? {} : var.cleanup_policies
     content {
@@ -107,8 +111,20 @@ resource "google_artifact_registry_repository" "registry" {
           # }
         }
       }
+      dynamic "common_repository" {
+        for_each = (
+          local.format_string == "docker" && try(local.format_obj.remote.common_repository, null) != null
+          ? [""] : []
+        )
+        content {
+          uri = local.format_obj.remote.common_repository
+        }
+      }
       dynamic "docker_repository" {
-        for_each = local.format_string == "docker" ? [""] : []
+        for_each = (
+          local.format_string == "docker" && try(local.format_obj.remote.common_repository, null) == null
+          ? [""] : []
+        )
         content {
           public_repository = local.format_obj.remote.public_repository
           dynamic "custom_repository" {

@@ -181,7 +181,7 @@ module "processing-dp-cluster" {
     }
   }
 }
-# tftest modules=6 resources=28 e2e
+# tftest modules=6 resources=29 e2e
 ```
 
 ### Cluster configuration on GKE

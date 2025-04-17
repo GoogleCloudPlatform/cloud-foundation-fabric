@@ -191,7 +191,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - put the values coming from user's inventory the right
     #   side of any comparison operators.
     # - include a descriptive error message to the assert
-    # print(yaml.dump({'values': summary.values}))
+    print(yaml.dump({'values': summary.values}))
     # print("", yaml.dump({'counts': summary.counts}))
 
     if 'values' in inventory:
@@ -207,11 +207,16 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
       try:
         expected_counts = inventory['counts']
         for type_, expected_count in expected_counts.items():
-          assert type_ in summary.counts, \
-              f'{relative_path}: module does not create any resources of type `{type_}`'
-          plan_count = summary.counts[type_]
-          assert plan_count == expected_count, \
-              f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+          # modules and resources always exists in summary
+          if expected_count == 0 and type_ not in ('modules', 'resources'):
+            assert type_ not in summary.counts, \
+              f'{relative_path}: module creates resources of type `{type_}` when expected not to create any'
+          else:
+            assert type_ in summary.counts, \
+                f'{relative_path}: module does not create any resources of type `{type_}`'
+            plan_count = summary.counts[type_]
+            assert plan_count == expected_count, \
+                f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
       except AssertionError:
         print(f'\n{path}')
         print(yaml.dump({'counts': summary.counts}))

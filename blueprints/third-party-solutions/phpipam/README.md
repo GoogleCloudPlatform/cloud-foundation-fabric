@@ -79,7 +79,7 @@ git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 Before you deploy the architecture, you will need at least the following
 information (for more precise configuration see the Variables section):
 
-* The project ID.
+- The project ID.
 
 #### Step 2: Prepare the variables
 
@@ -236,13 +236,14 @@ module "test" {
   }
   project_id = "test-prj"
 }
-# tftest modules=8 resources=54
+# tftest modules=8 resources=55
 ```
 
 ## Bugs and errors
 
 If you've deployed the phpIPAM terraform configuration, destroyed it, and set it up again, you might stumble upon this error:
-```
+
+```bash
 ╷
 │ Error: Error waiting for Create Service Networking Connection: Error code 9, message: Cannot modify allocated ranges in CreateConnection. Please use UpdateConnection.
 │ Help Token: <token>
@@ -253,13 +254,16 @@ If you've deployed the phpIPAM terraform configuration, destroyed it, and set it
 │ 
 ╵
 ```
+
 This can be solved by running this command:
+
 ```bash
 gcloud beta services vpc-peerings update \
-	--service=servicenetworking.googleapis.com \
-	--ranges=[your-private-connection-range-name] \
-	--network=[your-vpc-name] \
-	--project=[your-project-id] \
-	--force
+ --service=servicenetworking.googleapis.com \
+ --ranges=[your-private-connection-range-name] \
+ --network=[your-vpc-name] \
+ --project=[your-project-id] \
+ --force
 ```
+
 After it has finished updating, try running `terraform apply` again and it should work.

@@ -26,7 +26,7 @@ counts:
   google_compute_network: 4
   google_compute_network_peering: 4
   google_compute_region_backend_service: 4
-  google_compute_route: 15
+  google_compute_route: 18
   google_compute_router: 4
   google_compute_router_interface: 4
   google_compute_router_nat: 2
@@ -45,11 +45,11 @@ counts:
   google_monitoring_monitored_project: 2
   google_project: 3
   google_project_iam_binding: 2
-  google_project_iam_member: 19
-  google_project_service: 25
-  google_project_service_identity: 19
+  google_project_iam_member: 22
+  google_project_service: 28
+  google_project_service_identity: 22
   google_storage_bucket_object: 1
   google_tags_tag_binding: 3
   modules: 42
   random_id: 6
-  resources: 243
+  resources: 255

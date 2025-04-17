@@ -60,6 +60,8 @@ resource "google_network_security_tls_inspection_policy" "default" {
   description           = coalesce(var.tls_inspection_config.create_config.description, var.description)
   ca_pool               = var.tls_inspection_config.create_config.ca_pool
   exclude_public_ca_set = var.tls_inspection_config.create_config.exclude_public_ca_set
+  min_tls_version       = "TLS_VERSION_UNSPECIFIED" # to avoid drift, not supported by Secure Web Proxy
+  tls_feature_profile   = "PROFILE_UNSPECIFIED"     # to avoid drift, not supported by Secure Web Proxy
 }
 
 moved {

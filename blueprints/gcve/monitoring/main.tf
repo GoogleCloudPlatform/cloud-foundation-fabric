@@ -36,8 +36,8 @@ module "project" {
   project_reuse   = var.project_create != null ? null : {}
   services = [
     "compute.googleapis.com",
-    "monitoring.googleapis.com",
     "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "secretmanager.googleapis.com"
   ]
   shared_vpc_service_config = !local.use_shared_vpc ? null : {

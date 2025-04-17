@@ -108,6 +108,10 @@ resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
   count           = var.shared_vpc_service_config.host_project != null ? 1 : 0
   host_project    = var.shared_vpc_service_config.host_project
   service_project = local.project.project_id
+  depends_on = [
+    google_access_context_manager_service_perimeter_dry_run_resource.default,
+    google_access_context_manager_service_perimeter_resource.default
+  ]
 }
 
 resource "google_project_iam_member" "shared_vpc_host_robots" {

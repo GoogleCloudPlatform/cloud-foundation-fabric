@@ -144,7 +144,8 @@ module "organization" {
               || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
               EOT
               , join(",", formatlist("'%s'", [
-                "roles/accesscontextmanager.policyAdmin",
+                "roles/accesscontextmanager.policyEditor",
+                "roles/accesscontextmanager.policyReader",
                 "roles/cloudasset.viewer",
                 "roles/compute.orgFirewallPolicyAdmin",
                 "roles/compute.orgFirewallPolicyUser",

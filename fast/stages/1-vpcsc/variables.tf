@@ -88,6 +88,7 @@ variable "egress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}
@@ -115,10 +116,11 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels    = optional(string, "data/access-levels")
-    egress_policies  = optional(string, "data/egress-policies")
-    ingress_policies = optional(string, "data/ingress-policies")
-    perimeters       = optional(string, "data/perimeters")
+    access_levels       = optional(string, "data/access-levels")
+    egress_policies     = optional(string, "data/egress-policies")
+    ingress_policies    = optional(string, "data/ingress-policies")
+    perimeters          = optional(string, "data/perimeters")
+    restricted_services = optional(string, "data/restricted-services.yaml")
     context = optional(object({
       identity_sets = optional(map(list(string)), {})
       resource_sets = optional(map(list(string)), {})
@@ -146,6 +148,7 @@ variable "ingress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}
