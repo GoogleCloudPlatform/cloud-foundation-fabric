@@ -1,10 +1,10 @@
-# Shared security resources and VPC Service Controls
+# SecOps Stage
 
-This stage sets up an area dedicated to hosting security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
+This stage sets up an area dedicated to hosting SecOps projects in the Google Cloud organization.
 
-The design of this stage is fairly general, and out of the box it only provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management).
+The design of this stage is fairly simple, this stage is just responsible for creating GCP projects that will be linked to SecOps instances as per the [following documentation](https://cloud.google.com/chronicle/docs/onboard/configure-cloud-project).
 
-Expanding it to include other security-related services like Secret Manager is fairly simple by adapting the provided implementation for Cloud KMS, and leveraging the broad permissions granted on the top-level Security folder to the automation service account used here.
+After creating the projects please refer to your Google Cloud Security representative for instructions on how to bind your Google SecOps instance the Google Cloud project/s created in this stage.
 
 The following diagram illustrates the high-level design of resources managed here:
 
@@ -14,8 +14,7 @@ The following diagram illustrates the high-level design of resources managed her
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
-  - [Cloud KMS](#cloud-kms)
-  - [Certificate Authority Service (CAS)](#certificate-authority-service-cas)
+  - [Workforce Identity Federation](#workforce-identity-federation)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
@@ -23,7 +22,7 @@ The following diagram illustrates the high-level design of resources managed her
   - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
-  - [NGFW Enterprise - sample TLS configurations](#ngfw-enterprise-sample-tls-configurations)
+  - [Workforce Identity Federation](#workforce-identity-federation)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -31,23 +30,30 @@ The following diagram illustrates the high-level design of resources managed her
 
 ## Design overview and choices
 
-Project-level security resources are grouped into two separate projects, one per environment. This setup matches requirements we frequently observe in real life and provides enough separation without needlessly complicating operations.
+This stage will deploy 1 SecOps project for each environment available from the 0-globals input variables, of course such a behaviour might be updated to either deploy a single production instance or different number of environments with respect to the foundations ones.
 
-Cloud KMS is configured and designed mainly to encrypt GCP resources with a [Customer-managed encryption key](https://cloud.google.com/kms/docs/cmek) but it may be used to create cryptokeys used to [encrypt application data](https://cloud.google.com/kms/docs/encrypting-application-data) too.
+IAM for day to day operations is already assigned at the folder level to the secops team by the previous stage, but more granularity can be added here at the project level, to grant control of separate services across environments to different actors as well as in the later 3-secops-dev/prod stages.
 
-IAM for day to day operations is already assigned at the folder level to the security team by the previous stage, but more granularity can be added here at the project level, to grant control of separate services across environments to different actors.
+### Workforce Identity Federation
 
-### Cloud KMS
+This stage supports configuration of [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation) which lets an external identity provider (IdP) to authenticate and authorize a group of users (usually employees) using IAM, so that the users can access Google Cloud services.
 
-A reference Cloud KMS implementation is part of this stage, to provide a simple way of managing centralized keys, that are then shared and consumed widely across the organization to enable customer-managed encryption. The implementation is also easy to clone and modify to support other services like Secret Manager.
+The following example shows an example on how to define a Workforce Identity pool for the organization.
 
-The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
-
-IAM roles on keys can be configured at the logical level for all locations where a logical key is created. Their management can also be delegated via [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) exposed through a simple variable, to allow other identities to set IAM policies on keys. This is particularly useful in setups like project factories, making it possible to configure IAM bindings during project creation for team groups or service agent accounts (compute, storage, etc.).
-
-### Certificate Authority Service (CAS)
-
-With this stage you can leverage Certificate Authority Services (CAS) and create as many CAs you need for each environments. To create custom CAS, you can use the `certificate_authorities` variable.
+```hcl
+# stage 2 secops wif tfvars
+workforce_identity_providers = {
+  test = {
+    issuer       = "azuread"
+    display_name = "wif-provider"
+    description  = "Workforce Identity pool"
+    saml         = {
+      idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+    }
+  }
+}
+# tftest skip
+```
 
 ## How to run this stage
 
@@ -142,29 +148,24 @@ terraform apply
 
 ## Customizations
 
-### NGFW Enterprise - sample TLS configurations
+### Workforce Identity Federation
 
-This is a minimal configuration that creates a CAs for each environment and enables TLS inspection policies for NGFW Enterprise.
+This is a minimal configuration that creates a Workforce Identity pool at organization level.
 
 ```tfvars
-cas_configs = {
-  dev = {
-    ngfw-dev-cas-0 = {
-      location = "europe-west1"
+workforce_identity_providers = {
+  test = {
+    issuer       = "azuread"
+    display_name = "wif-provider"
+    description  = "Workforce Identity pool"
+    saml         = {
+      idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
     }
   }
-  prod = {
-    ngfw-prod-cas-0 = {
-      location = "europe-west1"
-    }
-  }
-}
-tls_inspection = {
-  enabled = true
 }
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-security-providers.tf -->
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:2-secops-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
@@ -188,15 +189,17 @@ tls_inspection = {
 | [organization](variables-fast.tf#L75) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables-fast.tf#L86) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [custom_roles](variables-fast.tf#L38) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  project_iam_viewer &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
-| [essential_contacts](variables.tf#L3) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
-| [outputs_location](variables.tf#L9) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [essential_contacts](variables.tf#L17) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
+| [outputs_location](variables.tf#L23) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [stage_config](variables-fast.tf#L96) | FAST stage configuration. | <code title="object&#40;&#123;&#10;  security &#61; optional&#40;object&#40;&#123;&#10;    short_name          &#61; optional&#40;string&#41;&#10;    iam_admin_delegated &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_viewer          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 | [tag_values](variables-fast.tf#L110) | Root-level tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
-| [workforce_identity_providers](variables.tf#L15) | Workforce Identity Federation pools. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; optional&#40;string&#41;&#10;  issuer              &#61; string&#10;  display_name        &#61; string&#10;  description         &#61; string&#10;  disabled            &#61; optional&#40;bool, false&#41;&#10;  saml &#61; optional&#40;object&#40;&#123;&#10;    idp_metadata_xml &#61; string&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [workforce_identity_providers](variables.tf#L29) | Workforce Identity Federation pools. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; optional&#40;string&#41;&#10;  issuer              &#61; string&#10;  display_name        &#61; string&#10;  description         &#61; string&#10;  disabled            &#61; optional&#40;bool, false&#41;&#10;  saml &#61; optional&#40;object&#40;&#123;&#10;    idp_metadata_xml &#61; string&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tfvars](outputs.tf#L63) | Terraform variable files for the following stages. | ✓ |  |
+| [federated_identity_pool](outputs.tf#L41) | Workforce Identity Federation pool. |  |  |
+| [secops_project_ids](outputs.tf#L46) | SecOps project IDs. |  |  |
+| [tfvars](outputs.tf#L51) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

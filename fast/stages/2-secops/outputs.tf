@@ -16,6 +16,9 @@
 
 locals {
   tfvars = {
+    federated_identity_pool = try(
+      google_iam_workforce_pool.default[0].name, null
+    )
     secops_project_ids = {
       for k, v in module.project : k => v.id
     }
@@ -33,6 +36,16 @@ resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
   name    = "tfvars/2-security.auto.tfvars.json"
   content = jsonencode(local.tfvars)
+}
+
+output "federated_identity_pool" {
+  description = "Workforce Identity Federation pool."
+  value = local.tfvars.federated_identity_pool
+}
+
+output "secops_project_ids" {
+  description = "SecOps project IDs."
+  value = local.tfvars.secops_project_ids
 }
 
 output "tfvars" {
