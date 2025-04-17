@@ -36,3 +36,7 @@ output "central_project_resources" {
     tag-templates-ids = module.central-tag-templates.data_catalog_tag_template_ids
   }
 }
+
+output "service_accounts" {
+  value = module.dp-processing-service-accounts
+}

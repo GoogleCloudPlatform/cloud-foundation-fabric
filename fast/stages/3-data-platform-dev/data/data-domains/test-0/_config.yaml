@@ -17,6 +17,20 @@
 name: Test 0
 short_name: t0
 
+service_accounts:
+  rw:
+    description: Automation (rw).
+  ro:
+    description: Automation (ro).
+
+project_config:
+  composer_deploy: true
+  services:
+    - composer.googleapis.com
+    - datacatalog.googleapis.com
+    - dataplex.googleapis.com
+    - datalineage.googleapis.com
+
 folder_config:
   # iam_by_principals:
   #   "group:data-consumer-bi@yoyoland.joonix.net":

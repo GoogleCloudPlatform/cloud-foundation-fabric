@@ -38,6 +38,10 @@
         "name": {
           "type": "string"
         },
+        "composer_deploy": {
+          "type": "boolean",
+          "default": false
+        },
         "iam": {
           "$ref": "#/$defs/iam"
         },

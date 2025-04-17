@@ -18,8 +18,9 @@ short_name: p0
 services:
   - bigquery.googleapis.com
   - cloudresourcemanager.googleapis.com
-  - dataplex.googleapis.com
   - datacatalog.googleapis.com
+  - dataplex.googleapis.com
+  - datalineage.googleapis.com
   - storage.googleapis.com
 exposed_resources:
   bigquery_datasets:
@@ -44,6 +45,11 @@ iam_bindings:
       title: "exposure"
       description: "Secure Tag Exposure"
       expression: "resource.hasTagKeyId('tagKeys/281478712003464')"
+
+service_accounts:
+  dp-processing:
+    name: dp-processing
+    description: Data Product Service Account.
 #
 #
 #

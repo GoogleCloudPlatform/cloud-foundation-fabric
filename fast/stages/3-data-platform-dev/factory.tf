@@ -43,6 +43,7 @@ locals {
         iam_by_principals     = try(v.folder_config.iam_by_principals, {})
       }
       project_config = {
+        composer_deploy       = try(v.project_config.composer_deploy, false)
         name                  = try(v.project_config.name, k)
         services              = try(v.project_config.services, [])
         iam                   = try(v.project_config.iam, {})
@@ -58,6 +59,7 @@ locals {
   }
   data_products = {
     for v in local._dp : "${v.dd}/${v.key}" => merge(v, {
+      dd         = v.dd
       short_name = lookup(v, "short_name", v.key)
       services = distinct(concat(
         lookup(v, "services", []),

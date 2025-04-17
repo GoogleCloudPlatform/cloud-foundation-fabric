@@ -69,7 +69,14 @@ module "dp-projects-iam" {
       )
     })
   }
-  iam_by_principals = each.value.iam_by_principals
+  iam_by_principals = merge(
+    {
+      "${module.dd-composer-service-accounts[each.value.dd].iam_email}" = [
+        "roles/iam.serviceAccountTokenCreator"
+      ]
+    },
+    each.value.iam_by_principals
+  )
 }
 
 module "dp-buckets" {
@@ -114,4 +121,24 @@ module "dp-service-accounts" {
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
   iam_storage_roles     = each.value.iam_storage_roles
+}
+
+module "dp-processing-service-accounts" {
+  source      = "../../../modules/iam-service-account"
+  for_each    = local.data_products
+  project_id  = module.dp-projects[each.key].project_id
+  prefix      = local.prefix
+  name        = "processing-sa"
+  description = "Processing Service Account"
+  iam_project_roles = {
+    "${module.dp-projects[each.key].project_id}" = [
+      "roles/bigquery.dataEditor",
+      "roles/bigquery.jobUser",
+      "roles/dataflow.admin",
+      "roles/dataproc.editor",
+      "roles/dataproc.worker",
+      "roles/iam.serviceAccountUser",
+      "roles/storage.admin"
+    ]
+  }
 }
