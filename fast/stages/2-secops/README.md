@@ -2,9 +2,9 @@
 
 This stage sets up an area dedicated to hosting SecOps projects in the Google Cloud organization.
 
-The design of this stage is fairly simple, this stage is just responsible for creating GCP projects that will be linked to SecOps instances as per the [following documentation](https://cloud.google.com/chronicle/docs/onboard/configure-cloud-project).
+The design of this stage is fairly simple, as it is only responsible for creating GCP projects that will be linked to SecOps instances as per the [following documentation](https://cloud.google.com/chronicle/docs/onboard/configure-cloud-project).
 
-After creating the projects please refer to your Google Cloud Security representative for instructions on how to bind your Google SecOps instance the Google Cloud project/s created in this stage.
+After creating the projects please refer to your Google Cloud Security representative for instructions on how to bind your Google SecOps instance to the Google Cloud project/s created in this stage.
 
 The following diagram illustrates the high-level design of resources managed here:
 
