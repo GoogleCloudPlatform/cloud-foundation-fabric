@@ -171,8 +171,8 @@ workforce_identity_providers = {
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [identity-providers-defs.tf](./identity-providers-defs.tf) | Identity provider definitions. |  |  |
-| [identity-providers.tf](./identity-providers.tf) | Workload Identity Federation provider definitions. |  | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
+| [identity-providers-defs.tf](./identity-providers-defs.tf) | Workforce Identity provider definitions. |  |  |
+| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. |  | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>folder</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
