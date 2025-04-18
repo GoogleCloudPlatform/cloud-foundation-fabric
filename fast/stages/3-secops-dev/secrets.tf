@@ -35,7 +35,7 @@ module "secops-tenant-secrets" {
     }, local.workspace_log_ingestion ? {
     (local.secops_workspace_int_sa_key) = {
       latest = {
-        enabled = true, data = google_service_account_key.workspace_integration_key.0.private_key
+        enabled = true, data = google_service_account_key.workspace_integration_key[0].private_key
       }
     }
   } : {})

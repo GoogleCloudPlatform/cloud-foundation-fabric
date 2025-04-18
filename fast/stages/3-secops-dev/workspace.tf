@@ -53,7 +53,7 @@ module "workspace-integration-sa" {
 
 resource "google_service_account_key" "workspace_integration_key" {
   count              = local.workspace_log_ingestion ? 1 : 0
-  service_account_id = module.workspace-integration-sa.0.email
+  service_account_id = module.workspace-integration-sa[0].email
 }
 
 resource "restful_resource" "workspace_feeds" {
@@ -75,12 +75,12 @@ resource "restful_resource" "workspace_feeds" {
         "authentication" : {
           "token_endpoint" : "https://oauth2.googleapis.com/token",
           "claims" : {
-            "issuer" : module.workspace-integration-sa.0.email,
+            "issuer" : module.workspace-integration-sa[0].email,
             "subject" : var.workspace_integration_config.delegated_user,
             "audience" : "https://oauth2.googleapis.com/token"
           },
           rs_credentials : {
-            private_key : jsondecode(base64decode(google_service_account_key.workspace_integration_key.0.private_key)).private_key
+            private_key : jsondecode(base64decode(google_service_account_key.workspace_integration_key[0].private_key)).private_key
           }
         },
         workspace_customer_id : each.key == "ws-alerts" ? trimprefix(var.workspace_integration_config.workspace_customer_id, "C") : var.workspace_integration_config.workspace_customer_id
