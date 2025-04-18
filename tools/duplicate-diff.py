@@ -24,10 +24,6 @@ duplicates = [
         # data factory
     ],
     [
-        "fast/stages/0-bootstrap/identity-providers-wfif.tf",
-        "fast/stages/2-secops/identity-providers.tf",
-    ],
-    [
         "fast/stages/0-bootstrap/identity-providers-wfif-defs.tf",
         "fast/stages/2-secops/identity-providers-defs.tf",
     ]

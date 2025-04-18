@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Workload Identity Federation provider definitions.
+# tfdoc:file:description Workforce Identity Federation provider definitions.
 
 locals {
   workforce_identity_providers = {
