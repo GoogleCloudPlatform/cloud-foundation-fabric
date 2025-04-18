@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-03-22 12:29:37+00:00 to: None since: v38.1.0 -->
 
+## [38.2.0] - 2025-04-18
+
 ### BREAKING CHANGES
 
 - `modules/iam-service-account`: removed `public_keys_directory` variable. Use bare `google_service_account_key` resources if this functionality is needed. [[#3008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3008)]
 - `modules/gke-cluster-standard`, `modules/gke-cluster-autopilot`: Default value for `access_config.ip_access` changed from `{}` to `null`; explicitly set to keep IP access enabled. [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)]
 
-
 ### BLUEPRINTS
 
+- [[#3043](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3043)] Bump golang.org/x/net from 0.36.0 to 0.38.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-04-17 05:38:23+00:00 -->
 - [[#2982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2982)] Module: net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2025-04-10 09:44:40+00:00 -->
 - [[#3008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3008)] Add support to attach tags to service accounts ([juliocc](https://github.com/juliocc)) <!-- 2025-04-04 12:31:19+00:00 -->
 - [[#2997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2997)] Allow disabling GKE IP endpoints and setting GKE VPC scope DNS domain ([juliocc](https://github.com/juliocc)) <!-- 2025-04-02 07:03:58+00:00 -->
@@ -20,6 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3033](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3033)] Pathexpand all factory data paths ([sruffilli](https://github.com/sruffilli)) <!-- 2025-04-16 11:28:10+00:00 -->
 - [[#3035](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3035)] Add managed Kafka  ([franpinedab](https://github.com/franpinedab)) <!-- 2025-04-15 18:15:46+00:00 -->
 - [[#3013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3013)] SecOps Anonymization improvements ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2025-04-11 13:14:06+00:00 -->
 - [[#3020](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3020)] [FAST] Remove object creator permission from storage viewer custom role ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-09 14:39:20+00:00 -->
@@ -28,6 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3033](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3033)] Pathexpand all factory data paths ([sruffilli](https://github.com/sruffilli)) <!-- 2025-04-16 11:28:10+00:00 -->
 - [[#3040](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3040)] Add vulnerability scanning to artifact registry module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-14 16:33:35+00:00 -->
 - [[#3034](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3034)] Added recipe HA VPN between AWS and GCP ([apichick](https://github.com/apichick)) <!-- 2025-04-14 10:47:21+00:00 -->
 - [[#3031](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3031)] Use path as keys in project factory ([wiktorn](https://github.com/wiktorn)) <!-- 2025-04-11 20:50:50+00:00 -->
@@ -3001,7 +3005,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.2.0...HEAD
+[38.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...v38.2.0
 [38.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.0.0...v38.1.0
 [38.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.4.0...v38.0.0
 [37.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v37.3.0...v37.4.0
