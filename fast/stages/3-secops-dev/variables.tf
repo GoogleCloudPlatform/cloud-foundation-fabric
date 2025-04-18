@@ -93,8 +93,8 @@ variable "project_id" {
 
 variable "project_reuse" {
   description = "Whether to use an existing project, leave default for FAST deployment."
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "region" {
