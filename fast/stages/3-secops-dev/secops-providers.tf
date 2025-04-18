@@ -21,7 +21,7 @@ provider "restful" {
   security = {
     http = {
       token = {
-        token = data.google_client_config.default.access_token
+        token = try(data.google_client_config.default.access_token,"")
       }
     }
   }
