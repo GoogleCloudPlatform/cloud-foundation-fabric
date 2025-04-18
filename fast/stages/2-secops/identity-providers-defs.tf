@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Identity provider definitions.
+# tfdoc:file:description Workforce Identity provider definitions.
 
 locals {
   workforce_identity_providers_defs = {
