@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+variable "billing_account" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
+  type = object({
+    id = optional(string)
+  })
+  default = {}
+}
+
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Folder name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "secops_project_ids" {
   # tfdoc:variable:source 2-secops
   description = "SecOps Project IDs for each environment."

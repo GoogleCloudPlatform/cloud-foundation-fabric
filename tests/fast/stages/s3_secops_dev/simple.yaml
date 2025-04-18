@@ -1,0 +1,37 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_apikeys_key: 1
+  google_chronicle_data_access_label: 1
+  google_chronicle_data_access_scope: 1
+  google_chronicle_reference_list: 1
+  google_chronicle_rule: 1
+  google_chronicle_rule_deployment: 1
+  google_org_policy_policy: 1
+  google_project: 1
+  google_project_iam_custom_role: 2
+  google_project_iam_member: 5
+  google_project_service: 9
+  google_project_service_identity: 5
+  google_secret_manager_secret: 2
+  google_secret_manager_secret_version: 2
+  google_service_account: 1
+  google_service_account_key: 1
+  modules: 4
+  resources: 41
+  restful_resource: 6
+
+outputs:
+  project_id: fast-dev-secops-0

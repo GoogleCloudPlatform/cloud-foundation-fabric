@@ -91,6 +91,12 @@ variable "project_id" {
   default     = null
 }
 
+variable "project_reuse" {
+  description = "Whether to use an existing project, leave default for FAST deployment."
+  type = map(string)
+  default = {}
+}
+
 variable "region" {
   description = "Google Cloud region definition for resources."
   type        = string
