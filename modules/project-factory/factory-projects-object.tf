@@ -43,6 +43,7 @@ locals {
       metric_scopes              = []
       parent                     = null
       prefix                     = null
+      project_id                 = null
       service_encryption_key_ids = {}
       services                   = []
       shared_vpc_service_config = merge({
@@ -96,6 +97,7 @@ locals {
       )
       parent                     = null
       prefix                     = null
+      project_id                 = null
       service_encryption_key_ids = null
       storage_location           = null
       tag_bindings               = null
@@ -181,6 +183,7 @@ locals {
         local.__projects_config.data_defaults.metric_scopes
       )
       name         = lookup(v, "name", basename(k)) # type: string
+      project_id   = lookup(v, "project_id", null)  # type: string, nullable
       org_policies = try(v.org_policies, {})        # type: map(object({...}))
       parent = try(                                 # type: string, nullable
         coalesce(

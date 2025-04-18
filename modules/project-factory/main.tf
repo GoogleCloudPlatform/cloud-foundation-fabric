@@ -37,11 +37,11 @@ module "projects" {
   source          = "../project"
   for_each        = local.projects
   billing_account = each.value.billing_account
-  name            = each.value.name
+  name            = each.value.project_id == null ? each.value.name : each.value.project_id # if project_id is present it takes precedence
   parent = lookup(
     local.context.folder_ids, each.value.parent, each.value.parent
   )
-  prefix              = each.value.prefix
+  prefix              = each.value.project_id == null ? each.value.prefix : null # if project_id is present no prefix should be used
   alerts              = try(each.value.alerts, null)
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})

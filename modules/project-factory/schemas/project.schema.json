@@ -109,6 +109,9 @@
     "name": {
       "type": "string"
     },
+    "project_id": {
+      "type": "string"
+    },
     "org_policies": {
       "type": "object",
       "additionalProperties": false,
