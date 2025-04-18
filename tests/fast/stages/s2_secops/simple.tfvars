@@ -5,7 +5,7 @@ billing_account = {
   id = "000000-111111-222222"
 }
 custom_roles = {
-  project_iam_viewer            = "organizations/123456789012/roles/bar"
+  project_iam_viewer = "organizations/123456789012/roles/bar"
 }
 environments = {
   "dev" : {
