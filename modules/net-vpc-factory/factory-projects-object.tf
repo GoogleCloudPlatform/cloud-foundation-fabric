@@ -273,10 +273,10 @@ locals {
     })
   }
   # tflint-ignore: terraform_unused_declarations
-  _projects_uniqunees_validation = {
+  _projects_uniqueness_validation = {
     # will raise error, if the same project (derived from file name, or provided in the YAML file)
     # is used more than once
     for k, v in local._projects_output :
-    "${v.prefix}-${v.name}" => k
+    "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
   }
 }

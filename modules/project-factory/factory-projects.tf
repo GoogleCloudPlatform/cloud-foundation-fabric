@@ -23,8 +23,7 @@ locals {
       trimsuffix(f, ".yaml") => merge(
         { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
-      )
-      if !endswith(f, "/_config.yaml")
+      ) if !endswith(f, "/_config.yaml")
     }
   )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
@@ -32,8 +31,10 @@ locals {
     for f in try(fileset(local._project_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
   }
-
-  _projects_input = merge(local._hierarchy_projects_full_path, local._projects_full_path)
+  _projects_input = merge(
+    local._hierarchy_projects_full_path,
+    local._projects_full_path
+  )
   _project_budgets = flatten([
     for k, v in local._projects_input : [
       for b in try(v.billing_budgets, []) : {
