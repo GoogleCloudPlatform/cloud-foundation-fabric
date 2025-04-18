@@ -14,52 +14,7 @@
  * limitations under the License.
  */
 
-variable "factories_config" {
-  description = "Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys."
-  type = object({
-    rules                = optional(string)
-    rules_defs           = optional(string, "data/rules")
-    reference_lists      = optional(string)
-    reference_lists_defs = optional(string, "data/reference_lists")
-  })
-  nullable = false
-  default = {
-    rules                = "./data/secops_rules.yaml"
-    rules_defs           = "./data/rules"
-    reference_lists      = "./data/secops_reference_lists.yaml"
-    reference_lists_defs = "./data/reference_lists"
-  }
-}
-
-variable "secops_group_principals" {
-  description = "Groups ID in IdP assigned to SecOps admins, editors, viewers roles."
-  type = object({
-    admins  = optional(list(string), [])
-    editors = optional(list(string), [])
-    viewers = optional(list(string), [])
-  })
-  default = {}
-}
-
-variable "secops_iam" {
-  description = "SecOps IAM configuration in {PRINCIPAL => {roles => [ROLES], scopes => [SCOPES]}} format."
-  type = map(object({
-    roles  = list(string)
-    scopes = optional(list(string))
-  }))
-  default  = {}
-  nullable = false
-}
-
-variable "secops_tenant_config" {
-  description = "SecOps Tenant configuration."
-  type = object({
-    customer_id = string
-    region      = string
-  })
-}
-
-variable "secops_data_rbac_config" {
+variable "data_rbac_config" {
   description = "SecOps Data RBAC scope and labels config."
   type = object({
     labels = optional(map(object({
@@ -93,7 +48,56 @@ variable "secops_data_rbac_config" {
   default = {}
 }
 
-variable "stage" {
+variable "factories_config" {
+  description = "Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys."
+  type = object({
+    rules                = optional(string)
+    rules_defs           = optional(string, "data/rules")
+    reference_lists      = optional(string)
+    reference_lists_defs = optional(string, "data/reference_lists")
+  })
+  nullable = false
+  default = {
+    rules                = "./data/secops_rules.yaml"
+    rules_defs           = "./data/rules"
+    reference_lists      = "./data/secops_reference_lists.yaml"
+    reference_lists_defs = "./data/reference_lists"
+  }
+}
+
+variable "iam" {
+  description = "SecOps IAM configuration in {PRINCIPAL => {roles => [ROLES], scopes => [SCOPES]}} format."
+  type = map(object({
+    roles  = list(string)
+    scopes = optional(list(string))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "iam_default" {
+  description = "Groups ID in IdP assigned to SecOps admins, editors, viewers roles."
+  type = object({
+    admins  = optional(list(string), [])
+    editors = optional(list(string), [])
+    viewers = optional(list(string), [])
+  })
+  default = {}
+}
+
+variable "project_id" {
+  description = "Project id that references existing SecOps project. Use this variable when running this stage in isolation."
+  type        = string
+  default     = null
+}
+
+variable "region" {
+  description = "Google Cloud region definition for resources."
+  type        = string
+  default     = "europe-west8"
+}
+
+variable "stage_config" {
   description = "FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management."
   type = object({
     environment = string
@@ -105,22 +109,12 @@ variable "stage" {
   }
 }
 
-variable "project_id" {
-  description = "Project id that references existing SecOps project. Use this variable when running this stage in isolation."
-  type        = string
-  default     = null
-}
-
-variable "regions" {
-  description = "Region definitions."
+variable "tenant_config" {
+  description = "SecOps Tenant configuration."
   type = object({
-    primary   = string
-    secondary = string
+    customer_id = string
+    region      = string
   })
-  default = {
-    primary   = "europe-west8"
-    secondary = "europe-west1"
-  }
 }
 
 variable "workspace_integration_config" {

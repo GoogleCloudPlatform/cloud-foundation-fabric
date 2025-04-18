@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-data "google_client_config" "default" {
-}
-
-#data "google_service_account_access_token" "secops_dev_api" {
-#  provider               = google
-#  target_service_account = module.secops-dev-api-client-sa.email
-#  scopes                 = ["userinfo-email", "cloud-platform"]
-#  lifetime               = "1200s"
-#}
+data "google_client_config" "default" {}
 
 provider "restful" {
-  base_url = "https://${var.secops_tenant_config.region}-chronicle.googleapis.com/v1alpha/"
+  base_url = "https://${var.tenant_config.region}-chronicle.googleapis.com/v1alpha/"
   security = {
     http = {
       token = {

@@ -40,12 +40,12 @@ resource "google_storage_bucket_object" "tfvars" {
 
 output "federated_identity_pool" {
   description = "Workforce Identity Federation pool."
-  value = local.tfvars.federated_identity_pool
+  value       = local.tfvars.federated_identity_pool
 }
 
 output "secops_project_ids" {
   description = "SecOps project IDs."
-  value = local.tfvars.secops_project_ids
+  value       = local.tfvars.secops_project_ids
 }
 
 output "tfvars" {

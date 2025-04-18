@@ -19,11 +19,11 @@ module "secops-tenant-secrets" {
   project_id = module.project.project_id
   secrets = merge({
     (local.secops_api_key_secret_key) = {
-      locations = [var.regions.primary]
+      locations = [var.region]
     }
     }, local.workspace_log_ingestion ? {
     (local.secops_workspace_int_sa_key) = {
-      locations = [var.regions.primary]
+      locations = [var.region]
     } } : {}
   )
   versions = merge({
@@ -40,8 +40,8 @@ module "secops-tenant-secrets" {
     }
   } : {})
   labels = merge({
-    (local.secops_api_key_secret_key) = { scope = "tenant" }
+    (local.secops_api_key_secret_key) = { scope = "secops" }
     }, local.workspace_log_ingestion ? {
-    (local.secops_workspace_int_sa_key) = { scope = "tenant" }
+    (local.secops_workspace_int_sa_key) = { scope = "secops" }
   } : {})
 }

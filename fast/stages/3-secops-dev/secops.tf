@@ -15,20 +15,20 @@
  */
 
 resource "google_chronicle_data_access_label" "labels" {
-  for_each             = coalesce(var.secops_data_rbac_config.labels, {})
+  for_each             = coalesce(var.data_rbac_config.labels, {})
   project              = module.project.project_id
-  location             = var.secops_tenant_config.region
-  instance             = var.secops_tenant_config.customer_id
+  location             = var.tenant_config.region
+  instance             = var.tenant_config.customer_id
   data_access_label_id = each.value.label_id
   udm_query            = each.value.udm_query
   description          = each.value.description
 }
 
 resource "google_chronicle_data_access_scope" "example" {
-  for_each             = coalesce(var.secops_data_rbac_config.scopes, {})
+  for_each             = coalesce(var.data_rbac_config.scopes, {})
   project              = module.project.project_id
-  location             = var.secops_tenant_config.region
-  instance             = var.secops_tenant_config.customer_id
+  location             = var.tenant_config.region
+  instance             = var.tenant_config.customer_id
   data_access_scope_id = each.value.scope_id
   description          = each.value.description
   allow_all            = length(each.value.denied_data_access_labels) != 0

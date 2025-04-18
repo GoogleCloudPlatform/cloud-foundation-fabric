@@ -1,24 +1,24 @@
 # SecOps Stage
 
-This stage allows creation and management of a fleet of GKE multitenant clusters for a single environment, optionally leveraging GKE Hub to configure additional features.
+This stage allows automated configuration of SecOps instance at both infrastructure and application level.
 
-The following diagram illustrates the high-level design of secops tenant configuration in both GCP and SecOps instance, which can be adapted to specific requirements via variables.
+The following diagram illustrates the high-level design of SecOps instance configuration in both GCP and SecOps instance, which can be adapted to specific requirements via variables.
 
 <p align="center">
-  <img src="diagram.png" alt="GKE multitenant">
+  <img src="diagram.png" alt="SecOPs stage">
 </p>
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
 - [How to run this stage](#how-to-run-this-stage)
-  - [Resource management configuration](#resource-management-configuration)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
   - [Variable configuration](#variable-configuration)
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
-  - [Clusters and node pools](#clusters-and-node-pools)
-  - [Fleet management](#fleet-management)
+  - [Data RBAC](#data-rbac)
+  - [SecOps rules and reference list management](#secops-rules-and-reference-list-management)
+  - [Google Workspace integration](#google-workspace-integration)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -26,35 +26,20 @@ The following diagram illustrates the high-level design of secops tenant configu
 
 ## Design overview and choices
 
-The general idea behind this stage is to deploy a single project hosting multiple clusters leveraging several useful GKE features like Config Sync, which lend themselves well to a multitenant approach to GKE.
+The general idea behind this stage is to configure a single SecOps instance for a specific environment with configurations both on SecOps leveraging terraform resources (where available) and `restful_resource` for interacting with the new [SecOps APIs](https://cloud.google.com/chronicle/docs/reference/rest).
 
-Some high level choices applied here:
+Some high level features of the current version of the stage are:
 
-- all clusters are created as [private clusters](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) which then need to be [VPC-native](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips).
-- Logging and monitoring uses Cloud Operations for system components and user workloads.
-- [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) is enabled by default and stored in a BigQuery dataset created within the project.
-- [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) can be optionally with support for the following features:
-  - [Fleet workload identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
-  - [Config Management](https://cloud.google.com/anthos-config-management/docs/overview)
-  - [Service Mesh](https://cloud.google.com/service-mesh/docs/overview)
-  - [Identity Service](https://cloud.google.com/anthos/identity/setup/fleet)
-  - [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services)
-  - [Multi-cluster ingress](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-ingress).
-- Support for [Config Sync](https://cloud.google.com/anthos-config-management/docs/config-sync-overview) and [Hierarchy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/hierarchy-controller) when using Config Management.
-- [Groups for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac) can be enabled to facilitate the creation of flexible RBAC policies referencing group principals.
-- Support for [application layer secret encryption](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets).
-- Some features are enabled by default in all clusters:
-  - [Intranode visibility](https://cloud.google.com/kubernetes-engine/docs/how-to/intranode-visibility)
-  - [Dataplane v2](https://cloud.google.com/kubernetes-engine/docs/concepts/dataplane-v2)
-  - [Shielded GKE nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes)
-  - [Workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)
-  - [Node local DNS cache](https://cloud.google.com/kubernetes-engine/docs/how-to/nodelocal-dns-cache)
-  - [Use of the GCE persistent disk CSI driver](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/gce-pd-csi-driver)
-  - Node [auto-upgrade](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-upgrades) and [auto-repair](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair) for all node pools
+- API/Services enablement
+- Data RBAC configuration with labels and scopes
+- IAM setup for the SecOps instance based on groups from Cloud Identity or WIF (with supports for Data RBAC)
+- Detection Rules and reference lists management via terraform (leveraging [secops-rules](../../../modules/secops-rules) module)
+- API Key setup for Webhook feeds 
+- Integration with Workspace for alerts and logs ingestion via SecOps Feeds
 
 ## How to run this stage
 
-This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, security and networking stages.
+This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, secops stages.
 
 It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
 
@@ -64,38 +49,19 @@ Before running this stage, you need to make sure you have the correct credential
 
 Some configuration changes are needed in resource management before this stage can be run.
 
-First, define a parent folder for each stage environment folder in the `data/top-level-folder` folder [in the resource management stage](../1-resman/data/top-level-folders/). As an example, this YAML definition creates a `GKE` folder under the organization:
+Make sure the stage 3 is enabled in the `data/stage-3` folder [in the resource management stage](../1-resman/data/stage-3/). As an example, this YAML definition saved as `secops-dev.yaml` enables this stage 3 for the development environment:
 
 ```yaml
-# yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
+# yaml-language-server: $schema=../../schemas/fast-stage3.schema.json
 
-name: GKE
-
-# IAM bindings and organization policies can also be defined here
+short_name: secops
+environment: dev
+folder_config:
+  name: Development
+  parent_id: secops
 ```
 
-Then, edit the definition of the networking stage 2 in the `data/stage2` folder [in the resource management stage](../1-resman/data/stage-2/) to include the IAM configuration for GKE. The following are example snippets for GKE dev, make sure they match the `short_name` and `environment` configured above.
-
-In `folder_config.iam_bindings_additive` add:
-
-```yaml
-# folder_config:
-  # iam_bindings_additive:
-    gke_dns_admin:
-      role: roles/dns.admin
-      member: gke-dev-ro
-      condition:
-        title: GKE dev DNS admin.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-    gke_dns_reader:
-      role: roles/dns.reader
-      member: gke-dev-ro
-      condition:
-        title: GKE dev DNS reader.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-```
+Make sure the stage 3 definitions are aligned with the environments you would like to setup for SecOps and coherent with the environments definitions in the stage 2 [2-secops](../2-secops) in order to have a dedicated stage 3 for SecOps for each environment (dev and prod as an example).
 
 ### Provider and Terraform variables
 
@@ -109,16 +75,16 @@ The commands to link or copy the provider and terraform variable files can be ea
 # File linking commands for GKE (dev) stage
 
 # provider file
-ln -s ~/fast-config/providers/3-gke-dev-providers.tf ./
+ln -s ~/fast-config/providers/3-secops-dev-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-secops.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
-ln -s ~/fast-config/3-gke-dev.auto.tfvars ./
+ln -s ~/fast-config/3-secops-dev.auto.tfvars ./
 ```
 
 ```bash
@@ -127,16 +93,16 @@ ln -s ~/fast-config/3-gke-dev.auto.tfvars ./
 # File linking commands for GKE (dev) stage
 
 # provider file
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-gke-dev-providers.tf ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-secops-dev-providers.tf ./
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-secops.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/3-gke-dev.auto.tfvars ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/3-secops-dev.auto.tfvars ./
 ```
 
 ### Impersonating the automation service account
@@ -164,52 +130,72 @@ terraform apply
 
 ## Customizations
 
-This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables allow management of clusters, nodepools, and fleet registration and configurations.
+This stage is designed with few basic integrations provided out of the box which can be customized as per the following sections.
 
-### Clusters and node pools
+### Data RBAC
 
-This is an example of declaring a private cluster with one nodepool via `tfvars` file:
+This stage supports configuration of [SecOps Data RBAC](https://cloud.google.com/chronicle/docs/administration/datarbac-overview) using two separate variables:
+
+- `secops_data_rbac_config`: specifies Data RBAC [label and scopes](https://cloud.google.com/chronicle/docs/administration/configure-datarbac-users) in Google SecOps 
+- `secops_iam`: defines SecOps IAM configuration in {PRINCIPAL => {roles => [ROLES], scopes => [SCOPES]}} format referencing previously defined scopes. When scope is populated a [IAM condition](https://cloud.google.com/chronicle/docs/administration/configure-datarbac-users#assign-scope-to-users) restrict access to those scopes.
+
+Example of a Data RBAC configuration is reported below.
 
 ```hcl
-clusters = {
-  test-00 = {
-    description = "Cluster test 0"
-    location    = "europe-west8"
-    private_cluster_config = {
-      enable_private_endpoint = true
-      master_global_access    = true
+secops_data_rbac_config = {
+  labels = {
+    google = {
+      description = "Google logs"
+      label_id    = "google"
+      udm_query   = "principal.hostname=\"google.com\""
     }
-    vpc_config = {
-      subnetwork             = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
-      master_ipv4_cidr_block = "172.16.20.0/28"
-      master_authorized_ranges = {
-        private = "10.0.0.0/8"
-      }
+  }
+  scopes = {
+    google = {
+      description = "Google logs"
+      scope_id    = "gscope"
+      allowed_data_access_labels = [{
+        data_access_label = "google"
+      }]
     }
   }
 }
-nodepools = {
-  test-00 = {
-    00 = {
-      node_count = { initial = 1 }
-    }
+secops_iam = {
+  "user:bruzzechesse@google.com" = {
+    roles  = ["roles/chronicle.editor"]
+    scopes = ["gscope"]
   }
 }
 # tftest skip
 ```
 
-If clusters share similar configurations, those can be centralized via `locals` blocks in this stage's `main.tf` file, and merged in with clusters via a simple `for_each` loop.
+### SecOps rules and reference list management
 
-### Fleet management
+This stage leverages the [secops-rules](../../../modules/secops-rules) for automated SecOps rules and reference list deployment via Terraform.
 
-Fleet management is entirely optional, and uses two separate variables:
+By default, the stage will try to deploy sample rule and reference list available in the [rules](./data/rules) and [reference_lists](./data/reference_lists) folders according to the configuration files `secops_rules.yaml` and `secops_reference_lists.yaml`.
 
-- `fleet_config`: specifies the [GKE fleet](https://cloud.google.com/anthos/fleet-management/docs/fleet-concepts#fleet-enabled-components) features to activate
-- `fleet_configmanagement_templates`: defines configuration templates for specific sets of features ([Config Management](https://cloud.google.com/anthos-config-management/docs/how-to/install-anthos-config-management) currently)
+The configuration can be updated via the `factory_config` variable as per the `secops-rules` module [README.md](../../../modules/secops-rules/README.md).
 
-Clusters can then be configured for fleet registration and one of the config management templates attached via the cluster-level `fleet_config` attribute.
+### Google Workspace integration
 
-<!-- TFDOC OPTS files:1 show_extra:1 exclude:3-gke-dev-providers.tf -->
+The stage supports automatic integration of Google Workspace as a SecOps source leveraging [SecOps Feeds](https://cloud.google.com/chronicle/docs/ingestion/default-parsers/collect-workspace-logs#configure_a_feed_in_to_ingest_logs) integration.
+
+Integration is enabled via the `workspace_integration_config` variable as per the following sample:
+
+```hcl
+workspace_integration_config = {
+  delegated_user        = "secops-feed@..."
+  workspace_customer_id = "CXXXXXXX"
+}
+# tftest skip
+```
+
+Where `delegated_user` should be the email of the user created in Cloud Identity following the configuration instructions available [here](https://cloud.google.com/chronicle/docs/ingestion/default-parsers/collect-workspace-logs#configure_a_feed_in_to_ingest_logs).
+
+Please be aware the Service Account Client ID needed during domain wide delegation setup is available in the key of the service account stored in Secret Manager.
+
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:3-secops-dev-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
 
@@ -229,16 +215,16 @@ Clusters can then be configured for fleet registration and one of the config man
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [secops_tenant_config](variables.tf#L54) | SecOps Tenant configuration. | <code title="object&#40;&#123;&#10;  customer_id &#61; string&#10;  region      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [factories_config](variables.tf#L17) | Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys. | <code title="object&#40;&#123;&#10;  rules                &#61; optional&#40;string&#41;&#10;  rules_defs           &#61; optional&#40;string, &#34;data&#47;rules&#34;&#41;&#10;  reference_lists      &#61; optional&#40;string&#41;&#10;  reference_lists_defs &#61; optional&#40;string, &#34;data&#47;reference_lists&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  rules                &#61; &#34;.&#47;data&#47;secops_rules.yaml&#34;&#10;  rules_defs           &#61; &#34;.&#47;data&#47;rules&#34;&#10;  reference_lists      &#61; &#34;.&#47;data&#47;secops_reference_lists.yaml&#34;&#10;  reference_lists_defs &#61; &#34;.&#47;data&#47;reference_lists&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [project_id](variables.tf#L108) | Project id that references existing SecOps project. Use this variable when running this stage in isolation. | <code>string</code> |  | <code>null</code> |  |
-| [regions](variables.tf#L114) | Region definitions. | <code title="object&#40;&#123;&#10;  primary   &#61; string&#10;  secondary &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  primary   &#61; &#34;europe-west8&#34;&#10;  secondary &#61; &#34;europe-west1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [secops_data_rbac_config](variables.tf#L62) | SecOps Data RBAC scope and labels config. | <code title="object&#40;&#123;&#10;  labels &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    label_id    &#61; string&#10;    udm_query   &#61; string&#10;  &#125;&#41;&#41;&#41;&#10;  scopes &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    scope_id    &#61; string&#10;    allowed_data_access_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;      data_access_label &#61; optional&#40;string&#41;&#10;      log_type          &#61; optional&#40;string&#41;&#10;      asset_namespace   &#61; optional&#40;string&#41;&#10;      ingestion_label &#61; optional&#40;object&#40;&#123;&#10;        ingestion_label_key   &#61; string&#10;        ingestion_label_value &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    denied_data_access_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;      data_access_label &#61; optional&#40;string&#41;&#10;      log_type          &#61; optional&#40;string&#41;&#10;      asset_namespace   &#61; optional&#40;string&#41;&#10;      ingestion_label &#61; optional&#40;object&#40;&#123;&#10;        ingestion_label_key   &#61; string&#10;        ingestion_label_value &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [secops_group_principals](variables.tf#L34) | Groups ID in IdP assigned to SecOps admins, editors, viewers roles. | <code title="object&#40;&#123;&#10;  admins  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  editors &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  viewers &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [secops_iam](variables.tf#L44) | SecOps IAM configuration in {PRINCIPAL => {roles => [ROLES], scopes => [SCOPES]}} format. | <code title="map&#40;object&#40;&#123;&#10;  roles  &#61; list&#40;string&#41;&#10;  scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [tenant_config](variables.tf#L112) | SecOps Tenant configuration. | <code title="object&#40;&#123;&#10;  customer_id &#61; string&#10;  region      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [data_rbac_config](variables.tf#L17) | SecOps Data RBAC scope and labels config. | <code title="object&#40;&#123;&#10;  labels &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    label_id    &#61; string&#10;    udm_query   &#61; string&#10;  &#125;&#41;&#41;&#41;&#10;  scopes &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    scope_id    &#61; string&#10;    allowed_data_access_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;      data_access_label &#61; optional&#40;string&#41;&#10;      log_type          &#61; optional&#40;string&#41;&#10;      asset_namespace   &#61; optional&#40;string&#41;&#10;      ingestion_label &#61; optional&#40;object&#40;&#123;&#10;        ingestion_label_key   &#61; string&#10;        ingestion_label_value &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    denied_data_access_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;      data_access_label &#61; optional&#40;string&#41;&#10;      log_type          &#61; optional&#40;string&#41;&#10;      asset_namespace   &#61; optional&#40;string&#41;&#10;      ingestion_label &#61; optional&#40;object&#40;&#123;&#10;        ingestion_label_key   &#61; string&#10;        ingestion_label_value &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L51) | Paths to  YAML config expected in 'rules' and 'reference_lists'. Path to folders containing rules definitions (yaral files) and reference lists content (txt files) for the corresponding _defs keys. | <code title="object&#40;&#123;&#10;  rules                &#61; optional&#40;string&#41;&#10;  rules_defs           &#61; optional&#40;string, &#34;data&#47;rules&#34;&#41;&#10;  reference_lists      &#61; optional&#40;string&#41;&#10;  reference_lists_defs &#61; optional&#40;string, &#34;data&#47;reference_lists&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  rules                &#61; &#34;.&#47;data&#47;secops_rules.yaml&#34;&#10;  rules_defs           &#61; &#34;.&#47;data&#47;rules&#34;&#10;  reference_lists      &#61; &#34;.&#47;data&#47;secops_reference_lists.yaml&#34;&#10;  reference_lists_defs &#61; &#34;.&#47;data&#47;reference_lists&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [iam](variables.tf#L68) | SecOps IAM configuration in {PRINCIPAL => {roles => [ROLES], scopes => [SCOPES]}} format. | <code title="map&#40;object&#40;&#123;&#10;  roles  &#61; list&#40;string&#41;&#10;  scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [iam_default](variables.tf#L78) | Groups ID in IdP assigned to SecOps admins, editors, viewers roles. | <code title="object&#40;&#123;&#10;  admins  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  editors &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  viewers &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [project_id](variables.tf#L88) | Project id that references existing SecOps project. Use this variable when running this stage in isolation. | <code>string</code> |  | <code>null</code> |  |
+| [region](variables.tf#L94) | Google Cloud region definition for resources. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |  |
 | [secops_project_ids](variables-fast.tf#L17) | SecOps Project IDs for each environment. | <code>map&#40;string&#41;</code> |  | <code>null</code> | <code>2-secops</code> |
-| [stage](variables.tf#L96) | FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management. | <code title="object&#40;&#123;&#10;  environment &#61; string&#10;  name        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment &#61; &#34;dev&#34;&#10;  name        &#61; &#34;secops-dev&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [workspace_integration_config](variables.tf#L126) | SecOps Feeds configuration for Workspace logs and entities ingestion. | <code title="object&#40;&#123;&#10;  workspace_customer_id &#61; string&#10;  delegated_user        &#61; string&#10;  applications &#61; optional&#40;list&#40;string&#41;, &#91;&#34;access_transparency&#34;, &#34;admin&#34;, &#34;calendar&#34;, &#34;chat&#34;, &#34;drive&#34;, &#34;gcp&#34;,&#10;    &#34;gplus&#34;, &#34;groups&#34;, &#34;groups_enterprise&#34;, &#34;jamboard&#34;, &#34;login&#34;, &#34;meet&#34;, &#34;mobile&#34;, &#34;rules&#34;, &#34;saml&#34;, &#34;token&#34;,&#10;    &#34;user_accounts&#34;, &#34;context_aware_access&#34;, &#34;chrome&#34;, &#34;data_studio&#34;, &#34;keep&#34;,&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [stage_config](variables.tf#L100) | FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management. | <code title="object&#40;&#123;&#10;  environment &#61; string&#10;  name        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment &#61; &#34;dev&#34;&#10;  name        &#61; &#34;secops-dev&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [workspace_integration_config](variables.tf#L120) | SecOps Feeds configuration for Workspace logs and entities ingestion. | <code title="object&#40;&#123;&#10;  workspace_customer_id &#61; string&#10;  delegated_user        &#61; string&#10;  applications &#61; optional&#40;list&#40;string&#41;, &#91;&#34;access_transparency&#34;, &#34;admin&#34;, &#34;calendar&#34;, &#34;chat&#34;, &#34;drive&#34;, &#34;gcp&#34;,&#10;    &#34;gplus&#34;, &#34;groups&#34;, &#34;groups_enterprise&#34;, &#34;jamboard&#34;, &#34;login&#34;, &#34;meet&#34;, &#34;mobile&#34;, &#34;rules&#34;, &#34;saml&#34;, &#34;token&#34;,&#10;    &#34;user_accounts&#34;, &#34;context_aware_access&#34;, &#34;chrome&#34;, &#34;data_studio&#34;, &#34;keep&#34;,&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 

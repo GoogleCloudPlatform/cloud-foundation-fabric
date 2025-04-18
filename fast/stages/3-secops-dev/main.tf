@@ -17,7 +17,7 @@
 locals {
   secops_api_key_secret_key   = "secops-feeds-api-key"
   secops_workspace_int_sa_key = "secops-workspace-ing-sa-key"
-  secops_project_id           = coalesce(try(var.secops_project_ids[var.stage.environment], null), var.project_id)
+  secops_project_id           = coalesce(try(var.secops_project_ids[var.stage_config.environment], null), var.project_id)
   secops_feeds_api_path       = "projects/${module.project.project_id}/locations/${var.secops_tenant_config.region}/instances/${var.secops_tenant_config.customer_id}/feeds"
   workspace_log_ingestion     = var.workspace_integration_config != null
 }
@@ -65,17 +65,16 @@ module "project" {
       "chronicle.referenceLists.update"
     ]
   }
-  iam = {
-    "roles/chronicle.viewer" = compact(concat(
-      [for group in var.secops_group_principals.viewers : "group:${group}"]
-    ))
-  }
-  iam_bindings_additive = merge({ for group in var.secops_group_principals.admins : group => {
-    member = "group:${group}"
-    role   = "roles/chronicle.admin"
-    }
-    }, merge({
-      for k, v in var.secops_iam : k => {
+  iam = {}
+  iam_bindings_additive = merge(
+    { for group in var.iam_default.admins :
+    "${group}-admins" => { member = "group:${group}", role = "roles/chronicle.admin" } },
+    { for group in var.iam_default.editors :
+    "${group}-editors" => { member = "group:${group}", role = "roles/chronicle.editor" } },
+    { for group in var.iam_default.editors :
+    "${group}-viewers" => { member = "group:${group}", role = "roles/chronicle.viewer" } },
+    { for k, v in var.iam :
+      k => {
         member = k
         role   = "roles/chronicle.restrictedDataAccess"
         condition = {
@@ -84,8 +83,8 @@ module "project" {
           description = "datarbac"
         }
       }
-  }))
-  iam_by_principals_additive = { for k, v in var.secops_iam : k => v.roles }
+  })
+  iam_by_principals_additive = { for k, v in var.iam : k => v.roles }
 }
 
 resource "google_apikeys_key" "feed_api_key" {
@@ -104,8 +103,8 @@ module "secops-rules" {
   source     = "../../../modules/secops-rules"
   project_id = local.secops_project_id
   tenant_config = {
-    region      = var.secops_tenant_config.region
-    customer_id = var.secops_tenant_config.customer_id
+    region      = var.tenant_config.region
+    customer_id = var.tenant_config.customer_id
   }
   factories_config = var.factories_config
 }

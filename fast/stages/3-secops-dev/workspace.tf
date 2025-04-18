@@ -68,7 +68,7 @@ resource "restful_resource" "workspace_feeds" {
     "display_name" : each.key,
     "details" : {
       "feed_source_type" : "API",
-      "log_type" : "projects/${module.project.project_id}/locations/${var.secops_tenant_config.region}/instances/${var.secops_tenant_config.customer_id}/logTypes/${each.value.log_type}",
+      "log_type" : "projects/${module.project.project_id}/locations/${var.tenant_config.region}/instances/${var.tenant_config.customer_id}/logTypes/${each.value.log_type}",
       "asset_namespace" : "",
       "labels" : {},
       (each.value.feed_type) : merge({
