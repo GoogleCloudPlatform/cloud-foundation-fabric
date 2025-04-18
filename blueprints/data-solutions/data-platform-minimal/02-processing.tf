@@ -119,11 +119,12 @@ module "processing-project" {
     "datalineage.googleapis.com",
     "dataproc.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
+    "storage-component.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com"
   ]
   service_encryption_key_ids = {
     "composer.googleapis.com" = compact([var.service_encryption_keys.composer])

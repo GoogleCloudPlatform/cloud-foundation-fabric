@@ -72,6 +72,10 @@ locals {
     ]...),
     local.billing_mode != "org" ? {} : local.billing_iam
   )
+  org_policy_tags = {
+    for k, v in var.org_policy_tags.values :
+    "${var.org_policy_tags.key_name}/${k}" => v
+  }
   # IAM principal expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
@@ -80,6 +84,11 @@ locals {
           for rm in rv : lookup(local.principals_iam, rm, rm)
         ]
       }
+      id = (
+        v.id == null || v.id != var.org_policy_tags.key_name
+        ? v.id
+        : var.org_policy_tags.key_id
+      )
       values = {
         for vk, vv in v.values : vk => merge(vv, {
           iam = {
@@ -87,6 +96,9 @@ locals {
               for rm in rv : lookup(local.principals_iam, rm, rm)
             ]
           }
+          id = (
+            vv.id == null ? null : lookup(local.org_policy_tags, vv.id, vv.id)
+          )
         })
       }
     })

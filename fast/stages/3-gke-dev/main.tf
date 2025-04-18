@@ -58,9 +58,10 @@ module "gke-project-0" {
     "gkeconnect.googleapis.com",
     "gkehub.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
-    "stackdriver.googleapis.com",
     "trafficdirector.googleapis.com"
   ]
   shared_vpc_service_config = {

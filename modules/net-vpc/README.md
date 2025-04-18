@@ -95,10 +95,17 @@ module "vpc" {
         flow_sampling        = 0.5
         aggregation_interval = "INTERVAL_10_MIN"
       }
+    },
+    # hybrid subnet
+    {
+      name                             = "hybrid"
+      region                           = "europe-west1"
+      ip_cidr_range                    = "10.0.4.0/24"
+      allow_subnet_cidr_routes_overlap = true
     }
   ]
 }
-# tftest modules=1 resources=8 inventory=subnet-options.yaml e2e
+# tftest modules=1 resources=9 inventory=subnet-options.yaml e2e
 ```
 
 ### Subnet IAM

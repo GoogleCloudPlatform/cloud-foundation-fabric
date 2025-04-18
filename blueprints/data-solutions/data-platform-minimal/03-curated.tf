@@ -24,11 +24,12 @@ locals {
     "compute.googleapis.com",
     "datalineage.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
+    "storage-component.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com"
   ]
   iam_cur = {
     "roles/bigquery.dataOwner" = [

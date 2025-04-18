@@ -20,10 +20,10 @@ locals {
     "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   ]))
   iam_admin_delegated = try(
-    var.stage_config["security"].iam_admin_delegated, {}
+    var.stage_configs["security"].iam_admin_delegated, {}
   )
   iam_viewer = try(
-    var.stage_config["security"].iam_viewer, {}
+    var.stage_configs["security"].iam_viewer, {}
   )
   project_services = [
     "certificatemanager.googleapis.com",

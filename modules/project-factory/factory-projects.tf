@@ -23,8 +23,7 @@ locals {
       trimsuffix(f, ".yaml") => merge(
         { parent = dirname(f) == "." ? "default" : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
-      )
-      if !endswith(f, "/_config.yaml")
+      ) if !endswith(f, "/_config.yaml")
     }
   )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
@@ -32,8 +31,10 @@ locals {
     for f in try(fileset(local._project_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
   }
-
-  _projects_input = merge(local._hierarchy_projects_full_path, local._projects_full_path)
+  _projects_input = merge(
+    local._hierarchy_projects_full_path,
+    local._projects_full_path
+  )
   _project_budgets = flatten([
     for k, v in local._projects_input : [
       for b in try(v.billing_budgets, []) : {
@@ -55,7 +56,6 @@ locals {
   project_budgets = {
     for v in local._project_budgets : v.budget => v.project...
   }
-
   buckets = flatten([
     for k, v in local.projects : [
       for name, opts in v.buckets : {
@@ -98,6 +98,7 @@ locals {
           try(var.data_defaults.service_accounts.display_name, null),
           "Terraform-managed."
         )
+        iam                    = try(opts.iam, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})

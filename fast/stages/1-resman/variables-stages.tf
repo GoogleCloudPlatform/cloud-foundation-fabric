@@ -63,6 +63,7 @@ variable "fast_stage_2" {
           }), {})
         })), [])
       })), {})
+      tag_bindings = optional(map(string), {})
     }))
     organization_config = optional(object({
       iam_bindings_additive = optional(map(object({

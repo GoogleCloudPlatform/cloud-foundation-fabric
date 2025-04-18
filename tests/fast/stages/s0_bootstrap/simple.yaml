@@ -20,16 +20,16 @@ counts:
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
   google_org_policy_custom_constraint: 1
-  google_org_policy_policy: 34
+  google_org_policy_policy: 36
   google_organization_iam_binding: 27
   google_organization_iam_custom_role: 13
   google_organization_iam_member: 29
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
-  google_project_iam_member: 16
-  google_project_service: 31
-  google_project_service_identity: 7
+  google_project_iam_member: 17
+  google_project_service: 32
+  google_project_service_identity: 8
   google_service_account: 6
   google_service_account_iam_binding: 6
   google_storage_bucket: 4
@@ -41,7 +41,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 245
+  resources: 250
 
 outputs:
   automation: __missing__
@@ -96,6 +96,7 @@ outputs:
       gcp-devops: group:gcp-devops@fast.example.com
       gcp-network-admins: group:gcp-vpc-network-admins@fast.example.com
       gcp-organization-admins: group:gcp-organization-admins@fast.example.com
+      gcp-secops-admins: group:gcp-secops-admins@fast.example.com
       gcp-security-admins: group:gcp-security-admins@fast.example.com
       gcp-support: group:gcp-support@example.com
     locations:
@@ -113,4 +114,3 @@ outputs:
   workload_identity_pool:
     pool: null
     providers: {}
-

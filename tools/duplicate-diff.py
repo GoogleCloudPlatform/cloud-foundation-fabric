@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env python3
+
 # Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +24,10 @@ duplicates = [
         "modules/project-factory/factory-projects-object.tf",
         # data factory
     ],
+    [
+        "fast/stages/0-bootstrap/identity-providers-wfif-defs.tf",
+        "fast/stages/2-secops/identity-providers-defs.tf",
+    ]
 ]
 
 for group in duplicates:
