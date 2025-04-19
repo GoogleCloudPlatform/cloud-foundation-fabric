@@ -22,6 +22,7 @@ locals {
     k => merge(try(v.automation.bucket, {}), {
       automation_project = v.automation.project
       prefix             = v.prefix
+      project_name       = v.name
     }) if try(v.automation.bucket, null) != null
   }
   automation_sa = flatten([
@@ -31,6 +32,7 @@ locals {
         name               = ks
         prefix             = v.prefix
         project            = k
+        project_name       = v.name
       })
     ]
   ])
@@ -43,7 +45,7 @@ module "automation-bucket" {
   # from the IAM dependency in the outputs of the main project
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
-  name           = "${each.key}-tf-state"
+  name           = "${each.value.project_name}-tf-state"
   encryption_key = lookup(each.value, "encryption_key", null)
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
@@ -111,7 +113,7 @@ module "automation-service-accounts" {
   # from the IAM dependency in the outputs of the main project
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
-  name        = "${each.value.project}-${each.value.name}"
+  name        = "${each.value.project_name}-${each.value.name}"
   description = lookup(each.value, "description", null)
   display_name = lookup(
     each.value,

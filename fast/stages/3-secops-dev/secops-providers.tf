@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-moved {
-  from = module.vpc-sc[0]
-  to   = module.vpc-sc
+data "google_client_config" "default" {
+  count = var.project_reuse == null ? 0 : 1
+}
+
+provider "restful" {
+  base_url = "https://${var.tenant_config.region}-chronicle.googleapis.com/v1alpha/"
+  security = {
+    http = {
+      token = {
+        token = try(data.google_client_config.default[0].access_token, "")
+      }
+    }
+  }
 }

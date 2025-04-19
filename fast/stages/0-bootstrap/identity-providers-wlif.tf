@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,44 +17,11 @@
 # tfdoc:file:description Workload Identity Federation provider definitions.
 
 locals {
-  workforce_identity_providers = {
-    for k, v in var.workforce_identity_providers : k => merge(
-      v,
-      lookup(local.workforce_identity_providers_defs, v.issuer, {})
-    )
-  }
   workload_identity_providers = {
     for k, v in var.workload_identity_providers : k => merge(
       v,
       lookup(local.workload_identity_providers_defs, v.issuer, {})
     )
-  }
-}
-
-resource "google_iam_workforce_pool" "default" {
-  count    = length(local.workforce_identity_providers) > 0 ? 1 : 0
-  parent   = "organizations/${var.organization.id}"
-  location = "global"
-  workforce_pool_id = templatestring(
-    var.resource_names["wf-bootstrap"], { prefix = var.prefix }
-  )
-}
-
-resource "google_iam_workforce_pool_provider" "default" {
-  for_each            = local.workforce_identity_providers
-  attribute_condition = each.value.attribute_condition
-  attribute_mapping   = each.value.attribute_mapping
-  description         = each.value.description
-  disabled            = each.value.disabled
-  display_name        = each.value.display_name
-  location            = google_iam_workforce_pool.default[0].location
-  provider_id = templatestring(var.resource_names["wf-provider_template"], {
-    prefix = var.prefix
-    key    = each.key
-  })
-  workforce_pool_id = google_iam_workforce_pool.default[0].workforce_pool_id
-  saml {
-    idp_metadata_xml = each.value.saml.idp_metadata_xml
   }
 }
 

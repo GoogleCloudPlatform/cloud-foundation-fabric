@@ -142,6 +142,7 @@ module "organization" {
               <<-EOT
               api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
               || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
+              || api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])
               EOT
               , join(",", formatlist("'%s'", [
                 "roles/accesscontextmanager.policyEditor",
@@ -152,7 +153,11 @@ module "organization" {
                 "roles/compute.xpnAdmin",
                 "roles/orgpolicy.policyAdmin",
                 "roles/orgpolicy.policyViewer",
-                "roles/resourcemanager.organizationViewer"
+                "roles/resourcemanager.organizationViewer",
+              ]))
+              , join(",", formatlist("'%s'", [
+                "roles/iam.workforcePoolAdmin",
+                "roles/iam.workforcePoolViewer"
               ]))
               , join(",", formatlist("'%s'", [
                 module.organization.custom_role_id["billing_viewer"],

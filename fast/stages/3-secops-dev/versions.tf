@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-moved {
-  from = module.vpc-sc[0]
-  to   = module.vpc-sc
+terraform {
+  required_providers {
+    restful = {
+      source  = "magodo/restful"
+      version = "= 0.21.0"
+    }
+  }
 }

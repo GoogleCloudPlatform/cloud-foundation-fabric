@@ -133,6 +133,7 @@ module "stage3-folder" {
     ? local.root_node
     : try(
       local.top_level_folder_ids[each.value.folder_config.parent_id],
+      module.stage2-folder[each.value.folder_config.parent_id].id,
       each.value.folder_config.parent_id
     )
   )
