@@ -56,6 +56,7 @@ variable "location" {
   description = "Location for aspect types."
   type        = string
   nullable    = false
+  default     = "global"
 }
 
 variable "project_id" {
