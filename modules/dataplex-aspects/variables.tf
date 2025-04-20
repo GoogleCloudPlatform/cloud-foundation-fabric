@@ -41,6 +41,8 @@ variable "aspect_types" {
       }))
     })), {})
   }))
+  nullable = false
+  default  = {}
 }
 
 variable "factories_config" {

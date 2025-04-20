@@ -22,8 +22,17 @@ locals {
   }
   aspect_types = merge(var.aspect_types, {
     for k, v in local._factory_data_raw : k => {
-      description       = lookup(v, "description", null)
-      display_name      = lookup(v, "display_name", null)
+      description  = lookup(v, "description", null)
+      display_name = lookup(v, "display_name", null)
+      iam          = lookup(v, "iam", {})
+      iam_bindings = {
+        for ik, iv in lookup(v, "iam_bindings", {}) :
+        ik => merge({ condition = null }, iv)
+      }
+      iam_bindings_additive = {
+        for ik, iv in lookup(v, "iam_bindings_additive", {}) :
+        ik => merge({ condition = null }, iv)
+      }
       labels            = lookup(v, "labels", {})
       metadata_template = lookup(v, "metadata_template", null)
     }
