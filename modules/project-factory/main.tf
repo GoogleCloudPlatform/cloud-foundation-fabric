@@ -42,6 +42,7 @@ module "projects" {
     local.context.folder_ids, each.value.parent, each.value.parent
   )
   prefix              = each.value.prefix
+  project_reuse       = each.value.project_reuse
   alerts              = try(each.value.alerts, null)
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})
