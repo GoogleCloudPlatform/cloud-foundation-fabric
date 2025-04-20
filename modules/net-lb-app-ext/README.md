@@ -576,6 +576,7 @@ module "glb-0" {
         { backend = "neg-0" }
       ]
       health_checks = []
+      port_name     = ""
     }
   }
   # with a single serverless NEG the implied default health check is not needed
