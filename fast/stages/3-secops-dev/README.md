@@ -204,12 +204,12 @@ Please be aware the Service Account Client ID needed during domain wide delegati
 |---|---|---|---|
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>project</code> · <code>secops-rules</code> | <code>google_apikeys_key</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [providers-override.tf](./providers-override.tf) | None |  |  |
 | [secops-providers.tf](./secops-providers.tf) | None |  |  |
 | [secops.tf](./secops.tf) | None |  | <code>google_chronicle_data_access_label</code> · <code>google_chronicle_data_access_scope</code> |
 | [secrets.tf](./secrets.tf) | None | <code>secret-manager</code> |  |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
-| [versions.tf](./versions.tf) | Version pins. |  |  |
 | [workspace.tf](./workspace.tf) | None | <code>iam-service-account</code> | <code>google_service_account_key</code> · <code>restful_resource</code> |
 
 ## Variables
