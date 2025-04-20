@@ -189,6 +189,36 @@
     "prefix": {
       "type": "string"
     },
+    "project_reuse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "use_data_source": {
+          "type": "boolean"
+        },
+        "service_projects": {
+          "type": "object",
+          "required": [
+            "name",
+            "number"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "number": {
+              "type": "string"
+            },
+            "services_enabled": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "service_accounts": {
       "type": "object",
       "additionalProperties": false,
