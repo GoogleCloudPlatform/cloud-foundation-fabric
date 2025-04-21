@@ -42,7 +42,7 @@
             "use_data_source": {
               "type": "boolean"
             },
-            "service_projects": {
+            "project_attributes": {
               "type": "object",
               "required": [
                 "name",
@@ -53,7 +53,7 @@
                   "type": "string"
                 },
                 "number": {
-                  "type": "string"
+                  "type": "number"
                 },
                 "services_enabled": {
                   "type": "array",
