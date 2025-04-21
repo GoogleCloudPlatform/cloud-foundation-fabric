@@ -69,12 +69,19 @@ module "aspect-types" {
 
 Aspect types can also be defined via a resource factory, where the file name will be used as the aspect type id. The resulting data is then internally combined with the `aspect_types` variable.
 
+IAM attributes can leverage substitutions for principals, which need to be defined via the `factories_configs.context.iam_principals` variable as shown in the example below.
+
 ```hcl
 module "aspect-types" {
   source     = "./fabric/modules/dataplex-aspects"
   project_id = "test-project"
   factories_config = {
     aspect_types = "data/aspect-types"
+    context = {
+      iam_principals = {
+        test-sa = "serviceAccount:sa-0@test-project.iam.gserviceaccount.com"
+      }
+    }
   }
 }
 # tftest modules=1 resources=4 files=aspect-0,aspect-1
@@ -83,8 +90,8 @@ module "aspect-types" {
 ```yaml
 display_name: "Test template 0."
 iam:
-  roles/dataplex.aspectTypeOwner:
-    - "group:data-owners@example.com"
+  "roles/dataplex.aspectTypeOwner":
+    - group:data-owners@example.com
 metadata_template: |
   {
     "name": "tf-test-template-0",
@@ -117,8 +124,8 @@ metadata_template: |
 display_name: "Test template 1."
 iam_bindings_additive:
   user:
-    role: "roles/dataplex.aspectTypeUser"
-    member: "serviceAccount:sa-0@test-project.iam.gserviceaccount.com"
+    role: roles/dataplex.aspectTypeUser
+    member: test-sa
 metadata_template: |
   {
     "name": "tf-test-template-1",
@@ -151,10 +158,10 @@ metadata_template: |
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L64) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L67) | Project id where resources will be created. | <code>string</code> | ✓ |  |
 | [aspect_types](variables.tf#L17) | Aspect templates. Merged with those defined via the factory. | <code title="map&#40;object&#40;&#123;&#10;  description       &#61; optional&#40;string&#41;&#10;  display_name      &#61; optional&#40;string&#41;&#10;  labels            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metadata_template &#61; optional&#40;string&#41;&#10;  iam               &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L48) | Paths to folders for the optional factories. | <code title="object&#40;&#123;&#10;  aspect_types &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L57) | Location for aspect types. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [factories_config](variables.tf#L48) | Paths to folders for the optional factories. | <code title="object&#40;&#123;&#10;  aspect_types &#61; optional&#40;string&#41;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L60) | Location for aspect types. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 
 ## Outputs
 
