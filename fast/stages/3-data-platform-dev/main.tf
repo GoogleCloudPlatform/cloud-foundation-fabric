@@ -78,15 +78,12 @@ module "central-project" {
   })
 }
 
-module "central-tag-templates" {
-  source     = "../../../modules/data-catalog-tag-template"
+module "central-aspect-types" {
+  source     = "../../../modules/dataplex-aspects"
   project_id = module.central-project.project_id
-  region     = local.location
+  location   = local.location
   factories_config = {
-    tag_templates = var.factories_config.tag_templates
-    context = {
-      regions = var.regions
-    }
+    aspect_types = var.factories_config.tag_templates
   }
 }
 

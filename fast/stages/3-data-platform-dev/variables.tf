@@ -23,6 +23,37 @@
 #    - dp0.yaml
 #    - dp1.yaml
 
+variable "aspect_types" {
+  description = "Aspect templates. Merged with those defined via the factory."
+  type = map(object({
+    description       = optional(string)
+    display_name      = optional(string)
+    labels            = optional(map(string), {})
+    metadata_template = optional(string)
+    iam               = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "central_project_config" {
   description = "Configuration for the top-level central project."
   type = object({
@@ -93,9 +124,12 @@ variable "exposure_config" {
 variable "factories_config" {
   description = "Configuration for the resource factories."
   type = object({
+    aspect_types  = optional(string, "data/aspect-types")
     data_domains  = optional(string, "data/data-domains")
-    policy_tags   = optional(string, "data/policy-tags")
     tag_templates = optional(string, "data/tag-templates")
+    context = optional(object({
+      iam_principals = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -106,45 +140,6 @@ variable "location" {
   type        = string
   nullable    = false
   default     = "europe-west1"
-}
-
-variable "policy_tags" {
-  description = "Shared data catalog tag templates."
-  type = map(object({
-    display_name = optional(string)
-    force_delete = optional(bool, false)
-    region       = optional(string)
-    fields = map(object({
-      display_name = optional(string)
-      description  = optional(string)
-      is_required  = optional(bool, false)
-      order        = optional(number)
-      type = object({
-        primitive_type   = optional(string)
-        enum_type_values = optional(list(string))
-      })
-    }))
-    iam = optional(map(list(string)), {})
-    iam_bindings = optional(map(object({
-      members = list(string)
-      role    = string
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-    iam_bindings_additive = optional(map(object({
-      member = string
-      role   = string
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-  }))
-  default = {}
 }
 
 variable "secure_tags" {
