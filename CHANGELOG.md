@@ -3,7 +3,16 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-02-21 08:47:20+00:00 to: None since: v38.0.0 -->
+## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
+
+### FAST
+
+- [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
+
+### MODULES
+
+- [[#3049](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3049)] [#3048] Fix serverless NEG example in net-lb-app-ext ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-20 19:17:16+00:00 -->
+- [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
 
 ## [39.0.0] - 2025-04-18
 
