@@ -62,6 +62,30 @@ variable "name" {
   default     = null
 }
 
+variable "network_config" {
+  description = "Network configuration."
+  type = object({
+    enable_private_nodes = optional(bool)
+    pod_range = optional(object({
+      cidr   = optional(string)
+      create = optional(bool, false)
+      name   = optional(string)
+    }), {})
+    additional_node_network_configs = optional(list(object({
+      network    = string
+      subnetwork = string
+    })), [])
+    additional_pod_network_config = optional(list(object({
+      subnetwork          = string
+      secondary_pod_range = string
+      max_pods_per_node   = string
+    })), [])
+    total_egress_bandwidth_tier        = optional(string)
+    pod_cidr_overprovisioning_disabled = optional(bool, false)
+  })
+  default = null
+}
+
 variable "node_config" {
   description = "Node-level configuration."
   type = object({
@@ -168,19 +192,6 @@ variable "nodepool_config" {
       max_surge       = number
       max_unavailable = number
     }))
-  })
-  default = null
-}
-
-variable "pod_range" {
-  description = "Pod secondary range configuration."
-  type = object({
-    secondary_pod_range = object({
-      name                 = string
-      cidr                 = optional(string)
-      create               = optional(bool)
-      enable_private_nodes = optional(bool)
-    })
   })
   default = null
 }
