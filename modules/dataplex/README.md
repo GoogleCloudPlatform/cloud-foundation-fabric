@@ -1,6 +1,14 @@
 # Dataplex instance with lake, zone & assets
 
-This module manages the creation of Dataplex instance along with lake, zone & assets in single regions.
+This module manages the creation of a Dataplex instance along with lake, zone & assets in single regions.
+
+<!-- BEGIN TOC -->
+- [Simple example](#simple-example)
+- [IAM](#iam)
+- [TODO](#todo)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Simple example
 

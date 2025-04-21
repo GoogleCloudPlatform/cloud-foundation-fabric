@@ -34,7 +34,6 @@ values:
     locality_lb_policy: null
     name: glb-test-0-default
     outlier_detection: []
-    port_name: http
     project: project-id
     protocol: HTTP
     security_policy: null

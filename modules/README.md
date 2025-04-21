@@ -92,6 +92,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Dataform Repository](./dataform-repository/)
 - [Datafusion](./datafusion)
 - [Dataplex](./dataplex)
+- [Dataplex Aspect Types](./dataplex-aspects/)
 - [Dataplex DataScan](./dataplex-datascan/)
 - [Dataproc](./dataproc)
 - [Firestore](./firestore)
