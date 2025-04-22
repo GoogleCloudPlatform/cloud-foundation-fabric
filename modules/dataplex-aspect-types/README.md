@@ -17,7 +17,7 @@ This example mirrors the one in the [`google_dataplex_aspect_type`](https://regi
 
 ```hcl
 module "aspect-types" {
-  source     = "./fabric/modules/dataplex-aspects"
+  source     = "./fabric/modules/dataplex-aspect-types"
   project_id = "test-project"
   # var.location defaults to "global"
   # location   = "global"
@@ -71,7 +71,7 @@ Aspect types can also be defined via a resource factory, where the file name wil
 
 ```hcl
 module "aspect-types" {
-  source     = "./fabric/modules/dataplex-aspects"
+  source     = "./fabric/modules/dataplex-aspect-types"
   project_id = "test-project"
   factories_config = {
     aspect_types = "data/aspect-types"
