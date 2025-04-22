@@ -26,7 +26,7 @@ output "project_ids" {
 output "central_project_resources" {
   description = "Central project Resources."
   value = {
-    policy-tags       = module.central-policy-tags.tags
-    tag-templates-ids = module.central-tag-templates.data_catalog_tag_template_ids
+    aspect_types = module.central-aspect-types.ids
+    policy_tags  = module.central-policy-tags.tags
   }
 }

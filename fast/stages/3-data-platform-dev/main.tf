@@ -83,7 +83,7 @@ module "central-aspect-types" {
   project_id = module.central-project.project_id
   location   = local.location
   factories_config = {
-    aspect_types = var.factories_config.tag_templates
+    aspect_types = var.factories_config.aspect_types
   }
 }
 

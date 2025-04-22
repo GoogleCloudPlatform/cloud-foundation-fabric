@@ -124,9 +124,9 @@ variable "exposure_config" {
 variable "factories_config" {
   description = "Configuration for the resource factories."
   type = object({
-    aspect_types  = optional(string, "data/aspect-types")
-    data_domains  = optional(string, "data/data-domains")
-    tag_templates = optional(string, "data/tag-templates")
+    aspect_types = optional(string, "data/aspect-types")
+    data_domains = optional(string, "data/data-domains")
+    policy_tags  = optional(string, "data/policy-tags")
     context = optional(object({
       iam_principals = optional(map(string), {})
     }), {})
