@@ -129,8 +129,8 @@ module "kafka-cluster-with-connect" {
 
   connect_clusters = {
     my-connect-cluster = {
-      vcpu_count   = 3
-      memory_bytes = 3221225472 # 3 GiB
+      vcpu_count     = 3
+      memory_bytes   = 3221225472 # 3 GiB
       primary_subnet = module.vpc.subnet_ids["${var.region}/subnet1"]
       additional_subnets = [
         module.vpc.subnet_ids["${var.region}/subnet2"],
