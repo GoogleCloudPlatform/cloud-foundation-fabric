@@ -133,9 +133,25 @@ variable "nodepools" {
     node_count = optional(map(number), {
       initial = 1
     })
-    node_locations        = optional(list(string))
-    nodepool_config       = optional(any)
-    pod_range             = optional(any)
+    node_locations  = optional(list(string))
+    nodepool_config = optional(any)
+    network_config = optional(object({
+      enable_private_nodes = optional(bool, true)
+      pod_range = optional(object({
+        cidr   = optional(string)
+        create = optional(bool, false)
+        name   = optional(string)
+      }), {})
+      additional_node_network_configs = optional(list(object({
+        network    = string
+        subnetwork = string
+      })), [])
+      additional_pod_network_config = optional(list(object({
+        subnetwork          = string
+        secondary_pod_range = string
+        max_pods_per_node   = string
+      })), [])
+    }))
     reservation_affinity  = optional(any)
     service_account       = optional(any)
     sole_tenant_nodegroup = optional(string)
