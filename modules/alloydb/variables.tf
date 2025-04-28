@@ -126,7 +126,8 @@ variable "cross_region_replication" {
     secondary_instance_display_name = optional(string, null)
     secondary_instance_name         = optional(string, null)
     secondary_machine_config = optional(object({
-      cpu_count = number
+      cpu_count    = number
+      machine_type = string
     }), null)
   })
   default = {}
@@ -209,10 +210,12 @@ variable "machine_config" {
   description = "AlloyDB machine config."
   type = object({
     cpu_count = optional(number, 2)
-  })
+    machine_type = optional(string, "n2-highmem-2"
+  ) })
   nullable = false
   default = {
-    cpu_count = 2
+    cpu_count    = 2
+    machine_type = "n2-highmem-2"
   }
 }
 
@@ -287,6 +290,22 @@ variable "network_config" {
     condition     = (var.network_config.psc_config == null) != (var.network_config.psa_config == null)
     error_message = "Please specify either psa_config or psc_config."
   }
+}
+
+variable "observability_config" {
+  description = "Observability config."
+  type = object({
+    enabled                       = optional(bool, false)
+    preserve_comments             = optional(bool)
+    track_wait_events             = optional(bool)
+    track_wait_event_types        = optional(bool)
+    max_query_string_length       = optional(number)
+    record_application_tags       = optional(bool)
+    query_plans_per_minute        = optional(number)
+    track_active_queries          = optional(bool)
+    assistive_experiences_enabled = optional(bool)
+  })
+  default = {}
 }
 
 variable "prefix" {

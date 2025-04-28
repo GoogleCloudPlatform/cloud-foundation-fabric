@@ -162,6 +162,7 @@ resource "google_alloydb_cluster" "primary" {
 }
 
 resource "google_alloydb_instance" "primary" {
+  provider          = google-beta
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.primary.id
@@ -188,7 +189,8 @@ resource "google_alloydb_instance" "primary" {
   dynamic "machine_config" {
     for_each = var.machine_config != null ? [""] : []
     content {
-      cpu_count = var.machine_config.cpu_count
+      cpu_count    = var.machine_config.cpu_count
+      machine_type = var.machine_config.machine_type
     }
   }
 
@@ -219,6 +221,21 @@ resource "google_alloydb_instance" "primary" {
       record_application_tags = var.query_insights_config.record_application_tags
       record_client_address   = var.query_insights_config.record_client_address
       query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
+    }
+  }
+
+  dynamic "observability_config" {
+    for_each = var.observability_config.enabled ? [""] : []
+    content {
+      enabled                       = var.observability_config.enabled
+      preserve_comments             = var.observability_config.preserve_comments
+      track_wait_events             = var.observability_config.track_wait_events
+      track_wait_event_types        = var.observability_config.track_wait_event_types
+      max_query_string_length       = var.observability_config.max_query_string_length
+      record_application_tags       = var.observability_config.record_application_tags
+      query_plans_per_minute        = var.observability_config.query_plans_per_minute
+      track_active_queries          = var.observability_config.track_active_queries
+      assistive_experiences_enabled = var.observability_config.assistive_experiences_enabled
     }
   }
 
@@ -347,6 +364,7 @@ resource "google_alloydb_cluster" "secondary" {
 }
 
 resource "google_alloydb_instance" "secondary" {
+  provider          = google-beta
   count             = var.cross_region_replication.enabled ? 1 : 0
   annotations       = var.annotations
   availability_type = var.availability_type
@@ -374,7 +392,8 @@ resource "google_alloydb_instance" "secondary" {
   dynamic "machine_config" {
     for_each = var.machine_config != null || var.cross_region_replication.secondary_machine_config != null ? [""] : []
     content {
-      cpu_count = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), try(var.machine_config.cpu_count, null))
+      cpu_count    = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), try(var.machine_config.cpu_count, null))
+      machine_type = coalesce(try(var.cross_region_replication.secondary_machine_config.machine_type, null), try(var.machine_config.machine_type, null))
     }
   }
 
@@ -405,6 +424,21 @@ resource "google_alloydb_instance" "secondary" {
       record_application_tags = var.query_insights_config.record_application_tags
       record_client_address   = var.query_insights_config.record_client_address
       query_plans_per_minute  = var.query_insights_config.query_plans_per_minute
+    }
+  }
+
+  dynamic "observability_config" {
+    for_each = var.observability_config.enabled ? [""] : []
+    content {
+      enabled                       = var.observability_config.enabled
+      preserve_comments             = var.observability_config.preserve_comments
+      track_wait_events             = var.observability_config.track_wait_events
+      track_wait_event_types        = var.observability_config.track_wait_event_types
+      max_query_string_length       = var.observability_config.max_query_string_length
+      record_application_tags       = var.observability_config.record_application_tags
+      query_plans_per_minute        = var.observability_config.query_plans_per_minute
+      track_active_queries          = var.observability_config.track_active_queries
+      assistive_experiences_enabled = var.observability_config.assistive_experiences_enabled
     }
   }
 
