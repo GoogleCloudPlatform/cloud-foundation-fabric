@@ -43,7 +43,10 @@ locals {
         iam_by_principals     = try(v.folder_config.iam_by_principals, {})
       }
       project_config = {
-        name                  = try(v.project_config.name, k)
+        name = try(v.project_config.name, k)
+        deploy = merge(
+          { composer = null }, try(v.project_config.deploy, {})
+        )
         services              = try(v.project_config.services, [])
         iam                   = try(v.project_config.iam, {})
         iam_bindings          = try(v.project_config.iam_bindings, {})

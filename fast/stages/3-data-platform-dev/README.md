@@ -1,7 +1,165 @@
 # Data Platform
 
-## Actors
+This stage allows creation and management of a Data Platform, which enables the implementation of a reliable, robust, and scalable environment to support the onboarding of new data products (or data workloads) over time.
 
+The code provided here sets up the foundational design and centralizes sharing patterns for data, leaving the specifics of data handling, computation, and processing to the individual data products.
+
+This solution implements the [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and relies on the higher level FAST stages for the resource hierarchy, networking, and security. It's also possible to run this stage in isolation by providing it the required prerequisites.
+
+<!-- BEGIN TOC -->
+- [Project Structure](#project-structure)
+  - [Central Shared Services](#central-shared-services)
+  - [Data Domains](#data-domains)
+  - [Data Products](#data-products)
+- [Teams and personas](#teams-and-personas)
+- [Configuration](#configuration)
+  - [Context replacements](#context-replacements)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+## Project Structure
+
+The stage manages the following high level structure:
+
+> TODO: Add diagram
+
+### Central Shared Services
+
+Central teams manage the data mesh by providing cross-domain oversight, services, and governance. They reduce the operational burden for data domains in producing and consuming data products, and facilitate the cross-domain relationships that are required for the data mesh to operate.
+
+A central project is created to host resources managed by the central team, which provide core and platform-wide capabilities such as Secure Tags, [Dataplex Catalog aspects)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata], and [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
+
+### Data Domains
+
+Data Domains are usually aligned with business or functional units within an enterprise. Common examples of business domains might be the mortgage department in a bank, or the customer, distribution, finance, or HR departments of an enterprise.
+
+Data Domain creation is centrally managed by this stage, with a dedicated folder sub-hierarchy and project for each logical domain. This provides a clear organizational boundary and allows for IAM and resource separation, which usually maps to an actual line of business.
+
+A dedicated Data Domain project is created as the primary container for all services and resources specific to each domain. A shared  Cloud Composer environment is also created to orchestrate domain-specific workflows, and provided by default with access to the domain's Data Products via impersonation.
+
+### Data Products
+
+One or more Data Products can be mapped to each Data Domain. A dedicated project is created for each product in its domain's hierarchy, enforcing modularity, scalability, flexibility and clear ownership boundaries.
+
+The per-product BigQuery and Cloud Storage exposure layers can then be deployed in each project, by binding the centrally managed secure tags connected to platform-level IAM bindings.
+
+## Teams and personas
+
+Clear operational role profiles must be defined for a data mesh to operate well, with each profile mapping to a team archetype or function. These profiles implement the core user journeys for each data mesh actor. This stage comes with three predefined profiles, which are meant as a starting example open to customizations.
+
+> TODO: add folder/project roles
+
+The three main functions identified here are:
+
+- **Central data team**
+  Defines and enforces the data platform structure and data governance policies among data producers, ensuring high data quality and data trustworthiness for consumers. This team is often referred to as the Data Governance team.
+- **Data domain teams**
+  Aligned with specific business domains, these teams are responsible for creating and maintaining data products over their lifecycle. This includes defining the data product's purpose, scope, and boundaries, developing and maintaining a product roadmap, implementing data security measures, ensuring compliance, and monitoring usage and performance.
+- **Data Product teams**
+  Aligned with a specific data products, these teams are responsible for developing, operating and maintaing the data product.
+
+## Configuration
+
+### Context replacements
+
+This stage is designed so that factory files are as much as possible organization and resource agnostic, so that they can be portable across installations (e.g. for different environments, or partner/customer organizations).
+
+This is mostly achieved via context replacements in factory files, where IAM principals and a few other attributes can use short names from the `factories_config.context` variable or from internally managed resources, which are then expanded to full principals at runtime.
+
+For example, configuring the `factories_config.context` variable:
+
+```hcl
+factories_config = {
+  context = {
+    iam_principals = {
+      data-consumer-bi = "group:data-consumer-bi@example.com"
+    }
+  }
+}
+```
+
+Allows using the group short name in templates:
+
+```yaml
+folder_config:
+  iam_by_principals:
+    data-consumer-bi:
+      - roles/datacatalog.viewer
+      - roles/dataplex.catalogViewer
+      - roles/datalineage.viewer
+```
+
+Or within a data domain definition, service accounts can be referenced in project-level IAM via their short name:
+
+```yaml
+service_accounts:
+  rw:
+    description: Automation (rw).
+project_config:
+  iam:
+    roles/owner:
+      - rw
+```
+
+The following table lists the available substitutions.
+
+| resource        | attributes | context expansions                            |
+| --------------- | ---------- | --------------------------------------------- |
+| central project | iam        | `var.factories_config.context.iam_principals` |
+| central project | tag iam    | `var.factories_config.context.iam_principals` |
+| domain folder   | iam        | `var.factories_config.context.iam_principals` |
+| domain project  | iam        | `var.factories_config.context.iam_principals` |
+| domain sa       | iam        | `var.factories_config.context.iam_principals` |
+|                 |            | domain service accounts                       |
+| product project | iam        | `var.factories_config.context.iam_principals` |
+|                 |            | product service accounts                      |
+| product sa      | iam        | `var.factories_config.context.iam_principals` |
+
+<!-- TFDOC OPTS files:1 show_extra:1 exclude:3-gcve-dev-providers.tf -->
+<!-- BEGIN TFDOC -->
+## Files
+
+| name | description | modules |
+|---|---|---|
+| [data-domains-composer.tf](./data-domains-composer.tf) | None | <code>iam-service-account</code> |
+| [data-domains.tf](./data-domains.tf) | None | <code>folder</code> · <code>iam-service-account</code> · <code>project</code> |
+| [data-products.tf](./data-products.tf) | None | <code>bigquery-dataset</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |
+| [factory.tf](./factory.tf) | None |  |
+| [main.tf](./main.tf) | Locals and project-level resources. | <code>data-catalog-policy-tag</code> · <code>dataplex-aspect-types</code> · <code>project</code> |
+| [outputs.tf](./outputs.tf) | Stage outputs. |  |
+| [variables-fast.tf](./variables-fast.tf) | None |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+
+## Variables
+
+| name | description | type | required | default | producer |
+|---|---|:---:|:---:|:---:|:---:|
+| [billing_account](variables-fast.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [environments](variables-fast.tf#L25) | Environment names. | <code title="object&#40;&#123;&#10;  dev &#61; object&#40;&#123;&#10;    name       &#61; string&#10;    short_name &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [prefix](variables-fast.tf#L52) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [aspect_types](variables.tf#L26) | Aspect templates. Merged with those defined via the factory. | <code title="map&#40;object&#40;&#123;&#10;  description       &#61; optional&#40;string&#41;&#10;  display_name      &#61; optional&#40;string&#41;&#10;  labels            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metadata_template &#61; optional&#40;string&#41;&#10;  iam               &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [central_project_config](variables.tf#L57) | Configuration for the top-level central project. | <code title="object&#40;&#123;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;bigquery.googleapis.com&#34;,&#10;    &#34;datacatalog.googleapis.com&#34;,&#10;    &#34;logging.googleapis.com&#34;,&#10;    &#34;monitoring.googleapis.com&#34;&#10;  &#93;&#41;&#10;  short_name &#61; optional&#40;string, &#34;central-0&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [config](variables.tf#L93) | Stage configuration used to find environment and resource ids, and to generate names. | <code title="object&#40;&#123;&#10;  environment &#61; string&#10;  name        &#61; string&#10;  short_name  &#61; optional&#40;string, &#34;dp&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment &#61; &#34;dev&#34;&#10;  name        &#61; &#34;data-platform-dev&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [exposure_config](variables.tf#L106) | Data exposure configuration. | <code title="object&#40;&#123;&#10;  tag_name &#61; optional&#40;string, &#34;exposure&#47;allow&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L124) | Configuration for the resource factories. | <code title="object&#40;&#123;&#10;  aspect_types &#61; optional&#40;string, &#34;data&#47;aspect-types&#34;&#41;&#10;  data_domains &#61; optional&#40;string, &#34;data&#47;data-domains&#34;&#41;&#10;  policy_tags  &#61; optional&#40;string, &#34;data&#47;policy-tags&#34;&#41;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [folder_ids](variables-fast.tf#L36) | Folder name => id mappings. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [host_project_ids](variables-fast.tf#L44) | Shared VPC host project name => id mappings. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [location](variables.tf#L138) | Default location used when no location is specified. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |  |
+| [regions](variables-fast.tf#L62) | Region mappings. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [secure_tags](variables.tf#L145) | Resource manager tags created in the central project. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [subnet_self_links](variables-fast.tf#L70) | Subnet VPC name => { name => self link } mappings. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [vpc_self_links](variables-fast.tf#L78) | Shared VPC name => self link mappings. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+
+## Outputs
+
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| [central_project_resources](outputs.tf#L26) | Central project Resources. |  |  |
+| [project_ids](outputs.tf#L17) | Project id. |  |  |
+<!-- END TFDOC -->
+<!--
 ### Data product owner [dp-product-a-0@] [dp-product-a-0-001@]
 
 - Editor on Data Product
@@ -41,6 +199,11 @@ Modules:
 Actors:
 
 - Add Data Domain team
+
+Conditions for roles:
+
+- GCS Name = resource.name.startsWith('projects/_/buckets/example-bucket')
+- projects/project-id/datasets/dataset-id
 
 ## CUJ
 
@@ -129,3 +292,4 @@ FILTER USING
 
 DROP ALL ROW ACCESS POLICIES ON `yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders`;  
 ```
+-->

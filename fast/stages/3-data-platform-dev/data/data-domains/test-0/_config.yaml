@@ -16,3 +16,43 @@
 
 name: Test 0
 short_name: t0
+
+service_accounts:
+  rw:
+    description: Automation (rw).
+  ro:
+    description: Automation (ro).
+
+project_config:
+  deploy:
+    composer: true
+  services:
+    - composer.googleapis.com
+    - datacatalog.googleapis.com
+    - dataplex.googleapis.com
+    - datalineage.googleapis.com
+
+folder_config:
+  iam_by_principals:
+    data-consumer-bi:
+      - roles/datacatalog.viewer
+      - roles/dataplex.catalogViewer
+      - roles/datalineage.viewer
+
+  iam_bindings:
+    bigquery_metadata_viewer:
+      members:
+        - data-consumer-bi
+      role: roles/bigquery.metadataViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')
+    bigquery_data_viewer:
+      members:
+        - data-consumer-bi
+      role: roles/bigquery.metadataViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')

@@ -38,6 +38,15 @@
         "name": {
           "type": "string"
         },
+        "deploy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "composer": {
+              "type": "boolean"
+            }
+          }
+        },
         "iam": {
           "$ref": "#/$defs/iam"
         },

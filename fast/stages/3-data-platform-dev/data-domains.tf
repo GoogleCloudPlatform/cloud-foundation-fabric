@@ -15,14 +15,49 @@
  */
 
 module "dd-folders" {
-  source                = "../../../modules/folder"
-  for_each              = local.data_domains
-  parent                = var.folder_ids[var.config.name]
-  name                  = each.value.name
-  iam                   = each.value.folder_config.iam
-  iam_bindings          = each.value.folder_config.iam_bindings
-  iam_bindings_additive = each.value.folder_config.iam_bindings_additive
-  iam_by_principals     = each.value.folder_config.iam_by_principals
+  source   = "../../../modules/folder"
+  for_each = local.data_domains
+  parent   = var.folder_ids[var.config.name]
+  name     = each.value.name
+  iam = {
+    for k, v in each.value.folder_config.iam : k => [
+      for m in v : lookup(
+        var.factories_config.context.iam_principals, m, m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.folder_config.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals, m, m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.folder_config.iam_bindings_additive : k => merge(v, {
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_by_principals = {
+    for k, v in each.value.folder_config.iam_by_principals :
+    lookup(var.factories_config.context.iam_principals, k, k) => v
+  }
+}
+
+module "dd-dp-folders" {
+  source   = "../../../modules/folder"
+  for_each = local.data_domains
+  parent   = module.dd-folders[each.key].id
+  name     = "Data Products"
+  iam = try(each.value.deploy.composer, null) != true ? {} : {
+    "roles/iam.serviceAccountTokenCreator" = [
+      module.dd-composer-sa[each.key].iam_email
+    ]
+  }
 }
 
 module "dd-projects" {
@@ -53,44 +88,75 @@ module "dd-projects-iam" {
   iam = {
     for k, v in each.value.project_config.iam : k => [
       for m in v : try(
-        local.service_accounts_iam[m],
-        local.service_accounts_iam["${each.key}/${m}"],
-        strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
+        var.factories_config.context.iam_principals[m],
+        module.dd-service-accounts["${each.key}/${m}"].iam_email,
+        m
       )
     ]
   }
   iam_bindings = {
     for k, v in each.value.project_config.iam_bindings : k => merge(v, {
       members = [
-        for m in v.members : try(
-          local.service_accounts_iam[m],
-          local.service_accounts_iam["${each.key}/${m}"],
-          strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals[m],
+          module.dd-service-accounts["${each.key}/${m}"].iam_email,
+          m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = merge(
+    {
+      for k, v in each.value.project_config.iam_bindings_additive : k => merge(v, {
+        member = lookup(
+          var.factories_config.context.iam_principals[v.member],
+          module.dd-service-accounts["${each.key}/${v.member}"].iam_email,
+          v.member
+        )
+      })
+    },
+    try(each.value.deploy.composer, null) != true ? {} : {
+      composer_worker = {
+        member = module.dd-composer-sa[each.key].iam_email
+        role   = "roles/composer.worker"
+      }
+    }
+  )
+  iam_by_principals = {
+    for k, v in each.value.project_config.iam_by_principals :
+    lookup(var.factories_config.context.iam_by_principals, k, k) => v
+  }
+}
+
+module "dd-service-accounts" {
+  source      = "../../../modules/iam-service-account"
+  for_each    = { for v in local.dd_service_accounts : v.key => v }
+  project_id  = module.dd-projects[each.value.dd].project_id
+  prefix      = local.prefix
+  name        = each.value.name
+  description = each.value.description
+  iam = {
+    for k, v in each.value.iam : k => [
+      for m in v : lookup(
+        var.factories_config.context.iam_principals, m, m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals, m, m
         )
       ]
     })
   }
   iam_bindings_additive = {
-    for k, v in each.value.project_config.iam_bindings_additive : k => merge(v, {
-      member = try(
-        local.service_accounts_iam[v.member],
-        local.service_accounts_iam["${each.key}/${v.member}"],
-        strcontains(v.member, ":") ? v.member : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
+    for k, v in each.value.iam_bindings_additive : k => merge(v, {
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
       )
     })
   }
-  iam_by_principals = each.value.project_config.iam_by_principals
-}
-
-module "dd-service-accounts" {
-  source                = "../../../modules/iam-service-account"
-  for_each              = { for v in local.dd_service_accounts : v.key => v }
-  project_id            = module.dd-projects[each.value.dd].project_id
-  prefix                = local.prefix
-  name                  = each.value.name
-  description           = each.value.description
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_storage_roles     = each.value.iam_storage_roles
+  iam_storage_roles = each.value.iam_storage_roles
 }

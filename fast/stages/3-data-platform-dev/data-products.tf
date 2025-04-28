@@ -19,7 +19,7 @@ module "dp-projects" {
   for_each        = local.data_products
   billing_account = var.billing_account.id
   name            = "${each.value.dds}-${each.value.short_name}-0"
-  parent          = module.dd-folders[each.value.dd].id
+  parent          = module.dd-dp-folders[each.value.dd].id
   prefix          = local.prefix
   labels = {
     data_domain  = each.value.dd
@@ -43,9 +43,9 @@ module "dp-projects-iam" {
   iam = {
     for k, v in each.value.iam : k => [
       for m in v : try(
-        local.service_accounts_iam[m],
-        local.service_accounts_iam["${each.key}/${m}"],
-        strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
+        var.factories_config.context.iam_principals[m],
+        module.dp-service-accounts["${each.key}/${m}"].iam_email,
+        m
       )
     ]
   }
@@ -53,9 +53,9 @@ module "dp-projects-iam" {
     for k, v in each.value.iam_bindings : k => merge(v, {
       members = [
         for m in v.members : try(
-          local.service_accounts_iam[m],
-          local.service_accounts_iam["${each.key}/${m}"],
-          strcontains(m, ":") ? m : tonumber("[Error] Invalid member: '${m}' in project '${each.key}'")
+          var.factories_config.context.iam_principals[m],
+          module.dp-service-accounts["${each.key}/${m}"].iam_email,
+          m
         )
       ]
     })
@@ -63,13 +63,29 @@ module "dp-projects-iam" {
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
       member = try(
-        local.service_accounts_iam[v.member],
-        local.service_accounts_iam["${each.key}/${v.member}"],
-        strcontains(v.member, ":") ? v.member : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
+        var.factories_config.context.iam_principals[v.member],
+        module.dp-service-accounts["${each.key}/${v.member}"].iam_email,
+        v.member
       )
     })
   }
-  iam_by_principals = each.value.iam_by_principals
+  iam_by_principals = merge(
+    {
+      for k, v in each.value.iam_by_principals :
+      lookup(var.factories_config.context.iam_principals, k, k) => v
+    },
+    {
+      (module.dp-processing-sa[each.key].iam_email) = [
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.jobUser",
+        "roles/dataflow.admin",
+        "roles/dataproc.editor",
+        "roles/dataproc.worker",
+        "roles/iam.serviceAccountUser",
+        "roles/storage.admin"
+      ]
+    }
+  )
 }
 
 module "dp-buckets" {
@@ -104,14 +120,43 @@ module "dp-datasets" {
 }
 
 module "dp-service-accounts" {
-  source                = "../../../modules/iam-service-account"
-  for_each              = { for v in local.dp_service_accounts : v.key => v }
-  project_id            = module.dp-projects[each.value.dp].project_id
-  prefix                = local.prefix
-  name                  = each.value.name
-  description           = each.value.description
-  iam                   = each.value.iam
-  iam_bindings          = each.value.iam_bindings
-  iam_bindings_additive = each.value.iam_bindings_additive
-  iam_storage_roles     = each.value.iam_storage_roles
+  source      = "../../../modules/iam-service-account"
+  for_each    = { for v in local.dp_service_accounts : v.key => v }
+  project_id  = module.dp-projects[each.value.dp].project_id
+  prefix      = local.prefix
+  name        = each.value.name
+  description = each.value.description
+  iam = {
+    for k, v in each.value.iam : k => [
+      for m in v : lookup(
+        var.factories_config.context.iam_principals, m, m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals, m, m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.iam_bindings_additive : k => merge(v, {
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_storage_roles = each.value.iam_storage_roles
+}
+
+module "dp-processing-sa" {
+  source      = "../../../modules/iam-service-account"
+  for_each    = local.data_products
+  project_id  = module.dp-projects[each.key].project_id
+  prefix      = local.prefix
+  name        = "processing"
+  description = "Data Product processing."
 }

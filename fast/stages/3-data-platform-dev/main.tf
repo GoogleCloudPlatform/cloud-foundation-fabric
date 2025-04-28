@@ -29,25 +29,44 @@ locals {
   )
   prefix_bq = replace(local.prefix, "-", "_")
   service_accounts_iam = merge(
-    {
-      for k, v in module.dd-service-accounts : k => v.iam_email
-    },
-    {
-      for k, v in module.dp-service-accounts : k => v.iam_email
-    }
+    { for k, v in module.dd-service-accounts : k => v.iam_email },
+    { for k, v in module.dp-service-accounts : k => v.iam_email }
   )
 }
 
 module "central-project" {
-  source                = "../../../modules/project"
-  billing_account       = var.billing_account.id
-  name                  = var.central_project_config.short_name
-  parent                = var.folder_ids[var.config.name]
-  prefix                = local.prefix
-  iam                   = var.central_project_config.iam
-  iam_bindings          = var.central_project_config.iam_bindings
-  iam_bindings_additive = var.central_project_config.iam_bindings_additive
-  iam_by_principals     = var.central_project_config.iam_by_principals
+  source          = "../../../modules/project"
+  billing_account = var.billing_account.id
+  name            = var.central_project_config.short_name
+  parent          = var.folder_ids[var.config.name]
+  prefix          = local.prefix
+  iam = {
+    for k, v in var.central_project_config.iam : k => [
+      for m in v : lookup(
+        var.factories_config.context.iam_principals, m, m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in var.central_project_config.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals, m, m
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in var.central_project_config.iam_bindings_additive : k => merge(v, {
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_by_principals = {
+    for k, v in var.central_project_config.iam_by_principals :
+    lookup(var.factories_config.context.iam_principals, k, k) => v
+  }
   labels = {
     environment = var.config.environment
   }
@@ -58,19 +77,30 @@ module "central-project" {
         var.secure_tags[local.exp_tag.key].description,
         "Managed by the Terraform project module."
       )
-      iam = try(var.secure_tags[local.exp_tag.key].description, {})
+      iam = {
+        for k, v in try(var.secure_tags[local.exp_tag.key].iam, {}) :
+        k => [
+          for m in v : lookup(
+            var.factories_config.context.iam_principals, m, m
+          )
+        ]
+      }
       values = merge(
-        try(var.secure_tags[local.exp_tag.key].tags, {}),
+        try(var.secure_tags[local.exp_tag.key].values, {}),
         {
           (local.exp_tag.value) = {
             description = try(
               var.secure_tags[local.exp_tag.key].values[local.exp_tag.value].description,
               "Managed by the Terraform project module."
             )
-            iam = try(
-              var.secure_tags[local.exp_tag.key].values[local.exp_tag.value].iam,
-              {}
-            )
+            iam = {
+              for k, v in try(var.secure_tags[local.exp_tag.key].values[local.exp_tag.value].iam, {}) :
+              k => [
+                for m in v : lookup(
+                  var.factories_config.context.iam_principals, m, m
+                )
+              ]
+            }
           }
         }
       )
@@ -79,7 +109,7 @@ module "central-project" {
 }
 
 module "central-aspect-types" {
-  source     = "../../../modules/dataplex-aspects"
+  source     = "../../../modules/dataplex-aspect-types"
   project_id = module.central-project.project_id
   location   = local.location
   factories_config = {
@@ -92,7 +122,6 @@ module "central-policy-tags" {
   project_id = module.central-project.project_id
   name       = "tags"
   location   = var.location
-  #TODO Add factory support and remove hardcoded tags
   tags = {
     low    = {}
     medium = {}

@@ -12,10 +12,14 @@
           "type": "object",
           "additionalProperties": false,
           "patternProperties": {
-            "^{a-z][a-z0-9_]+$": {
+            "^[a-z][a-z0-9_]+$": {
               "type": "object",
               "additionalProperties": false,
-              "properties": {}
+              "properties": {
+                "location": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
@@ -250,7 +254,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z]+[a-z-]+$": {
+        "^[a-z]+[a-z0-9-]+$": {
           "type": "array",
           "items": {
             "type": "string",
