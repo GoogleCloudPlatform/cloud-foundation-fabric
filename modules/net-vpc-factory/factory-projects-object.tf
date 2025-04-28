@@ -39,10 +39,18 @@ locals {
           quotas        = null
         })
       )
-      labels                     = {}
-      metric_scopes              = []
-      parent                     = null
-      prefix                     = null
+      labels        = {}
+      metric_scopes = []
+      parent        = null
+      prefix        = null
+      project_reuse = merge({
+        use_data_source    = true
+        project_attributes = null
+        }, try(local._projects_config.data_defaults.project_reuse, {
+          use_data_source    = true
+          project_attributes = null
+        })
+      )
       service_encryption_key_ids = {}
       services                   = []
       shared_vpc_service_config = merge({
@@ -195,6 +203,17 @@ locals {
           try(v.prefix, null),
           local.__projects_config.data_defaults.prefix
         ), null
+      )
+      project_reuse = ( # type: object({...})
+        try(v.project_reuse, null) != null
+        ? merge(
+          {
+            use_data_source    = true
+            project_attributes = null
+          },
+          v.project_reuse
+        )
+        : local.__projects_config.data_defaults.project_reuse
       )
       service_encryption_key_ids = coalesce( # type: map(list(string))
         local.__projects_config.data_overrides.service_encryption_key_ids,

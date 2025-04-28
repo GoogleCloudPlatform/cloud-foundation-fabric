@@ -35,6 +35,36 @@
         "parent": {
           "type": "string"
         },
+        "project_reuse": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "use_data_source": {
+              "type": "boolean"
+            },
+            "project_attributes": {
+              "type": "object",
+              "required": [
+                "name",
+                "number"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "number"
+                },
+                "services_enabled": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "billing_account": {
           "type": "string"
         },

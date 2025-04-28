@@ -25,10 +25,18 @@ variable "data_defaults" {
       org_policies  = optional(string)
       quotas        = optional(string)
     }), {})
-    labels                     = optional(map(string), {})
-    metric_scopes              = optional(list(string), [])
-    parent                     = optional(string)
-    prefix                     = optional(string)
+    labels        = optional(map(string), {})
+    metric_scopes = optional(list(string), [])
+    parent        = optional(string)
+    prefix        = optional(string)
+    project_reuse = optional(object({
+      use_data_source = optional(bool, true)
+      project_attributes = optional(object({
+        name             = string
+        number           = number
+        services_enabled = optional(list(string), [])
+      }))
+    }))
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({

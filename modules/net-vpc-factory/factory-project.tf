@@ -23,6 +23,7 @@ locals {
       billing_account = var.billing_account
       prefix          = var.prefix
       parent          = var.parent_id
+      project_reuse   = var.project_reuse
     }
   }
   projects = local._projects_output
@@ -43,4 +44,5 @@ module "projects" {
   iam_by_principals          = each.value.iam_by_principals
   iam_by_principals_additive = each.value.iam_by_principals_additive
   org_policies               = each.value.org_policies
+  project_reuse              = each.value.project_reuse
 }
