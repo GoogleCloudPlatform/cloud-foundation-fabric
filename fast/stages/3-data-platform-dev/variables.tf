@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-# TODO: factories for secure/policy tags, dd, dp
-# TODO: refactor tag template module for template-level IAM
-
-# dd0
-#  - _config.yaml
-#  - products
-#    - dp0.yaml
-#    - dp1.yaml
-
 variable "aspect_types" {
   description = "Aspect templates. Merged with those defined via the factory."
   type = map(object({
@@ -90,19 +81,6 @@ variable "central_project_config" {
   default  = {}
 }
 
-variable "config" {
-  description = "Stage configuration used to find environment and resource ids, and to generate names."
-  type = object({
-    environment = string
-    name        = string
-    short_name  = optional(string, "dp")
-  })
-  default = {
-    environment = "dev"
-    name        = "data-platform-dev"
-  }
-}
-
 variable "exposure_config" {
   description = "Data exposure configuration."
   type = object({
@@ -160,5 +138,18 @@ variable "secure_tags" {
       for k, v in var.secure_tags : v != null
     ])
     error_message = "Use an empty map instead of null as value."
+  }
+}
+
+variable "stage_config" {
+  description = "Stage configuration used to find environment and resource ids, and to generate names."
+  type = object({
+    environment = string
+    name        = string
+    short_name  = optional(string, "dp")
+  })
+  default = {
+    environment = "dev"
+    name        = "data-platform-dev"
   }
 }

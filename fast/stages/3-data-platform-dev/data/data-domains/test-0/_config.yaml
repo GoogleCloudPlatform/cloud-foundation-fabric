@@ -23,9 +23,15 @@ service_accounts:
   ro:
     description: Automation (ro).
 
+deploy_config:
+  composer:
+    region: europe-west8
+    environment_size: ENVIRONMENT_SIZE_SMALL
+    node_config:
+      network: dev-spoke-0
+      subnetwork: europe-west8/gce
+
 project_config:
-  deploy:
-    composer: true
   services:
     - composer.googleapis.com
     - datacatalog.googleapis.com

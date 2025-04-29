@@ -13,6 +13,87 @@
     "short_name": {
       "type": "string"
     },
+    "deploy_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "composer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "region",
+            "node_config"
+          ],
+          "properties": {
+            "region": {
+              "type": "string"
+            },
+            "environment_size": {
+              "type": "string",
+              "default": "ENVIRONMENT_SIZE_SMALL"
+            },
+            "node_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "network",
+                "subnetwork"
+              ],
+              "properties": {
+                "service_account": {
+                  "type": "string"
+                },
+                "network": {
+                  "type": "string"
+                },
+                "subnetwork": {
+                  "type": "string"
+                }
+              }
+            },
+            "workloads_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "dag_processor": {
+                  "$ref": "#/$defs/composer_workload"
+                },
+                "triggerer": {
+                  "$ref": "#/$defs/composer_workload"
+                },
+                "scheduler": {
+                  "$ref": "#/$defs/composer_workload"
+                },
+                "web_server": {
+                  "$ref": "#/$defs/composer_workload"
+                },
+                "worker": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cpu": {
+                      "type": "number"
+                    },
+                    "memory_gb": {
+                      "type": "number"
+                    },
+                    "storage_gb": {
+                      "type": "number"
+                    },
+                    "min_count": {
+                      "type": "integer"
+                    },
+                    "max_count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "folder_config": {
       "type": "object",
       "additionalProperties": false,
@@ -37,15 +118,6 @@
       "properties": {
         "name": {
           "type": "string"
-        },
-        "deploy": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "composer": {
-              "type": "boolean"
-            }
-          }
         },
         "iam": {
           "$ref": "#/$defs/iam"
@@ -159,6 +231,24 @@
     }
   },
   "$defs": {
+    "composer_workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "type": "number"
+        },
+        "memory_gb": {
+          "type": "number"
+        },
+        "storage_gb": {
+          "type": "number"
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
     "iam": {
       "type": "object",
       "additionalProperties": false,

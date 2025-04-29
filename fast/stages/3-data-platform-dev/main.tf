@@ -17,15 +17,15 @@
 # tfdoc:file:description Locals and project-level resources.
 
 locals {
-  environment = var.environments[var.config.environment]
+  environment = var.environments[var.stage_config.environment]
   exp_tag = {
     key   = split("/", var.exposure_config.tag_name)[0]
     value = split("/", var.exposure_config.tag_name)[1]
   }
-  folder_id = var.folder_ids[var.config.name]
+  folder_id = var.folder_ids[var.stage_config.name]
   location  = lookup(var.regions, var.location, var.location)
   prefix = (
-    "${var.prefix}-${local.environment.short_name}-${var.config.short_name}"
+    "${var.prefix}-${local.environment.short_name}-${var.stage_config.short_name}"
   )
   prefix_bq = replace(local.prefix, "-", "_")
   service_accounts_iam = merge(
@@ -38,7 +38,7 @@ module "central-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = var.central_project_config.short_name
-  parent          = var.folder_ids[var.config.name]
+  parent          = var.folder_ids[var.stage_config.name]
   prefix          = local.prefix
   iam = {
     for k, v in var.central_project_config.iam : k => [
@@ -68,7 +68,7 @@ module "central-project" {
     lookup(var.factories_config.context.iam_principals, k, k) => v
   }
   labels = {
-    environment = var.config.environment
+    environment = var.stage_config.environment
   }
   services = var.central_project_config.services
   tags = merge(var.secure_tags, {

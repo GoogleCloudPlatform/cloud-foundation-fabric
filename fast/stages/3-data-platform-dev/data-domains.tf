@@ -17,7 +17,7 @@
 module "dd-folders" {
   source   = "../../../modules/folder"
   for_each = local.data_domains
-  parent   = var.folder_ids[var.config.name]
+  parent   = var.folder_ids[var.stage_config.name]
   name     = each.value.name
   iam = {
     for k, v in each.value.folder_config.iam : k => [

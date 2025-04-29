@@ -36,6 +36,9 @@ locals {
     for k, v in local._dd_raw : k => {
       name       = v.name
       short_name = lookup(v, "short_name", reverse(split("/", k))[0])
+      deploy_config = {
+        composer = try(v.deploy_config.composer, null)
+      }
       folder_config = {
         iam                   = try(v.folder_config.iam, {})
         iam_bindings          = try(v.folder_config.iam_bindings, {})
