@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,9 +173,9 @@ resource "google_cloud_run_v2_job" "job" {
 
 resource "google_cloud_run_v2_job_iam_binding" "binding" {
   for_each = var.create_job ? var.iam : {}
-  project  = google_cloud_run_v2_job.job[0].project
-  location = google_cloud_run_v2_job.job[0].location
-  name     = google_cloud_run_v2_job.job[0].name
+  project  = local.service.project
+  location = local.service.location
+  name     = local.service.name
   role     = each.key
   members  = each.value
 }
