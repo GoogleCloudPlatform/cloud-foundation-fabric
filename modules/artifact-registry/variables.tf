@@ -50,8 +50,7 @@ variable "description" {
 variable "enable_vulnerability_scanning" {
   description = "Whether vulnerability scanning should be enabled in the repository."
   type        = bool
-  default     = true
-  nullable    = false
+  default     = null
 }
 
 variable "encryption_key" {
