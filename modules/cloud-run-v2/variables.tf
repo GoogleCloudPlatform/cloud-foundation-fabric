@@ -171,6 +171,7 @@ variable "launch_stage" {
 variable "managed_revision" {
   description = "Whether the Terraform module should control the deployment of revisions."
   type        = bool
+  nullable    = false
   default     = true
 }
 
