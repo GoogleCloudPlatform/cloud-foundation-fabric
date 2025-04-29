@@ -13,31 +13,35 @@
 # limitations under the License.
 
 values:
-  google_privateca_ca_pool.pool:
+  module.cas.google_privateca_ca_pool.default[0]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     issuance_policy: []
     labels: null
-    location: us-central1
-    name: ca-pool
+    location: europe-west1
+    name: test-ca
     project: project-id
     publishing_options: []
-    tier: ENTERPRISE
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
     timeouts: null
-  google_privateca_certificate_authority.ca_authority:
-    certificate_authority_id: ca-authority
+  module.cas.google_privateca_certificate_authority.default["root_ca"]:
+    certificate_authority_id: root_ca
     config:
     - subject_config:
       - subject:
-        - common_name: my-company-authority
+        - common_name: example.com
           country_code: null
           locality: null
-          organization: My Company
+          organization: Example
           organizational_unit: null
           postal_code: null
           province: null
           street_address: null
         subject_alt_name:
         - dns_names:
-          - mycompany.org
+          - example.com
           email_addresses: null
           ip_addresses: null
           uris: null
@@ -53,81 +57,101 @@ values:
         key_usage:
         - base_key_usage:
           - cert_sign: true
-            content_commitment: null
+            content_commitment: false
             crl_sign: true
-            data_encipherment: null
-            decipher_only: null
-            digital_signature: null
-            encipher_only: null
-            key_agreement: null
-            key_encipherment: null
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
           extended_key_usage:
-          - client_auth: null
-            code_signing: null
-            email_protection: null
-            ocsp_signing: null
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
             server_auth: true
-            time_stamping: null
+            time_stamping: false
           unknown_extended_key_usages: []
         name_constraints: []
         policy_ids: []
-    deletion_protection: false
+    deletion_protection: true
     desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     gcs_bucket: null
-    ignore_active_certificates_on_deletion: true
+    ignore_active_certificates_on_deletion: false
     key_spec:
-    - algorithm: RSA_PKCS1_4096_SHA256
+    - algorithm: RSA_PKCS1_2048_SHA256
       cloud_kms_key_version: null
     labels: null
     lifetime: 315360000s
-    location: us-central1
+    location: europe-west1
     pem_ca_certificate: null
-    pool: ca-pool
     project: project-id
     skip_grace_period: true
     subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     type: SELF_SIGNED
-  module.certificate-manager.google_certificate_manager_certificate.certificates["my-certificate-1"]:
+    user_defined_access_urls: []
+  module.certificate-manager.google_certificate_manager_certificate.certificates["cert-0"]:
     description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     location: global
     managed:
     - dns_authorizations: null
       domains:
-      - mydomain.mycompany.org
-    name: my-certificate-1
+      - cert-0.example.com
+    name: cert-0
     project: project-id
     scope: null
     self_managed: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.certificate-manager.google_certificate_manager_certificate_issuance_config.default["my-issuance-config"]:
+  module.certificate-manager.google_certificate_manager_certificate_issuance_config.default["config-0"]:
     certificate_authority_config:
     - certificate_authority_service_config:
       - {}
     description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     key_algorithm: ECDSA_P256
     labels: null
     lifetime: 1814400s
     location: global
-    name: my-issuance-config
+    name: config-0
     project: project-id
     rotation_window_percentage: 34
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.certificate-manager.google_certificate_manager_certificate_map.map[0]:
     description: My certificate map
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     name: my-certificate-map
     project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.certificate-manager.google_certificate_manager_certificate_map_entry.entries["mydomain-mycompany-org"]:
+  module.certificate-manager.google_certificate_manager_certificate_map_entry.entries["cert-0"]:
     description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     hostname: null
     labels: null
     map: my-certificate-map
     matcher: PRIMARY
-    name: mydomain-mycompany-org
+    name: cert-0
     project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
 
 counts:
@@ -137,5 +161,5 @@ counts:
   google_certificate_manager_certificate_map_entry: 1
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
-  modules: 1
+  modules: 2
   resources: 6

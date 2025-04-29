@@ -7,10 +7,17 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3052)] Updated network config variables in GKE node pool ([apichick](https://github.com/apichick)) <!-- 2025-04-21 18:44:40+00:00 -->
 - [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
 
 ### MODULES
 
+- [[#3059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3059)] Better cert manager module examples ([ludoo](https://github.com/ludoo)) <!-- 2025-04-29 12:12:40+00:00 -->
+- [[#3057](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3057)] [cloud-run-v2] Add ability to control code deployments outside Terraform ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-29 08:32:58+00:00 -->
+- [[#3056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3056)] Default vulnerability scanning to null in ar module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-29 07:54:20+00:00 -->
+- [[#3054](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3054)] New Managed Kafka module ([juliocc](https://github.com/juliocc)) <!-- 2025-04-24 06:52:03+00:00 -->
+- [[#3053](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3053)] Rename Dataplex Aspects module to Dataplex Aspect Types ([ludoo](https://github.com/ludoo)) <!-- 2025-04-22 13:06:40+00:00 -->
+- [[#3052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3052)] Updated network config variables in GKE node pool ([apichick](https://github.com/apichick)) <!-- 2025-04-21 18:44:40+00:00 -->
 - [[#3049](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3049)] [#3048] Fix serverless NEG example in net-lb-app-ext ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-20 19:17:16+00:00 -->
 - [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
 

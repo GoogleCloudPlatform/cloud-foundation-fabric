@@ -33,7 +33,11 @@ resource "google_artifact_registry_repository" "registry" {
   cleanup_policy_dry_run = var.cleanup_policy_dry_run
 
   vulnerability_scanning_config {
-    enablement_config = var.enable_vulnerability_scanning ? "INHERITED" : "DISABLED"
+    enablement_config = (
+      var.enable_vulnerability_scanning == true
+      ? "INHERITED"
+      : var.enable_vulnerability_scanning == false ? "DISABLED" : null
+    )
   }
 
   dynamic "cleanup_policies" {
