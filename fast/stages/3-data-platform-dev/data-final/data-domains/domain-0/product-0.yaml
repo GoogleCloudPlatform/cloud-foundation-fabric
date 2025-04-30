@@ -28,17 +28,17 @@ automation:
 exposure_layer:
   bigquery:
     datasets:
-      exposed: {}
+      exposure: {}
     iam:
       "roles/bigquery.dataViewer":
         - data-consumer-bi
-      "roles/dataplex.catalogViewer":
-        - data-consumer-bi
+      # "roles/dataplex.catalogViewer":
+      #   - data-consumer-bi
   storage:
     buckets:
       exposed-ew8: {}
     iam:
-      "roles/storage.admin":
+      "roles/storage.objectViewer":
         - data-consumer-bi
 iam_by_principals:
   rw:
@@ -47,7 +47,7 @@ iam_by_principals:
     - roles/viewer
   dp-product-a-0:
     - roles/dataplex.catalogEditor
-    - roles/bigquery.admin
+    - roles/bigquery.dataEditor
   processing:
     - "roles/bigquery.dataEditor"
     - "roles/bigquery.jobUser"
@@ -55,15 +55,15 @@ iam_by_principals:
     - "roles/dataproc.editor"
     - "roles/dataproc.worker"
     - "roles/iam.serviceAccountUser"
-    - "roles/storage.admin"
-iam_bindings_additive:
-  test-tag:
-    member: rw
-    role: roles/storage.viewer
-    condition:
-      title: Storage viewer on exposed resources.
-      expression: |
-        resource.matchTag('${tag_values["exposure/allow"]}')
+    - "roles/storage.objectAdmin" # Improve IAM storage handling.
+# iam_bindings_additive:
+#   test-tag:
+#     member: rw
+#     role: roles/storage.objectViewer
+#     condition:
+#       title: Storage viewer on exposed resources.
+#       expression: |
+#         resource.matchTag('${tag_values["exposure/allow"]}')
 service_accounts:
   processing:
     description: Processing service account.

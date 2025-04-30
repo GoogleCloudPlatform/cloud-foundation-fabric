@@ -50,7 +50,7 @@ resource "google_composer_environment" "default" {
     node_config {
       service_account = try(
         each.value.node_config.service_account,
-        module.dd-composer-sa[each.key]
+        module.dd-composer-sa[each.key].email
       )
       network = try(
         var.vpc_self_links[each.value.node_config.network],

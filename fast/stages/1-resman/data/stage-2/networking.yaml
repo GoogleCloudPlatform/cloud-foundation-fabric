@@ -71,3 +71,7 @@ organization_config:
       role: ngfw_enterprise_viewer
 # stage_3_config for IAM delegation are added here when needed
 # refer to each stage 3 documentation for snippets and examples
+stage3_config:
+  iam_admin_delegated:
+    - environment: dev
+      principal: data-platform-dev-rw
