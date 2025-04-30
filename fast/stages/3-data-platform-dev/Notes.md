@@ -6,6 +6,11 @@
 - [x] allow project and exposure-level interpolation for automation sa
 - [x] move processing serivce account and IAM from product code to YAML
 - [x] expose IAM for "exposure" buckets and datasets using the format below
+- [ ] output tfvars for the stage
+- [ ] output provider files for the products
+- [ ] context replacements in shared vpc service project IAM
+- [ ] automation block for data domains
+- [ ] tag context in data domain folder and project
 
 ```yaml
 exposure_layer:

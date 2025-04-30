@@ -82,7 +82,7 @@ locals {
         }
         storage = {
           buckets = try(v.exposure_layer.storage.buckets, {})
-          iam     = try(v.exposure_layer.bigquery.iam, {})
+          iam     = try(v.exposure_layer.storage.iam, {})
         }
       }
       iam                   = lookup(v, "iam", {})
