@@ -22,7 +22,7 @@ locals {
     }
   }
   _data_paths = {
-    for k in ["access_levels", "bridges", "egress_policies", "ingress_policies", "perimeters"] : k => (
+    for k in ["access_levels", "egress_policies", "ingress_policies", "perimeters"] : k => (
       var.factories_config[k] == null
       ? null
       : pathexpand(var.factories_config[k])
@@ -90,16 +90,6 @@ locals {
           resources = try(v.to.resources, [])
           roles     = try(v.to.roles, [])
         }
-      }
-    }
-    bridges = {
-      for k, v in local._data.bridges :
-      k => {
-        description               = try(v.description, null)
-        title                     = try(v.title, null)
-        spec_resources            = try(v.spec_resources, null)
-        status_resources          = try(v.resources, null)
-        use_explicit_dry_run_spec = try(v.use_explicit_dry_run_spec, false)
       }
     }
     perimeters = {
