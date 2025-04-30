@@ -16,13 +16,13 @@
 
 # tfdoc:file:description Data product automation resources.
 
-module "dp-automation-bucket" {
+module "dd-automation-bucket" {
   source = "../../../modules/gcs"
   for_each = {
-    for k, v in local.data_products :
+    for k, v in local.data_domains :
     k => v if try(v.automation.location, null) != null
   }
-  project_id = module.dd-projects[each.value.dd].project_id
+  project_id = module.dd-projects[each.key].project_id
   prefix     = local.prefix
   name       = "${each.value.short_name}-state"
   location = try(
@@ -31,11 +31,11 @@ module "dp-automation-bucket" {
   )
   iam = {
     "roles/storage.admin" = [
-      module.dp-automation-sa["${each.key}/rw"].iam_email
+      module.dd-automation-sa["${each.key}/rw"].iam_email
     ]
     "roles/storage.objectViewer" = concat(
       [
-        module.dp-automation-sa["${each.key}/ro"].iam_email
+        module.dd-automation-sa["${each.key}/ro"].iam_email
       ],
       [
         for m in each.value.automation.impersonation_principals : lookup(
@@ -46,10 +46,10 @@ module "dp-automation-bucket" {
   }
 }
 
-module "dp-automation-sa" {
+module "dd-automation-sa" {
   source      = "../../../modules/iam-service-account"
-  for_each    = { for v in local.dp_automation_sa : v.key => v }
-  project_id  = module.dp-projects[each.value.dp].project_id
+  for_each    = { for v in local.dd_automation_sa : v.key => v }
+  project_id  = module.dd-projects[each.value.dd].project_id
   prefix      = each.value.prefix
   name        = each.value.name
   description = each.value.description

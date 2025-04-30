@@ -36,6 +36,7 @@ locals {
     for k, v in local._dd_raw : k => {
       name       = v.name
       short_name = lookup(v, "short_name", reverse(split("/", k))[0])
+      automation = try(v.automation, null)
       deploy_config = {
         composer = try(v.deploy_config.composer, null)
       }
@@ -95,6 +96,20 @@ locals {
       )
     })
   }
+  dd_automation_sa = flatten([
+    for k, v in local.data_domains : [
+      for n in ["ro", "rw"] : {
+        dd          = k
+        key         = "${k}/${n}"
+        name        = "iac-${n}"
+        prefix      = v.short_name
+        description = "Automation for ${v.short_name} (${n}.)"
+        impersonation_principals = lookup(
+          v.automation, "impersonation_principals", []
+        )
+      }
+    ] if v.automation != null
+  ])
   dd_service_accounts = flatten([
     for k, v in local.data_domains : [
       for sk, sv in v.service_accounts : {
@@ -114,7 +129,7 @@ locals {
       for n in ["ro", "rw"] : {
         dp          = k
         key         = "${k}/${n}"
-        name        = n
+        name        = "iac-${n}"
         prefix      = "${v.dds}-${v.short_name}"
         description = "Automation for ${k} (${n}.)"
         impersonation_principals = lookup(

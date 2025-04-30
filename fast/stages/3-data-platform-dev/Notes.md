@@ -8,8 +8,8 @@
 - [x] expose IAM for "exposure" buckets and datasets using the format below
 - [ ] output tfvars for the stage
 - [ ] output provider files for the products
-- [ ] context replacements in shared vpc service project IAM and project id
-- [ ] automation block for data domains
+- [x] context replacements in shared vpc service project IAM and project id
+- [x] automation block for data domains
 - [ ] tag context in data domain folder and project
 - [ ] resman: interpolate stage sa using slash
 

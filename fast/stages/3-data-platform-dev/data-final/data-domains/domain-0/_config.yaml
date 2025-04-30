@@ -17,11 +17,9 @@
 name: Domain 0
 short_name: d0
 
-service_accounts:
-  rw:
-    description: Automation (rw).
-  ro:
-    description: Automation (ro).
+automation:
+  impersonation_principals:
+    - dp-product-a-0
 
 deploy_config:
   composer:
@@ -32,6 +30,11 @@ deploy_config:
       subnetwork: europe-west8/dev-dataplatform
 
 project_config:
+  iam:
+    roles/owner:
+      - rw
+    roles/viewer:
+      - ro
   services:
     - composer.googleapis.com
     - datacatalog.googleapis.com
@@ -44,12 +47,6 @@ project_config:
         - composer
 
 folder_config:
-  iam_by_principals:
-    data-consumer-bi:
-      - roles/datacatalog.viewer
-      - roles/dataplex.catalogViewer
-      - roles/datalineage.viewer
-
   iam_bindings:
     bigquery_metadata_viewer:
       members:
@@ -67,3 +64,8 @@ folder_config:
         title: exposure
         description: Expose via secure tag.
         expression: resource.matchTag('exposure', 'allow')
+  iam_by_principals:
+    data-consumer-bi:
+      - roles/datacatalog.viewer
+      - roles/dataplex.catalogViewer
+      - roles/datalineage.viewer

@@ -13,6 +13,21 @@
     "short_name": {
       "type": "string"
     },
+    "automation": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "impersonation_principals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        }
+      }
+    },
     "deploy_config": {
       "type": "object",
       "additionalProperties": false,

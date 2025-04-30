@@ -89,6 +89,7 @@ module "dd-projects-iam" {
     for k, v in each.value.project_config.iam : k => [
       for m in v : try(
         var.factories_config.context.iam_principals[m],
+        module.dd-automation-sa["${each.key}/${m}"].iam_email,
         module.dd-service-accounts["${each.key}/${m}"].iam_email,
         m
       )
@@ -99,6 +100,7 @@ module "dd-projects-iam" {
       members = [
         for m in v.members : lookup(
           var.factories_config.context.iam_principals[m],
+          module.dd-automation-sa["${each.key}/${m}"].iam_email,
           module.dd-service-accounts["${each.key}/${m}"].iam_email,
           m
         )
@@ -110,6 +112,7 @@ module "dd-projects-iam" {
       for k, v in each.value.project_config.iam_bindings_additive : k => merge(v, {
         member = lookup(
           var.factories_config.context.iam_principals[v.member],
+          module.dd-automation-sa["${each.key}/${v.member}"].iam_email,
           module.dd-service-accounts["${each.key}/${v.member}"].iam_email,
           v.member
         )
@@ -139,6 +142,7 @@ module "dd-projects-iam" {
         for m in try(each.value.project_config.shared_vpc_service_config.network_users, []) :
         try(
           var.factories_config.context.iam_principals[m],
+          module.dd-automation-sa["${each.key}/${m}"].iam_email,
           module.dd-service-accounts["${each.key}/${m}"].iam_email,
           m
         )
