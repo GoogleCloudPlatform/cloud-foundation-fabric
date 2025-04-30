@@ -59,6 +59,6 @@ module "vpc-sc" {
       context = local.context
     }
   )
-  ingress_policies           = var.ingress_policies
-  service_perimeters_regular = var.perimeters
+  ingress_policies = var.ingress_policies
+  perimeters       = var.perimeters
 }
