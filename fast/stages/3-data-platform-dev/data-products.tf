@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Data product project, service account and exposed resources.
+
 module "dp-projects" {
   source          = "../../../modules/project"
   for_each        = local.data_products
@@ -69,23 +71,46 @@ module "dp-projects-iam" {
       )
     })
   }
-  iam_by_principals = merge(
-    {
-      for k, v in each.value.iam_by_principals :
-      lookup(var.factories_config.context.iam_principals, k, k) => v
-    },
-    {
-      (module.dp-processing-sa[each.key].iam_email) = [
-        "roles/bigquery.dataEditor",
-        "roles/bigquery.jobUser",
-        "roles/dataflow.admin",
-        "roles/dataproc.editor",
-        "roles/dataproc.worker",
-        "roles/iam.serviceAccountUser",
-        "roles/storage.admin"
+  iam_by_principals = {
+    for k, v in each.value.iam_by_principals : try(
+      var.factories_config.context.iam_principals[k],
+      module.dp-service-accounts["${each.key}/${k}"].iam_email,
+      k
+    ) => v
+  }
+}
+
+module "dp-service-accounts" {
+  source      = "../../../modules/iam-service-account"
+  for_each    = { for v in local.dp_service_accounts : v.key => v }
+  project_id  = module.dp-projects[each.value.dp].project_id
+  prefix      = each.value.prefix
+  name        = each.value.name
+  description = each.value.description
+  iam = {
+    for k, v in each.value.iam : k => [
+      for m in v : lookup(
+        var.factories_config.context.iam_principals, m, m
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in each.value.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(
+          var.factories_config.context.iam_principals, m, m
+        )
       ]
-    }
-  )
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.iam_bindings_additive : k => merge(v, {
+      member = lookup(
+        var.factories_config.context.iam_principals, v.member, v.member
+      )
+    })
+  }
+  iam_storage_roles = each.value.iam_storage_roles
 }
 
 module "dp-buckets" {
@@ -117,46 +142,4 @@ module "dp-datasets" {
       module.central-project.tag_values["${var.exposure_config.tag_name}"].id
     )
   }
-}
-
-module "dp-service-accounts" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = { for v in local.dp_service_accounts : v.key => v }
-  project_id  = module.dp-projects[each.value.dp].project_id
-  prefix      = local.prefix
-  name        = each.value.name
-  description = each.value.description
-  iam = {
-    for k, v in each.value.iam : k => [
-      for m in v : lookup(
-        var.factories_config.context.iam_principals, m, m
-      )
-    ]
-  }
-  iam_bindings = {
-    for k, v in each.value.iam_bindings : k => merge(v, {
-      members = [
-        for m in v.members : lookup(
-          var.factories_config.context.iam_principals, m, m
-        )
-      ]
-    })
-  }
-  iam_bindings_additive = {
-    for k, v in each.value.iam_bindings_additive : k => merge(v, {
-      member = lookup(
-        var.factories_config.context.iam_principals, v.member, v.member
-      )
-    })
-  }
-  iam_storage_roles = each.value.iam_storage_roles
-}
-
-module "dp-processing-sa" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.data_products
-  project_id  = module.dp-projects[each.key].project_id
-  prefix      = local.prefix
-  name        = "processing"
-  description = "Data Product processing."
 }

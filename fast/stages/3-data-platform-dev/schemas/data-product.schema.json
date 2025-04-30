@@ -4,6 +4,21 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "automation": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "impersonation_principals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        }
+      }
+    },
     "exposed_resources": {
       "type": "object",
       "additionalProperties": false,

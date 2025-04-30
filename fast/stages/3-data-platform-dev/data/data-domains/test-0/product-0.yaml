@@ -22,6 +22,10 @@ services:
   - dataplex.googleapis.com
   - datalineage.googleapis.com
   - storage.googleapis.com
+automation:
+  location: europe-west8
+  impersonation_principals:
+    - user:foo@example.com
 exposed_resources:
   bigquery_datasets:
     exposed_ew8:
@@ -34,3 +38,15 @@ iam_by_principals:
   dp-product-a-0:
     - roles/datacatalog.tagEditor
     - roles/bigquery.admin
+  processing:
+    - "roles/bigquery.dataEditor"
+    - "roles/bigquery.jobUser"
+    - "roles/dataflow.admin"
+    - "roles/dataproc.editor"
+    - "roles/dataproc.worker"
+    - "roles/iam.serviceAccountUser"
+    - "roles/storage.admin"
+
+service_accounts:
+  processing:
+    description: Processing service account.
