@@ -141,7 +141,7 @@ locals {
       for dk, dv in v.exposure_layer.bigquery.datasets : {
         dp         = k
         dps        = replace("${v.dds}-${v.short_name}", "-", "_")
-        iam        = v.exposure_layer.storage.iam
+        iam        = v.exposure_layer.bigquery.iam
         key        = dk
         short_name = replace(lookup(dv, "short_name", dk), "-", "_")
         location   = lookup(dv, "location", var.location)
