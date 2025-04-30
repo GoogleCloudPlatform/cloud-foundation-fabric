@@ -1,6 +1,6 @@
 # Notes
 
-- [ ] implement tag substitution for product-level IAM conditions
+- [x] implement tag substitution for product-level IAM conditions
 - [x] allow all four network configurations for Composer
 - [x] add `automation` block to data domains and products
 - [x] allow project and exposure-level interpolation for automation sa
