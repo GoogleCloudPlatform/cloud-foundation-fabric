@@ -115,21 +115,16 @@ project_config:
 
 The following table lists the available substitutions.
 
-> TODO: ensure all contexts are represented below
-
-| resource        | attributes         | context expansions                            |
-| --------------- | ------------------ | --------------------------------------------- |
-| central project | iam principals     | `var.factories_config.context.iam_principals` |
-| central project | tag iam principals | `var.factories_config.context.iam_principals` |
-| domain folder   | iam principals     | `var.factories_config.context.iam_principals` |
-| domain project  | iam principals     | `var.factories_config.context.iam_principals` |
-| domain sa       | iam principals     | `var.factories_config.context.iam_principals` |
-|                 |                    | domain service accounts                       |
-| product project | iam principals     | `var.factories_config.context.iam_principals` |
-|                 |                    | product service accounts                      |
-| product project | iam conditions     | `var.factories_config.context.iam_tag_values`, FAST tag values, exposure tag value |
-|                 |                    | product service accounts                      |
-| product sa      | iam principals     | `var.factories_config.context.iam_principals` |
+| resource        | attributes         | context expansions                                                                 |
+| --------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| central project | IAM principals     | `var.factories_config.context.iam_principals`                                      |
+| central project | tag IAM principals | `var.factories_config.context.iam_principals`                                      |
+| domain folder   | IAM principals     | `var.factories_config.context.iam_principals`                                      |
+| domain project  | IAM principals     | `var.factories_config.context.iam_principals`                                      |
+| domain sa       | IAM principals     | `var.factories_config.context.iam_principals`<br>domain service accounts                                      |
+| product project | IAM principals     | `var.factories_config.context.iam_principals`<br>product service accounts                                      |
+| product project | IAM conditions     | `var.factories_config.context.iam_tag_values`<br>FAST tag values<br>exposure tag value |
+| product sa      | IAM principals     | `var.factories_config.context.iam_principals`                                      |
 
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:3-gcve-dev-providers.tf -->
 <!-- BEGIN TFDOC -->
