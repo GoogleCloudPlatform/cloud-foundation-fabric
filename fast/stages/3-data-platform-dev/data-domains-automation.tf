@@ -20,7 +20,7 @@ module "dd-automation-bucket" {
   source = "../../../modules/gcs"
   for_each = {
     for k, v in local.data_domains :
-    k => v if try(v.automation.location, null) != null
+    k => v if v.automation != null
   }
   project_id = module.dd-projects[each.key].project_id
   prefix     = local.prefix
