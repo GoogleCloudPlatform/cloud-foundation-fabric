@@ -74,9 +74,17 @@ locals {
           "bigquery.googleapis.com"
         ]
       ))
-      automation            = try(v.automation, null)
-      exposed_buckets       = try(v.exposed_resources.storage_buckets, {})
-      exposed_datasets      = try(v.exposed_resources.bigquery_datasets, {})
+      automation = try(v.automation, null)
+      exposure_layer = {
+        bigquery = {
+          datasets = try(v.exposure_layer.bigquery.datasets, {})
+          iam      = try(v.exposure_layer.bigquery.iam, {})
+        }
+        storage = {
+          buckets = try(v.exposure_layer.storage.buckets, {})
+          iam     = try(v.exposure_layer.bigquery.iam, {})
+        }
+      }
       iam                   = lookup(v, "iam", {})
       iam_bindings          = lookup(v, "iam_bindings", {})
       iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
@@ -117,9 +125,10 @@ locals {
   ])
   dp_buckets = flatten([
     for k, v in local.data_products : [
-      for bk, bv in v.exposed_buckets : {
+      for bk, bv in v.exposure_layer.storage.buckets : {
         dp            = k
         dps           = "${v.dds}-${v.short_name}"
+        iam           = v.exposure_layer.storage.iam
         key           = bk
         short_name    = lookup(bv, "short_name", bk)
         location      = lookup(bv, "location", var.location)
@@ -129,9 +138,10 @@ locals {
   ])
   dp_datasets = flatten([
     for k, v in local.data_products : [
-      for dk, dv in v.exposed_datasets : {
+      for dk, dv in v.exposure_layer.bigquery.datasets : {
         dp         = k
         dps        = replace("${v.dds}-${v.short_name}", "-", "_")
+        iam        = v.exposure_layer.storage.iam
         key        = dk
         short_name = replace(lookup(dv, "short_name", dk), "-", "_")
         location   = lookup(dv, "location", var.location)

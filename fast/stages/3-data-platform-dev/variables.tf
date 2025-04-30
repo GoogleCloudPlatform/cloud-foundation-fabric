@@ -107,6 +107,7 @@ variable "factories_config" {
     policy_tags  = optional(string, "data/policy-tags")
     context = optional(object({
       iam_principals = optional(map(string), {})
+      tag_values     = optional(map(string), {})
     }), {})
   })
   nullable = false

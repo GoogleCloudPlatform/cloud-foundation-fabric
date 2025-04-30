@@ -46,6 +46,7 @@ module "dp-projects-iam" {
     for k, v in each.value.iam : k => [
       for m in v : try(
         var.factories_config.context.iam_principals[m],
+        module.dp-automation-sa["${each.key}/${m}"].iam_email,
         module.dp-service-accounts["${each.key}/${m}"].iam_email,
         m
       )
@@ -56,24 +57,41 @@ module "dp-projects-iam" {
       members = [
         for m in v.members : try(
           var.factories_config.context.iam_principals[m],
+          module.dp-automation-sa["${each.key}/${m}"].iam_email,
           module.dp-service-accounts["${each.key}/${m}"].iam_email,
           m
         )
       ]
+      condition = try(v.condition, null) == null ? null : {
+        title       = v.condition.title
+        description = try(v.condition.description, null)
+        expression = templatestring(v.condition.expression, {
+          tag_values = local.tag_values
+        })
+      }
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.iam_bindings_additive : k => merge(v, {
       member = try(
         var.factories_config.context.iam_principals[v.member],
+        module.dp-automation-sa["${each.key}/${v.member}"].iam_email,
         module.dp-service-accounts["${each.key}/${v.member}"].iam_email,
         v.member
       )
+      condition = try(v.condition, null) == null ? null : {
+        title       = v.condition.title
+        description = try(v.condition.description, null)
+        expression = templatestring(v.condition.expression, {
+          tag_values = local.tag_values
+        })
+      }
     })
   }
   iam_by_principals = {
     for k, v in each.value.iam_by_principals : try(
       var.factories_config.context.iam_principals[k],
+      module.dp-automation-sa["${each.key}/${k}"].iam_email,
       module.dp-service-accounts["${each.key}/${k}"].iam_email,
       k
     ) => v
@@ -111,35 +129,4 @@ module "dp-service-accounts" {
     })
   }
   iam_storage_roles = each.value.iam_storage_roles
-}
-
-module "dp-buckets" {
-  source = "../../../modules/gcs"
-  for_each = {
-    for v in local.dp_buckets : "${v.dp}/${v.key}" => v
-  }
-  project_id = module.dp-projects[each.value.dp].project_id
-  prefix     = local.prefix
-  name       = "${each.value.dps}-${each.value.short_name}-0"
-  location   = each.value.location
-  tag_bindings = {
-    exposure = (
-      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
-    )
-  }
-}
-
-module "dp-datasets" {
-  source = "../../../modules/bigquery-dataset"
-  for_each = {
-    for v in local.dp_datasets : "${v.dp}/${v.key}" => v
-  }
-  project_id = module.dp-projects[each.value.dp].project_id
-  id         = "${local.prefix_bq}_${each.value.dps}_${each.value.short_name}_0"
-  location   = each.value.location
-  tag_bindings = {
-    exposure = (
-      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
-    )
-  }
 }

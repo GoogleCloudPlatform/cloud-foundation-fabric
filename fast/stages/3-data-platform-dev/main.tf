@@ -32,6 +32,11 @@ locals {
     { for k, v in module.dd-service-accounts : k => v.iam_email },
     { for k, v in module.dp-service-accounts : k => v.iam_email }
   )
+  tag_values = merge(
+    var.tag_values,
+    var.factories_config.context.tag_values,
+    { for k, v in module.central-project.tag_values : k => v.id }
+  )
 }
 
 module "central-project" {

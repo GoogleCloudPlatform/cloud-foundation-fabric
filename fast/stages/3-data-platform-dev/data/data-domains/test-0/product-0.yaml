@@ -26,15 +26,26 @@ automation:
   location: europe-west8
   impersonation_principals:
     - user:foo@example.com
-exposed_resources:
-  bigquery_datasets:
-    exposed_ew8:
-      location: europe-west8
-  storage_buckets:
-    exposed-ew8:
-      location: europe-west8
-
+exposure_layer:
+  bigquery:
+    datasets:
+      exposed_ew8:
+        location: europe-west8
+    iam:
+      "roles/bigquery.admin":
+        - user:foo@example.com
+  storage:
+    buckets:
+      exposed-ew8:
+        location: europe-west8
+    iam:
+      "roles/storage.admin":
+        - user:foo@example.com
 iam_by_principals:
+  rw:
+    - roles/editor
+  ro:
+    - roles/viewer
   dp-product-a-0:
     - roles/datacatalog.tagEditor
     - roles/bigquery.admin
@@ -46,7 +57,14 @@ iam_by_principals:
     - "roles/dataproc.worker"
     - "roles/iam.serviceAccountUser"
     - "roles/storage.admin"
-
+iam_bindings_additive:
+  test-tag:
+    member: rw
+    role: roles/storage.viewer
+    condition:
+      title: Storage viewer on exposed resources.
+      expression: |
+        resource.matchTag('${tag_values["exposure/allow"]}')
 service_accounts:
   processing:
     description: Processing service account.

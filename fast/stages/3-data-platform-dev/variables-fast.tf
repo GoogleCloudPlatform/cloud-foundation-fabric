@@ -75,6 +75,14 @@ variable "subnet_self_links" {
   default     = {}
 }
 
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "FAST-managed resource manager tag values."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC name => self link mappings."

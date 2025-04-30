@@ -19,40 +19,54 @@
         }
       }
     },
-    "exposed_resources": {
+    "exposure_layer": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "bigquery_datasets": {
+        "bigquery": {
           "type": "object",
           "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z][a-z0-9_]+$": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "location": {
-                  "type": "string"
+          "properties": {
+            "datasets": {
+              "patternProperties": {
+                "^[a-z][a-z0-9_]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "location": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
             }
           }
         },
-        "storage_buckets": {
+        "storage": {
           "type": "object",
           "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z][a-z0-9-]+$": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "location": {
-                  "type": "string"
-                },
-                "storage_class": {
-                  "type": "string"
+          "properties": {
+            "buckets": {
+              "patternProperties": {
+                "^[a-z][a-z0-9-]+$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "location": {
+                      "type": "string"
+                    },
+                    "storage_class": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
             }
           }
         }
