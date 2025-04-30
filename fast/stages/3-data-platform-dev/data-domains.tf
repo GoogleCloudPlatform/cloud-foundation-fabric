@@ -33,6 +33,13 @@ module "dd-folders" {
           var.factories_config.context.iam_principals, m, m
         )
       ]
+      condition = try(v.condition, null) == null ? null : {
+        title       = v.condition.title
+        description = try(v.condition.description, null)
+        expression = templatestring(v.condition.expression, {
+          tag_values = local.tag_values
+        })
+      }
     })
   }
   iam_bindings_additive = {
@@ -40,6 +47,13 @@ module "dd-folders" {
       member = lookup(
         var.factories_config.context.iam_principals, v.member, v.member
       )
+      condition = try(v.condition, null) == null ? null : {
+        title       = v.condition.title
+        description = try(v.condition.description, null)
+        expression = templatestring(v.condition.expression, {
+          tag_values = local.tag_values
+        })
+      }
     })
   }
   iam_by_principals = {
@@ -98,24 +112,38 @@ module "dd-projects-iam" {
   iam_bindings = {
     for k, v in each.value.project_config.iam_bindings : k => merge(v, {
       members = [
-        for m in v.members : lookup(
+        for m in v.members : try(
           var.factories_config.context.iam_principals[m],
           module.dd-automation-sa["${each.key}/${m}"].iam_email,
           module.dd-service-accounts["${each.key}/${m}"].iam_email,
           m
         )
       ]
+      condition = try(v.condition, null) == null ? null : {
+        title       = v.condition.title
+        description = try(v.condition.description, null)
+        expression = templatestring(v.condition.expression, {
+          tag_values = local.tag_values
+        })
+      }
     })
   }
   iam_bindings_additive = merge(
     {
       for k, v in each.value.project_config.iam_bindings_additive : k => merge(v, {
-        member = lookup(
+        member = try(
           var.factories_config.context.iam_principals[v.member],
           module.dd-automation-sa["${each.key}/${v.member}"].iam_email,
           module.dd-service-accounts["${each.key}/${v.member}"].iam_email,
           v.member
         )
+        condition = try(v.condition, null) == null ? null : {
+          title       = v.condition.title
+          description = try(v.condition.description, null)
+          expression = templatestring(v.condition.expression, {
+            tag_values = local.tag_values
+          })
+        }
       })
     },
     try(each.value.deploy.composer, null) != true ? {} : {

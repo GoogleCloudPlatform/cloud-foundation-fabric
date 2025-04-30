@@ -10,7 +10,7 @@
 - [ ] output provider files for the products
 - [x] context replacements in shared vpc service project IAM and project id
 - [x] automation block for data domains
-- [ ] tag context in data domain folder and project
+- [x] tag context in data domain folder and project
 - [ ] resman: interpolate stage sa using slash
 
 ```yaml

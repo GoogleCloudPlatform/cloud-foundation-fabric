@@ -35,6 +35,15 @@ project_config:
       - rw
     roles/viewer:
       - ro
+  iam_bindings:
+    test-tag:
+      members:
+        - data-consumer-bi
+      role: roles/viewer
+      condition:
+        title: Storage viewer on exposed resources.
+        expression: |
+          resource.matchTag('${tag_values["exposure/allow"]}')
   services:
     - composer.googleapis.com
     - datacatalog.googleapis.com
