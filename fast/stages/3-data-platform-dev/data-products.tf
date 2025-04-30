@@ -27,8 +27,7 @@ module "dp-projects" {
     data_domain  = each.value.dd
     data_product = replace(each.key, "/", "_")
   }
-  services                  = each.value.services
-  shared_vpc_service_config = each.value.shared_vpc_service_config
+  services = each.value.services
 }
 
 module "dp-projects-iam" {
@@ -38,8 +37,9 @@ module "dp-projects-iam" {
   project_reuse = {
     use_data_source = false
     project_attributes = {
-      name   = module.dp-projects[each.key].name
-      number = module.dp-projects[each.key].number
+      name             = module.dp-projects[each.key].name
+      number           = module.dp-projects[each.key].number
+      services_enabled = each.value.services
     }
   }
   iam = {
@@ -96,6 +96,34 @@ module "dp-projects-iam" {
       k
     ) => v
   }
+  shared_vpc_service_config = (
+    each.value.shared_vpc_service_config == null
+    ? null
+    : {
+      host_project = lookup(
+        var.host_project_ids,
+        each.value.shared_vpc_service_config.host_project,
+        each.value.shared_vpc_service_config.host_project
+      )
+      network_users = [
+        for m in try(each.value.shared_vpc_service_config.network_users, []) :
+        try(
+          var.factories_config.context.iam_principals[m],
+          module.dp-automation-sa["${each.key}/${m}"].iam_email,
+          module.dp-service-accounts["${each.key}/${m}"].iam_email,
+          m
+        )
+      ]
+      service_agent_iam = try(
+        each.value.shared_vpc_service_config.service_agent_iam,
+        {}
+      )
+      service_iam_grants = try(
+        each.value.shared_vpc_service_config.service_iam_grants,
+        []
+      )
+    }
+  )
 }
 
 module "dp-service-accounts" {

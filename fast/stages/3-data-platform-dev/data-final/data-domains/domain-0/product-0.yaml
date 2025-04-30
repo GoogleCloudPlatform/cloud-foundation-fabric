@@ -18,6 +18,7 @@ short_name: p0
 services:
   - bigquery.googleapis.com
   - cloudresourcemanager.googleapis.com
+  - composer.googleapis.com
   - datacatalog.googleapis.com
   - dataplex.googleapis.com
   - datalineage.googleapis.com

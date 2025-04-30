@@ -148,34 +148,10 @@
             }
           }
         },
-        "service_agent_subnet_iam": {
-          "type": "object",
-          "additionalItems": false,
-          "patternProperties": {
-            "^[a-z0-9_-]+$": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        },
         "service_iam_grants": {
           "type": "array",
           "items": {
             "type": "string"
-          }
-        },
-        "network_subnet_users": {
-          "type": "object",
-          "additionalItems": false,
-          "patternProperties": {
-            "^[a-z0-9_-]+$": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
           }
         }
       }

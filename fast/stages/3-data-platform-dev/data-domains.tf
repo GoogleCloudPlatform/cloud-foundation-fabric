@@ -70,8 +70,7 @@ module "dd-projects" {
   labels = {
     data_domain = each.key
   }
-  services                  = each.value.project_config.services
-  shared_vpc_service_config = each.value.project_config.shared_vpc_service_config
+  services = each.value.project_config.services
 }
 
 module "dd-projects-iam" {
@@ -81,8 +80,9 @@ module "dd-projects-iam" {
   project_reuse = {
     use_data_source = false
     project_attributes = {
-      name   = module.dd-projects[each.key].name
-      number = module.dd-projects[each.key].number
+      name             = module.dd-projects[each.key].name
+      number           = module.dd-projects[each.key].number
+      services_enabled = each.value.project_config.services
     }
   }
   iam = {
@@ -126,6 +126,33 @@ module "dd-projects-iam" {
     for k, v in each.value.project_config.iam_by_principals :
     lookup(var.factories_config.context.iam_by_principals, k, k) => v
   }
+  shared_vpc_service_config = (
+    each.value.project_config.shared_vpc_service_config == null
+    ? null
+    : {
+      host_project = lookup(
+        var.host_project_ids,
+        each.value.project_config.shared_vpc_service_config.host_project,
+        each.value.project_config.shared_vpc_service_config.host_project
+      )
+      network_users = [
+        for m in try(each.value.project_config.shared_vpc_service_config.network_users, []) :
+        try(
+          var.factories_config.context.iam_principals[m],
+          module.dd-service-accounts["${each.key}/${m}"].iam_email,
+          m
+        )
+      ]
+      service_agent_iam = try(
+        each.value.project_config.shared_vpc_service_config.service_agent_iam,
+        {}
+      )
+      service_iam_grants = try(
+        each.value.project_config.shared_vpc_service_config.service_iam_grants,
+        []
+      )
+    }
+  )
 }
 
 module "dd-service-accounts" {
