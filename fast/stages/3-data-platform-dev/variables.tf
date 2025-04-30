@@ -104,7 +104,6 @@ variable "factories_config" {
   type = object({
     aspect_types = optional(string, "data/aspect-types")
     data_domains = optional(string, "data/data-domains")
-    policy_tags  = optional(string, "data/policy-tags")
     context = optional(object({
       iam_principals = optional(map(string), {})
       tag_values     = optional(map(string), {})

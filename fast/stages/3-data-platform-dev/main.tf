@@ -122,6 +122,7 @@ module "central-aspect-types" {
   }
 }
 
+# TODO: Add factory support.
 module "central-policy-tags" {
   source     = "../../../modules/data-catalog-policy-tag"
   project_id = module.central-project.project_id
