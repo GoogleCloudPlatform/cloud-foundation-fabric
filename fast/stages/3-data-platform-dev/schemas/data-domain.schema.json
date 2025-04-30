@@ -25,11 +25,13 @@
             "node_config"
           ],
           "properties": {
-            "region": {
-              "type": "string"
-            },
             "environment_size": {
               "type": "string",
+              "enum": [
+                "ENVIRONMENT_SIZE_SMALL",
+                "ENVIRONMENT_SIZE_MEDIUM",
+                "ENVIRONMENT_SIZE_LARGE"
+              ],
               "default": "ENVIRONMENT_SIZE_SMALL"
             },
             "node_config": {
@@ -50,6 +52,17 @@
                   "type": "string"
                 }
               }
+            },
+            "private_builds": {
+              "type": "boolean",
+              "default": true
+            },
+            "private_environment": {
+              "type": "boolean",
+              "default": true
+            },
+            "region": {
+              "type": "string"
             },
             "workloads_config": {
               "type": "object",

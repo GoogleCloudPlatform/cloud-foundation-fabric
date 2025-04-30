@@ -40,7 +40,8 @@ resource "google_composer_environment" "default" {
   name     = "${var.prefix}-${each.key}"
   region   = each.value.region
   config {
-    enable_private_environment = true
+    enable_private_builds_only = try(each.value.private_builds, true)
+    enable_private_environment = try(each.value.private_environment, true)
     environment_size = try(
       each.value.environment_size,
       "ENVIRONMENT_SIZE_SMALL"
