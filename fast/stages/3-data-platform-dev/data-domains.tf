@@ -146,7 +146,7 @@ module "dd-projects-iam" {
         }
       })
     },
-    try(each.value.deploy.composer, null) != true ? {} : {
+    try(each.value.deploy_config.composer, null) == null ? {} : {
       composer_worker = {
         member = module.dd-composer-sa[each.key].iam_email
         role   = "roles/composer.worker"
