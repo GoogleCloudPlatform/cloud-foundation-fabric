@@ -25,6 +25,10 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 6.33.0, < 7.0.0" # tftest
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 2.2.0" # tftest
+    }
   }
   provider_meta "google" {
     module_name = "google-pso-tool/cloud-foundation-fabric/modules/alloydb:v39.0.0-tofu"
