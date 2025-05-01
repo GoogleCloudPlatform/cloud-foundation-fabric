@@ -35,6 +35,8 @@ project_config:
       - rw
     roles/viewer:
       - ro
+    roles/composer.environmentAndStorageObjectAdmin:
+      - dp-product-a-0
   services:
     - composer.googleapis.com
     - datacatalog.googleapis.com
