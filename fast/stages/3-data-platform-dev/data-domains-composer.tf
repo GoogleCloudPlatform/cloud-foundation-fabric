@@ -36,7 +36,7 @@ module "dd-composer-sa" {
 
 resource "google_composer_environment" "default" {
   for_each = local.dd_composer
-  project  = module.dd-projects[each.key].project_id
+  project  = module.dd-projects-iam[each.key].project_id
   name     = "${var.prefix}-${each.key}"
   region   = each.value.region
   config {
