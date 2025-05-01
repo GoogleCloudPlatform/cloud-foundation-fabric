@@ -67,7 +67,7 @@ module "dd-dp-folders" {
   for_each = local.data_domains
   parent   = module.dd-folders[each.key].id
   name     = "Data Products"
-  iam = try(each.value.deploy.composer, null) != true ? {} : {
+  iam = try(each.value.deploy_config.composer, null) == null ? {} : {
     "roles/iam.serviceAccountTokenCreator" = [
       module.dd-composer-sa[each.key].iam_email
     ]
