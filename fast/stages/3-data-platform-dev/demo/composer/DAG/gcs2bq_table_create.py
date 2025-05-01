@@ -99,6 +99,7 @@ with models.DAG('table_creation', default_args=default_args,
 
   exposure_view = BigQueryCreateTableOperator(
       task_id="exposure_view",
+      project_id=DP_PROJECT,    
       dataset_id=EXPOSURE_BQ_DATASET,
       table_id="customer_purchase",
       table_resource={
