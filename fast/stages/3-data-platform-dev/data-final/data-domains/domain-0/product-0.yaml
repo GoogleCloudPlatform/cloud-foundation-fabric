@@ -49,6 +49,7 @@ iam_by_principals:
   dp-product-a-0:
     - roles/dataplex.catalogEditor
     - roles/bigquery.dataEditor
+    - "roles/storage.objectAdmin" # Improve IAM storage handling.
   processing:
     - "roles/bigquery.dataEditor"
     - "roles/bigquery.jobUser"
