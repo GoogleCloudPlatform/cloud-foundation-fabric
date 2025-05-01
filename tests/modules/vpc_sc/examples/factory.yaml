@@ -73,7 +73,25 @@ values:
             service_name: storage.googleapis.com
           resources:
           - projects/123456789
+          roles: []
+        title: gcs-sa-foo
       ingress_policies:
+      - ingress_from:
+        - identities:
+          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - projects/1234567890
+          - projects/321
+          - projects/654
+          roles: []
+        title: '0'
       - ingress_from:
         - identities:
           - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
@@ -92,20 +110,8 @@ values:
             service_name: compute.googleapis.com
           resources:
           - '*'
-      - ingress_from:
-        - identities:
-          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
-          identity_type: null
-          sources:
-          - resource: null
-        ingress_to:
-        - operations:
-          - method_selectors: []
-            service_name: '*'
-          resources:
-          - projects/1234567890
-          - projects/321
-          - projects/654
+          roles: []
+        title: '1'
       resources:
       - projects/1111
       - projects/2222

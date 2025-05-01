@@ -77,22 +77,6 @@ values:
       ingress_policies:
       - ingress_from:
         - identities:
-          - serviceAccount:test-tf-2@myproject.iam.gserviceaccount.com
-          identity_type: null
-          sources:
-          - access_level: '*'
-            resource: null
-        ingress_to:
-        - operations:
-          - method_selectors: []
-            service_name: '*'
-          resources:
-          - '*'
-          roles:
-          - roles/storage.objectViewer
-        title: sa-roles
-      - ingress_from:
-        - identities:
           - serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com
           - serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com
           identity_type: null
@@ -106,7 +90,23 @@ values:
           resources:
           - '*'
           roles: null
-        title: sa-tf-test
+        title: '0'
+      - ingress_from:
+        - identities:
+          - serviceAccount:test-tf-2@myproject.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+          roles:
+          - roles/storage.objectViewer
+        title: '1'
       resources:
       - projects/1111
       - projects/2222
