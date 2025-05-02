@@ -247,7 +247,7 @@ variable "network_config" {
   })
   nullable = false
   validation {
-    condition     = try(var.network_config.psa_config.enable_public_ip, false) == try(length(var.network_config.psa_config.authorized_external_networks) > 0, false)
+    condition     = try(length(var.network_config.psa_config.authorized_external_networks) > 0, false) ? try(var.network_config.psa_config.enable_public_ip, false) : true
     error_message = "A list of external network authorized to access this instance is required only in case public IP is enabled for the instance."
   }
   validation {
@@ -327,7 +327,7 @@ variable "read_pool" {
   validation {
     condition = alltrue([
       for k, v in var.read_pool :
-      try(v.network_config.enable_public_ip, false) == try(length(v.network_config.authorized_external_networks) > 0, false)
+      try(length(v.network_config.psa_config.authorized_external_networks) > 0, false) ? try(v.network_config.psa_config.enable_public_ip, false) : true
     ])
     error_message = "A list of external network authorized to access this replica pool instance is required only in case public IP is enabled for the replica pool instance."
   }
