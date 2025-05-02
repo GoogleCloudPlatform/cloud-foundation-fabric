@@ -293,5 +293,6 @@ terraform apply
 | [folder_ids](outputs.tf#L77) | Folder ids. |  |  |
 | [providers](outputs.tf#L83) | Terraform provider files for this stage and dependent stages. | ✓ |  |
 | [service_accounts](outputs.tf#L89) | Service accounts. |  |  |
-| [tfvars](outputs.tf#L95) | Terraform variable files for the following stages. | ✓ |  |
+| [tag_values](outputs.tf#L94) | Tag values. |  |  |
+| [tfvars](outputs.tf#L100) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

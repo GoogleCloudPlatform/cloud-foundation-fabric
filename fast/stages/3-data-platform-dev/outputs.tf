@@ -168,14 +168,14 @@ output "aspect_types" {
   value       = local.tfvars.aspect_types
 }
 
-output "data_domains" {
-  description = "Data domain attributes."
-  value       = local.dd_attrs
-}
-
 output "central_project" {
   description = "Central project attributes."
   value       = local.central_project
+}
+
+output "data_domains" {
+  description = "Data domain attributes."
+  value       = local.dd_attrs
 }
 
 output "policy_tags" {
