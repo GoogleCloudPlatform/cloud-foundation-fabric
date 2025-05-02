@@ -27,7 +27,7 @@ deploy_config:
     environment_size: ENVIRONMENT_SIZE_SMALL
     node_config:
       network: dev-spoke-0
-      subnetwork: europe-west8/gce # dev-dataplatform
+      subnetwork: europe-west8/dev-dataplatform
 
 project_config:
   iam:
