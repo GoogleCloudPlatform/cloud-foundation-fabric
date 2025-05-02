@@ -828,8 +828,8 @@ module "instance" {
 Resource manager tags bindings for use in IAM or org policy conditions are supported via three different variables:
 
 - `network_tag_bindings` associates tags to instances after creation, and is meant for use with network firewall policies
-- `tag_bindings` associates tags to instances and zonal disks after creation, and is meant for use with IAM or organization policy conditions
-- `tag_bindings_immutable` associates tags to instances and disks created as part of the instance, or instance templates; the binding is applied at creation time and triggers resource recreation on change
+- `tag_bindings` associates tags to instances and disks after creation, and is meant for use with IAM or organization policy conditions
+- `tag_bindings_immutable` associates tags to instances and disks during the instance or template creation flow; these bindings are immutable and changes trigger resource recreation
 
 The non-immutable variables follow our usual interface for tag bindings, and support specifying a map with arbitrary keys mapping to tag key or value ids. To prevent a provider permadiff also pass in the project number in the `project_number` variable.
 
@@ -921,7 +921,7 @@ module "sole-tenancy" {
 | [description](variables.tf#L135) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
 | [enable_display](variables.tf#L141) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
 | [encryption](variables.tf#L147) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; optional&#40;bool, false&#41;&#10;  disk_encryption_key_raw &#61; optional&#40;string&#41;&#10;  kms_key_self_link       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L157) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L157) | GPU information. Based on <https://cloud.google.com/compute/docs/gpus>. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [group](variables.tf#L192) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [hostname](variables.tf#L200) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L206) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
