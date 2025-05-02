@@ -17,6 +17,7 @@
 short_name: p0
 services:
   - bigquery.googleapis.com
+  - cloudaicompanion.googleapis.com
   - cloudresourcemanager.googleapis.com
   - composer.googleapis.com
   - datacatalog.googleapis.com
@@ -33,8 +34,6 @@ exposure_layer:
     iam:
       "roles/bigquery.dataViewer":
         - data-consumer-bi
-      # "roles/dataplex.catalogViewer":
-      #   - data-consumer-bi
   storage:
     buckets:
       exposed-ew8: {}
@@ -47,8 +46,14 @@ iam_by_principals:
   ro:
     - roles/viewer
   dp-product-a-0:
-    - roles/dataplex.catalogEditor
-    - roles/bigquery.dataEditor
+    - "roles/dataplex.catalogEditor"
+    - "roles/bigquery.dataOwner"
+    - "roles/bigquery.jobUser"
+    - "roles/datalineage.viewer"
+    - "roles/dataplex.dataScanCreator"
+    - "roles/logging.viewer"
+    - "roles/serviceusage.serviceUsageViewer"
+    - "roles/storage.bucketViewer"
     - "roles/storage.objectAdmin" # Improve IAM storage handling.
   processing:
     - "roles/bigquery.dataEditor"
@@ -57,6 +62,7 @@ iam_by_principals:
     - "roles/dataproc.editor"
     - "roles/dataproc.worker"
     - "roles/iam.serviceAccountUser"
+    - "roles/storage.bucketViewer"
     - "roles/storage.objectAdmin" # Improve IAM storage handling.
 # iam_bindings_additive:
 #   test-tag:
