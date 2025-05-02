@@ -22,16 +22,11 @@ locals {
     key   = split("/", var.exposure_config.tag_name)[0]
     value = split("/", var.exposure_config.tag_name)[1]
   }
-  folder_id = var.folder_ids[var.stage_config.name]
-  location  = lookup(var.regions, var.location, var.location)
+  location = lookup(var.regions, var.location, var.location)
   prefix = (
     "${var.prefix}-${local.environment.short_name}-${var.stage_config.short_name}"
   )
   prefix_bq = replace(local.prefix, "-", "_")
-  service_accounts_iam = merge(
-    { for k, v in module.dd-service-accounts : k => v.iam_email },
-    { for k, v in module.dp-service-accounts : k => v.iam_email }
-  )
   tag_values = merge(
     var.tag_values,
     var.factories_config.context.tag_values,
@@ -120,6 +115,7 @@ module "central-aspect-types" {
   factories_config = {
     aspect_types = var.factories_config.aspect_types
   }
+  aspect_types = var.aspect_types
 }
 
 # TODO: Migrate to new Policy Tag on BQ.

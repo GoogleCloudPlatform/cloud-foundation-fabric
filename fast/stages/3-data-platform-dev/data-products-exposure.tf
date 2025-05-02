@@ -37,7 +37,7 @@ module "dp-buckets" {
   }
   tag_bindings = {
     exposure = (
-      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
+      module.central-project.tag_values[var.exposure_config.tag_name].id
     )
   }
 }
@@ -62,7 +62,7 @@ module "dp-datasets" {
   }
   tag_bindings = {
     exposure = (
-      module.central-project.tag_values["${var.exposure_config.tag_name}"].id
+      module.central-project.tag_values[var.exposure_config.tag_name].id
     )
   }
 }

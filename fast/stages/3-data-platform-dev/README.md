@@ -171,11 +171,11 @@ The following table lists the available substitutions.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [aspect_types](outputs.tf#L166) | Aspect types defined in central project. |  |  |
-| [central_project](outputs.tf#L171) | Central project attributes. |  |  |
-| [data_domains](outputs.tf#L176) | Data domain attributes. |  |  |
-| [policy_tags](outputs.tf#L181) | Policy tags defined in central project. |  |  |
-| [secure_tags](outputs.tf#L186) | Secure tags defined in central project. |  |  |
+| [aspect_types](outputs.tf#L163) | Aspect types defined in central project. |  |  |
+| [central_project](outputs.tf#L168) | Central project attributes. |  |  |
+| [data_domains](outputs.tf#L173) | Data domain attributes. |  |  |
+| [policy_tags](outputs.tf#L178) | Policy tags defined in central project. |  |  |
+| [secure_tags](outputs.tf#L183) | Secure tags defined in central project. |  |  |
 <!-- END TFDOC -->
 <!--
 ### Data product owner [dp-product-a-0@] [dp-product-a-0-001@]

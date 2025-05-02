@@ -110,9 +110,6 @@ locals {
       }) if v.automation != null
     }
   )
-  secure_tags = {
-    for k, v in module.central-project.tag_values : k => v.id
-  }
   tfvars = {
     aspect_types    = module.central-aspect-types.ids
     central_project = local.central_project
