@@ -27,6 +27,7 @@ locals {
     data_defaults = merge({
       billing_account = null
       contacts        = {}
+      deletion_policy = null
       factories_config = merge({
         custom_roles  = null
         observability = null
@@ -90,6 +91,7 @@ locals {
     data_overrides = merge({
       billing_account = null
       contacts        = null
+      deletion_policy = null
       factories_config = merge({
         custom_roles  = null
         observability = null
@@ -138,6 +140,11 @@ locals {
         local.__projects_config.data_overrides.billing_account,
         try(v.billing_account, null),
         local.__projects_config.data_defaults.billing_account
+      ), null)
+      deletion_policy = try(coalesce( # type: string
+        local.__projects_config.data_overrides.deletion_policy,
+        try(v.deletion_policy, null),
+        local.__projects_config.data_defaults.deletion_policy
       ), null)
       contacts = coalesce( # type: map
         local.__projects_config.data_overrides.contacts,

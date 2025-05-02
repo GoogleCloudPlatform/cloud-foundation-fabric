@@ -37,6 +37,7 @@ module "projects" {
   source          = "../project"
   for_each        = local.projects
   billing_account = each.value.billing_account
+  deletion_policy = each.value.deletion_policy
   name            = each.value.name
   parent = lookup(
     local.context.folder_ids, each.value.parent, each.value.parent

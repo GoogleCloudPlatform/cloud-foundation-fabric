@@ -19,6 +19,7 @@ variable "data_defaults" {
   type = object({
     billing_account = optional(string)
     contacts        = optional(map(list(string)), {})
+    deletion_policy = optional(string)
     factories_config = optional(object({
       custom_roles  = optional(string)
       observability = optional(string)
@@ -94,6 +95,7 @@ variable "data_overrides" {
     # data overrides default to null to mark that they should not override
     billing_account = optional(string)
     contacts        = optional(map(list(string)))
+    deletion_policy = optional(string)
     factories_config = optional(object({
       custom_roles  = optional(string)
       observability = optional(string)
