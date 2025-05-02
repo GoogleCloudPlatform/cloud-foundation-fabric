@@ -14,63 +14,47 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description FAST stage interface.
-
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
   })
+  nullable = false
 }
-
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
-    id           = string
-    is_org_level = optional(bool, true)
+    id = string
   })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
-
-variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type = object({
-    project_iam_viewer = string
-  })
-  default = null
 }
 
 variable "environments" {
-  # tfdoc:variable:source 0-globals
+  # tfdoc:variable:source 1-resman
   description = "Environment names."
-  type = map(object({
-    name       = string
-    tag_name   = string
-    is_default = optional(bool, false)
-  }))
-  nullable = false
-  validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
-  }
+  type = object({
+    dev = object({
+      name       = string
+      short_name = string
+    })
+  })
 }
 
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
-  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format."
-  type = object({
-    networking      = string
-    networking-dev  = optional(string)
-    networking-prod = optional(string)
-  })
+  description = "Folder name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Shared VPC host project name => id mappings."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "prefix" {
@@ -83,31 +67,34 @@ variable "prefix" {
   }
 }
 
-variable "security_profile_groups" {
-  # tfdoc:variable:source 2-networking-ngfw
-  description = "Security profile group ids used for policy rule substitutions."
+variable "regions" {
+  # tfdoc:variable:source 2-networking
+  description = "Region mappings."
   type        = map(string)
   nullable    = false
   default     = {}
 }
 
-variable "stage_configs" {
-  # tfdoc:variable:source 1-resman
-  description = "FAST stage configuration."
-  type = object({
-    networking = optional(object({
-      short_name          = optional(string)
-      iam_admin_delegated = optional(map(list(string)), {})
-      iam_viewer          = optional(map(list(string)), {})
-    }), {})
-  })
-  default  = {}
-  nullable = false
+variable "subnet_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Subnet VPC name => { name => self link } mappings."
+  type        = map(map(string))
+  nullable    = false
+  default     = {}
 }
 
 variable "tag_values" {
   # tfdoc:variable:source 1-resman
-  description = "Root-level tag values."
+  description = "FAST-managed resource manager tag values."
   type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "vpc_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Shared VPC name => self link mappings."
+  type        = map(string)
+  nullable    = false
   default     = {}
 }

@@ -49,6 +49,9 @@ variable "factories_config" {
   description = "Paths to folders for the optional factories."
   type = object({
     aspect_types = optional(string)
+    context = optional(object({
+      iam_principals = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}

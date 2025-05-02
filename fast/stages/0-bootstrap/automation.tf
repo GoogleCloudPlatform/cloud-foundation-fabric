@@ -140,6 +140,7 @@ module "automation-project" {
       "cloudkms.googleapis.com",
       "cloudquotas.googleapis.com",
       "cloudresourcemanager.googleapis.com",
+      "datacatalog.googleapis.com",
       "essentialcontacts.googleapis.com",
       "iam.googleapis.com",
       "iamcredentials.googleapis.com",

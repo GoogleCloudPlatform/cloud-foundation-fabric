@@ -30,10 +30,10 @@ locals {
     "roles/vpcaccess.user",
   ]))
   iam_admin_delegated = try(
-    var.stage_config["networking"].iam_admin_delegated, {}
+    var.stage_configs["networking"].iam_admin_delegated, {}
   )
   iam_viewer = try(
-    var.stage_config["networking"].iam_viewer, {}
+    var.stage_configs["networking"].iam_viewer, {}
   )
   # select the NVA ILB as next hop for spoke VPC routing depending on net mode
   nva_load_balancers = (var.network_mode == "ncc_ra") ? null : {
