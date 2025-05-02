@@ -51,7 +51,7 @@ folder_config:
             'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
           ])
   # example conditional grants for stage 3s
-  iam_bindings_additive:
+  iam_bindings_additive: {}
     # Data Platform (dev)
     # dp_dev_net_admin:
     #   role: service_project_network_admin
