@@ -23,9 +23,17 @@ This solution implements the [Data Mesh principles on Google Cloud Platform](htt
 
 ## Project Structure
 
-The stage manages the following high level structure:
+The stage manages three separate high level components:
 
-> TODO: Add diagram
+- a central project, where aspect types, policy tags, and resource manager tags are defined
+- one or more data domains, each composed of a folder, a project hosting resources shared at the product level (Composer), and a folder hosting data products
+- one or more data products per domain, each composed of a project, and optional exposed resources
+
+The platform high level approach is represented in the following diagram:
+
+<p align="center">
+  <img src="diagram.png" alt="High level diagram.">
+</p>
 
 ### Central Shared Services
 
