@@ -50,8 +50,53 @@ folder_config:
             'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
             'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
           ])
-  # iam_bindings_additive for stage 3 are added here when needed
-  # refer to each stage 3 documentation for snippets and examples
+  # example conditional grants for stage 3s
+  iam_bindings_additive:
+    # Data Platform (dev)
+    # dp_dev_net_admin:
+    #   role: service_project_network_admin
+    #   member: data-platform-dev-rw
+    #   condition:
+    #     title: Data platform dev service project admin.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # dp_dev_net_viewer:
+    #   role: roles/compute.networkViewer
+    #   member: data-platform-dev-ro
+    #   condition:
+    #     title: Data platform dev network viewer.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # GCVE (dev)
+    # gcve_dev_net_admin:
+    #   role: gcve_network_admin
+    #   member: gcve-dev-rw
+    #   condition:
+    #     title: GCVE dev network admin.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # gcve_dev_net_viewer:
+    #   role: gcve_network_viewer
+    #   member: gcve-dev-ro
+    #   condition:
+    #     title: GCVE dev network viewer.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # GKE (dev)
+    # gke_dns_admin:
+    #   role: roles/dns.admin
+    #   member: gke-dev-ro
+    #   condition:
+    #     title: GKE dev DNS admin.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    # gke_dns_reader:
+    #   role: roles/dns.reader
+    #   member: gke-dev-ro
+    #   condition:
+    #     title: GKE dev DNS reader.
+    #     expression: |
+    #       resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
 organization_config:
   iam_bindings_additive:
     sa_net_rw_fw_policy_admin:
@@ -69,9 +114,15 @@ organization_config:
     sa_net_ro_ngfw_enterprise_viewer:
       member: ro
       role: ngfw_enterprise_viewer
-# stage_3_config for IAM delegation are added here when needed
-# refer to each stage 3 documentation for snippets and examples
-stage3_config:
-  iam_admin_delegated:
-    - environment: dev
-      principal: data-platform-dev-rw
+# example configuration for stage 3s needing environment-level conditional grants
+# stage3_config:
+#   iam_admin_delegated:
+#     - environment: dev
+#       principal: gcve-dev-rw
+#     - environment: dev
+#       principal: data-platform-dev-rw
+#   iam_viewer:
+#     - environment: dev
+#       principal: gcve-dev-ro
+#     - environment: dev
+#       principal: data-platform-dev-ro
