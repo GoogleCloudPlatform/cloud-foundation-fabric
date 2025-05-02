@@ -120,6 +120,12 @@ variable "location" {
   default     = "europe-west1"
 }
 
+variable "outputs_location" {
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
+  type        = string
+  default     = null
+}
+
 variable "secure_tags" {
   description = "Resource manager tags created in the central project."
   type = map(object({

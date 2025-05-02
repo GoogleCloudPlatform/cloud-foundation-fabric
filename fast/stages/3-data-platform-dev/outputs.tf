@@ -15,75 +15,175 @@
 # tfdoc:file:description Stage outputs.
 
 locals {
-  o_dd_iac_sa = {
-    for k in keys(module.dd-automation-sa) :
-    split("/", k)[0] => k...
+  central_project = {
+    id     = module.central-project.project_id
+    number = module.central-project.number
   }
-  o_dd_sa = {
-    for k in keys(module.dd-service-accounts) :
-    split("/", k)[0] => k...
-  }
-  o_dp = {
-    for k, v in local.data_products :
-    v.dd => k...
-  }
-  o_dp_iac_sa = {
-    for k in keys(module.dp-automation-sa) :
-    join("/", slice(split("/", k), 0, 2)) => k...
-  }
-}
-
-output "data_domains" {
-  description = "Data domain attributes."
-  value = {
+  dd_attrs = {
     for k, v in local.data_domains : k => {
       automation = v.automation == null ? null : {
         bucket = module.dd-automation-bucket[k].name
         service_accounts = {
-          for vv in lookup(local.o_dd_iac_sa, k, []) :
-          split("/", vv)[1] => module.dd-automation-sa[vv].email
+          ro = module.dd-automation-sa["${k}/ro"].email
+          rw = module.dd-automation-sa["${k}/rw"].email
         }
       }
       data_products = {
-        for vv in lookup(local.o_dp, k, []) : split("/", vv)[1] => {
-          project = {
-            id     = module.dp-projects[vv].project_id
-            number = module.dp-projects[vv].number
-          }
-          automation = local.data_products[vv].automation == null ? null : {
-            bucket = module.dp-automation-bucket[vv].name
-            service_accounts = {
-              for vvv in lookup(local.o_dp_iac_sa, vv, []) :
-              split("/", vvv)[2] => module.dp-automation-sa[vvv].email
-            }
-          }
+        for pk in lookup(local.dp_by_dd, k, []) :
+        split("/", pk)[1] => {
+          for kk, kv in local.dp_attrs[pk] : kk => kv if kk != "automation"
         }
       }
-      folder          = module.dd-folders[k].id
-      folder_products = module.dd-dp-folders[k].id
+      folder_ids = {
+        domain   = module.dd-folders[k].id
+        products = module.dd-dp-folders[k].id
+      }
       project = {
         id     = module.dd-projects[k].project_id
         number = module.dd-projects[k].number
       }
       service_accounts = {
-        for vv in lookup(local.o_dd_sa, k, []) :
-        split("/", vv)[1] => module.dd-service-accounts[vv].email
+        for sk in keys(v.service_accounts) :
+        sk => module.dd-service-accounts["${k}/${sk}"].email
       }
     }
   }
+  dp_attrs = {
+    for k, v in local.data_products : k => {
+      automation = local.data_products[k].automation == null ? null : {
+        bucket = module.dp-automation-bucket[k].name
+        service_accounts = {
+          ro = module.dp-automation-sa["${k}/ro"].email
+          rw = module.dp-automation-sa["${k}/rw"].email
+        }
+      }
+      project = {
+        id     = module.dp-projects[k].project_id
+        number = module.dp-projects[k].number
+      }
+      service_accounts = {
+        for sk in keys(v.service_accounts) :
+        sk => module.dp-service-accounts["${k}/${sk}"].email
+      }
+    }
+  }
+  dp_by_dd = {
+    for k, v in local.data_products :
+    v.dd => k...
+  }
+  files_prefix = "3-${var.stage_config.name}"
+  providers = merge(
+    {
+      for k, v in local.dd_attrs :
+      "${k}-providers.tf" => templatefile("templates/providers.tf.tpl", {
+        backend_extra = null
+        bucket        = v.automation.bucket
+        name          = k
+        sa            = v.automation.service_accounts.rw
+      }) if v.automation != null
+    },
+    {
+      for k, v in local.dd_attrs :
+      "${k}-r-providers.tf" => templatefile("templates/providers.tf.tpl", {
+        backend_extra = null
+        bucket        = v.automation.bucket
+        name          = k
+        sa            = v.automation.service_accounts.ro
+      }) if v.automation != null
+    },
+    {
+      for k, v in local.dp_attrs :
+      "${replace(k, "/", "-")}-providers.tf" => templatefile("templates/providers.tf.tpl", {
+        backend_extra = null
+        bucket        = v.automation.bucket
+        name          = k
+        sa            = v.automation.service_accounts.rw
+      }) if v.automation != null
+    },
+    {
+      for k, v in local.dp_attrs :
+      "${replace(k, "/", "-")}-r-providers.tf" => templatefile("templates/providers.tf.tpl", {
+        backend_extra = null
+        bucket        = v.automation.bucket
+        name          = k
+        sa            = v.automation.service_accounts.ro
+      }) if v.automation != null
+    }
+  )
+  secure_tags = {
+    for k, v in module.central-project.tag_values : k => v.id
+  }
+  tfvars = {
+    aspect_types    = module.central-aspect-types.ids
+    central_project = local.central_project
+    policy_tags     = module.central-policy-tags.tags
+    secure_tags = {
+      for k, v in module.central-project.tag_values : k => v.id
+    }
+  }
+  tfvars_dd = {
+    for k, v in local.data_domains : k => merge(local.tfvars, {
+      for kk, vv in local.dd_attrs[k] :
+      kk => vv if kk != "automation"
+    })
+  }
+}
+
+# tfvars files for data domains and products
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : local.tfvars_dd
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/${local.files_prefix}/${each.key}.auto.tfvars.json"
+  content         = jsonencode(each.value)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  for_each = local.tfvars_dd
+  bucket   = var.automation.outputs_bucket
+  name     = "tfvars/${local.files_prefix}/${each.key}.auto.tfvars.json"
+  content  = jsonencode(each.value)
+}
+
+# provider files for data domains and products
+
+resource "local_file" "providers" {
+  for_each        = var.outputs_location == null ? {} : local.providers
+  file_permission = "0644"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/providers/${local.files_prefix}/${each.key}"
+  content         = each.value
+}
+
+resource "google_storage_bucket_object" "providers" {
+  for_each = local.providers
+  bucket   = var.automation.outputs_bucket
+  name     = "providers/${local.files_prefix}/${each.key}"
+  content  = each.value
+}
+
+# regular outputs
+
+output "aspect_types" {
+  description = "Aspect types defined in central project."
+  value       = local.tfvars.aspect_types
+}
+
+output "data_domains" {
+  description = "Data domain attributes."
+  value       = local.dd_attrs
 }
 
 output "central_project" {
   description = "Central project attributes."
-  value = {
-    aspect_types = module.central-aspect-types.ids
-    policy_tags  = module.central-policy-tags.tags
-    secure_tags = {
-      for k, v in module.central-project.tag_values : k => v.id
-    }
-    project = {
-      id     = module.central-project.project_id
-      number = module.central-project.number
-    }
-  }
+  value       = local.central_project
+}
+
+output "policy_tags" {
+  description = "Policy tags defined in central project."
+  value       = local.tfvars.policy_tags
+}
+
+output "secure_tags" {
+  description = "Secure tags defined in central project."
+  value       = local.tfvars.secure_tags
 }

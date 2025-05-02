@@ -14,32 +14,33 @@
 
 # yaml-language-server: $schema=../../schemas/aspect-type.schema.json
 
-display_name: "Test template 0."
-iam:
-  roles/dataplex.aspectTypeOwner:
-    - "group:data-owners@example.com"
+display_name: "Basic template"
 metadata_template: |
   {
-    "name": "tf-test-template-0",
+    "name": "tf-basic-template",
     "type": "record",
     "recordFields": [
       {
-        "name": "type",
-        "type": "enum",
+        "name": "source",
+        "type": "string",
         "annotations": {
-          "displayName": "Type",
-          "description": "Specifies the type of view represented by the entry."
+          "displayName": "Source",
+          "description": "Specifies the source of data."
         },
         "index": 1,
         "constraints": {
           "required": true
+        }
+      },
+      {
+        "name": "owner",
+        "type": "string",
+        "annotations": {
+          "displayName": "Owner",
+          "description": "Specifies the data owner."
         },
-        "enumValues": [
-          {
-            "name": "VIEW",
-            "index": 1
-          }
-        ]
+        "index": 2,
+        "constraints": {}
       }
     ]
   }
