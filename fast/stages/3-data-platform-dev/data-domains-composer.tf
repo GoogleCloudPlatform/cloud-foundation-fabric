@@ -38,7 +38,7 @@ resource "google_composer_environment" "default" {
   for_each = local.dd_composer
   project  = module.dd-projects-iam[each.key].project_id
   name     = "${var.prefix}-${each.key}"
-  region   = each.value.region
+  region   = try(each.value.region, var.location)
   config {
     enable_private_builds_only = try(each.value.private_builds, true)
     enable_private_environment = try(each.value.private_environment, true)

@@ -28,6 +28,16 @@ locals {
           rw = module.dd-automation-sa["${k}/rw"].email
         }
       }
+      deployments = {
+        composer = lookup(local.dd_composer, k, null) == null ? null : {
+          airflow_uri = try(
+            google_composer_environment.default[k].config[0].airflow_uri, null
+          )
+          dag_gcs_prefix = try(
+            google_composer_environment.default[k].config[0].dag_gcs_prefix, null
+          )
+        }
+      }
       data_products = {
         for pk in lookup(local.dp_by_dd, k, []) :
         split("/", pk)[1] => {
