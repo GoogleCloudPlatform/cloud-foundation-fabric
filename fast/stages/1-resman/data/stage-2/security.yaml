@@ -54,9 +54,9 @@ organization_config:
       role: roles/cloudasset.viewer
 # example configuration for stage 3s needing environment-level conditional grants
 # stage3_config:
-#   iam_admin_delegated:
-#     - environment: dev
-#       principal: gcve-dev-rw
-#   iam_viewer:
-#     - environment: dev
-#       principal: gcve-dev-ro
+  # iam_admin_delegated:
+  #   - environment: dev
+  #     principal: data-platform-dev-rw
+  # iam_viewer:
+  #   - environment: dev
+  #     principal: data-platform-dev-ro

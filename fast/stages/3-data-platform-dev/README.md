@@ -125,10 +125,10 @@ For security, a block similar to the one above is needed.
 stage3_config:
   iam_admin_delegated:
     - environment: dev
-      principal: gcve-dev-rw
+      principal: data-platform-dev-rw
   iam_viewer:
     - environment: dev
-      principal: gcve-dev-ro
+      principal: data-platform-dev-ro
 ```
 
 Once the two above configurations are in place, apply the resource management,  networking and security stages in succession. Be sure to refresh the tfvars files in the network and security stages if needed (e.g. by re-running `fast-links.sh`).
