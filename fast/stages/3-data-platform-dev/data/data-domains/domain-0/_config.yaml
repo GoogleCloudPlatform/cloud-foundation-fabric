@@ -55,21 +55,14 @@ folder_config:
     bigquery_metadata_viewer:
       members:
         - data-consumer-bi
-      role: roles/bigquery.metadataViewer
-      condition:
-        title: exposure
-        description: Expose via secure tag.
-        expression: resource.matchTag('exposure', 'allow')
-    bigquery_data_viewer:
-      members:
-        - data-consumer-bi
-      role: roles/bigquery.metadataViewer
+      role: roles/dataplex.catalogViewer #roles/bigquery.metadataViewer
       condition:
         title: exposure
         description: Expose via secure tag.
         expression: resource.matchTag('exposure', 'allow')
   iam_by_principals:
     data-consumer-bi:
-      - roles/datacatalog.viewer
-      - roles/dataplex.catalogViewer
       - roles/datalineage.viewer
+    dp-product-a-0:
+      - "roles/logging.viewer"
+      - "roles/monitoring.viewer"

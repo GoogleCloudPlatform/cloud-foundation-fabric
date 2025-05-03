@@ -52,6 +52,7 @@ iam_by_principals:
     - "roles/datalineage.viewer"
     - "roles/dataplex.dataScanCreator"
     - "roles/logging.viewer"
+    - "roles/monitoring.viewer"
     - "roles/serviceusage.serviceUsageViewer"
     - "roles/storage.bucketViewer"
     - "roles/storage.objectAdmin"
