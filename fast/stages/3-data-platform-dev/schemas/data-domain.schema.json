@@ -39,6 +39,9 @@
             "node_config"
           ],
           "properties": {
+            "encryption_key": {
+              "type": "string"
+            },
             "environment_size": {
               "type": "string",
               "enum": [

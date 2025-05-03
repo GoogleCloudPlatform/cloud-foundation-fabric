@@ -138,28 +138,44 @@ locals {
       }
     ] if v.automation != null
   ])
+  dp_bucket_keys = {
+    for v in local.dp_buckets : "${v.dp}/${v.key}" => (
+      v.encryption_key != null
+      ? v.encryption_key
+      : try(var.encryption_keys.storage[v.location], null)
+    )
+  }
   dp_buckets = flatten([
     for k, v in local.data_products : [
       for bk, bv in v.exposure_layer.storage.buckets : {
-        dp            = k
-        dps           = "${v.dds}-${v.short_name}"
-        iam           = v.exposure_layer.storage.iam
-        key           = bk
-        short_name    = lookup(bv, "short_name", bk)
-        location      = lookup(bv, "location", var.location)
-        storage_class = lookup(bv, "storage_class", null)
+        dp             = k
+        dps            = "${v.dds}-${v.short_name}"
+        iam            = v.exposure_layer.storage.iam
+        key            = bk
+        encryption_key = lookup(bv, "encryption_key", null)
+        short_name     = lookup(bv, "short_name", bk)
+        location       = lookup(bv, "location", var.location)
+        storage_class  = lookup(bv, "storage_class", null)
       }
     ]
   ])
+  dp_dataset_keys = {
+    for v in local.dp_datasets : "${v.dp}/${v.key}" => (
+      v.encryption_key != null
+      ? v.encryption_key
+      : try(var.encryption_keys.storage[v.location], null)
+    )
+  }
   dp_datasets = flatten([
     for k, v in local.data_products : [
       for dk, dv in v.exposure_layer.bigquery.datasets : {
-        dp         = k
-        dps        = replace("${v.dds}-${v.short_name}", "-", "_")
-        iam        = v.exposure_layer.bigquery.iam
-        key        = dk
-        short_name = replace(lookup(dv, "short_name", dk), "-", "_")
-        location   = lookup(dv, "location", var.location)
+        dp             = k
+        dps            = replace("${v.dds}-${v.short_name}", "-", "_")
+        encryption_key = lookup(dv, "encryption_key", null)
+        iam            = v.exposure_layer.bigquery.iam
+        key            = dk
+        short_name     = replace(lookup(dv, "short_name", dk), "-", "_")
+        location       = lookup(dv, "location", var.location)
       }
     ]
   ])

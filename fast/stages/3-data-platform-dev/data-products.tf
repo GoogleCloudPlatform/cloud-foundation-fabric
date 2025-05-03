@@ -28,6 +28,18 @@ module "dp-projects" {
     data_product = replace(each.key, "/", "_")
   }
   services = each.value.services
+  service_encryption_key_ids = {
+    "bigquery.googleapis.com" = distinct([
+      for k, v in local.dp_dataset_keys :
+      lookup(local.kms_keys, v, v)
+      if startswith(k, each.key) && v != null
+    ])
+    "storage.googleapis.com" = distinct([
+      for k, v in local.dp_bucket_keys :
+      lookup(local.kms_keys, v, v)
+      if startswith(k, each.key) && v != null
+    ])
+  }
 }
 
 module "dp-projects-iam" {

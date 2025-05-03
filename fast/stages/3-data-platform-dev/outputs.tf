@@ -67,6 +67,16 @@ locals {
           rw = module.dp-automation-sa["${k}/rw"].email
         }
       }
+      exposure = {
+        bigquery = {
+          for vv in lookup(local.exp_datasets_by_dp, k, []) :
+          split("/", vv)[2] => module.dp-datasets[vv].id
+        }
+        storage = {
+          for vv in lookup(local.exp_buckets_by_dp, k, []) :
+          split("/", vv)[2] => module.dp-buckets[vv].id
+        }
+      }
       project = {
         id     = module.dp-projects[k].project_id
         number = module.dp-projects[k].number
@@ -80,6 +90,14 @@ locals {
   dp_by_dd = {
     for k, v in local.data_products :
     v.dd => k...
+  }
+  exp_buckets_by_dp = {
+    for k, v in module.dp-buckets :
+    join("/", slice(split("/", k), 0, 2)) => k...
+  }
+  exp_datasets_by_dp = {
+    for k, v in module.dp-datasets :
+    join("/", slice(split("/", k), 0, 2)) => k...
   }
   files_prefix = "3-${var.stage_config.name}"
   providers = merge(

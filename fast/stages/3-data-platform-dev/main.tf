@@ -22,6 +22,9 @@ locals {
     key   = split("/", var.exposure_config.tag_name)[0]
     value = split("/", var.exposure_config.tag_name)[1]
   }
+  kms_keys = merge(
+    var.kms_keys, var.factories_config.context.kms_keys
+  )
   location = lookup(var.regions, var.location, var.location)
   prefix = (
     "${var.prefix}-${local.environment.short_name}-${var.stage_config.short_name}"

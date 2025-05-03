@@ -57,6 +57,14 @@ variable "host_project_ids" {
   default     = {}
 }
 
+variable "kms_keys" {
+  # tfdoc:variable:source 2-security
+  description = "KMS key ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+locals {
+  dd_services = {
+    for k, v in local.data_domains : k => distinct(concat(
+      v.project_config.services,
+      lookup(local.dd_composer, k, null) == null ? [] : [
+        "composer.googleapis.com",
+        "storage.googleapis.com"
+      ]
+    ))
+  }
+}
+
 module "dd-folders" {
   source   = "../../../modules/folder"
   for_each = local.data_domains
@@ -84,7 +96,20 @@ module "dd-projects" {
   labels = {
     data_domain = each.key
   }
-  services = each.value.project_config.services
+  services = local.dd_services[each.key]
+  service_encryption_key_ids = (
+    lookup(local.dd_composer, each.key, null) == null ? {} : {
+      "composer.googleapis.com" = compact([
+        try(local.dd_composer_keys[each.key], null) == null
+        ? null
+        : lookup(
+          local.kms_keys,
+          local.dd_composer_keys[each.key],
+          local.dd_composer_keys[each.key]
+        )
+      ])
+    }
+  )
 }
 
 module "dd-projects-iam" {
@@ -96,7 +121,7 @@ module "dd-projects-iam" {
     project_attributes = {
       name             = module.dd-projects[each.key].name
       number           = module.dd-projects[each.key].number
-      services_enabled = each.value.project_config.services
+      services_enabled = local.dd_services[each.key]
     }
   }
   iam = {

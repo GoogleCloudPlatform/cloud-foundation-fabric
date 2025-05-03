@@ -25,6 +25,15 @@ module "dp-buckets" {
   prefix     = local.prefix
   name       = "${each.value.dps}-${each.value.short_name}-0"
   location   = each.value.location
+  encryption_key = (
+    local.dp_bucket_keys[each.key] == null
+    ? null
+    : lookup(
+      local.kms_keys,
+      local.dp_bucket_keys[each.key],
+      local.dp_bucket_keys[each.key]
+    )
+  )
   iam = {
     for k, v in each.value.iam : k => [
       for m in v : try(
@@ -50,6 +59,15 @@ module "dp-datasets" {
   project_id = module.dp-projects[each.value.dp].project_id
   id         = "${local.prefix_bq}_${each.value.dps}_${each.value.short_name}_0"
   location   = each.value.location
+  encryption_key = (
+    local.dp_dataset_keys[each.key] == null
+    ? null
+    : lookup(
+      local.kms_keys,
+      local.dp_dataset_keys[each.key],
+      local.dp_dataset_keys[each.key]
+    )
+  )
   iam = {
     for k, v in each.value.iam : k => [
       for m in v : try(

@@ -33,6 +33,9 @@
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
+                    "encryption_key": {
+                      "type": "string"
+                    },
                     "location": {
                       "type": "string"
                     }
@@ -55,6 +58,9 @@
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
+                    "encryption_key": {
+                      "type": "string"
+                    },
                     "location": {
                       "type": "string"
                     },

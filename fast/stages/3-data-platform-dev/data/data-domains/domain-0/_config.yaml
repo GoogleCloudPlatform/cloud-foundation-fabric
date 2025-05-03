@@ -24,6 +24,7 @@ automation:
 deploy_config:
   composer:
     # region defaults to var.location
+    # encryption_key: composer-dev-europe-west8
     node_config:
       network: dev-spoke-0
       subnetwork: europe-west8/dev-dataplatform

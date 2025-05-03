@@ -81,6 +81,17 @@ variable "central_project_config" {
   default  = {}
 }
 
+variable "encryption_keys" {
+  description = "Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis."
+  type = object({
+    bigquery = optional(map(string), {})
+    composer = optional(map(string), {})
+    storage  = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "exposure_config" {
   description = "Data exposure configuration."
   type = object({
@@ -106,6 +117,7 @@ variable "factories_config" {
     data_domains = optional(string, "data/data-domains")
     context = optional(object({
       iam_principals = optional(map(string), {})
+      kms_keys       = optional(map(string), {})
       tag_values     = optional(map(string), {})
     }), {})
   })

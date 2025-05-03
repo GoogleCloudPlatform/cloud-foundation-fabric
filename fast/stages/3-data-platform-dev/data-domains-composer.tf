@@ -16,11 +16,20 @@
 
 locals {
   dd_composer = {
-    for k, v in local.data_domains :
-    k => merge({ short_name = v.short_name }, try(v.deploy_config.composer, {}))
+    for k, v in local.data_domains : k => merge(
+      { region = var.location, short_name = v.short_name },
+      try(v.deploy_config.composer, {})
+    )
     if(
       try(v.deploy_config.composer.node_config.network, null) != null &&
       try(v.deploy_config.composer.node_config.subnetwork, null) != null
+    )
+  }
+  dd_composer_keys = {
+    for k, v in local.dd_composer : k => try(
+      v.encryption_key,
+      var.encryption_keys.composer[v.region],
+      null
     )
   }
 }
@@ -38,7 +47,7 @@ resource "google_composer_environment" "default" {
   for_each = local.dd_composer
   project  = module.dd-projects-iam[each.key].project_id
   name     = "${var.prefix}-${each.key}"
-  region   = try(each.value.region, var.location)
+  region   = each.value.region
   config {
     enable_private_builds_only = try(each.value.private_builds, true)
     enable_private_environment = try(each.value.private_environment, true)
@@ -46,6 +55,16 @@ resource "google_composer_environment" "default" {
       each.value.environment_size,
       "ENVIRONMENT_SIZE_SMALL"
     )
+    dynamic "encryption_config" {
+      for_each = local.dd_composer_keys[each.key] == null ? [] : [""]
+      content {
+        kms_key_name = lookup(
+          local.kms_keys,
+          local.dd_composer_keys[each.key],
+          local.dd_composer_keys[each.key]
+        )
+      }
+    }
     # TODO: implement the same context fail mode used in the project factory
     node_config {
       service_account = try(
