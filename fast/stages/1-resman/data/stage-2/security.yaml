@@ -60,3 +60,5 @@ organization_config:
   # iam_viewer:
   #   - environment: dev
   #     principal: data-platform-dev-ro
+  #   - environment: dev
+  #     principal: data-platform-dev-rw
