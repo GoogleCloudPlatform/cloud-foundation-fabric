@@ -15,8 +15,8 @@ environments = {
 factories_config = {
   context = {
     iam_principals = {
-      data-consumer-bi = "group:gcp-devops@example.com"
-      dp-product-a-0   = "group:gcp-devops@example.com"
+      data-consumer-bi = "group:gcp-consumer-bi@example.com"
+      dp-product-a-0   = "group:gcp-data-product-a-0@example.com"
     }
   }
 }
