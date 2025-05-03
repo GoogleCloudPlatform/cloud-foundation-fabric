@@ -35,7 +35,6 @@ folder_config:
       - project_iam_viewer
     gcp-security-admins:
       - roles/editor
-
   # project factory delegated IAM grant
   iam_bindings:
     project_factory:
@@ -53,3 +52,13 @@ organization_config:
     sa_sec_cloudasset:
       member: rw
       role: roles/cloudasset.viewer
+# example configuration for stage 3s needing environment-level conditional grants
+# stage3_config:
+  # iam_admin_delegated:
+  #   - environment: dev
+  #     principal: data-platform-dev-rw
+  # iam_viewer:
+  #   - environment: dev
+  #     principal: data-platform-dev-ro
+  #   - environment: dev
+  #     principal: data-platform-dev-rw

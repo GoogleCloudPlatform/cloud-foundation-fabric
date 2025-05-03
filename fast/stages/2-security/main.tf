@@ -63,18 +63,18 @@ module "project" {
   }
   # optionally delegate a fixed set of IAM roles to selected principals
   iam = {
-    (var.custom_roles.project_iam_viewer) = try(
+    "roles/iam.securityReviewer" = try(
       local.iam_viewer[each.key], []
     )
   }
   iam_bindings = (
     lookup(local.iam_admin_delegated, each.key, null) == null ? {} : {
       sa_delegated_grants = {
-        role    = "roles/resourcemanager.projectIamAdmin"
+        role    = "roles/cloudkms.admin"
         members = try(local.iam_admin_delegated[each.key], [])
         condition = {
           title       = "${each.key}_stage3_sa_delegated_grants"
-          description = "${var.environments[each.key].name} project delegated grants."
+          description = "${var.environments[each.key].name} KMS delegated grants."
           expression = format(
             "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
             local.iam_delegated

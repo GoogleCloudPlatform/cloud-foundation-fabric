@@ -28,7 +28,7 @@ counts:
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
   google_project_iam_member: 17
-  google_project_service: 32
+  google_project_service: 33
   google_project_service_identity: 8
   google_service_account: 6
   google_service_account_iam_binding: 6
@@ -41,7 +41,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 250
+  resources: 251
 
 outputs:
   automation: __missing__

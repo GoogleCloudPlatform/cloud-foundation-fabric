@@ -20,11 +20,14 @@ locals {
   _folders_path = try(
     pathexpand(var.factories_config.folders_data_path), null
   )
-  _folders = {
-    for f in local._hierarchy_files : dirname(f) => yamldecode(file(
-      "${coalesce(var.factories_config.folders_data_path, "-")}/${f}"
-    ))
-  }
+  _folders = merge(
+    var.factories_data.hierarchy,
+    {
+      for f in local._hierarchy_files : dirname(f) => yamldecode(file(
+        "${coalesce(var.factories_config.folders_data_path, "-")}/${f}"
+      ))
+    }
+  )
   _hierarchy_files = try(
     fileset(local._folders_path, "**/_config.yaml"),
     []

@@ -19,7 +19,8 @@
 locals {
   # reimplement the billing account factory here to interpolate projects
   _budget_path = try(pathexpand(var.factories_config.budgets.budgets_data_path), null)
-  _budgets = (
+  _budgets = merge(
+    var.factories_data.budgets,
     {
       for f in try(fileset(local._budget_path, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._budget_path}/${f}"))

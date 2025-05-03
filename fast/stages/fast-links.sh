@@ -69,7 +69,7 @@ if [[ ! -z ${FAST_STAGE_DEPS+x} ]]; then
   done
 fi
 
-echo -e "\n# conventional place for stage tfvars (manually created)"
+echo -e "\n# conventional location for this stage terraform.tfvars (manually managed)"
 echo "$CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./"
 
 if [[ ! -z ${FAST_STAGE_OPTIONAL+x} ]]; then

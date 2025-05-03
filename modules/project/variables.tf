@@ -220,7 +220,8 @@ variable "shared_vpc_host_config" {
     enabled          = bool
     service_projects = optional(list(string), [])
   })
-  default = null
+  nullable = true
+  default  = null
 }
 
 variable "shared_vpc_service_config" {

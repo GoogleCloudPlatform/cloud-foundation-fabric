@@ -55,14 +55,20 @@ resource "google_dataplex_aspect_type_iam_binding" "authoritative" {
   }
   role           = each.value.role
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
-  members        = each.value.members
+  members = [
+    for v in each.value.members :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
 }
 
 resource "google_dataplex_aspect_type_iam_binding" "bindings" {
   for_each       = local.iam_bindings
   role           = each.value.role
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
-  members        = each.value.members
+  members = [
+    for v in each.value.members :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -77,7 +83,9 @@ resource "google_dataplex_aspect_type_iam_member" "members" {
   for_each       = local.iam_bindings_additive
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
   role           = each.value.role
-  member         = each.value.member
+  member = lookup(
+    var.factories_config.context.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
