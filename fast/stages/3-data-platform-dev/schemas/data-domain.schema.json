@@ -36,7 +36,6 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "region",
             "node_config"
           ],
           "properties": {

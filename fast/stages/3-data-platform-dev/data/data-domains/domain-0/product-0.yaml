@@ -54,7 +54,7 @@ iam_by_principals:
     - "roles/logging.viewer"
     - "roles/serviceusage.serviceUsageViewer"
     - "roles/storage.bucketViewer"
-    - "roles/storage.objectAdmin" # Improve IAM storage handling.
+    - "roles/storage.objectAdmin"
   processing:
     - "roles/bigquery.dataEditor"
     - "roles/bigquery.jobUser"
@@ -63,7 +63,7 @@ iam_by_principals:
     - "roles/dataproc.worker"
     - "roles/iam.serviceAccountUser"
     - "roles/storage.bucketViewer"
-    - "roles/storage.objectAdmin" # Improve IAM storage handling.
+    - "roles/storage.objectAdmin"
 # iam_bindings_additive:
 #   test-tag:
 #     member: rw
