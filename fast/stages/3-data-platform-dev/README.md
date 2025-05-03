@@ -72,13 +72,58 @@ The three main functions identified here are:
 
 ## Configuration
 
-### Data Domain Syntax
+### FAST prerequisites
 
-> TODO: describe the data domain YAML format and provide a comprehensive example
+This stage needs specific permission granted to its automation service accounts, that enable them to connect service projects to Shared VPC networks. This needs to be configured in the resource management stage's network configuration via two separate blocks.
 
-### Data Product Syntax
+The first block grants the relevant roles on the Networking folder to the Data Platform service accounts, with a condition on the environment tag.
 
-> TODO: describe the data domain YAML format and provide a comprehensive example
+```yaml
+# make sure this block exists in the data/stage-2/networking.yaml file
+  iam_bindings_additive:
+    # Data Platform (dev)
+    dp_dev_net_admin:
+      role: service_project_network_admin
+      member: data-platform-dev-rw
+      condition:
+        title: Data platform dev service project admin.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+    dp_dev_net_viewer:
+      role: roles/compute.networkViewer
+      member: data-platform-dev-ro
+      condition:
+        title: Data platform dev network viewer.
+        expression: |
+          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
+```
+
+The second block signals the networking stage that the Data Platform service accounts need delegated IAM grants on the dev network project, in order to be able to assign specific roles on it.
+
+```yaml
+# make sure this block exists in the data/stage-2/networking.yaml file
+stage3_config:
+  iam_admin_delegated:
+    - environment: dev
+      principal: data-platform-dev-rw
+  iam_viewer:
+    - environment: dev
+      principal: data-platform-dev-ro
+```
+
+Once the two above configurations are in place, apply the resource management and network stages in succession. Be sure to refresh the tfvars files in the network stage if needed (e.g. by re-running `fast-links.sh`).
+
+### Stage Variables
+
+The default data files provided as an example makes a few assumptions that needs to be matched by corresponding variables configured for the stage:
+
+- the `location` variable needs to be explicitly configured, as it's used as a default location for buckets, datasets, and Composer; locations can be individually overridden but a default needs to be in place
+- the domain `deploy_config.composer.node_config.subnetwork` attribute neeeds to match the location defined above; Composer network and subnetwork use interpolation from FAST networking outputs, explicit IDs can be used instead if needed
+- IAM roles for the domain and product refer to generic `dp-product-a-0` and `data-consumer-bi` groups, these need to be defined via the `factories_config.context.iam_principals` variable, or changed to explicit IAM principals (e.g. `group:foo@example.com`)
+
+### Data Domain and Product Data Files
+
+The formats for both types of data files are controlled via [schemas](./schemas/), which can generally be used directly in development environments to provide error checking and autocompletion. A set of HTML files with each schema representation is available [in the same folder](./schemas/) and can be used as a quick human-readable reference.
 
 ### Context replacements
 
@@ -185,137 +230,3 @@ The following table lists the available substitutions.
 | [policy_tags](outputs.tf#L188) | Policy tags defined in central project. |  |  |
 | [secure_tags](outputs.tf#L193) | Secure tags defined in central project. |  |  |
 <!-- END TFDOC -->
-<!--
-### Data product owner [dp-product-a-0@] [dp-product-a-0-001@]
-
-- Editor on Data Product
-- Composer roles on DataDomain
-
-### Data Domain owner [dp-domain-a@] [dp-domain-a-001@]
-
-- Editor on DataDomain
-- Viewer on DataProducts (NO)
-
-### Data Platform owner (Central team) [dp-platform-0@] [dp-platform-0-001@]
-
-- Editor on Central
-- Viewer on DataDomain/Product (NO)
-
-### Data Consumer
-
-- DataCatalog on DataPlatform (with condition)
-- Ad-hoc Data product BigQuery viewer (with condition)
-
-## TODO
-
-Add support for:
-
-- CMEK
-- VPC
-- Composer
-
-Modules:
-
-- [BigQuery Data Policy](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_datapolicy_data_policy)
-- Add Factory support to [Policy TAG](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/modules/data-catalog-policy-tag)
-- [BigQuery Reservation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_bi_reservation)
-- [Aspects Type](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataplex_aspect_type)
-- [Analycts Hub](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange)
-
-Actors:
-
-- Add Data Domain team
-
-Conditions for roles:
-
-- GCS Name = resource.name.startsWith('projects/_/buckets/example-bucket')
-- projects/project-id/datasets/dataset-id
-
-## CUJ
-
-- As Data Platform Owner:
-  - Create Taxonomy (via Tag Template)
-  - Create Policy TAG (Via Data Cat.)
-  - Create Dynamic Data Masked on a Policy TAG
-
-- As Data Product Owner:
-  - Create Dataset (L0, L1), Table, View, Auth View
-  - Insert Data into L0, L1
-  - Tag Template view on central project
-  - TAG template, bind tag template on Table, column
-  - Create row level policy
-  - Create a Data Policy on Policy TAG (Manually, at the moment not supported by TF Fabric module)
-  
-- As Consumer:
-  - See exposure metadata from BQ console
-  - See exposure metadata from Dataplex ([limitation](https://cloud.google.com/bigquery/docs/tags#limitations) due to condition)
-  - Query Exposure Auth view
-  - Query Filtered Data (Row Level Policy)
-  - Query Dynamic Data Masked data on a table
-
-## Fake data
-
-```sql
-
-CREATE SCHEMA `yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0` OPTIONS (location="europe-west8");
-CREATE SCHEMA `yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1` OPTIONS (location="europe-west8");
-
-CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers (
-    id NUMERIC,
-    name STRING,
-    surname STRING
-);
-
-DELETE FROM yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers WHERE TRUE;
-INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers VALUES (1,'Giovanni','Rossi');
-INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers VALUES (2,'Alberto','Bianchi');
-
-CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders (
-    id NUMERIC,
-    customer_id NUMERIC,
-    item STRING,
-    quantity NUMERIC,
-    price NUMERIC
-);
-
-DELETE FROM yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders WHERE TRUE;
-INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (1,1,'Umbrella',1,10);
-INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (2,1,'Car',1,1000);
-INSERT INTO yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders VALUES (3,2,'Car',1,1200);
-
-CREATE OR REPLACE TABLE yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders AS
-SELECT
-    c.id AS customer_id,
-    c.name,
-    c.surname,
-    o.id AS order_id,
-    o.item,
-    o.quantity,
-    o.price
-FROM
-    yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.customers AS c
-JOIN
-    yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l0.orders AS o ON c.id = o.customer_id;
-
-CREATE OR REPLACE VIEW yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_exposure_0.customer_order_view AS
-SELECT
-    customer_id,
-    name,
-    surname,
-    order_id,
-    item,
-    quantity,
-    price
-FROM
-    yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders;
-
-CREATE OR REPLACE ROW ACCESS POLICY
-  item_filter
-ON
-  `yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders` GRANT TO ("group: data-consumer-bi-01@yoyoland.joonix.net")
-FILTER USING
-  (item="Car" );
-
-DROP ALL ROW ACCESS POLICIES ON `yy-dev-dp-t0-p0-0.yy_dev_dp_t0_p0_l1.customer_orders`;  
-```
--->
