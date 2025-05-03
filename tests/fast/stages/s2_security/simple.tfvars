@@ -24,10 +24,6 @@ certificate_authorities = {
     location = "europe-west8"
   }
 }
-custom_roles = {
-  project_iam_viewer            = "organizations/123456789012/roles/bar"
-  service_project_network_admin = "organizations/123456789012/roles/foo"
-}
 environments = {
   dev = {
     is_default = false
