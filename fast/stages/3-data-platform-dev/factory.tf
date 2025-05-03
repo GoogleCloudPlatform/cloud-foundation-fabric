@@ -163,7 +163,7 @@ locals {
     for v in local.dp_datasets : "${v.dp}/${v.key}" => (
       v.encryption_key != null
       ? v.encryption_key
-      : try(var.encryption_keys.storage[v.location], null)
+      : try(var.encryption_keys.bigquery[v.location], null)
     )
   }
   dp_datasets = flatten([
