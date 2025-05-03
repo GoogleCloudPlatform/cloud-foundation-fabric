@@ -123,7 +123,7 @@ The default data files provided as an example makes a few assumptions that needs
 
 ### Data Domain and Product Data Files
 
-The formats for both types of data files are controlled via [schemas](./schemas/), which can generally be used directly in development environments to provide error checking and autocompletion. A set of HTML files with each schema representation is available [in the same folder](./schemas/) and can be used as a quick human-readable reference.
+The formats for both types of data files are controlled via [schemas](./schemas/), which can generally be used directly in development environments to provide error checking and autocompletion.
 
 ### Context replacements
 
