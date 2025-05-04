@@ -87,7 +87,11 @@
     },
     "deletion_policy": {
       "type": "string",
-      "enum": ["PREVENT", "DELETE", "ABANDON"]
+      "enum": [
+        "PREVENT",
+        "DELETE",
+        "ABANDON"
+      ]
     },
     "iam": {
       "$ref": "#/$defs/iam"
