@@ -5,13 +5,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
 
+### BLUEPRINTS
+
+- [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
+
 ### FAST
 
+- [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
 - [[#3052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3052)] Updated network config variables in GKE node pool ([apichick](https://github.com/apichick)) <!-- 2025-04-21 18:44:40+00:00 -->
 - [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
 
 ### MODULES
 
+- [[#3067](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3067)] fix reference to boot disk in snapshots when using independent disks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-05-03 12:21:38+00:00 -->
+- [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
+- [[#3060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3060)] Add deletion_policy to project-factory module ([tyler-sommer](https://github.com/tyler-sommer)) <!-- 2025-04-30 16:10:12+00:00 -->
 - [[#3059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3059)] Better cert manager module examples ([ludoo](https://github.com/ludoo)) <!-- 2025-04-29 12:12:40+00:00 -->
 - [[#3057](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3057)] [cloud-run-v2] Add ability to control code deployments outside Terraform ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-29 08:32:58+00:00 -->
 - [[#3056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3056)] Default vulnerability scanning to null in ar module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-29 07:54:20+00:00 -->
@@ -20,6 +28,10 @@ All notable changes to this project will be documented in this file.
 - [[#3052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3052)] Updated network config variables in GKE node pool ([apichick](https://github.com/apichick)) <!-- 2025-04-21 18:44:40+00:00 -->
 - [[#3049](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3049)] [#3048] Fix serverless NEG example in net-lb-app-ext ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-20 19:17:16+00:00 -->
 - [[#3050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3050)] New Dataplex Aspect Types module ([ludoo](https://github.com/ludoo)) <!-- 2025-04-20 09:25:13+00:00 -->
+
+### TOOLS
+
+- [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
 
 ## [39.0.0] - 2025-04-18
 
