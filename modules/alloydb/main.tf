@@ -17,7 +17,6 @@
 locals {
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   is_regional = var.availability_type == "REGIONAL"
-  flags       = try(var.network_config.psa_config.enable_outbound_public_ip, false) ? merge(var.flags, { "password.enforce_complexity" = "on" }) : var.flags # Outbound Public IP requires password complexity to be enabled.
 
   require_connectors = try(var.client_connection_config.require_connectors, false) ? true : null
   ssl_mode           = try(var.client_connection_config.ssl_config.ssl_mode, null)
@@ -41,7 +40,11 @@ locals {
     ? "SECONDARY"
     : google_alloydb_cluster.secondary[0].cluster_type, null
   )
-  secondary_machine_type = try(var.cross_region_replication.secondary_machine_config.machine_type, null) != null ? var.cross_region_replication.secondary_machine_config.machine_type : var.machine_config.machine_type
+  secondary_machine_type = (
+    try(var.cross_region_replication.secondary_machine_config.machine_type, null) != null
+    ? var.cross_region_replication.secondary_machine_config.machine_type
+    : var.machine_config.machine_type
+  )
 
   read_pool = {
     for name, instance in var.read_pool : name => merge(instance, {
@@ -66,7 +69,7 @@ resource "google_alloydb_cluster" "primary" {
 
   # network_config block should exist only when PSA VPC resource link is present to prevent Terraform state drift
   dynamic "network_config" {
-    for_each = try(var.network_config.psa_config.network, null) != null ? [""] : []
+    for_each = var.network_config.psa_config.network != null ? [""] : []
     content {
       network            = var.network_config.psa_config.network
       allocated_ip_range = var.network_config.psa_config.allocated_ip_range
@@ -182,7 +185,7 @@ resource "google_alloydb_instance" "primary" {
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.primary.id
-  database_flags    = local.flags
+  database_flags    = var.flags
   display_name      = coalesce(var.display_name, local.primary_instance_name)
   instance_id       = local.primary_instance_name
   instance_type     = var.cross_region_replication.switchover_mode ? "SECONDARY" : "PRIMARY"
@@ -257,7 +260,7 @@ resource "google_alloydb_cluster" "secondary" {
 
   # network_config block should exist only when PSA VPC resource link is present to prevent Terraform state drift
   dynamic "network_config" {
-    for_each = try(var.network_config.psa_config.network, null) != null ? [""] : []
+    for_each = var.network_config.psa_config.network != null ? [""] : []
     content {
       network            = var.network_config.psa_config.network
       allocated_ip_range = var.network_config.psa_config.allocated_ip_range
@@ -368,7 +371,7 @@ resource "google_alloydb_instance" "secondary" {
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.secondary[0].id
-  database_flags    = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? local.flags : null
+  database_flags    = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? var.flags : null
   display_name      = coalesce(var.cross_region_replication.secondary_instance_name, local.secondary_instance_name)
   gce_zone          = local.is_regional ? null : var.gce_zone
   instance_id       = local.secondary_instance_name
@@ -510,11 +513,15 @@ resource "random_password" "passwords" {
 }
 
 resource "google_alloydb_user" "users" {
-  for_each       = var.users
-  cluster        = google_alloydb_cluster.primary.id
-  user_id        = each.key
-  user_type      = each.value.type
-  password       = each.value.type == "ALLOYDB_BUILT_IN" && each.value.password == null ? random_password.passwords[each.key].result : each.value.password
+  for_each  = var.users
+  cluster   = google_alloydb_cluster.primary.id
+  user_id   = each.key
+  user_type = each.value.type
+  password = (
+    each.value.type == "ALLOYDB_BUILT_IN" && each.value.password == null ?
+    random_password.passwords[each.key].result
+    : each.value.password
+  )
   database_roles = each.value.roles
   depends_on     = [google_alloydb_instance.primary]
 }
