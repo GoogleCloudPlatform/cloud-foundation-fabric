@@ -39,8 +39,8 @@
         - **cpu**: *number*
         - **memory_gb**: *number*
         - **storage_gb**: *number*
-        - **min_count**: *number*
-        - **max_count**: *number*
+        - **min_count**: *integer*
+        - **max_count**: *integer*
 - **folder_config**: *object*
   <br>*additional properties: false*
   - **iam**: *reference([iam](#refs-iam))*
@@ -84,7 +84,7 @@
   - **cpu**: *number*
   - **memory_gb**: *number*
   - **storage_gb**: *number*
-  - **count**: *number*
+  - **count**: *integer*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:roles/|[a-z_]+)`**: *array*

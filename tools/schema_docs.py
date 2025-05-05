@@ -64,7 +64,7 @@ def parse_node(node, name=None):
         for k, v in defs.items():
           el.defs.append(parse_node(v, k))
     case 'integer':
-      el = Number(name, node.get('default'), node.get('enum'))
+      el = Integer(name, node.get('default'), node.get('enum'))
     case 'number':
       el = Number(name, node.get('default'), node.get('enum'))
     case 'string':

@@ -6,7 +6,7 @@
 
 *additional properties: false*
 
-- ⁺**priority**: *number*
+- ⁺**priority**: *integer*
 - **allow**: *boolean*
 - **description**: *string*
 - **enabled**: *boolean*
