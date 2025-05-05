@@ -33,7 +33,7 @@
   - **`^[a-z0-9_-]+$`**: *array*
     - items: *string*
 - **deletion_policy**: *string*
-<br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
+  <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*

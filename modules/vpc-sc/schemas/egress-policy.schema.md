@@ -12,7 +12,7 @@
   - **access_levels**: *array*
     - items: *string*
   - **identity_type**: *string*
-  <br>*enum: ['IDENTITY_TYPE_UNSPECIFIED', 'ANY_IDENTITY', 'ANY_USER_ACCOUNT', 'ANY_SERVICE_ACCOUNT', '']*
+    <br>*enum: ['IDENTITY_TYPE_UNSPECIFIED', 'ANY_IDENTITY', 'ANY_USER_ACCOUNT', 'ANY_SERVICE_ACCOUNT', '']*
   - **identities**: *array*
     - items: *string*
   - **resources**: *array*

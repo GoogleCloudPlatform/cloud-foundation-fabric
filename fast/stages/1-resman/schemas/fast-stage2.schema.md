@@ -15,7 +15,7 @@
     - ⁺**name**: *string*
     - **branch**: *string*
     - **type**: *string*
-    <br>*default: github*, *enum: ['github', 'gitlab']*
+      <br>*default: github*, *enum: ['github', 'gitlab']*
 - **folder_config**: *object*
   <br>*additional properties: false*
   - ⁺**name**: *string*

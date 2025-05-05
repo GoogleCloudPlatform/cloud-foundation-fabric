@@ -124,7 +124,7 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
       if el.enum:
         details.append(f'*enum: {el.enum}*')
       if details:
-        buffer.append(f'{indent}<br>{", ".join(details)}')
+        buffer.append(f'{indent}  <br>{", ".join(details)}')
   if level == 0:
     return '\n'.join(buffer), '\n'.join(defs_buffer)
   return '\n'.join(buffer)
