@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
 
+## [40.0.0-rc1] - 2025-05-05
+
+### BLUEPRINTS
+
+- [[#3066](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3066)] New FAST data platform ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 21:21:38+00:00 -->
+
+### FAST
+
+- [[#3066](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3066)] New FAST data platform ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 21:21:38+00:00 -->
+
+### MODULES
+
+- [[#3066](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3066)] New FAST data platform ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 21:21:38+00:00 -->
+- [[#3051](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3051)] Add ability to reuse existing projects in project factory ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-04-21 08:57:53+00:00 -->
+
 ## [39.1.0] - 2025-05-05
 
 ### BLUEPRINTS
@@ -3110,6 +3125,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...HEAD
+[40.0.0-rc1]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v40.0.0-rc1
 [39.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v39.1.0
 [39.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.2.0...v39.0.0
 [38.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...v38.2.0
