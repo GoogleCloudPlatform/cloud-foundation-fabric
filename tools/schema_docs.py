@@ -25,14 +25,14 @@ DOC = '\n\n'.join(
     ('# {title}', '<!-- markdownlint-disable MD036 -->', '## Properties',
      '{properties}', '## Definitions', '{definitions}'))
 
-Array = collections.namedtuple('Array', 'name items default', defaults=(None,))
+Array = collections.namedtuple('Array', 'name items default', defaults=[None])
 Boolean = collections.namedtuple('Boolean', 'name default')
-Integer = collections.namedtuple('Integer', 'name default')
-Number = collections.namedtuple('Number', 'name default')
+Integer = collections.namedtuple('Integer', 'name default enum')
+Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
 Reference = collections.namedtuple('Reference', 'name to')
-String = collections.namedtuple('String', 'name default')
+String = collections.namedtuple('String', 'name default enum')
 
 
 def parse_node(node, name=None):
@@ -64,11 +64,11 @@ def parse_node(node, name=None):
         for k, v in defs.items():
           el.defs.append(parse_node(v, k))
     case 'integer':
-      el = Number(name, node.get('default'))
+      el = Number(name, node.get('default'), node.get('enum'))
     case 'number':
-      el = Number(name, node.get('default'))
+      el = Number(name, node.get('default'), node.get('enum'))
     case 'string':
-      el = String(name, node.get('default'))
+      el = String(name, node.get('default'), node.get('enum'))
     case _:
       ref = node.get('$ref')
       if ref:
@@ -112,10 +112,18 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
               render_node(p, 1,
                           f_name=lambda n: f'**{n}**<a name="refs-{n}"></a>'))
     case 'array':
-      buffer.append(render_node(el.items, level + 1, f_name=str))
+      if el.items:
+        buffer.append(render_node(el.items, level + 1, f_name=str))
     case 'reference':
       buffer[-1] = (
           f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
+    case 'integer' | 'number' | 'string':
+      if el.default or el.enum:
+        details = ', '.join([
+            f'*default: {el.default}*' if el.default else '',
+            f'*enum: {el.enum}*' if el.enum else ''
+        ])
+        buffer.append(f'<br>{details}')
   if level == 0:
     return '\n'.join(buffer), '\n'.join(defs_buffer)
   return '\n'.join(buffer)

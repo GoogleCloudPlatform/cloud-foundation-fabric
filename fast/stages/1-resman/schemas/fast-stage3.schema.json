@@ -12,6 +12,7 @@
       "type": "string"
     },
     "environment": {
+      "type": "string",
       "enum": [
         "dev",
         "prod"
@@ -42,6 +43,7 @@
               "type": "string"
             },
             "type": {
+              "type": "string",
               "enum": [
                 "github",
                 "gitlab"
@@ -91,66 +93,69 @@
           "additionalProperties": false,
           "patternProperties": {
             "^[a-z]+\\.": {
-              "inherit_from_parent": {
-                "type": "boolean"
-              },
-              "reset": {
-                "type": "boolean"
-              },
-              "rules": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "allow": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "all": {
-                          "type": "boolean"
-                        },
-                        "values": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
+              "type": "object",
+              "properties": {
+                "inherit_from_parent": {
+                  "type": "boolean"
+                },
+                "reset": {
+                  "type": "boolean"
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "allow": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "all": {
+                            "type": "boolean"
+                          },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
                           }
                         }
-                      }
-                    },
-                    "deny": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "all": {
-                          "type": "boolean"
-                        },
-                        "values": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
+                      },
+                      "deny": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "all": {
+                            "type": "boolean"
+                          },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
                           }
                         }
-                      }
-                    },
-                    "enforce": {
-                      "type": "boolean"
-                    },
-                    "condition": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "description": {
-                          "type": "string"
-                        },
-                        "expression": {
-                          "type": "string"
-                        },
-                        "location": {
-                          "type": "string"
-                        },
-                        "title": {
-                          "type": "string"
+                      },
+                      "enforce": {
+                        "type": "boolean"
+                      },
+                      "condition": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "description": {
+                            "type": "string"
+                          },
+                          "expression": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          }
                         }
                       }
                     }

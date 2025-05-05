@@ -1302,19 +1302,13 @@
           "type": "string"
         },
         "exclude_export_ranges": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "items": {
             "type": "string"
           }
         },
         "include_export_ranges": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": "array",
           "items": {
             "type": "string"
           }
