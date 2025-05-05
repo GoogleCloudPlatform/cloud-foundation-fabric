@@ -21,8 +21,13 @@ import json
 
 from pathlib import Path
 
+DOC = '\n\n'.join(
+    ('# {title}', '<!-- markdownlint-disable MD036 -->', '## Properties',
+     '{properties}', '## Definitions', '{definitions}'))
+
 Array = collections.namedtuple('Array', 'name items default', defaults=(None,))
 Boolean = collections.namedtuple('Boolean', 'name default')
+Integer = collections.namedtuple('Integer', 'name default')
 Number = collections.namedtuple('Number', 'name default')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
@@ -31,7 +36,7 @@ String = collections.namedtuple('String', 'name default')
 
 
 def parse_node(node, name=None):
-  logging.info(f'parse {name} type {node.get("type")}')
+  logging.debug(f'parse {name} type {node.get("type")}')
   name = name or node.get('title')
   el_type = node.get('type')
   match el_type:
@@ -58,6 +63,8 @@ def parse_node(node, name=None):
       if defs:
         for k, v in defs.items():
           el.defs.append(parse_node(v, k))
+    case 'integer':
+      el = Number(name, node.get('default'))
     case 'number':
       el = Number(name, node.get('default'))
     case 'string':
@@ -68,22 +75,26 @@ def parse_node(node, name=None):
         el = Reference(name, ref.split('/')[-1])
       else:
         raise ValueError(f'{name} {el_type}')
-  # logging.info(f'return {el}')
+  # logging.debug(f'return {el}')
   return el
 
 
-def render_node(el, level=0, required=False):
+def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
   buffer = []
   defs_buffer = []
-  indent = '  ' * level
+  indent = ''
   t = el.__class__.__name__.lower()
   r = '⁺' if required else ''
   if level > 0:
-    buffer.append(f'{indent}- {r}**{el.name}:** *{t}*')
+    indent = '  ' * (level - 1)
+    buffer.append(f'{indent}- {r}{f_name(el.name)}: *{t}*')
   match t:
     case 'object':
       if el.additional == False:
-        buffer.append(f'{indent}  *no additional properties allowed*')
+        if level == 0:
+          buffer.append(f'*no additional properties allowed*\n')
+        else:
+          buffer.append(f'{indent}  <br>*no additional properties allowed*')
       elif el.additional:
         buffer.append(
             f'{indent}  *additional properties: {el.additional.__class__.__name__}*'
@@ -93,39 +104,46 @@ def render_node(el, level=0, required=False):
           buffer.append(render_node(p, level + 1, p.name in el.required))
       if el.pattern:
         for p in el.pattern:
-          buffer.append(render_node(p, level + 1))
+          buffer.append(render_node(p, level + 1,
+                                    f_name=lambda n: f'**`{n}`**'))
       if level == 0 and el.defs:
         for p in el.defs:
-          defs_buffer.append(render_node(p, 1))
+          defs_buffer.append(
+              render_node(p, 1,
+                          f_name=lambda n: f'**{n}**<a name="refs-{n}"></a>'))
     case 'array':
-      buffer.append(render_node(el.items, level + 1))
+      buffer.append(render_node(el.items, level + 1, f_name=str))
     case 'reference':
       buffer[-1] = (
-          f'{indent}- **{el.name}:** *reference([{el.to}](#refs-{el.to}))*')
+          f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
   if level == 0:
     return '\n'.join(buffer), '\n'.join(defs_buffer)
   return '\n'.join(buffer)
 
 
 @click.command()
-@click.argument('dirs', type=str, nargs=-1)
-def main(dirs=None):
-  dirs = dirs or ['.']
-  for dir in dirs:
-    logging.info(f'dir {dir}')
-    for f in Path(dir).glob('**/*.schema.json'):
-      logging.info(f'file {f}')
+@click.argument('paths', type=str, nargs=-1)
+def main(paths=None):
+  paths = paths or ['.']
+  for p in paths:
+    logging.debug(f'path {p}')
+    p = Path(p)
+    schemas = [p] if p.is_file() else list(p.glob('**/*.schema.json'))
+    for f in schemas:
+      logging.info(f'schema {f}')
       try:
         schema = json.load(f.open())
       except json.JSONDecodeError as e:
         raise SystemExit(f'error decoding file {f}: {e.args[0]}')
       tree = parse_node(schema)
-      properties, refs = render_node(tree)
-      print(properties)
-      print(refs)
-      break
+      props, defs = render_node(tree)
+      doc = DOC.format(title=schema.get('title'), properties=props,
+                       definitions=defs or '')
+      f_doc = f.with_suffix('.md')
+      f_doc.write_text(doc)
+      logging.info(f'doc {f}')
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO)
+  logging.basicConfig(level=logging.DEBUG)
   main()
