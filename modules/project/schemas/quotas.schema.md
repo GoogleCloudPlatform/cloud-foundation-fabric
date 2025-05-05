@@ -4,10 +4,10 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **`^[a-zA-Z0-9_-]+$`**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - ⁺**service**: *string*
   - ⁺**quota_id**: *string*
   - ⁺**preferred_value**: *number*

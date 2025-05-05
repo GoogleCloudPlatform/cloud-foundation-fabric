@@ -4,31 +4,31 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - ⁺**amount**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **currency_code**: *string*
   - **nanos**: *number*
   - **units**: *number*
   - **use_last_period**: *boolean*
 - **display_name**: *string*
 - **filter**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **credit_types_treatment**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **exclude_all**: *boolean*
     - **include_specified**: *array*
       - items: *string*
   - **label**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **key**: *string*
     - **value**: *string*
   - **period**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **calendar**: *string*
     - **custom**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - **start_date**: *reference([date](#refs-date))*
       - **end_date**: *reference([date](#refs-date))*
   - **projects**: *array*
@@ -41,13 +41,13 @@
     - items: *string*
 - **threshold_rules**: *array*
   - items: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - ⁺**percent**: *number*
     - **forecasted_spend**: *boolean*
 - **update_rules**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **disable_default_iam_recipients**: *boolean*
     - **monitoring_notification_channels**: *array*
       - items: *string*
@@ -56,7 +56,7 @@
 ## Definitions
 
 - **date**<a name="refs-date"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **day**: *number*
   - **month**: *number*
   - **year**: *number*

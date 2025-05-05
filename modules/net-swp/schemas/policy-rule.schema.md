@@ -4,7 +4,7 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - ⁺**priority**: *number*
 - **allow**: *boolean*
@@ -14,7 +14,7 @@
 - **session_matcher**: *string*
 - **tls_inspect**: *boolean*
 - **matcher_args**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **application**: *array*
     - items: *string*
   - **session**: *array*

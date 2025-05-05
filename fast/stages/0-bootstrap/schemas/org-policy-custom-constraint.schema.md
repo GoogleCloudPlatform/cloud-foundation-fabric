@@ -4,10 +4,10 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **`^[a-z-]+\.[a-zA-Z]+$`**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **display_name**: *string*
   - **description**: *string*
   - ⁺**action_type**: *string*

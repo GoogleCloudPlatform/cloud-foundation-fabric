@@ -4,14 +4,14 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **active**: *boolean*
 - **description**: *string*
 - **enable_private_access**: *boolean*
 - **allow_subnet_cidr_routes_overlap**: *boolean*
 - **flow_logs_config**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **aggregation_interval**: *string*
   - **filter_expression**: *string*
   - **flow_sampling**: *number*
@@ -21,7 +21,7 @@
 - **global**: *boolean*
 - ⁺**ip_cidr_range**: *string*
 - **ipv6**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **access_type**: *string*
 - **name**: *string*
 - ⁺**region**: *string*
@@ -36,29 +36,29 @@
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^roles/`**: *array*
     - items: *string*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **members**: *array*
       - items: *string*
     - **role**: *string*
     - **condition**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - ⁺**expression**: *string*
       - ⁺**title**: *string*
       - **description**: *string*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **member**: *string*
     - **role**: *string*
     - **condition**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - ⁺**expression**: *string*
       - ⁺**title**: *string*
       - **description**: *string*

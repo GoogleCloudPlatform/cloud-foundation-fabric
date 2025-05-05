@@ -4,12 +4,12 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **description**: *string*
 - **title**: *string*
 - **spec**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **access_levels**: *array*
     - items: *string*
   - **egress_policies**: *array*
@@ -22,7 +22,7 @@
     - items: *string*
   - **vpc_accessible_services**: *reference([VpcAccessibleServices](#refs-VpcAccessibleServices))*
 - **status**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **access_levels**: *array*
     - items: *string*
   - **egress_policies**: *array*
@@ -39,7 +39,7 @@
 ## Definitions
 
 - **VpcAccessibleServices**<a name="refs-VpcAccessibleServices"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - ⁺**allowed_services**: *array*
     - items: *string*
   - **enable_restriction**: *boolean*

@@ -4,26 +4,26 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **egress**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *reference([rule](#refs-rule))*
 - **ingress**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *reference([rule](#refs-rule))*
 
 ## Definitions
 
 - **rule**<a name="refs-rule"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **deny**: *boolean*
   - **description**: *string*
   - **destination_ranges**: *array*
     - items: *string*
   - **disabled**: *boolean*
   - **enable_logging**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **include_metadata**: *boolean*
   - **priority**: *number*
   - **source_ranges**: *array*
@@ -35,7 +35,7 @@
   - **use_service_accounts**: *boolean*
   - **rules**: *array*
     - items: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - **protocol**: *string*
       - **ports**: *array*
         - items: *number*

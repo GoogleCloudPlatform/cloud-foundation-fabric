@@ -4,7 +4,7 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **name**: *string*
 - **includedPermissions**: *array*

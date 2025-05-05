@@ -4,7 +4,7 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **description**: *string*
 - **display_name**: *string*
@@ -17,29 +17,29 @@
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^roles/`**: *array*
     - items: *string*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **members**: *array*
       - items: *string*
     - **role**: *string*
     - **condition**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - ⁺**expression**: *string*
       - ⁺**title**: *string*
       - **description**: *string*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **member**: *string*
     - **role**: *string*
     - **condition**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - ⁺**expression**: *string*
       - ⁺**title**: *string*
       - **description**: *string*

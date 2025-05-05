@@ -92,9 +92,9 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
     case 'object':
       if el.additional == False:
         if level == 0:
-          buffer.append(f'*no additional properties allowed*\n')
+          buffer.append(f'*additional properties: false*\n')
         else:
-          buffer.append(f'{indent}  <br>*no additional properties allowed*')
+          buffer.append(f'{indent}  <br>*additional properties: false*')
       elif el.additional:
         buffer.append(
             f'{indent}  *additional properties: {el.additional.__class__.__name__}*'

@@ -4,14 +4,14 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **combining_function**: *string*
 - **conditions**: *array*
   - items: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **device_policy**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - **allowed_device_management_levels**: *array*
         - items: *string*
       - **allowed_encryption_statuses**: *array*
@@ -21,7 +21,7 @@
       - **require_screen_lock**: *boolean*
       - **os_constraints**: *array*
         - items: *object*
-          <br>*no additional properties allowed*
+          <br>*additional properties: false*
           - **os_type**: *string*
           - **minimum_version**: *string*
           - **require_verified_chrome_os**: *boolean*
@@ -35,7 +35,7 @@
     - **required_access_levels**: *array*
       - items: *string*
     - **vpc_subnets**: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - **`^//compute.googleapis.com/projects/[^/]+/global/networks/[^/]+$`**: *array*
         - items: *string*
 

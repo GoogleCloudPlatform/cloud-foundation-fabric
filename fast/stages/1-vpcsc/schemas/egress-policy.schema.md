@@ -4,11 +4,11 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **title**: *string*
 - ⁺**from**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **access_levels**: *array*
     - items: *string*
   - **identity_type**: *string*
@@ -18,12 +18,12 @@
   - **resources**: *array*
     - items: *string*
 - ⁺**to**: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - **external_resources**: *array*
     - items: *string*
   - **operations**: *array*
     - items: *object*
-      <br>*no additional properties allowed*
+      <br>*additional properties: false*
       - **method_selectors**: *array*
         - items: *string*
       - **permission_selectors**: *array*

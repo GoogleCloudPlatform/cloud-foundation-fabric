@@ -4,14 +4,14 @@
 
 ## Properties
 
-*no additional properties allowed*
+*additional properties: false*
 
 - **`^[a-z0-9_-]+$`**: *reference([rule](#refs-rule))*
 
 ## Definitions
 
 - **rule**<a name="refs-rule"></a>: *object*
-  <br>*no additional properties allowed*
+  <br>*additional properties: false*
   - ⁺**priority**: *number*
   - **action**: *string*
 <br>, *enum: ['allow', 'deny', 'goto_next', 'apply_security_profile_group']*
@@ -27,7 +27,7 @@
     - items: *string*
   - **tls_inspect**: *boolean*
   - **match**: *object*
-    <br>*no additional properties allowed*
+    <br>*additional properties: false*
     - **address_groups**: *array*
       - items: *string*
     - **fqdns**: *array*
@@ -44,6 +44,6 @@
       - items: *string*
     - **layer4_configs**: *array*
       - items: *object*
-        <br>*no additional properties allowed*
+        <br>*additional properties: false*
         - **protocol**: *string*
         - **ports**: *array*
