@@ -148,7 +148,8 @@ resource "google_compute_disk_resource_policy_attachment" "boot" {
     google_compute_resource_policy.snapshot[each.value].name,
     each.value
   )
-  disk       = var.name
+  # if independent disk is used for boot disk it will have a different name compared to when created implicitly
+  disk       = !var.create_template && var.boot_disk.use_independent_disk ? google_compute_disk.boot[0].name : var.name
   depends_on = [google_compute_instance.default]
 }
 
