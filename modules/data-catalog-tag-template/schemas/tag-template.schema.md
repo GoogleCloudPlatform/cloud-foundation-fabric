@@ -18,7 +18,7 @@
   - **type**: *object*
     <br>*additional properties: false*
     - **primitive_type**: *string*
-<br>, *enum: ['DOUBLE', 'STRING', 'BOOL', 'TIMESTAMP']*
+    <br>*enum: ['DOUBLE', 'STRING', 'BOOL', 'TIMESTAMP']*
     - **enum_type_values**: *array*
       - items: *string*
 - **iam**: *reference([iam](#refs-iam))*

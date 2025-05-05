@@ -8,7 +8,7 @@
 
 - ⁺**short_name**: *string*
 - ⁺**environment**: *string*
-<br>, *enum: ['dev', 'prod']*
+<br>*enum: ['dev', 'prod']*
 - **cicd_config**: *object*
   <br>*additional properties: false*
   - ⁺**identity_provider**: *string*
@@ -17,7 +17,7 @@
     - ⁺**name**: *string*
     - **branch**: *string*
     - **type**: *string*
-<br>*default: github*, *enum: ['github', 'gitlab']*
+    <br>*default: github*, *enum: ['github', 'gitlab']*
 - **folder_config**: *object*
   <br>*additional properties: false*
   - ⁺**name**: *string*

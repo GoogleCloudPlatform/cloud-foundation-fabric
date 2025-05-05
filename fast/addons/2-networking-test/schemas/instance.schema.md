@@ -17,7 +17,7 @@
 - **tags**: *array*
   - items: *string*
 - **type**: *string*
-<br>*default: e2-micro*, 
+<br>*default: e2-micro*
 - **user_data_file**: *string*
 - **zones**: *array*
   - items: *string*

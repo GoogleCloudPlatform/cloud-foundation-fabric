@@ -27,9 +27,9 @@
         - items: *string*
   - **billing_account**: *string*
   - **deletion_policy**: *string*
-<br>, *enum: ['DELETE', 'ABANDON']*
+  <br>*enum: ['DELETE', 'ABANDON']*
   - **default_service_account**: *string*
-<br>, *enum: ['deprovision', 'disable', 'keep']*
+  <br>*enum: ['deprovision', 'disable', 'keep']*
   - **auto_create_network**: *boolean*
   - **project_create**: *boolean*
   - **shared_vpc_host_config**: *object*
@@ -52,7 +52,7 @@
   - ⁺**name**: *string*
   - **description**: *string*
   - **preset_topology**: *string*
-<br>, *enum: ['MESH', 'STAR', 'PLANETARY']*
+  <br>*enum: ['MESH', 'STAR', 'PLANETARY']*
   - **export_psc**: *boolean*
   - **groups**: *object*
     <br>*additional properties: false*
@@ -91,7 +91,7 @@
     <br>*additional properties: false*
     - **`^[a-zA-Z0-9-]+$`**: *reference([dnsZone](#refs-dnsZone))*
   - **firewall_policy_enforcement_order**: *string*
-<br>, *enum: ['AFTER_CLASSIC_FIREWALL', 'BEFORE_CLASSIC_FIREWALL']*
+  <br>*enum: ['AFTER_CLASSIC_FIREWALL', 'BEFORE_CLASSIC_FIREWALL']*
   - **ipv6_config**: *object*
     <br>*additional properties: false*
     - **enable_ula_internal**: *boolean*
@@ -115,7 +115,7 @@
     <br>*additional properties: false*
     - **`^[a-zA-Z0-9-]+$`**: *reference([routeConfig](#refs-routeConfig))*
   - **routing_mode**: *string*
-<br>, *enum: ['GLOBAL', 'REGIONAL']*
+  <br>*enum: ['GLOBAL', 'REGIONAL']*
   - **subnets_factory_config**: *object*
     <br>*additional properties: false*
     - **context**: *object*
@@ -167,15 +167,15 @@
 - **dnssecConfig**<a name="refs-dnssecConfig"></a>: *object*
   <br>*additional properties: false*
   - **non_existence**: *string*
-<br>, *enum: ['nsec', 'nsec3']*
+  <br>*enum: ['nsec', 'nsec3']*
   - ⁺**state**: *string*
-<br>, *enum: ['on', 'off', 'transfer']*
+  <br>*enum: ['on', 'off', 'transfer']*
   - **key_signing_key**: *reference([dnsKeySpec](#refs-dnsKeySpec))*
   - **zone_signing_key**: *reference([dnsKeySpec](#refs-dnsKeySpec))*
 - **dnsKeySpec**<a name="refs-dnsKeySpec"></a>: *object*
   <br>*additional properties: false*
   - ⁺**algorithm**: *string*
-<br>, *enum: ['rsasha1', 'rsasha256', 'rsasha512', 'ecdsap256sha256', 'ecdsap384sha384']*
+  <br>*enum: ['rsasha1', 'rsasha256', 'rsasha512', 'ecdsap256sha256', 'ecdsap384sha384']*
   - ⁺**key_length**: *number*
 - **dnsRecordSet**<a name="refs-dnsRecordSet"></a>: *object*
   <br>*additional properties: false*
@@ -215,14 +215,14 @@
   - **router_network**: *string*
   - **router_asn**: *number*
   - **type**: *string*
-<br>, *enum: ['PUBLIC', 'PRIVATE']*
+  <br>*enum: ['PUBLIC', 'PRIVATE']*
   - **addresses**: *array*
     - items: *string*
   - **endpoint_types**: *array*
     - items: *string*
-<br>, *enum: ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG', 'ENDPOINT_TYPE_MANAGED_PROXY_LB']*
+    <br>*enum: ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG', 'ENDPOINT_TYPE_MANAGED_PROXY_LB']*
   - **logging_filter**: *string*
-<br>, *enum: ['ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL']*
+  <br>*enum: ['ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL']*
   - **config_port_allocation**: *object*
     <br>*additional properties: false*
     - **enable_endpoint_independent_mapping**: *boolean*
@@ -288,7 +288,7 @@
 - **psaConfig**<a name="refs-psaConfig"></a>: *object*
   <br>*additional properties: false*
   - **deletion_policy**: *string*
-<br>, *enum: ['delete', 'abandon']*
+  <br>*enum: ['delete', 'abandon']*
   - **ranges**: *reference([stringMap](#refs-stringMap))*
   - **export_routes**: *boolean*
   - **import_routes**: *boolean*
@@ -325,7 +325,7 @@
     - **`^[a-zA-Z0-9-]+$`**: *reference([peerGateway](#refs-peerGateway))*
   - **router_config**: *reference([vpnRouterConfig](#refs-vpnRouterConfig))*
   - **stack_type**: *string*
-<br>, *enum: ['IPV4_ONLY', 'IPV4_IPV6']*
+  <br>*enum: ['IPV4_ONLY', 'IPV4_IPV6']*
   - ⁺**tunnels**: *object*
     <br>*additional properties: false*
     - **`^[a-zA-Z0-9-]+$`**: *reference([vpnTunnel](#refs-vpnTunnel))*
@@ -336,7 +336,7 @@
 - **externalPeerGateway**<a name="refs-externalPeerGateway"></a>: *object*
   <br>*additional properties: false*
   - ⁺**redundancy_type**: *string*
-<br>, *enum: ['SINGLE_IP_INTERNALLY_REDUNDANT', 'TWO_IPS_REDUNDANCY', 'FOUR_IPS_REDUNDANCY']*
+  <br>*enum: ['SINGLE_IP_INTERNALLY_REDUNDANT', 'TWO_IPS_REDUNDANCY', 'FOUR_IPS_REDUNDANCY']*
   - ⁺**interfaces**: *array*
     - items: *string*
   - **description**: *string*
@@ -354,7 +354,7 @@
   - **bgp_peer**: *reference([bgpPeerConfig](#refs-bgpPeerConfig))*
   - ⁺**bgp_session_range**: *string*
   - **ike_version**: *number*
-<br>, *enum: [1, 2]*
+  <br>*enum: [1, 2]*
   - **name**: *string*
   - **peer_external_gateway_interface**: *number*
   - **peer_router_interface_name**: *string*
@@ -391,7 +391,7 @@
     - **public_export**: *boolean*
     - **public_import**: *boolean*
   - **stack_type**: *string*
-<br>, *enum: ['IPV4_ONLY', 'IPV4_IPV6']*
+  <br>*enum: ['IPV4_ONLY', 'IPV4_IPV6']*
 - **vpcNccConfig**<a name="refs-vpcNccConfig"></a>: *object*
   <br>*additional properties: false*
   - ⁺**hub**: *string*

@@ -118,12 +118,13 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
       buffer[-1] = (
           f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
     case 'integer' | 'number' | 'string':
-      if el.default or el.enum:
-        details = ', '.join([
-            f'*default: {el.default}*' if el.default else '',
-            f'*enum: {el.enum}*' if el.enum else ''
-        ])
-        buffer.append(f'<br>{details}')
+      details = []
+      if el.default:
+        details.append(f'*default: {el.default}*')
+      if el.enum:
+        details.append(f'*enum: {el.enum}*')
+      if details:
+        buffer.append(f'{indent}<br>{", ".join(details)}')
   if level == 0:
     return '\n'.join(buffer), '\n'.join(defs_buffer)
   return '\n'.join(buffer)

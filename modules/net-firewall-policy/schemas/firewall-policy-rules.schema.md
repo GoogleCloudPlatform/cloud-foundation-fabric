@@ -14,7 +14,7 @@
   <br>*additional properties: false*
   - ⁺**priority**: *number*
   - **action**: *string*
-<br>, *enum: ['allow', 'deny', 'goto_next', 'apply_security_profile_group']*
+  <br>*enum: ['allow', 'deny', 'goto_next', 'apply_security_profile_group']*
   - **description**: *string*
   - **disabled**: *boolean*
   - **enable_logging**: *boolean*
