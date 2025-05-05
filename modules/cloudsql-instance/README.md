@@ -129,6 +129,7 @@ module "db" {
   tier             = "db-g1-small"
 
   flags = {
+    cloudsql_iam_authentication    = "on"
     disconnect_on_expired_password = "on"
   }
 
