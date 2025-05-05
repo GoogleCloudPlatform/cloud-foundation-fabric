@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
 
+## [39.1.0] - 2025-05-05
+
 ### BLUEPRINTS
 
+- [[#3068](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3068)] vertex-mlops: fix permadiff after apply ([wiktorn](https://github.com/wiktorn)) <!-- 2025-05-04 14:46:39+00:00 -->
 - [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
 
 ### FAST
@@ -17,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3069](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3069)] [cloudsql-instance] Add cloudsql_iam_authentication flag to fix example in readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-05-05 06:50:32+00:00 -->
 - [[#3067](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3067)] fix reference to boot disk in snapshots when using independent disks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-05-03 12:21:38+00:00 -->
 - [[#3063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3063)] Enable repd tag bindings in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-03 09:29:08+00:00 -->
 - [[#3060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3060)] Add deletion_policy to project-factory module ([tyler-sommer](https://github.com/tyler-sommer)) <!-- 2025-04-30 16:10:12+00:00 -->
@@ -3106,6 +3110,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...HEAD
+[39.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v39.1.0
 [39.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.2.0...v39.0.0
 [38.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...v38.2.0
 [38.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.0.0...v38.1.0
