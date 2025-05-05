@@ -117,6 +117,7 @@ variable "factories_config" {
     data_domains = optional(string, "data/data-domains")
     context = optional(object({
       iam_principals = optional(map(string), {})
+      kms_keys       = optional(map(string), {})
       tag_values     = optional(map(string), {})
     }), {})
   })
