@@ -1,24 +1,41 @@
-# Data Platform
+# Data Platform <!-- omit in toc -->
 
-## Overview
+This Cloud Foundations Fabric FAST stage focuses on the creation and management of an opinonated Data Platform architecture based on Google Cloud best practices. Its architecture is designed to be reliable, robust, and scalable, facilitating the continuous onboarding of new Data Products (or data workloads).
 
-This stage allows creation and management of a Data Platform. The solution is structured designed to enable the implementation of a reliable, robust, and scalable platform that supports the onboarding of new Data Products (or data workload) over time.
+<!-- BEGIN TOC -->
+- [Design Overview \& Choices](#design-overview--choices)
+  - [Organisational Hierarchy](#organisational-hierarchy)
+  - [Data Platform Project Structure](#data-platform-project-structure)
+    - [Central Services (Project)](#central-services-project)
+  - [Data Domain](#data-domain)
+  - [Data Product](#data-product)
+- [Team and personas](#team-and-personas)
+  - [Data product owner \[dp-product-a-0@\] \[dp-product-a-0-001@\]](#data-product-owner-dp-product-a-0-dp-product-a-0-001)
+  - [Data Domain owner \[dp-domain-a@\] \[dp-domain-a-001@\]](#data-domain-owner-dp-domain-a-dp-domain-a-001)
+  - [Data Platform owner (Central team) \[dp-platform-0@\] \[dp-platform-0-001@\]](#data-platform-owner-central-team-dp-platform-0-dp-platform-0-001)
+  - [Data Consumer](#data-consumer)
+- [TODO](#todo)
+- [CUJ](#cuj)
+- [Fake data](#fake-data)
+<!-- END TOC -->
 
-It establishes the platform's foundation but does not define the specifics of data handling, computation, or processing for individual workloads or data products, allowing them flexibility in technology choice. However, to optimize, standardize, and accelerate adoption, the platform encourages the use of shared patterns across data products, aiming to reduce implementation costs.
+## Design Overview & Choices
 
-This solution implements [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and relies on established FAST stages for resource hierarchy, networking, and security. These aspects are considered pre-configured and are outside the scope of this document.
+The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
+
+This Data Platform implementation closely aligned with [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and builds up on established [FAST stages](./fast/stages/README.md) for crucial aspects of Google Cloud Platform implementation like resource hierarchy, networking, and security. These FAST components are considered prerequisites and fall outside the direct scope of this stage.
 
 ## Project Structure
 
-The solution rappresent the following structure:
+The solution represents the following structure:
 
 TODO: Add diagram
 
-### Central Shared Services
+### Central Services (Project)
 
-Central teams enable the operation of the data mesh by providing cross-domain oversight, services, and governance. They reduce the operational burden for data domains in producing and consuming data products, and facilitate the cross-domain relationships that are required for the data mesh to operate.
+Central teams oversee and facilitate the computational governance aspects of the data mesh by providing established foundations for cross-domain data discovery, data sharing, self-service services, and governance. They reduce the operational burden for data domains in producing and consuming data products while also facilitating the cross-domain relationships required for the data mesh to operate.
 
-This foundational project is centrally managed and it provides core, and platform-wide capabilities such as Security Tag, [Dataplex Catalog aspects)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata] definition, [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
+This foundations project is centrally managed and it provides core, and platform-wide capabilities such as ["Secure" Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview), [Dataplex Catalog Aspects)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata] definition and [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
 
 ### Data Domain
 
