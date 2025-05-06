@@ -377,6 +377,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
               for_each = containers.value.liveness_probe.http_get == null ? [] : [""]
               content {
                 path = containers.value.liveness_probe.http_get.path
+                port = containers.value.liveness_probe.http_get.port
                 dynamic "http_headers" {
                   for_each = coalesce(containers.value.liveness_probe.http_get.http_headers, tomap({}))
                   content {
@@ -406,6 +407,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
               for_each = containers.value.startup_probe.http_get == null ? [] : [""]
               content {
                 path = containers.value.startup_probe.http_get.path
+                port = containers.value.startup_probe.http_get.port
                 dynamic "http_headers" {
                   for_each = coalesce(containers.value.startup_probe.http_get.http_headers, tomap({}))
                   content {
