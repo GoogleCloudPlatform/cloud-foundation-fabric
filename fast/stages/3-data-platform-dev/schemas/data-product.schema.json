@@ -5,6 +5,7 @@
   "additionalProperties": false,
   "properties": {
     "automation": {
+      "type": "object",
       "additionalProperties": false,
       "properties": {
         "location": {
@@ -28,6 +29,7 @@
           "additionalProperties": false,
           "properties": {
             "datasets": {
+              "type": "object",
               "patternProperties": {
                 "^[a-z][a-z0-9_]+$": {
                   "type": "object",
@@ -53,6 +55,7 @@
           "additionalProperties": false,
           "properties": {
             "buckets": {
+              "type": "object",
               "patternProperties": {
                 "^[a-z][a-z0-9-]+$": {
                   "type": "object",

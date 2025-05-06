@@ -22,6 +22,7 @@ variable "automation" {
   })
   nullable = false
 }
+
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."

@@ -22,6 +22,7 @@
           }
         },
         "identity_type": {
+          "type": "string",
           "enum": [
             "IDENTITY_TYPE_UNSPECIFIED",
             "ANY_IDENTITY",

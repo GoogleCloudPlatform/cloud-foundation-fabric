@@ -37,6 +37,7 @@
           "additionalProperties": false,
           "properties": {
             "primitive_type": {
+              "type": "string",
               "enum": [
                 "DOUBLE",
                 "STRING",
