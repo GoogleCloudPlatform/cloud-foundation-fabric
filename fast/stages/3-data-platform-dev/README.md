@@ -4,12 +4,12 @@ This Cloud Foundations Fabric FAST stage focuses on the creation and management 
 
 <!-- BEGIN TOC -->
 - [Design Overview \& Choices](#design-overview--choices)
-  - [Organisational Hierarchy](#organisational-hierarchy)
-  - [Data Platform Project Structure](#data-platform-project-structure)
-    - [Central Services (Project)](#central-services-project)
-  - [Data Domain](#data-domain)
-  - [Data Product](#data-product)
-- [Team and personas](#team-and-personas)
+  - [Resource Hierarchy Overview](#resource-hierarchy-overview)
+  - [Data Platform Architecture](#data-platform-architecture)
+    - [Central Services Project for Federated Governance](#central-services-project-for-federated-governance)
+    - [Data Domain Folder(s) for Domain-Driven Ownership](#data-domain-folders-for-domain-driven-ownership)
+    - [Data Product(s) for Data as a Product](#data-products-for-data-as-a-product)
+  - [Teams and Personas](#teams-and-personas)
   - [Data product owner \[dp-product-a-0@\] \[dp-product-a-0-001@\]](#data-product-owner-dp-product-a-0-dp-product-a-0-001)
   - [Data Domain owner \[dp-domain-a@\] \[dp-domain-a-001@\]](#data-domain-owner-dp-domain-a-dp-domain-a-001)
   - [Data Platform owner (Central team) \[dp-platform-0@\] \[dp-platform-0-001@\]](#data-platform-owner-central-team-dp-platform-0-dp-platform-0-001)
@@ -25,33 +25,39 @@ The Data Platform's foundation, established in this stage, provides core capabil
 
 This Data Platform implementation closely aligned with [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and builds up on established [FAST stages](./fast/stages/README.md) for crucial aspects of Google Cloud Platform implementation like resource hierarchy, networking, and security. These FAST components are considered prerequisites and fall outside the direct scope of this stage.
 
-## Project Structure
+### Resource Hierarchy Overview
 
-The solution represents the following structure:
+The following diagram shows where the Data Platform and its associated resources sit in the organisation's resource hierarchy:
 
 TODO: Add diagram
 
-### Central Services (Project)
+### Data Platform Architecture
 
-Central teams oversee and facilitate the computational governance aspects of the data mesh by providing established foundations for cross-domain data discovery, data sharing, self-service services, and governance. They reduce the operational burden for data domains in producing and consuming data products while also facilitating the cross-domain relationships required for the data mesh to operate.
+The following diagram illustrates the high-level design of Data Platform projects and resources managed by this stage:
 
-This foundations project is centrally managed and it provides core, and platform-wide capabilities such as ["Secure" Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview), [Dataplex Catalog Aspects)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata] definition and [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
+TODO: Add diagram
 
-### Data Domain
+#### Central Services Project for Federated Governance
 
-A data domain is aligned with a business unit (BU), or a function within an enterprise. Common examples of business domains might be the mortgage department in a bank, or the customer, distribution, finance, or HR departments of an enterprise.
+Standardised central capabilities are provided to foster federated governance processes. These are implemented via established foundations that enable cross-domain data discovery, data sharing, self-service functionalities, and consistent governance. A key objective of these centrally managed services is to reduce the operational burden for data domains in producing and consuming data products, while also fostering the cross-domain collaboration necessary for the data mesh to operate efficiently.
 
-Each logical Data Domain will have its own isolated GCP Folder and project. This provides a clear organizational boundary and resource separation, and can be mapped to actual lines of business.
+Managed within a dedicated "Central Services" project, these central services deliver core, platform-wide capabilities. This includes, for example, configuring ["Secure" Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview), defining templates for [Dataplex Catalog Aspect Types)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata], and enforcing data access through [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
 
-The Data domain project is the primary container for all services and resources specific to that domain. A shared  Cloud Composer environment is provisioned for orchestrating data workflows relevant to that domain. Composer will run with a dedicated IAM Service Account able to impersonate Data Product service account to guarantee the principle of least privilege.
 
-### Data Product
+#### Data Domain Folder(s) for Domain-Driven Ownership
 
-Within each Data Domain, each Data Product reside in its own dedicated GCP Project. This enforces modularity, scalability, flexibility and clear ownership.
+Another foundational principle of a data mesh architecture is domain-driven ownership. A Data Domain, in this context, typically aligns with a business unit (BU) or a distinct function within an enterprise. For instance, Data Domains could represent a bank's mortgage department, or an enterprise's customer, distribution, finance, or HR departments.
 
-Withing the project created in this stage, the exposure layer of BigQuery and Cloud Storage will be deployed assigning the conresponding secure tag created in the central project to let IAM bindings created relying on IAM conditions.
+To support this ownership model and ensure clear separation, each logical Data Domain is provisioned with its own isolated GCP folder under the Data Platform parent with its collection of dedicated Google Cloud project(s). This structure establishes a distinct organizational boundary and resource separation, directly mapping to specific lines of business.
 
-A service account will be created with the ability of handling and preparing data to be stored in the exposure layer.
+Within each Data Domain, a corresponding Google Cloud "Data Domain" project serves as the primary container for all its specific services and resources. A dedicated Cloud Composer environment is provisioned within this project for orchestrating the domain's data workflows. To adhere to the principle of least privilege, this Composer environment operates with a dedicated IAM Service Account capable of impersonating the necessary Data Product-specific service accounts within that domain.
+
+
+#### Data Product(s) for Data as a Product
+
+Each Data Product within a Data Domain (which is organized under a GCP Folder) encapsulated in its own dedicated Google Cloud Project. This seperation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
+
+For every Data Product project created, its exposure layer (e.g. specific BigQuery datasets or Cloud Storage buckets) is carefully configured and deployed. This involves assigning the relevant "Secure Tags" that were established in the central services project. Applying these tags is crucial as it allows for the implementation of precise IAM bindings based on IAM conditions, thereby ensuring fine-grained and secure data access in line with least privilige principles.
 
 ## Team and personas
 
