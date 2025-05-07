@@ -69,7 +69,7 @@ resource "google_alloydb_cluster" "primary" {
 
   # network_config block should exist only when PSA VPC resource link is present to prevent Terraform state drift
   dynamic "network_config" {
-    for_each = var.network_config.psa_config.network != null ? [""] : []
+    for_each = var.network_config.psa_config != null ? [""] : []
     content {
       network            = var.network_config.psa_config.network
       allocated_ip_range = var.network_config.psa_config.allocated_ip_range
@@ -260,7 +260,7 @@ resource "google_alloydb_cluster" "secondary" {
 
   # network_config block should exist only when PSA VPC resource link is present to prevent Terraform state drift
   dynamic "network_config" {
-    for_each = var.network_config.psa_config.network != null ? [""] : []
+    for_each = var.network_config.psa_config != null ? [""] : []
     content {
       network            = var.network_config.psa_config.network
       allocated_ip_range = var.network_config.psa_config.allocated_ip_range
