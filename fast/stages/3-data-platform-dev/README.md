@@ -1,17 +1,23 @@
 # Data Platform
 
-This stage allows creation and management of a Data Platform, which enables the implementation of a reliable, robust, and scalable environment to support the onboarding of new data products (or data workloads) over time.
+This stage focuses on the creation and management of an opinionated Data Platform architecture based on Google Cloud best practices. Its architecture is designed to be reliable, robust, and scalable, facilitating the continuous onboarding of new Data Products (or data workloads).
 
-The code provided here sets up the foundational design and centralizes sharing patterns for data, leaving the specifics of data handling, computation, and processing to the individual data products.
+The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
 
-This solution implements the [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and relies on the higher level FAST stages for the resource hierarchy, networking, and security. It's also possible to run this stage in isolation by providing it the required prerequisites.
+Our implementation is closely aligned with [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and builds up on established [FAST stages](./fast/stages/README.md) for crucial aspects of Google Cloud Platform implementation like resource hierarchy, networking, and security. These FAST components are considered prerequisites and fall outside the direct scope of this stage. It's also possible to run this stage in isolation by providing it the required prerequisites.
 
 <!-- BEGIN TOC -->
-- [Project Structure](#project-structure)
-  - [Central Shared Services](#central-shared-services)
-  - [Data Domains](#data-domains)
-  - [Data Products](#data-products)
-- [Teams and personas](#teams-and-personas)
+- [Design Overview & Choices](#design-overview-choices)
+  - [Resource Hierarchy Overview](#resource-hierarchy-overview)
+  - [Data Platform Architecture](#data-platform-architecture)
+  - [Folder & Project Structure](#folder-project-structure)
+    - [Shared Services (Federated Governance)](#shared-services-federated-governance)
+    - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
+    - [3. Data Products (DaaP)](#3-data-products-daap)
+  - [Teams and personas](#teams-and-personas)
+    - [Central Data Platform Team](#central-data-platform-team)
+    - [Data Domain Teams](#data-domain-teams)
+    - [Data Product Teams](#data-product-teams)
 - [Configuration](#configuration)
   - [FAST prerequisites](#fast-prerequisites)
   - [Stage Variables](#stage-variables)
@@ -22,54 +28,79 @@ This solution implements the [Data Mesh principles on Google Cloud Platform](htt
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-## Project Structure
+## Design Overview & Choices
 
-The stage manages three separate high level components:
+### Resource Hierarchy Overview
 
-- a central project, where aspect types, policy tags, and resource manager tags are defined
-- one or more data domains, each composed of a folder, a project hosting resources shared at the product level (Composer), and a folder hosting data products
-- one or more data products per domain, each composed of a project, and optional exposed resources
+The following diagram shows where the Data Platform and its associated projects sit within the organization's resource hierarchy:
 
-The platform high level approach is represented in the following diagram:
+TODO: Add diagram
+
+### Data Platform Architecture
+
+The following diagram represent the high-level architecture of the Data Platform related projects and their associated resources managed by this stage:
 
 <p align="center">
   <img src="diagram.png" alt="High level diagram.">
 </p>
 
-### Central Shared Services
+### Folder & Project Structure
 
-Central teams manage the data mesh by providing cross-domain oversight, services, and governance. They reduce the operational burden for data domains in producing and consuming data products, and facilitate the cross-domain relationships that are required for the data mesh to operate.
+The stage manages the following three high-level logical components implemented via GCP folders and projects:
 
-A central project is created to host resources managed by the central team, which provide core and platform-wide capabilities such as Secure Tags, [Dataplex Catalog aspects)[https://cloud.google.com/dataplex/docs/enrich-entries-metadata], and [Policy tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
+- "central shared services", a single central project, in which Dataplex Catalog Aspect Types, Policy Tags, and Resource Manager tags a.k.a. "Secure Tags" are defined
+- one or more "data domains", each composed of a folder containing a project hosting shared resources at the domain level e.g. Composer, and a folder for hosting data products
+- one or more "data products" per domain, each composed of a project, and related resources that are optional*
 
-### Data Domains
+#### Shared Services (Federated Governance)
 
-Data Domains are usually aligned with business or functional units within an enterprise. Common examples of business domains might be the mortgage department in a bank, or the customer, distribution, finance, or HR departments of an enterprise.
+Central Shared Services Project provides the standardized central capabilities to foster federated governance processes. These are implemented via established foundations that enable cross-domain data discovery, data sharing, self-service functionalities, and consistent governance. A key objective of these centrally managed services is to reduce the operational burden for data domains in producing and consuming data products, while also fostering the cross-domain collaboration necessary for the data mesh to operate efficiently.
 
-Data Domain creation is centrally managed by this stage, with a dedicated folder sub-hierarchy and project for each logical domain. This provides a clear organizational boundary and allows for IAM and resource separation, which usually maps to an actual line of business.
+Managed within a dedicated "Central Services" project, these shared services deliver core, platform-wide capabilities. This includes, for example, configuring ["Secure Tags"](https://cloud.google.com/resource-manager/docs/tags/tags-overview), defining templates for [Dataplex Catalog Aspect Types](https://cloud.google.com/dataplex/docs/enrich-entries-metadata), and enforcing data access through [Policy Tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
 
-A dedicated Data Domain project is created as the primary container for all services and resources specific to each domain. A shared  Cloud Composer environment is also created to orchestrate domain-specific workflows, and provided by default with access to the domain's Data Products via impersonation.
+#### Data Domains (Domain-Driven Ownership)
 
-### Data Products
+Another foundational principle of a data mesh architecture is domain-driven ownership. A Data Domain, in this context, typically aligns with a business unit (BU) or a distinct function within an enterprise. For instance, Data Domains could represent a bank's mortgage department, or an enterprise's customer, distribution, finance, or HR departments.
 
-One or more Data Products can be mapped to each Data Domain. A dedicated project is created for each product in its domain's hierarchy, enforcing modularity, scalability, flexibility and clear ownership boundaries.
+To support this ownership model and ensure clear separation, each logical Data Domain is provisioned with its own isolated GCP folder under the Data Platform parent with its collection of dedicated Google Cloud project(s). This structure establishes a distinct organizational boundary and resource separation, directly mapping to specific lines of business.
 
-The per-product BigQuery and Cloud Storage exposure layers can then be deployed in each project, by binding the centrally managed secure tags connected to platform-level IAM bindings.
+Within each Data Domain, a corresponding Google Cloud "Data Domain" project serves as the primary container for all its specific services and resources. A dedicated Cloud Composer environment is provisioned within this project for orchestrating the domain's data workflows. To adhere to the principle of least privilege, this Composer environment operates with a dedicated IAM Service Account capable of impersonating the necessary Data Product-specific service accounts within that domain.
 
-## Teams and personas
+#### 3. Data Products (DaaP)
 
-Clear operational role profiles must be defined for a data mesh to operate well, with each profile mapping to a team archetype or function. These profiles implement the core user journeys for each data mesh actor. This stage comes with three predefined profiles, which are meant as a starting example open to customizations.
+Each Data Product within a Data Domain (which is organized under a GCP Folder) encapsulated in its own dedicated Google Cloud Project. This separation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
+
+For every Data Product project created, its exposure layer (e.g. specific BigQuery datasets or Cloud Storage buckets) is carefully configured and deployed. This involves assigning the relevant "Secure Tags" that were established in the central Shared Services project. Applying these tags is crucial as it allows for the implementation of precise IAM bindings based on IAM conditions, thereby ensuring fine-grained and secure data access in line with least privilege principles.
+
+### Teams and Personas
+
+Effective data mesh operation relies on well-defined roles and responsibilities. Ownership is typically assigned to team archetypes, also referred to as functions. These functions represent the core user journeys of individual roles interacting with the data mesh. To clearly describe these journeys, specific user roles are defined within these functions. These user roles can be split or combined bases on specific needs and the scale of each enterprise.
 
 > TODO: add folder/project roles
 
-The three main functions identified here are:
+This stage comes with three predefined role profiles, which are meant as a starting example open to customizations:
 
-- **Central data team**
-  Defines and enforces the data platform structure and data governance policies among data producers, ensuring high data quality and data trustworthiness for consumers. This team is often referred to as the Data Governance team.
-- **Data domain teams**
-  Aligned with specific business domains, these teams are responsible for creating and maintaining data products over their lifecycle. This includes defining the data product's purpose, scope, and boundaries, developing and maintaining a product roadmap, implementing data security measures, ensuring compliance, and monitoring usage and performance.
-- **Data Product teams**
-  Aligned with a specific data products, these teams are responsible for developing, operating and maintaing the data product.
+#### Central Data Platform Team
+
+This function defines the overall data platform architecture, establishes shared infrastructure, and enforces central data governance policies and standards across the data mesh. It enables data producers with tools, paved path solutions and best practices, ensuring high data quality, security, and trustworthiness for consumers. Its focus is on providing the foundations of a self-serve data platform as well as universal governance standards for all users. The Central Data Platform team often works in collaboration with the Data Governance functions within enterprises.
+
+TODO: Add roles on project/folder
+
+#### Data Domain Teams
+
+Aligned with specific business areas (e.g., customer, finance, distribution), this function holds clearly defined ownership of data within that domain. Key responsibilities include establishing and upholding a data product's purpose, scope, and boundaries. This is achieved through ongoing activities such as:
+- Creating and maintaining its domain-wide data product roadmap.
+- Implementing robust data security measures.
+- Ensuring adherence to all relevant compliance obligations.
+- Continuously monitoring usage and performance.
+
+TODO: Add roles on project/folder
+
+#### Data Product Teams
+
+This function is responsible for the end-to-end lifecycle of a specific data product. Data Product Teams (which may be part of or work closely with a Data Domain Team) develop, operate, and maintain their assigned data product. Their tasks include defining the data product's schema and interfaces, implementing data ingestion and transformation pipelines, ensuring data quality and security for their product, managing its roadmap, and supporting its data consumers.
+
+TODO: Add roles on project/folder
 
 ## Configuration
 
@@ -138,7 +169,7 @@ Once the two above configurations are in place, apply the resource management,  
 The default data files provided as an example makes a few assumptions that needs to be matched by corresponding variables configured for the stage:
 
 - the `location` variable needs to be explicitly configured, as it's used as a default location for buckets, datasets, and Composer; locations can be individually overridden but a default needs to be in place
-- the domain `deploy_config.composer.node_config.subnetwork` attribute neeeds to match the location defined above; Composer network and subnetwork use interpolation from FAST networking outputs, explicit IDs can be used instead if needed
+- the domain `deploy_config.composer.node_config.subnetwork` attribute needs to match the location defined above; Composer network and subnetwork use interpolation from FAST networking outputs, explicit IDs can be used instead if needed
 - IAM roles for the domain and product refer to generic `dp-product-a-0` and `data-consumer-bi` groups, these need to be defined via the `factories_config.context.iam_principals` variable, or changed to explicit IAM principals (e.g. `group:foo@example.com`)
 
 ### Data Domain and Product Data Files
