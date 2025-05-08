@@ -180,7 +180,7 @@ module "dd-projects-iam" {
   )
   iam_by_principals = {
     for k, v in each.value.project_config.iam_by_principals :
-    lookup(var.factories_config.context.iam_by_principals, k, k) => v
+    lookup(var.factories_config.context.iam_principals, k, k) => v
   }
   shared_vpc_service_config = (
     each.value.project_config.shared_vpc_service_config == null
