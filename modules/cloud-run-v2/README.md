@@ -10,6 +10,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 - [Direct VPC Egress](#direct-vpc-egress)
 - [VPC Access Connector](#vpc-access-connector)
 - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
+- [Deploying OpenTelemetry Collector sidecar](#deploying-opentelemetry-collector-sidecar)
 - [Eventarc triggers](#eventarc-triggers)
   - [PubSub](#pubsub)
   - [Audit logs](#audit-logs)
