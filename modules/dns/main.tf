@@ -22,7 +22,10 @@ locals {
   # split record name and type and set as keys in a map
   _recordsets_0 = {
     for key, attrs in var.recordsets :
-    key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
+    key => merge(attrs, {
+      name = try(split(" ", key)[1], "")
+      type = split(" ", key)[0]
+    })
   }
   # compute the final resource name for the recordset
   recordsets = {

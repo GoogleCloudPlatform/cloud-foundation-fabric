@@ -69,13 +69,6 @@ variable "recordsets" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in coalesce(var.recordsets, {}) :
-      length(split(" ", k)) == 2
-    ])
-    error_message = "Recordsets must have keys in the format \"type name\"."
-  }
-  validation {
-    condition = alltrue([
       for k, v in coalesce(var.recordsets, {}) : (
         (v.records != null && v.wrr_routing == null && v.geo_routing == null) ||
         (v.records == null && v.wrr_routing != null && v.geo_routing == null) ||
