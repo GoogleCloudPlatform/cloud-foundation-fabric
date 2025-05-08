@@ -27,26 +27,26 @@ locals {
       try(v.spec.resources, []),
       [
         for k, v in local.ingress_policies : [
-          try(v.from.resources),
-          try(v.to.resources)
+          try(v.from.resources, []),
+          try(v.to.resources, [])
         ]
       ],
       [
         for k, v in local.egress_policies : [
-          try(v.from.resources),
-          try(v.to.resources)
+          try(v.from.resources, []),
+          try(v.to.resources, [])
         ]
       ],
     ]
   ]))
-  _project_ids = toset([
+  _project_ids = [
     for x in local._all_project_identifiers :
-    x
+    trimprefix(x, "projects/")
     if can(regex("^projects/[a-z]+", x))
-  ])
+  ]
   project_number = {
-    for k, v in data.google_project.project :
-    k => "projects/${v.number}"
+    for x in data.google_cloud_asset_search_all_resources.projects.results :
+    (trimprefix(x.name, "//cloudresourcemanager.googleapis.com/")) => x.project
   }
 }
 
@@ -57,7 +57,26 @@ resource "google_access_context_manager_access_policy" "default" {
   scopes = var.access_policy_create.scopes
 }
 
-data "google_project" "project" {
-  for_each   = local._project_ids
-  project_id = trimprefix(each.value, "projects/")
+locals {
+
+  cai_query = join(" OR ",
+    formatlist("\"//cloudresourcemanager.googleapis.com/projects/%s\"", local._project_ids)
+  )
+}
+
+data "google_cloud_asset_search_all_resources" "projects" {
+  scope = "organizations/529325294915"
+  asset_types = [
+    "cloudresourcemanager.googleapis.com/Project"
+  ]
+  query = "name=${local.cai_query}"
+}
+
+output "cai" {
+  value = {
+    # cai_query      = local.cai_query
+    # pid            = local._project_ids
+    # result         = data.google_cloud_asset_search_all_resources.projects
+    project_number = local.project_number
+  }
 }
