@@ -14,7 +14,7 @@ Our implementation is closely aligned with [Data Mesh principles on Google Cloud
     - [Shared Services (Federated Governance)](#shared-services-federated-governance)
     - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
     - [3. Data Products (DaaP)](#3-data-products-daap)
-  - [Teams and personas](#teams-and-personas)
+  - [Teams and Personas](#teams-and-personas)
     - [Central Data Platform Team](#central-data-platform-team)
     - [Data Domain Teams](#data-domain-teams)
     - [Data Product Teams](#data-product-teams)
