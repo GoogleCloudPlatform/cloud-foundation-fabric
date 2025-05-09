@@ -25,7 +25,11 @@ locals {
       local._project_ids
     )
   )
-  do_cai_query = var.project_id_search_scope != null && length(local._project_ids) > 0
+  do_cai_query = (
+    var.project_id_search_scope == null
+    ? false
+    : length(local._project_ids) > 0
+  )
 
   # collect project ids and convert them to numbers
   _all_project_identifiers = distinct(flatten([

@@ -90,7 +90,7 @@ values:
           resources:
           - '*'
           roles: null
-        title: '0'
+        title: sa-tf-test
       - ingress_from:
         - identities:
           - serviceAccount:test-tf-2@myproject.iam.gserviceaccount.com
@@ -106,7 +106,7 @@ values:
           - '*'
           roles:
           - roles/storage.objectViewer
-        title: '1'
+        title: sa-roles
       resources:
       - projects/1111
       - projects/2222
