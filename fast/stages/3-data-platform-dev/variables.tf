@@ -77,6 +77,11 @@ variable "central_project_config" {
       "storage.googleapis.com",
     ])
     short_name = optional(string, "central-0")
+    policy_tags = optional(map(any), {
+      low    = {}
+      medium = {}
+      high   = {}
+    })
   })
   nullable = false
   default  = {}
