@@ -250,3 +250,9 @@ variable "perimeters" {
   default  = {}
   nullable = false
 }
+
+variable "project_id_search_scope" {
+  description = "Set this to an organization or folder ID to use Cloud Asset Inventory to automatically translate project ids to numbers."
+  type        = string
+  default     = null
+}

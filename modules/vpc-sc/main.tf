@@ -19,6 +19,13 @@ locals {
     google_access_context_manager_access_policy.default[0].name,
     var.access_policy
   )
+  cai_query = join(" OR ",
+    formatlist(
+      "\"//cloudresourcemanager.googleapis.com/projects/%s\"",
+      local._project_ids
+    )
+  )
+  do_cai_query = var.project_id_search_scope != null && length(local._project_ids) > 0
 
   # collect project ids and convert them to numbers
   _all_project_identifiers = distinct(flatten([
@@ -26,15 +33,15 @@ locals {
       try(v.status.resources, []),
       try(v.spec.resources, []),
       [
-        for k, v in local.ingress_policies : [
-          try(v.from.resources, []),
-          try(v.to.resources, [])
+        for _, vv in local.ingress_policies : [
+          try(vv.from.resources, []),
+          try(vv.to.resources, [])
         ]
       ],
       [
-        for k, v in local.egress_policies : [
-          try(v.from.resources, []),
-          try(v.to.resources, [])
+        for _, vv in local.egress_policies : [
+          try(vv.from.resources, []),
+          try(vv.to.resources, [])
         ]
       ],
     ]
@@ -42,12 +49,15 @@ locals {
   _project_ids = [
     for x in local._all_project_identifiers :
     trimprefix(x, "projects/")
-    if can(regex("^projects/[a-z]+", x))
+    if can(regex("^projects/[a-z]", x))
   ]
-  project_number = {
-    for x in data.google_cloud_asset_search_all_resources.projects.results :
-    (trimprefix(x.name, "//cloudresourcemanager.googleapis.com/")) => x.project
-  }
+  project_number = (local.do_cai_query
+    ? {
+      for x in data.google_cloud_asset_search_all_resources.projects[0].results :
+      (trimprefix(x.name, "//cloudresourcemanager.googleapis.com/")) => x.project
+    }
+    : {}
+  )
 }
 
 resource "google_access_context_manager_access_policy" "default" {
@@ -57,26 +67,11 @@ resource "google_access_context_manager_access_policy" "default" {
   scopes = var.access_policy_create.scopes
 }
 
-locals {
-
-  cai_query = join(" OR ",
-    formatlist("\"//cloudresourcemanager.googleapis.com/projects/%s\"", local._project_ids)
-  )
-}
-
 data "google_cloud_asset_search_all_resources" "projects" {
-  scope = "organizations/529325294915"
+  count = local.do_cai_query ? 1 : 0
+  scope = var.project_id_search_scope
   asset_types = [
     "cloudresourcemanager.googleapis.com/Project"
   ]
   query = "name=${local.cai_query}"
-}
-
-output "cai" {
-  value = {
-    # cai_query      = local.cai_query
-    # pid            = local._project_ids
-    # result         = data.google_cloud_asset_search_all_resources.projects
-    project_number = local.project_number
-  }
 }

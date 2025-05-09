@@ -13,6 +13,7 @@ If you are using [Application Default Credentials](https://cloud.google.com/sdk/
     - [Access policy IAM](#access-policy-iam)
   - [Access levels](#access-levels)
   - [Perimeters](#perimeters)
+- [Automatic Project ID to Project Number Conversion](#automatic-project-id-to-project-number-conversion)
 - [Factories](#factories)
 - [Notes](#notes)
 - [Files](#files)
@@ -192,13 +193,56 @@ module "test" {
 # tftest modules=1 resources=3 inventory=regular.yaml
 ```
 
+## Automatic Project ID to Project Number Conversion
+
+As a convenience, this module can optionally convert project IDs to project numbers. Set `var.project_id_search_scope` to a folder or organization ID to define the search scope.
+
+The caller must have `cloudasset.assets.searchAllResources` permission to perform the search. Roles like `roles/accesscontextmanager.policyAdmin`, `roles/cloudasset.viewer`, or `roles/viewer` grant this.
+
+```hcl
+module "vpc-sc" {
+  source                  = "./fabric/modules/vpc-sc"
+  project_id_search_scope = var.org_id
+
+  access_policy = "12345678"
+  ingress_policies = {
+    i1 = {
+      from = {
+        identities = [
+          "serviceAccount:foo@myproject.iam.gserviceaccount.com"
+        ]
+        resources = ["projects/my-source-project"]
+      }
+      to = {
+        operations = [{
+          method_selectors = ["*"]
+          service_name     = "storage.googleapis.com"
+        }]
+        resources = ["projects/my-destionation-project"]
+      }
+    }
+  }
+
+  perimeters = {
+    p = {
+      spec = {
+        ingress_policies = ["i1"]
+        resources        = ["projects/my-destionation-project"]
+      }
+      use_explicit_dry_run_spec = true
+    }
+  }
+}
+# tftest skip because uses data sources
+```
+
 ## Factories
 
 This module implements support for four distinct factories, used to create and manage perimeters, access levels, egress policies, and ingress policies via YAML files.
 
 JSON Schema files for each factory object are available in the [`schemas`](./schemas/) folder, and can be used to validate input YAML data with [`validate-yaml`](https://github.com/gerald1248/validate-yaml) or any of the available tools and libraries.
 
-Note that the factory configuration points to folders, where each file represents one resource.
+3Note that the factory configuration points to folders, where each file represents one resource.
 
 ```hcl
 module "test" {
@@ -362,6 +406,7 @@ to:
 | [iam_bindings_additive](variables.tf#L164) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_policies](variables.tf#L179) | Ingress policy definitions that can be referenced in perimeters. | <code title="map&#40;object&#40;&#123;&#10;  title &#61; optional&#40;string&#41;&#10;  from &#61; object&#40;&#123;&#10;    access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      permission_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name         &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources &#61; optional&#40;list&#40;string&#41;&#41;&#10;    roles     &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [perimeters](variables.tf#L221) | Regular service perimeters. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  title       &#61; optional&#40;string&#41;&#10;  spec &#61; optional&#40;object&#40;&#123;&#10;    access_levels       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    egress_policies     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    ingress_policies    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    restricted_services &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources           &#61; optional&#40;list&#40;string&#41;&#41;&#10;    vpc_accessible_services &#61; optional&#40;object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  status &#61; optional&#40;object&#40;&#123;&#10;    access_levels       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    egress_policies     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    ingress_policies    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources           &#61; optional&#40;list&#40;string&#41;&#41;&#10;    restricted_services &#61; optional&#40;list&#40;string&#41;&#41;&#10;    vpc_accessible_services &#61; optional&#40;object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  use_explicit_dry_run_spec &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id_search_scope](variables.tf#L254) | Set this to an organization or folder ID to use Cloud Asset Inventory to automatically translate project ids to numbers. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
