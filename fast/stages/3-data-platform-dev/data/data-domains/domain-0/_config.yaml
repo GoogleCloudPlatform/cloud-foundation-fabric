@@ -24,7 +24,8 @@ automation:
 deploy_config:
   composer:
     {}
-    # # region defaults to var.location
+    # Uncomment for VPC Network Connectivity
+    # region defaults to var.location
     # node_config:
     #   network: dev-spoke-0
     #   subnetwork: europe-west8/dev-dataplatform
