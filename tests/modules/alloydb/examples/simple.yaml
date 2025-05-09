@@ -30,14 +30,13 @@ values:
     labels: null
     location: europe-west8
     maintenance_update_policy: []
-    network_config:
-    - allocated_ip_range: null
     project: test-alloydb
-    psc_config:
-    - psc_enabled: null
+    psc_config: []
     restore_backup_source: []
     restore_continuous_backup_source: []
     secondary_config: []
+    skip_await_major_version_upgrade: true
+    subscription_type: STANDARD
     timeouts: null
   module.alloydb.google_alloydb_instance.primary:
     annotations: null
@@ -49,9 +48,6 @@ values:
     labels: null
     machine_config:
     - cpu_count: 2
-    network_config:
-    - authorized_external_networks: []
-      enable_public_ip: false
     query_insights_config:
     - query_plans_per_minute: 5
       query_string_length: 1024
