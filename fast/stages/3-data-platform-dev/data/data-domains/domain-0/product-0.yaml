@@ -15,6 +15,7 @@
 # yaml-language-server: $schema=../../../schemas/data-product.schema.json
 
 short_name: p0
+
 services:
   - bigquery.googleapis.com
   - cloudaicompanion.googleapis.com
@@ -24,9 +25,11 @@ services:
   - dataplex.googleapis.com
   - datalineage.googleapis.com
   - storage.googleapis.com
+
 automation:
   impersonation_principals:
     - dp-product-a-0
+
 exposure_layer:
   bigquery:
     datasets:
@@ -40,6 +43,9 @@ exposure_layer:
     iam:
       "roles/storage.objectViewer":
         - data-consumer-bi
+      "roles/storage.bucketViewer":
+        - data-consumer-bi
+
 iam_by_principals:
   rw:
     - roles/editor
@@ -65,14 +71,7 @@ iam_by_principals:
     - "roles/iam.serviceAccountUser"
     - "roles/storage.bucketViewer"
     - "roles/storage.objectAdmin"
-# iam_bindings_additive:
-#   test-tag:
-#     member: rw
-#     role: roles/storage.objectViewer
-#     condition:
-#       title: Storage viewer on exposed resources.
-#       expression: |
-#         resource.matchTag('${tag_values["exposure/allow"]}')
+
 service_accounts:
   processing:
     description: Processing service account.

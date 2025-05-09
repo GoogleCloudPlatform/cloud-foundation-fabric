@@ -21,13 +21,13 @@
 # google_access_context_manager_service_perimeters resource
 
 locals {
-  egress_policies    = merge(local.data.egress_policies, var.egress_policies)
-  ingress_policies   = merge(local.data.ingress_policies, var.ingress_policies)
-  regular_perimeters = merge(local.data.perimeters, var.service_perimeters_regular)
+  egress_policies  = merge(local.data.egress_policies, var.egress_policies)
+  ingress_policies = merge(local.data.ingress_policies, var.ingress_policies)
+  perimeters       = merge(local.data.perimeters, var.perimeters)
 }
 
 resource "google_access_context_manager_service_perimeter" "regular" {
-  for_each                  = local.regular_perimeters
+  for_each                  = local.perimeters
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   description               = each.value.description
@@ -45,8 +45,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         ]
       )
       resources = flatten([
-        for r in spec.value.resources :
-        lookup(var.factories_config.context.resource_sets, r, [r])
+        for r in spec.value.resources : try(
+          var.factories_config.context.resource_sets[r],
+          [local.project_number[r]], [r]
+        )
       ])
       restricted_services = flatten([
         for r in coalesce(spec.value.restricted_services, []) :
@@ -54,13 +56,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       ])
 
       dynamic "egress_policies" {
-        for_each = spec.value.egress_policies == null ? {} : {
+        for_each = spec.value.egress_policies == null ? [] : [
           for k in spec.value.egress_policies :
-          k => local.egress_policies[k]
-        }
+          merge(local.egress_policies[k], { key = k })
+        ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.key)
+          title = coalesce(policy.value.title, policy.value.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -86,8 +88,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               }
               dynamic "sources" {
                 for_each = flatten([
-                  for r in policy.value.from.resources :
-                  lookup(var.factories_config.context.resource_sets, r, [r])
+                  for r in policy.value.from.resources : try(
+                    var.factories_config.context.resource_sets[r],
+                    [local.project_number[r]], [r]
+                  )
                 ])
                 iterator = resource
                 content {
@@ -101,8 +105,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               external_resources = policy.value.to.external_resources
               resources = flatten([
-                for r in policy.value.to.resources :
-                lookup(var.factories_config.context.resource_sets, r, [r])
+                for r in policy.value.to.resources : try(
+                  var.factories_config.context.resource_sets[r],
+                  [local.project_number[r]], [r]
+                )
               ])
 
               roles = policy.value.to.roles
@@ -131,13 +137,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "ingress_policies" {
-        for_each = spec.value.ingress_policies == null ? {} : {
+        for_each = spec.value.ingress_policies == null ? [] : [
           for k in spec.value.ingress_policies :
-          k => local.ingress_policies[k]
-        }
+          merge(local.ingress_policies[k], { key = k })
+        ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.key)
+          title = coalesce(policy.value.title, policy.value.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -157,8 +163,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               }
               dynamic "sources" {
                 for_each = flatten([
-                  for r in policy.value.from.resources :
-                  lookup(var.factories_config.context.resource_sets, r, [r])
+                  for r in policy.value.from.resources : try(
+                    var.factories_config.context.resource_sets[r],
+                    [local.project_number[r]], [r]
+                  )
                 ])
                 content {
                   resource = sources.value
@@ -170,8 +178,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = flatten([
-                for r in policy.value.to.resources :
-                lookup(var.factories_config.context.resource_sets, r, [r])
+                for r in policy.value.to.resources : try(
+                  var.factories_config.context.resource_sets[r],
+                  [local.project_number[r]], [r]
+                )
               ])
               roles = policy.value.to.roles
               dynamic "operations" {
@@ -199,7 +209,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "vpc_accessible_services" {
-        for_each = spec.value.vpc_accessible_services == null ? {} : { 1 = 1 }
+        for_each = spec.value.vpc_accessible_services == null ? [] : [""]
         content {
           allowed_services = flatten([
             for r in spec.value.vpc_accessible_services.allowed_services :
@@ -222,8 +232,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         ]
       )
       resources = flatten([
-        for r in status.value.resources :
-        lookup(var.factories_config.context.resource_sets, r, [r])
+        for r in status.value.resources : try(
+          var.factories_config.context.resource_sets[r],
+          [local.project_number[r]], [r]
+        )
       ])
       restricted_services = flatten([
         for r in coalesce(status.value.restricted_services, []) :
@@ -231,13 +243,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       ])
 
       dynamic "egress_policies" {
-        for_each = status.value.egress_policies == null ? {} : {
+        for_each = status.value.egress_policies == null ? [] : [
           for k in status.value.egress_policies :
-          k => local.egress_policies[k]
-        }
+          merge(local.egress_policies[k], { key = k })
+        ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.key)
+          title = coalesce(policy.value.title, policy.value.key)
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -263,8 +275,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               }
               dynamic "sources" {
                 for_each = flatten([
-                  for r in policy.value.from.resources :
-                  lookup(var.factories_config.context.resource_sets, r, [r])
+                  for r in policy.value.from.resources : try(
+                    var.factories_config.context.resource_sets[r],
+                    [local.project_number[r]], [r]
+                  )
                 ])
                 iterator = resource
                 content {
@@ -304,13 +318,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "ingress_policies" {
-        for_each = status.value.ingress_policies == null ? {} : {
+        for_each = status.value.ingress_policies == null ? [] : [
           for k in status.value.ingress_policies :
-          k => local.ingress_policies[k]
-        }
+          merge(local.ingress_policies[k], { key = k })
+        ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.key)
+          title = coalesce(policy.value.title, policy.value.key)
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -331,8 +345,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               }
               dynamic "sources" {
                 for_each = flatten([
-                  for r in policy.value.from.resources :
-                  lookup(var.factories_config.context.resource_sets, r, [r])
+                  for r in policy.value.from.resources : try(
+                    var.factories_config.context.resource_sets[r],
+                    [local.project_number[r]], [r]
+                  )
                 ])
                 content {
                   resource = sources.value
@@ -344,8 +360,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             for_each = policy.value.to == null ? [] : [""]
             content {
               resources = flatten([
-                for r in policy.value.to.resources :
-                lookup(var.factories_config.context.resource_sets, r, [r])
+                for r in policy.value.to.resources : try(
+                  var.factories_config.context.resource_sets[r],
+                  [local.project_number[r]], [r]
+                )
               ])
               roles = policy.value.to.roles
               dynamic "operations" {
@@ -373,7 +391,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "vpc_accessible_services" {
-        for_each = status.value.vpc_accessible_services == null ? {} : { 1 = 1 }
+        for_each = status.value.vpc_accessible_services == null ? [] : [""]
         content {
           allowed_services = flatten([
             for r in status.value.vpc_accessible_services.allowed_services :

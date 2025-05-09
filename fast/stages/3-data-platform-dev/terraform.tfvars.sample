@@ -1,0 +1,42 @@
+central_project_config = {
+  iam_by_principals = {
+    "group:dp-platform-0@example.com" = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquerydatapolicy.admin",
+      "roles/datacatalog.tagTemplateOwner",
+      "roles/datacatalog.categoryAdmin",
+      "roles/datacatalog.entryGroupOwner",
+      "roles/datacatalog.glossaryOwner",
+      "roles/dataplex.admin",
+      "roles/dataplex.aspectTypeOwner"
+    ]
+    "group:dp-domain-a@example.com" = [
+      "roles/datacatalog.tagTemplateUser",
+      "roles/datacatalog.tagTemplateViewer",
+      "roles/datacatalog.entryViewer",
+      "roles/datacatalog.glossaryUser",
+      "roles/dataplex.aspectTypeUser"
+    ]
+    "group:dp-product-a-0@example.com" = [
+      "roles/datacatalog.tagTemplateUser",
+      "roles/datacatalog.tagTemplateViewer",
+      "roles/datacatalog.categoryAdmin",
+      "roles/datacatalog.entryViewer",
+      "roles/datacatalog.glossaryUser",
+      "roles/dataplex.aspectTypeUser"
+    ]
+  }
+}
+
+factories_config = {
+  context = {
+    iam_principals = {
+      data-consumer-bi = "group:data-consumer-bi@example.com"
+      dp-product-a-0   = "group:dp-product-a-0@example.com"
+      dp-domain-a      = "group:dp-domain-a@example.com"
+      dp-platform      = "group:dp-platform-0@example.com"
+    }
+  }
+  aspect_types = "data/aspect-types"
+  data_domains = "data/data-domains"
+}

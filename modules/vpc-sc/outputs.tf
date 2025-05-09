@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,12 +44,7 @@ output "id" {
   value       = local.access_policy
 }
 
-output "service_perimeters_bridge" {
-  description = "Bridge service perimeter resources."
-  value       = google_access_context_manager_service_perimeter.bridge
-}
-
-output "service_perimeters_regular" {
+output "perimeters" {
   description = "Regular service perimeter resources."
   value       = google_access_context_manager_service_perimeter.regular
 }

@@ -20,10 +20,6 @@ locals {
       { region = var.location, short_name = v.short_name },
       try(v.deploy_config.composer, {})
     )
-    if(
-      try(v.deploy_config.composer.node_config.network, null) != null &&
-      try(v.deploy_config.composer.node_config.subnetwork, null) != null
-    )
   }
   dd_composer_keys = {
     for k, v in local.dd_composer : k => try(
@@ -74,12 +70,12 @@ resource "google_composer_environment" "default" {
       network = try(
         var.vpc_self_links[each.value.node_config.network],
         each.value.node_config.network,
-        "-"
+        null
       )
       subnetwork = try(
         var.subnet_self_links[each.value.node_config.network][each.value.node_config.subnetwork],
         each.value.node_config.subnetwork,
-        "-"
+        null
       )
     }
     software_config {

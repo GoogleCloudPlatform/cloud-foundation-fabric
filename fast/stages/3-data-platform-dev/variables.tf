@@ -73,7 +73,8 @@ variable "central_project_config" {
       "bigquery.googleapis.com",
       "datacatalog.googleapis.com",
       "logging.googleapis.com",
-      "monitoring.googleapis.com"
+      "monitoring.googleapis.com",
+      "storage.googleapis.com",
     ])
     short_name = optional(string, "central-0")
   })
