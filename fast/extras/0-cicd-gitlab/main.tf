@@ -28,6 +28,8 @@ locals {
         ] : []),
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f],
         [for f in fileset(path.module, "${v.populate_from}/templates/*.tpl") : f],
+        [for f in fileset(path.module, "${v.populate_from}/templates/*.yaml") : f],
+        [for f in fileset(path.module, "${v.populate_from}/schemas/*.json") : f],
         [for f in fileset(path.module, "${v.populate_from}/terraform.tfvars") : f]
         ) : {
         project = k
