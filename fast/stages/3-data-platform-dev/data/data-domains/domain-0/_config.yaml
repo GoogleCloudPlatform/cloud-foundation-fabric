@@ -23,11 +23,12 @@ automation:
 
 deploy_config:
   composer:
+    {}
+    # Uncomment for VPC Network Connectivity
     # region defaults to var.location
-    # encryption_key: composer-dev-europe-west8
-    node_config:
-      network: dev-spoke-0
-      subnetwork: europe-west8/dev-dataplatform
+    # node_config:
+    #   network: dev-spoke-0
+    #   subnetwork: europe-west8/dev-dataplatform
 
 project_config:
   iam:
@@ -37,8 +38,16 @@ project_config:
       - ro
     roles/composer.environmentAndStorageObjectAdmin:
       - dp-product-a-0
-    roles/monitoring.viewer:
-      - dp-product-a-0
+  iam_by_principals:
+    dp-product-a-0:
+      - roles/composer.environmentAndStorageObjectAdmin
+      - roles/monitoring.viewer
+      - roles/logging.viewer
+    dp-domain-a:
+      - roles/composer.environmentAndStorageObjectAdmin
+      - roles/monitoring.viewer
+      - roles/logging.viewer
+
   services:
     - composer.googleapis.com
     - datacatalog.googleapis.com
@@ -55,14 +64,16 @@ folder_config:
     bigquery_metadata_viewer:
       members:
         - data-consumer-bi
-      role: roles/dataplex.catalogViewer #roles/bigquery.metadataViewer
+      role: roles/bigquery.metadataViewer
       condition:
         title: exposure
         description: Expose via secure tag.
         expression: resource.matchTag('exposure', 'allow')
-  iam_by_principals:
-    data-consumer-bi:
-      - roles/datalineage.viewer
-    dp-product-a-0:
-      - "roles/logging.viewer"
-      - "roles/monitoring.viewer"
+    dataplex_catalog_viewer:
+      members:
+        - data-consumer-bi
+      role: roles/dataplex.catalogViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')

@@ -36,9 +36,7 @@
         "composer": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "node_config"
-          ],
+          "required": [],
           "properties": {
             "encryption_key": {
               "type": "string"
