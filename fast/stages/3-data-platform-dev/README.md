@@ -2,7 +2,7 @@
 
 This stage focuses on the creation and management of an opinionated Data Platform architecture based on Google Cloud best practices. Its architecture is designed to be reliable, robust, and scalable, facilitating the continuous onboarding of new Data Products (or data workloads).
 
-The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
+The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains, product and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
 
 Our implementation is closely aligned with [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and builds up on established [FAST stages](../README.md) for crucial aspects of Google Cloud Platform implementation like resource hierarchy, networking, and security. These FAST components are considered prerequisites and fall outside the direct scope of this stage. It's also possible to run this stage in isolation by providing it the required prerequisites.
 
@@ -34,7 +34,9 @@ Our implementation is closely aligned with [Data Mesh principles on Google Cloud
 
 The following diagram shows where the Data Platform and its associated projects sit within the organization's resource hierarchy:
 
-TODO: Add diagram
+<p align="center">
+  <img src="diagram_resman.png" alt="Data Platform Resman." width="200px">
+</p>
 
 ### Data Platform Architecture
 
@@ -51,6 +53,10 @@ The stage manages the following three high-level logical components implemented 
 - "central shared services", a single central project, in which Dataplex Catalog Aspect Types, Policy Tags, and Resource Manager tags a.k.a. "Secure Tags" are defined
 - one or more "data domains", each composed of a folder containing a project hosting shared resources at the domain level e.g. Composer, and a folder for hosting data products
 - one or more "data products" per domain, each composed of a project, and related resources that are optional*
+
+<p align="center">
+  <img src="diagram_folders.png" alt="Folder structure." width="300px">
+</p>
 
 #### Shared Services (Federated Governance)
 
@@ -89,6 +95,7 @@ TODO: Add roles on project/folder
 #### Data Domain Teams
 
 Aligned with specific business areas (e.g., customer, finance, distribution), this function holds clearly defined ownership of data within that domain. Key responsibilities include establishing and upholding a data product's purpose, scope, and boundaries. This is achieved through ongoing activities such as:
+
 - Creating and maintaining its domain-wide data product roadmap.
 - Implementing robust data security measures.
 - Ensuring adherence to all relevant compliance obligations.
