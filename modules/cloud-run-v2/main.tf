@@ -35,7 +35,11 @@ locals {
   )
   service = (
     var.create_job
-    ? google_cloud_run_v2_job.job[0]
+    ? (
+      var.managed_revision
+      ? google_cloud_run_v2_job.job[0]
+      : google_cloud_run_v2_job.job_unmanaged[0]
+    )
     : (
       var.managed_revision
       ? google_cloud_run_v2_service.service[0]
