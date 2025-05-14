@@ -19,9 +19,9 @@ variable "access_config" {
   type = object({
     dns_access = optional(bool, true)
     ip_access = optional(object({
-      authorized_ranges               = optional(map(string), {})
+      authorized_ranges               = optional(map(string), null)
       disable_public_endpoint         = optional(bool, true)
-      gcp_public_cidrs_access_enabled = optional(bool, false)
+      gcp_public_cidrs_access_enabled = optional(bool, null)
       private_endpoint_config = optional(object({
         endpoint_subnetwork = optional(string)
         global_access       = optional(bool, true)
