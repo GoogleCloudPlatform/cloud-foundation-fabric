@@ -96,7 +96,7 @@ outputs:
       gcp-devops: group:gcp-devops@fast.example.com
       gcp-network-admins: group:gcp-vpc-network-admins@fast.example.com
       gcp-organization-admins: group:gcp-organization-admins@fast.example.com
-      gcp-secops-admins: group:gcp-secops-admins@fast.example.com
+      gcp-secops-admins: group:gcp-security-admins@fast.example.com
       gcp-security-admins: group:gcp-security-admins@fast.example.com
       gcp-support: group:gcp-support@example.com
     locations:

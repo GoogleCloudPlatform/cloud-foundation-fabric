@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ variable "groups" {
     gcp-devops              = optional(string, "gcp-devops")
     gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
-    gcp-secops-admins       = optional(string, "gcp-secops-admins")
+    gcp-secops-admins       = optional(string, "gcp-security-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
   })
   nullable = false
