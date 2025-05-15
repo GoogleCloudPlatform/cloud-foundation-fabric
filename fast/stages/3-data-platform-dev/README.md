@@ -67,6 +67,8 @@ Managed within a dedicated "Central Services" project, these shared services del
 - [Dataplex Catalog Aspect Types](https://cloud.google.com/dataplex/docs/enrich-entries-metadata) configuration: create a YAML file definition for each Aspect Type in the `data/aspect-types` folder.
 - [Policy Tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags) definition: configure them in the `central_project_config.policy_tags` variable.
 
+Configure accordingly to your needs the `central_project_config` terraform variable. Use the [terraform.tfvars.sample](./terraform.tfvars.sample) as reference.
+
 #### Data Domains (Domain-Driven Ownership)
 
 Another foundational principle of a data mesh architecture is domain-driven ownership. A Data Domain, in this context, typically aligns with a business unit (BU) or a distinct function within an enterprise. For instance, Data Domains could represent a bank's mortgage department, or an enterprise's customer, distribution, finance, or HR departments.
@@ -75,7 +77,32 @@ To support this ownership model and ensure clear separation, each logical Data D
 
 Within each Data Domain, a corresponding Google Cloud "Data Domain" project serves as the primary container for all its specific services and resources. A dedicated Cloud Composer environment is provisioned within this project for orchestrating the domain's data workflows. To adhere to the principle of least privilege, this Composer environment operates with a dedicated IAM Service Account capable of impersonating the necessary Data Product-specific service accounts within that domain.
 
-A data domain will be created for each folder within the `data/data-domains` folder. The configuration should be provided in a `_config.yaml` file within each folder.
+A data domain will be created for each folder within the `data/data-domains` folder. The configuration should be provided in a `_config.yaml` file within each folder. Within the `_config.yaml` you can configure IAM, services to enable in the shared folder and the Cloud composer configuration.
+
+It is suggested to grant access to consumers on exposed data metadata relying IAM secure tag created in the central project.
+
+```yaml
+folder_config:
+  iam_bindings:
+    bigquery_metadata_viewer:
+      members:
+        - data-consumer-bi
+      role: roles/bigquery.metadataViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')
+    dataplex_catalog_viewer:
+      members:
+        - data-consumer-bi
+      role: roles/dataplex.catalogViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')
+```
+
+Use the [.data/data-domains/domain-0/](domain-0) folder as reference to customize.
 
 #### 3. Data Products (DaaP)
 
@@ -85,21 +112,41 @@ For every Data Product project created, its exposure layer (e.g. specific BigQue
 
 Resources needed to import and curate data (e.g. intermediate dataset, dataproc instances, ...) are not deployed by the central Data Platform team. Each data Product owner is responsible for the definition of resources needed. The deployment of those resources will belong to a different Teraform state.
 
-Within a Data Domain will be created for each YAML file within the `data/data-domains/DOMAIN_NAME/` folder.
+Within each domain, you can instantiate a data product creating a `data-product-X.yaml` file in the data domain's folder. In the YAML file you can configure IAM, services, products to configure in the exposure layer.
+
+It is suggested to grant access to consumer on exposed data configuring IAM binging in the `exposure_layer` variable.
+
+```yaml
+exposure_layer:
+  bigquery:
+    datasets:
+      exposure: {}
+    iam:
+      "roles/bigquery.dataViewer":
+        - data-consumer-bi
+```
+
+Use the [./data/data-domains/domain-0/product-0.yaml](product-0.yaml) file as reference to customize.
 
 ### Teams and Personas
 
 Effective data mesh operation relies on well-defined roles and responsibilities. Ownership is typically assigned to team archetypes, also referred to as functions. These functions represent the core user journeys of individual roles interacting with the data mesh. To clearly describe these journeys, specific user roles are defined within these functions. These user roles can be split or combined bases on specific needs and the scale of each enterprise.
 
-> TODO: add folder/project roles
+This stage comes with four predefined role profiles, which are meant as a starting example open to customizations. It is suggested to rely on [context replacements](Context Replacements) logic where you can configure the mapping between short names and group values in the `factories_config.context.iam_principals` variable. The mapping will let you refer in YAML file to the group using the short name.
 
-This stage comes with three predefined role profiles, which are meant as a starting example open to customizations:
+Use IAM configured in the [./terraform.tfvars.sample](terraform.tfvars.sample), [./data/domain-0/_config.yaml](Data Domain YAML) and [./data/domain-0/product-0.yaml](Data Product YAML) as reference to customize.
 
 #### Central Data Platform Team
 
 This function defines the overall data platform architecture, establishes shared infrastructure, and enforces central data governance policies and standards across the data mesh. It enables data producers with tools, paved path solutions and best practices, ensuring high data quality, security, and trustworthiness for consumers. Its focus is on providing the foundations of a self-serve data platform as well as universal governance standards for all users. The Central Data Platform team often works in collaboration with the Data Governance functions within enterprises.
 
-TODO: Add roles on project/folder
+The group tipically has `ADMIN` access on resources in the central project. The team tipically do not have access to the underling data stored on each data domain and product but has access to log and metrics information to monitor the data platform health.
+
+|Group|Central Project|Data Domain|Data Product|
+|-|:-:|:-:|:-:|
+|Central Data Platform team|`ADMIN`|`Log and Metrics Viewer`|`Log and Metrics Viewer`|
+
+The team is usually responsible to configure IAM bindings on data domains and products.
 
 #### Data Domain Teams
 
@@ -110,13 +157,33 @@ Aligned with specific business areas (e.g., customer, finance, distribution), th
 - Ensuring adherence to all relevant compliance obligations.
 - Continuously monitoring usage and performance.
 
-TODO: Add roles on project/folder
+The group tipically has `ADMIN` access on resources in the shared data domain project, read and usage access to resources created in the central project (e.g. aspects type). The team tipically do not have access to the underling data stored on each data product but has access to log and metrics information to monitor the data platform health. The team is not tipically owner for IAM bindings.
+
+|Group|Central Project|Data Domain|Data Product|
+|-|:-:|:-:|:-:|
+|Data Domain team|`READ/USAGE`|`ADMIN`|`Log and Metrics Viewer`|
 
 #### Data Product Teams
 
 This function is responsible for the end-to-end lifecycle of a specific data product. Data Product Teams (which may be part of or work closely with a Data Domain Team) develop, operate, and maintain their assigned data product. Their tasks include defining the data product's schema and interfaces, implementing data ingestion and transformation pipelines, ensuring data quality and security for their product, managing its roadmap, and supporting its data consumers.
 
-TODO: Add roles on project/folder
+The group tipically has `ADMIN` access on resources in the data product project, read and usage access to resources created in the central project (e.g. aspects type) and data domain shared project (e.g. Cloud Composer). The team is not tipically owner for IAM bindings.
+
+|Group|Central Project|Data Domain|Data Product|
+|-|:-:|:-:|:-:|
+|Data Domain team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
+
+The team is responsible of:
+
+- identify and configure resources needed in the data product to Extract, Load and Transform data to expose in the exposure layer. Those resources should be deployed in a different Terraform state using the automation service account created for each data product.
+- configure Policy Tags to protect PII data.
+- configure metadata on Aspects related to tables and resources configured in the exposure layer.
+
+When using BigQuery in the exposure layer, it is suggested to rely on Authorized view configuring the exposure dataset as an authorized dataset of the underling dataset hosting curated data.
+
+## TODO
+
+- How to run the stage (similar to all other FAST starges copy&paste)
 
 ## Configuration
 

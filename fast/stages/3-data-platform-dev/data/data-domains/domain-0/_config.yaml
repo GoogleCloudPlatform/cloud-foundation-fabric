@@ -39,6 +39,10 @@ project_config:
     roles/composer.environmentAndStorageObjectAdmin:
       - dp-product-a-0
   iam_by_principals:
+    dp-platform:
+      - roles/composer.environmentAndStorageObjectUser
+      - roles/monitoring.viewer
+      - roles/logging.viewer
     dp-product-a-0:
       - roles/composer.environmentAndStorageObjectAdmin
       - roles/monitoring.viewer
@@ -63,6 +67,9 @@ folder_config:
   iam_bindings:
     bigquery_metadata_viewer:
       members:
+        - dp-platform
+        - dp-domain-a
+        - dp-product-a-0
         - data-consumer-bi
       role: roles/bigquery.metadataViewer
       condition:
@@ -71,6 +78,9 @@ folder_config:
         expression: resource.matchTag('exposure', 'allow')
     dataplex_catalog_viewer:
       members:
+        - dp-platform
+        - dp-domain-a
+        - dp-product-a-0
         - data-consumer-bi
       role: roles/dataplex.catalogViewer
       condition:
