@@ -27,7 +27,7 @@ values:
   module.db.google_sql_user.users["fixture-service-account@project-id.iam.gserviceaccount.com"]:
     instance: db
     name: fixture-service-account@project-id.iam.gserviceaccount.com
-    password: null
+    password_wo: null
     password_policy: []
     project: project-id
     type: CLOUD_IAM_SERVICE_ACCOUNT
