@@ -31,7 +31,7 @@ variable "gitlab_config" {
     access_token = string
     hostname     = optional(string, "gitlab.com")
     ssh_port     = optional(number, 22)
-    saas_group = optional(string, "my_group")
+    saas_group   = optional(string, "my_group")
   })
   validation {
     condition = (

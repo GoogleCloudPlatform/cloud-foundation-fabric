@@ -77,7 +77,7 @@ locals {
 }
 
 data "gitlab_group" "saas" {
-  count = length(var.gitlab_config.saas_group) > 0 && var.gitlab_config.hostname == "gitlab.com" ? 1 : 0
+  count     = length(var.gitlab_config.saas_group) > 0 && var.gitlab_config.hostname == "gitlab.com" ? 1 : 0
   full_path = var.gitlab_config.saas_group
 }
 
@@ -86,7 +86,7 @@ resource "gitlab_group" "default" {
   name        = each.value.name
   path        = each.value.path
   description = each.value.description
-  parent_id = var.gitlab_config.hostname == "gitlab.com" ? data.gitlab_group.saas[0].id : null
+  parent_id   = var.gitlab_config.hostname == "gitlab.com" ? data.gitlab_group.saas[0].id : null
 }
 
 resource "gitlab_project" "modules" {
@@ -167,9 +167,9 @@ resource "gitlab_repository_file" "default" {
     ? base64encode(replace(
       file(each.value.file),
       "/source(\\s*)=\\s*\"../../../modules/([^/\"]+)\"/",
-        "source$1= \"git::ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${(var.gitlab_config.saas_group != "" && var.gitlab_config.hostname == "gitlab.com" ? "${var.gitlab_config.saas_group}/" : ""
-        )}${local.modules_group}/${local.modules_project}.git//${local.module_prefix}$2${local.modules_ref}\""
-      ))
+      "source$1= \"git::ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${(var.gitlab_config.saas_group != "" && var.gitlab_config.hostname == "gitlab.com" ? "${var.gitlab_config.saas_group}/" : ""
+      )}${local.modules_group}/${local.modules_project}.git//${local.module_prefix}$2${local.modules_ref}\""
+    ))
     : endswith(each.value.name, ".png") || endswith(each.value.name, ".gif") || endswith(each.value.name, ".svg") ? filebase64(each.value.file) : base64encode(file(each.value.file))
   )
   commit_message = "${var.commit_config.message} (${each.value.name})"
