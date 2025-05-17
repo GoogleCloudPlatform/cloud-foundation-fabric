@@ -14,6 +14,7 @@ When deploying SWP, the required ad-hoc [Cloud Router](https://cloud.google.com/
 - [PSC service attachments](#psc-service-attachments)
 - [Secure Web Proxy with rules](#secure-web-proxy-with-rules)
 - [Secure Web Proxy with TLS inspection](#secure-web-proxy-with-tls-inspection)
+- [Secure Web Proxy as transparent proxy](#secure-web-proxy-as-transparent-proxy)
 - [Factories](#factories)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -78,7 +79,7 @@ module "secure-web-proxy" {
 
 ## Secure Web Proxy with rules
 
-This example shows different ways of definining policy rules, including how to leverage substition for internally generated URL maps, or externally defined resources.
+This example shows different ways of defining policy rules, including how to leverage substitution for internally generated URL maps, or externally defined resources.
 
 ```hcl
 module "secure-web-proxy" {
@@ -272,6 +273,67 @@ module "secure-web-proxy" {
   }
 }
 # tftest modules=1 resources=3 inventory=tls-no-ip.yaml
+```
+
+## Secure Web Proxy as transparent proxy
+To use Secure Web Proxy as transparent proxy, define it as a default gateway for the tag or create policy based routes as described in the [documentation](https://cloud.google.com/secure-web-proxy/docs/deploy-next-hop). Secure Web Proxy passes only traffic on the ports that it listens. Configure rules as documented in earlier sections.
+
+```hcl
+locals {
+  swp_address = "10.0.2.2"
+}
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = var.project_id
+  name       = "swp-network"
+  routes = {
+    gateway = {
+      dest_range    = "0.0.0.0/0",
+      priority      = 100
+      tags          = ["swp"] # only traffic from instances tagged 'swp' will be inspected
+      next_hop_type = "ilb",
+      next_hop      = local.swp_address # resource doesn't allow to obtain address
+    }
+  }
+  subnets_proxy_only = [ # SWP requires proxy-only subnet
+    {
+      ip_cidr_range = "10.0.1.0/24"
+      name          = "regional-proxy"
+      region        = var.region
+      active        = true
+    }
+  ]
+  subnets = [
+    {
+      ip_cidr_range = "10.0.2.0/24"
+      name          = "production"
+      region        = var.region
+    }
+  ]
+}
+
+module "secure-web-proxy" {
+  source     = "./fabric/modules/net-swp"
+  project_id = var.project_id
+  region     = var.region
+  name       = "secure-web-proxy"
+  network    = module.vpc.id
+  subnetwork = module.vpc.subnets["${var.region}/production"].id
+  gateway_config = {
+    addresses             = [local.swp_address] # SWP allows only providing unreserved addresses, must provide address to avoid drift
+    next_hop_routing_mode = true
+    ports                 = [80, 443] # specify all ports to be intercepted
+  }
+  policy_rules = {
+    proxy-rule = {
+      priority        = 100
+      session_matcher = "true" # pass all traffic
+      tls_inspect     = false
+    }
+  }
+}
+
+# tftest inventory=transparent-proxy.yaml e2e
 ```
 
 ## Factories

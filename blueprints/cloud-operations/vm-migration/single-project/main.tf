@@ -29,8 +29,8 @@ module "landing-project" {
     "iam.googleapis.com",
     "logging.googleapis.com",
     "networkconnectivity.googleapis.com",
-    "servicemanagement.googleapis.com",
     "servicecontrol.googleapis.com",
+    "servicemanagement.googleapis.com",
     "vmmigration.googleapis.com"
   ]
   project_reuse = var.project_create != null ? null : {}

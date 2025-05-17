@@ -152,7 +152,9 @@ variable "subscriptions" {
     push = optional(object({
       endpoint   = string
       attributes = optional(map(string))
-      no_wrapper = optional(bool, false)
+      no_wrapper = optional(object({
+        write_metadata = optional(bool, false)
+      }))
       oidc_token = optional(object({
         audience              = optional(string)
         service_account_email = string

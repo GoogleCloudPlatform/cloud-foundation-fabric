@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,6 +61,13 @@ variable "regions" {
   }
 }
 
+variable "secops_tenant_config" {
+  default = {
+    customer_id = "customer-id"
+    region      = "europe"
+  }
+}
+
 variable "service_account" {
   default = {
     id        = "service_account_id"
@@ -85,12 +92,14 @@ variable "subnets" {
       region    = "europe-west8"
       cidr      = "10.0.16.0/24"
       self_link = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary"
+      id        = "projects/my-project/regions/europe-west8/subnetworks/primary"
     }
     secondary = {
       name      = "secondary"
       region    = "europe-west89"
       cidr      = "10.0.16.0/24"
       self_link = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west9/subnetworks/secondary"
+      id        = "projects/my-project/regions/europe-west9/subnetworks/secondary"
     }
   }
 }

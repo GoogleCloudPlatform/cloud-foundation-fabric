@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,12 @@
 # service perimeters are needed, switch to the
 # google_access_context_manager_service_perimeters resource
 
+locals {
+  bridge_perimeters = merge(local.data.bridges, var.service_perimeters_bridge)
+}
+
 resource "google_access_context_manager_service_perimeter" "bridge" {
-  for_each                  = var.service_perimeters_bridge
+  for_each                  = local.bridge_perimeters
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   title                     = each.key
@@ -31,12 +35,21 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   dynamic "spec" {
     for_each = each.value.spec_resources == null ? [] : [""]
     content {
-      resources = each.value.spec_resources
+      resources = flatten([
+        for r in each.value.spec_resources :
+        lookup(var.factories_config.context.resource_sets, r, [r])
+      ])
     }
   }
 
-  status {
-    resources = each.value.status_resources == null ? [] : each.value.status_resources
+  dynamic "status" {
+    for_each = each.value.status_resources == null ? [] : [""]
+    content {
+      resources = flatten([
+        for r in each.value.status_resources :
+        lookup(var.factories_config.context.resource_sets, r, [r])
+      ])
+    }
   }
 
   # lifecycle {

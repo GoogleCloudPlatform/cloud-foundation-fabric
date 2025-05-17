@@ -88,6 +88,7 @@ variable "egress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}
@@ -115,9 +116,16 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels    = optional(string, "data/access-levels")
-    egress_policies  = optional(string, "data/egress-policies")
-    ingress_policies = optional(string, "data/ingress-policies")
+    access_levels       = optional(string, "data/access-levels")
+    egress_policies     = optional(string, "data/egress-policies")
+    ingress_policies    = optional(string, "data/ingress-policies")
+    perimeters          = optional(string, "data/perimeters")
+    restricted_services = optional(string, "data/restricted-services.yaml")
+    context = optional(object({
+      identity_sets = optional(map(list(string)), {})
+      resource_sets = optional(map(list(string)), {})
+      service_sets  = optional(map(list(string)), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -140,6 +148,7 @@ variable "ingress_policies" {
         service_name         = string
       })), [])
       resources = optional(list(string))
+      roles     = optional(list(string))
     })
   }))
   default  = {}
@@ -173,24 +182,34 @@ variable "outputs_location" {
 variable "perimeters" {
   description = "Perimeter definitions."
   type = map(object({
-    access_levels       = optional(list(string), [])
-    dry_run             = optional(bool, true)
-    egress_policies     = optional(list(string), [])
-    ingress_policies    = optional(list(string), [])
-    resources           = optional(list(string), [])
-    restricted_services = optional(list(string))
-    vpc_accessible_services = optional(object({
-      allowed_services   = list(string)
-      enable_restriction = optional(bool, true)
+    description = optional(string)
+    title       = optional(string)
+    spec = optional(object({
+      access_levels       = optional(list(string))
+      egress_policies     = optional(list(string))
+      ingress_policies    = optional(list(string))
+      restricted_services = optional(list(string))
+      resources           = optional(list(string))
+      vpc_accessible_services = optional(object({
+        allowed_services   = list(string)
+        enable_restriction = optional(bool, true)
+      }))
     }))
+    status = optional(object({
+      access_levels       = optional(list(string))
+      egress_policies     = optional(list(string))
+      ingress_policies    = optional(list(string))
+      resources           = optional(list(string))
+      restricted_services = optional(list(string))
+      vpc_accessible_services = optional(object({
+        allowed_services   = list(string)
+        enable_restriction = optional(bool, true)
+      }))
+    }))
+    use_explicit_dry_run_spec = optional(bool, false)
   }))
   nullable = false
-  default = {
-    default = {
-      access_levels    = ["geo"]
-      ingress_policies = ["fast-org-log-sinks"]
-    }
-  }
+  default  = {}
 }
 
 variable "resource_discovery" {

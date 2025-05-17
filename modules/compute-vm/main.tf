@@ -60,14 +60,6 @@ locals {
       )
     )
   }
-  tags_combined = (
-    var.tag_bindings == null && var.tag_bindings_firewall == null
-    ? null
-    : merge(
-      coalesce(var.tag_bindings, {}),
-      coalesce(var.tag_bindings_firewall, {})
-    )
-  )
   termination_action = (
     var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
@@ -77,10 +69,12 @@ resource "google_compute_disk" "boot" {
   count   = !var.create_template && var.boot_disk.use_independent_disk ? 1 : 0
   project = var.project_id
   zone    = var.zone
-  name    = "${var.name}-boot"
-  type    = var.boot_disk.initialize_params.type
-  size    = var.boot_disk.initialize_params.size
-  image   = var.boot_disk.initialize_params.image
+  # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
+  # compatibility
+  name  = "${var.name}-boot"
+  type  = var.boot_disk.initialize_params.type
+  size  = var.boot_disk.initialize_params.size
+  image = var.boot_disk.initialize_params.image
   labels = merge(var.labels, {
     disk_name = "boot"
     disk_type = var.boot_disk.initialize_params.type
@@ -245,7 +239,7 @@ resource "google_compute_instance" "default" {
         image                 = var.boot_disk.initialize_params.image
         size                  = var.boot_disk.initialize_params.size
         type                  = var.boot_disk.initialize_params.type
-        resource_manager_tags = var.tag_bindings
+        resource_manager_tags = var.tag_bindings_immutable
       }
     }
   }
@@ -313,6 +307,21 @@ resource "google_compute_instance" "default" {
         values   = affinity.value.values
       }
     }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
+      }
+    }
+
   }
 
   dynamic "scratch_disk" {
@@ -344,9 +353,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = local.tags_combined == null ? [] : [""]
+    for_each = var.tag_bindings_immutable == null ? [] : [""]
     content {
-      resource_manager_tags = local.tags_combined
+      resource_manager_tags = var.tag_bindings_immutable
     }
   }
 
@@ -382,7 +391,7 @@ resource "google_compute_instance_template" "default" {
   can_ip_forward        = var.can_ip_forward
   metadata              = var.metadata
   labels                = var.labels
-  resource_manager_tags = local.tags_combined
+  resource_manager_tags = var.tag_bindings_immutable
 
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []
@@ -403,7 +412,7 @@ resource "google_compute_instance_template" "default" {
     boot                  = true
     disk_size_gb          = var.boot_disk.initialize_params.size
     disk_type             = var.boot_disk.initialize_params.type
-    resource_manager_tags = var.tag_bindings
+    resource_manager_tags = var.tag_bindings_immutable
     source_image          = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
@@ -452,7 +461,7 @@ resource "google_compute_instance_template" "default" {
       disk_name = (
         config.value.source_type != "attach" ? config.value.name : null
       )
-      resource_manager_tags = var.tag_bindings
+      resource_manager_tags = var.tag_bindings_immutable
       type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
@@ -517,6 +526,20 @@ resource "google_compute_instance_template" "default" {
         key      = affinity.key
         operator = affinity.value.in ? "IN" : "NOT_IN"
         values   = affinity.value.values
+      }
+    }
+
+    dynamic "graceful_shutdown" {
+      for_each = var.options.graceful_shutdown != null ? [""] : []
+      content {
+        enabled = var.options.graceful_shutdown.enabled
+        dynamic "max_duration" {
+          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          content {
+            seconds = var.options.graceful_shutdown.max_duration_secs
+            nanos   = 0
+          }
+        }
       }
     }
   }

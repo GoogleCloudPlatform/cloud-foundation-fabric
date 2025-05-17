@@ -36,14 +36,15 @@ module "project" {
   project_reuse = var.project_create != null ? null : {}
   name          = var.project_id
   services = concat([
-    "compute.googleapis.com",
-    "iap.googleapis.com",
-    "stackdriver.googleapis.com",
     "chronicle.googleapis.com",
-    "container.googleapis.com",
-    "gkehub.googleapis.com",
+    "compute.googleapis.com",
     "connectgateway.googleapis.com",
-    "gkeconnect.googleapis.com"
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
+    "iap.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
   ])
   iam = {
     "roles/pubsub.editor" = ["principal://iam.googleapis.com/projects/${module.project.number}/locations/global/workloadIdentityPools/${module.project.project_id}.svc.id.goog/subject/ns/bindplane/sa/bindplane"]

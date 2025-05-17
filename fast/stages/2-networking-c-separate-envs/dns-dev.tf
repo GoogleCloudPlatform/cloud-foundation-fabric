@@ -21,9 +21,9 @@
 module "dev-dns-private-zone" {
   source     = "../../../modules/dns"
   project_id = module.dev-spoke-project.project_id
-  name       = "dev-gcp-example-com"
+  name       = "dev-${replace(var.dns.gcp_domain, ".", "-")}"
   zone_config = {
-    domain = "dev.gcp.example.com."
+    domain = "dev.${var.dns.gcp_domain}."
     private = {
       client_networks = [module.dev-spoke-vpc.self_link]
     }

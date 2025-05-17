@@ -32,8 +32,8 @@ module "project" {
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudscheduler.googleapis.com",
-    "logging.googleapis.com",
     "compute.googleapis.com",
+    "logging.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com"

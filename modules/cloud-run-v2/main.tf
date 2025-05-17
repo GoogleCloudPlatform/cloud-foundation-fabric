@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,19 @@ locals {
       : null
     )
     : var.service_account
+  )
+  service = (
+    var.create_job
+    ? (
+      var.managed_revision
+      ? google_cloud_run_v2_job.job[0]
+      : google_cloud_run_v2_job.job_unmanaged[0]
+    )
+    : (
+      var.managed_revision
+      ? google_cloud_run_v2_service.service[0]
+      : google_cloud_run_v2_service.service_unmanaged[0]
+    )
   )
   trigger_sa_create = try(
     var.eventarc_triggers.service_account_create, false

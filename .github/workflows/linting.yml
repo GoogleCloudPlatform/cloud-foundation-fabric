@@ -95,7 +95,8 @@ jobs:
         run: |
           yapf -p -d -r \
             tools/*.py \
-            blueprints
+            blueprints \
+            fast
 
       - name: Check blueprint metadata
         id: metadata
@@ -120,3 +121,8 @@ jobs:
           diff -rub /tmp/versions.tf /tmp/versions.tofu
           DIFF_EC=$?
           [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]
+
+      - name: Check for diverging files
+        id: duplicates
+        run: |
+          python3 tools/duplicate-diff.py

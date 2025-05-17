@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 locals {
   tfvars = {
     perimeters = {
-      for k, v in try(module.vpc-sc[0].service_perimeters_regular, {}) :
+      for k, v in try(module.vpc-sc.service_perimeters_regular, {}) :
       k => v.id
     }
     perimeters_bridge = {
-      for k, v in try(module.vpc-sc[0].service_perimeters_bridge, {}) :
+      for k, v in try(module.vpc-sc.service_perimeters_bridge, {}) :
       k => v.id
     }
   }
@@ -49,5 +49,5 @@ output "tfvars" {
 output "vpc_sc_perimeter_default" {
   description = "Raw default perimeter resource."
   sensitive   = true
-  value       = try(module.vpc-sc[0].service_perimeters_regular["default"], null)
+  value       = try(module.vpc-sc.service_perimeters_regular["default"], null)
 }

@@ -35,9 +35,9 @@ values:
     disabled: null
     display_name: null
     oidc:
-    - allowed_audiences: []
-      issuer_uri: https://token.actions.githubusercontent.com
-      jwks_json: null
+      - allowed_audiences: []
+        issuer_uri: https://token.actions.githubusercontent.com
+        jwks_json: null
     project: fast-prod-iac-core-0
     saml: []
     timeouts: null
@@ -66,9 +66,9 @@ values:
     disabled: null
     display_name: null
     oidc:
-    - allowed_audiences: []
-      issuer_uri: https://gitlab.com
-      jwks_json: null
+      - allowed_audiences: []
+        issuer_uri: https://gitlab.com
+        jwks_json: null
     project: fast-prod-iac-core-0
     saml: []
     timeouts: null
@@ -133,7 +133,7 @@ values:
   ? module.automation-tf-bootstrap-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
-    - serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-bootstrap-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -149,10 +149,10 @@ values:
     member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     project: fast-prod-iac-core-0
     timeouts: null
-  module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
+  ? module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
     members:
-    - serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-bootstrap-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -162,8 +162,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["bootstrap"].google_service_account.service_account[0]:
-    account_id: fast-prod-bootstrap-1r
+  ? module.automation-tf-cicd-r-sa["bootstrap"].google_service_account.service_account[0]
+  : account_id: fast-prod-bootstrap-1r
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -183,8 +183,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["resman"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-1r
+  ? module.automation-tf-cicd-r-sa["resman"].google_service_account.service_account[0]
+  : account_id: fast-prod-resman-1r
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -204,8 +204,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-tenants-1r
+  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account.service_account[0]
+  : account_id: fast-prod-resman-tenants-1r
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -225,8 +225,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["bootstrap"].google_service_account.service_account[0]:
-    account_id: fast-prod-bootstrap-1
+  ? module.automation-tf-cicd-sa["bootstrap"].google_service_account.service_account[0]
+  : account_id: fast-prod-bootstrap-1
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -246,8 +246,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["resman"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-1
+  ? module.automation-tf-cicd-sa["resman"].google_service_account.service_account[0]
+  : account_id: fast-prod-resman-1
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -256,8 +256,8 @@ values:
     member: serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
     project: fast-prod-iac-core-0
     timeouts: null
-  module.automation-tf-cicd-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
-    condition: []
+  ? module.automation-tf-cicd-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
     role: roles/iam.workloadIdentityUser
   ? module.automation-tf-cicd-sa["resman"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -267,8 +267,8 @@ values:
   : condition: []
     project: fast-prod-iac-core-0
     role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["resman-tenants"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-tenants-1
+  ? module.automation-tf-cicd-sa["resman-tenants"].google_service_account.service_account[0]
+  : account_id: fast-prod-resman-tenants-1
     create_ignore_already_exists: null
     description: null
     disabled: false
@@ -277,8 +277,8 @@ values:
     member: serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
     project: fast-prod-iac-core-0
     timeouts: null
-  module.automation-tf-cicd-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
-    condition: []
+  ? module.automation-tf-cicd-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
+  : condition: []
     role: roles/iam.workloadIdentityUser
   ? module.automation-tf-cicd-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -294,11 +294,11 @@ values:
     member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     project: fast-prod-iac-core-0
     timeouts: null
-  module.automation-tf-resman-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
+  ? module.automation-tf-resman-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
     members:
-    - serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-resman-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -314,11 +314,11 @@ values:
     member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     project: fast-prod-iac-core-0
     timeouts: null
-  module.automation-tf-resman-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
-    condition: []
+  ? module.automation-tf-resman-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
     members:
-    - serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+      - serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-resman-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -335,16 +335,16 @@ counts:
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
   google_org_policy_custom_constraint: 1
-  google_org_policy_policy: 34
+  google_org_policy_policy: 36
   google_organization_iam_binding: 27
   google_organization_iam_custom_role: 13
   google_organization_iam_member: 29
   google_project: 3
   google_project_iam_audit_config: 1
   google_project_iam_binding: 19
-  google_project_iam_member: 22
-  google_project_service: 31
-  google_project_service_identity: 7
+  google_project_iam_member: 23
+  google_project_service: 32
+  google_project_service_identity: 8
   google_service_account: 12
   google_service_account_iam_binding: 12
   google_storage_bucket: 4
@@ -356,4 +356,4 @@ counts:
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 282
+  resources: 287

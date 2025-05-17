@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ variable "clusters" {
     access_config = optional(object({
       dns_access = optional(bool, true)
       ip_access = optional(object({
-        authorized_ranges       = optional(map(string), {})
-        disable_public_endpoint = optional(bool, true)
+        authorized_ranges               = optional(map(string), {})
+        disable_public_endpoint         = optional(bool, true)
+        gcp_public_cidrs_access_enabled = optional(bool, false)
         private_endpoint_config = optional(object({
           endpoint_subnetwork = optional(string)
           global_access       = optional(bool, true)
         }), {})
-      }), {})
+      }))
       private_nodes = optional(bool, true)
     }), {})
     cluster_autoscaling = optional(any)
@@ -132,9 +133,25 @@ variable "nodepools" {
     node_count = optional(map(number), {
       initial = 1
     })
-    node_locations        = optional(list(string))
-    nodepool_config       = optional(any)
-    pod_range             = optional(any)
+    node_locations  = optional(list(string))
+    nodepool_config = optional(any)
+    network_config = optional(object({
+      enable_private_nodes = optional(bool, true)
+      pod_range = optional(object({
+        cidr   = optional(string)
+        create = optional(bool, false)
+        name   = optional(string)
+      }), {})
+      additional_node_network_configs = optional(list(object({
+        network    = string
+        subnetwork = string
+      })), [])
+      additional_pod_network_config = optional(list(object({
+        subnetwork          = string
+        secondary_pod_range = string
+        max_pods_per_node   = string
+      })), [])
+    }))
     reservation_affinity  = optional(any)
     service_account       = optional(any)
     sole_tenant_nodegroup = optional(string)

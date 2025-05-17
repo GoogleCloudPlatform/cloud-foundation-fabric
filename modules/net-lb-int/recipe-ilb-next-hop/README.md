@@ -96,5 +96,5 @@ module "test" {
     number = 1234567890
   }
 }
-# tftest modules=18 resources=48
+# tftest modules=18 resources=50
 ```

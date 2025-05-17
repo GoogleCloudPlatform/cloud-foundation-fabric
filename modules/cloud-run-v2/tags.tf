@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 resource "google_tags_location_tag_binding" "binding" {
   for_each = var.create_job ? {} : var.tag_bindings
   parent = (
-    "//run.googleapis.com/projects/${var.project_id}/locations/${var.region}/services/${google_cloud_run_v2_service.service[0].name}"
+    "//run.googleapis.com/projects/${var.project_id}/locations/${var.region}/services/${local.service.name}"
   )
   tag_value = each.value
   location  = var.region

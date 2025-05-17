@@ -23,12 +23,16 @@ factories_config = {
 }
 perimeters = {
   default = {
-    access_levels    = ["geo_it", "identity_me"]
-    egress_policies  = ["test"]
-    ingress_policies = ["fast-org-log-sinks", "test"]
-    resources = [
-      "projects/1234567890"
-    ]
+    use_explicit_dry_run_spec = true
+    spec = {
+      access_levels       = ["geo_it", "identity_me"]
+      egress_policies     = ["test"]
+      ingress_policies    = ["fast-org-log-sinks", "test"]
+      restricted_services = ["restricted_services"]
+      resources = [
+        "projects/1234567890"
+      ]
+    }
   }
 }
 resource_discovery = {

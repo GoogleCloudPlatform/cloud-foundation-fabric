@@ -24,6 +24,7 @@ Note that this module assumes that some options are the same for both the primar
 <!-- END TOC -->
 
 ## Examples
+
 ### Simple example
 
 This example shows how to setup a project, VPC and a standalone Cloud SQL instance.
@@ -77,7 +78,7 @@ module "db" {
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=3 resources=15 inventory=simple.yaml isolated e2e
+# tftest modules=3 resources=16 inventory=simple.yaml isolated e2e
 ```
 
 ### Cross-regional read replica
@@ -96,7 +97,7 @@ module "db" {
   name             = "db"
   prefix           = "myprefix"
   region           = var.region
-  database_version = "POSTGRES_13"
+  database_version = "POSTGRES_16"
   tier             = "db-g1-small"
 
   replicas = {
@@ -128,6 +129,7 @@ module "db" {
   tier             = "db-g1-small"
 
   flags = {
+    cloudsql_iam_authentication    = "on"
     disconnect_on_expired_password = "on"
   }
 
@@ -227,7 +229,7 @@ module "db" {
   terraform_deletion_protection = false
 }
 
-# tftest modules=4 resources=21 isolated e2e
+# tftest modules=4 resources=22 isolated e2e
 ```
 
 ### Instance with PSC enabled

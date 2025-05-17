@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 variable "containers" {
   description = "Containers in name => attributes format."
   type = map(object({
-    image   = string
-    command = optional(list(string))
-    args    = optional(list(string))
-    env     = optional(map(string))
+    image      = string
+    depends_on = optional(list(string))
+    command    = optional(list(string))
+    args       = optional(list(string))
+    env        = optional(map(string))
     env_from_key = optional(map(object({
       secret  = string
       version = string
@@ -33,6 +34,7 @@ variable "containers" {
       http_get = optional(object({
         http_headers = optional(map(string))
         path         = optional(string)
+        port         = optional(number)
       }))
       failure_threshold     = optional(number)
       initial_delay_seconds = optional(number)
@@ -59,6 +61,7 @@ variable "containers" {
       http_get = optional(object({
         http_headers = optional(map(string))
         path         = optional(string)
+        port         = optional(number)
       }))
       tcp_socket = optional(object({
         port = optional(number)
@@ -139,6 +142,12 @@ variable "ingress" {
   }
 }
 
+variable "invoker_iam_disabled" {
+  description = "Disables IAM permission check for run.routes.invoke for callers of this service."
+  type        = bool
+  default     = false
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -160,6 +169,13 @@ variable "launch_stage" {
     BETA, GA, DEPRECATED.
     EOF
   }
+}
+
+variable "managed_revision" {
+  description = "Whether the Terraform module should control the deployment of revisions."
+  type        = bool
+  nullable    = false
+  default     = true
 }
 
 variable "name" {

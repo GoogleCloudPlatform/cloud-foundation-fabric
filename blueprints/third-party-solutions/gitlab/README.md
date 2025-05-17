@@ -55,12 +55,12 @@ managed services incorporated:
 
 Benefits:
 
-- Reduced Operational Overhead: Google handles infrastructure setup,
+* Reduced Operational Overhead: Google handles infrastructure setup,
   maintenance, and updates, freeing up your time and resources.
-- Enhanced Security: Managed services often benefit from Google's comprehensive
+* Enhanced Security: Managed services often benefit from Google's comprehensive
   security measures and expertise.
-- Scalability: Easily adjust resource allocation to meet evolving demands.
-- Cost Optimization: Pay for the resources you use, benefiting from Google's
+* Scalability: Easily adjust resource allocation to meet evolving demands.
+* Cost Optimization: Pay for the resources you use, benefiting from Google's
   infrastructure optimization.
   Integration: Managed services seamlessly integrate with other GCP services,
   promoting a cohesive cloud environment.
@@ -80,25 +80,25 @@ type, the table below summarized such a configuration:
 
 | Object Type      | Description                            | Cloud Storage Bucket              |
 |------------------|----------------------------------------|-----------------------------------|
-| artifacts	       | CI artifacts                           | ${prefix}-gitlab-artifacts        |
+| artifacts        | CI artifacts                           | ${prefix}-gitlab-artifacts        |
 | external_diffs   | Merge request diffs                    | ${prefix}-mr-diffs                |
-| uploads	         | User uploads                           | ${prefix}-gitlab-uploads          |
-| lfs	             | Git Large File Storage objects         | ${prefix}-gitlab-lfs              |
-| packages	        | Project packages (e.g. PyPI, Maven ..) | ${prefix}-gitlab-packages         |
+| uploads          | User uploads                           | ${prefix}-gitlab-uploads          |
+| lfs              | Git Large File Storage objects         | ${prefix}-gitlab-lfs              |
+| packages         | Project packages (e.g. PyPI, Maven ..) | ${prefix}-gitlab-packages         |
 | dependency_proxy | Dependency Proxy                       | ${prefix}-gitlab-dependency-proxy |
 | terraform_state  | Terraform state files                  | ${prefix}-gitlab-terraform-state  |
-| pages	           | Pages                                  | ${prefix}-gitlab-pages            |
+| pages            | Pages                                  | ${prefix}-gitlab-pages            |
 
 For more information on Gitlab object storage and Google Cloud Storage
 integration please refer to the official Gitlab documentation available at the
 following [link](https://docs.gitlab.com/ee/administration/object_storage.html).
 
-- [PostgreSQL service](https://docs.gitlab.com/ee/administration/postgresql/external.html)
+* [PostgreSQL service](https://docs.gitlab.com/ee/administration/postgresql/external.html)
 
 Updated postgres configuration to match documentation, created required database
 in postgres instance.
 
-- [Redis](https://docs.gitlab.com/ee/administration/redis/replication_and_failover_external.html)
+* [Redis](https://docs.gitlab.com/ee/administration/redis/replication_and_failover_external.html)
 
 ## Identity
 
@@ -116,7 +116,7 @@ SP). This allows GitLab to consume assertions from a SAML identity provider (
 IdP), such as Cloud Identity, to authenticate users. Please find instructions
 below for integration with:
 
-- [Google Workspace](#google-workspace-setup)
+* [Google Workspace](#google-workspace-setup)
 
 #### Google Workspace Setup
 
@@ -131,11 +131,11 @@ information in the service provider configuration:
 
 | Configuration     | Typical Value                                    | Cloud Storage Bucket                                                                        |
 |-------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------|
-| Name of SAML App	 | Gitlab                                           | Name of the app                                                                             |
+| Name of SAML App  | Gitlab                                           | Name of the app                                                                             |
 | ACS URL           | https://<GITLAB_DOMAIN>/users/auth/saml/callback | Assertion Consumer Service URL.                                                             |
-| GITLAB_DOMAIN	    | gitlab.example.com                               | Your GitLab instance domain.                                                                |
-| Entity ID	        | https://gitlab.example.com                       | A value unique to your SAML application. Set it to the issuer in your GitLab configuration. |
-| Name ID	          | EMAIL                                            | Required value. Also known as name_identifier_format.                                       |
+| GITLAB_DOMAIN     | gitlab.example.com                               | Your GitLab instance domain.                                                                |
+| Entity ID         | <https://gitlab.example.com>                       | A value unique to your SAML application. Set it to the issuer in your GitLab configuration. |
+| Name ID           | EMAIL                                            | Required value. Also known as name_identifier_format.                                       |
 
 Then setup the following SAML attribute mappings:
 
@@ -155,14 +155,14 @@ information:
 
 ### Others Identity Integration
 
-- [OpenID Connect OmniAuth](https://docs.gitlab.com/ee/administration/auth/oidc.html#configure-google)
-- [Google Secure LDAP](https://docs.gitlab.com/ee/administration/auth/ldap/google_secure_ldap.html)
+* [OpenID Connect OmniAuth](https://docs.gitlab.com/ee/administration/auth/oidc.html#configure-google)
+* [Google Secure LDAP](https://docs.gitlab.com/ee/administration/auth/ldap/google_secure_ldap.html)
 
 ## Email
 
 ### Gmail / Workspace
 
-- [ ] [documentation](https://docs.gitlab.com/ee/administration/incoming_email.html#gmail)
+* [ ] [documentation](https://docs.gitlab.com/ee/administration/incoming_email.html#gmail)
 
 ### Sendgrid integration
 
@@ -229,11 +229,11 @@ following [link](https://docs.gitlab.com/omnibus/settings/ssl/#configure-https-m
 
 ## Networking and scalability
 
-- [Load balancer](https://docs.gitlab.com/ee/administration/load_balancer.html)
+* [Load balancer](https://docs.gitlab.com/ee/administration/load_balancer.html)
 
 ## HA
 
-- [High Availability](http://ubimol.it/12.0/ee/administration/high_availability/README.html)
+* [High Availability](http://ubimol.it/12.0/ee/administration/high_availability/README.html)
 
 ### Deployment
 
@@ -256,10 +256,10 @@ information (for more precise configuration see the Variables section):
 * The project ID
 
 The VPC host project, VPC and subnets should already exist and the following networking requirements are satisfied:
-- configured PSA for Cloud SQL on the VPC
-- subnets configured with PGA and Cloud NAT for internet access
-- Inbound firewall rule for IAP on port 22
-- Inbound firewall rule for TCP ports 80, 443, 2222 from proxy subnet CIDR (gitlab)
+* configured PSA for Cloud SQL on the VPC
+* subnets configured with PGA and Cloud NAT for internet access
+* Inbound firewall rule for IAP on port 22
+* Inbound firewall rule for TCP ports 80, 443, 2222 from proxy subnet CIDR (gitlab)
 
 #### Step 2: Prepare the variables
 
@@ -291,11 +291,11 @@ terraform output ssh_to_bastion
 
 A gcloud command like the following should be available
 
-```bash 
+```bash
 gcloud compute ssh squid-vm --project ${project} --zone europe-west8-b -- -L 3128:127.0.0.1:3128 -N -q -f
 ```
 
-Set as system proxy ip 127.0.0.1 and port 3128 and connect to Gitlab hostname https://gitlab.gcp.example.com.
+Set as system proxy ip 127.0.0.1 and port 3128 and connect to Gitlab hostname <https://gitlab.gcp.example.com>.
 Use default admin password available in /run/gitlab/config/initial_root_password or reset admin password via the following command on the Docker container:
 
 ```bash
@@ -304,9 +304,9 @@ gitlab-rake “gitlab:password:reset”
 
 ## Reference and useful links
 
-- [Reference architecture up to 1k users](https://docs.gitlab.com/ee/administration/reference_architectures/1k_users.html)
-- [`/etc/gitlab/gitlab.rb` template](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template)
-- [`/etc/gitlab/gitlab.rb` default options](https://docs.gitlab.com/ee/administration/package_information/defaults.html)
+* [Reference architecture up to 1k users](https://docs.gitlab.com/ee/administration/reference_architectures/1k_users.html)
+* [`/etc/gitlab/gitlab.rb` template](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template)
+* [`/etc/gitlab/gitlab.rb` default options](https://docs.gitlab.com/ee/administration/package_information/defaults.html)
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
@@ -317,7 +317,7 @@ gitlab-rake “gitlab:password:reset”
 | [gitlab.tf](./gitlab.tf) | None | <code>compute-vm</code> · <code>iam-service-account</code> · <code>net-lb-int</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [services.tf](./services.tf) | None | <code>cloudsql-instance</code> · <code>gcs</code> | <code>google_redis_instance</code> |
+| [services.tf](./services.tf) | None | <code>artifact-registry</code> · <code>cloudsql-instance</code> · <code>gcs</code> | <code>google_redis_instance</code> |
 | [ssl.tf](./ssl.tf) | None |  | <code>tls_cert_request</code> · <code>tls_locally_signed_cert</code> · <code>tls_private_key</code> · <code>tls_self_signed_cert</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -325,7 +325,7 @@ gitlab-rake “gitlab:password:reset”
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [gitlab_instance_config](variables.tf#L69) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n1-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string&#41;&#10;  zone          &#61; optional&#40;string&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [gitlab_instance_config](variables.tf#L69) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n2-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string&#41;&#10;  zone          &#61; optional&#40;string&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [network_config](variables.tf#L89) | Shared VPC network configurations to use for Gitlab Runner VM. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [prefix](variables.tf#L98) | Prefix used for resource names. | <code>string</code> | ✓ |  |  |
 | [project_id](variables.tf#L117) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |  |
@@ -385,5 +385,5 @@ module "test" {
   project_id = "my-project"
   region     = "europe-west8"
 }
-# tftest modules=14 resources=58
+# tftest modules=15 resources=63
 ```

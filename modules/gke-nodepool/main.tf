@@ -116,12 +116,39 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   dynamic "network_config" {
-    for_each = var.pod_range != null ? [""] : []
+    for_each = var.network_config != null ? [""] : []
     content {
-      create_pod_range     = var.pod_range.secondary_pod_range.create
-      enable_private_nodes = var.pod_range.secondary_pod_range.enable_private_nodes
-      pod_ipv4_cidr_block  = var.pod_range.secondary_pod_range.cidr
-      pod_range            = var.pod_range.secondary_pod_range.name
+      create_pod_range     = var.network_config.pod_range.create
+      enable_private_nodes = var.network_config.enable_private_nodes
+      pod_ipv4_cidr_block  = var.network_config.pod_range.cidr
+      pod_range            = var.network_config.pod_range.name
+      dynamic "additional_node_network_configs" {
+        for_each = try(var.network_config.additional_node_network_configs, [])
+        content {
+          network    = additional_node_network_configs.value.network
+          subnetwork = additional_node_network_configs.value.subnetwork
+        }
+      }
+      dynamic "additional_pod_network_configs" {
+        for_each = try(var.network_config.additional_pod_network_configs, [])
+        content {
+          subnetwork          = additional_pod_network_configs.value.network
+          secondary_pod_range = additional_pod_network_configs.value.secondary_pod_range
+          max_pods_per_node   = additional_pod_network_configs.value.max_pods_per_node
+        }
+      }
+      dynamic "network_performance_config" {
+        for_each = try(var.network_config.total_egress_bandwidth_tier, null) != null ? [""] : []
+        content {
+          total_egress_bandwidth_tier = var.network_config.total_egress_bandwidth_tier
+        }
+      }
+      dynamic "pod_cidr_overprovision_config" {
+        for_each = var.network_config.pod_cidr_overprovisioning_disabled ? [""] : []
+        content {
+          disabled = true
+        }
+      }
     }
   }
 

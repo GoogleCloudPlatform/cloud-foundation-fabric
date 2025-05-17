@@ -17,16 +17,13 @@ import json
 import os
 import click
 import logging
-import sys
 import google.cloud.logging
-from google.auth.transport.requests import AuthorizedSession
-from google.oauth2 import service_account
-from shared.secops import SecOpsUtils
 from jinja2 import Template
 from shared import utils
 from google.cloud import dlp_v2
 from google.cloud import storage
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from secops import SecOpsClient
 
 client = google.cloud.logging.Client()
 client.setup_logging()
@@ -37,79 +34,60 @@ logging.basicConfig(
     format='[%(levelname)-8s] - %(asctime)s - %(message)s')
 logging.root.setLevel(logging.DEBUG)
 
-SCOPES = [
-    "https://www.googleapis.com/auth/chronicle-backstory",
-    "https://www.googleapis.com/auth/malachite-ingestion"
-]
-
-# Threshold value in bytes for ingesting the logs to the SecOps.
-# SecOps Ingestion API allows the maximum 1MB of payload and we kept 0.5MB as a buffer.
-SIZE_THRESHOLD_BYTES = 950000
-
 SECOPS_REGION = os.environ.get("SECOPS_REGION")
-SECOPS_ALPHA_APIS_REGION = os.environ.get("SECOPS_ALPHA_APIS_REGION")
 GCP_PROJECT_ID = os.environ.get("GCP_PROJECT")
 SECOPS_EXPORT_BUCKET = os.environ.get("SECOPS_EXPORT_BUCKET")
 SECOPS_OUTPUT_BUCKET = os.environ.get("SECOPS_OUTPUT_BUCKET")
-SECOPS_SOURCE_SA_KEY_SECRET_PATH = os.environ.get(
-    "SECOPS_SOURCE_SA_KEY_SECRET_PATH")
-SECOPS_TARGET_SA_KEY_SECRET_PATH = os.environ.get(
-    "SECOPS_TARGET_SA_KEY_SECRET_PATH")
+SECOPS_SOURCE_PROJECT = os.environ.get("SECOPS_SOURCE_PROJECT")
+SECOPS_TARGET_PROJECT = os.environ.get("SECOPS_TARGET_PROJECT")
+SECOPS_SOURCE_CUSTOMER_ID = os.environ.get("SECOPS_SOURCE_CUSTOMER_ID")
 SECOPS_TARGET_CUSTOMER_ID = os.environ.get("SECOPS_TARGET_CUSTOMER_ID")
-
+SECOPS_TARGET_FORWARDER_ID = os.environ.get("SECOPS_TARGET_FORWARDER_ID")
 SKIP_ANONYMIZATION = False if (os.environ.get(
     "SKIP_ANONYMIZATION", "false").lower() == "false") else True
 DLP_DEIDENTIFY_TEMPLATE_ID = os.environ.get("DLP_DEIDENTIFY_TEMPLATE_ID")
 DLP_INSPECT_TEMPLATE_ID = os.environ.get("DLP_INSPECT_TEMPLATE_ID")
 DLP_REGION = os.environ.get("DLP_REGION")
 
-INGESTION_API_URL = F"https://{SECOPS_REGION}-malachiteingestion-pa.googleapis.com"
-URI_UNSTRUCTURED = f"{INGESTION_API_URL}/v2/unstructuredlogentries:batchCreate"
-
 
 def import_logs(export_date):
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_TARGET_CUSTOMER_ID,
+                               project_id=SECOPS_TARGET_PROJECT,
+                               region=SECOPS_REGION)
+
   storage_client = storage.Client()
   BUCKET = SECOPS_OUTPUT_BUCKET if not SKIP_ANONYMIZATION else SECOPS_EXPORT_BUCKET
   bucket = storage_client.bucket(BUCKET)
   export_ids = utils.get_secops_export_folders_for_date(BUCKET, export_date)
-  backstory_credentials = service_account.Credentials.from_service_account_file(
-      SECOPS_TARGET_SA_KEY_SECRET_PATH, scopes=SCOPES)
-  authed_session = AuthorizedSession(backstory_credentials)
 
   for export_id in export_ids:
     for folder in utils.list_anonymized_folders(BUCKET, export_id):
       log_type = folder.split("-")[0]
 
       for log_file in utils.list_log_files(BUCKET, f"{export_id}/{folder}"):
-        blob = bucket.blob(log_file)  # Directly get the blob object
-        with blob.open("r") as f:
-          cur_entries = []
-          body = {
-              "customer_id": SECOPS_TARGET_CUSTOMER_ID,
-              "log_type": log_type,
-              "entries": cur_entries
-          }
-          size_of_empty_payload = sys.getsizeof(json.dumps(body))
-          for line in f:
-            next_entries = cur_entries + [{"logText": line.rstrip('\n')}]
-            if size_of_empty_payload + sys.getsizeof(
-                json.dumps(next_entries)) >= SIZE_THRESHOLD_BYTES:
-              body["entries"] = cur_entries
-              LOGGER.debug(body)
-              LOGGER.debug(sys.getsizeof(json.dumps(body)))
-              response = authed_session.post(URI_UNSTRUCTURED, json=body)
-              LOGGER.debug(response)
-              cur_entries = [{"logText": line.rstrip('\n')}]
-            else:
-              cur_entries.append({"logText": line.rstrip('\n')})
+        try:
+          blob = bucket.blob(log_file)  # Directly get the blob object
+          with blob.open("r") as f:
+            logs = []
+            for line in f:
+              logs.append(line.rstrip('\n'))
+              if len(logs) == 1000:
+                response = chronicle.ingest_log(
+                    log_message=logs, log_type=log_type,
+                    forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+                LOGGER.debug(response)
+                logs = []
 
-          # Send any remaining entries
-          if cur_entries:
-            body["entries"] = cur_entries
-            LOGGER.debug(sys.getsizeof(json.dumps(body)))
-            LOGGER.debug(body)
-            response = authed_session.post(URI_UNSTRUCTURED, json=body)
-            LOGGER.debug(response)
+            # Send any remaining entries
+            if len(logs) > 0:
+              response = chronicle.ingest_log(
+                  log_message=logs, log_type=log_type,
+                  forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+              LOGGER.debug(response)
+        except Exception as e:
+          LOGGER.error(f"Error during log ingestion': {e}")
+          raise SystemExit(f'Error during log ingestion: {e}')
 
     # delete both export and anonymized buckets after ingesting logs
     utils.delete_folder(BUCKET, export_id)
@@ -120,7 +98,7 @@ def import_logs(export_date):
 
 
 def trigger_export(export_date: str, export_start_datetime: str,
-                   export_end_datetime: str, log_types: list):
+                   export_end_datetime: str, log_types: str):
   """
     Trigger secops export using Data Export API for a specific date
     :param secops_source_sa_key_secret_path:
@@ -133,36 +111,46 @@ def trigger_export(export_date: str, export_start_datetime: str,
     :param date: datetime (as string) with DD-MM-YYYY format
     :return:
   """
-  backstory_credentials = service_account.Credentials.from_service_account_file(
-      SECOPS_SOURCE_SA_KEY_SECRET_PATH, scopes=SCOPES)
-  secops_utils = SecOpsUtils(backstory_credentials)
+
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID,
+                               project_id=SECOPS_SOURCE_PROJECT,
+                               region=SECOPS_REGION)
 
   export_ids = []
+
+  if export_start_datetime and export_end_datetime:
+    start_time, end_time = datetime.strptime(
+        export_start_datetime,
+        "%Y-%m-%dT%H:%M:%SZ"), datetime.strptime(export_end_datetime,
+                                                 "%Y-%m-%dT%H:%M:%SZ")
+  else:
+    start_time, end_time = utils.format_date_time_range(date_input=export_date)
+  gcs_bucket = f"projects/{GCP_PROJECT_ID}/buckets/{SECOPS_EXPORT_BUCKET}"
+
   try:
-    if log_types is None:
-      export_response = secops_utils.create_data_export(
-          project=GCP_PROJECT_ID, export_date=export_date,
-          export_start_datetime=export_start_datetime,
-          export_end_datetime=export_end_datetime)
+    if log_types is None or log_types == "":
+      export_response = chronicle.create_data_export(start_time=start_time,
+                                                     end_time=end_time,
+                                                     gcs_bucket=gcs_bucket,
+                                                     export_all_logs=True)
       LOGGER.info(export_response)
-      export_ids.append(export_response["dataExportId"])
-      LOGGER.info(
-          f"Triggered export with ID: {export_response['dataExportId']}")
+      export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
+      export_ids.append(export_id)
+      LOGGER.info(f"Triggered export with ID: {export_id}")
     else:
-      for log_type in log_types:
-        export_response = secops_utils.create_data_export(
-            project=GCP_PROJECT_ID, export_date=export_date,
-            export_start_datetime=export_start_datetime,
-            export_end_datetime=export_end_datetime, log_type=log_type)
-        LOGGER.info(export_response)
-        export_ids.append(export_response["dataExportId"])
-        LOGGER.info(
-            f"Triggered export with ID: {export_response['dataExportId']}")
+      for log_type in log_types.split(","):
+        export_response = chronicle.create_data_export(start_time=start_time,
+                                                       end_time=end_time,
+                                                       gcs_bucket=gcs_bucket,
+                                                       log_type=log_type)
+        export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
+        export_ids.append(export_id)
+        LOGGER.info(f"Triggered export with ID: {export_id}")
   except Exception as e:
     LOGGER.error(f"Error during export': {e}")
     raise SystemExit(f'Error during secops export: {e}')
 
-  LOGGER.info(f"Export IDs: {export_response['dataExportId']}")
   return export_ids
 
 
@@ -172,19 +160,25 @@ def anonymize_data(export_date):
   :param export_date: date for which data should be anonymized
   :return:
   """
-  backstory_credentials = service_account.Credentials.from_service_account_file(
-      SECOPS_SOURCE_SA_KEY_SECRET_PATH, scopes=SCOPES)
-  secops_utils = SecOpsUtils(backstory_credentials)
+
+  client = SecOpsClient()
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID,
+                               project_id=SECOPS_SOURCE_PROJECT,
+                               region=SECOPS_REGION)
   export_ids = utils.get_secops_export_folders_for_date(SECOPS_EXPORT_BUCKET,
                                                         export_date=export_date)
 
   export_finished = True
   for export_id in export_ids:
-    export = secops_utils.get_data_export(export_id=export_id)
-    export_state = export["dataExportStatus"]["stage"]
-    LOGGER.info(f"Export status: {export_state}.")
-    if export_state != "FINISHED_SUCCESS":
+    export = chronicle.get_data_export(data_export_id=export_id)
+    LOGGER.info(f"Export response: {export}.")
+    if "dataExportStatus" in export and export["dataExportStatus"][
+        "stage"] == "FINISHED_SUCCESS":
+      export_state = export["dataExportStatus"]["stage"]
+      LOGGER.info(f"Export status: {export_state}.")
+    else:
       export_finished = False
+      break
 
   if export_finished:
     for export_id in export_ids:
@@ -209,10 +203,14 @@ def anonymize_data(export_date):
             "inspect_job": dlp_job
         }
 
-        dlp_client = dlp_v2.DlpServiceClient(
-            client_options={'quota_project_id': GCP_PROJECT_ID})
-        response = dlp_client.create_dlp_job(request=job_request)
-        LOGGER.info(response)
+        try:
+          dlp_client = dlp_v2.DlpServiceClient(
+              client_options={'quota_project_id': GCP_PROJECT_ID})
+          response = dlp_client.create_dlp_job(request=job_request)
+          LOGGER.info(response)
+        except Exception as e:
+          LOGGER.error(f"Error during export': {e}")
+          raise SystemExit(f'Error during secops export: {e}')
 
   else:
     LOGGER.error("Export is not finished yet, please try again later.")
@@ -286,7 +284,7 @@ def main_cli(export_date, export_start_datetime, export_end_datetime,
       trigger_export(export_date=export_date,
                      export_start_datetime=export_start_datetime,
                      export_end_datetime=export_end_datetime,
-                     log_types=log_type)
+                     log_types=','.join(log_type))
     case "ANONYMIZE-DATA":
       anonymize_data(export_date=export_date)
     case "IMPORT-DATA":

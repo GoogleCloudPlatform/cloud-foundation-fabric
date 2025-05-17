@@ -67,10 +67,11 @@ module "land-project" {
     "cloudresourcemanager.googleapis.com",
     "datalineage.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
-    "storage.googleapis.com",
     "storage-component.googleapis.com",
+    "storage.googleapis.com",
   ]
   service_encryption_key_ids = {
     "bigquery.googleapis.com" = compact([var.service_encryption_keys.bq])

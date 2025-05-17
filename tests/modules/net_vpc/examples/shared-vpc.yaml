@@ -49,7 +49,7 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_route: 2
+  google_compute_route: 3
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork: 1

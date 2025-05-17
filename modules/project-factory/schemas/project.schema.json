@@ -85,6 +85,10 @@
         }
       }
     },
+    "deletion_policy": {
+      "type": "string",
+      "enum": ["PREVENT", "DELETE", "ABANDON"]
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
@@ -199,6 +203,9 @@
           "properties": {
             "display_name": {
               "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
             },
             "iam_self_roles": {
               "type": "array",
@@ -316,6 +323,54 @@
       "patternProperties": {
         "^[a-z0-9_-]+$": {
           "type": "string"
+        }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "iam": {
+            "$ref": "#/$defs/iam"
+          },
+          "iam_bindings": {
+            "$ref": "#/$defs/iam_bindings"
+          },
+          "iam_bindings_additive": {
+            "$ref": "#/$defs/iam_bindings_additive"
+          },
+          "id": {
+            "type": "string"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     },

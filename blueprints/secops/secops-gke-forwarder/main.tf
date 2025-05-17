@@ -37,13 +37,14 @@ module "project" {
   name          = var.project_id
   services = concat([
     "compute.googleapis.com",
-    "iap.googleapis.com",
-    "stackdriver.googleapis.com",
     "chronicle.googleapis.com",
-    "container.googleapis.com",
-    "gkehub.googleapis.com",
     "connectgateway.googleapis.com",
-    "gkeconnect.googleapis.com"
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
+    "iap.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
   ])
 }
 

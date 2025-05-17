@@ -85,7 +85,7 @@ module "gke-nodepool" {
   node_count           = each.value.node_count
   node_locations       = each.value.node_locations
   nodepool_config      = each.value.nodepool_config
-  pod_range            = each.value.pod_range
+  network_config       = each.value.network_config
   reservation_affinity = each.value.reservation_affinity
   service_account = (
     each.value.service_account == null

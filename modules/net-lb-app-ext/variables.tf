@@ -68,13 +68,9 @@ variable "forwarding_rules_config" {
   validation {
     condition = alltrue([
       for k, v in var.forwarding_rules_config :
-      v.ports == null || (
-        var.protocol == "HTTPS" && alltrue([
-          for p in coalesce(v.ports, []) : contains([80, 8080], p)
-        ])
-      )
+      v.ports == null || (length(coalesce(v.ports, [])) <= 1)
     ])
-    error_message = "Ports can only be configured when using HTTP. Valid HTTP ports are 80 and 8080."
+    error_message = "Application Load Balancer supports at most one port per forwarding rule."
   }
 }
 
