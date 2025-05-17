@@ -1,6 +1,10 @@
 gitlab_config = {
-  access_token = "{token}"
+  access_token = "glpat-XXXXXXXXXXXXXXXXXXXXXXXX"
+  hostname = "gitlab.com"
+  ssh_port = 22
+  saas_group = "XXX" # Replace with path GitLab group
 }
+
 modules_config = {
   project_name = "modules"
   key_config = {

@@ -18,6 +18,6 @@ output "clone" {
   description = "Clone projects commands."
   value = {
     for k, v in var.projects :
-    k => "ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${v.group}/${k}.git"
+    k => "ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${(var.gitlab_config.saas_group != "" ? "${var.gitlab_config.saas_group}/${v.group}" : "${v.group}")}/${k}.git"
   }
 }
