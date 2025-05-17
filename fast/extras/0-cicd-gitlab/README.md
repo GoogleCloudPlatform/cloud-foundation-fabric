@@ -27,24 +27,19 @@ Gitlab hostname and SSH port on the `gitlab_config` section.
 
 ### Gitlab Config
 
-The `gitlab_config` variable controls where and how projects will be created.
-Gitlab can be SaaS, with the hostname set to gitlab.com (by default), or a private 
-instance with specific fqdn. If the hostname is set to `gitlab.com`, the `saas_group` 
-variable must be set with the group's path where resources will be created.
-
-The gitlab_config variable defines where projects will be hosted.
-GitLab can either be the SaaS offering (with the default hostname gitlab.com) 
+The `gitlab_config` variable defines where projects will be hosted.
+GitLab can either be the SaaS offering (with the default hostname `gitlab.com`) 
 or a self-hosted instance with a custom FQDN. If hostname is set to gitlab.com, you must 
-also set the saas_group variable to specify the group path where resources will be created.
+also set the `saas_group` variable to specify the group path where resources will be created.
 
-This is an example that configures a SaaS gitlab instance using my_group/gcp as default group :
+This is an example that configures a SaaS gitlab instance using `my_group/gcp` as default group :
 
 ```hcl
 gitlab_config = {
   access_token = "glpat-XXX"
-  hostname = "gitlab.com"
-  ssh_port = 22
-  saas_group = "my_group/gcp"
+  hostname     = "gitlab.com"
+  ssh_port     = 22
+  saas_group   = "my_group/gcp"
 }
 # tftest skip
 ```
@@ -54,7 +49,7 @@ This is an example that configures an on-premise gitlab instance :
 ```hcl
 gitlab_config = {
   access_token = "glpat-XXX"
-  hostname = "my-gitlab.example.com"
+  hostname     = "my-gitlab.example.com"
 }
 # tftest skip
 ```
