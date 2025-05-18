@@ -28,6 +28,8 @@ locals {
         ] : []),
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f],
         [for f in fileset(path.module, "${v.populate_from}/templates/*.tpl") : f],
+        [for f in fileset(path.module, "${v.populate_from}/templates/*.yaml") : f],
+        [for f in fileset(path.module, "${v.populate_from}/schemas/*.json") : f],
         [for f in fileset(path.module, "${v.populate_from}/terraform.tfvars") : f]
         ) : {
         project = k
@@ -64,7 +66,7 @@ locals {
       for k in local._repository_files :
       "${k.project}/${k.name}" => k
       if !endswith(k.name, ".tf") || (
-        !startswith(k.name, "0") && k.name != "globals.tf"
+        !startswith(k.name, "0") && !startswith(k.name, "1") && !startswith(k.name, "2") && k.name != "globals.tf"
       )
     },
     {
