@@ -36,6 +36,9 @@ locals {
       }
     ] if v.populate_from != null
   ])
+  gitlab_ssh_prefix = "git::ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/"
+  gitlab_base_path  = var.gitlab_config.hostname == "gitlab.com" ? "${var.gitlab_config.saas_group}/" : ""
+  gitlab_base_url   = "${local.gitlab_ssh_prefix}${local.gitlab_base_path}${local.modules_group}/${local.modules_project}.git"
   modules_files = {
     for f in concat(
       [for f in fileset(path.module, "../../../modules/*/*.svg") : f],
@@ -77,7 +80,7 @@ locals {
 }
 
 data "gitlab_group" "saas" {
-  count     = length(var.gitlab_config.saas_group) > 0 && var.gitlab_config.hostname == "gitlab.com" ? 1 : 0
+  count     = var.gitlab_config.hostname == "gitlab.com" ? 1 : 0
   full_path = var.gitlab_config.saas_group
 }
 
@@ -167,8 +170,7 @@ resource "gitlab_repository_file" "default" {
     ? base64encode(replace(
       file(each.value.file),
       "/source(\\s*)=\\s*\"../../../modules/([^/\"]+)\"/",
-      "source$1= \"git::ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${(var.gitlab_config.saas_group != "" && var.gitlab_config.hostname == "gitlab.com" ? "${var.gitlab_config.saas_group}/" : ""
-      )}${local.modules_group}/${local.modules_project}.git//${local.module_prefix}$2${local.modules_ref}\""
+      "source$1= \"${local.gitlab_base_url}//${local.module_prefix}$2${local.modules_ref}\""
     ))
     : endswith(each.value.name, ".png") || endswith(each.value.name, ".gif") || endswith(each.value.name, ".svg") ? filebase64(each.value.file) : base64encode(file(each.value.file))
   )

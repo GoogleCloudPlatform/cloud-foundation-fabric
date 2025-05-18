@@ -31,13 +31,12 @@ variable "gitlab_config" {
     access_token = string
     hostname     = optional(string, "gitlab.com")
     ssh_port     = optional(number, 22)
-    saas_group   = optional(string, "my_group")
+    saas_group   = optional(string, "")
   })
   validation {
     condition = (
-      var.gitlab_config.hostname == "gitlab.com"
-      &&
-      var.gitlab_config.saas_group != null
+      (var.gitlab_config.hostname == "gitlab.com" && var.gitlab_config.saas_group != "") ||
+      (var.gitlab_config.hostname != "gitlab.com" && var.gitlab_config.saas_group == "")
     )
     error_message = "Gitlab Saas parent group must be define."
   }
