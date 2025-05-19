@@ -18,6 +18,7 @@ factories_config = {
       data-consumer-bi = "group:gcp-consumer-bi@example.com"
       dp-product-a-0   = "group:gcp-data-product-a-0@example.com"
       dp-domain-a      = "group:gcp-data-domain-a@example.com"
+      dp-platform      = "group:dp-platform-0@example.com"
     }
   }
 }
