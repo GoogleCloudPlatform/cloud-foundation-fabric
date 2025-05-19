@@ -46,5 +46,8 @@ output "id" {
 
 output "perimeters" {
   description = "Regular service perimeter resources."
-  value       = google_access_context_manager_service_perimeter.regular
+  value = merge(
+    google_access_context_manager_service_perimeter.regular,
+    google_access_context_manager_service_perimeter.additive
+  )
 }
