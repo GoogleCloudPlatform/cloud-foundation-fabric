@@ -4,7 +4,7 @@ This stage focuses on the creation and management of an opinionated Data Platfor
 
 The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains, product and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
 
-Our implementation is closely aligned with [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) and builds up on established [FAST stages](../README.md) for crucial aspects of Google Cloud Platform implementation like resource hierarchy, networking, and security. These FAST components are considered prerequisites and fall outside the direct scope of this stage. It's also possible to run this stage in isolation by providing it the required prerequisites.
+While our implementation draws inspiration from [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) for illustrative purposes, its core design primarily emphasizes the "Data as a Product" concept, treating data as a first-class citizen. This stage can be integrated with established [FAST stages](../README.md) for foundational aspects like resource hierarchy, networking, and security. However, FAST is not a strict prerequisite; this solution can also be deployed independently, provided the necessary dependencies are met.
 
 <!-- BEGIN TOC -->
 - [Design Overview and Choices](#design-overview-and-choices)
