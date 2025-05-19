@@ -13,11 +13,12 @@ Our implementation is closely aligned with [Data Mesh principles on Google Cloud
   - [Folder & Project Structure](#folder-project-structure)
     - [Shared Services (Federated Governance)](#shared-services-federated-governance)
     - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
-    - [3. Data Products (DaaP)](#3-data-products-daap)
+    - [Data Products (DaaP)](#data-products-daap)
   - [Teams and Personas](#teams-and-personas)
     - [Central Data Platform Team](#central-data-platform-team)
     - [Data Domain Teams](#data-domain-teams)
     - [Data Product Teams](#data-product-teams)
+- [TODO](#todo)
 - [Configuration](#configuration)
   - [FAST prerequisites](#fast-prerequisites)
   - [Stage Variables](#stage-variables)
@@ -104,7 +105,7 @@ folder_config:
 
 Use the [.data/data-domains/domain-0/](domain-0) folder as reference to customize.
 
-#### 3. Data Products (DaaP)
+#### Data Products (DaaP)
 
 Each Data Product within a Data Domain (which is organized under a GCP Folder) encapsulated in its own dedicated Google Cloud Project. This separation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
 
