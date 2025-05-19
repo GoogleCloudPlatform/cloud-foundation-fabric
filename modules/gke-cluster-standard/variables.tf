@@ -207,7 +207,7 @@ variable "enable_features" {
       scope                         = optional(string)
       domain                        = optional(string)
     }))
-    enable_multi_networking         = optional(bool, false)
+    multi_networking         = optional(bool, false)
     database_encryption = optional(object({
       state    = string
       key_name = string

@@ -34,6 +34,7 @@ resource "google_container_cluster" "cluster" {
   subnetwork                               = var.vpc_config.subnetwork
   resource_labels                          = var.labels
   default_max_pods_per_node                = var.max_pods_per_node
+  enable_multi_networking                  = var.enable_features.multi_networking
   enable_intranode_visibility              = var.enable_features.intranode_visibility
   enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
   enable_shielded_nodes                    = var.enable_features.shielded_nodes
