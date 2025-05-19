@@ -19,6 +19,7 @@ While our solution is conceptually guided by [Data Mesh principles on Google Clo
     - [Data Product Team](#data-product-team)
 - [How to run this stage](#how-to-run-this-stage)
   - [FAST prerequisites](#fast-prerequisites)
+  - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Variable Configuration](#variable-configuration)
   - [Data Domain and Product Data Files](#data-domain-and-product-data-files)
   - [Context replacements](#context-replacements)
@@ -228,6 +229,52 @@ stage3_config:
 ```
 
 Once the two above configurations are in place, apply the resource management,  networking and security stages in succession. Be sure to refresh the tfvars files in the network and security stages if needed (e.g. by re-running `fast-links.sh`).
+
+### Provider and Terraform variables
+
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+
+The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+
+```bash
+# File linking commands for Data Platform (dev) stage
+
+# provider file
+ln -s ~/fast-config/providers/3-data-platform-dev-providers.tf ./
+
+# input files from other stages
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional location for this stage terraform.tfvars (manually managed)
+ln -s ~/fast-config/3-data-platform-dev.auto.tfvars ./
+
+# optional files
+ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
+```
+
+```bash
+../fast-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# File linking commands for Data Platform (dev) stage
+
+# provider file
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-data-platform-dev-providers.tf ./
+
+# input files from other stages
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+
+# conventional location for this stage terraform.tfvars (manually managed)
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/3-data-platform-dev.auto.tfvars ./
+
+# optional files
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
+```
 
 ### Variable Configuration
 
