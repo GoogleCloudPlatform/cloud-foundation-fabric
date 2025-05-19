@@ -38,8 +38,6 @@ The following diagram represent the high-level architecture of the Data Platform
   <img src="diagram-data-platform.png" alt="High level diagram.">
 </p>
 
-<img src="diagram-folders.png" alt="Folder structure." style="float: right; margin-top: 20px; margin-left: 15px; margin-bottom: 10px;" />
-
 ### Folder & Project Structure
 
 The stage manages the following three high-level logical components implemented via GCP folders and projects:
@@ -47,6 +45,10 @@ The stage manages the following three high-level logical components implemented 
 - "Central Shared Services", a single central project e.g. `dev-dp-0`, in which Dataplex Catalog Aspect Types, Policy Tags, and Resource Manager tags a.k.a. "Secure Tags" are defined
 - one or more "Data Domains", each composed of a folder e.g. `Data Domain 0` with a top-level shared project e.g. `dev-dp-domain-0` hosting shared resources such as Composer at the domain level, and an additional sub-folder for hosting data products e.g. "Data Products"
 - one or more "data products" per domain, each composed of a project e.g. `dev-dp-product-0-a`, and related resources that are optional
+
+<p align="center">
+<img src="diagram-folders.png" alt="Folder structure." width=500px />
+</p>
 
 #### Central Shared Services (Federated Governance)
 
