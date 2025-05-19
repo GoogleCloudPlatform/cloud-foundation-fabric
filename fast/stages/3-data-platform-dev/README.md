@@ -35,10 +35,10 @@ While our implementation draws inspiration from [Data Mesh principles on Google 
 The following diagram represent the high-level architecture of the Data Platform related projects and their associated resources managed by this stage:
 
 <p align="center">
-  <img src="diagram.png" alt="High level diagram.">
+  <img src="diagram-data-platform.png" alt="High level diagram.">
 </p>
 
-<img src="diagram_folders.png" alt="Folder structure." style="float: right; margin-top: 20px; margin-left: 15px; margin-bottom: 10px;" />
+<img src="diagram-folders.png" alt="Folder structure." style="float: right; margin-top: 20px; margin-left: 15px; margin-bottom: 10px;" />
 
 ### Folder & Project Structure
 
