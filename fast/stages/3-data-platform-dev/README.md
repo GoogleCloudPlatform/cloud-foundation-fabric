@@ -8,7 +8,6 @@ While our implementation draws inspiration from [Data Mesh principles on Google 
 
 <!-- BEGIN TOC -->
 - [Design Overview and Choices](#design-overview-and-choices)
-  - [Resource Hierarchy Overview](#resource-hierarchy-overview)
   - [Data Platform Architecture](#data-platform-architecture)
   - [Folder & Project Structure](#folder-project-structure)
     - [Shared Services (Federated Governance)](#shared-services-federated-governance)
@@ -30,14 +29,6 @@ While our implementation draws inspiration from [Data Mesh principles on Google 
 <!-- END TOC -->
 
 ## Design Overview and Choices
-
-### Resource Hierarchy Overview
-
-The following diagram shows where the Data Platform and its associated projects sit within the organization's resource hierarchy:
-
-<p align="center">
-  <img src="diagram_resman.png" alt="Data Platform Resman." width="200px">
-</p>
 
 ### Data Platform Architecture
 
