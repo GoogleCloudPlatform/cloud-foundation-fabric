@@ -186,7 +186,28 @@ module "projects-iam" {
     })
   }
   # IAM by principals would trigger dynamic key errors so we don't interpolate
-  iam_by_principals = try(each.value.iam_by_principals, {})
+  # iam_by_principals = try(each.value.iam_by_principals, {})
+  iam_by_principals = {
+    for k, v in try(each.value.iam_by_principals, {}) :
+    try(
+      # project service accounts (sa)
+      module.service-accounts["${each.key}/${k}"].iam_email,
+      # automation service account (rw)
+      local.context.iam_principals["${each.key}/automation/${k}"],
+      # automation service account (automation/rw)
+      local.context.iam_principals["${each.key}/${k}"],
+      # other projects service accounts (project/sa)
+      module.service-accounts[k].iam_email,
+      # other automation service account (project/automation/rw)
+      local.context.iam_principals[k],
+      # passthrough + error handling using tonumber until Terraform gets fail/raise function
+      (
+        strcontains(k, ":")
+        ? k
+        : tonumber("[Error] Invalid member: '${k}' in project '${each.key}'")
+      )
+    ) => v
+  }
   # Shared VPC configuration is done at stage 2, to avoid dependency cycle between project service accounts and
   # IAM grants done for those service accounts
   factories_config = {
