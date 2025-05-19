@@ -27,6 +27,7 @@ resource "google_container_cluster" "cluster" {
   network                  = var.vpc_config.network
   subnetwork               = var.vpc_config.subnetwork
   resource_labels          = var.labels
+  enable_multi_networking  = var.enable_features.multi_networking
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
   enable_tpu               = var.enable_features.tpu
   initial_node_count       = 1
