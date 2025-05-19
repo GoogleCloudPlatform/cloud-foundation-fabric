@@ -44,7 +44,7 @@ The stage manages the following three high-level logical components implemented 
 
 - "Central Shared Services", a single central project e.g. `dev-dp-0`, in which Dataplex Catalog Aspect Types, Policy Tags, and Resource Manager tags a.k.a. "Secure Tags" are defined
 - one or more "Data Domains", each composed of a folder e.g. `Data Domain 0` with a top-level shared project e.g. `dev-dp-domain-0` hosting shared resources such as Composer at the domain level, and an additional sub-folder for hosting data products e.g. "Data Products"
-- one or more "data products" per domain, each composed of a project e.g. `dev-dp-product-0-a`, and related resources that are optional
+- one or more "Data Products" per domain, each composed of a project e.g. `dev-dp-product-0-a`, and related resources that are optional
 
 <p align="center">
 <img src="diagram-folders.png" alt="Folder structure." width=500px />
@@ -130,7 +130,7 @@ This stage provides four predefined role profiles discussed in this section, des
 |-|:-:|:-:|:-:|
 |Central Data Platform Team|`ADMIN`|`Log and Metrics Viewer`|`Log and Metrics Viewer`|
 |Data Domain Team|`READ/USAGE`|`ADMIN`|`Log and Metrics Viewer`|
-|Data Domain team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
+|Data Product Team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
 
 
 Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/data-domains/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/data-domains/domain-0/product-0.yaml) files as a starting point for managing IAM.
