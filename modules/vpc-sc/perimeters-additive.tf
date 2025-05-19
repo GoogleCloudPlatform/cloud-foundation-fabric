@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Regular service perimeter resources.
+# tfdoc:file:description Regular service perimeter resources which ignore resource changes.
 
-locals {
-  egress_policies  = merge(local.data.egress_policies, var.egress_policies)
-  ingress_policies = merge(local.data.ingress_policies, var.ingress_policies)
-  perimeters       = merge(local.data.perimeters, var.perimeters)
-}
-
-resource "google_access_context_manager_service_perimeter" "regular" {
+resource "google_access_context_manager_service_perimeter" "additive" {
   for_each = {
-    for k, v in local.perimeters : k => v if !v.ignore_resource_changes
+    for k, v in local.perimeters : k => v if v.ignore_resource_changes
   }
   parent                    = "accessPolicies/${local.access_policy}"
   name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
@@ -400,6 +394,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
     }
+  }
+  lifecycle {
+    ignore_changes = [spec[0].resources, status[0].resources]
   }
   depends_on = [
     google_access_context_manager_access_policy.default,
