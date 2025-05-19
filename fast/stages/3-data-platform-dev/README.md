@@ -131,7 +131,7 @@ This stage provides four predefined role profiles discussed in this section, des
 |Data Domain team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
 
 
-Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/domain-0/product-0.yaml) files as a starting point for managing IAM.
+Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/data-domains/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/data-domains/domain-0/product-0.yaml) files as a starting point for managing IAM.
 
 
 #### Central Data Platform Team
