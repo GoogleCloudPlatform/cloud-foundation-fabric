@@ -391,6 +391,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
+    kubelet_readonly_port_enabled = optional(bool, true)
   })
   default  = {}
   nullable = false

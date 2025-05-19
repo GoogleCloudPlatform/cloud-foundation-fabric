@@ -266,10 +266,13 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
-  dynamic "node_pool_auto_config" {
-    for_each = var.node_config.tags != null ? [""] : []
-    content {
-      network_tags {
+  node_pool_auto_config {
+    node_kubelet_config {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
+    }
+    dynamic "network_tags" {
+      for_each = var.node_config.tags != null ? [""] : []
+      content {
         tags = toset(var.node_config.tags)
       }
     }

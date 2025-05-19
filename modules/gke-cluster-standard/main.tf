@@ -81,6 +81,7 @@ resource "google_container_cluster" "cluster" {
   # gcfs_config deactivation need the block to be defined so it can't be dynamic
   node_pool_defaults {
     node_config_defaults {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
       gcfs_config {
         enabled = var.enable_features.image_streaming
       }
