@@ -22,13 +22,12 @@ automation:
     - dp-product-a-0
 
 deploy_config:
-  composer:
-    {}
+  composer: {}
     # Uncomment for VPC Network Connectivity
     # region defaults to var.location
     # node_config:
-    #   network: dev-spoke-0
-    #   subnetwork: europe-west8/dev-dataplatform
+    #   network: dev-net-spoke-0
+    #   subnetwork: europe-west1/dev-dataplatform
 
 project_config:
   iam:
@@ -58,7 +57,7 @@ project_config:
     - dataplex.googleapis.com
     - datalineage.googleapis.com
   shared_vpc_service_config:
-    host_project: dev-spoke-0
+    host_project: dev-net-spoke-0
     service_agent_iam:
       roles/composer.sharedVpcAgent:
         - composer

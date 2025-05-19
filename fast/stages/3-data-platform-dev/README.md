@@ -4,23 +4,22 @@ This stage focuses on the creation and management of an opinionated Data Platfor
 
 The Data Platform's foundation, established in this stage, provides core capabilities without prescribing specific data handling, computation, or processing for individual workloads or Data Products. This allows flexibility in the technology choices for individual data domains, product and teams. The platform's approach is to encourage shared patterns, aiming to optimize, standardize, accelerate adoption, and ultimately reduce implementation costs and management overhead across Data Products.
 
-While our implementation draws inspiration from [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh) for illustrative purposes, its core design primarily emphasizes the "Data as a Product" concept, treating data as a first-class citizen. This stage can be integrated with established [FAST stages](../README.md) for foundational aspects like resource hierarchy, networking, and security. However, FAST is not a strict prerequisite; this solution can also be deployed independently, provided the necessary dependencies are met.
+While our solution is conceptually guided by [Data Mesh principles on Google Cloud Platform](https://cloud.google.com/architecture/data-mesh), its adoption doesn't strictly require adherence to every Data Mesh concept. However, the 'Data as a Product' principle that treats data as a first-class citizen is fundamental to our implementation as well. For foundational elements like resource hierarchy, networking, and security, this stage can integrate with established [FAST stages](../README.md). Nevertheless, FAST is not a mandatory prerequisite; the solution can also be deployed independently, as long as all necessary dependencies are satisfied.
 
 <!-- BEGIN TOC -->
 - [Design Overview and Choices](#design-overview-and-choices)
   - [Data Platform Architecture](#data-platform-architecture)
   - [Folder & Project Structure](#folder-project-structure)
-    - [Shared Services (Federated Governance)](#shared-services-federated-governance)
+    - [Central Shared Services (Federated Governance)](#central-shared-services-federated-governance)
     - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
     - [Data Products (DaaP)](#data-products-daap)
   - [Teams and Personas](#teams-and-personas)
     - [Central Data Platform Team](#central-data-platform-team)
-    - [Data Domain Teams](#data-domain-teams)
-    - [Data Product Teams](#data-product-teams)
-- [TODO](#todo)
-- [Configuration](#configuration)
+    - [Data Domain Team](#data-domain-team)
+    - [Data Product Team](#data-product-team)
+- [How to run this stage](#how-to-run-this-stage)
   - [FAST prerequisites](#fast-prerequisites)
-  - [Stage Variables](#stage-variables)
+  - [Variable Configuration](#variable-configuration)
   - [Data Domain and Product Data Files](#data-domain-and-product-data-files)
   - [Context replacements](#context-replacements)
 - [Files](#files)
@@ -45,19 +44,19 @@ The following diagram represent the high-level architecture of the Data Platform
 The stage manages the following three high-level logical components implemented via GCP folders and projects:
 
 - "Central Shared Services", a single central project e.g. `dev-dp-0`, in which Dataplex Catalog Aspect Types, Policy Tags, and Resource Manager tags a.k.a. "Secure Tags" are defined
-- one or more "Data Domains", each composed of a folder e.g. `Data Domain 0` containing a project e.g. `dev-dp-domain-0` hosting shared resources such as Composer at the domain level, and a folder for hosting data products e.g. "Data Products"
+- one or more "Data Domains", each composed of a folder e.g. `Data Domain 0` with a top-level shared project e.g. `dev-dp-domain-0` hosting shared resources such as Composer at the domain level, and an additional sub-folder for hosting data products e.g. "Data Products"
 - one or more "data products" per domain, each composed of a project e.g. `dev-dp-product-0-a`, and related resources that are optional
 
-#### Shared Services (Federated Governance)
+#### Central Shared Services (Federated Governance)
 
 Central Shared Services Project provides the standardized central capabilities to foster federated governance processes. These are implemented via established foundations that enable cross-domain data discovery, data sharing, self-service functionalities, and consistent governance. A key objective of these centrally managed services is to reduce the operational burden for data domains in producing and consuming data products, while also fostering the cross-domain collaboration necessary for the data mesh to operate efficiently.
 
-Managed within a dedicated "Central Services" project, these shared services deliver core, platform-wide capabilities. This includes:
+Core, platform-wide capabilities are delivered as shared services managed within a dedicated "Central Shared Services" project. These capabilities include:
 
-- [Dataplex Catalog Aspect Types](https://cloud.google.com/dataplex/docs/enrich-entries-metadata) configuration: create a YAML file definition for each Aspect Type in the `data/aspect-types` folder.
-- [Policy Tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags) definition: configure them in the `central_project_config.policy_tags` variable.
+- [Dataplex Catalog Aspect Types](https://cloud.google.com/dataplex/docs/enrich-entries-metadata): Create a YAML file definition for each Aspect Type in the `data/aspect-types` directory.
+- [Policy Tags](https://cloud.google.com/bigquery/docs/best-practices-policy-tags): Configure these via the `central_project_config.policy_tags` Terraform variable.
 
-Configure accordingly to your needs the `central_project_config` terraform variable. Use the [terraform.tfvars.sample](./terraform.tfvars.sample) as reference.
+Ensure the main `central_project_config` Terraform variable is configured according to your requirements. The `terraform.tfvars.sample` file provides a reference.
 
 #### Data Domains (Domain-Driven Ownership)
 
@@ -67,9 +66,9 @@ To support this ownership model and ensure clear separation, each logical Data D
 
 Within each Data Domain, a corresponding Google Cloud "Data Domain" project serves as the primary container for all its specific services and resources. A dedicated Cloud Composer environment is provisioned within this project for orchestrating the domain's data workflows. To adhere to the principle of least privilege, this Composer environment operates with a dedicated IAM Service Account capable of impersonating the necessary Data Product-specific service accounts within that domain.
 
-A data domain will be created for each folder within the `data/data-domains` folder. The configuration should be provided in a `_config.yaml` file within each folder. Within the `_config.yaml` you can configure IAM, services to enable in the shared folder and the Cloud composer configuration.
+Define data domains by creating individual sub-folders within the `data/data-domains` directory. Each domain's configuration, including IAM permissions, services to enable in its shared folder, and settings for its Cloud Composer instance, should be specified in a `_config.yaml` file within its respective subfolder. Refer to the 
 
-It is suggested to grant access to consumers on exposed data metadata relying IAM secure tag created in the central project.
+We recommend granting data consumers access to exposed data product metadata through IAM Secure Tags created in the central project.
 
 ```yaml
 folder_config:
@@ -92,19 +91,19 @@ folder_config:
         expression: resource.matchTag('exposure', 'allow')
 ```
 
-Use the [.data/data-domains/domain-0/](domain-0) folder as reference to customize.
+Refer to the ["domain-0"](./data/data-domains/domain-0) directory's [_config.yaml](./data/data-domains/domain-0/_config.yaml) as a starting point for setting up and configuring an example Data Domain.
 
 #### Data Products (DaaP)
 
-Each Data Product within a Data Domain (which is organized under a GCP Folder) encapsulated in its own dedicated Google Cloud Project. This separation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
+Each Data Product within a Data Domain (which is organized under the "Data Products" GCP Folder per domain) is encapsulated in its own dedicated Google Cloud Project. This separation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
 
 For every Data Product project created, its exposure layer (e.g. specific BigQuery datasets or Cloud Storage buckets) is carefully configured and deployed. This involves assigning the relevant "Secure Tags" that were established in the central Shared Services project. Applying these tags is crucial as it allows for the implementation of precise IAM bindings based on IAM conditions, thereby ensuring fine-grained and secure data access in line with least privilege principles.
 
-Resources needed to import and curate data (e.g. intermediate dataset, dataproc instances, ...) are not deployed by the central Data Platform team. Each data Product owner is responsible for the definition of resources needed. The deployment of those resources will belong to a different Teraform state.
+Following a data-as-a-product approach, individual Data Product Owners are responsible for defining and deploying resources essential for data ingestion and processing (e.g., intermediate datasets, Dataproc instances etc.). The Central Data Platform Team provides a self-service platform and foundational building blocks to enable cross-domain sharing; it does not implement domain-specific resources or dictate how data products are built, including their ingestion and transformation pipelines. Reflecting this distributed ownership, each data product's infrastructure is managed in its own Terraform state.
 
-Within each domain, you can instantiate a data product creating a `data-product-X.yaml` file in the data domain's folder. In the YAML file you can configure IAM, services, products to configure in the exposure layer.
+Within each Domain, you can define a new data product by creating a `data-product-{x}.yaml` file in the Data Domain's folder. In this YAML file, you can configure IAM permissions, services to enable, and specific resources or settings for the product's exposure layer.
 
-It is suggested to grant access to consumer on exposed data configuring IAM binging in the `exposure_layer` variable.
+To grant data consumers access to exposed data, we recommend configuring IAM bindings within the `exposure_layer` variable in the data product's YAML configuration file.
 
 ```yaml
 exposure_layer:
@@ -116,66 +115,59 @@ exposure_layer:
         - data-consumer-bi
 ```
 
-Use the [./data/data-domains/domain-0/product-0.yaml](product-0.yaml) file as reference to customize.
+Refer to the ["domain-0"](./data/data-domains/domain-0) directory's [product-0.yaml](./data/data-domains/domain-0/product-0.yaml) data product definition as a starting point for setting up and configuring an example Data Product.
 
 ### Teams and Personas
 
 Effective data mesh operation relies on well-defined roles and responsibilities. Ownership is typically assigned to team archetypes, also referred to as functions. These functions represent the core user journeys of individual roles interacting with the data mesh. To clearly describe these journeys, specific user roles are defined within these functions. These user roles can be split or combined bases on specific needs and the scale of each enterprise.
 
-This stage comes with four predefined role profiles, which are meant as a starting example open to customizations. It is suggested to rely on [context replacements](Context Replacements) logic where you can configure the mapping between short names and group values in the `factories_config.context.iam_principals` variable. The mapping will let you refer in YAML file to the group using the short name.
+This stage provides four predefined role profiles discussed in this section, designed as initial examples that you can tailor to your needs. To simplify references to IAM principals, leverage the [context replacements](#context-replacements) logic. This involves configuring a mapping between concise short names and full group values in the `factories_config.context.iam_principals` Terraform variable. Once configured, you can use these short names to refer to the groups in your YAML files.
 
-Use IAM configured in the [./terraform.tfvars.sample](terraform.tfvars.sample), [./data/domain-0/_config.yaml](Data Domain YAML) and [./data/domain-0/product-0.yaml](Data Product YAML) as reference to customize.
+|Group|Central Shared Services Project|Data Domain Folder|Data Product Project|
+|-|:-:|:-:|:-:|
+|Central Data Platform Team|`ADMIN`|`Log and Metrics Viewer`|`Log and Metrics Viewer`|
+|Data Domain Team|`READ/USAGE`|`ADMIN`|`Log and Metrics Viewer`|
+|Data Domain team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
+
+
+Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/domain-0/product-0.yaml) files as a starting point for managing IAM.
+
 
 #### Central Data Platform Team
 
-This function defines the overall data platform architecture, establishes shared infrastructure, and enforces central data governance policies and standards across the data mesh. It enables data producers with tools, paved path solutions and best practices, ensuring high data quality, security, and trustworthiness for consumers. Its focus is on providing the foundations of a self-serve data platform as well as universal governance standards for all users. The Central Data Platform team often works in collaboration with the Data Governance functions within enterprises.
+This team defines the overall data platform architecture, establishes shared infrastructure, and enforces central data governance policies and standards across the data mesh. It empowers Data Producers with building blocks and best practices, ensuring high data quality, security, and trustworthiness for consumers. The primary focus is on providing the foundations for a self-serve data platform and universal governance standards for all users. The Central Data Platform team often collaborates with Data Governance functions within the enterprise.
 
-The group tipically has `ADMIN` access on resources in the central project. The team tipically do not have access to the underling data stored on each data domain and product but has access to log and metrics information to monitor the data platform health.
+Typically, this group has `ADMIN` access to resources in the "Central Shared Services" project. While the team usually doesn't have access to the underlying data stored in each Data Domain and Data Product, it can access log and metrics information to monitor the data platform's health and performance.
 
-|Group|Central Project|Data Domain|Data Product|
-|-|:-:|:-:|:-:|
-|Central Data Platform team|`ADMIN`|`Log and Metrics Viewer`|`Log and Metrics Viewer`|
+The team is also generally responsible for configuring IAM bindings on Data Domains and Data Products.
 
-The team is usually responsible to configure IAM bindings on data domains and products.
+#### Data Domain Team
 
-#### Data Domain Teams
+Aligned with specific business areas (e.g., customer, finance, distribution), this team holds clearly defined ownership of data within that domain. Key responsibilities include establishing and upholding the purpose, scope, and boundaries for data products within their domain. This is achieved through ongoing activities such as:
 
-Aligned with specific business areas (e.g., customer, finance, distribution), this function holds clearly defined ownership of data within that domain. Key responsibilities include establishing and upholding a data product's purpose, scope, and boundaries. This is achieved through ongoing activities such as:
+- Creating and maintaining the domain-wide data product roadmap.
+- Implementing robust data security measures specific to the domain.
+- Ensuring adherence to all relevant compliance obligations for their data.
+- Continuously monitoring the usage and performance of their data products.
 
-- Creating and maintaining its domain-wide data product roadmap.
-- Implementing robust data security measures.
-- Ensuring adherence to all relevant compliance obligations.
-- Continuously monitoring usage and performance.
+Typically, this team has `ADMIN` access to resources in their top-level shared project for the Data Domain and `READ/USAGE` access to relevant resources created in the Central Shared Services (e.g., Aspect Types). While the team usually does not have access to the underlying data stored in each individual Data Product (unless they are also the Product Owner), they can access log and metrics information to monitor the health and usage of their domain's data products and resources. This team is typically not the primary owner for configuring IAM bindings on individual data products, as this responsibility often lies with Data Product Owners or the Central Data Platform team.
 
-The group tipically has `ADMIN` access on resources in the shared data domain project, read and usage access to resources created in the central project (e.g. aspects type). The team tipically do not have access to the underling data stored on each data product but has access to log and metrics information to monitor the data platform health. The team is not tipically owner for IAM bindings.
+#### Data Product Team
 
-|Group|Central Project|Data Domain|Data Product|
-|-|:-:|:-:|:-:|
-|Data Domain team|`READ/USAGE`|`ADMIN`|`Log and Metrics Viewer`|
+This team is responsible for the end-to-end lifecycle of a specific Data Product. Data Product Teams, which can be part of or work closely with a Data Domain Team, develop, operate, and maintain their assigned Data Product. Their tasks include defining the Data Product's schema and interfaces, implementing data ingestion and transformation pipelines, ensuring data quality and security for their product, managing its end-to-end lifecycle, and supporting its data consumers.
 
-#### Data Product Teams
+Typically, this group has `ADMIN` access to resources within their Data Product project(s). They also usually have `READ/USAGE` access to relevant resources in the Central Shared Services project (e.g., Aspect Types) and the Data Domain's top-level shared project (e.g., Cloud Composer). This team is generally not the primary owner for configuring overarching IAM bindings, as that responsibility often lies elsewhere.
 
-This function is responsible for the end-to-end lifecycle of a specific data product. Data Product Teams (which may be part of or work closely with a Data Domain Team) develop, operate, and maintain their assigned data product. Their tasks include defining the data product's schema and interfaces, implementing data ingestion and transformation pipelines, ensuring data quality and security for their product, managing its roadmap, and supporting its data consumers.
+Key responsibilities for the Data Product Team include:
+- Identifying and configuring the necessary resources within their data product project to perform ETL operations for the exposure layer. These resources should be deployed in a separate Terraform state, using the dedicated automation service account created for each data product.
+- Configuring Policy Tags to protect PII and sensitive data.
+- Defining and managing metadata for aspects related to tables and other resources within their data product's exposure layer.
 
-The group tipically has `ADMIN` access on resources in the data product project, read and usage access to resources created in the central project (e.g. aspects type) and data domain shared project (e.g. Cloud Composer). The team is not tipically owner for IAM bindings.
+When using BigQuery in the exposure layer, we recommend using [authorized datasets](https://cloud.google.com/bigquery/docs/authorized-datasets). This can be achieved by configuring the exposure dataset to authorize access to the underlying dataset that hosts the curated data.
 
-|Group|Central Project|Data Domain|Data Product|
-|-|:-:|:-:|:-:|
-|Data Domain team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
+## How to run this stage
 
-The team is responsible of:
-
-- identify and configure resources needed in the data product to Extract, Load and Transform data to expose in the exposure layer. Those resources should be deployed in a different Terraform state using the automation service account created for each data product.
-- configure Policy Tags to protect PII data.
-- configure metadata on Aspects related to tables and resources configured in the exposure layer.
-
-When using BigQuery in the exposure layer, it is suggested to rely on Authorized view configuring the exposure dataset as an authorized dataset of the underling dataset hosting curated data.
-
-## TODO
-
-- How to run the stage (similar to all other FAST starges copy&paste)
-
-## Configuration
+If this stage is deployed within a FAST-based GCP organization, we recommend executing it after foundational FAST `stage-2` components like `networking` and `security`. This sequencing is advisable as specific data platform features in this stage might depend on configurations from these earlier stages. Although this stage can be run independently, instructions for such a standalone setup are beyond the scope of this document.
 
 ### FAST prerequisites
 
@@ -237,9 +229,9 @@ stage3_config:
 
 Once the two above configurations are in place, apply the resource management,  networking and security stages in succession. Be sure to refresh the tfvars files in the network and security stages if needed (e.g. by re-running `fast-links.sh`).
 
-### Stage Variables
+### Variable Configuration
 
-The default data files provided as an example makes a few assumptions that needs to be matched by corresponding variables configured for the stage:
+The default data files provided as an example makes a few assumptions that needs to be matched by corresponding Terraform variables configured for the stage:
 
 - the `location` variable needs to be explicitly configured, as it's used as a default location for buckets, datasets, and Composer; locations can be individually overridden but a default needs to be in place
 - the domain `deploy_config.composer.node_config.subnetwork` attribute needs to match the location defined above; Composer network and subnetwork use interpolation from FAST networking outputs, explicit IDs can be used instead if needed

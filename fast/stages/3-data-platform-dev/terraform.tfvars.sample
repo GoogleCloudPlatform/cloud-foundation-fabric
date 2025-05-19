@@ -1,3 +1,5 @@
+location = "europe-west1"
+
 central_project_config = {
   iam_by_principals = {
     "group:dp-platform-0@example.com" = [
