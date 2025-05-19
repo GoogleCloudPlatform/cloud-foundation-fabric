@@ -47,6 +47,8 @@ The following diagram represent the high-level architecture of the Data Platform
   <img src="diagram.png" alt="High level diagram.">
 </p>
 
+<img src="diagram_folders.png" alt="Folder structure." style="float: right; margin-top: 20px; margin-left: 15px; margin-bottom: 10px;" />
+
 ### Folder & Project Structure
 
 The stage manages the following three high-level logical components implemented via GCP folders and projects:
@@ -55,9 +57,6 @@ The stage manages the following three high-level logical components implemented 
 - one or more "data domains", each composed of a folder containing a project hosting shared resources at the domain level e.g. Composer, and a folder for hosting data products
 - one or more "data products" per domain, each composed of a project, and related resources that are optional*
 
-<p align="center">
-  <img src="diagram_folders.png" alt="Folder structure." width="300px">
-</p>
 
 #### Shared Services (Federated Governance)
 
