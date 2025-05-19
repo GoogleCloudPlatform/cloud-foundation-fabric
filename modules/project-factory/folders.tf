@@ -63,8 +63,13 @@ module "hierarchy-folder-lvl-1" {
       )
     })
   }
-  iam_by_principals = lookup(each.value, "iam_by_principals", {})
-  org_policies      = lookup(each.value, "org_policies", {})
+  iam_by_principals = {
+    for k, v in lookup(each.value, "iam_by_principals", {}) :
+    lookup(
+      var.factories_config.context.iam_principals, k, k
+    ) => v
+  }
+  org_policies = lookup(each.value, "org_policies", {})
   tag_bindings = {
     for k, v in lookup(each.value, "tag_bindings", {}) :
     k => lookup(var.factories_config.context.tag_values, v, v)
