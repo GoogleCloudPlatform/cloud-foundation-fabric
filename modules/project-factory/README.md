@@ -350,6 +350,9 @@ service_encryption_key_ids:
 services:
   - container.googleapis.com
   - storage.googleapis.com
+iam_by_principals:
+  app-0-be:
+    - roles/storage.objectViewer
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
