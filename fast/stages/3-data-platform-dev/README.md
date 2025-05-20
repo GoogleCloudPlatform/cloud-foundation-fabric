@@ -132,6 +132,7 @@ This stage provides four predefined role profiles discussed in this section, des
 |Data Domain Team|`READ/USAGE`|`ADMIN`|`Log and Metrics Viewer`|
 |Data Product Team|`READ/USAGE`|`READ/USAGE`|`ADMIN`|
 
+Please note that the above access scopes and the example configurations provided as part of this stage are for development purposes and therefore the IAM permissions and roles assigned to each team / user personas would have to be reviewed to follow least privilege principles in a production deployment.
 
 Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/data-domains/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/data-domains/domain-0/product-0.yaml) files as a starting point for managing IAM.
 
