@@ -80,8 +80,9 @@ module "common-project" {
     "dataplex.googleapis.com",
     "dlp.googleapis.com",
     "iam.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
   ]
 }
 

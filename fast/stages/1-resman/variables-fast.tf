@@ -96,6 +96,7 @@ variable "groups" {
     gcp-devops              = optional(string, "gcp-devops")
     gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-secops-admins       = optional(string, "gcp-secops-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
   })
   nullable = false
@@ -144,6 +145,18 @@ check "prefix_validator" {
     condition     = (try(length(var.prefix), 0) < 10) || (try(length(var.prefix), 0) < 12 && var.root_node != null)
     error_message = "var.prefix must be 9 characters or shorter for organizations, and 11 chars or shorter for tenants."
   }
+}
+
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization policy tags."
+  type = object({
+    key_id   = optional(string)
+    key_name = optional(string, "org-policies")
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "prefix" {

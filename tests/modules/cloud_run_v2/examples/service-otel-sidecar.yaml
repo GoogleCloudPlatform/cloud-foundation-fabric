@@ -1,0 +1,58 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    template:
+    - containers:
+      - image: us-docker.pkg.dev/cloud-ops-agents-artifacts/google-cloud-opentelemetry-collector/otelcol-google:0.122.1
+        liveness_probe:
+        - failure_threshold: 3
+          grpc: []
+          http_get:
+          - http_headers: []
+            path: /
+            port: 13133
+          initial_delay_seconds: 0
+          period_seconds: 30
+          tcp_socket: []
+          timeout_seconds: 30
+        name: collector
+        startup_probe:
+        - failure_threshold: 3
+          grpc: []
+          http_get:
+          - http_headers: []
+            path: /
+            port: 13133
+          initial_delay_seconds: 0
+          period_seconds: 30
+          tcp_socket: []
+          timeout_seconds: 30
+      - depends_on:
+        - collector
+        image: us-docker.pkg.dev/cloudrun/container/hello
+        name: hello
+        ports:
+        - container_port: 3000
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_secret_manager_secret: 1
+  google_secret_manager_secret_iam_binding: 1
+  google_secret_manager_secret_version: 1
+  modules: 2
+  resources: 4
+
+outputs: {}

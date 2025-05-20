@@ -43,7 +43,8 @@ SECOPS_TARGET_PROJECT = os.environ.get("SECOPS_TARGET_PROJECT")
 SECOPS_SOURCE_CUSTOMER_ID = os.environ.get("SECOPS_SOURCE_CUSTOMER_ID")
 SECOPS_TARGET_CUSTOMER_ID = os.environ.get("SECOPS_TARGET_CUSTOMER_ID")
 SECOPS_TARGET_FORWARDER_ID = os.environ.get("SECOPS_TARGET_FORWARDER_ID")
-SKIP_ANONYMIZATION = False if (os.environ.get("SKIP_ANONYMIZATION", "false").lower() == "false") else True
+SKIP_ANONYMIZATION = False if (os.environ.get(
+    "SKIP_ANONYMIZATION", "false").lower() == "false") else True
 DLP_DEIDENTIFY_TEMPLATE_ID = os.environ.get("DLP_DEIDENTIFY_TEMPLATE_ID")
 DLP_INSPECT_TEMPLATE_ID = os.environ.get("DLP_INSPECT_TEMPLATE_ID")
 DLP_REGION = os.environ.get("DLP_REGION")
@@ -51,7 +52,9 @@ DLP_REGION = os.environ.get("DLP_REGION")
 
 def import_logs(export_date):
   client = SecOpsClient()
-  chronicle = client.chronicle(customer_id=SECOPS_TARGET_CUSTOMER_ID, project_id=SECOPS_TARGET_PROJECT, region=SECOPS_REGION)
+  chronicle = client.chronicle(customer_id=SECOPS_TARGET_CUSTOMER_ID,
+                               project_id=SECOPS_TARGET_PROJECT,
+                               region=SECOPS_REGION)
 
   storage_client = storage.Client()
   BUCKET = SECOPS_OUTPUT_BUCKET if not SKIP_ANONYMIZATION else SECOPS_EXPORT_BUCKET
@@ -70,14 +73,18 @@ def import_logs(export_date):
             for line in f:
               logs.append(line.rstrip('\n'))
               if len(logs) == 1000:
-                response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+                response = chronicle.ingest_log(
+                    log_message=logs, log_type=log_type,
+                    forwarder_id=SECOPS_TARGET_FORWARDER_ID)
                 LOGGER.debug(response)
                 logs = []
 
             # Send any remaining entries
             if len(logs) > 0:
-                response = chronicle.ingest_log(log_message=logs, log_type=log_type, forwarder_id=SECOPS_TARGET_FORWARDER_ID)
-                LOGGER.debug(response)
+              response = chronicle.ingest_log(
+                  log_message=logs, log_type=log_type,
+                  forwarder_id=SECOPS_TARGET_FORWARDER_ID)
+              LOGGER.debug(response)
         except Exception as e:
           LOGGER.error(f"Error during log ingestion': {e}")
           raise SystemExit(f'Error during log ingestion: {e}')
@@ -106,26 +113,37 @@ def trigger_export(export_date: str, export_start_datetime: str,
   """
 
   client = SecOpsClient()
-  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID, project_id=SECOPS_SOURCE_PROJECT, region=SECOPS_REGION)
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID,
+                               project_id=SECOPS_SOURCE_PROJECT,
+                               region=SECOPS_REGION)
 
   export_ids = []
 
   if export_start_datetime and export_end_datetime:
-      start_time, end_time = datetime.strptime(export_start_datetime, "%Y-%m-%dT%H:%M:%SZ"), datetime.strptime(export_end_datetime, "%Y-%m-%dT%H:%M:%SZ")
+    start_time, end_time = datetime.strptime(
+        export_start_datetime,
+        "%Y-%m-%dT%H:%M:%SZ"), datetime.strptime(export_end_datetime,
+                                                 "%Y-%m-%dT%H:%M:%SZ")
   else:
-      start_time, end_time = utils.format_date_time_range(date_input=export_date)
+    start_time, end_time = utils.format_date_time_range(date_input=export_date)
   gcs_bucket = f"projects/{GCP_PROJECT_ID}/buckets/{SECOPS_EXPORT_BUCKET}"
 
   try:
     if log_types is None or log_types == "":
-      export_response = chronicle.create_data_export(start_time=start_time, end_time=end_time, gcs_bucket=gcs_bucket, export_all_logs=True)
+      export_response = chronicle.create_data_export(start_time=start_time,
+                                                     end_time=end_time,
+                                                     gcs_bucket=gcs_bucket,
+                                                     export_all_logs=True)
       LOGGER.info(export_response)
       export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
       export_ids.append(export_id)
       LOGGER.info(f"Triggered export with ID: {export_id}")
     else:
       for log_type in log_types.split(","):
-        export_response = chronicle.create_data_export(start_time=start_time, end_time=end_time, gcs_bucket=gcs_bucket, log_type=log_type)
+        export_response = chronicle.create_data_export(start_time=start_time,
+                                                       end_time=end_time,
+                                                       gcs_bucket=gcs_bucket,
+                                                       log_type=log_type)
         export_id = export_response["dataExportStatus"]["name"].split("/")[-1]
         export_ids.append(export_id)
         LOGGER.info(f"Triggered export with ID: {export_id}")
@@ -144,14 +162,18 @@ def anonymize_data(export_date):
   """
 
   client = SecOpsClient()
-  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID, project_id=SECOPS_SOURCE_PROJECT, region=SECOPS_REGION)
-  export_ids = utils.get_secops_export_folders_for_date(SECOPS_EXPORT_BUCKET, export_date=export_date)
+  chronicle = client.chronicle(customer_id=SECOPS_SOURCE_CUSTOMER_ID,
+                               project_id=SECOPS_SOURCE_PROJECT,
+                               region=SECOPS_REGION)
+  export_ids = utils.get_secops_export_folders_for_date(SECOPS_EXPORT_BUCKET,
+                                                        export_date=export_date)
 
   export_finished = True
   for export_id in export_ids:
     export = chronicle.get_data_export(data_export_id=export_id)
     LOGGER.info(f"Export response: {export}.")
-    if "dataExportStatus"in export and export["dataExportStatus"]["stage"] == "FINISHED_SUCCESS":
+    if "dataExportStatus" in export and export["dataExportStatus"][
+        "stage"] == "FINISHED_SUCCESS":
       export_state = export["dataExportStatus"]["stage"]
       LOGGER.info(f"Export status: {export_state}.")
     else:
@@ -182,7 +204,8 @@ def anonymize_data(export_date):
         }
 
         try:
-          dlp_client = dlp_v2.DlpServiceClient(client_options={'quota_project_id': GCP_PROJECT_ID})
+          dlp_client = dlp_v2.DlpServiceClient(
+              client_options={'quota_project_id': GCP_PROJECT_ID})
           response = dlp_client.create_dlp_job(request=job_request)
           LOGGER.info(response)
         except Exception as e:
@@ -234,13 +257,21 @@ def main(request):
 
 
 @click.command()
-@click.option('--export-date', '-d', required=False, type=str, help='Date for secops export and anonymization.')
-@click.option('--export-start-datetime', '-d', required=False, type=str, help='Start datetime for secops export and anonymization.')
-@click.option('--export-end-datetime', '-d', required=False, type=str, help='End datetime for secops export and anonymization.')
+@click.option('--export-date', '-d', required=False, type=str,
+              help='Date for secops export and anonymization.')
+@click.option('--export-start-datetime', '-d', required=False, type=str,
+              help='Start datetime for secops export and anonymization.')
+@click.option('--export-end-datetime', '-d', required=False, type=str,
+              help='End datetime for secops export and anonymization.')
 @click.option('--log-type', type=str, multiple=True)
-@click.option('--action', type=click.Choice(['TRIGGER-EXPORT', 'ANONYMIZE-DATA', 'IMPORT-DATA']), required=True)
-@click.option('--debug', is_flag=True, default=False, help='Turn on debug logging.')
-def main_cli(export_date, export_start_datetime, export_end_datetime, log_type: list, action: str, debug=False):
+@click.option(
+    '--action',
+    type=click.Choice(['TRIGGER-EXPORT', 'ANONYMIZE-DATA',
+                       'IMPORT-DATA']), required=True)
+@click.option('--debug', is_flag=True, default=False,
+              help='Turn on debug logging.')
+def main_cli(export_date, export_start_datetime, export_end_datetime,
+             log_type: list, action: str, debug=False):
   """
     CLI entry point.
     :param date: date for secops export and anonymization

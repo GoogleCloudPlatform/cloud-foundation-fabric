@@ -69,10 +69,12 @@ resource "google_compute_disk" "boot" {
   count   = !var.create_template && var.boot_disk.use_independent_disk ? 1 : 0
   project = var.project_id
   zone    = var.zone
-  name    = "${var.name}-boot"
-  type    = var.boot_disk.initialize_params.type
-  size    = var.boot_disk.initialize_params.size
-  image   = var.boot_disk.initialize_params.image
+  # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
+  # compatibility
+  name  = "${var.name}-boot"
+  type  = var.boot_disk.initialize_params.type
+  size  = var.boot_disk.initialize_params.size
+  image = var.boot_disk.initialize_params.image
   labels = merge(var.labels, {
     disk_name = "boot"
     disk_type = var.boot_disk.initialize_params.type

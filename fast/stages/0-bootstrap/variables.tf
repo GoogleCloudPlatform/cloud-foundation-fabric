@@ -155,6 +155,7 @@ variable "groups" {
     gcp-devops              = optional(string, "gcp-devops")
     gcp-network-admins      = optional(string, "gcp-vpc-network-admins")
     gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-secops-admins       = optional(string, "gcp-secops-admins")
     gcp-security-admins     = optional(string, "gcp-security-admins")
     # aliased to gcp-devops as the checklist does not create it
     gcp-support = optional(string, "gcp-devops")

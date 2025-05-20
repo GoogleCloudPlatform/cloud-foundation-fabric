@@ -17,16 +17,18 @@
 # tfdoc:file:description Factory locals.
 
 locals {
+  _factory_i_path = pathexpand(coalesce(var.factories_config.instances, "-"))
   _factory_i_data = {
-    for f in try(fileset(var.factories_config.instances, "*.yaml"), []) :
+    for f in try(fileset(local._factory_i_path, "*.yaml"), []) :
     replace(f, ".yaml", "") => yamldecode(
-      file("${var.factories_config.instances}/${f}")
+      file("${local._factory_i_path}/${f}")
     )
   }
+  _factory_sa_path = pathexpand(coalesce(var.factories_config.service_accounts, "-"))
   _factory_sa_data = {
-    for f in try(fileset(var.factories_config.service_accounts, "*.yaml"), []) :
+    for f in try(fileset(local._factory_sa_path, "*.yaml"), []) :
     replace(f, ".yaml", "") => yamldecode(
-      file("${var.factories_config.service_accounts}/${f}")
+      file("${local._factory_sa_path}/${f}")
     )
   }
   factory_instances = {

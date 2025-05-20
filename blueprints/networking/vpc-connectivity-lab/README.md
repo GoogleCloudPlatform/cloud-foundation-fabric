@@ -108,5 +108,5 @@ module "test" {
   prefix     = "fast-sr0-sbox"
 }
 
-# tftest modules=35 resources=150
+# tftest modules=35 resources=153
 ```

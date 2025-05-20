@@ -34,7 +34,7 @@ module "project_spoke_01" {
     "networkmanagement.googleapis.com",
     # Logging and Monitoring
     "logging.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
   ]
 }
 

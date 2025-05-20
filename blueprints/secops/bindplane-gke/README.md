@@ -38,10 +38,10 @@ git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 Before you deploy the architecture, you will need at least the following
 information/configurations in place (for more precise configuration see the Variables section):
 
-* The project ID
-* The VPC host project
-* VPC and subnets should already exist
-* Subnet must be configured with pods and services secondary ranges (default names for secondary ranges is "pod" and "services")
+- The project ID
+- The VPC host project
+- VPC and subnets should already exist
+- Subnet must be configured with pods and services secondary ranges (default names for secondary ranges is "pod" and "services")
 
 #### Step 2: Prepare the variables
 
@@ -98,7 +98,7 @@ Then running the command `kubectl get pods` you should receive the following mes
 "No resources found in default namespace."
 ```
 
-In case private connection is available and DNS configuration is properly in place you should be able to reach the BindPlane OP Management console navigating the url (e.g. https://bindplane.example.com/), the following login page should show up.
+In case private connection is available and DNS configuration is properly in place you should be able to reach the BindPlane OP Management console navigating the url (e.g. <https://bindplane.example.com/>), the following login page should show up.
 
 ![Bindplane OP Management console login page](./images/login.png)
 
@@ -158,5 +158,5 @@ module "bindplane-gke" {
   region = "europe-west8"
   prefix = "tmp"
 }
-# tftest modules=10 resources=45
+# tftest modules=10 resources=48
 ```

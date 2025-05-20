@@ -13,23 +13,23 @@
 # limitations under the License.
 
 counts:
-  google_folder: 12
-  google_folder_iam_binding: 51
+  google_folder: 14
+  google_folder_iam_binding: 67
   google_org_policy_policy: 2
-  google_organization_iam_member: 15
-  google_project_iam_member: 13
-  google_service_account: 13
-  google_service_account_iam_binding: 13
-  google_storage_bucket: 6
-  google_storage_bucket_iam_binding: 12
-  google_storage_bucket_iam_member: 13
-  google_storage_bucket_object: 15
-  google_tags_tag_binding: 12
+  google_organization_iam_member: 20
+  google_project_iam_member: 17
+  google_service_account: 17
+  google_service_account_iam_binding: 17
+  google_storage_bucket: 8
+  google_storage_bucket_iam_binding: 16
+  google_storage_bucket_iam_member: 17
+  google_storage_bucket_object: 19
+  google_tags_tag_binding: 14
   google_tags_tag_key: 2
-  google_tags_tag_value: 12
+  google_tags_tag_value: 13
   google_tags_tag_value_iam_binding: 4
-  modules: 32
-  resources: 195
+  modules: 40
+  resources: 247
 
 outputs:
   cicd_repositories:
@@ -49,6 +49,10 @@ outputs:
     project-factory-ro: fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
     project-factory-rw: fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
     sandbox: fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    secops-dev-ro: fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    secops-dev-rw: fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    secops-ro: fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    secops-rw: fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
     security-ro: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     security-rw: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
 

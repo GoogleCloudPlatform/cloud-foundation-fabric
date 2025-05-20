@@ -27,6 +27,7 @@ locals {
     data_defaults = merge({
       billing_account = null
       contacts        = {}
+      deletion_policy = null
       factories_config = merge({
         custom_roles  = null
         observability = null
@@ -82,6 +83,7 @@ locals {
     data_overrides = merge({
       billing_account = null
       contacts        = null
+      deletion_policy = null
       factories_config = merge({
         custom_roles  = null
         observability = null
@@ -130,6 +132,11 @@ locals {
         local.__projects_config.data_overrides.billing_account,
         try(v.billing_account, null),
         local.__projects_config.data_defaults.billing_account
+      ), null)
+      deletion_policy = try(coalesce( # type: string
+        local.__projects_config.data_overrides.deletion_policy,
+        try(v.deletion_policy, null),
+        local.__projects_config.data_defaults.deletion_policy
       ), null)
       contacts = coalesce( # type: map
         local.__projects_config.data_overrides.contacts,
@@ -234,7 +241,25 @@ locals {
         try(v.tag_bindings, null),
         local.__projects_config.data_defaults.tag_bindings
       )
-      vpc_sc = ( # type: object
+      tags = {
+        for tag_name, tag_data in try(v.tags, {}) : tag_name => {
+          description           = try(tag_data.description, "Managed by the Terraform project-factory module.")
+          id                    = try(tag_data.id, null)
+          iam                   = try(tag_data.iam, {})
+          iam_bindings          = try(tag_data.iam_bindings, {})
+          iam_bindings_additive = try(tag_data.iam_bindings_additive, {})
+          values = {
+            for value_name, value_data in try(tag_data.values, {}) : value_name => {
+              description           = try(value_data.description, "Managed by the Terraform project-factory module.")
+              id                    = try(value_data.id, null)
+              iam                   = try(value_data.iam, {})
+              iam_bindings          = try(value_data.iam_bindings, {})
+              iam_bindings_additive = try(value_data.iam_bindings_additive, {})
+            }
+          }
+        }
+      }
+      vpc_sc = (
         local.__projects_config.data_overrides.vpc_sc != null
         ? local.__projects_config.data_overrides.vpc_sc
         : (
@@ -255,10 +280,10 @@ locals {
     })
   }
   # tflint-ignore: terraform_unused_declarations
-  _projects_uniqunees_validation = {
+  _projects_uniqueness_validation = {
     # will raise error, if the same project (derived from file name, or provided in the YAML file)
-    # is sued more than once
+    # is used more than once
     for k, v in local._projects_output :
-    "${v.prefix}-${v.name}" => k
+    "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
   }
 }

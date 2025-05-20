@@ -828,8 +828,8 @@ module "instance" {
 Resource manager tags bindings for use in IAM or org policy conditions are supported via three different variables:
 
 - `network_tag_bindings` associates tags to instances after creation, and is meant for use with network firewall policies
-- `tag_bindings` associates tags to instances and zonal disks after creation, and is meant for use with IAM or organization policy conditions
-- `tag_bindings_immutable` associates tags to instances and disks created as part of the instance, or instance templates; the binding is applied at creation time and triggers resource recreation on change
+- `tag_bindings` associates tags to instances and disks after creation, and is meant for use with IAM or organization policy conditions
+- `tag_bindings_immutable` associates tags to instances and disks during the instance or template creation flow; these bindings are immutable and changes trigger resource recreation
 
 The non-immutable variables follow our usual interface for tag bindings, and support specifying a map with arbitrary keys mapping to tag key or value ids. To prevent a provider permadiff also pass in the project number in the `project_number` variable.
 

@@ -45,11 +45,12 @@ module "dev-spoke-project" {
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
     "networkmanagement.googleapis.com",
     "networksecurity.googleapis.com",
     "servicenetworking.googleapis.com",
-    "stackdriver.googleapis.com",
-    "vpcaccess.googleapis.com"
+    "vpcaccess.googleapis.com",
   ]
   shared_vpc_host_config = {
     enabled = true

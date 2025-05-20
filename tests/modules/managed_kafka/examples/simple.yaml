@@ -1,0 +1,44 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.kafka-cluster.google_managed_kafka_cluster.cluster:
+    capacity_config:
+    - memory_bytes: '3221225472'
+      vcpu_count: '3'
+    cluster_id: my-kafka-cluster
+    effective_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    gcp_config:
+    - access_config:
+      - network_configs:
+        - subnet: projects/my-project/regions/europe-west8/subnetworks/primary
+      kms_key: null
+    labels:
+      environment: development
+    location: europe-west8
+    project: project-id
+    rebalance_config: []
+    terraform_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_managed_kafka_cluster: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

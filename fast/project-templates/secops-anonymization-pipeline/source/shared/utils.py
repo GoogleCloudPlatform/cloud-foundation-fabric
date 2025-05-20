@@ -40,7 +40,8 @@ def format_date_time_range(date_input):
     """
   date_obj = datetime.strptime(date_input, "%Y-%m-%d")
 
-  start_of_day = datetime.combine(date_obj.date(), time.min,tzinfo=timezone.utc)
+  start_of_day = datetime.combine(date_obj.date(), time.min,
+                                  tzinfo=timezone.utc)
   end_of_day = start_of_day + timedelta(days=1, seconds=-1)
 
   return start_of_day, end_of_day
@@ -185,7 +186,9 @@ def get_secops_export_folders_for_date(bucket_name, export_date):
   for blob in storage_client.list_blobs(bucket_name):
     if "_$folder$" in blob.name:
       continue
-    if blob.time_created.strftime("%Y-%m-%d") == export_date and blob.name.split('/')[0] not in export_ids:
+    if blob.time_created.strftime(
+        "%Y-%m-%d") == export_date and blob.name.split(
+            '/')[0] not in export_ids:
       export_ids.append(blob.name.split('/')[0])
 
   return export_ids

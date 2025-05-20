@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Identity provider definitions.
+# tfdoc:file:description Workload Identity provider definitions.
 
 locals {
-  workforce_identity_providers_defs = {
-    azuread = {
-      attribute_mapping = {
-        "google.subject"       = "assertion.subject"
-        "google.display_name"  = "assertion.attributes.userprincipalname[0]"
-        "google.groups"        = "assertion.attributes.groups"
-        "attribute.first_name" = "assertion.attributes.givenname[0]"
-        "attribute.last_name"  = "assertion.attributes.surname[0]"
-        "attribute.user_email" = "assertion.attributes.mail[0]"
-      }
-    }
-  }
   workload_identity_providers_defs = {
     # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
     github = {

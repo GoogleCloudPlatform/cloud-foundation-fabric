@@ -35,15 +35,15 @@ locals {
       }
     ]
   ])
-  # region_disk_tags = flatten([
-  #   for k, v in var.tag_bindings : [
-  #     for dk, dv in google_compute_region_disk.disks : {
-  #       disk_id   = dv.disk_id
-  #       key       = "${dk}/${k}"
-  #       tag_value = v
-  #     }
-  #   ]
-  # ])
+  region_disk_tags = flatten([
+    for k, v in var.tag_bindings : [
+      for dk, dv in google_compute_region_disk.disks : {
+        disk_id   = dv.disk_id
+        key       = "${dk}/${k}"
+        tag_value = v
+      }
+    ]
+  ])
   tag_parent_base = format(
     "//compute.googleapis.com/projects/%s",
     coalesce(var.project_number, var.project_id)
@@ -92,18 +92,16 @@ resource "google_tags_location_tag_binding" "disks" {
   location  = var.zone
 }
 
-# TODO: enable once regional disks support disk_id
-
-# resource "google_tags_location_tag_binding" "disks_regional" {
-#   for_each = (
-#     var.create_template ? {} : { for v in local.region_disk_tags : v.key => v }
-#   )
-#   parent = (
-#     "${local.tag_parent_base}/regions/${local.region}/disks/${each.value.disk_id}"
-#   )
-#   tag_value = each.value.tag_value
-#   location  = local.region
-# }
+resource "google_tags_location_tag_binding" "disks_regional" {
+  for_each = (
+    var.create_template ? {} : { for v in local.region_disk_tags : v.key => v }
+  )
+  parent = (
+    "${local.tag_parent_base}/regions/${local.region}/disks/${each.value.disk_id}"
+  )
+  tag_value = each.value.tag_value
+  location  = local.region
+}
 
 # TODO: enable once the template id is available
 

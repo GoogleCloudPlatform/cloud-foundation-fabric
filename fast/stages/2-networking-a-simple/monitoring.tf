@@ -17,10 +17,11 @@
 # tfdoc:file:description Network monitoring dashboards.
 
 locals {
-  dashboard_files = fileset(var.factories_config.dashboards, "*.json")
+  _dashboard_path = pathexpand(var.factories_config.dashboards)
+  dashboard_files = try(fileset(local._dashboard_path, "*.json"), [])
   dashboards = {
     for filename in local.dashboard_files :
-    filename => "${var.factories_config.dashboards}/${filename}"
+    filename => "${local._dashboard_path}/${filename}"
   }
 }
 

@@ -19,6 +19,7 @@ variable "data_defaults" {
   type = object({
     billing_account = optional(string)
     contacts        = optional(map(list(string)), {})
+    deletion_policy = optional(string)
     factories_config = optional(object({
       custom_roles  = optional(string)
       observability = optional(string)
@@ -86,6 +87,7 @@ variable "data_overrides" {
     # data overrides default to null to mark that they should not override
     billing_account = optional(string)
     contacts        = optional(map(list(string)))
+    deletion_policy = optional(string)
     factories_config = optional(object({
       custom_roles  = optional(string)
       observability = optional(string)
@@ -131,6 +133,7 @@ variable "factories_config" {
       # TODO: add KMS keys
       folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
+      perimeters            = optional(map(string), {})
       tag_values            = optional(map(string), {})
       vpc_host_projects     = optional(map(string), {})
       notification_channels = optional(map(string), {})
