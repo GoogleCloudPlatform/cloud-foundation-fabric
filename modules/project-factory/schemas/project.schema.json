@@ -7,9 +7,6 @@
     "automation": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "project"
-      ],
       "properties": {
         "project": {
           "type": "string"
