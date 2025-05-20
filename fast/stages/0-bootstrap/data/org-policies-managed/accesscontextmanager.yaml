@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.automation-tf-bootstrap-sa.google_service_account.service_account[0]:
-    account_id: fast-prod-bootstrap-0
-    display_name: Terraform organization bootstrap service account.
-    project: fast-prod-iac-core-0
-  module.automation-tf-resman-sa.google_service_account.service_account[0]:
-    account_id: fast-prod-resman-0
-    display_name: Terraform stage 1 resman service account.
-    project: fast-prod-iac-core-0
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
+
+custom.denyBridgePerimeters:
+  rules:
+    - enforce: true

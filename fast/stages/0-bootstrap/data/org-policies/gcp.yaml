@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-# sample subset of useful organization policies, edit to suit requirements
-# start of document (---) avoids errors if the file only contains comments
-
 # yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
-# gcp.resourceLocations:
-#   rules:
+gcp.resourceLocations:
+  rules:
+  - allow:
+      all: true
 #   - allow:
 #       values:
 #       - "in:europe-locations"

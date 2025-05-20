@@ -95,8 +95,9 @@ locals {
     perimeters = {
       for k, v in local._data.perimeters :
       k => {
-        description = try(v.description, null)
-        title       = try(v.title, null)
+        description             = try(v.description, null)
+        ignore_resource_changes = try(v.ignore_resource_changes, false)
+        title                   = try(v.title, null)
         spec = !can(v.spec) ? null : merge(v.spec, {
           access_levels           = try(v.spec.access_levels, [])
           egress_policies         = try(v.spec.egress_policies, [])

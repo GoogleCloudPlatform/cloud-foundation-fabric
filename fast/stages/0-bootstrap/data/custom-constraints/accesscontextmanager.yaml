@@ -1,4 +1,3 @@
-# skip boilerplate check
 # Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/0-bootstrap
-tests:
-  simple:
-    inventory:
-      - simple.yaml
-      - simple_org_policies.yaml
-  managed_org_policies:
-    inventory:
-      - simple.yaml
-      - managed_org_policies.yaml
-  iam_by_principals:
-  cicd:
+# yaml-language-server: $schema=../../schemas/org-policy-custom-constraint.schema.json
+
+custom.denyBridgePerimeters:
+  resource_types:
+    - accesscontextmanager.googleapis.com/ServicePerimeter
+  method_types:
+    - CREATE
+    - UPDATE
+  condition: "resource.perimeterType == 'PERIMETER_TYPE_BRIDGE'"
+  action_type: DENY
+  display_name: Disable perimeter bridges
+  description: Disables the use of perimeter bridges. Instead, use ingress and egress rules.

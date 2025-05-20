@@ -51,13 +51,13 @@ variable "configmanagement_templates" {
       enable_hierarchical_resource_quota = optional(bool)
       enable_pod_tree_labels             = optional(bool)
     }))
-    policy_controller = object({
+    policy_controller = optional(object({
       audit_interval_seconds     = optional(number)
       exemptable_namespaces      = optional(list(string))
       log_denies_enabled         = optional(bool)
       referential_rules_enabled  = optional(bool)
       template_library_installed = optional(bool)
-    })
+    }))
   }))
   default  = {}
   nullable = false
