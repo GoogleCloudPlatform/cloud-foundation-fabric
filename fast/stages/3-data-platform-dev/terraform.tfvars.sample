@@ -3,28 +3,17 @@ location = "europe-west1"
 central_project_config = {
   iam_by_principals = {
     "group:dp-platform-0@example.com" = [
-      "roles/bigquery.dataOwner",
-      "roles/bigquerydatapolicy.admin",
-      "roles/datacatalog.tagTemplateOwner",
       "roles/datacatalog.categoryAdmin",
-      "roles/datacatalog.entryGroupOwner",
-      "roles/datacatalog.glossaryOwner",
-      "roles/dataplex.admin",
-      "roles/dataplex.aspectTypeOwner"
+      "roles/dataplex.catalogAdmin",
+      "roles/dataplex.aspectTypeOwner",
+      "roles/resourcemanager.tagViewer"
     ]
     "group:dp-domain-a@example.com" = [
-      "roles/datacatalog.tagTemplateUser",
-      "roles/datacatalog.tagTemplateViewer",
-      "roles/datacatalog.entryViewer",
-      "roles/datacatalog.glossaryUser",
+      "roles/datacatalog.viewer",
       "roles/dataplex.aspectTypeUser"
     ]
     "group:dp-product-a-0@example.com" = [
-      "roles/datacatalog.tagTemplateUser",
-      "roles/datacatalog.tagTemplateViewer",
-      "roles/datacatalog.categoryAdmin",
-      "roles/datacatalog.entryViewer",
-      "roles/datacatalog.glossaryUser",
+      "roles/datacatalog.viewer",
       "roles/dataplex.aspectTypeUser"
     ]
   }
