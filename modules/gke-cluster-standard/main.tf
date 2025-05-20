@@ -220,6 +220,7 @@ resource "google_container_cluster" "cluster" {
           }
         }
       }
+      auto_provisioning_locations = var.cluster_autoscaling.auto_provisioning_locations
       dynamic "resource_limits" {
         for_each = local.cas.cpu_limits != null ? [""] : []
         content {
