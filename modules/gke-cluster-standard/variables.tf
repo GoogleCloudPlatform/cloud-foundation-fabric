@@ -98,6 +98,7 @@ variable "cluster_autoscaling" {
       }))
       # add validation rule to ensure only one is present if upgrade settings is defined
     }))
+    auto_provisioning_locations = optional(list(string))
     cpu_limits = optional(object({
       min = optional(number, 0)
       max = number
