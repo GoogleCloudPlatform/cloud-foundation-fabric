@@ -39,7 +39,7 @@ exposure_layer:
         - data-consumer-bi
   storage:
     buckets:
-      exposed-ew8: {}
+      exposed: {}
     iam:
       "roles/storage.objectViewer":
         - data-consumer-bi
