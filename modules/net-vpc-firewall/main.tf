@@ -154,7 +154,7 @@ resource "google_compute_firewall" "custom-rules" {
     iterator = rule
     content {
       protocol = rule.value.protocol
-      ports    = rule.value.ports
+      ports    = try(rule.value.ports, [])
     }
   }
 
@@ -163,7 +163,7 @@ resource "google_compute_firewall" "custom-rules" {
     iterator = rule
     content {
       protocol = rule.value.protocol
-      ports    = rule.value.ports
+      ports    = try(rule.value.ports, [])
     }
   }
 }
