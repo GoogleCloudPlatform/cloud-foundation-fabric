@@ -408,6 +408,15 @@ iam:
     - automation/ro
 shared_vpc_host_config:
   enabled: true
+service_accounts:
+  vm-default:
+    display_name: "VM default service account."
+    iam_self_roles:
+      - roles/logging.logWriter
+      - roles/monitoring.metricWriter
+    iam:
+      "roles/iam.serviceAccountTokenCreator":
+        - automation/rw
 automation:
   project: test-pf-teams-iac-0
   service_accounts:

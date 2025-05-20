@@ -504,6 +504,29 @@ values:
   : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
+    account_id: vm-default
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: VM default service account.
+    email: vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
+    member: serviceAccount:vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    timeouts: null
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/logging.logWriter
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
     account_id: app-0-be
     create_ignore_already_exists: null
@@ -526,10 +549,11 @@ counts:
   google_monitoring_notification_channel: 1
   google_project: 4
   google_project_iam_binding: 5
-  google_project_iam_member: 18
+  google_project_iam_member: 20
   google_project_service: 12
   google_project_service_identity: 4
-  google_service_account: 5
+  google_service_account: 6
+  google_service_account_iam_binding: 1
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
@@ -537,7 +561,7 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 20
-  resources: 75
+  modules: 21
+  resources: 79
 
 outputs: {}
