@@ -105,7 +105,6 @@ def main(write_defaults, **kwargs):
   for file_path in root_path.rglob(f"fast_version.txt"):
     click.echo(f"Processing {file_path}")
     process_file(FAST_VERSIONS_TEMPLATE, file_path, fast_context)
-    
 
 
 if __name__ == "__main__":
