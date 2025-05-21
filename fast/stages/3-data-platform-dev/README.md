@@ -399,9 +399,9 @@ The following table lists the available substitutions.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [aspect_types](outputs.tf#L191) | Aspect types defined in central project. |  |  |
-| [central_project](outputs.tf#L196) | Central project attributes. |  |  |
-| [data_domains](outputs.tf#L201) | Data domain attributes. |  |  |
-| [policy_tags](outputs.tf#L206) | Policy tags defined in central project. |  |  |
-| [secure_tags](outputs.tf#L211) | Secure tags defined in central project. |  |  |
+| [aspect_types](outputs.tf#L198) | Aspect types defined in central project. |  |  |
+| [central_project](outputs.tf#L203) | Central project attributes. |  |  |
+| [data_domains](outputs.tf#L208) | Data domain attributes. |  |  |
+| [policy_tags](outputs.tf#L213) | Policy tags defined in central project. |  |  |
+| [secure_tags](outputs.tf#L218) | Secure tags defined in central project. |  |  |
 <!-- END TFDOC -->
