@@ -2366,13 +2366,13 @@ counts:
   google_storage_bucket: 4
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_iam_member: 12
-  google_storage_bucket_object: 13
+  google_storage_bucket_object: 14
   google_storage_project_service_account: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 293
+  resources: 294
 
 outputs:
   custom_roles:

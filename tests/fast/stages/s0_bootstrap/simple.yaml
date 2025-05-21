@@ -1578,13 +1578,13 @@ counts:
   google_storage_bucket: 4
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_iam_member: 6
-  google_storage_bucket_object: 8
+  google_storage_bucket_object: 9
   google_storage_project_service_account: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 256
+  resources: 257
 
 outputs:
   cicd_repositories: {}
