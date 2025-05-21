@@ -25,6 +25,35 @@ Gitlab hostname and SSH port on the `gitlab_config` section.
 
 ## Variable configuration
 
+### Gitlab Config
+
+The `gitlab_config` variable defines where projects will be hosted.
+GitLab can either be the SaaS offering (with the default hostname `gitlab.com`) 
+or a self-hosted instance with a custom FQDN. If hostname is set to gitlab.com, you must 
+also set the `saas_group` variable to specify the group path where resources will be created.
+
+This is an example that configures a SaaS gitlab instance using `my_group/gcp` as default group :
+
+```hcl
+gitlab_config = {
+  access_token = "glpat-XXX"
+  hostname     = "gitlab.com"
+  ssh_port     = 22
+  saas_group   = "my_group/gcp"
+}
+# tftest skip
+```
+
+This is an example that configures an on-premise gitlab instance :
+
+```hcl
+gitlab_config = {
+  access_token = "glpat-XXX"
+  hostname     = "my-gitlab.example.com"
+}
+# tftest skip
+```
+
 ### Modules project and sources
 
 The `modules_config` variable controls creation and management of both the
@@ -374,11 +403,11 @@ check if the plan pipeline executes successfully.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [gitlab_config](variables.tf#L28) | Gitlab config. | <code title="object&#40;&#123;&#10;  access_token &#61; string&#10;  hostname     &#61; optional&#40;string, &#34;gitlab.gcp.example.com&#34;&#41;&#10;  ssh_port     &#61; optional&#40;number, 2222&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [groups](variables.tf#L37) | Gitlab groups. | <code title="map&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  path        &#61; string&#10;  description &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [gitlab_config](variables.tf#L28) | Gitlab config. | <code title="object&#40;&#123;&#10;  access_token &#61; string&#10;  hostname     &#61; optional&#40;string, &#34;gitlab.com&#34;&#41;&#10;  ssh_port     &#61; optional&#40;number, 22&#41;&#10;  saas_group   &#61; optional&#40;string, &#34;&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [groups](variables.tf#L45) | Gitlab groups. | <code title="map&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  path        &#61; string&#10;  description &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [commit_config](variables.tf#L17) | Configure commit metadata. | <code title="object&#40;&#123;&#10;  author  &#61; optional&#40;string, &#34;FAST loader&#34;&#41;&#10;  email   &#61; optional&#40;string, &#34;fast-loader&#64;fast.gcp.tf&#34;&#41;&#10;  message &#61; optional&#40;string, &#34;FAST initial loading&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [modules_config](variables.tf#L46) | Gitlab modules config. | <code title="object&#40;&#123;&#10;  bootstrap     &#61; optional&#40;bool, true&#41;&#10;  module_prefix &#61; optional&#40;string, &#34;&#34;&#41;&#10;  group         &#61; optional&#40;string&#41;&#10;  project_name  &#61; string&#10;  source_ref    &#61; optional&#40;string&#41;&#10;  key_config &#61; optional&#40;object&#40;&#123;&#10;    create_key     &#61; optional&#40;bool, false&#41;&#10;    create_secrets &#61; optional&#40;bool, false&#41;&#10;    keypair_path   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [projects](variables.tf#L71) | Gitlab projects to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  group            &#61; string&#10;  populate_from    &#61; optional&#40;string&#41;&#10;  populate_samples &#61; optional&#40;bool, false&#41;&#10;  workflow_file    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [modules_config](variables.tf#L54) | Gitlab modules config. | <code title="object&#40;&#123;&#10;  bootstrap     &#61; optional&#40;bool, true&#41;&#10;  module_prefix &#61; optional&#40;string, &#34;&#34;&#41;&#10;  group         &#61; optional&#40;string&#41;&#10;  project_name  &#61; string&#10;  source_ref    &#61; optional&#40;string&#41;&#10;  key_config &#61; optional&#40;object&#40;&#123;&#10;    create_key     &#61; optional&#40;bool, false&#41;&#10;    create_secrets &#61; optional&#40;bool, false&#41;&#10;    keypair_path   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [projects](variables.tf#L79) | Gitlab projects to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  group            &#61; string&#10;  populate_from    &#61; optional&#40;string&#41;&#10;  populate_samples &#61; optional&#40;bool, false&#41;&#10;  workflow_file    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
