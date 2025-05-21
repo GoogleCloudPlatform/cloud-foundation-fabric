@@ -3,7 +3,26 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
+## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+
+## [40.1.0] - 2025-05-21
+
+### BLUEPRINTS
+
+- [[#3107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3107)] Add fast_version.txt to FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2025-05-21 13:10:58+00:00 -->
+
+### FAST
+
+- [[#3108](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3108)] Add version tracking files to FAST ([ludoo](https://github.com/ludoo)) <!-- 2025-05-21 14:14:06+00:00 -->
+- [[#3107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3107)] Add fast_version.txt to FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2025-05-21 13:10:58+00:00 -->
+
+### MODULES
+
+- [[#3107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3107)] Add fast_version.txt to FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2025-05-21 13:10:58+00:00 -->
+
+### TOOLS
+
+- [[#3107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3107)] Add fast_version.txt to FAST stages ([juliocc](https://github.com/juliocc)) <!-- 2025-05-21 13:10:58+00:00 -->
 
 ## [40.0.0] - 2025-05-21
 
@@ -1153,7 +1172,9 @@ All notable changes to this project will be documented in this file.
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...HEAD
+[40.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...40.1.0
+[40.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.2.0...v40.0.0
 [39.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.1.0...v39.2.0
 [39.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v39.1.0
 [39.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.2.0...v39.0.0
