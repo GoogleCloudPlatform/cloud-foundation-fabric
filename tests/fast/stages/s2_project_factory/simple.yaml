@@ -180,9 +180,10 @@ counts:
   google_project: 4
   google_project_iam_member: 4
   google_project_service: 4
+  google_storage_bucket_object: 1
   google_tags_tag_binding: 4
   modules: 15
-  resources: 26
+  resources: 27
 
 outputs:
   buckets: {}

@@ -75,6 +75,13 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/2-networking-version.txt"
+  source = "fast_version.txt"
+}
+
 # outputs
 
 output "dev_cloud_dns_inbound_policy" {

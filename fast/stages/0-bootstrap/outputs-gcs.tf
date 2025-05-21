@@ -42,3 +42,10 @@ resource "google_storage_bucket_object" "workflows" {
   name     = "workflows/${each.key}-workflow.yaml"
   content  = each.value
 }
+
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = module.automation-tf-output-gcs.name
+  name   = "versions/0-bootstrap-version.txt"
+  source = "fast_version.txt"
+}
