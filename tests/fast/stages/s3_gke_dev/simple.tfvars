@@ -1,3 +1,6 @@
+automation = {
+  outputs_bucket = "fast2-prod-iac-core-outputs"
+}
 billing_account = {
   id = "012345-67890A-BCDEF0",
 }

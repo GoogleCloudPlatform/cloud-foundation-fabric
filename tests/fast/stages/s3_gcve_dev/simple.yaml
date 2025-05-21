@@ -17,8 +17,9 @@ counts:
   google_project_iam_member: 3
   google_project_service: 4
   google_project_service_identity: 2
+  google_storage_bucket_object: 1
   google_vmwareengine_network: 1
   google_vmwareengine_network_peering: 2
   google_vmwareengine_private_cloud: 1
   modules: 2
-  resources: 14
+  resources: 15

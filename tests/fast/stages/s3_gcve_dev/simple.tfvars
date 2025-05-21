@@ -1,7 +1,9 @@
+automation = {
+  outputs_bucket = "fast2-prod-iac-core-outputs"
+}
 billing_account = {
   id = "000000-111111-222222"
 }
-
 environments = {
   dev = {
     name = "Development"
