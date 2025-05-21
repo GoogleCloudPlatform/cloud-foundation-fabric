@@ -20,7 +20,7 @@ locals {
   automation_buckets = {
     for k, v in local.projects :
     k => merge(try(v.automation.bucket, {}), {
-      automation_project = try(v.automation.project, "${v.prefix}-${v.name}")
+      automation_project = v.automation.project
       prefix             = v.prefix
       project_name       = v.name
     }) if try(v.automation.bucket, null) != null
@@ -28,7 +28,7 @@ locals {
   automation_sa = flatten([
     for k, v in local.projects : [
       for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
-        automation_project = try(v.automation.project, "${v.prefix}-${v.name}")
+        automation_project = v.automation.project
         name               = ks
         prefix             = v.prefix
         project            = k
