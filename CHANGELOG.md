@@ -3,7 +3,28 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-04-18 15:45:57+00:00 to: None since: v39.0.0 -->
+## [Unreleased] <!-- from: 2025-05-05 12:20:37+00:00 to: None since: v39.1.0 -->
+
+## [39.2.0] - 2025-05-21
+
+### FAST
+
+- [[#3088](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3088)] Add GitLab SaaS support in fast/extras/0-cicd-gitlab ([Alhossril](https://github.com/Alhossril)) <!-- 2025-05-18 08:32:40+00:00 -->
+- [[#2944](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2944)] fix: remove file starting by 1 and 2 to avoid copying 1-resman-provid… ([Alhossril](https://github.com/Alhossril)) <!-- 2025-05-18 07:14:29+00:00 -->
+
+### MODULES
+
+- [[#3103](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3103)] Added auto-provisioning-locations to gke-cluster-standard module ([apichick](https://github.com/apichick)) <!-- 2025-05-20 15:42:03+00:00 -->
+- [[#3102](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3102)] feat: enables blue-green upgrades ([msikora-rtb](https://github.com/msikora-rtb)) <!-- 2025-05-20 14:43:04+00:00 -->
+- [[#3101](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3101)] Backup enablement for CloudSQL instance should be only based on user provided settings ([apichick](https://github.com/apichick)) <!-- 2025-05-20 11:24:18+00:00 -->
+- [[#3099](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3099)] Fix net vpc firewall module schema ([ludoo](https://github.com/ludoo)) <!-- 2025-05-20 08:59:35+00:00 -->
+- [[#3096](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3096)] Enable multi-network GKE ([msikora-rtb](https://github.com/msikora-rtb)) <!-- 2025-05-19 16:43:59+00:00 -->
+- [[#3092](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3092)] feat(gke): add kubelet_readonly_port_enabled ([6uellerBpanda](https://github.com/6uellerBpanda)) <!-- 2025-05-19 09:07:15+00:00 -->
+- [[#3086](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3086)] bug: mark policy_controller as optional ([FalconerTC](https://github.com/FalconerTC)) <!-- 2025-05-15 16:16:13+00:00 -->
+- [[#3077](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3077)] Add ability to optionally update Cloud Run job containers outside Terraform ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-05-10 13:36:34+00:00 -->
+- [[#3061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3061)] AlloyDB read poll support and various usability fixes ([viliampucik](https://github.com/viliampucik)) <!-- 2025-05-09 11:03:58+00:00 -->
+- [[#3071](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3071)] [cloud-run-v2] Add ability to deploy OpenTelemetry Collector sidecar ([charles-salmon](https://github.com/charles-salmon)) <!-- 2025-05-08 09:05:59+00:00 -->
+- [[#3073](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3073)] Added versions.tf to net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2025-05-08 08:40:45+00:00 -->
 
 ## [39.1.0] - 2025-05-05
 
@@ -3109,7 +3130,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.2.0...HEAD
+[39.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.1.0...v39.2.0
 [39.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v39.1.0
 [39.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.2.0...v39.0.0
 [38.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v38.1.0...v38.2.0
