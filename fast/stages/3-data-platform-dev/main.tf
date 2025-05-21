@@ -127,9 +127,5 @@ module "central-policy-tags" {
   project_id = module.central-project.project_id
   name       = "tags"
   location   = var.location
-  tags = {
-    low    = {}
-    medium = {}
-    high   = {}
-  }
+  tags       = var.central_project_config.policy_tags
 }
