@@ -299,7 +299,7 @@ tls_inspection = {
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [certificate_authority_pools](outputs.tf#L53) | Certificate Authority Service pools and CAs. |  |  |
-| [kms_keys](outputs.tf#L58) | KMS key ids. |  |  |
-| [tfvars](outputs.tf#L63) | Terraform variable files for the following stages. | ✓ |  |
+| [certificate_authority_pools](outputs.tf#L60) | Certificate Authority Service pools and CAs. |  |  |
+| [kms_keys](outputs.tf#L65) | KMS key ids. |  |  |
+| [tfvars](outputs.tf#L70) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
