@@ -31,6 +31,9 @@ locals {
       # module.service-accounts are excluded here, as adding them here results in dependency cycles
     )
   }
+  service_accounts_names = {
+    for k, v in module.service-accounts : k => v.name
+  }
 }
 
 module "projects" {
@@ -375,6 +378,22 @@ module "service-accounts" {
       (module.projects[each.value.project_key].project_id) = each.value.iam_self_roles
     }
   )
+}
+
+module "service_accounts-iam" {
+  source = "../iam-service-account"
+  for_each = {
+    for k in local.service_accounts : "${k.project_key}/${k.name}" => k
+    if k.iam_sa_roles != {}
+  }
+  project_id             = module.service-accounts[each.key].service_account.project
+  name                   = each.value.name
+  service_account_create = false
+  iam_sa_roles = {
+    for k, v in each.value.iam_sa_roles : lookup(
+      local.service_accounts_names, "${each.value.project_key}/${k}", k
+    ) => v
+  }
 }
 
 module "billing-account" {
