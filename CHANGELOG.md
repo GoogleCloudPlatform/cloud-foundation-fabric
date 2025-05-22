@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+## [Unreleased] <!-- from: 2025-05-21 14:22:05+00:00 to: None since: v40.1.0 -->
+
+### MODULES
+
+- [[#3110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3110)] Support iam_sa_roles in project factory service accounts ([ludoo](https://github.com/ludoo)) <!-- 2025-05-22 08:22:32+00:00 -->
 
 ## [40.1.0] - 2025-05-21
 
