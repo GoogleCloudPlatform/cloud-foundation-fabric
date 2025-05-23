@@ -67,7 +67,7 @@ Some examples on where to use each of the three sets are [provided below](#examp
 
 Service accounts and GCS buckets can be managed as part of each project's YAML configuration. This allows creation of default service accounts used for GCE instances, in firewall rules, or for application-level credentials without resorting to a separate Terraform configuration.
 
-Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-level YAML map, which exposes most of the variables available in the `iam-service-account` module. Both the `display_name` and `iam_self_roles` attributes are optional.
+Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-level YAML map, which exposes most of the variables available in the `iam-service-account` module. Most of the service accounts attributes are optional.
 
 ```yaml
 service_accounts:
@@ -79,6 +79,9 @@ service_accounts:
     iam_project_roles:
       my-host-project:
         - roles/compute.networkUser
+    iam_sa_roles:
+      be-0:
+        - roles/iam.serviceAccountUser
   terraform-rw: {}
 ```
 
@@ -199,29 +202,30 @@ The following table lists the available context interpolations. External context
 - Internally created folders creates keys under `${folder_name_1}[/${folder_name_2}/${folder_name_3}]`
 - IAM principals are resolved within context of managed project or use `${project}/${service_account}` to refer service account from other projects managed by the same project factory instance.
 
-| resource            | attribute       | external contexts   | internal contexts                  |
-|---------------------|-----------------|---------------------|------------------------------------|
-| folder              | parent          | `folder_ids`        | implicit through folder structure  |
-| folder              | IAM principals  | `iam_principals`    |                                    |
-| folder              | tag bindings    | `tag_values`        |                                    |
-| project             | parent          | `folder_ids`        | internally created folders         |
-| project             | Shared VPC host | `vpc_host_projects` |                                    |
-| project             | Shared VPC IAM  | `iam_principals`    | project service accounts           |
-|                     |                 |                     | IaC service accounts               |
-|                     |                 |                     | other project service accounts     |
-|                     |                 |                     | other project IaC service accounts |
-| project             | tag bindings    | `tag_values`        |                                    |
-| project             | IAM principals  | `iam_principals`    | project service accounts           |
-|                     |                 |                     | IaC service accounts               |
-|                     |                 |                     | other project service accounts     |
-|                     |                 |                     | other project IaC service accounts |
-| bucket              | IAM principals  | `iam_principals`    | project service accounts           |
-|                     |                 |                     | IaC service accounts               |
-|                     |                 |                     | other project service accounts     |
-|                     |                 |                     | other project IaC service accounts |
-| service account     | IAM projects    | `vpc_host_projects` |                                    |
-| IaC bucket          | IAM principals  | `iam_principals`    | IaC service accounts               |
-| IaC service account | IAM principals  | `iam_principals`    |                                    |
+| resource            | attribute            | external contexts   | internal contexts                  |
+| ------------------- | -------------------- | ------------------- | ---------------------------------- |
+| folder              | parent               | `folder_ids`        | implicit through folder structure  |
+| folder              | IAM principals       | `iam_principals`    |                                    |
+| folder              | tag bindings         | `tag_values`        |                                    |
+| project             | parent               | `folder_ids`        | internally created folders         |
+| project             | Shared VPC host      | `vpc_host_projects` |                                    |
+| project             | Shared VPC IAM       | `iam_principals`    | project service accounts           |
+|                     |                      |                     | IaC service accounts               |
+|                     |                      |                     | other project service accounts     |
+|                     |                      |                     | other project IaC service accounts |
+| project             | tag bindings         | `tag_values`        |                                    |
+| project             | IAM principals       | `iam_principals`    | project service accounts           |
+|                     |                      |                     | IaC service accounts               |
+|                     |                      |                     | other project service accounts     |
+|                     |                      |                     | other project IaC service accounts |
+| bucket              | IAM principals       | `iam_principals`    | project service accounts           |
+|                     |                      |                     | IaC service accounts               |
+|                     |                      |                     | other project service accounts     |
+|                     |                      |                     | other project IaC service accounts |
+| service account     | IAM projects         | `vpc_host_projects` |                                    |
+| service account     | `iam_sa_roles` |                     | service accounts in the same project |
+| IaC bucket          | IAM principals       | `iam_principals`    | IaC service accounts               |
+| IaC service account | IAM principals       | `iam_principals`    |                                    |
 
 ## Example
 
@@ -408,6 +412,15 @@ iam:
     - automation/ro
 shared_vpc_host_config:
   enabled: true
+service_accounts:
+  vm-default:
+    display_name: "VM default service account."
+    iam_self_roles:
+      - roles/logging.logWriter
+      - roles/monitoring.metricWriter
+    iam:
+      "roles/iam.serviceAccountTokenCreator":
+        - automation/rw
 automation:
   project: test-pf-teams-iac-0
   service_accounts:

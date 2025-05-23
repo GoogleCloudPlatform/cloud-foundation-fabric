@@ -7,6 +7,9 @@
     "automation": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "project"
+      ],
       "properties": {
         "project": {
           "type": "string"
@@ -252,6 +255,9 @@
             },
             "iam_project_roles": {
               "$ref": "#/$defs/iam_project_roles"
+            },
+            "iam_sa_roles": {
+              "$ref": "#/$defs/iam_sa_roles"
             }
           }
         }

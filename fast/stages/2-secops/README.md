@@ -199,7 +199,7 @@ workforce_identity_providers = {
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [federated_identity_pool](outputs.tf#L41) | Workforce Identity Federation pool. |  |  |
-| [secops_project_ids](outputs.tf#L46) | SecOps project IDs. |  |  |
-| [tfvars](outputs.tf#L51) | Terraform variable files for the following stages. | ✓ |  |
+| [federated_identity_pool](outputs.tf#L48) | Workforce Identity Federation pool. |  |  |
+| [secops_project_ids](outputs.tf#L53) | SecOps project IDs. |  |  |
+| [tfvars](outputs.tf#L58) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
