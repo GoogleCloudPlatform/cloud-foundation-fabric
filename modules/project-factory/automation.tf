@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ locals {
     for k, v in local.projects : [
       for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
         automation_project = v.automation.project
-        name               = ks
+        name               = lookup(kv, "name", "${v.name}-${ks}")
         prefix             = v.prefix
         project            = k
         project_name       = v.name
@@ -113,7 +113,7 @@ module "automation-service-accounts" {
   # from the IAM dependency in the outputs of the main project
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
-  name        = "${each.value.project_name}-${each.value.name}"
+  name        = each.value.name
   description = lookup(each.value, "description", null)
   display_name = lookup(
     each.value,

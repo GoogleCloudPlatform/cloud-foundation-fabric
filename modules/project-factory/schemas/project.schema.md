@@ -24,6 +24,7 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+      - **name**: *string*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*
