@@ -218,6 +218,7 @@ The following table lists the available context interpolations. External context
 | project             | IAM principals       | `iam_principals`    | project service accounts           |
 |                     |                      |                     | IaC service accounts               |
 |                     |                      |                     | other project service accounts     |
+|                     |                      |                     | other project service agents     |
 |                     |                      |                     | other project IaC service accounts |
 | bucket              | IAM principals       | `iam_principals`    | project service accounts           |
 |                     |                      |                     | IaC service accounts               |
@@ -360,7 +361,7 @@ iam_by_principals:
     - roles/storage.objectViewer
 iam:
   roles/cloudkms.cryptoKeyEncrypterDecrypter:
-    - storage  
+    - storage
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
