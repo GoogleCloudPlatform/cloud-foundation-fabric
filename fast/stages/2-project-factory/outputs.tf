@@ -39,9 +39,10 @@ output "projects" {
   description = "Created projects."
   value = {
     for k, v in module.projects.projects : k => {
-      id         = v.project_id
-      number     = v.number
-      automation = v.automation
+      id             = v.project_id
+      number         = v.number
+      automation     = v.automation
+      service_agents = v.service_agents
     }
   }
 }

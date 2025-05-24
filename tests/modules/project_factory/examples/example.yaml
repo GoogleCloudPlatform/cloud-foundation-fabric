@@ -548,7 +548,7 @@ counts:
   google_kms_crypto_key_iam_member: 1
   google_monitoring_notification_channel: 1
   google_project: 4
-  google_project_iam_binding: 5
+  google_project_iam_binding: 6
   google_project_iam_member: 20
   google_project_service: 12
   google_project_service_identity: 4
@@ -562,6 +562,6 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 21
-  resources: 79
+  resources: 80
 
 outputs: {}

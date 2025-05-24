@@ -34,6 +34,11 @@ locals {
   service_accounts_names = {
     for k, v in module.service-accounts : k => v.name
   }
+  service_agents_email = {
+    for k, v in module.projects : k => {
+      for kk, vv in v.service_agents : kk => "serviceAccount:${vv.email}"
+    }
+  }
 }
 
 module "projects" {
@@ -133,6 +138,8 @@ module "projects-iam" {
         module.service-accounts[vv].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[vv],
+        # project's service identities
+        local.service_agents_email[each.key][vv],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
@@ -156,6 +163,8 @@ module "projects-iam" {
           module.service-accounts[vv].iam_email,
           # other automation service account (project/automation/rw)
           local.context.iam_principals[vv],
+          # project's service identities
+          local.service_agents_email[each.key][vv],
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
@@ -179,6 +188,8 @@ module "projects-iam" {
         module.service-accounts[v.member].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[v.member],
+        # project's service identities
+        local.service_agents_email[each.key][v.member],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")
