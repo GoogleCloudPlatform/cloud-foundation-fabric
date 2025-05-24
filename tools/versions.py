@@ -20,7 +20,7 @@ from pathlib import Path
 import click
 
 HEADER = "".join(open(__file__).readlines()[2:15])
-VERSIONS_TEMPLATE = """
+FABRIC_VERSIONS_TEMPLATE = """
 # Fabric release: {fabric_release}
 
 terraform {{
@@ -44,6 +44,8 @@ terraform {{
 }}
 """
 
+FAST_VERSIONS_TEMPLATE = "\n# FAST release: {fast_release}"
+
 
 def extract_variables(template, interpolated_string):
   # Find all variable names in the escaped template
@@ -60,10 +62,10 @@ def extract_variables(template, interpolated_string):
     return dict(zip(variable_names, match.groups()))
 
 
-def process_file(file_path, context):
+def process_file(template, file_path, context):
   with file_path.open("w", encoding="utf-8") as f:
     f.write(HEADER)
-    f.write(VERSIONS_TEMPLATE.format(**context))
+    f.write(template.format(**context))
 
 
 @click.command()
@@ -79,22 +81,30 @@ def process_file(file_path, context):
 def main(write_defaults, **kwargs):
   root_path = Path(__file__).parents[1]
   overrides = {k: v for k, v in kwargs.items() if v is not None}
+  # process versions.tf and versions.tofu
   for engine in ["tf", "tofu"]:
     defaults_fname = root_path / f"default-versions.{engine}"
-    defaults = extract_variables(VERSIONS_TEMPLATE, defaults_fname.read_text())
+    defaults = extract_variables(FABRIC_VERSIONS_TEMPLATE,
+                                 defaults_fname.read_text())
     context = defaults | overrides
     if kwargs[f'{engine}_version'] is not None:
       context['engine_version'] = kwargs[f'{engine}_version']
 
     for file_path in root_path.rglob(f"versions.{engine}"):
       click.echo(f"Processing {file_path}")
-      process_file(file_path, context | {
+      process_file(FABRIC_VERSIONS_TEMPLATE, file_path, context | {
           "path": file_path.parent.relative_to(root_path),
       })
 
     if write_defaults:
       click.echo(f"Processing {defaults_fname}")
-      process_file(defaults_fname, context)
+      process_file(FABRIC_VERSIONS_TEMPLATE, defaults_fname, context)
+
+  # process fast_version.txt.
+  fast_context = {"fast_release": context["fabric_release"]}
+  for file_path in root_path.rglob(f"fast_version.txt"):
+    click.echo(f"Processing {file_path}")
+    process_file(FAST_VERSIONS_TEMPLATE, file_path, fast_context)
 
 
 if __name__ == "__main__":
