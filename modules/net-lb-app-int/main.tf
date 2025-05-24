@@ -24,7 +24,7 @@ locals {
     ]
   ])
   fwd_rule_ports = (
-    var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
+    var.protocol == "HTTPS" ? coalesce(var.ports, [443]) : coalesce(var.ports, [80])
   )
   fwd_rule_target = (
     var.protocol == "HTTPS"
