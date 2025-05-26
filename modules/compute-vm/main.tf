@@ -17,8 +17,8 @@
 locals {
   advanced_mf = var.options.advanced_machine_features
   attached_disks = {
-    for disk in var.attached_disks :
-    (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
+    for i, disk in var.attached_disks :
+    coalesce(disk.name, disk.device_name, "disk-${i}") => merge(disk, {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
