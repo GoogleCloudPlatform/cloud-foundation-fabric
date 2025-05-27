@@ -17,8 +17,8 @@
 locals {
   advanced_mf = var.options.advanced_machine_features
   attached_disks = {
-    for disk in var.attached_disks :
-    (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
+    for i, disk in var.attached_disks :
+    coalesce(disk.name, disk.device_name, "disk-${i}") => merge(disk, {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
@@ -196,10 +196,8 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_regional
     iterator = config
     content {
-      device_name = (
-        config.value.device_name != null
-        ? config.value.device_name
-        : config.value.name
+      device_name = coalesce(
+        config.value.device_name, config.value.name, config.key
       )
       mode = config.value.options.mode
       source = (
@@ -442,7 +440,9 @@ resource "google_compute_instance_template" "default" {
     iterator = config
     content {
       auto_delete = config.value.options.auto_delete
-      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
+      device_name = coalesce(
+        config.value.device_name, config.value.name, config.key
+      )
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
