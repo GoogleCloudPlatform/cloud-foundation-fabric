@@ -53,7 +53,7 @@ locals {
 # use a different resource to avoid overlapping key issues
 
 resource "google_tags_location_tag_binding" "network" {
-  for_each = var.create_template ? {} : var.network_tag_bindings
+  for_each = local.template_create ? {} : var.network_tag_bindings
   parent = (
     "${local.tag_parent_base}/zones/${var.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
@@ -62,7 +62,7 @@ resource "google_tags_location_tag_binding" "network" {
 }
 
 resource "google_tags_location_tag_binding" "instance" {
-  for_each = var.create_template ? {} : var.tag_bindings
+  for_each = local.template_create ? {} : var.tag_bindings
   parent = (
     "${local.tag_parent_base}/zones/${var.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
@@ -72,7 +72,7 @@ resource "google_tags_location_tag_binding" "instance" {
 
 resource "google_tags_location_tag_binding" "boot_disks" {
   for_each = (
-    var.create_template ? {} : { for v in local.boot_disk_tags : v.key => v }
+    local.template_create ? {} : { for v in local.boot_disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/zones/${var.zone}/disks/${each.value.disk_id}"
@@ -83,7 +83,7 @@ resource "google_tags_location_tag_binding" "boot_disks" {
 
 resource "google_tags_location_tag_binding" "disks" {
   for_each = (
-    var.create_template ? {} : { for v in local.disk_tags : v.key => v }
+    local.template_create ? {} : { for v in local.disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/zones/${var.zone}/disks/${each.value.disk_id}"
@@ -94,7 +94,7 @@ resource "google_tags_location_tag_binding" "disks" {
 
 resource "google_tags_location_tag_binding" "disks_regional" {
   for_each = (
-    var.create_template ? {} : { for v in local.region_disk_tags : v.key => v }
+    local.template_create ? {} : { for v in local.region_disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/regions/${local.region}/disks/${each.value.disk_id}"
@@ -106,7 +106,7 @@ resource "google_tags_location_tag_binding" "disks_regional" {
 # TODO: enable once the template id is available
 
 # resource "google_tags_location_tag_binding" "template" {
-#   for_each = var.create_template ? var.tag_bindings : {}
+#   for_each = local.template_create ? var.tag_bindings : {}
 #   parent = (
 #     "${local.tag_parent_base}/regions/${local.region}/instanceTemplates/${google_compute_instance.default[0].instance_id}"
 #   )

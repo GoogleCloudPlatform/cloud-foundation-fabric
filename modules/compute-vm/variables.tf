@@ -126,9 +126,12 @@ variable "confidential_compute" {
 }
 
 variable "create_template" {
-  description = "Create instance template instead of instances."
-  type        = bool
-  default     = false
+  description = "Create instance template instead of instances. Defaults to a global template."
+  type = object({
+    regional = optional(bool, false)
+  })
+  nullable = true
+  default  = null
 }
 
 variable "description" {
