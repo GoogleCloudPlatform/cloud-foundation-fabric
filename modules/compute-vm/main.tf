@@ -196,10 +196,8 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_regional
     iterator = config
     content {
-      device_name = (
-        config.value.device_name != null
-        ? config.value.device_name
-        : config.value.name
+      device_name = coalesce(
+        config.value.device_name, config.value.name, config.key
       )
       mode = config.value.options.mode
       source = (
