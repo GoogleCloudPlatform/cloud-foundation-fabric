@@ -47,10 +47,6 @@ module "cluster-1" {
       authorized_ranges = {
         internal-vms = "10.0.0.0/8"
       }
-      # disable_public_endpoint = true
-      # private_endpoint_config = {
-      #   global_access = true
-      # }
     }
     # private_nodes = true
   }
@@ -86,7 +82,8 @@ module "cluster-1" {
       authorized_ranges = {
         "corporate proxy" = "8.8.8.8/32"
       }
-      disable_public_endpoint = false
+      gcp_public_cidrs_access_enabled = false
+      disable_public_endpoint         = false
     }
     private_nodes = false
   }
@@ -117,13 +114,13 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   access_config = {
-    dns_access                      = false
-    gcp_public_cidrs_access_enabled = true
+    dns_access = false
     ip_access = {
       authorized_ranges = {
         internal-vms = "10.0.0.0/8"
       }
-      disable_public_endpoint = false
+      gcp_public_cidrs_access_enabled = true
+      disable_public_endpoint         = false
     }
     private_nodes = false
   }
@@ -154,13 +151,6 @@ module "cluster-1" {
   name           = "cluster-1"
   location       = "europe-west1"
   node_locations = ["europe-west1-b"]
-  access_config = {
-    ip_access = {
-      authorized_ranges = {
-        internal-vms = "10.0.0.0/8"
-      }
-    }
-  }
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -500,7 +490,7 @@ module "cluster-1" {
 | [name](variables.tf#L382) | Cluster name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L416) | Cluster project id. | <code>string</code> | ✓ |  |
 | [vpc_config](variables.tf#L427) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  disable_default_snat &#61; optional&#40;bool&#41;&#10;  network              &#61; string&#10;  subnetwork           &#61; string&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string&#41;&#10;    services &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  additional_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  stack_type        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [access_config](variables.tf#L17) | Control plane endpoint and nodes access configurations. | <code title="object&#40;&#123;&#10;  dns_access &#61; optional&#40;bool, true&#41;&#10;  ip_access &#61; optional&#40;object&#40;&#123;&#10;    authorized_ranges               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    disable_public_endpoint         &#61; optional&#40;bool, true&#41;&#10;    gcp_public_cidrs_access_enabled &#61; optional&#40;bool, false&#41;&#10;    private_endpoint_config &#61; optional&#40;object&#40;&#123;&#10;      endpoint_subnetwork &#61; optional&#40;string&#41;&#10;      global_access       &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  private_nodes &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [access_config](variables.tf#L17) | Control plane endpoint and nodes access configurations. | <code title="object&#40;&#123;&#10;  dns_access &#61; optional&#40;bool, true&#41;&#10;  ip_access &#61; optional&#40;object&#40;&#123;&#10;    authorized_ranges               &#61; optional&#40;map&#40;string&#41;&#41;&#10;    disable_public_endpoint         &#61; optional&#40;bool&#41;&#10;    gcp_public_cidrs_access_enabled &#61; optional&#40;bool&#41;&#10;    private_endpoint_config &#61; optional&#40;object&#40;&#123;&#10;      endpoint_subnetwork &#61; optional&#40;string&#41;&#10;      global_access       &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  private_nodes &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backup_configs](variables.tf#L43) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    region                            &#61; string&#10;    applications                      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    labels                            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    schedule                          &#61; optional&#40;string&#41;&#10;    retention_policy_days             &#61; optional&#40;number&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cluster_autoscaling](variables.tf#L65) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  enabled             &#61; optional&#40;bool, true&#41;&#10;  autoscaling_profile &#61; optional&#40;string, &#34;BALANCED&#34;&#41;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    disk_size         &#61; optional&#40;number&#41;&#10;    disk_type         &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;    management &#61; optional&#40;object&#40;&#123;&#10;      auto_repair  &#61; optional&#40;bool, true&#41;&#10;      auto_upgrade &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#10;    shielded_instance_config &#61; optional&#40;object&#40;&#123;&#10;      integrity_monitoring &#61; optional&#40;bool, true&#41;&#10;      secure_boot          &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;&#41;&#10;    upgrade_settings &#61; optional&#40;object&#40;&#123;&#10;      blue_green &#61; optional&#40;object&#40;&#123;&#10;        node_pool_soak_duration &#61; optional&#40;string&#41;&#10;        standard_rollout_policy &#61; optional&#40;object&#40;&#123;&#10;          batch_percentage    &#61; optional&#40;number&#41;&#10;          batch_node_count    &#61; optional&#40;number&#41;&#10;          batch_soak_duration &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      surge &#61; optional&#40;object&#40;&#123;&#10;        max         &#61; optional&#40;number&#41;&#10;        unavailable &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  auto_provisioning_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; optional&#40;number, 0&#41;&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; optional&#40;number, 0&#41;&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  accelerator_resources &#61; optional&#40;list&#40;object&#40;&#123;&#10;    resource_type &#61; string&#10;    min           &#61; optional&#40;number, 0&#41;&#10;    max           &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [default_nodepool](variables.tf#L145) | Enable default nodepool. | <code title="object&#40;&#123;&#10;  remove_pool        &#61; optional&#40;bool, true&#41;&#10;  initial_node_count &#61; optional&#40;number, 1&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
