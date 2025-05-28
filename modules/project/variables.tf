@@ -252,6 +252,12 @@ variable "skip_delete" {
   default     = false
 }
 
+variable "deletion_policy" {
+  description = "Allows the underlying resources to be destroyed without destroying the project itself."
+  type        = string
+  default     = "ABANDON"
+}
+
 variable "tag_bindings" {
   description = "Tag bindings for this project, in key => tag value id format."
   type        = map(string)
