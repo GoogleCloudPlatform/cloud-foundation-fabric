@@ -47,10 +47,6 @@ module "cluster-1" {
       authorized_ranges = {
         internal-vms = "10.0.0.0/8"
       }
-      # disable_public_endpoint = true
-      # private_endpoint_config = {
-      #   global_access = true
-      # }
     }
     # private_nodes = true
   }
@@ -86,7 +82,8 @@ module "cluster-1" {
       authorized_ranges = {
         "corporate proxy" = "8.8.8.8/32"
       }
-      disable_public_endpoint = false
+      gcp_public_cidrs_access_enabled = false
+      disable_public_endpoint         = false
     }
     private_nodes = false
   }
@@ -117,13 +114,13 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   access_config = {
-    dns_access                      = false
-    gcp_public_cidrs_access_enabled = true
+    dns_access = false
     ip_access = {
       authorized_ranges = {
         internal-vms = "10.0.0.0/8"
       }
-      disable_public_endpoint = false
+      gcp_public_cidrs_access_enabled = true
+      disable_public_endpoint         = false
     }
     private_nodes = false
   }
@@ -154,13 +151,6 @@ module "cluster-1" {
   name           = "cluster-1"
   location       = "europe-west1"
   node_locations = ["europe-west1-b"]
-  access_config = {
-    ip_access = {
-      authorized_ranges = {
-        internal-vms = "10.0.0.0/8"
-      }
-    }
-  }
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link

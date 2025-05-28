@@ -56,6 +56,7 @@ values:
     default_max_pods_per_node: 32
     deletion_protection: true
     description: null
+    disable_l4_lb_firewall_reconciliation: false
     dns_config: []
     effective_labels:
       environment: dev
@@ -72,6 +73,7 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
+    in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
     - additional_pod_ranges_config: []
@@ -94,7 +96,6 @@ values:
     - cidr_blocks:
       - cidr_block: 10.0.0.0/8
         display_name: internal-vms
-      gcp_public_cidrs_access_enabled: false
     min_master_version: null
     monitoring_config:
     - enable_components:
@@ -112,6 +113,7 @@ values:
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
       fast_socket: []
+      flex_start: null
       gvnic: []
       host_maintenance_policy: []
       linux_node_config: []
@@ -135,12 +137,11 @@ values:
       - containerd_config: []
         gcfs_config:
         - enabled: false
+        insecure_kubelet_readonly_port_enabled: 'TRUE'
     pod_security_policy_config: []
     private_cluster_config:
-    - enable_private_endpoint: true
+    - enable_private_endpoint: null
       enable_private_nodes: true
-      master_global_access_config:
-      - enabled: true
       private_endpoint_subnetwork: null
     project: myproject
     remove_default_node_pool: true
