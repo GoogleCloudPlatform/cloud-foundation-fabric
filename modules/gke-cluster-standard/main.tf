@@ -404,7 +404,7 @@ resource "google_container_cluster" "cluster" {
       gcp_public_cidrs_access_enabled = try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null)
 
       dynamic "cidr_blocks" {
-        for_each = try(var.access_config.ip_access.authorized_ranges, {})
+        for_each = coalesce(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
         content {
           cidr_block   = range.value
