@@ -28,6 +28,7 @@ resource "google_cloud_run_v2_job" "job" {
   launch_stage        = var.launch_stage
   deletion_protection = var.deletion_protection
   template {
+    labels     = var.revision.labels
     task_count = var.revision.job.task_count
     template {
       encryption_key = var.encryption_key
@@ -189,6 +190,7 @@ resource "google_cloud_run_v2_job" "job_unmanaged" {
   launch_stage        = var.launch_stage
   deletion_protection = var.deletion_protection
   template {
+    labels     = var.revision.labels
     task_count = var.revision.job.task_count
     template {
       encryption_key = var.encryption_key

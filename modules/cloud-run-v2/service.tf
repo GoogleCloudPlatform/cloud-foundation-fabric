@@ -32,6 +32,7 @@ resource "google_cloud_run_v2_service" "service" {
   deletion_protection  = var.deletion_protection
 
   template {
+    labels         = var.revision.labels
     encryption_key = var.encryption_key
     revision       = local.revision_name
     execution_environment = (
@@ -275,6 +276,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   deletion_protection  = var.deletion_protection
 
   template {
+    labels         = var.revision.labels
     encryption_key = var.encryption_key
     revision       = local.revision_name
     execution_environment = (
