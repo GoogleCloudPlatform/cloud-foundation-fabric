@@ -7,8 +7,9 @@
     "description": {
       "type": "string"
     },
-    "title": {
-      "type": "string"
+    "ignore_resource_changes": {
+      "type": "boolean",
+      "default": false
     },
     "spec": {
       "type": "object",
@@ -87,6 +88,9 @@
         }
       },
       "additionalProperties": false
+    },
+    "title": {
+      "type": "string"
     },
     "use_explicit_dry_run_spec": {
       "type": "boolean",

@@ -27,6 +27,7 @@ resource "google_container_cluster" "cluster" {
   network                  = var.vpc_config.network
   subnetwork               = var.vpc_config.subnetwork
   resource_labels          = var.labels
+  enable_multi_networking  = var.enable_features.multi_networking
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
   enable_tpu               = var.enable_features.tpu
   initial_node_count       = 1
@@ -266,10 +267,13 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
-  dynamic "node_pool_auto_config" {
-    for_each = var.node_config.tags != null ? [""] : []
-    content {
-      network_tags {
+  node_pool_auto_config {
+    node_kubelet_config {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
+    }
+    dynamic "network_tags" {
+      for_each = var.node_config.tags != null ? [""] : []
+      content {
         tags = toset(var.node_config.tags)
       }
     }

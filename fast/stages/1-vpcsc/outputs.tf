@@ -17,11 +17,7 @@
 locals {
   tfvars = {
     perimeters = {
-      for k, v in try(module.vpc-sc.service_perimeters_regular, {}) :
-      k => v.id
-    }
-    perimeters_bridge = {
-      for k, v in try(module.vpc-sc.service_perimeters_bridge, {}) :
+      for k, v in try(module.vpc-sc.perimeters, {}) :
       k => v.id
     }
   }
@@ -49,5 +45,12 @@ output "tfvars" {
 output "vpc_sc_perimeter_default" {
   description = "Raw default perimeter resource."
   sensitive   = true
-  value       = try(module.vpc-sc.service_perimeters_regular["default"], null)
+  value       = try(module.vpc-sc.perimeters["default"], null)
+}
+
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/1-vpcsc-version.txt"
+  source = "fast_version.txt"
 }

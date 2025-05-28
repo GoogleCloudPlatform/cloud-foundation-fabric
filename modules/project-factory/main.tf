@@ -17,6 +17,14 @@
 # tfdoc:file:description Projects and billing budgets factory resources.
 
 locals {
+  _service_agent_emails = flatten([
+    for k, v in module.projects : [
+      for kk, vv in v.service_agents : {
+        key   = "${k}/${kk}"
+        value = "serviceAccount:${vv.email}"
+      }
+    ]
+  ])
   context = {
     folder_ids = merge(
       var.factories_config.context.folder_ids,
@@ -31,6 +39,12 @@ locals {
       # module.service-accounts are excluded here, as adding them here results in dependency cycles
     )
   }
+  service_accounts_names = {
+    for k, v in module.service-accounts : k => v.name
+  }
+  service_agents_email = {
+    for v in local._service_agent_emails : v.key => v.value
+  }
 }
 
 module "projects" {
@@ -43,6 +57,7 @@ module "projects" {
     local.context.folder_ids, each.value.parent, each.value.parent
   )
   prefix              = each.value.prefix
+  project_reuse       = each.value.project_reuse
   alerts              = try(each.value.alerts, null)
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})
@@ -129,6 +144,9 @@ module "projects-iam" {
         module.service-accounts[vv].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[vv],
+        # project's service identities
+        local.service_agents_email["${each.key}/${vv}"],
+        local.service_agents_email[vv],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
@@ -152,6 +170,8 @@ module "projects-iam" {
           module.service-accounts[vv].iam_email,
           # other automation service account (project/automation/rw)
           local.context.iam_principals[vv],
+          # project's service identities
+          local.service_agents_email[each.key][vv],
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
@@ -175,6 +195,8 @@ module "projects-iam" {
         module.service-accounts[v.member].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[v.member],
+        # project's service identities
+        local.service_agents_email[each.key][v.member],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")
@@ -185,7 +207,28 @@ module "projects-iam" {
     })
   }
   # IAM by principals would trigger dynamic key errors so we don't interpolate
-  iam_by_principals = try(each.value.iam_by_principals, {})
+  # iam_by_principals = try(each.value.iam_by_principals, {})
+  iam_by_principals = {
+    for k, v in try(each.value.iam_by_principals, {}) :
+    try(
+      # project service accounts (sa)
+      module.service-accounts["${each.key}/${k}"].iam_email,
+      # automation service account (rw)
+      local.context.iam_principals["${each.key}/automation/${k}"],
+      # automation service account (automation/rw)
+      local.context.iam_principals["${each.key}/${k}"],
+      # other projects service accounts (project/sa)
+      module.service-accounts[k].iam_email,
+      # other automation service account (project/automation/rw)
+      local.context.iam_principals[k],
+      # passthrough + error handling using tonumber until Terraform gets fail/raise function
+      (
+        strcontains(k, ":")
+        ? k
+        : tonumber("[Error] Invalid member: '${k}' in project '${each.key}'")
+      )
+    ) => v
+  }
   # Shared VPC configuration is done at stage 2, to avoid dependency cycle between project service accounts and
   # IAM grants done for those service accounts
   factories_config = {
@@ -330,16 +373,16 @@ module "service-accounts" {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
         # automation service account (rw)
-        local.context.iam_principals["${each.key}/automation/${vv}"],
+        local.context.iam_principals["${each.value.project_key}/automation/${vv}"],
         # automation service account (automation/rw)
-        local.context.iam_principals["${each.key}/${vv}"],
+        local.context.iam_principals["${each.value.project_key}/${vv}"],
         # other automation service account (project/automation/rw)
         local.context.iam_principals[vv],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
           ? vv
-          : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
+          : tonumber("[Error] Invalid member: '${vv}' in project '${each.value.project_key}'")
         )
       )
     ]
@@ -353,6 +396,22 @@ module "service-accounts" {
       (module.projects[each.value.project_key].project_id) = each.value.iam_self_roles
     }
   )
+}
+
+module "service_accounts-iam" {
+  source = "../iam-service-account"
+  for_each = {
+    for k in local.service_accounts : "${k.project_key}/${k.name}" => k
+    if k.iam_sa_roles != {}
+  }
+  project_id             = module.service-accounts[each.key].service_account.project
+  name                   = each.value.name
+  service_account_create = false
+  iam_sa_roles = {
+    for k, v in each.value.iam_sa_roles : lookup(
+      local.service_accounts_names, "${each.value.project_key}/${k}", k
+    ) => v
+  }
 }
 
 module "billing-account" {

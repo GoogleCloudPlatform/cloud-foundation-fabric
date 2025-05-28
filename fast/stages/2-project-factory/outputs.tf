@@ -39,9 +39,10 @@ output "projects" {
   description = "Created projects."
   value = {
     for k, v in module.projects.projects : k => {
-      id         = v.project_id
-      number     = v.number
-      automation = v.automation
+      id             = v.project_id
+      number         = v.number
+      automation     = v.automation
+      service_agents = v.service_agents
     }
   }
 }
@@ -54,6 +55,13 @@ output "service_accounts" {
       iam_email = v.iam_email
     }
   }
+}
+
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/2-project-factory-version.txt"
+  source = "fast_version.txt"
 }
 
 # generate tfvars file for subsequent stages

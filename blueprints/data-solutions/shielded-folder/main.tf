@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ module "vpc-sc" {
   access_levels        = var.vpc_sc_access_levels
   egress_policies      = var.vpc_sc_egress_policies
   ingress_policies     = merge(var.vpc_sc_ingress_policies, local._sink_ingress_policies)
-  service_perimeters_regular = {
+  perimeters = {
     shielded = {
       # Move `spec` definition to `status` and comment `use_explicit_dry_run_spec` variable to enforce VPC-SC configuration
       # Before enforcing configuration check logs and create Access Level, Ingress/Egress policy as needed

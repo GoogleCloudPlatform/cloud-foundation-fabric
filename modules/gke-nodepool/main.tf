@@ -157,6 +157,21 @@ resource "google_container_node_pool" "nodepool" {
     content {
       max_surge       = try(var.nodepool_config.upgrade_settings.max_surge, null)
       max_unavailable = try(var.nodepool_config.upgrade_settings.max_unavailable, null)
+      strategy        = try(var.nodepool_config.upgrade_settings.strategy, null)
+      dynamic "blue_green_settings" {
+        for_each = try(var.nodepool_config.upgrade_settings.blue_green_settings, null) != null ? [""] : []
+        content {
+          node_pool_soak_duration = var.nodepool_config.upgrade_settings.blue_green_settings.node_pool_soak_duration
+          dynamic "standard_rollout_policy" {
+            for_each = try(var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy, null) != null ? [""] : []
+            content {
+              batch_percentage    = var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_percentage
+              batch_node_count    = var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_node_count
+              batch_soak_duration = var.nodepool_config.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_soak_duration
+            }
+          }
+        }
+      }
     }
   }
 

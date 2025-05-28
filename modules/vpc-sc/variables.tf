@@ -127,7 +127,6 @@ variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
     access_levels    = optional(string)
-    bridges          = optional(string)
     egress_policies  = optional(string)
     ingress_policies = optional(string)
     perimeters       = optional(string)
@@ -219,23 +218,13 @@ variable "ingress_policies" {
   }
 }
 
-variable "service_perimeters_bridge" {
-  description = "Bridge service perimeters."
-  type = map(object({
-    description               = optional(string)
-    title                     = optional(string)
-    spec_resources            = optional(list(string))
-    status_resources          = optional(list(string))
-    use_explicit_dry_run_spec = optional(bool, false)
-  }))
-  default = {}
-}
-
-variable "service_perimeters_regular" {
+variable "perimeters" {
   description = "Regular service perimeters."
   type = map(object({
-    description = optional(string)
-    title       = optional(string)
+    description               = optional(string)
+    ignore_resource_changes   = optional(bool, false)
+    title                     = optional(string)
+    use_explicit_dry_run_spec = optional(bool, false)
     spec = optional(object({
       access_levels       = optional(list(string))
       egress_policies     = optional(list(string))
@@ -258,8 +247,13 @@ variable "service_perimeters_regular" {
         enable_restriction = optional(bool, true)
       }))
     }))
-    use_explicit_dry_run_spec = optional(bool, false)
   }))
   default  = {}
   nullable = false
+}
+
+variable "project_id_search_scope" {
+  description = "Set this to an organization or folder ID to use Cloud Asset Inventory to automatically translate project ids to numbers."
+  type        = string
+  default     = null
 }

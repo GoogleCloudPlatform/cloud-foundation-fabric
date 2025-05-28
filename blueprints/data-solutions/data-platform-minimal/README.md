@@ -2,7 +2,7 @@
 
 This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and sets up projects and related resources that compose an end-to-end data environment.
 
-This minimal Data Platform Architecture keep to a minimal set of projects the solution. The approach make the architecture easy to read and operate but limit the ability to scale to handle multiple worklaods. To better handle more complex use cases where workloads need processing role segmentation betwneed transformations or deeper cost attribution are needed, it is suggested to refer to the [Data Platform](../data-platform-foundations/) blueprint.
+This minimal Data Platform Architecture keep to a minimal set of projects the solution. The approach make the architecture easy to read and operate but limit the ability to scale to handle multiple worklaods. To better handle more complex use cases where workloads need processing role segmentation betwneed transformations or deeper cost attribution are needed, it is suggested to refer to the [Data Platform](../../../fast/stages/3-data-platform-dev/) FAST stage.
 
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 

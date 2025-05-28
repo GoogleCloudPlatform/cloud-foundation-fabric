@@ -25,13 +25,6 @@ This blueprint is deprecated. To create a Cloud Composer instance please consult
 
 <br clear="left">
 
-### Data Platform Foundations
-
-<a href="./data-platform-foundations/" title="Data Platform"><img src="./data-platform-foundations/images/overview_diagram.png" align="left" width="280px"></a>
-This [blueprint](./data-platform-foundations/) implements a robust and flexible Data Platform on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
-
-<br clear="left">
-
 ### Minimal Data Platform
 
 <a href="./data-platform-minimal/" title="Minimal Data Platform"><img src="./data-platform-minimal/images/diagram.png" align="left" width="280px"></a>

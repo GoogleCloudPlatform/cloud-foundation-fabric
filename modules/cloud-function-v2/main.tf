@@ -111,15 +111,16 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   service_config {
-    max_instance_count             = var.function_config.instance_count
-    min_instance_count             = 0
-    available_memory               = "${var.function_config.memory_mb}M"
+    all_traffic_on_latest_revision = true
     available_cpu                  = var.function_config.cpu
-    timeout_seconds                = var.function_config.timeout_seconds
+    available_memory               = "${var.function_config.memory_mb}M"
+    binary_authorization_policy    = var.function_config.binary_authorization_policy
     environment_variables          = var.environment_variables
     ingress_settings               = var.ingress_settings
-    all_traffic_on_latest_revision = true
+    max_instance_count             = var.function_config.instance_count
+    min_instance_count             = 0
     service_account_email          = local.service_account_email
+    timeout_seconds                = var.function_config.timeout_seconds
     vpc_connector                  = local.vpc_connector
     vpc_connector_egress_settings  = var.vpc_connector.egress_settings
 

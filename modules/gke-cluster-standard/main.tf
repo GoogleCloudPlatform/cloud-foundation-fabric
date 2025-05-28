@@ -34,6 +34,7 @@ resource "google_container_cluster" "cluster" {
   subnetwork                               = var.vpc_config.subnetwork
   resource_labels                          = var.labels
   default_max_pods_per_node                = var.max_pods_per_node
+  enable_multi_networking                  = var.enable_features.multi_networking
   enable_intranode_visibility              = var.enable_features.intranode_visibility
   enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
   enable_shielded_nodes                    = var.enable_features.shielded_nodes
@@ -81,6 +82,7 @@ resource "google_container_cluster" "cluster" {
   # gcfs_config deactivation need the block to be defined so it can't be dynamic
   node_pool_defaults {
     node_config_defaults {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
       gcfs_config {
         enabled = var.enable_features.image_streaming
       }
@@ -218,6 +220,7 @@ resource "google_container_cluster" "cluster" {
           }
         }
       }
+      auto_provisioning_locations = var.cluster_autoscaling.auto_provisioning_locations
       dynamic "resource_limits" {
         for_each = local.cas.cpu_limits != null ? [""] : []
         content {

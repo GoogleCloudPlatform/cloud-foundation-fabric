@@ -1,0 +1,88 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/data-domain.schema.json
+
+name: Domain 0
+short_name: d0
+
+automation:
+  impersonation_principals:
+    - dp-product-a-0
+
+deploy_config:
+  composer: {}
+    # Uncomment for VPC Network Connectivity
+    # region defaults to var.location
+    # node_config:
+    #   network: dev-net-spoke-0
+    #   subnetwork: europe-west1/dev-dataplatform
+
+project_config:
+  iam:
+    roles/owner:
+      - rw
+    roles/viewer:
+      - ro
+    roles/composer.environmentAndStorageObjectAdmin:
+      - dp-product-a-0
+  iam_by_principals:
+    dp-platform:
+      - roles/composer.environmentAndStorageObjectUser
+      - roles/monitoring.viewer
+      - roles/logging.viewer
+    dp-product-a-0:
+      - roles/composer.environmentAndStorageObjectAdmin
+      - roles/monitoring.viewer
+      - roles/logging.viewer
+    dp-domain-a:
+      - roles/composer.environmentAndStorageObjectAdmin
+      - roles/monitoring.viewer
+      - roles/logging.viewer
+
+  services:
+    - composer.googleapis.com
+    - datacatalog.googleapis.com
+    - dataplex.googleapis.com
+    - datalineage.googleapis.com
+  shared_vpc_service_config:
+    host_project: dev-net-spoke-0
+    service_agent_iam:
+      roles/composer.sharedVpcAgent:
+        - composer
+
+folder_config:
+  iam_bindings:
+    bigquery_metadata_viewer:
+      members:
+        - dp-platform
+        - dp-domain-a
+        - dp-product-a-0
+        - data-consumer-bi
+      role: roles/bigquery.metadataViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')
+    dataplex_catalog_viewer:
+      members:
+        - dp-platform
+        - dp-domain-a
+        - dp-product-a-0
+        - data-consumer-bi
+      role: roles/dataplex.catalogViewer
+      condition:
+        title: exposure
+        description: Expose via secure tag.
+        expression: resource.matchTag('exposure', 'allow')

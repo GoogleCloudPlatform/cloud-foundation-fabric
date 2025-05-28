@@ -53,9 +53,13 @@ locals {
 }
 
 resource "google_data_catalog_tag_template" "default" {
-  for_each        = local.tag_templates
-  project         = var.project_id
-  region          = coalesce(each.value.region, var.region)
+  for_each = local.tag_templates
+  project  = var.project_id
+  region = lookup(
+    var.factories_config,
+    coalesce(each.value.region, var.region),
+    coalesce(each.value.region, var.region)
+  )
   tag_template_id = each.key
   display_name    = each.value.display_name
   dynamic "fields" {

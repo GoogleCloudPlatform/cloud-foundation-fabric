@@ -48,7 +48,7 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -91,7 +91,7 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -142,7 +142,7 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -194,7 +194,7 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -245,7 +245,7 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -307,7 +307,7 @@ module "nginx-template" {
     size        = 10
     source      = google_compute_disk.test-disk.name
   }]
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -358,7 +358,7 @@ module "nginx-template" {
     size        = 10
     source      = google_compute_disk.test-disk.name
   }]
-  create_template = true
+  create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }

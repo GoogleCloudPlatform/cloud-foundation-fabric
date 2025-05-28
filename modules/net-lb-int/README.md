@@ -31,7 +31,7 @@ module "instance_template" {
   project_id      = var.project_id
   zone            = "europe-west1-b"
   name            = "vm-test"
-  create_template = true
+  create_template = {}
   service_account = {
     auto_create = true
   }

@@ -95,7 +95,7 @@ module "nva-regional-template" {
   zone            = "${each.value}-${local.nva_zones[0]}"
   instance_type   = "e2-standard-4"
   tags            = ["nva"]
-  create_template = true
+  create_template = {}
   can_ip_forward  = true
   network_interfaces = [
     {

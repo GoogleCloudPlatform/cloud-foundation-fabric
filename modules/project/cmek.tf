@@ -27,10 +27,9 @@ locals {
     "artifactregistry.googleapis.com" : ["artifactregistry"]
     "bigtableadmin.googleapis.com" : ["bigtable"]
     "bigquery.googleapis.com" : ["bigquery-encryption"]
-    "composer.googleapis.com" : [
-      "composer", "artifactregistry", "container-engine",
-      "compute", "pubsub", "storage"
-    ]
+    # the list for composer now track composer 3
+    # https://cloud.google.com/composer/docs/composer-3/configure-cmek-encryption#grant-roles-permissions
+    "composer.googleapis.com" : ["composer", "storage"]
     "compute.googleapis.com" : ["compute"]
     "container.googleapis.com" : ["compute"]
     "dataflow.googleapis.com" : ["dataflow", "compute"]

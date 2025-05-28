@@ -13,33 +13,6 @@
 # limitations under the License.
 
 values:
-  module.organization.google_org_policy_custom_constraint.constraint["custom.disableKubeletReadOnlyPort"]:
-    action_type: DENY
-    condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled
-      == true
-    description: Disallows the use of Kubelet read-only port 10255 to enhance security
-    display_name: Disable Kubelet Read-Only Port 10255
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.disableKubeletReadOnlyPort
-    parent: organizations/123456789012
-    resource_types:
-    - container.googleapis.com/Cluster
-  module.organization.google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
-    dry_run_spec: []
-    name: organizations/123456789012/policies/cloudbuild.disableCreateDefaultServiceAccount
-    parent: organizations/123456789012
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
   module.organization.google_org_policy_policy.default["cloudbuild.useBuildServiceAccount"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/cloudbuild.useBuildServiceAccount
@@ -54,6 +27,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["cloudbuild.useComputeServiceAccount"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/cloudbuild.useComputeServiceAccount
@@ -68,6 +42,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableGuestAttributesAccess
@@ -82,6 +57,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.disableInternetNetworkEndpointGroup"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableInternetNetworkEndpointGroup
@@ -96,6 +72,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.disableNestedVirtualization"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableNestedVirtualization
@@ -110,6 +87,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.disableSerialPortAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableSerialPortAccess
@@ -124,6 +102,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.disableVpcExternalIpv6"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.disableVpcExternalIpv6
@@ -138,6 +117,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.requireOsLogin"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.requireOsLogin
@@ -152,6 +132,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.restrictLoadBalancerCreationForTypes
@@ -169,6 +150,7 @@ values:
         - allowed_values:
           - in:INTERNAL
           denied_values: null
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.restrictProtocolForwardingCreationForTypes"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.restrictProtocolForwardingCreationForTypes
@@ -186,6 +168,7 @@ values:
         - allowed_values:
           - INTERNAL
           denied_values: null
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.setNewProjectDefaultToZonalDNSOnly
@@ -200,6 +183,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.skipDefaultNetworkCreation
@@ -214,6 +198,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.trustedImageProjects"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.trustedImageProjects
@@ -253,6 +238,7 @@ values:
           - is:projects/gke-windows-node-images
           - is:projects/ubuntu-os-gke-cloud
           denied_values: null
+    timeouts: null
   module.organization.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/compute.vmExternalIpAccess
@@ -267,6 +253,22 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["custom.denyBridgePerimeters"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/custom.denyBridgePerimeters
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["custom.disableKubeletReadOnlyPort"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/custom.disableKubeletReadOnlyPort
@@ -281,6 +283,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["essentialcontacts.allowedContactDomains"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/essentialcontacts.allowedContactDomains
@@ -316,6 +319,22 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["gcp.resourceLocations"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/gcp.resourceLocations
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.allowedPolicyMemberDomains
@@ -351,6 +370,7 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.automaticIamGrantsForDefaultServiceAccounts
@@ -365,6 +385,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.disableAuditLoggingExemption"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.disableAuditLoggingExemption
@@ -379,6 +400,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.disableServiceAccountKeyCreation
@@ -393,6 +415,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.disableServiceAccountKeyUpload
@@ -407,6 +430,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.serviceAccountKeyExposureResponse"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.serviceAccountKeyExposureResponse
@@ -424,6 +448,7 @@ values:
         - allowed_values:
           - DISABLE_KEY
           denied_values: null
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.workloadIdentityPoolAwsAccounts
@@ -438,6 +463,7 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/iam.workloadIdentityPoolProviders
@@ -452,6 +478,7 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["run.allowedIngress"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/run.allowedIngress
@@ -469,6 +496,7 @@ values:
         - allowed_values:
           - is:internal-and-cloud-load-balancing
           denied_values: null
+    timeouts: null
   module.organization.google_org_policy_policy.default["run.managed.requireInvokerIam"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/run.managed.requireInvokerIam
@@ -498,6 +526,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["sql.restrictPublicIp"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/sql.restrictPublicIp
@@ -512,6 +541,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["storage.publicAccessPrevention"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/storage.publicAccessPrevention
@@ -526,6 +556,25 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["storage.restrictAuthTypes"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/storage.restrictAuthTypes
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - in:ALL_HMAC_SIGNED_REQUESTS
+    timeouts: null
   module.organization.google_org_policy_policy.default["storage.secureHttpTransport"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/storage.secureHttpTransport
@@ -540,6 +589,7 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null
   module.organization.google_org_policy_policy.default["storage.uniformBucketLevelAccess"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/storage.uniformBucketLevelAccess
@@ -554,3 +604,4 @@ values:
         enforce: 'TRUE'
         parameters: null
         values: []
+    timeouts: null

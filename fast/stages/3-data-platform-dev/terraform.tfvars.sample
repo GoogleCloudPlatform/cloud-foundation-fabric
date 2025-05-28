@@ -1,0 +1,33 @@
+location = "europe-west1"
+
+central_project_config = {
+  iam_by_principals = {
+    "group:dp-platform-0@example.com" = [
+      "roles/datacatalog.categoryAdmin",
+      "roles/dataplex.catalogAdmin",
+      "roles/dataplex.aspectTypeOwner",
+      "roles/resourcemanager.tagViewer"
+    ]
+    "group:dp-domain-a@example.com" = [
+      "roles/datacatalog.viewer",
+      "roles/dataplex.aspectTypeUser"
+    ]
+    "group:dp-product-a-0@example.com" = [
+      "roles/datacatalog.viewer",
+      "roles/dataplex.aspectTypeUser"
+    ]
+  }
+}
+
+factories_config = {
+  context = {
+    iam_principals = {
+      data-consumer-bi = "group:data-consumer-bi@example.com"
+      dp-product-a-0   = "group:dp-product-a-0@example.com"
+      dp-domain-a      = "group:dp-domain-a@example.com"
+      dp-platform      = "group:dp-platform-0@example.com"
+    }
+  }
+  aspect_types = "data/aspect-types"
+  data_domains = "data/data-domains"
+}
