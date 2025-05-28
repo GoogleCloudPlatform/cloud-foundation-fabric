@@ -73,7 +73,6 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
-    in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
     - additional_pod_ranges_config: []

@@ -72,7 +72,6 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
-    in_transit_encryption_config: null
     initial_node_count: 1
     location: europe-west1
     logging_config:
