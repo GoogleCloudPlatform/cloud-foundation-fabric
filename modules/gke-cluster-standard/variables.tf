@@ -20,12 +20,12 @@ variable "access_config" {
     dns_access = optional(bool, true)
     ip_access = optional(object({
       authorized_ranges               = optional(map(string))
-      disable_public_endpoint         = optional(bool, true)
+      disable_public_endpoint         = optional(bool)
       gcp_public_cidrs_access_enabled = optional(bool)
       private_endpoint_config = optional(object({
         endpoint_subnetwork = optional(string)
         global_access       = optional(bool, true)
-      }), {})
+      }))
     }))
     private_nodes = optional(bool, true)
   })

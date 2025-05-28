@@ -278,11 +278,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.access_config.private_nodes == true ? [""] : []
     content {
       enable_private_nodes = true
-      enable_private_endpoint = try(
-        var.access_config.ip_access.disable_public_endpoint,
-        # this should be null, but when ip_access is disabled, the API
-        # returns true. We return true to avoid a permadiff
-        true
+      enable_private_endpoint = (
+        var.access_config.ip_access == null
+        # when ip_access is disabled, the API returns true. We return
+        # true to avoid a permadiff
+        ? true
+        : try(var.access_config.ip_access.disable_public_endpoint, null)
       )
       private_endpoint_subnetwork = try(
         var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
