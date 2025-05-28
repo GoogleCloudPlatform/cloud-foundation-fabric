@@ -17,6 +17,14 @@
 # tfdoc:file:description Projects and billing budgets factory resources.
 
 locals {
+  _service_agent_emails = flatten([
+    for k, v in module.projects : [
+      for kk, vv in v.service_agents : {
+        key   = "${k}/${kk}"
+        value = "serviceAccount:${vv.email}"
+      }
+    ]
+  ])
   context = {
     folder_ids = merge(
       var.factories_config.context.folder_ids,
@@ -33,6 +41,9 @@ locals {
   }
   service_accounts_names = {
     for k, v in module.service-accounts : k => v.name
+  }
+  service_agents_email = {
+    for v in local._service_agent_emails : v.key => v.value
   }
 }
 
@@ -133,6 +144,9 @@ module "projects-iam" {
         module.service-accounts[vv].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[vv],
+        # project's service identities
+        local.service_agents_email["${each.key}/${vv}"],
+        local.service_agents_email[vv],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
@@ -156,6 +170,8 @@ module "projects-iam" {
           module.service-accounts[vv].iam_email,
           # other automation service account (project/automation/rw)
           local.context.iam_principals[vv],
+          # project's service identities
+          local.service_agents_email[each.key][vv],
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
@@ -179,6 +195,8 @@ module "projects-iam" {
         module.service-accounts[v.member].iam_email,
         # other automation service account (project/automation/rw)
         local.context.iam_principals[v.member],
+        # project's service identities
+        local.service_agents_email[each.key][v.member],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")

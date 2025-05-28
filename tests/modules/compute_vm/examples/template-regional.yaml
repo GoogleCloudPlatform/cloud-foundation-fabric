@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.cos-test.google_compute_instance_template.default[0]:
+  module.cos-test.google_compute_region_instance_template.default[0]:
     disk:
     - auto_delete: true
       boot: true
@@ -45,7 +45,6 @@ values:
     network_interface:
     - access_config: []
       alias_ip_range: []
-      ipv6_access_config: []
       network: projects/xxx/global/networks/aaa
       network_ip: null
       nic_type: null
@@ -60,4 +59,4 @@ values:
       - https://www.googleapis.com/auth/userinfo.email
 
 counts:
-  google_compute_instance_template: 1
+  google_compute_region_instance_template: 1

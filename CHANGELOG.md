@@ -5,8 +5,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-05-21 14:22:05+00:00 to: None since: v40.1.0 -->
 
+### FAST
+
+- [[#3112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3112)] Add support for service agent expansion to project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-05-24 10:33:20+00:00 -->
+
 ### MODULES
 
+- [[#3112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3112)] Add support for service agent expansion to project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-05-24 10:33:20+00:00 -->
+- [[#3105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3105)] Add option to specify any port on https protocol ([Stepanenko-Alexey](https://github.com/Stepanenko-Alexey)) <!-- 2025-05-24 06:31:18+00:00 -->
 - [[#3110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3110)] Support iam_sa_roles in project factory service accounts ([ludoo](https://github.com/ludoo)) <!-- 2025-05-22 08:22:32+00:00 -->
 
 ## [40.1.0] - 2025-05-21

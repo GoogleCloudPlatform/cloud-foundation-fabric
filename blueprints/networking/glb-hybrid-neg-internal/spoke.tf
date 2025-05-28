@@ -110,7 +110,7 @@ module "test_vms" {
     "https-server",
     "ssh"
   ]
-  create_template = var.ilb_create
+  create_template = var.ilb_create ? {} : null
 }
 
 module "test_vm_migs" {

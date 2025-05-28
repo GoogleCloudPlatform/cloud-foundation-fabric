@@ -76,7 +76,7 @@ module "nva-simple-template" {
   zone            = "${each.value.region}-${each.value.zone}"
   instance_type   = "e2-micro"
   tags            = ["nva"]
-  create_template = true
+  create_template = {}
   can_ip_forward  = true
   network_interfaces = [
     {
