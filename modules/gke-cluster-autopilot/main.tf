@@ -211,12 +211,19 @@ resource "google_container_cluster" "cluster" {
   }
   dynamic "master_authorized_networks_config" {
     for_each = (
+      try(var.access_config.ip_access.private_endpoint_authorized_ranges_enforcement, null) != null ||
       try(var.access_config.ip_access.authorized_ranges, null) != null ||
       try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null) != null
     ) ? [""] : []
     content {
-      gcp_public_cidrs_access_enabled = try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null)
-
+      gcp_public_cidrs_access_enabled = try(
+        var.access_config.ip_access.gcp_public_cidrs_access_enabled,
+        null
+      )
+      private_endpoint_enforcement_enabled = try(
+        var.access_config.ip_access.private_endpoint_authorized_ranges_enforcement,
+        null
+      )
       dynamic "cidr_blocks" {
         for_each = coalesce(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
