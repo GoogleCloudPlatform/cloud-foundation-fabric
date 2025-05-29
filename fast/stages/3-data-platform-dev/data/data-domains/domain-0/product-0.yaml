@@ -1,0 +1,77 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/data-product.schema.json
+
+short_name: p0
+
+services:
+  - bigquery.googleapis.com
+  - cloudaicompanion.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - composer.googleapis.com
+  - datacatalog.googleapis.com
+  - dataplex.googleapis.com
+  - datalineage.googleapis.com
+  - storage.googleapis.com
+
+automation:
+  impersonation_principals:
+    - dp-product-a-0
+
+exposure_layer:
+  bigquery:
+    datasets:
+      exposure: {}
+    iam:
+      "roles/bigquery.dataViewer":
+        - data-consumer-bi
+  storage:
+    buckets:
+      exposed: {}
+    iam:
+      "roles/storage.objectViewer":
+        - data-consumer-bi
+      "roles/storage.bucketViewer":
+        - data-consumer-bi
+
+iam_by_principals:
+  rw:
+    - roles/editor
+  ro:
+    - roles/viewer
+  dp-product-a-0:
+    - "roles/dataplex.catalogEditor"
+    - "roles/bigquery.dataOwner"
+    - "roles/bigquery.jobUser"
+    - "roles/datalineage.viewer"
+    - "roles/dataplex.dataScanCreator"
+    - "roles/logging.viewer"
+    - "roles/monitoring.viewer"
+    - "roles/serviceusage.serviceUsageViewer"
+    - "roles/storage.bucketViewer"
+    - "roles/storage.objectAdmin"
+  processing:
+    - "roles/bigquery.dataEditor"
+    - "roles/bigquery.jobUser"
+    - "roles/dataflow.admin"
+    - "roles/dataproc.editor"
+    - "roles/dataproc.worker"
+    - "roles/iam.serviceAccountUser"
+    - "roles/storage.bucketViewer"
+    - "roles/storage.objectAdmin"
+
+service_accounts:
+  processing:
+    description: Processing service account.

@@ -182,8 +182,10 @@ variable "outputs_location" {
 variable "perimeters" {
   description = "Perimeter definitions."
   type = map(object({
-    description = optional(string)
-    title       = optional(string)
+    description               = optional(string)
+    ignore_resource_changes   = optional(bool, false)
+    title                     = optional(string)
+    use_explicit_dry_run_spec = optional(bool, false)
     spec = optional(object({
       access_levels       = optional(list(string))
       egress_policies     = optional(list(string))
@@ -206,7 +208,6 @@ variable "perimeters" {
         enable_restriction = optional(bool, true)
       }))
     }))
-    use_explicit_dry_run_spec = optional(bool, false)
   }))
   nullable = false
   default  = {}

@@ -222,6 +222,6 @@ counts:
   google_access_context_manager_access_level: 2
   google_access_context_manager_access_policy: 1
   google_access_context_manager_service_perimeter: 1
-  google_storage_bucket_object: 1
+  google_storage_bucket_object: 2
   modules: 1
-  resources: 5
+  resources: 6

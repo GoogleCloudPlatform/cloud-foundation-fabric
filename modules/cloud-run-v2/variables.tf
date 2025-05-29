@@ -206,6 +206,7 @@ variable "region" {
 variable "revision" {
   description = "Revision template configurations."
   type = object({
+    labels                     = optional(map(string))
     name                       = optional(string)
     gen2_execution_environment = optional(bool)
     max_concurrency            = optional(number)

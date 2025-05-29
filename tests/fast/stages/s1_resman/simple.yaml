@@ -13,23 +13,23 @@
 # limitations under the License.
 
 counts:
-  google_folder: 14
-  google_folder_iam_binding: 67
+  google_folder: 16
+  google_folder_iam_binding: 74
   google_org_policy_policy: 2
-  google_organization_iam_member: 20
-  google_project_iam_member: 17
-  google_service_account: 17
-  google_service_account_iam_binding: 17
-  google_storage_bucket: 8
-  google_storage_bucket_iam_binding: 16
-  google_storage_bucket_iam_member: 17
-  google_storage_bucket_object: 19
-  google_tags_tag_binding: 14
+  google_organization_iam_member: 21
+  google_project_iam_member: 19
+  google_service_account: 19
+  google_service_account_iam_binding: 19
+  google_storage_bucket: 9
+  google_storage_bucket_iam_binding: 18
+  google_storage_bucket_iam_member: 19
+  google_storage_bucket_object: 22
+  google_tags_tag_binding: 16
   google_tags_tag_key: 2
   google_tags_tag_value: 13
   google_tags_tag_value_iam_binding: 4
-  modules: 40
-  resources: 247
+  modules: 45
+  resources: 273
 
 outputs:
   cicd_repositories:
@@ -40,6 +40,8 @@ outputs:
         name: cloud-foundation-fabric/1-resman
         type: github
   service_accounts:
+    data-platform-dev-ro: fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    data-platform-dev-rw: fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
     gcve-dev-ro: fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
     gcve-dev-rw: fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
     gke-dev-ro: fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com

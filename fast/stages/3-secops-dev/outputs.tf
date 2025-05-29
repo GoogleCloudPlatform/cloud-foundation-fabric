@@ -16,3 +16,10 @@ output "project_id" {
   description = "SecOps project id."
   value       = module.project.project_id
 }
+
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/3-${var.stage_config.name}-version.txt"
+  source = "fast_version.txt"
+}

@@ -310,7 +310,7 @@ module "win-template" {
   zone            = "${var.region}-a"
   name            = "win-template"
   instance_type   = "n2d-standard-2"
-  create_template = true
+  create_template = {}
   boot_disk = {
     initialize_params = {
       image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"

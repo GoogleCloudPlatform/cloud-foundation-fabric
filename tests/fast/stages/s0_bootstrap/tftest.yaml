@@ -18,14 +18,10 @@ tests:
   simple:
     inventory:
       - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
       - simple_org_policies.yaml
   managed_org_policies:
     inventory:
       - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
       - managed_org_policies.yaml
   iam_by_principals:
   cicd:

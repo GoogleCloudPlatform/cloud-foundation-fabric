@@ -19,13 +19,13 @@ variable "access_config" {
   type = object({
     dns_access = optional(bool, true)
     ip_access = optional(object({
-      authorized_ranges               = optional(map(string), {})
-      disable_public_endpoint         = optional(bool, true)
-      gcp_public_cidrs_access_enabled = optional(bool, false)
+      authorized_ranges               = optional(map(string))
+      disable_public_endpoint         = optional(bool)
+      gcp_public_cidrs_access_enabled = optional(bool)
       private_endpoint_config = optional(object({
         endpoint_subnetwork = optional(string)
         global_access       = optional(bool, true)
-      }), {})
+      }))
     }))
     private_nodes = optional(bool, true)
   })
@@ -100,6 +100,7 @@ variable "enable_features" {
       scope                         = optional(string)
       domain                        = optional(string)
     }))
+    multi_networking = optional(bool, false)
     database_encryption = optional(object({
       state    = string
       key_name = string
@@ -234,6 +235,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
+    kubelet_readonly_port_enabled = optional(bool, true)
   })
   default  = {}
   nullable = false

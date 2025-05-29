@@ -29,8 +29,9 @@ counts:
   google_secret_manager_secret_version: 2
   google_service_account: 1
   google_service_account_key: 1
+  google_storage_bucket_object: 1
   modules: 4
-  resources: 41
+  resources: 42
   restful_resource: 6
 
 outputs:

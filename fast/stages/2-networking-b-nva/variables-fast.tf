@@ -91,7 +91,7 @@ variable "security_profile_groups" {
   default     = {}
 }
 
-variable "stage_config" {
+variable "stage_configs" {
   # tfdoc:variable:source 1-resman
   description = "FAST stage configuration."
   type = object({

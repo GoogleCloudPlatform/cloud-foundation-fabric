@@ -41,6 +41,7 @@
           }
         },
         "ignore_safety_checks": {
+          "type": "string",
           "enum": [
             "QUOTA_DECREASE_BELOW_USAGE",
             "QUOTA_DECREASE_PERCENTAGE_TOO_HIGH",

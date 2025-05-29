@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v39.1.0
+# Fabric release: 40.1.0
 
 terraform {
-  required_version = ">= 1.10.2"
+  required_version = ">= 1.11.4"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/api-gateway:v39.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/api-gateway:40.1.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/api-gateway:v39.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/api-gateway:40.1.0-tf"
   }
 }

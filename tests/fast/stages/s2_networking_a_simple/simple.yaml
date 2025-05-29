@@ -43,8 +43,8 @@ counts:
   google_project_iam_member: 22
   google_project_service: 28
   google_project_service_identity: 22
-  google_storage_bucket_object: 1
+  google_storage_bucket_object: 2
   google_tags_tag_binding: 3
   modules: 28
   random_id: 3
-  resources: 202
+  resources: 203

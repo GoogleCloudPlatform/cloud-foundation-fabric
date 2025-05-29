@@ -56,6 +56,7 @@ values:
     default_max_pods_per_node: 32
     deletion_protection: true
     description: null
+    disable_l4_lb_firewall_reconciliation: false
     dns_config: []
     effective_labels:
       environment: dev
@@ -112,6 +113,7 @@ values:
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
       fast_socket: []
+      flex_start: null
       gvnic: []
       host_maintenance_policy: []
       linux_node_config: []
@@ -135,6 +137,7 @@ values:
       - containerd_config: []
         gcfs_config:
         - enabled: false
+        insecure_kubelet_readonly_port_enabled: 'TRUE'
     pod_security_policy_config: []
     private_cluster_config: []
     project: myproject

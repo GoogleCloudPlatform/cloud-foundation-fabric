@@ -29,9 +29,8 @@ values:
       source_snapshot: null
       source_snapshot_encryption_key: []
     - auto_delete: true
-      device_name: disk-1
+      device_name: disk-0
       disk_encryption_key: []
-      disk_name: disk-1
       disk_size_gb: 10
       disk_type: pd-balanced
       labels: null

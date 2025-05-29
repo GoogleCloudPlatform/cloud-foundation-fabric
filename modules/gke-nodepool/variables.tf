@@ -191,6 +191,15 @@ variable "nodepool_config" {
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number
+      strategy        = optional(string)
+      blue_green_settings = optional(object({
+        node_pool_soak_duration = optional(string)
+        standard_rollout_policy = optional(object({
+          batch_percentage    = optional(number)
+          batch_node_count    = optional(number)
+          batch_soak_duration = optional(string)
+        }))
+      }))
     }))
   })
   default = null

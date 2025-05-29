@@ -27,6 +27,7 @@ resource "google_container_cluster" "cluster" {
   network                  = var.vpc_config.network
   subnetwork               = var.vpc_config.subnetwork
   resource_labels          = var.labels
+  enable_multi_networking  = var.enable_features.multi_networking
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
   enable_tpu               = var.enable_features.tpu
   initial_node_count       = 1
@@ -217,7 +218,7 @@ resource "google_container_cluster" "cluster" {
       gcp_public_cidrs_access_enabled = try(var.access_config.ip_access.gcp_public_cidrs_access_enabled, null)
 
       dynamic "cidr_blocks" {
-        for_each = try(var.access_config.ip_access.authorized_ranges, {})
+        for_each = coalesce(var.access_config.ip_access.authorized_ranges, {})
         iterator = range
         content {
           cidr_block   = range.value
@@ -266,10 +267,13 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
-  dynamic "node_pool_auto_config" {
-    for_each = var.node_config.tags != null ? [""] : []
-    content {
-      network_tags {
+  node_pool_auto_config {
+    node_kubelet_config {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
+    }
+    dynamic "network_tags" {
+      for_each = var.node_config.tags != null ? [""] : []
+      content {
         tags = toset(var.node_config.tags)
       }
     }
@@ -278,11 +282,12 @@ resource "google_container_cluster" "cluster" {
     for_each = var.access_config.private_nodes == true ? [""] : []
     content {
       enable_private_nodes = true
-      enable_private_endpoint = try(
-        var.access_config.ip_access.disable_public_endpoint,
-        # this should be null, but when ip_access is disabled, the API
-        # returns true. We return true to avoid a permadiff
-        true
+      enable_private_endpoint = (
+        var.access_config.ip_access == null
+        # when ip_access is disabled, the API returns true. We return
+        # true to avoid a permadiff
+        ? true
+        : try(var.access_config.ip_access.disable_public_endpoint, null)
       )
       private_endpoint_subnetwork = try(
         var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
