@@ -428,6 +428,8 @@ service_accounts:
         - automation/rw
 automation:
   project: test-pf-teams-iac-0
+  # prefix used for automation resources can be explicitly set if needed
+  # prefix: test-pf-dev-tb-0-0
   service_accounts:
     rw:
       description: Team B app 0 read/write automation sa.
