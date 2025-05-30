@@ -11,6 +11,9 @@
         "project"
       ],
       "properties": {
+        "prefix": {
+          "type": "string"
+        },
         "project": {
           "type": "string"
         },
