@@ -5,15 +5,33 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-05-21 14:22:05+00:00 to: None since: v40.1.0 -->
 
+### BLUEPRINTS
+
+- [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
+- [[#3114](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3114)] Allow creation of regional templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 12:18:40+00:00 -->
+
 ### FAST
 
+- [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
+- [[#3114](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3114)] Allow creation of regional templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 12:18:40+00:00 -->
 - [[#3112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3112)] Add support for service agent expansion to project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-05-24 10:33:20+00:00 -->
 
 ### MODULES
 
+- [[#3119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3119)] Expose private_endpoint_enforcement_enabled in gke modules ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 10:33:03+00:00 -->
+- [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
+- [[#3083](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3083)] Remove default values for access_config.ip_config for gke cluster modules ([jaiakt](https://github.com/jaiakt)) <!-- 2025-05-28 20:07:36+00:00 -->
+- [[#3117](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3117)] adds revision label ([msikora-rtb](https://github.com/msikora-rtb)) <!-- 2025-05-28 16:32:06+00:00 -->
+- [[#3116](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3116)] Add support for binary authorization policy to cloud function v2 module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-28 15:01:43+00:00 -->
+- [[#3114](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3114)] Allow creation of regional templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 12:18:40+00:00 -->
+- [[#3113](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3113)] Allow creating disks with no name in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 07:19:13+00:00 -->
 - [[#3112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3112)] Add support for service agent expansion to project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-05-24 10:33:20+00:00 -->
 - [[#3105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3105)] Add option to specify any port on https protocol ([Stepanenko-Alexey](https://github.com/Stepanenko-Alexey)) <!-- 2025-05-24 06:31:18+00:00 -->
 - [[#3110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3110)] Support iam_sa_roles in project factory service accounts ([ludoo](https://github.com/ludoo)) <!-- 2025-05-22 08:22:32+00:00 -->
+
+### TOOLS
+
+- [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 
 ## [40.1.0] - 2025-05-21
 
