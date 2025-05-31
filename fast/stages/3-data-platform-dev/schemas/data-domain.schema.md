@@ -20,7 +20,7 @@
     - **encryption_key**: *string*
     - **environment_size**: *string*
       <br>*default: ENVIRONMENT_SIZE_SMALL*, *enum: ['ENVIRONMENT_SIZE_SMALL', 'ENVIRONMENT_SIZE_MEDIUM', 'ENVIRONMENT_SIZE_LARGE']*
-    - ⁺**node_config**: *object*
+    - **node_config**: *object*
       <br>*additional properties: false*
       - **service_account**: *string*
       - ⁺**network**: *string*

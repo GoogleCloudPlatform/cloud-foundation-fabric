@@ -38,4 +38,4 @@
       <br>*additional properties: false*
       - **protocol**: *string*
       - **ports**: *array*
-        - items: *number*
+        - items: *(integer|string)*

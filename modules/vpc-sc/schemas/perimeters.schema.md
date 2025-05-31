@@ -7,7 +7,7 @@
 *additional properties: false*
 
 - **description**: *string*
-- **title**: *string*
+- **ignore_resource_changes**: *boolean*
 - **spec**: *object*
   <br>*additional properties: false*
   - **access_levels**: *array*
@@ -34,6 +34,7 @@
   - **restricted_services**: *array*
     - items: *string*
   - **vpc_accessible_services**: *reference([VpcAccessibleServices](#refs-VpcAccessibleServices))*
+- **title**: *string*
 - **use_explicit_dry_run_spec**: *boolean*
 
 ## Definitions

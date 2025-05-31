@@ -8,6 +8,7 @@
 
 - **automation**: *object*
   <br>*additional properties: false*
+  - **prefix**: *string*
   - ⁺**project**: *string*
   - **bucket**: *reference([bucket](#refs-bucket))*
   - **service_accounts**: *object*
@@ -86,6 +87,7 @@
     - **iam_self_roles**: *array*
       - items: *string*
     - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
+    - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
 - **service_encryption_key_ids**: *object*
   <br>*additional properties: false*
   - **`^[a-z-]+\.googleapis\.com$`**: *array*
