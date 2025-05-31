@@ -7,8 +7,10 @@
 *additional properties: false*
 
 - **description**: *string*
+  <br>*pattern: None*
 - **values**: *array*
   - items: *string*
+    <br>*pattern: None*
 
 ## Definitions
 

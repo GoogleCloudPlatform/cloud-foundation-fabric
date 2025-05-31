@@ -28,12 +28,12 @@ DOC = '\n\n'.join(
 Array = collections.namedtuple('Array', 'name items default', defaults=[None])
 Boolean = collections.namedtuple('Boolean', 'name default')
 Integer = collections.namedtuple('Integer', 'name default enum')
-AnyOf = collections.namedtuple('AnyOf', 'name default types')
+AnyOf = collections.namedtuple('AnyOf', 'name default pattern types')
 Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
 Reference = collections.namedtuple('Reference', 'name to')
-String = collections.namedtuple('String', 'name default enum')
+String = collections.namedtuple('String', 'name default enum pattern')
 
 
 def parse_node(node, name=None):
@@ -42,8 +42,9 @@ def parse_node(node, name=None):
   el_type = node.get('type')
   default = node.get('default')
   enum = node.get('enum')
+  pattern = node.get('pattern')
   if isinstance(el_type, list):
-    return AnyOf(name, default, el_type)
+    return AnyOf(name, default, pattern, el_type)
   match el_type:
     case 'array':
       items = node.get('items')
@@ -73,7 +74,7 @@ def parse_node(node, name=None):
     case 'number':
       el = Number(name, default, enum)
     case 'string':
-      el = String(name, default, enum)
+      el = String(name, default, enum, pattern)
     case _:
       ref = node.get('$ref')
       if ref:
@@ -124,12 +125,16 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
           f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
     case 'anyof':
       buffer[-1] = f'{indent}- {r}{f_name(el.name)}: *({"|".join(el.types)})*'
+      if el.pattern:
+        buffer.append(f'{indent}  <br>*pattern: `{el.pattern}`*')
     case 'integer' | 'number' | 'string':
       details = []
       if el.default:
         details.append(f'*default: {el.default}*')
       if el.enum:
         details.append(f'*enum: {el.enum}*')
+      if hasattr(el, 'pattern'):
+        details.append(f'*pattern: {el.pattern}*')
       if details:
         buffer.append(f'{indent}  <br>{", ".join(details)}')
   if level == 0:

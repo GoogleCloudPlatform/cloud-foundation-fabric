@@ -19,10 +19,15 @@
       - **condition**: *object*
         <br>*additional properties: false*
         - **description**: *string*
+          <br>*pattern: None*
         - **expression**: *string*
+          <br>*pattern: None*
         - **location**: *string*
+          <br>*pattern: None*
         - **title**: *string*
+          <br>*pattern: None*
       - **parameters**: *string*
+        <br>*pattern: None*
 
 ## Definitions
 
@@ -31,3 +36,4 @@
   - **all**: *boolean*
   - **values**: *array*
     - items: *string*
+      <br>*pattern: None*

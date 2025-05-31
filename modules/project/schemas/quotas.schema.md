@@ -9,16 +9,20 @@
 - **`^[a-zA-Z0-9_-]+$`**: *object*
   <br>*additional properties: false*
   - ⁺**service**: *string*
+    <br>*pattern: None*
   - ⁺**quota_id**: *string*
+    <br>*pattern: None*
   - ⁺**preferred_value**: *number*
   - **dimensions**: *object*
     *additional properties: String*
   - **justification**: *string*
+    <br>*pattern: None*
   - **contact_email**: *string*
+    <br>*pattern: None*
   - **annotations**: *object*
     *additional properties: String*
   - **ignore_safety_checks**: *string*
-    <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
+    <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*, *pattern: None*
 
 ## Definitions
 

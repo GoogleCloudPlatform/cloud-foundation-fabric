@@ -7,32 +7,42 @@
 *additional properties: false*
 
 - **title**: *string*
+  <br>*pattern: None*
 - ⁺**from**: *object*
   <br>*additional properties: false*
   - **access_levels**: *array*
     - items: *string*
+      <br>*pattern: None*
   - **identity_type**: *string*
-    <br>*enum: ['IDENTITY_TYPE_UNSPECIFIED', 'ANY_IDENTITY', 'ANY_USER_ACCOUNT', 'ANY_SERVICE_ACCOUNT', '']*
+    <br>*enum: ['IDENTITY_TYPE_UNSPECIFIED', 'ANY_IDENTITY', 'ANY_USER_ACCOUNT', 'ANY_SERVICE_ACCOUNT', '']*, *pattern: None*
   - **identities**: *array*
     - items: *string*
+      <br>*pattern: ^(?:serviceAccount:|user:|group:|principal:)*
   - **resources**: *array*
     - items: *string*
+      <br>*pattern: None*
 - ⁺**to**: *object*
   <br>*additional properties: false*
   - **external_resources**: *array*
     - items: *string*
+      <br>*pattern: None*
   - **operations**: *array*
     - items: *object*
       <br>*additional properties: false*
       - **method_selectors**: *array*
         - items: *string*
+          <br>*pattern: None*
       - **permission_selectors**: *array*
         - items: *string*
+          <br>*pattern: None*
       - ⁺**service_name**: *string*
+        <br>*pattern: None*
   - **resources**: *array*
     - items: *string*
+      <br>*pattern: None*
   - **roles**: *array*
     - items: *string*
+      <br>*pattern: None*
 
 ## Definitions
 
