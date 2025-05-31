@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3125)] Document x-referencing HCs in net-lb-int ([sruffilli](https://github.com/sruffilli)) <!-- 2025-05-30 16:34:30+00:00 -->
+- [[#3124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3124)] Allow explicit definition of automation prefix in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-05-30 12:30:54+00:00 -->
 - [[#3119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3119)] Expose private_endpoint_enforcement_enabled in gke modules ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 10:33:03+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 - [[#3083](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3083)] Remove default values for access_config.ip_config for gke cluster modules ([jaiakt](https://github.com/jaiakt)) <!-- 2025-05-28 20:07:36+00:00 -->
