@@ -11,7 +11,6 @@
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **name**: *string*
-  <br>*pattern: None*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
@@ -25,30 +24,22 @@
           - **all**: *boolean*
           - **values**: *array*
             - items: *string*
-              <br>*pattern: None*
         - **deny**: *object*
           <br>*additional properties: false*
           - **all**: *boolean*
           - **values**: *array*
             - items: *string*
-              <br>*pattern: None*
         - **enforce**: *boolean*
         - **condition**: *object*
           <br>*additional properties: false*
           - **description**: *string*
-            <br>*pattern: None*
           - **expression**: *string*
-            <br>*pattern: None*
           - **location**: *string*
-            <br>*pattern: None*
           - **title**: *string*
-            <br>*pattern: None*
 - **parent**: *string*
-  <br>*pattern: None*
 - **tag_bindings**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *string*
-    <br>*pattern: None*
 
 ## Definitions
 
@@ -69,11 +60,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
@@ -85,11 +73,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_by_principals**<a name="refs-iam_by_principals"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])`**: *array*

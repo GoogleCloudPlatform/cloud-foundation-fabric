@@ -7,12 +7,9 @@
 *additional properties: false*
 
 - **description**: *string*
-  <br>*pattern: None*
 - **display_name**: *string*
-  <br>*pattern: None*
 - **labels**: *object*
 - **metadata_template**: *string*
-  <br>*pattern: None*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -36,11 +33,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
@@ -52,8 +46,5 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*

@@ -8,32 +8,23 @@
 
 - **active**: *boolean*
 - **description**: *string*
-  <br>*pattern: None*
 - **enable_private_access**: *boolean*
 - **allow_subnet_cidr_routes_overlap**: *boolean*
 - **flow_logs_config**: *object*
   <br>*additional properties: false*
   - **aggregation_interval**: *string*
-    <br>*pattern: None*
   - **filter_expression**: *string*
-    <br>*pattern: None*
   - **flow_sampling**: *number*
   - **metadata**: *string*
-    <br>*pattern: None*
   - **metadata_fields**: *array*
     - items: *string*
-      <br>*pattern: None*
 - **global**: *boolean*
 - ⁺**ip_cidr_range**: *string*
-  <br>*pattern: None*
 - **ipv6**: *object*
   <br>*additional properties: false*
   - **access_type**: *string*
-    <br>*pattern: None*
 - **name**: *string*
-  <br>*pattern: None*
 - ⁺**region**: *string*
-  <br>*pattern: None*
 - **psc**: *boolean*
 - **proxy_only**: *boolean*
 - **secondary_ip_ranges**: *object*
@@ -61,11 +52,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
@@ -77,8 +65,5 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*

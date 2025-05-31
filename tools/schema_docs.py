@@ -133,7 +133,7 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
         details.append(f'*default: {el.default}*')
       if el.enum:
         details.append(f'*enum: {el.enum}*')
-      if hasattr(el, 'pattern'):
+      if getattr(el, 'pattern', None):
         details.append(f'*pattern: {el.pattern}*')
       if details:
         buffer.append(f'{indent}  <br>{", ".join(details)}')

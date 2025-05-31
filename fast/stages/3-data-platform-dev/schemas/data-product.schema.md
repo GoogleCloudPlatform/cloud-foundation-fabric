@@ -9,7 +9,6 @@
 - **automation**: *object*
   <br>*additional properties: false*
   - **location**: *string*
-    <br>*pattern: None*
   - **impersonation_principals**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
@@ -21,9 +20,7 @@
       - **`^[a-z][a-z0-9_]+$`**: *object*
         <br>*additional properties: false*
         - **encryption_key**: *string*
-          <br>*pattern: None*
         - **location**: *string*
-          <br>*pattern: None*
     - **iam**: *reference([iam](#refs-iam))*
   - **storage**: *object*
     <br>*additional properties: false*
@@ -31,11 +28,8 @@
       - **`^[a-z][a-z0-9-]+$`**: *object*
         <br>*additional properties: false*
         - **encryption_key**: *string*
-          <br>*pattern: None*
         - **location**: *string*
-          <br>*pattern: None*
         - **storage_class**: *string*
-          <br>*pattern: None*
     - **iam**: *reference([iam](#refs-iam))*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
@@ -46,32 +40,24 @@
   - **`^[a-z0-9-]+$`**: *object*
     <br>*additional properties: false*
     - **description**: *string*
-      <br>*pattern: None*
     - **iam**: *reference([iam](#refs-iam))*
     - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
     - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
     - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
     - **name**: *string*
-      <br>*pattern: None*
 - **services**: *array*
   - items: *string*
-    <br>*pattern: None*
 - **shared_vpc_service_config**: *object*
   <br>*additional properties: false*
   - ⁺**host_project**: *string*
-    <br>*pattern: None*
   - **network_users**: *array*
     - items: *string*
-      <br>*pattern: None*
   - **service_agent_iam**: *object*
     - **`^[a-z0-9_-]+$`**: *array*
       - items: *string*
-        <br>*pattern: None*
   - **service_iam_grants**: *array*
     - items: *string*
-      <br>*pattern: None*
 - **short_name**: *string*
-  <br>*pattern: None*
 
 ## Definitions
 
@@ -92,11 +78,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_bindings_additive**<a name="refs-iam_bindings_additive"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
@@ -108,11 +91,8 @@
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
-        <br>*pattern: None*
       - ⁺**title**: *string*
-        <br>*pattern: None*
       - **description**: *string*
-        <br>*pattern: None*
 - **iam_by_principals**<a name="refs-iam_by_principals"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z]+[a-z0-9-]+$`**: *array*
@@ -122,4 +102,3 @@
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
     - items: *string*
-      <br>*pattern: None*
