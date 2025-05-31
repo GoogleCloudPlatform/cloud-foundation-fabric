@@ -38,4 +38,5 @@
       <br>*additional properties: false*
       - **protocol**: *string*
       - **ports**: *array*
-        - items: *number*
+        - items: *(integer|string)*
+          <br>*pattern: `^[0-9]+(?:-[0-9]+)?$`*

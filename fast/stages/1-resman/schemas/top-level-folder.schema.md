@@ -16,6 +16,7 @@
   <br>*additional properties: false*
   - **`@`**: *array*
     - items: *string*
+      <br>*pattern: ^(?:ALL|SUSPENSION|SECURITY|TECHNICAL|BILLING|LEGAL|PRODUCT_UPDATES)$*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*
@@ -36,6 +37,7 @@
       <br>*additional properties: false*
       - **exempted_members**: *array*
         - items: *string*
+          <br>*pattern: @*
 - **logging_exclusions**: *object*
   *additional properties: String*
 - **logging_settings**: *object*
@@ -81,13 +83,16 @@
   <br>*additional properties: false*
   - **`^(?:roles/|[a-z_]+)`**: *array*
     - items: *string*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
     - **members**: *array*
       - items: *string*
+        <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)*
     - **role**: *string*
+      <br>*pattern: ^(?:roles/|[a-z_]+)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -98,7 +103,9 @@
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
     - **member**: *string*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|project-factory|project-factory-dev|project-factory-prod|networking|security|vpcsc|self)*
     - **role**: *string*
+      <br>*pattern: ^(?:roles/|[a-z_]+)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -108,3 +115,4 @@
   <br>*additional properties: false*
   - **`^[a-z]+[a-z-]+$`**: *array*
     - items: *string*
+      <br>*pattern: ^(?:roles/|[a-z_]+)*

@@ -20,13 +20,16 @@
   <br>*additional properties: false*
   - **`^roles/`**: *array*
     - items: *string*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
     - **members**: *array*
       - items: *string*
+        <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
     - **role**: *string*
+      <br>*pattern: ^roles/*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -37,7 +40,9 @@
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
     - **member**: *string*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
     - **role**: *string*
+      <br>*pattern: ^roles/*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*

@@ -9,6 +9,8 @@
 - **name**: *string*
 - **includedPermissions**: *array*
   - items: *string*
+    <br>*pattern: ^[a-zA-Z-]+\.[a-zA-Z-]+\.[a-zA-Z-]+$*
 
 ## Definitions
+
 

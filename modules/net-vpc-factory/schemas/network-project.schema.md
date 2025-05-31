@@ -39,6 +39,7 @@
       - items: *string*
   - **services**: *array*
     - items: *string*
+      <br>*pattern: ^[a-z-]+\.googleapis\.com$*
   - **org_policies**: *reference([orgPolicies](#refs-orgPolicies))*
   - **metric_scopes**: *array*
     - items: *string*
@@ -410,7 +411,9 @@
   - ⁺**title**: *string*
   - **description**: *string*
 - **principalPattern**<a name="refs-principalPattern"></a>: *string*
+  <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
 - **rolePattern**<a name="refs-rolePattern"></a>: *string*
+  <br>*pattern: ^roles/*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
   - **`^roles/`**: *array*

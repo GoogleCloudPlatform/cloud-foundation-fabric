@@ -28,24 +28,30 @@ DOC = '\n\n'.join(
 Array = collections.namedtuple('Array', 'name items default', defaults=[None])
 Boolean = collections.namedtuple('Boolean', 'name default')
 Integer = collections.namedtuple('Integer', 'name default enum')
+AnyOf = collections.namedtuple('AnyOf', 'name default pattern types')
 Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
 Reference = collections.namedtuple('Reference', 'name to')
-String = collections.namedtuple('String', 'name default enum')
+String = collections.namedtuple('String', 'name default enum pattern')
 
 
 def parse_node(node, name=None):
   logging.debug(f'parse {name} type {node.get("type")}')
   name = name or node.get('title')
   el_type = node.get('type')
+  default = node.get('default')
+  enum = node.get('enum')
+  pattern = node.get('pattern')
+  if isinstance(el_type, list):
+    return AnyOf(name, default, pattern, el_type)
   match el_type:
     case 'array':
       items = node.get('items')
       items = parse_node(items, 'items') if items else None
-      el = Array(name, items, node.get('default'))
+      el = Array(name, items, default)
     case 'boolean':
-      el = Boolean(name, node.get('default'))
+      el = Boolean(name, default)
     case 'object':
       additional = node.get('additionalProperties')
       if isinstance(additional, dict):
@@ -64,11 +70,11 @@ def parse_node(node, name=None):
         for k, v in defs.items():
           el.defs.append(parse_node(v, k))
     case 'integer':
-      el = Integer(name, node.get('default'), node.get('enum'))
+      el = Integer(name, default, enum)
     case 'number':
-      el = Number(name, node.get('default'), node.get('enum'))
+      el = Number(name, default, enum)
     case 'string':
-      el = String(name, node.get('default'), node.get('enum'))
+      el = String(name, default, enum, pattern)
     case _:
       ref = node.get('$ref')
       if ref:
@@ -117,12 +123,18 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
     case 'reference':
       buffer[-1] = (
           f'{indent}- {f_name(el.name)}: *reference([{el.to}](#refs-{el.to}))*')
+    case 'anyof':
+      buffer[-1] = f'{indent}- {r}{f_name(el.name)}: *({"|".join(el.types)})*'
+      if el.pattern:
+        buffer.append(f'{indent}  <br>*pattern: `{el.pattern}`*')
     case 'integer' | 'number' | 'string':
       details = []
       if el.default:
         details.append(f'*default: {el.default}*')
       if el.enum:
         details.append(f'*enum: {el.enum}*')
+      if getattr(el, 'pattern', None):
+        details.append(f'*pattern: {el.pattern}*')
       if details:
         buffer.append(f'{indent}  <br>{", ".join(details)}')
   if level == 0:
@@ -149,7 +161,7 @@ def main(paths=None):
       doc = DOC.format(title=schema.get('title'), properties=props,
                        definitions=defs or '')
       f_doc = f.with_suffix('.md')
-      f_doc.write_text(doc)
+      f_doc.write_text(f'{doc}\n')
       logging.info(f'doc {f}')
 
 
