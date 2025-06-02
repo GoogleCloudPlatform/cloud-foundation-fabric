@@ -1,6 +1,16 @@
 # API Gateway
 This module allows creating an API with its associated API config and API gateway. It also allows you grant IAM roles on the created resources.
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+- [Basic example](#basic-example)
+- [Use existing service account](#use-existing-service-account)
+- [Create service account](#create-service-account)
+- [Recipes](#recipes)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 # Examples
 
 ## Basic example
@@ -57,6 +67,9 @@ module "gateway" {
 # tftest modules=1 resources=11 inventory=create-sa.yaml
 ```
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [Multi-region deployment for API Gateway](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/api-gateway/recipe-multi-region)
 
 ## Variables
 
@@ -85,5 +98,4 @@ module "gateway" {
 | [service_account](outputs.tf#L94) | Service account resource. |  |
 | [service_account_email](outputs.tf#L99) | The service account for creating API configs. |  |
 | [service_account_iam_email](outputs.tf#L104) | The service account for creating API configs. |  |
-
 <!-- END TFDOC -->
