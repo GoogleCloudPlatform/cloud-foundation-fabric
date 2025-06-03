@@ -18,19 +18,21 @@
 
 locals {
   # used here for convenience, in organization.tf members are explicit
-  billing_ext_admins = [
-    local.principals.gcp-billing-admins,
-    local.principals.gcp-organization-admins,
-    module.automation-tf-bootstrap-sa.iam_email,
-    module.automation-tf-resman-sa.iam_email
-  ]
-  billing_ext_viewers = [
-    module.automation-tf-bootstrap-r-sa.iam_email,
-    module.automation-tf-resman-r-sa.iam_email
-  ]
-  billing_ext_log_writers = [
-    module.automation-tf-bootstrap-sa.iam_email
-  ]
+  billing_iam = {
+    "roles/billing.admin" = [
+      local.principals.gcp-billing-admins,
+      local.principals.gcp-organization-admins,
+      module.automation-tf-bootstrap-sa.iam_email,
+      module.automation-tf-resman-sa.iam_email
+    ],
+    "roles/billing.viewer" = [
+      module.automation-tf-bootstrap-r-sa.iam_email,
+      module.automation-tf-resman-r-sa.iam_email
+    ],
+    "roles/logging.configWriter" = [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
+  }
   billing_mode = (
     var.billing_account.no_iam
     ? null
@@ -84,33 +86,6 @@ module "billing-export-dataset" {
 
 # standalone billing account
 
-resource "google_billing_account_iam_member" "billing_ext_admin" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_admins : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/billing.admin"
-  member             = each.key
-}
-
-resource "google_billing_account_iam_member" "billing_ext_viewer" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_viewers : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/billing.viewer"
-  member             = each.key
-}
-
-resource "google_billing_account_iam_member" "billing_ext_log_writer" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_log_writers : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/logging.configWriter"
-  member             = each.key
-}
-
 module "billing-account-logbucket" {
   source        = "../../../modules/logging-bucket"
   count         = local.billing_mode == "resource" ? 1 : 0
@@ -127,6 +102,7 @@ module "billing-account-log-sink" {
   source = "../modules/billing-account"
   count  = local.billing_mode == "resource" ? 1 : 0
   id     = var.billing_account.id
+  iam    = local.billing_iam
   logging_sinks = {
     billing_bucket_log_sink = {
       destination = module.billing-account-logbucket[0].id
