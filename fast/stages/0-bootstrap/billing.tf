@@ -28,6 +28,9 @@ locals {
     module.automation-tf-bootstrap-r-sa.iam_email,
     module.automation-tf-resman-r-sa.iam_email
   ]
+  billing_ext_log_writers = [
+    module.automation-tf-bootstrap-sa.iam_email
+  ]
   billing_mode = (
     var.billing_account.no_iam
     ? null
@@ -97,4 +100,46 @@ resource "google_billing_account_iam_member" "billing_ext_viewer" {
   billing_account_id = var.billing_account.id
   role               = "roles/billing.viewer"
   member             = each.key
+}
+
+resource "google_billing_account_iam_member" "billing_ext_log_writer" {
+  for_each = toset(
+    local.billing_mode == "resource" ? local.billing_ext_log_writers : []
+  )
+  billing_account_id = var.billing_account.id
+  role               = "roles/logging.configWriter"
+  member             = each.key
+}
+
+module "billing-account-logbucket" {
+  source        = "../../../modules/logging-bucket"
+  count         = local.billing_mode == "resource" ? 1 : 0
+  parent_type   = "project"
+  parent        = module.log-export-project.project_id
+  id            = "billing-account"
+  location      = local.locations.logging
+  log_analytics = { enable = true }
+  # org-level logging settings ready before we create any logging buckets
+  depends_on = [module.organization-logging]
+}
+
+resource "google_logging_billing_account_sink" "billing-account-sink" {
+  count           = local.billing_mode == "resource" ? 1 : 0
+  name            = "billing-account"
+  description     = "billing-account sink (Terraform-managed)."
+  billing_account = var.billing_account.id
+  destination     = "logging.googleapis.com/${module.billing-account-logbucket[0].id}"
+}
+
+resource "google_project_iam_member" "billing-bucket-sinks-binding" {
+  count   = local.billing_mode == "resource" ? 1 : 0
+  project = module.log-export-project.project_id
+  role    = "roles/logging.bucketWriter"
+  member  = google_logging_billing_account_sink.billing-account-sink[0].writer_identity
+
+  condition {
+    title       = "billing-account bucket writer"
+    description = "Grants bucketWriter to ${google_logging_billing_account_sink.billing-account-sink[0].writer_identity} used by log sink billing-account"
+    expression  = "resource.name.endsWith('${module.billing-account-logbucket[0].id}')"
+  }
 }
