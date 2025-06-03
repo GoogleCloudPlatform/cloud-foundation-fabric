@@ -123,23 +123,15 @@ module "billing-account-logbucket" {
   depends_on = [module.organization-logging]
 }
 
-resource "google_logging_billing_account_sink" "billing-account-sink" {
-  count           = local.billing_mode == "resource" ? 1 : 0
-  name            = "billing-account"
-  description     = "billing-account sink (Terraform-managed)."
-  billing_account = var.billing_account.id
-  destination     = "logging.googleapis.com/${module.billing-account-logbucket[0].id}"
-}
-
-resource "google_project_iam_member" "billing-bucket-sinks-binding" {
-  count   = local.billing_mode == "resource" ? 1 : 0
-  project = module.log-export-project.project_id
-  role    = "roles/logging.bucketWriter"
-  member  = google_logging_billing_account_sink.billing-account-sink[0].writer_identity
-
-  condition {
-    title       = "billing-account bucket writer"
-    description = "Grants bucketWriter to ${google_logging_billing_account_sink.billing-account-sink[0].writer_identity} used by log sink billing-account"
-    expression  = "resource.name.endsWith('${module.billing-account-logbucket[0].id}')"
+module "billing-account-log-sink" {
+  source = "../modules/billing-account"
+  count  = local.billing_mode == "resource" ? 1 : 0
+  id     = var.billing_account.id
+  logging_sinks = {
+    billing_bucket_log_sink = {
+      destination = module.billing-account-logbucket[0].id
+      type        = "logging"
+      description = "billing-account sink (Terraform-managed)."
+    }
   }
 }
