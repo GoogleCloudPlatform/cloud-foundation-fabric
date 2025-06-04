@@ -22,11 +22,11 @@ locals {
   perimeters       = merge(local.data.perimeters, var.perimeters)
   _undefined_egress_policies = {
     for k, v in local.perimeters :
-    k => setsubtract(concat(try(v.spec.egress_policies, []), try(v.status.egress_policies)), keys(local.egress_policies))
+    k => setsubtract(concat(try(v.spec.egress_policies, []), try(v.status.egress_policies, [])), keys(local.egress_policies))
   }
   _undefined_ingress_policies = {
     for k, v in local.perimeters :
-    k => setsubtract(concat(try(v.spec.ingress_policies, []), try(v.status.ingress_policies)), keys(local.ingress_policies))
+    k => setsubtract(concat(try(v.spec.ingress_policies, []), try(v.status.ingress_policies, [])), keys(local.ingress_policies))
   }
 }
 
