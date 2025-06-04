@@ -48,8 +48,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       ])
 
       dynamic "egress_policies" {
-        for_each = spec.value.egress_policies == null ? [] : [
-          for k in spec.value.egress_policies :
+        for_each = [
+          for k in coalesce(spec.value.egress_policies, []) :
           merge(local.egress_policies[k], { key = k })
         ]
         iterator = policy
@@ -129,8 +129,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       }
 
       dynamic "ingress_policies" {
-        for_each = spec.value.ingress_policies == null ? [] : [
-          for k in spec.value.ingress_policies :
+        for_each = [
+          for k in coalesce(spec.value.ingress_policies, []) :
           merge(local.ingress_policies[k], { key = k })
         ]
         iterator = policy
@@ -235,8 +235,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       ])
 
       dynamic "egress_policies" {
-        for_each = status.value.egress_policies == null ? [] : [
-          for k in status.value.egress_policies :
+        for_each = [
+          for k in coalesce(status.value.egress_policies, []) :
           merge(local.egress_policies[k], { key = k })
         ]
         iterator = policy
@@ -310,8 +310,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       }
 
       dynamic "ingress_policies" {
-        for_each = status.value.ingress_policies == null ? [] : [
-          for k in status.value.ingress_policies :
+        for_each = [
+          for k in coalesce(status.value.ingress_policies, []) :
           merge(local.ingress_policies[k], { key = k })
         ]
         iterator = policy
@@ -397,6 +397,14 @@ resource "google_access_context_manager_service_perimeter" "additive" {
   }
   lifecycle {
     ignore_changes = [spec[0].resources, status[0].resources]
+    precondition {
+      condition     = length(local._undefined_ingress_policies[each.key]) == 0
+      error_message = "Undefined ingress policies: ${join(", ", local._undefined_ingress_policies[each.key])}"
+    }
+    precondition {
+      condition     = length(local._undefined_egress_policies[each.key]) == 0
+      error_message = "Undefined egress policies: ${join(", ", local._undefined_egress_policies[each.key])}"
+    }
   }
   depends_on = [
     google_access_context_manager_access_policy.default,
