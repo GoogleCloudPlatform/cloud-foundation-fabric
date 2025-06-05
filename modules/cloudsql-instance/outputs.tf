@@ -127,8 +127,10 @@ output "self_links" {
 output "user_passwords" {
   description = "Map of containing the password of all users created through terraform."
   value = {
-    for name, user in google_sql_user.users :
-    name => user.password
+    for k, v in local.users : k => v.password
   }
   sensitive = true
+  depends_on = [
+    google_sql_user.users
+  ]
 }

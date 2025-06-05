@@ -21,19 +21,19 @@ locals {
   has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
   users = {
-    for k, v in coalesce(var.users, {}) : k =>
+    for k, v in var.users : k =>
     local.is_mysql
     ? {
-      name     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
-      host     = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = coalesce(v.type, "BUILT_IN")
+      name     = v.type == "BUILT_IN" ? split("@", k)[0] : k
+      host     = v.type == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = v.type
     }
     : {
       name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
       host     = null
-      password = coalesce(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = coalesce(v.type, "BUILT_IN")
+      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = v.type
     }
   }
 }
@@ -285,9 +285,9 @@ resource "google_sql_database" "databases" {
 
 resource "random_password" "passwords" {
   for_each = toset([
-    for k, v in coalesce(var.users, {}) :
+    for k, v in var.users :
     k
-    if v.password == null
+    if v.password == null && v.type == "BUILT_IN"
   ])
   length      = try(var.password_validation_policy.min_length, 16)
   special     = true
