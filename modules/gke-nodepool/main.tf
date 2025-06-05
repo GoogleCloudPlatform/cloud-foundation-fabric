@@ -132,7 +132,7 @@ resource "google_container_node_pool" "nodepool" {
       dynamic "additional_pod_network_configs" {
         for_each = try(var.network_config.additional_pod_network_configs, [])
         content {
-          subnetwork          = additional_pod_network_configs.value.network
+          subnetwork          = additional_pod_network_configs.value.subnetwork
           secondary_pod_range = additional_pod_network_configs.value.secondary_pod_range
           max_pods_per_node   = additional_pod_network_configs.value.max_pods_per_node
         }

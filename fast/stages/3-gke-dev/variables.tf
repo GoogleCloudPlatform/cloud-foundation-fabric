@@ -146,7 +146,7 @@ variable "nodepools" {
         network    = string
         subnetwork = string
       })), [])
-      additional_pod_network_config = optional(list(object({
+      additional_pod_network_configs = optional(list(object({
         subnetwork          = string
         secondary_pod_range = string
         max_pods_per_node   = string
