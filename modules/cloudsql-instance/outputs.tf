@@ -55,7 +55,7 @@ output "dns_names" {
 
 output "id" {
   description = "Fully qualified primary instance id."
-  value       = google_sql_database_instance.primary.private_ip_address
+  value       = google_sql_database_instance.primary.id
 }
 
 output "ids" {
