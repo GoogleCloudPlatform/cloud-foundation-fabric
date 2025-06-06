@@ -32,6 +32,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
   - [Changing the Network Endpoint Group](#changing-the-network-endpoint-group)
   - [Updating SSL certificate](#updating-ssl-certificate)
+- [Recipes](#recipes)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1035,6 +1036,10 @@ After provisioning this change, and verifying that the new certificate is provis
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [Expose Cloud Run service with Global External Application Load Balancer protected by IAP](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/net-lb-app-ext/recipe-cloud-run-iap)
+
 ## Files
 
 | name | description | resources |
