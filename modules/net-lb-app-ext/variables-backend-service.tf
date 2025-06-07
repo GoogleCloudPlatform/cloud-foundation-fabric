@@ -37,6 +37,7 @@ variable "backend_service_configs" {
     backends = list(object({
       # group renamed to backend
       backend         = string
+      preference      = optional(string, "DEFAULT")
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
@@ -162,6 +163,15 @@ variable "backend_service_configs" {
       )]
     ]))
     error_message = "When specified, balancing mode needs to be 'RATE' or 'UTILIZATION'."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for backend_service in values(var.backend_service_configs) : [
+        for backend in backend_service.backends : contains(
+          ["DEFAULT", "PREFERRED"], coalesce(backend.preference, "DEFAULT")
+      )]
+    ]))
+    error_message = "When specified, balancing mode needs to be 'DEFAULT' or 'PREFERRED'."
   }
   validation {
     condition = alltrue([
