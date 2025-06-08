@@ -18,6 +18,7 @@ This module simplifies the creation of a Apigee resources (organization, environ
   - [New endpoint attachment](#new-endpoint-attachment)
   - [Apigee add-ons](#apigee-add-ons)
   - [IAM](#iam)
+- [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -355,6 +356,10 @@ module "apigee" {
 # tftest modules=1 resources=10
 ```
 <!-- BEGIN TFDOC -->
+## Recipes
+
+- [Apigee X with Secure Web Proxy](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/modules/apigee/recipe-apigee-swp)
+
 ## Variables
 
 | name | description | type | required | default |
