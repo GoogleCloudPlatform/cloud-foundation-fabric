@@ -280,8 +280,9 @@ To use Secure Web Proxy as transparent proxy, define it as a default gateway for
 
 ```hcl
 locals {
-  swp_address = "10.0.2.2"
+  swp_name = "gateway"
 }
+
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   project_id = var.project_id
@@ -292,7 +293,7 @@ module "vpc" {
       priority      = 100
       tags          = ["swp"] # only traffic from instances tagged 'swp' will be inspected
       next_hop_type = "ilb",
-      next_hop      = local.swp_address # resource doesn't allow to obtain address
+      next_hop      = module.addresses.internal_addresses[local.swp_name].address
     }
   }
   subnets_proxy_only = [ # SWP requires proxy-only subnet
@@ -312,15 +313,26 @@ module "vpc" {
   ]
 }
 
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  internal_addresses = {
+    (local.swp_name) = {
+      region     = var.region
+      subnetwork = module.vpc.subnet_self_links["${var.region}/production"]
+    }
+  }
+}
+
 module "secure-web-proxy" {
   source     = "./fabric/modules/net-swp"
   project_id = var.project_id
   region     = var.region
-  name       = "secure-web-proxy"
+  name       = local.swp_name
   network    = module.vpc.id
   subnetwork = module.vpc.subnets["${var.region}/production"].id
   gateway_config = {
-    addresses             = [local.swp_address] # SWP allows only providing unreserved addresses, must provide address to avoid drift
+    addresses             = [module.addresses.internal_addresses[local.swp_name].address]
     next_hop_routing_mode = true
     ports                 = [80, 443] # specify all ports to be intercepted
   }
