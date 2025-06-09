@@ -15,10 +15,15 @@
 #
 
 values:
+  module.addresses.google_compute_address.internal["gateway"]:
+    address_type: INTERNAL
+    name: gateway
+    project: project-id
+    region: europe-west8
   module.secure-web-proxy.google_network_security_gateway_security_policy.default:
     description: Managed by Terraform.
     location: europe-west8
-    name: secure-web-proxy
+    name: gateway
     project: project-id
     tls_inspection_policy: null
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.default["proxy-rule"]:
@@ -26,7 +31,7 @@ values:
     basic_profile: ALLOW
     description: Managed by Terraform.
     enabled: true
-    gateway_security_policy: secure-web-proxy
+    gateway_security_policy: gateway
     location: europe-west8
     name: proxy-rule
     priority: 100
@@ -34,15 +39,13 @@ values:
     session_matcher: 'true'
     tls_inspection_enabled: false
   module.secure-web-proxy.google_network_services_gateway.default:
-    addresses:
-    - 10.0.2.2
     certificate_urls: []
     delete_swg_autogen_router_on_destroy: true
     description: Managed by Terraform.
     effective_labels:
       goog-terraform-provisioned: 'true'
     location: europe-west8
-    name: secure-web-proxy
+    name: gateway
     ports:
     - 80
     - 443
@@ -59,19 +62,12 @@ values:
     dest_range: 0.0.0.0/0
     name: swp-network-gateway
     network: swp-network
-    next_hop_gateway: null
-    next_hop_ilb: 10.0.2.2
-    next_hop_instance: null
-    next_hop_vpn_tunnel: null
     priority: 100
     project: project-id
     tags:
     - swp
   module.vpc.google_compute_subnetwork.proxy_only["europe-west8/regional-proxy"]:
-    description: Terraform-managed proxy-only subnet for Regional HTTPS, Internal
-      HTTPS or Cross-Regional HTTPS Internal LB.
     ip_cidr_range: 10.0.1.0/24
-    log_config: []
     name: regional-proxy
     network: swp-network
     project: project-id
@@ -79,15 +75,11 @@ values:
     region: europe-west8
     role: ACTIVE
   module.vpc.google_compute_subnetwork.subnetwork["europe-west8/production"]:
-    description: Terraform-managed.
     ip_cidr_range: 10.0.2.0/24
-    log_config: []
     name: production
     network: swp-network
-    private_ip_google_access: true
     project: project-id
     region: europe-west8
-    send_secondary_ip_range_if_empty: true
 
 counts:
   google_network_security_gateway_security_policy: 1
