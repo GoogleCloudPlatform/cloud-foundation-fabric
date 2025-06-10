@@ -14,7 +14,7 @@
 
 counts:
   google_folder: 16
-  google_folder_iam_binding: 74
+  google_folder_iam_binding: 72
   google_org_policy_policy: 2
   google_organization_iam_member: 21
   google_project_iam_member: 19
@@ -29,7 +29,7 @@ counts:
   google_tags_tag_value: 13
   google_tags_tag_value_iam_binding: 4
   modules: 45
-  resources: 273
+  resources: 271
 
 outputs:
   cicd_repositories:
