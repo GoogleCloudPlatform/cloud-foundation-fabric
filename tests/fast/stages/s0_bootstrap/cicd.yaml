@@ -2353,7 +2353,7 @@ counts:
   google_org_policy_custom_constraint: 2
   google_org_policy_policy: 39
   google_organization_iam_binding: 26
-  google_organization_iam_custom_role: 13
+  google_organization_iam_custom_role: 15
   google_organization_iam_member: 31
   google_project: 3
   google_project_iam_audit_config: 1
@@ -2372,13 +2372,15 @@ counts:
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 294
+  resources: 296
 
 outputs:
   custom_roles:
     billing_viewer: organizations/123456789012/roles/billingViewer
     gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
     gcve_network_viewer: organizations/123456789012/roles/gcveNetworkViewer
+    kms_key_encryption_admin: organizations/123456789012/roles/kmsKeyEncryptionAdmin
+    kms_key_viewer: organizations/123456789012/roles/kmsKeyViewer
     network_firewall_policies_admin: organizations/123456789012/roles/networkFirewallPoliciesAdmin
     ngfw_enterprise_admin: organizations/123456789012/roles/ngfwEnterpriseAdmin
     ngfw_enterprise_viewer: organizations/123456789012/roles/ngfwEnterpriseViewer
