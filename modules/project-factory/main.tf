@@ -90,10 +90,14 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
-  service_encryption_key_ids = merge(
-    each.value.service_encryption_key_ids,
-    var.data_merges.service_encryption_key_ids
-  )
+  service_encryption_key_ids = {
+    for k, v in merge(
+      each.value.service_encryption_key_ids,
+      var.data_merges.service_encryption_key_ids
+      ) : k => [
+      for key in v : lookup(var.factories_config.context.kms_keys, key, key)
+    ]
+  }
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
