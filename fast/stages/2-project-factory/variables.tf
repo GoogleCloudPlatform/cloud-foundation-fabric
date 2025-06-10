@@ -25,8 +25,8 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
-      # TODO: add KMS keys
       folder_ids        = optional(map(string), {})
+      kms_keys          = optional(map(string), {})
       iam_principals    = optional(map(string), {})
       tag_values        = optional(map(string), {})
       vpc_host_projects = optional(map(string), {})

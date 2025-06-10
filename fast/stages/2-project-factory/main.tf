@@ -45,6 +45,10 @@ module "projects" {
         var.groups,
         var.factories_config.context.iam_principals
       )
+      kms_keys = merge(
+        var.kms_keys,
+        var.factories_config.context.kms_keys
+      )
       perimeters = var.perimeters
       tag_values = merge(
         {
