@@ -231,9 +231,6 @@ module "projects-iam" {
   }
   # Shared VPC configuration is done at stage 2, to avoid dependency cycle between project service accounts and
   # IAM grants done for those service accounts
-  factories_config = {
-    custom_roles = each.value.factories_config.custom_roles
-  }
   shared_vpc_service_config = (
     try(each.value.shared_vpc_service_config.host_project, null) == null
     ? null
