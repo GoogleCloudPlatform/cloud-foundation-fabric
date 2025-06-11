@@ -29,7 +29,7 @@ variable "access_config" {
       }))
     }))
     master_ipv4_cidr_block = optional(string)
-    private_nodes = optional(bool, true)
+    private_nodes          = optional(bool, true)
   })
   nullable = false
   default  = {}
