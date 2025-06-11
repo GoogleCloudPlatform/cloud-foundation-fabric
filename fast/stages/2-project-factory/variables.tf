@@ -31,6 +31,9 @@ variable "factories_config" {
       tag_values        = optional(map(string), {})
       vpc_host_projects = optional(map(string), {})
     }), {})
+    projects_config = optional(object({
+      key_ignores_path = optional(bool, false)
+    }), {})
   })
   nullable = false
   default  = {}
