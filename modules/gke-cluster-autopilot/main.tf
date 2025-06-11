@@ -296,6 +296,7 @@ resource "google_container_cluster" "cluster" {
         ? true
         : try(var.access_config.ip_access.disable_public_endpoint, null)
       )
+      master_ipv4_cidr_block = try(var.access_config.master_ipv4_cidr_block, null)
       private_endpoint_subnetwork = try(
         var.access_config.ip_access.private_endpoint_config.endpoint_subnetwork,
         null

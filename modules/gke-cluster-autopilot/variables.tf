@@ -28,7 +28,8 @@ variable "access_config" {
         global_access       = optional(bool, true)
       }))
     }))
-    private_nodes = optional(bool, true)
+    private_nodes          = optional(bool, true)
+    master_ipv4_cidr_block = optional(string)
   })
   nullable = false
   default  = {}
