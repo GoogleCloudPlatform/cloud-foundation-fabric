@@ -148,6 +148,9 @@ variable "factories_config" {
     }), {})
     folders_data_path  = optional(string)
     projects_data_path = optional(string)
+    projects_config = optional(object({
+      key_ignores_path = optional(bool, false)
+    }), {})
   })
   nullable = false
 }

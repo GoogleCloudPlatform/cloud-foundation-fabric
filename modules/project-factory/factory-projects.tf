@@ -48,9 +48,13 @@ locals {
     data_defaults  = var.data_defaults
   }
   projects = {
-    for k, v in local._projects_output : k => merge({
-      buckets          = try(v.buckets, {})
-      service_accounts = try(v.service_accounts, {})
+    for k, v in local._projects_output : (
+      var.factories_config.projects_config.key_ignores_path == true
+      ? basename(k)
+      : k
+      ) => merge({
+        buckets          = try(v.buckets, {})
+        service_accounts = try(v.service_accounts, {})
     }, v)
   }
   project_budgets = {
