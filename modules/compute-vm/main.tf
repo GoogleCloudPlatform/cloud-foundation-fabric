@@ -259,9 +259,10 @@ resource "google_compute_instance" "default" {
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
       dynamic "access_config" {
-        for_each = config.value.nat ? [""] : []
+        for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
-          nat_ip = try(config.value.addresses.external, null)
+          nat_ip       = try(config.value.addresses.external, null)
+          network_tier = try(config.value.network_tier, null)
         }
       }
       dynamic "alias_ip_range" {
