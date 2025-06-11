@@ -53,7 +53,7 @@ locals {
     for service, keys in var.service_encryption_key_ids : [
       # use the deps listed above, if the service does not appear
       # there, use all the service agents belonging to the service
-      for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name]) : {
+      for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name], [service]) : {
         # use index in map key, to allow specifying keys, that will be created in the same apply
         for index, key in keys :
         "key-${index}.${local._aliased_service_agents[dep].name}" => {
