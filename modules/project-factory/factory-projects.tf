@@ -31,10 +31,15 @@ locals {
     for f in try(fileset(local._project_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
   }
-  _projects_input = merge(
-    local._hierarchy_projects_full_path,
-    local._projects_full_path
-  )
+  _projects_input = {
+    for k, v in merge(
+      local._hierarchy_projects_full_path, local._projects_full_path
+      ) : (
+      var.factories_config.projects_config.key_ignores_path == true
+      ? basename(k)
+      : k
+    ) => v
+  }
   _project_budgets = flatten([
     for k, v in local._projects_input : [
       for b in try(v.billing_budgets, []) : {

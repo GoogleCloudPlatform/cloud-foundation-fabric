@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project-factory
+# yaml-language-server: $schema=../../../schemas/folder.schema.json
 
-tests:
-  bucket_iam:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/bucket_iam
-  shared_vpc_network_user:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/shared_vpc_network_user/projects
-  data_overrides_defaults:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/data_overrides_defaults/projects
-  key_ignores_path:
-    extra_dirs:
-      - ../../tests/modules/project_factory/data/key_ignores_path
+name: Team A
+parent: teams
+# iam_by_principals:
+#   "group:team-a-admins@example.com":
+#     - roles/viewer
