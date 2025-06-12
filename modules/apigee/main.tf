@@ -173,3 +173,15 @@ resource "google_apigee_addons_config" "addons_config" {
     }
   }
 }
+
+resource "google_apigee_dns_zone" "dns_zones" {
+  for_each    = var.dns_zones
+  org_id      = google_apigee_organization.organization[0].id
+  dns_zone_id = each.key
+  domain      = each.value.domain
+  description = each.value.description
+  peering_config {
+    target_project_id = each.value.target_project_id
+    target_network_id = each.value.target_network_id
+  }
+}
