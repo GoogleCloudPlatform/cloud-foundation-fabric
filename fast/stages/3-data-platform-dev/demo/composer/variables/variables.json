@@ -1,0 +1,10 @@
+{
+  "EXPOSURE_BQ_DATASET": "yy_4_dev_dp_d0_p0_exposure_0",
+  "LOCATION": "europe-west8",
+  "CURATED_BQ_DATASET": "yy_4_t0_p0_cur_bq_0",
+  "CURATED_BQ_DATASET": "yy_4_t0_p0_cur_bq_0",
+  "LAND_BQ_DATASET": "yy_4_t0_p0_lnd_bq_0",
+  "LAND_GCS": "yy-4-t0-p0-lnd-cs-0",
+  "DP_PROJECT": "yy-4-dev-dp-d0-p0-0",
+  "DP_SERVICE_ACCOUNT": "d0-p0-processing@yy-4-dev-dp-d0-p0-0.iam.gserviceaccount.com"
+}
