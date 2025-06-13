@@ -501,7 +501,10 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
       client,
       client_version,
       template[0].annotations["run.googleapis.com/operation-id"],
-      template[0].containers
+      template[0].containers,
+      template[0].labels["commit-sha"],
+      template[0].labels["goog-terraform-provisioned"],
+      template[0].labels["managed-by"],
     ]
   }
 }
