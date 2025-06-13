@@ -21,6 +21,7 @@ The following diagram is a high level reference of the resources created and man
   - [Project and hierarchy factory](#project-and-hierarchy-factory)
 - [Other design considerations](#other-design-considerations)
   - [Secure tags](#secure-tags)
+    - [Organization policy tag values from the bootstrap stage](#organization-policy-tag-values-from-the-bootstrap-stage)
   - [Multitenancy](#multitenancy)
   - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
 - [How to run this stage](#how-to-run-this-stage)
@@ -295,7 +296,8 @@ terraform apply
 |---|---|---|---|
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
-| [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
+| [organization-tags.tf](./organization-tags.tf) | Organization-level tag locals. |  |  |
+| [organization.tf](./organization.tf) | Organization-level IAM and org policies. | <code>organization</code> |  |
 | [outputs-cicd.tf](./outputs-cicd.tf) | Locals for CI/CD workflow files. |  |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs-providers.tf](./outputs-providers.tf) | Locals for provider output files. |  |  |

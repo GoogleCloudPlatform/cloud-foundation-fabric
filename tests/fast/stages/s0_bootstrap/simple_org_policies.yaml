@@ -269,21 +269,6 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization.google_org_policy_policy.default["custom.disableKubeletReadOnlyPort"]:
-    dry_run_spec: []
-    name: organizations/123456789012/policies/custom.disableKubeletReadOnlyPort
-    parent: organizations/123456789012
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.organization.google_org_policy_policy.default["essentialcontacts.allowedContactDomains"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/essentialcontacts.allowedContactDomains

@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/org-policy-custom-constraint.schema.json
-
 ---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policy-custom-constraint.schema.json
 
 # custom.disableKubeletReadOnlyPort:
 #   resource_types:
