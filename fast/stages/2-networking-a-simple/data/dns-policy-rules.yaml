@@ -13,6 +13,13 @@ aiplatform-notebook-cloud-all:
 aiplatform-notebook-gu-all:
   dns_name: "*.aiplatform-notebook.googleusercontent.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+appengine:
+  dns_name: "appengine.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+appspot-all:
+  dns_name: "*.appspot.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+
 backupdr-cloud:
   dns_name: "backupdr.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
@@ -105,6 +112,9 @@ kernels-gu-all:
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 ltsapis-all:
   dns_name: "*.ltsapis.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+notebooks:
+  dns_name: "notebooks.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 notebooks-all:
   dns_name: "*.notebooks.cloud.google.com."
