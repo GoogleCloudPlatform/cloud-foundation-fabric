@@ -1150,20 +1150,6 @@ values:
     resource_types:
     - accesscontextmanager.googleapis.com/ServicePerimeter
     timeouts: null
-  module.organization.google_org_policy_custom_constraint.constraint["custom.disableKubeletReadOnlyPort"]:
-    action_type: DENY
-    condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled
-      == true
-    description: Disallows the use of Kubelet read-only port 10255 to enhance security
-    display_name: Disable Kubelet Read-Only Port 10255
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.disableKubeletReadOnlyPort
-    parent: organizations/123456789012
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
   module.organization.google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/cloudbuild.disableCreateDefaultServiceAccount
@@ -1423,21 +1409,6 @@ values:
   module.organization.google_org_policy_policy.default["custom.denyBridgePerimeters"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/custom.denyBridgePerimeters
-    parent: organizations/123456789012
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
-  module.organization.google_org_policy_policy.default["custom.disableKubeletReadOnlyPort"]:
-    dry_run_spec: []
-    name: organizations/123456789012/policies/custom.disableKubeletReadOnlyPort
     parent: organizations/123456789012
     spec:
     - inherit_from_parent: null
@@ -2350,8 +2321,8 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
-  google_org_policy_custom_constraint: 2
-  google_org_policy_policy: 39
+  google_org_policy_custom_constraint: 1
+  google_org_policy_policy: 38
   google_organization_iam_binding: 26
   google_organization_iam_custom_role: 15
   google_organization_iam_member: 31
@@ -2372,7 +2343,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 296
+  resources: 294
 
 outputs:
   custom_roles:
