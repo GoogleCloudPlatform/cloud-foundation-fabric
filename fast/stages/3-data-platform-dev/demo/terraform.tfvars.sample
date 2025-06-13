@@ -1,0 +1,3 @@
+project_id = "<replace-with-your-project-id>"
+authorized_dataset_on_curated = "<replace-with-your-dataset-id>"
+prefix="demo"
