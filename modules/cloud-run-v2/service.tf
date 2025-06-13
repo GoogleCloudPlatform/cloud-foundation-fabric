@@ -465,8 +465,9 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
         dynamic "gcs" {
           for_each = volumes.value.gcs == null ? [] : [""]
           content {
-            bucket    = volumes.value.gcs.bucket
-            read_only = volumes.value.gcs.is_read_only
+            bucket        = volumes.value.gcs.bucket
+            read_only     = volumes.value.gcs.is_read_only
+            mount_options = volumes.value.gcs.mount_options
           }
         }
         dynamic "nfs" {

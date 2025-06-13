@@ -274,8 +274,9 @@ variable "volumes" {
     empty_dir_size      = optional(string)
     gcs = optional(object({
       # needs revision.gen2_execution_environment
-      bucket       = string
-      is_read_only = optional(bool)
+      bucket        = string
+      is_read_only  = optional(bool)
+      mount_options = optional(list(string), [])
     }))
     nfs = optional(object({
       server       = string
