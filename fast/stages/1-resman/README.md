@@ -146,6 +146,58 @@ tags = {
 }
 ```
 
+#### Organization policy tag values from the bootstrap stage
+
+A specific set of tag values used in org-level organization policy conditions can be optionally defined in the bootstrap stage, and can be referenced here if stage service accounts need specific permissions on those.
+
+As an example, consider this tag value defined via the boostrap stage tfvars.
+
+```tfvars
+org_policies_config = {
+  tag_values = {
+    storage-public-access-allow = {
+      description = "Bind this tag to allow public access on storage buckets."
+    }
+  }
+}
+```
+
+The tag is then used in the boostrap stage to modify the behaviour of the relevant organization policy.
+
+```yaml
+storage.publicAccessPrevention:
+  rules:
+    - enforce: true
+    - enforce: false
+      condition:
+        title: Allow any member domain
+        expression: |
+          resource.matchTag('${tags.org_policies_tag_name}', 'storage-public-access-allow')
+```
+
+The same tag value can be referenced in this stage to assign usage permissions to specific stage service accounts without the need to specify the explicit tag value id.
+
+```tfvars
+tags = {
+  org-policies = {
+    id = "org-policies"
+    values = {
+      storage-public-access-allow = {
+        id = "storage-public-access-allow"
+        iam = {
+          "roles/resourcemanager.tagUser" : [
+            "project-factory-rw"
+          ]
+          "roles/resourcemanager.tagViewer" : [
+            "project-factory-ro"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
 ### Multitenancy
 
 Multitenancy is supported via an [add-on](../../addons/1-resman-tenants/) which is entirely optional, and is be applied after resource management has been deployed. The add-on needs to be enabled before use via the `fast_addon` variable in the bootstrap stage.

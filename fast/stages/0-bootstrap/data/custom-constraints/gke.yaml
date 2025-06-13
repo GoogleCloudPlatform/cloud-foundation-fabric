@@ -14,13 +14,15 @@
 
 # yaml-language-server: $schema=../../schemas/org-policy-custom-constraint.schema.json
 
-custom.disableKubeletReadOnlyPort:
-  resource_types:
-    - container.googleapis.com/Cluster
-  method_types:
-    - CREATE
-    - UPDATE
-  condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled == true
-  action_type: DENY
-  display_name: Disable Kubelet Read-Only Port 10255
-  description: Disallows the use of Kubelet read-only port 10255 to enhance security
+---
+
+# custom.disableKubeletReadOnlyPort:
+#   resource_types:
+#     - container.googleapis.com/Cluster
+#   method_types:
+#     - CREATE
+#     - UPDATE
+#   condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled == true
+#   action_type: DENY
+#   display_name: Disable Kubelet Read-Only Port 10255
+#   description: Disallows the use of Kubelet read-only port 10255 to enhance security
