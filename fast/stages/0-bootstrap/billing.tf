@@ -17,17 +17,6 @@
 # tfdoc:file:description Billing export project and dataset.
 
 locals {
-  # used here for convenience, in organization.tf members are explicit
-  billing_ext_admins = [
-    local.principals.gcp-billing-admins,
-    local.principals.gcp-organization-admins,
-    module.automation-tf-bootstrap-sa.iam_email,
-    module.automation-tf-resman-sa.iam_email
-  ]
-  billing_ext_viewers = [
-    module.automation-tf-bootstrap-r-sa.iam_email,
-    module.automation-tf-resman-r-sa.iam_email
-  ]
   billing_mode = (
     var.billing_account.no_iam
     ? null
@@ -81,20 +70,42 @@ module "billing-export-dataset" {
 
 # standalone billing account
 
-resource "google_billing_account_iam_member" "billing_ext_admin" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_admins : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/billing.admin"
-  member             = each.key
+module "billing-account-logbucket" {
+  source        = "../../../modules/logging-bucket"
+  count         = local.billing_mode == "resource" ? 1 : 0
+  parent_type   = "project"
+  parent        = module.log-export-project.project_id
+  id            = "billing-account"
+  location      = local.locations.logging
+  log_analytics = { enable = true }
+  # org-level logging settings ready before we create any logging buckets
+  depends_on = [module.organization-logging]
 }
 
-resource "google_billing_account_iam_member" "billing_ext_viewer" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_viewers : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/billing.viewer"
-  member             = each.key
+module "billing-account" {
+  source = "../../../modules/billing-account"
+  count  = local.billing_mode == "resource" ? 1 : 0
+  id     = var.billing_account.id
+  iam = {
+    "roles/billing.admin" = [
+      local.principals.gcp-billing-admins,
+      local.principals.gcp-organization-admins,
+      module.automation-tf-bootstrap-sa.iam_email,
+      module.automation-tf-resman-sa.iam_email
+    ],
+    "roles/billing.viewer" = [
+      module.automation-tf-bootstrap-r-sa.iam_email,
+      module.automation-tf-resman-r-sa.iam_email
+    ],
+    "roles/logging.configWriter" = [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
+  }
+  logging_sinks = {
+    billing_bucket_log_sink = {
+      destination = module.billing-account-logbucket[0].id
+      type        = "logging"
+      description = "billing-account sink (Terraform-managed)."
+    }
+  }
 }
