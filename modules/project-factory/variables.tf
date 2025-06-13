@@ -286,6 +286,12 @@ variable "factories_data" {
           iam_sa_roles           = optional(map(list(string)), {})
           iam_storage_roles      = optional(map(list(string)), {})
         })), {})
+        cicd_config = optional(list(object({
+          service_accounts = list(string)
+          provider         = string
+          repository       = optional(string)
+          branch           = optional(string)
+        })), [])
       }))
       billing_account = optional(string)
       billing_budgets = optional(list(string), [])
@@ -394,4 +400,16 @@ variable "factories_data" {
   })
   nullable = false
   default  = {}
+}
+
+variable "federated_identity_pool" {
+  description = "The full name of the workload identity pool."
+  type        = string
+  default     = null
+}
+
+variable "federated_identity_providers" {
+  description = "A map of workload identity provider configurations."
+  type        = map(any)
+  default     = {}
 }
