@@ -838,6 +838,59 @@ module "kms" {
 # tftest modules=2 resources=10 e2e
 ```
 
+Services like Composer, Dataflow, and Datafusion require service agent dependencies from other services to function properly with CMEK encryption. These dependencies are automatically resolved based on a predefined mapping that follows the latest service requirements.
+
+In situations where the predefined mapping doesn't cover your specific use case (such as using older service versions or custom configurations), you can extend this mapping by explicitly declaring additional dependencies.
+
+The `service_encryption_key_ids` parameter accepts keys declared using either:
+
+- [Service Agents](#service-agents) API names (e.g., composer.googleapis.com)
+- [Service Agent aliases](#service-agent-aliases) (e.g., container-engine-robot)
+
+The following examples demonstrate how to configure CMEK encryption for different Composer versions:
+
+For composer v3:
+
+```
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "composer.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    "composer.googleapis.com" = [module.kms.keys.key-regional.id]
+  }
+}
+```
+
+For composer v2:
+
+```
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "composer.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    "composer.googleapis.com"         = [module.kms.keys.key-regional.id]
+    # Composer v2 dependencies
+    "artifactregistry.googleapis.com" = [module.kms.keys.key-regional.id]
+    "container-engine-robot"          = [module.kms.keys.key-regional.id]
+    "container.googleapis.com"        = [module.kms.keys.key-regional.id]
+    "pubsub.googleapis.com"           = [module.kms.keys.key-regional.id]
+  }
+}
+```
+
+
 ## Tags
 
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
