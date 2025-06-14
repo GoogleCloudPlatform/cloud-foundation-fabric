@@ -133,6 +133,7 @@ automation = {
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
   billing_viewer                  = "organizations/123456789012/roles/billingViewer"
+  dns_zone_binder                 = "organizations/123456789012/roles/dnsZoneBinder"
   gcve_network_admin              = "organizations/123456789012/roles/gcveNetworkAdmin"
   gcve_network_viewer             = "organizations/123456789012/roles/gcveNetworkViewer"
   kms_key_encryption_admin        = "organizations/123456789012/roles/kmsKeyEncryptionAdmin"

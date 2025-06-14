@@ -25,6 +25,7 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
+      custom_roles      = optional(map(string), {})
       folder_ids        = optional(map(string), {})
       kms_keys          = optional(map(string), {})
       iam_principals    = optional(map(string), {})

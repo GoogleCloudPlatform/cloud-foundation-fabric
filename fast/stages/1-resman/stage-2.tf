@@ -89,6 +89,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -105,6 +106,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -126,6 +128,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
