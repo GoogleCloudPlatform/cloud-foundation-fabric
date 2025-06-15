@@ -54,21 +54,26 @@ locals {
       )
       service_encryption_key_ids = {}
       services                   = []
-      shared_vpc_service_config = merge({
-        host_project             = null
-        network_users            = []
-        service_agent_iam        = {}
-        service_agent_subnet_iam = {}
-        service_iam_grants       = []
-        network_subnet_users     = {}
-        }, try(local._projects_config.data_defaults.shared_vpc_service_config, {
+      shared_vpc_service_config = merge(
+        {
           host_project             = null
+          iam_bindings_additive    = {}
           network_users            = []
           service_agent_iam        = {}
           service_agent_subnet_iam = {}
           service_iam_grants       = []
           network_subnet_users     = {}
-        })
+        },
+        try(local._projects_config.data_defaults.shared_vpc_service_config, {
+          host_project             = null
+          iam_bindings_additive    = {}
+          network_users            = []
+          service_agent_iam        = {}
+          service_agent_subnet_iam = {}
+          service_iam_grants       = []
+          network_subnet_users     = {}
+          }
+        )
       )
       storage_location = null
       tag_bindings     = {}
@@ -245,6 +250,7 @@ locals {
         ? merge(
           {
             host_project             = null
+            iam_bindings_additive    = {}
             network_users            = []
             service_agent_iam        = {}
             service_agent_subnet_iam = {}
