@@ -18,7 +18,16 @@ variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
-    outputs_bucket = string
+    outputs_bucket          = string
+    federated_identity_pool = optional(string)
+    federated_identity_providers = optional(map(object({
+      audiences        = list(string)
+      issuer           = string
+      issuer_uri       = string
+      name             = string
+      principal_branch = string
+      principal_repo   = string
+    })), {})
   })
   nullable = false
 }

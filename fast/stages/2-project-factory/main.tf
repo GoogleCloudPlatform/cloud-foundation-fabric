@@ -31,6 +31,8 @@ module "projects" {
   data_overrides = {
     prefix = var.prefix
   }
+  federated_identity_pool      = var.automation.federated_identity_pool
+  federated_identity_providers = var.automation.federated_identity_providers
   factories_config = merge(var.factories_config, {
     context = {
       custom_roles = merge(

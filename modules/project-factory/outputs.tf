@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "automation_service_accounts" {
+  description = "Automation service account emails, keyed by project/sa_name."
+  value       = { for k, v in module.automation-service-accounts : k => v.email }
+}
 
 output "buckets" {
   description = "Bucket names."
@@ -36,14 +41,18 @@ output "projects" {
       automation = (
         lookup(local.projects[k], "automation", null) == null
         ? null
-        : {
-          bucket = try(module.automation-bucket[k].name, null)
-          service_accounts = {
-            for kk, vv in module.automation-service-accounts :
-            trimprefix(kk, "${k}/") => vv.email
-            if startswith(kk, "${k}/")
+        : merge(
+          local.projects[k].automation,
+          {
+            outputs_bucket = try(module.automation-bucket["${k}-outputs"].name, null)
+            bucket         = try(module.automation-bucket[k].name, null)
+            service_accounts = {
+              for kk, vv in module.automation-service-accounts :
+              replace(kk, "${k}/automation/", "") => vv.email
+              if startswith(kk, "${k}/")
+            }
           }
-        }
+        )
       )
       service_agents = {
         for k, v in v.service_agents : k => v.email if v.is_primary

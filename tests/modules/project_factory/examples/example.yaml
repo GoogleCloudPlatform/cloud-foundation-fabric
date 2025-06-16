@@ -74,6 +74,14 @@ values:
     member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-ro"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-cicd-ro
+    description: RO CI/CD service account
+    project: test-pf-teams-iac-0
+  module.project-factory.module.automation-bucket["dev-tb-app0-0-outputs"].google_storage_bucket.bucket[0]:
+    location: EU
+    name: test-pf-teams-iac-0-outputs
+    project: test-pf-teams-iac-0
   module.project-factory.module.billing-account[0].google_billing_budget.default["test-100"]:
     all_updates_rule:
     - disable_default_iam_recipients: true
@@ -556,16 +564,17 @@ counts:
   google_project_iam_member: 21
   google_project_service: 13
   google_project_service_identity: 4
-  google_service_account: 6
+  google_service_account: 8
   google_service_account_iam_binding: 1
-  google_storage_bucket: 1
-  google_storage_bucket_iam_binding: 2
+  google_service_account_iam_member: 4
+  google_storage_bucket: 2
+  google_storage_bucket_iam_binding: 3
   google_storage_project_service_account: 4
   google_tags_tag_binding: 1
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 21
-  resources: 83
+  modules: 24
+  resources: 91
 
 outputs: {}

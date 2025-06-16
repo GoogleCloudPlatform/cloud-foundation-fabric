@@ -11,13 +11,42 @@
         "project"
       ],
       "properties": {
-        "prefix": {
-          "type": "string"
+        "cicd_config": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "workload_identity_provider",
+              "repository"
+            ],
+            "properties": {
+              "workload_identity_provider": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "branch": {
+                "type": "string"
+              },
+              "impersonations": {
+                "type": "object",
+                "patternProperties": {
+                  "^[a-z0-9-]+$": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
         },
         "project": {
           "type": "string"
         },
         "bucket": {
+          "$ref": "#/$defs/bucket"
+        },
+        "outputs_bucket": {
           "$ref": "#/$defs/bucket"
         },
         "service_accounts": {
@@ -57,6 +86,76 @@
                 },
                 "iam_storage_roles": {
                   "$ref": "#/$defs/iam_storage_roles"
+                }
+              }
+            }
+          }
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "workload_identity_provider"
+            ],
+            "properties": {
+              "workload_identity_provider": {
+                "type": "string"
+              },
+              "workflow": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "plan",
+                  "apply"
+                ],
+                "properties": {
+                  "plan": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "service_account"
+                    ],
+                    "properties": {
+                      "service_account": {
+                        "type": "string"
+                      },
+                      "provider_file": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "apply": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "service_account"
+                    ],
+                    "properties": {
+                      "service_account": {
+                        "type": "string"
+                      },
+                      "provider_file": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "provider_files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "service_account"
+                  ],
+                  "properties": {
+                    "service_account": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }

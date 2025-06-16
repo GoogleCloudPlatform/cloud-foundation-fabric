@@ -8,9 +8,16 @@
 
 - **automation**: *object*
   <br>*additional properties: false*
-  - **prefix**: *string*
+  - **cicd_config**: *array*
+    - items: *object*
+      - ⁺**workload_identity_provider**: *string*
+      - ⁺**repository**: *string*
+      - **branch**: *string*
+      - **impersonations**: *object*
+        - **`^[a-z0-9-]+$`**: *string*
   - ⁺**project**: *string*
   - **bucket**: *reference([bucket](#refs-bucket))*
+  - **outputs_bucket**: *reference([bucket](#refs-bucket))*
   - **service_accounts**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
@@ -25,6 +32,24 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+  - **templates**: *array*
+    - items: *object*
+      <br>*additional properties: false*
+      - ⁺**workload_identity_provider**: *string*
+      - **workflow**: *object*
+        <br>*additional properties: false*
+        - ⁺**plan**: *object*
+          <br>*additional properties: false*
+          - ⁺**service_account**: *string*
+          - **provider_file**: *string*
+        - ⁺**apply**: *object*
+          <br>*additional properties: false*
+          - ⁺**service_account**: *string*
+          - **provider_file**: *string*
+      - **provider_files**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**service_account**: *string*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*

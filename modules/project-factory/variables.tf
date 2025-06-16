@@ -243,6 +243,12 @@ variable "factories_data" {
     projects = optional(map(object({
       automation = optional(object({
         project = string
+        cicd_config = optional(list(object({
+          service_accounts           = list(string)
+          workload_identity_provider = string
+          repository                 = optional(string)
+          branch                     = optional(string)
+        })), [])
         bucket = optional(object({
           location                    = string
           description                 = optional(string)
@@ -260,6 +266,18 @@ variable "factories_data" {
               description = optional(string)
             }))
           })), {})
+          outputs_bucket = optional(object({
+            description                 = optional(string)
+            iam                         = optional(map(list(string)), {})
+            iam_bindings                = optional(map(any), {})
+            iam_bindings_additive       = optional(map(any), {})
+            labels                      = optional(map(string), {})
+            location                    = optional(string)
+            prefix                      = optional(string)
+            storage_class               = optional(string, "STANDARD")
+            uniform_bucket_level_access = optional(bool, true)
+            versioning                  = optional(bool)
+          }))
           iam_bindings_additive = optional(map(object({
             member = string
             role   = string
@@ -299,6 +317,22 @@ variable "factories_data" {
           iam_sa_roles           = optional(map(list(string)), {})
           iam_storage_roles      = optional(map(list(string)), {})
         })), {})
+        templates = optional(list(object({
+          workload_identity_provider = string
+          workflow = optional(object({
+            plan = object({
+              service_account = string
+              provider_file   = string
+            })
+            apply = object({
+              service_account = string
+              provider_file   = string
+            })
+          }))
+          provider_files = optional(list(object({
+            service_account = string
+          })))
+        })))
       }))
       billing_account = optional(string)
       billing_budgets = optional(list(string), [])
@@ -407,4 +441,16 @@ variable "factories_data" {
   })
   nullable = false
   default  = {}
+}
+
+variable "federated_identity_pool" {
+  description = "The full name of the workload identity pool."
+  type        = string
+  default     = null
+}
+
+variable "federated_identity_providers" {
+  description = "A map of workload identity provider configurations."
+  type        = map(any)
+  default     = {}
 }

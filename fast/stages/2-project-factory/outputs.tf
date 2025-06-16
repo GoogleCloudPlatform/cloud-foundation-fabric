@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  project_provider_data = flatten([
-    for k, v in module.projects.projects : [
-      for sk, sv in try(v.automation.service_accounts) : {
-        key             = "${k}-${sk}"
-        bucket          = try(v.automation.bucket, null)
-        project_id      = v.project_id
-        project_number  = v.number
-        service_account = sv
-      }
-    ] if try(v.automation.bucket, null) != null
-  ])
-}
-
 output "buckets" {
   description = "Created buckets."
   value = {
@@ -62,20 +48,4 @@ resource "google_storage_bucket_object" "version" {
   bucket = var.automation.outputs_bucket
   name   = "versions/2-project-factory-version.txt"
   source = "fast_version.txt"
-}
-
-# generate tfvars file for subsequent stages
-
-resource "local_file" "providers" {
-  for_each        = var.outputs_location == null ? {} : { for v in local.project_provider_data : v.key => v }
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/providers/${var.stage_name}/${each.key}-providers.tf"
-  content         = templatefile("templates/providers.tf.tpl", each.value)
-}
-
-resource "google_storage_bucket_object" "tfvars" {
-  for_each = { for v in local.project_provider_data : v.key => v }
-  bucket   = var.automation.outputs_bucket
-  name     = "providers/${var.stage_name}/${each.key}-providers.tf"
-  content  = templatefile("templates/providers.tf.tpl", each.value)
 }
