@@ -125,6 +125,44 @@ variable "iam" {
   default     = {}
 }
 
+variable "iap_enabled" {
+  description = <<-EOT
+  Enables Identity-Aware Proxy (IAP) for this service.
+  IAP can only be enabled for Cloud Run services (create_job = false).
+  EOT
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.iap_enabled || (var.iap_enabled && !var.create_job)
+    error_message = "IAP can only be enabled for Cloud Run services (create_job = false), not for jobs."
+  }
+}
+
+variable "iap_http_resource_accessors_config" {
+  description = <<-EOT
+  IAP HTTP resource accessors configuration. 
+  When authoritative_mode is true, the google_iap_web_cloud_run_service_iam_binding resource is used
+  which replaces any existing IAM policy attached to the IAP web service. 
+  When authoritative_mode is false (default), the google_iap_web_cloud_run_service_iam_member resource is used
+  which adds the IAM policies to the service.
+  EOT
+  type = object({
+    iam_emails         = list(string)
+    authoritative_mode = optional(bool, false)
+  })
+  default = null
+
+  validation {
+    condition     = var.iap_http_resource_accessors_config == null || var.iap_enabled
+    error_message = "iap_http_resource_accessors_config can only be set when iap_enabled = true."
+  }
+  validation {
+    condition     = var.iap_http_resource_accessors_config == null || (var.iap_http_resource_accessors_config != null && length(var.iap_http_resource_accessors_config.iam_emails) > 0)
+    error_message = "When iap_http_resource_accessors_config is set, iam_emails must not be empty."
+  }
+}
+
 variable "ingress" {
   description = "Ingress settings."
   type        = string
@@ -168,6 +206,10 @@ variable "launch_stage" {
     The launch stage should be one of UNIMPLEMENTED, PRELAUNCH, EARLY_ACCESS, ALPHA,
     BETA, GA, DEPRECATED.
     EOF
+  }
+  validation {
+    condition     = !var.iap_enabled || (var.iap_enabled && var.launch_stage == "BETA")
+    error_message = "When IAP is enabled (iap_enabled = true), launch_stage must be set to 'BETA'."
   }
 }
 
