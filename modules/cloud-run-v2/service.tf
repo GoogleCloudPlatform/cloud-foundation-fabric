@@ -527,9 +527,9 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
 
 locals {
 
-  iap_member_list = toset(coalesce(var.iap_config.iam_additive, []))
+  iap_member_list = toset(try(coalesce(var.iap_config.iam_additive, []), []))
 
-  use_iap_iam_binding = var.iap_config != null && var.iap_config.iam != null
+  use_iap_iam_binding = var.iap_config != null && try(var.iap_config.iam,null) != null
   iap_binding_dict    = local.use_iap_iam_binding ? { "iap" = var.iap_config.iam } : {}
 
 }
