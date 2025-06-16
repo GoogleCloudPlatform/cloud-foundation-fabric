@@ -11,13 +11,48 @@
         "project"
       ],
       "properties": {
-        "prefix": {
-          "type": "string"
+        "cicd_config": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "provider",
+              "repository"
+            ],
+            "properties": {
+              "provider": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "branch": {
+                "type": "string"
+              },
+              "service_accounts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "impersonations": {
+                "type": "object",
+                "patternProperties": {
+                  "^[a-z0-9-]+$": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
         },
         "project": {
           "type": "string"
         },
         "bucket": {
+          "$ref": "#/$defs/bucket"
+        },
+        "outputs_bucket": {
           "$ref": "#/$defs/bucket"
         },
         "service_accounts": {

@@ -11,6 +11,10 @@
   - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
+  - [Local Development & State Bootstrapping](#local-development-state-bootstrapping)
+    - [Step 1: Grant Impersonation Permissions](#step-1-grant-impersonation-permissions)
+    - [Step 2: Bootstrap the New Project's State](#step-2-bootstrap-the-new-projects-state)
+    - [Step 3: Rely on CI/CD](#step-3-rely-on-cicd)
 - [Alternative patterns](#alternative-patterns)
   - [Per-environment Factories](#per-environment-factories)
 - [Files](#files)
@@ -271,12 +275,18 @@ When created projects are meant to be managed via IaC downstream, an initial set
 ```yaml
 # controlling project shown in the diagram above
 parent: teams
-name: xxx-prod-iac-teams-0
+name: prod-iac-teams-0
 services:
   - compute.googleapis.com
   - storage.googleapis.com
+  - iam.googleapis.com
   # ...
   # enable all services used by service accounts in this project
+# Uncomment to allow users in the below group to impersonate service accounts
+# E.g. when using `terraform init` locally to bootstrap the state
+#iam_by_principals:
+#  group:devops@example.org:
+#    - roles/iam.serviceAccountTokenCreator
 ```
 
 Once a controlling project is in place, it can be used in any other project declaration to host service accounts and bucket for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
@@ -304,6 +314,23 @@ automation:
     # resulting sa name: xxx-dev-ta-app-0-ro
     ro:
       description: Read-only automation sa for team a app 0.
+    # resulting sa name: xxx-dev-ta-app-0-cicd-ro
+    cicd-ro:
+      description: Read-only WIF CI/CD service account
+    # resulting sa name: xxx-dev-ta-app-0-cicd-rw
+    cicd-rw:
+      description: Read-write WIF CI/CD service account
+  # Configure CI/CD automation for this project.
+  # This generates Terraform provider files and an initial workflow for the
+  # specified provider (e.g., GitHub, GitLab) based on the settings below.
+  cicd_config:
+    - provider: github
+      impersonations:
+        # cicd-ro can impersonate the ro service account
+        cicd-ro: ro
+        # cicd-rw can impersonate the rw service account
+        cicd-rw: rw
+      repository: my-org/my-repo
   bucket:
     # resulting bucket name: xxx-dev-ta-app-0-state
     description: Terraform state bucket for team a app 0.
@@ -315,7 +342,43 @@ automation:
         - rw
         - ro
         - group:devops@example.org
+  # Defines the GCS bucket for storing CI/CD artifacts like provider configurations.
+  outputs_bucket:
+    # The bucket name is based on the controlling 'automation.project' ID, not this project's name.
+    # e.g., resulting name: xxx-prod-iac-teams-0-outputs
+    description: CI/CD outputs bucket for team a app 0.
+    iam:
+      # Allow the CI/CD service accounts to download the pre-configured
+      # provider files needed for pipeline execution.
+      roles/storage.objectViewer:
+        - cicd-ro
+        - cicd-rw
 ```
+
+### Local Development & State Bootstrapping
+
+While the CI/CD pipeline will handle day-to-day operations, you must first run Terraform locally to initialize the remote state for a newly created project. This is a one-time setup action.
+
+Because the Terraform backend is configured to use Service Account impersonation, `terraform init` will fail with a `403 Permission Denied` error unless your local user has permission to act as the project's `rw` service account.
+
+#### Step 1: Grant Impersonation Permissions
+
+To grant your administrative group the necessary permissions, you can define an `iam_by_principals` in the `xxx-prod-iac-teams-0` project. This declaratively grants the `serviceAccountTokenCreator` role, allowing members to impersonate the Service Accounts within the IaC project.
+
+#### Step 2: Bootstrap the New Project's State
+
+With permissions in place, you can initialize the project:
+
+1.  **Download Provider Configuration:** The project factory generates a pre-configured provider file and stores it in the CI/CD outputs bucket. For the example project `dev-ta-app-0`, download the `rw` provider file from:
+    `gs://xxx-prod-iac-teams-0-outputs/providers/dev-ta-app-0-rw-providers.tf`
+
+2.  **Initialize Terraform:** Place the downloaded provider file in your local Terraform directory for the new project and run `terraform init`. Your gcloud-authenticated user will impersonate the `rw` service account to configure the backend.
+
+3.  **Apply and Create State:** Run `terraform apply` to create the project's resources and write the initial `default.tfstate` file to the GCS bucket.
+
+#### Step 3: Rely on CI/CD
+
+Once the state is bootstrapped, all future infrastructure management should go through the automated CI/CD pipeline, which uses keyless Workload Identity Federation.
 
 ## Alternative patterns
 
@@ -344,7 +407,8 @@ The approach is not shown here but reasonably easy to implement. The main projec
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
-| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [outputs-automation.tf](./outputs-automation.tf) | This file defines local values for selecting projects with CI/CD configuration and generating workflow templates for each project. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -352,27 +416,27 @@ The approach is not shown here but reasonably easy to implement. The main projec
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L26) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L101) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  federated_identity_pool &#61; optional&#40;string&#41;&#10;  federated_identity_providers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    audiences        &#61; list&#40;string&#41;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_branch &#61; string&#10;    principal_repo   &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [billing_account](variables-fast.tf#L35) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L110) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 | [factories_config](variables.tf#L17) | Configuration for YAML-based factories. | <code title="object&#40;&#123;&#10;  folders_data_path  &#61; optional&#40;string, &#34;data&#47;hierarchy&#34;&#41;&#10;  projects_data_path &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; optional&#40;string, &#34;data&#47;budgets&#34;&#41;&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    kms_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    vpc_host_projects &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [folder_ids](variables-fast.tf#L39) | Folders created in the resource management stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
-| [groups](variables-fast.tf#L47) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [host_project_ids](variables-fast.tf#L56) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [kms_keys](variables-fast.tf#L64) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
-| [locations](variables-fast.tf#L72) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  gcs &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [org_policy_tags](variables-fast.tf#L90) | Optional organization policy tag values. | <code title="object&#40;&#123;&#10;  key_name &#61; optional&#40;string, &#34;org-policies&#34;&#41;&#10;  values   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [folder_ids](variables-fast.tf#L48) | Folders created in the resource management stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [groups](variables-fast.tf#L56) | Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [host_project_ids](variables-fast.tf#L65) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [kms_keys](variables-fast.tf#L73) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
+| [locations](variables-fast.tf#L81) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  gcs &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [org_policy_tags](variables-fast.tf#L99) | Optional organization policy tag values. | <code title="object&#40;&#123;&#10;  key_name &#61; optional&#40;string, &#34;org-policies&#34;&#41;&#10;  values   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
 | [outputs_location](variables.tf#L39) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
-| [perimeters](variables-fast.tf#L82) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [service_accounts](variables-fast.tf#L111) | Automation service accounts in name => email format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [perimeters](variables-fast.tf#L91) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
+| [service_accounts](variables-fast.tf#L120) | Automation service accounts in name => email format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 | [stage_name](variables.tf#L45) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
-| [tag_values](variables-fast.tf#L119) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
+| [tag_values](variables-fast.tf#L128) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-resman</code> |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [buckets](outputs.tf#L31) | Created buckets. |  |  |
-| [projects](outputs.tf#L38) | Created projects. |  |  |
-| [service_accounts](outputs.tf#L50) | Created service accounts. |  |  |
+| [buckets](outputs.tf#L17) | Created buckets. |  |  |
+| [projects](outputs.tf#L24) | Created projects. |  |  |
+| [service_accounts](outputs.tf#L36) | Created service accounts. |  |  |
 <!-- END TFDOC -->
