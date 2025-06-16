@@ -662,7 +662,7 @@ FAST defines a simple mechanism to extend stage functionality via the use of [ad
 | name | description | modules | resources |
 |---|---|---|---|
 | [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
-| [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>project</code> | <code>google_billing_account_iam_member</code> |
+| [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>billing-account</code> · <code>logging-bucket</code> · <code>project</code> |  |
 | [cicd.tf](./cicd.tf) | CI/CD locals and resources. | <code>iam-service-account</code> |  |
 | [identity-providers-wfif-defs.tf](./identity-providers-wfif-defs.tf) | Workforce Identity provider definitions. |  |  |
 | [identity-providers-wfif.tf](./identity-providers-wfif.tf) | Workforce Identity Federation provider definitions. |  | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
