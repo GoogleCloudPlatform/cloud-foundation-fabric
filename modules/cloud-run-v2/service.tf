@@ -532,7 +532,7 @@ locals {
     !var.iap_http_resource_accessors_config.authoritative_mode
   )
 
-  iap_member_list = local.use_iap_member ? toset(var.iap_http_resource_accessors_config.iam_emails) : ()
+  iap_member_list = local.use_iap_member ? toset(var.iap_http_resource_accessors_config.iam_emails) : toset([])
 
   use_iap_iam_binding = (
     !var.create_job &&
