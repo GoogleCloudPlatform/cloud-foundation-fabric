@@ -30,6 +30,7 @@ resource "google_cloud_run_v2_service" "service" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
+  iap_enabled          = var.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -274,6 +275,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
+  iap_enabled          = var.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -521,4 +523,40 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
       each.value, ["serviceAccount:${local.trigger_sa_email}"]
     )
   )
+}
+
+locals {
+  use_iap_member = (
+    !var.create_job &&
+    var.iap_http_resource_accessors_config != null &&
+    !var.iap_http_resource_accessors_config.authoritative_mode
+  )
+
+  iap_member_list = local.use_iap_member ? toset(var.iap_http_resource_accessors_config.iam_emails) : []
+
+  use_iap_iam_binding = (
+    !var.create_job &&
+    var.iap_http_resource_accessors_config != null &&
+    var.iap_http_resource_accessors_config.authoritative_mode
+  )
+  iap_binding_dict = local.use_iap_iam_binding ? { "iap" = var.iap_http_resource_accessors_config.iam_emails } : {}
+
+}
+
+resource "google_iap_web_cloud_run_service_iam_member" "member" {
+  for_each               = local.iap_member_list
+  project                = local.service.project
+  location               = local.service.location
+  cloud_run_service_name = local.service.name
+  role                   = "roles/iap.httpsResourceAccessor"
+  member                 = each.key
+}
+
+resource "google_iap_web_cloud_run_service_iam_binding" "binding" {
+  for_each               = local.iap_binding_dict
+  project                = local.service.project
+  location               = local.service.location
+  cloud_run_service_name = local.service.name
+  role                   = "roles/iap.httpsResourceAccessor"
+  members                = each.value
 }
