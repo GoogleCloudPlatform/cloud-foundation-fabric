@@ -30,7 +30,7 @@ resource "google_cloud_run_v2_service" "service" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
-  iap_enabled          = var.iap_enabled
+  iap_enabled          = local.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -275,7 +275,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
-  iap_enabled          = var.iap_enabled
+  iap_enabled          = local.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -526,20 +526,11 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
 }
 
 locals {
-  use_iap_member = (
-    !var.create_job &&
-    var.iap_http_resource_accessors_config != null &&
-    !var.iap_http_resource_accessors_config.authoritative_mode
-  )
 
-  iap_member_list = local.use_iap_member ? toset(var.iap_http_resource_accessors_config.iam_emails) : toset([])
+  iap_member_list = toset(coalesce(var.iap_config.iam_additive, []))
 
-  use_iap_iam_binding = (
-    !var.create_job &&
-    var.iap_http_resource_accessors_config != null &&
-    var.iap_http_resource_accessors_config.authoritative_mode
-  )
-  iap_binding_dict = local.use_iap_iam_binding ? { "iap" = var.iap_http_resource_accessors_config.iam_emails } : {}
+  use_iap_iam_binding = var.iap_config != null && var.iap_config.iam != null 
+  iap_binding_dict = local.use_iap_iam_binding ? { "iap" = var.iap_config.iam } : {}
 
 }
 

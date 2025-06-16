@@ -125,41 +125,43 @@ variable "iam" {
   default     = {}
 }
 
-variable "iap_enabled" {
+variable "iap_config" {
   description = <<-EOT
-  Enables Identity-Aware Proxy (IAP) for this service.
-  IAP can only be enabled for Cloud Run services (create_job = false).
-  EOT
-  type        = bool
-  default     = false
-
-  validation {
-    condition     = !var.iap_enabled || (var.iap_enabled && !var.create_job)
-    error_message = "IAP can only be enabled for Cloud Run services (create_job = false), not for jobs."
-  }
-}
-
-variable "iap_http_resource_accessors_config" {
-  description = <<-EOT
-  IAP HTTP resource accessors configuration. 
-  When authoritative_mode is true, the google_iap_web_cloud_run_service_iam_binding resource is used
-  which replaces any existing IAM policy attached to the IAP web service. 
-  When authoritative_mode is false (default), the google_iap_web_cloud_run_service_iam_member resource is used
-  which adds the IAM policies to the service.
+  If present, it turns on Identity-Aware Proxy (IAP) for this service.
+  iam (resource google_iap_web_cloud_run_service_iam_binding) - list of iam emails (e.g. "group:abc@domain.com") to be granted with iap.httpsResourceAccessor role.
+  iam_additive (resource google_iap_web_cloud_run_service_iam_member ) - list of iam emails (e.g. "group:abc@domain.com") to be granted with iap.httpsResourceAccessor.
+  iam and iam_additive are mutually exclusive.
   EOT
   type = object({
-    iam_emails         = list(string)
-    authoritative_mode = optional(bool, false)
+    iam          = optional(list(string))
+    iam_additive = optional(list(string))
   })
   default = null
-
+  
   validation {
-    condition     = var.iap_http_resource_accessors_config == null || var.iap_enabled
-    error_message = "iap_http_resource_accessors_config can only be set when iap_enabled = true."
+    condition = var.iap_config == null || (
+      (var.iap_config.iam != null && var.iap_config.iam_additive == null) ||
+      (var.iap_config.iam == null && var.iap_config.iam_additive != null)
+    )
+    error_message = "When iap_config is provided, exactly one of 'iam' or 'iam_additive' must be specified."
   }
+  
   validation {
-    condition     = var.iap_http_resource_accessors_config == null || (var.iap_http_resource_accessors_config != null && length(var.iap_http_resource_accessors_config.iam_emails) > 0)
-    error_message = "When iap_http_resource_accessors_config is set, iam_emails must not be empty."
+    condition = var.iap_config == null || (
+      (var.iap_config.iam != null ? length(var.iap_config.iam) > 0 : true) &&
+      (var.iap_config.iam_additive != null ? length(var.iap_config.iam_additive) > 0 : true)
+    )
+    error_message = "When 'iam' or 'iam_additive' lists are provided in iap_config, they must not be empty."
+  }
+  
+  validation {
+    condition     = var.iap_config == null || !var.create_job
+    error_message = "IAP is only supported for Cloud Run services, not Cloud Run jobs. Set create_job to false when using iap_config."
+  }
+  
+  validation {
+    condition     = var.iap_config == null || var.launch_stage != "GA"
+    error_message = "iap is currently not supported in GA. Set launch_stage to 'BETA' or lower."
   }
 }
 
@@ -206,10 +208,6 @@ variable "launch_stage" {
     The launch stage should be one of UNIMPLEMENTED, PRELAUNCH, EARLY_ACCESS, ALPHA,
     BETA, GA, DEPRECATED.
     EOF
-  }
-  validation {
-    condition     = !var.iap_enabled || (var.iap_enabled && var.launch_stage == "BETA")
-    error_message = "When IAP is enabled (iap_enabled = true), launch_stage must be set to 'BETA'."
   }
 }
 
