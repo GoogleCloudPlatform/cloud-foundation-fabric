@@ -529,7 +529,7 @@ locals {
 
   iap_member_list = toset(try(coalesce(var.iap_config.iam_additive, []), []))
 
-  use_iap_iam_binding = var.iap_config != null && try(var.iap_config.iam,null) != null
+  use_iap_iam_binding = var.iap_config != null && try(var.iap_config.iam, null) != null
   iap_binding_dict    = local.use_iap_iam_binding ? { "iap" = var.iap_config.iam } : {}
 
 }
