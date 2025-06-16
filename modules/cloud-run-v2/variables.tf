@@ -137,7 +137,7 @@ variable "iap_config" {
     iam_additive = optional(list(string))
   })
   default = null
-  
+
   validation {
     condition = var.iap_config == null || (
       (var.iap_config.iam != null && var.iap_config.iam_additive == null) ||
@@ -145,7 +145,7 @@ variable "iap_config" {
     )
     error_message = "When iap_config is provided, exactly one of 'iam' or 'iam_additive' must be specified."
   }
-  
+
   validation {
     condition = var.iap_config == null || (
       (var.iap_config.iam != null ? length(var.iap_config.iam) > 0 : true) &&
@@ -153,12 +153,12 @@ variable "iap_config" {
     )
     error_message = "When 'iam' or 'iam_additive' lists are provided in iap_config, they must not be empty."
   }
-  
+
   validation {
     condition     = var.iap_config == null || !var.create_job
     error_message = "IAP is only supported for Cloud Run services, not Cloud Run jobs. Set create_job to false when using iap_config."
   }
-  
+
   validation {
     condition     = var.iap_config == null || var.launch_stage != "GA"
     error_message = "iap is currently not supported in GA. Set launch_stage to 'BETA' or lower."
