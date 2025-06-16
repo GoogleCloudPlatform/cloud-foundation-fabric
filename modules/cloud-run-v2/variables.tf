@@ -126,12 +126,7 @@ variable "iam" {
 }
 
 variable "iap_config" {
-  description = <<-EOT
-  If present, it turns on Identity-Aware Proxy (IAP) for this service.
-  iam (resource google_iap_web_cloud_run_service_iam_binding) - list of iam emails (e.g. "group:abc@domain.com") to be granted with iap.httpsResourceAccessor role.
-  iam_additive (resource google_iap_web_cloud_run_service_iam_member ) - list of iam emails (e.g. "group:abc@domain.com") to be granted with iap.httpsResourceAccessor.
-  iam and iam_additive are mutually exclusive.
-  EOT
+  description = "If present, turns on Identity-Aware Proxy (IAP) for the Cloud Run service."
   type = object({
     iam          = optional(list(string))
     iam_additive = optional(list(string))
