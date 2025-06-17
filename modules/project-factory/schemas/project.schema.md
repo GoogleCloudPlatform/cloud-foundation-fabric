@@ -41,11 +41,11 @@
         - ⁺**plan**: *object*
           <br>*additional properties: false*
           - ⁺**service_account**: *string*
-          - **provider_file**: *string*
+          - ⁺**provider_file**: *string*
         - ⁺**apply**: *object*
           <br>*additional properties: false*
           - ⁺**service_account**: *string*
-          - **provider_file**: *string*
+          - ⁺**provider_file**: *string*
       - **provider_files**: *array*
         - items: *object*
           <br>*additional properties: false*

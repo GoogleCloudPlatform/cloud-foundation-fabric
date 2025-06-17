@@ -115,7 +115,8 @@
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
-                      "service_account"
+                      "service_account",
+                      "provider_file"
                     ],
                     "properties": {
                       "service_account": {
@@ -130,7 +131,8 @@
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
-                      "service_account"
+                      "service_account",
+                      "provider_file"
                     ],
                     "properties": {
                       "service_account": {
