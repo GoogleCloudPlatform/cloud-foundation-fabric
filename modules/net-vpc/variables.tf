@@ -274,7 +274,9 @@ variable "subnets" {
       access_type = optional(string, "INTERNAL")
       # this field is marked for internal use in the API documentation
       # enable_private_access = optional(string)
+      ipv6_only = optional(bool, false)
     }))
+    ip_collection       = optional(string, null)
     secondary_ip_ranges = optional(map(string))
     iam                 = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
