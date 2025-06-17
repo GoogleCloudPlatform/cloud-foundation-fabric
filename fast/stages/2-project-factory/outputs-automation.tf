@@ -20,64 +20,59 @@ locals {
   project_numbers_by_id = {
     for p in module.projects.projects : p.project_id => p.number
   }
-  templates_flat = flatten([
-    for project_key, project_data in module.projects.projects :
-    [
-      for template_config in try(project_data.automation.templates, []) :
-      {
-        project_key     = project_key
-        project_data    = project_data
-        template_config = template_config
-      } if try(project_data.automation.templates, null) != null
-    ]
-  ])
+  cicd_projects = {
+    for k, v in module.projects.projects : k => v
+    if try(v.automation.templates, null) != null
+  }
   workflow_templates = {
-    for t in local.templates_flat :
-    t.project_key => {
+    for key, p in local.cicd_projects :
+    key => {
       content = templatefile(
-        "${path.module}/templates/workflow-${
-          var.automation.federated_identity_providers[
-            t.template_config.workload_identity_provider
-          ].issuer
-        }.yaml",
+        "${path.module}/templates/workflow-${var.automation.federated_identity_providers[
+          p.automation.cicd_config.identity_provider
+        ].issuer}.yaml",
         {
-          identity_provider = var.automation.federated_identity_providers[t.template_config.workload_identity_provider].name
-          outputs_bucket    = t.project_data.automation.outputs_bucket
+          identity_provider = var.automation.federated_identity_providers[
+            p.automation.cicd_config.identity_provider
+          ].name
+          outputs_bucket = p.automation.outputs_bucket
           service_accounts = {
-            apply = t.project_data.automation.service_accounts[t.template_config.workflow.apply.service_account]
-            plan  = t.project_data.automation.service_accounts[t.template_config.workflow.plan.service_account]
+            apply = p.automation.service_accounts[p.automation.templates.workflow.apply.service_account]
+            plan  = p.automation.service_accounts[p.automation.templates.workflow.plan.service_account]
           }
-          workflow_name = "Project ${t.project_key}"
+          workflow_name = "Project ${key}"
           tf_providers_files = {
-            apply = "${t.project_key}-${t.template_config.workflow.apply.provider_file}-provider.tf"
-            plan  = "${t.project_key}-${t.template_config.workflow.plan.provider_file}-provider.tf"
+            apply = "${key}-${p.automation.cicd_config.impersonations[
+              p.automation.templates.workflow.apply.service_account
+            ]}-provider.tf"
+            plan = "${key}-${p.automation.cicd_config.impersonations[
+              p.automation.templates.workflow.plan.service_account
+            ]}-provider.tf"
           }
           audiences = try(
-            var.automation.federated_identity_providers[t.template_config.workload_identity_provider].audiences,
+            var.automation.federated_identity_providers[
+              p.automation.cicd_config.identity_provider
+            ].audiences,
             null
           )
         }
       )
-      filename_suffix = "${
-        var.automation.federated_identity_providers[
-          t.template_config.workload_identity_provider
-        ]
-      .issuer}-workflow.yaml"
-      outputs_bucket = t.project_data.automation.outputs_bucket
-    } if try(t.template_config.workflow, null) != null
+      filename_suffix = "${var.automation.federated_identity_providers[
+        p.automation.cicd_config.identity_provider
+      ].issuer}-workflow.yaml"
+      outputs_bucket = p.automation.outputs_bucket
+    } if try(p.automation.templates.workflow, null) != null
   }
   provider_files = {
     for v in flatten([
-      for t in local.templates_flat :
-      [
-        for pf in try(t.template_config.provider_files, []) :
-        {
-          key             = "${t.project_key}-${pf.service_account}-provider"
-          bucket          = t.project_data.automation.bucket
-          outputs_bucket  = t.project_data.automation.outputs_bucket
-          project_id      = t.project_data.automation.project
-          project_number  = local.project_numbers_by_id[t.project_data.automation.project]
-          service_account = t.project_data.automation.service_accounts[pf.service_account]
+      for key, p in local.cicd_projects : [
+        for pf in try(p.automation.templates.provider_files, []) : {
+          key             = "${key}-${pf.service_account}-provider"
+          bucket          = p.automation.bucket
+          outputs_bucket  = p.automation.outputs_bucket
+          project_id      = p.automation.project
+          project_number  = local.project_numbers_by_id[p.automation.project]
+          service_account = p.automation.service_accounts[pf.service_account]
         }
       ]
     ]) : v.key => v

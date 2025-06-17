@@ -64,25 +64,21 @@ locals {
     ]
   ])
   wif_configs_flat = flatten([
-    for project_key, project_config in local.projects :
-    [
-      for wif_config in try(project_config.automation.cicd_config, []) :
-      [
-        for impersonator, impersonated in try(wif_config.impersonations, {}) :
-        {
-          project_key                = project_key
-          automation_proj            = project_config.automation.project
-          sa_key                     = impersonator
-          impersonated_sa            = impersonated
-          workload_identity_provider = wif_config.workload_identity_provider
-          repository                 = wif_config.repository
-          branch                     = try(wif_config.branch, null)
-          prefix = coalesce(
-            try(project_config.automation.prefix, null),
-            "${project_config.prefix}-${project_config.name}"
-          )
-        } if try(project_config.automation, null) != null
-      ]
+    for project_key, project_config in local.projects : [
+      for impersonator, impersonated in try(project_config.automation.cicd_config.impersonations, {}) :
+      {
+        project_key       = project_key
+        automation_proj   = project_config.automation.project
+        sa_key            = impersonator
+        impersonated_sa   = impersonated
+        identity_provider = project_config.automation.cicd_config.identity_provider
+        repository        = project_config.automation.cicd_config.repository
+        branch            = try(project_config.automation.cicd_config.branch, null)
+        prefix = coalesce(
+          try(project_config.automation.prefix, null),
+          "${project_config.prefix}-${project_config.name}"
+        )
+      } if try(project_config.automation.cicd_config, null) != null
     ]
   ])
 }
@@ -216,9 +212,7 @@ module "automation-service-accounts" {
 resource "google_service_account_iam_member" "sa_wif_binding" {
   for_each = {
     for wif in local.wif_configs_flat :
-    "${wif.project_key}-${wif.workload_identity_provider}-${
-      replace(wif.repository, "/", "-")
-    }-${coalesce(wif.branch, "any")}-${wif.sa_key}" => wif
+    "${wif.project_key}/${wif.sa_key}" => wif
   }
 
   service_account_id = module.automation-service-accounts[
@@ -227,11 +221,11 @@ resource "google_service_account_iam_member" "sa_wif_binding" {
   role = "roles/iam.workloadIdentityUser"
   member = (
     each.value.branch == null
-    ? format(var.federated_identity_providers[each.value.workload_identity_provider].principal_repo,
-      var.federated_identity_pool,
+    ? format(var.factories_config.context.federated_identity_providers[each.value.identity_provider].principal_repo,
+      var.factories_config.context.federated_identity_pool,
     each.value.repository)
-    : format(var.federated_identity_providers[each.value.workload_identity_provider].principal_branch,
-      var.federated_identity_pool,
+    : format(var.factories_config.context.federated_identity_providers[each.value.identity_provider].principal_branch,
+      var.factories_config.context.federated_identity_pool,
       each.value.repository,
     each.value.branch)
   )
@@ -240,9 +234,7 @@ resource "google_service_account_iam_member" "sa_wif_binding" {
 resource "google_service_account_iam_member" "automation_sa_token_creator" {
   for_each = {
     for wif in local.wif_configs_flat :
-    "${wif.project_key}-${wif.workload_identity_provider}-${
-      replace(wif.repository, "/", "-")
-    }-${coalesce(wif.branch, "any")}-${wif.sa_key}-impersonates-${wif.impersonated_sa}" => wif
+    "${wif.project_key}/${wif.sa_key}-impersonates-${wif.impersonated_sa}" => wif
   }
 
   service_account_id = module.automation-service-accounts[

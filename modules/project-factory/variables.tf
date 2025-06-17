@@ -149,14 +149,21 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
-      custom_roles          = optional(map(string), {})
-      folder_ids            = optional(map(string), {})
-      iam_principals        = optional(map(string), {})
-      kms_keys              = optional(map(string), {})
-      perimeters            = optional(map(string), {})
-      tag_values            = optional(map(string), {})
-      vpc_host_projects     = optional(map(string), {})
-      notification_channels = optional(map(string), {})
+      custom_roles            = optional(map(string), {})
+      folder_ids              = optional(map(string), {})
+      iam_principals          = optional(map(string), {})
+      kms_keys                = optional(map(string), {})
+      perimeters              = optional(map(string), {})
+      tag_values              = optional(map(string), {})
+      vpc_host_projects       = optional(map(string), {})
+      notification_channels   = optional(map(string), {})
+      federated_identity_pool = optional(string)
+      federated_identity_providers = optional(map(object({
+        issuer           = string
+        name             = string
+        principal_branch = string
+        principal_repo   = string
+      })))
     }), {})
     projects_config = optional(object({
       key_ignores_path = optional(bool, false)
@@ -243,12 +250,12 @@ variable "factories_data" {
     projects = optional(map(object({
       automation = optional(object({
         project = string
-        cicd_config = optional(list(object({
-          service_accounts           = list(string)
-          workload_identity_provider = string
-          repository                 = optional(string)
-          branch                     = optional(string)
-        })), [])
+        cicd_config = optional(object({
+          identity_provider = string
+          repository        = optional(string)
+          branch            = optional(string)
+          impersonations    = optional(map(string))
+        }))
         bucket = optional(object({
           location                    = string
           description                 = optional(string)
@@ -317,22 +324,19 @@ variable "factories_data" {
           iam_sa_roles           = optional(map(list(string)), {})
           iam_storage_roles      = optional(map(list(string)), {})
         })), {})
-        templates = optional(list(object({
-          workload_identity_provider = string
+        templates = optional(object({
           workflow = optional(object({
             plan = object({
               service_account = string
-              provider_file   = string
             })
             apply = object({
               service_account = string
-              provider_file   = string
             })
           }))
           provider_files = optional(list(object({
             service_account = string
           })))
-        })))
+        }))
       }))
       billing_account = optional(string)
       billing_budgets = optional(list(string), [])
@@ -441,16 +445,4 @@ variable "factories_data" {
   })
   nullable = false
   default  = {}
-}
-
-variable "federated_identity_pool" {
-  description = "The full name of the workload identity pool."
-  type        = string
-  default     = null
-}
-
-variable "federated_identity_providers" {
-  description = "A map of workload identity provider configurations."
-  type        = map(any)
-  default     = {}
 }

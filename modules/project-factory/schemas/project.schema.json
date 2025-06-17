@@ -12,29 +12,26 @@
       ],
       "properties": {
         "cicd_config": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "workload_identity_provider",
-              "repository"
-            ],
-            "properties": {
-              "workload_identity_provider": {
-                "type": "string"
-              },
-              "repository": {
-                "type": "string"
-              },
-              "branch": {
-                "type": "string"
-              },
-              "impersonations": {
-                "type": "object",
-                "patternProperties": {
-                  "^[a-z0-9-]+$": {
-                    "type": "string"
-                  }
+          "type": "object",
+          "required": [
+            "identity_provider",
+            "repository"
+          ],
+          "properties": {
+            "identity_provider": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "impersonations": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "string"
                 }
               }
             }
@@ -92,64 +89,18 @@
           }
         },
         "templates": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "workload_identity_provider"
-            ],
-            "properties": {
-              "workload_identity_provider": {
-                "type": "string"
-              },
-              "workflow": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "plan",
-                  "apply"
-                ],
-                "properties": {
-                  "plan": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "service_account",
-                      "provider_file"
-                    ],
-                    "properties": {
-                      "service_account": {
-                        "type": "string"
-                      },
-                      "provider_file": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "apply": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "service_account",
-                      "provider_file"
-                    ],
-                    "properties": {
-                      "service_account": {
-                        "type": "string"
-                      },
-                      "provider_file": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              },
-              "provider_files": {
-                "type": "array",
-                "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "workflow": {
+              "type": "object",
+              "required": [
+                "plan",
+                "apply"
+              ],
+              "properties": {
+                "plan": {
                   "type": "object",
-                  "additionalProperties": false,
                   "required": [
                     "service_account"
                   ],
@@ -157,6 +108,31 @@
                     "service_account": {
                       "type": "string"
                     }
+                  }
+                },
+                "apply": {
+                  "type": "object",
+                  "required": [
+                    "service_account"
+                  ],
+                  "properties": {
+                    "service_account": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "provider_files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "service_account"
+                ],
+                "properties": {
+                  "service_account": {
+                    "type": "string"
                   }
                 }
               }

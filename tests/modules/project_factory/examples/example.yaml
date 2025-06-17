@@ -13,6 +13,26 @@
 # limitations under the License.
 
 values:
+  ? module.project-factory.google_service_account_iam_member.automation_sa_token_creator["dev-tb-app0-0/cicd-ro-impersonates-ro"]
+  : condition: []
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/test-pf-teams-iac-0/serviceAccounts/test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+  ? module.project-factory.google_service_account_iam_member.automation_sa_token_creator["dev-tb-app0-0/cicd-rw-impersonates-rw"]
+  : condition: []
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/test-pf-teams-iac-0/serviceAccounts/test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+  module.project-factory.google_service_account_iam_member.sa_wif_binding["dev-tb-app0-0/cicd-ro"]:
+    condition: []
+    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/attribute.fast_sub/repo:my-org/my-repo:ref:refs/heads/main
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/test-pf-teams-iac-0/serviceAccounts/test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+  module.project-factory.google_service_account_iam_member.sa_wif_binding["dev-tb-app0-0/cicd-rw"]:
+    condition: []
+    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/attribute.fast_sub/repo:my-org/my-repo:ref:refs/heads/main
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/test-pf-teams-iac-0/serviceAccounts/test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
   module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -24,6 +44,7 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -54,6 +75,60 @@ values:
     - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
+  module.project-factory.module.automation-bucket["dev-tb-app0-0-outputs"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: test-pf-teams-iac-0-outputs
+    project: test-pf-teams-iac-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.project-factory.module.automation-bucket["dev-tb-app0-0-outputs"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-teams-iac-0-outputs
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-ro"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-cicd-ro
+    create_ignore_already_exists: null
+    description: RO CI/CD service account
+    disabled: false
+    display_name: Service account cicd-ro for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-teams-iac-0
+    timeouts: null
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-rw"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-cicd-rw
+    create_ignore_already_exists: null
+    description: RO CI/CD service account
+    disabled: false
+    display_name: Service account cicd-rw for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-teams-iac-0
+    timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-ro
     create_ignore_already_exists: null
@@ -74,14 +149,6 @@ values:
     member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
-  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-ro"].google_service_account.service_account[0]
-  : account_id: test-pf-dev-tb-app0-0-cicd-ro
-    description: RO CI/CD service account
-    project: test-pf-teams-iac-0
-  module.project-factory.module.automation-bucket["dev-tb-app0-0-outputs"].google_storage_bucket.bucket[0]:
-    location: EU
-    name: test-pf-teams-iac-0-outputs
-    project: test-pf-teams-iac-0
   module.project-factory.module.billing-account[0].google_billing_budget.default["test-100"]:
     all_updates_rule:
     - disable_default_iam_recipients: true
@@ -162,6 +229,16 @@ values:
     host_project: test-pf-dev-net-spoke-0
     service_project: test-pf-dev-ta-app0-be
     timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_binding.authoritative["roles/storage.objectViewer"]
+  : condition: []
+    members:
+    - serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    project: test-pf-dev-ta-app0-be
+    role: roles/storage.objectViewer
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]
   : condition: []
     member: group:gcp-devops@example.org
@@ -239,6 +316,10 @@ values:
       goog-terraform-provisioned: 'true'
       team: team-a
     timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/compute.serviceAgent
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["container-engine-robot"]
   : condition: []
     project: test-pf-dev-ta-app0-be
@@ -247,6 +328,12 @@ values:
     condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/container.defaultNodeServiceAgent
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-app0-be
+    service: compute.googleapis.com
+    timeouts: null
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["container.googleapis.com"]
   : disable_dependent_services: false
     disable_on_destroy: false
@@ -508,13 +595,13 @@ values:
     member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-0-roles/logging.logWriter"]
   : condition: []
-    project: test-pf-dev-tb-app0-1
+    project: test-pf-dev-tb-app0-0
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-0-roles/monitoring.metricWriter"]
   : condition: []
-    project: test-pf-dev-tb-app0-1
+    project: test-pf-dev-tb-app0-0
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
     account_id: vm-default
@@ -549,7 +636,6 @@ values:
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     timeouts: null
-
 counts:
   google_billing_budget: 1
   google_compute_shared_vpc_host_project: 1

@@ -323,19 +323,19 @@ automation:
   # Configure CI/CD Workload Identity Federation (WIF) for the given provider
   # and setup impersonation roles for the service accounts.
   cicd_config:
-    - workload_identity_provider: github-public-sample
-      impersonations:
-        # cicd-ro can impersonate the ro service account
-        cicd-ro: ro
-        # cicd-rw can impersonate the rw service account
-        cicd-rw: rw
-      repository: my-org/my-repo
+    workload_identity_provider: github-public-sample
+    impersonations:
+      # cicd-ro can impersonate the ro service account
+      cicd-ro: ro
+      # cicd-rw can impersonate the rw service account
+      cicd-rw: rw
+    repository: my-org/my-repo
   bucket:
     # resulting bucket name: xxx-dev-ta-app-0-tf-state
     description: Terraform state bucket for team a app 0.
     iam:
       # service accounts can use short name substitutions from context
-      roles/storage.objectCreator:
+      roles/storage.objectAdmin:
         - rw
       roles/storage.objectViewer:
         - rw
@@ -355,22 +355,21 @@ automation:
   # Generate provider files and CI/CD workflow templates for the IaC project and inject
   # the service accounts.
   templates:
-    - workload_identity_provider: github-public-sample
-      # Optional. Generates a CI/CD workflow file. The `plan` and `apply`
-      # blocks specify the CI/CD service accounts and provide files to be used
-      # in the generated workflow file.
-      workflow:
-        plan:
-          service_account: cicd-ro
-          provider_file: ro
-        apply:
-          service_account: cicd-rw
-          provider_file: rw
-      # Optional. Generates individual Terraform provider files for each service
-      # account listed, which are used by the CI/CD pipeline for impersonation.
-      provider_files:
-        - service_account: ro
-        - service_account: rw
+    # Optional. If present, generates a CI/CD workflow file.
+    # The `plan` and `apply` blocks specify which CI/CD service account
+    # will execute each respective step in the pipeline. The provider file
+    # used for impersonation is automatically determined from the `impersonations`
+    # map in the `cicd_config` block.
+    workflow:
+      plan:
+        service_account: cicd-ro
+      apply:
+        service_account: cicd-rw
+    # Optional. Generates individual Terraform provider files for each service
+    # account listed, which are used by the CI/CD pipeline for impersonation.
+    provider_files:
+      - service_account: ro
+      - service_account: rw
 ```
 
 ### Local Development State Bootstrapping
