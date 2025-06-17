@@ -134,16 +134,8 @@ variable "iap_config" {
   default = null
 
   validation {
-    condition = var.iap_config == null || (
-      (try(var.iap_config.iam, null) != null && try(var.iap_config.iam_additive, null) == null) ||
-      (try(var.iap_config.iam, null) == null && try(var.iap_config.iam_additive, null) != null)
-    )
-    error_message = "When iap_config is provided, exactly one of 'iam' or 'iam_additive' must be specified."
-  }
-
-  validation {
     condition = !(length(try(var.iap_config.iam, [])) > 0 && length(try(var.iap_config.iam_additive, [])) > 0)
-    )
+
     error_message = "When 'iam' or 'iam_additive' lists are provided in iap_config, they must not be empty."
   }
 
