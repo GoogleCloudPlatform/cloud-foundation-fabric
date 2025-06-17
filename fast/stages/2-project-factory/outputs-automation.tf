@@ -94,7 +94,7 @@ resource "google_storage_bucket_object" "workflows" {
 resource "local_file" "workflows" {
   for_each        = var.outputs_location == null ? {} : local.workflow_templates
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/workflows/${each.key}-${each.value.filename_suffix}"
+  filename        = "${pathexpand(var.outputs_location)}/workflows/${var.stage_name}/${each.key}-${each.value.filename_suffix}"
   content         = each.value.content
 }
 
@@ -108,6 +108,6 @@ resource "google_storage_bucket_object" "providers" {
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.provider_files
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}.tf"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${var.stage_name}/${each.key}.tf"
   content         = templatefile("${path.module}/templates/providers.tf.tpl", each.value)
 }
