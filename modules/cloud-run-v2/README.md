@@ -816,11 +816,10 @@ IAP is only supported for service.  Refer to the [Configure IAP directly on clou
 
 ```hcl
 module "cloud_run" {
-  source     = "./fabric/modules/cloud-run-v2"
-  project_id = var.project_id
-  name       = "hello"
-  region     = var.region
-  launch_stage = "BETA"
+  source       = "./fabric/modules/cloud-run-v2"
+  project_id   = var.project_id
+  name         = "hello"
+  region       = var.region
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
