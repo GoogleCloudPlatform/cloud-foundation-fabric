@@ -527,15 +527,15 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
 
 locals {
 
-  iap_member_list = toset(try(coalesce(var.iap_config.iam_additive, []), []))
+  iap_iam_additive = local.iap_enabled ? var.iap_config.iam_additive : []
 
   use_iap_iam_binding = var.iap_config != null && try(var.iap_config.iam, null) != null
-  iap_binding_dict    = local.use_iap_iam_binding ? { "iap" = var.iap_config.iam } : {}
+  iap_iam    = local.iap_enabled ? var.iap_config.iam : []
 
 }
 
 resource "google_iap_web_cloud_run_service_iam_member" "member" {
-  for_each               = local.iap_member_list
+  for_each               = local.iap_iam_additive
   project                = local.service.project
   location               = local.service.location
   cloud_run_service_name = local.service.name
@@ -544,10 +544,10 @@ resource "google_iap_web_cloud_run_service_iam_member" "member" {
 }
 
 resource "google_iap_web_cloud_run_service_iam_binding" "binding" {
-  for_each               = local.iap_binding_dict
+  for_each               = length(local.iap_iam) == 0 ? {} : {1 = 1} 
   project                = local.service.project
   location               = local.service.location
   cloud_run_service_name = local.service.name
   role                   = "roles/iap.httpsResourceAccessor"
-  members                = each.value
+  member                 = local.iap_iam
 }
