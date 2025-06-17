@@ -128,8 +128,8 @@ variable "iam" {
 variable "iap_config" {
   description = "If present, turns on Identity-Aware Proxy (IAP) for the Cloud Run service."
   type = object({
-    iam          = optional(list(string))
-    iam_additive = optional(list(string))
+    iam          = optional(list(string), [])
+    iam_additive = optional(list(string), [])
   })
   default = null
 
@@ -142,9 +142,7 @@ variable "iap_config" {
   }
 
   validation {
-    condition = var.iap_config == null || (
-      (try(var.iap_config.iam, null) != null ? length(var.iap_config.iam) > 0 : true) &&
-      (try(var.iap_config.iam_additive, null) != null ? length(var.iap_config.iam_additive) > 0 : true)
+    condition = !(length(try(var.iap_config.iam, [])) > 0 && length(try(var.iap_config.iam_additive, [])) > 0)
     )
     error_message = "When 'iam' or 'iam_additive' lists are provided in iap_config, they must not be empty."
   }
