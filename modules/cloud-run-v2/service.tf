@@ -528,9 +528,7 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
 locals {
 
   iap_iam_additive = local.iap_enabled ? var.iap_config.iam_additive : []
-
-  use_iap_iam_binding = var.iap_config != null && try(var.iap_config.iam, null) != null
-  iap_iam             = local.iap_enabled ? var.iap_config.iam : []
+  iap_iam          = local.iap_enabled ? var.iap_config.iam : []
 
 }
 
