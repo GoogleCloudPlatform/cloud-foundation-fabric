@@ -101,6 +101,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Pub/Sub](./pubsub)
 - [Spanner instance](./spanner-instance)
 
+## AI
+
+- [Agentspace](./agentspace/README.md)
+
 ## Development
 
 - [API Gateway](./api-gateway)

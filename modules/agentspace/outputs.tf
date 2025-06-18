@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-output "chat_engines" {
-  description = "The chat engines created."
-  value       = google_discovery_engine_chat_engine.chat_engines
-}
-
-output "chat_engines_ids" {
+output "chat_engine_ids" {
   description = "The ids of the chat engines created."
   value = {
     for k, v in google_discovery_engine_chat_engine.chat_engines
@@ -27,9 +22,9 @@ output "chat_engines_ids" {
   }
 }
 
-output "data_stores" {
-  description = "The data stores resources created."
-  value       = google_discovery_engine_data_store.data_stores
+output "chat_engines" {
+  description = "The chat engines created."
+  value       = google_discovery_engine_chat_engine.chat_engines
 }
 
 output "data_store_ids" {
@@ -40,15 +35,20 @@ output "data_store_ids" {
   }
 }
 
-output "search_engines" {
-  description = "The search engines created."
-  value       = google_discovery_engine_search_engine.search_engines
+output "data_stores" {
+  description = "The data stores resources created."
+  value       = google_discovery_engine_data_store.data_stores
 }
 
-output "search_engines_ids" {
+output "search_engine_ids" {
   description = "The ids of the search engines created."
   value = {
     for k, v in google_discovery_engine_search_engine.search_engines
     : k => v.id
   }
+}
+
+output "search_engines" {
+  description = "The search engines created."
+  value       = google_discovery_engine_search_engine.search_engines
 }

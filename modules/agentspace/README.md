@@ -244,10 +244,10 @@ module "agentspace" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [chat_engines](outputs.tf#L17) | The chat engines created. |  |
-| [chat_engines_ids](outputs.tf#L22) | The ids of the chat engines created. |  |
-| [data_store_ids](outputs.tf#L35) | The ids of the data stores created. |  |
-| [data_stores](outputs.tf#L30) | The data stores resources created. |  |
-| [search_engines](outputs.tf#L43) | The search engines created. |  |
-| [search_engines_ids](outputs.tf#L48) | The ids of the search engines created. |  |
+| [chat_engine_ids](outputs.tf#L17) | The ids of the chat engines created. |  |
+| [chat_engines](outputs.tf#L25) | The chat engines created. |  |
+| [data_store_ids](outputs.tf#L30) | The ids of the data stores created. |  |
+| [data_stores](outputs.tf#L38) | The data stores resources created. |  |
+| [search_engine_ids](outputs.tf#L43) | The ids of the search engines created. |  |
+| [search_engines](outputs.tf#L51) | The search engines created. |  |
 <!-- END TFDOC -->
