@@ -63,17 +63,35 @@ locals {
       })
     ]
   ])
+  wif_binding_additive_map = {
+    for wif in local.wif_configs_flat :
+    "${wif.project_key}/automation/${wif.sa_key}" => {
+      "wif-binding" = {
+        role = "roles/iam.workloadIdentityUser"
+        member = (
+          wif.branch == null
+          ? format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_repo,
+            var.factories_config.context.federated_identity_pool,
+          wif.repository)
+          : format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_branch,
+            var.factories_config.context.federated_identity_pool,
+            wif.repository,
+          wif.branch)
+        )
+      }
+    }
+  }
   wif_configs_flat = flatten([
     for project_key, project_config in local.projects : [
       for impersonator, impersonated in try(project_config.automation.cicd_config.impersonations, {}) :
       {
-        project_key       = project_key
-        automation_proj   = project_config.automation.project
-        sa_key            = impersonator
-        impersonated_sa   = impersonated
-        identity_provider = project_config.automation.cicd_config.identity_provider
-        repository        = project_config.automation.cicd_config.repository
-        branch            = try(project_config.automation.cicd_config.branch, null)
+        project_key        = project_key
+        automation_project = project_config.automation.project
+        sa_key             = impersonator
+        impersonated_sa    = impersonated
+        identity_provider  = project_config.automation.cicd_config.identity_provider
+        repository         = project_config.automation.cicd_config.repository
+        branch             = try(project_config.automation.cicd_config.branch, null)
         prefix = coalesce(
           try(project_config.automation.prefix, null),
           "${project_config.prefix}-${project_config.name}"
@@ -81,6 +99,26 @@ locals {
       } if try(project_config.automation.cicd_config, null) != null
     ]
   ])
+  impersonated_sa_metadata = {
+    for c in local.wif_configs_flat :
+    "${c.project_key}/automation/${c.impersonated_sa}" => {
+      project_id = c.automation_project
+      prefix     = c.prefix
+      name       = c.impersonated_sa
+    }
+  }
+  impersonators_by_impersonated = {
+    for target_sa_key in distinct(
+      [
+        for c in local.wif_configs_flat : "${c.project_key}/automation/${c.impersonated_sa}"
+      ]
+    ) :
+    target_sa_key => [
+      for config in local.wif_configs_flat :
+      "${config.project_key}/automation/${config.sa_key}"
+      if "${config.project_key}/automation/${config.impersonated_sa}" == target_sa_key
+    ]
+  }
 }
 
 module "automation-bucket" {
@@ -191,8 +229,11 @@ module "automation-service-accounts" {
     })
   }
   iam_bindings_additive = {
-    for role, binding in lookup(each.value, "iam_bindings_additive", {}) :
-    role => merge(binding, {
+    for role_key, binding in merge(
+      lookup(each.value, "iam_bindings_additive", {}),
+      lookup(local.wif_binding_additive_map, each.key, {})
+    ) :
+    role_key => merge(binding, {
       member = lookup(
         var.factories_config.context.iam_principals,
         binding.member,
@@ -209,37 +250,22 @@ module "automation-service-accounts" {
   iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
 }
 
-resource "google_service_account_iam_member" "sa_wif_binding" {
-  for_each = {
-    for wif in local.wif_configs_flat :
-    "${wif.project_key}/${wif.sa_key}" => wif
+module "automation_sa_impersonation" {
+  source                 = "../iam-service-account"
+  for_each               = local.impersonators_by_impersonated
+  service_account_create = false
+  project_id             = local.impersonated_sa_metadata[each.key].project_id
+  prefix                 = local.impersonated_sa_metadata[each.key].prefix
+  name                   = local.impersonated_sa_metadata[each.key].name
+  iam_bindings_additive = {
+    for i, impersonator_key in each.value :
+    "token-creator-${i}" => {
+      role   = "roles/iam.serviceAccountTokenCreator"
+      member = module.automation-service-accounts[impersonator_key].iam_email
+    }
   }
 
-  service_account_id = module.automation-service-accounts[
-    "${each.value.project_key}/automation/${each.value.sa_key}"
-  ].id
-  role = "roles/iam.workloadIdentityUser"
-  member = (
-    each.value.branch == null
-    ? format(var.factories_config.context.federated_identity_providers[each.value.identity_provider].principal_repo,
-      var.factories_config.context.federated_identity_pool,
-    each.value.repository)
-    : format(var.factories_config.context.federated_identity_providers[each.value.identity_provider].principal_branch,
-      var.factories_config.context.federated_identity_pool,
-      each.value.repository,
-    each.value.branch)
-  )
-}
-
-resource "google_service_account_iam_member" "automation_sa_token_creator" {
-  for_each = {
-    for wif in local.wif_configs_flat :
-    "${wif.project_key}/${wif.sa_key}-impersonates-${wif.impersonated_sa}" => wif
-  }
-
-  service_account_id = module.automation-service-accounts[
-    "${each.value.project_key}/automation/${each.value.impersonated_sa}"
-  ].id
-  role   = "roles/iam.serviceAccountTokenCreator"
-  member = module.automation-service-accounts["${each.value.project_key}/automation/${each.value.sa_key}"].iam_email
+  depends_on = [
+    module.automation-service-accounts
+  ]
 }
