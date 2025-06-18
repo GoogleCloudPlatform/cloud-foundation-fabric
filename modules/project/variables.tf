@@ -47,6 +47,12 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "default_network_tier" {
+  description = "Default compute network tier for the project."
+  type        = string
+  default     = null
+}
+
 variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"

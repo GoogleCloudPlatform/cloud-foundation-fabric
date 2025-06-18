@@ -201,6 +201,10 @@ values:
     - ALL
     parent: projects/test-pf-dev-ta-app0-be
     timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]
+  : condition: []
+    crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
   : condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
@@ -545,12 +549,12 @@ counts:
   google_essential_contacts_contact: 4
   google_folder: 5
   google_folder_iam_binding: 1
-  google_kms_crypto_key_iam_member: 1
+  google_kms_crypto_key_iam_member: 2
   google_monitoring_notification_channel: 1
   google_project: 4
   google_project_iam_binding: 6
-  google_project_iam_member: 20
-  google_project_service: 12
+  google_project_iam_member: 21
+  google_project_service: 13
   google_project_service_identity: 4
   google_service_account: 6
   google_service_account_iam_binding: 1
@@ -562,6 +566,6 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 21
-  resources: 80
+  resources: 83
 
 outputs: {}

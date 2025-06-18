@@ -90,10 +90,14 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
-  service_encryption_key_ids = merge(
-    each.value.service_encryption_key_ids,
-    var.data_merges.service_encryption_key_ids
-  )
+  service_encryption_key_ids = {
+    for k, v in merge(
+      each.value.service_encryption_key_ids,
+      var.data_merges.service_encryption_key_ids
+      ) : k => [
+      for key in v : lookup(var.factories_config.context.kms_keys, key, key)
+    ]
+  }
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -231,9 +235,6 @@ module "projects-iam" {
   }
   # Shared VPC configuration is done at stage 2, to avoid dependency cycle between project service accounts and
   # IAM grants done for those service accounts
-  factories_config = {
-    custom_roles = each.value.factories_config.custom_roles
-  }
   shared_vpc_service_config = (
     try(each.value.shared_vpc_service_config.host_project, null) == null
     ? null

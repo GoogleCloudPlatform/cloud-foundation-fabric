@@ -37,6 +37,7 @@ variable "backend_service_configs" {
     backends = list(object({
       # group renamed to backend
       backend         = string
+      preferred       = optional(bool, false)
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")

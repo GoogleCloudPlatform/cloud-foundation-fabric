@@ -61,6 +61,14 @@ variable "host_project_ids" {
   default     = {}
 }
 
+variable "kms_keys" {
+  # tfdoc:variable:source 2-security
+  description = "KMS key ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "locations" {
   # tfdoc:variable:source 0-bootstrap
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
