@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-05-21 14:22:05+00:00 to: None since: v40.1.0 -->
 
+### BREAKING CHANGES
+
+- `modules/gke-nodepool`: renamed variable `network_config.additional_pod_network_config` to `network_config.additional_pod_network_configs` [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)]
+
+
 ### BLUEPRINTS
 
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
@@ -12,12 +17,35 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3146](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3146)] Bump requests from 2.32.2 to 2.32.4 in /fast/project-templates/secops-anonymization-pipeline/source ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-06-10 08:51:36+00:00 -->
+- [[#3145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3145)] Add KMS keys interpolation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 08:24:25+00:00 -->
+- [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)] fix additional pod networks config creation in GKE node pool ([jacek-jablonski](https://github.com/jacek-jablonski)) <!-- 2025-06-05 11:41:51+00:00 -->
+- [[#3126](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3126)] Allow multiple types in JSON schema docs tool ([ludoo](https://github.com/ludoo)) <!-- 2025-05-31 09:58:20+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 - [[#3114](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3114)] Allow creation of regional templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 12:18:40+00:00 -->
 - [[#3112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3112)] Add support for service agent expansion to project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-05-24 10:33:20+00:00 -->
 
 ### MODULES
 
+- [[#3156](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3156)] Allow to directly specify service agents for CMEK in project module (Composer v2 support) ([jnahelou](https://github.com/jnahelou)) <!-- 2025-06-12 18:27:41+00:00 -->
+- [[#3157](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3157)] Fixed problem with backend preference, changed it to boolean. Backend… ([apichick](https://github.com/apichick)) <!-- 2025-06-12 05:40:39+00:00 -->
+- [[#3153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3153)] Bring back master ipv4 cidr block ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-06-11 09:51:47+00:00 -->
+- [[#3140](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3140)] Added recipe for Apigee X with SWP ([apichick](https://github.com/apichick)) <!-- 2025-06-11 05:40:17+00:00 -->
+- [[#3150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3150)] Added default compute network tier to project module ([apichick](https://github.com/apichick)) <!-- 2025-06-10 21:44:39+00:00 -->
+- [[#3151](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3151)] Added network tier to network interfaces in compute-vm module ([apichick](https://github.com/apichick)) <!-- 2025-06-10 21:26:44+00:00 -->
+- [[#3145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3145)] Add KMS keys interpolation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 08:24:25+00:00 -->
+- [[#3139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3139)] Added backend preference to global application load balancers ([apichick](https://github.com/apichick)) <!-- 2025-06-10 06:49:47+00:00 -->
+- [[#3144](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3144)] Fix #3142 ([juliocc](https://github.com/juliocc)) <!-- 2025-06-10 06:08:44+00:00 -->
+- [[#3143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3143)] Fixed mistake in net-vpn-ha module docs ([apichick](https://github.com/apichick)) <!-- 2025-06-09 19:45:18+00:00 -->
+- [[#3141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3141)] Improve SWP transparent gateway example ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-09 07:43:23+00:00 -->
+- [[#3129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3129)] Cloud Run with IAP recipe ([apichick](https://github.com/apichick)) <!-- 2025-06-08 12:51:09+00:00 -->
+- [[#3137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3137)] Return instance ID not IP address ([kkrtbhouse](https://github.com/kkrtbhouse)) <!-- 2025-06-06 11:21:34+00:00 -->
+- [[#3135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3135)] CloudSQL - Create password resource only when needed ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-05 14:28:58+00:00 -->
+- [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)] fix additional pod networks config creation in GKE node pool ([jacek-jablonski](https://github.com/jacek-jablonski)) <!-- 2025-06-05 11:41:51+00:00 -->
+- [[#3133](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3133)] Add explicit errors when VPC-SC perimeters reference undefined directional policies ([juliocc](https://github.com/juliocc)) <!-- 2025-06-04 18:50:33+00:00 -->
+- [[#3128](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3128)] Added multi-region API Gateway recipe, that was removed by accident ([apichick](https://github.com/apichick)) <!-- 2025-06-01 11:26:16+00:00 -->
+- [[#3127](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3127)] Interpolate egress_to resources in enforced perimeter config ([juliocc](https://github.com/juliocc)) <!-- 2025-05-31 16:11:07+00:00 -->
+- [[#3126](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3126)] Allow multiple types in JSON schema docs tool ([ludoo](https://github.com/ludoo)) <!-- 2025-05-31 09:58:20+00:00 -->
 - [[#3125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3125)] Document x-referencing HCs in net-lb-int ([sruffilli](https://github.com/sruffilli)) <!-- 2025-05-30 16:34:30+00:00 -->
 - [[#3124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3124)] Allow explicit definition of automation prefix in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-05-30 12:30:54+00:00 -->
 - [[#3119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3119)] Expose private_endpoint_enforcement_enabled in gke modules ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 10:33:03+00:00 -->
@@ -33,6 +61,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3126](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3126)] Allow multiple types in JSON schema docs tool ([ludoo](https://github.com/ludoo)) <!-- 2025-05-31 09:58:20+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 
 ## [40.1.0] - 2025-05-21
