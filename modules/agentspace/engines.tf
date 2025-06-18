@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-resource "google_discovery_engine_chat_engine" "chat_engines" {
+resource "google_discovery_engine_chat_engine" "default" {
   for_each = ({
     for k, v in var.engines_configs
     : k => v if v.chat_engine_config != null
@@ -26,17 +26,17 @@ resource "google_discovery_engine_chat_engine" "chat_engines" {
   data_store_ids = [
     for ds in each.value.data_store_ids
     : coalesce(
-      try(google_discovery_engine_data_store.data_stores[ds].data_store_id, null),
+      try(google_discovery_engine_data_store.default[ds].data_store_id, null),
       ds
     )
   ]
   industry_vertical = coalesce(
     try(each.value.industry_vertical, null),
-    try(google_discovery_engine_data_store.data_stores[each.value.data_store_ids[0]].industry_vertical, null)
+    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].industry_vertical, null)
   )
   location = coalesce(
     try(each.value.location, null),
-    try(google_discovery_engine_data_store.data_stores[each.value.data_store_ids[0]].location, null),
+    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
     var.location
   )
 
@@ -50,7 +50,7 @@ resource "google_discovery_engine_chat_engine" "chat_engines" {
       time_zone             = each.value.chat_engine_config.time_zone
       location = coalesce(
         try(each.value.location, null),
-        try(google_discovery_engine_data_store.data_stores[each.value.data_store_ids[0]].location, null),
+        try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
         var.location
       )
     }
@@ -61,7 +61,7 @@ resource "google_discovery_engine_chat_engine" "chat_engines" {
   }
 }
 
-resource "google_discovery_engine_search_engine" "search_engines" {
+resource "google_discovery_engine_search_engine" "default" {
   for_each = ({
     for k, v in var.engines_configs
     : k => v if v.search_engine_config != null
@@ -73,17 +73,17 @@ resource "google_discovery_engine_search_engine" "search_engines" {
   data_store_ids = [
     for ds in each.value.data_store_ids
     : coalesce(
-      try(google_discovery_engine_data_store.data_stores[ds].data_store_id, null),
+      try(google_discovery_engine_data_store.default[ds].data_store_id, null),
       ds
     )
   ]
   industry_vertical = coalesce(
     try(each.value.industry_vertical, null),
-    try(google_discovery_engine_data_store.data_stores[each.value.data_store_ids[0]].industry_vertical, null)
+    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].industry_vertical, null)
   )
   location = coalesce(
     try(each.value.location, null),
-    try(google_discovery_engine_data_store.data_stores[each.value.data_store_ids[0]].location, null),
+    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
     var.location
   )
 

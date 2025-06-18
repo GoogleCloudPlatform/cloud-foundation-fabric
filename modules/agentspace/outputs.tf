@@ -17,38 +17,38 @@
 output "chat_engine_ids" {
   description = "The ids of the chat engines created."
   value = {
-    for k, v in google_discovery_engine_chat_engine.chat_engines
+    for k, v in google_discovery_engine_chat_engine.default
     : k => v.id
   }
 }
 
 output "chat_engines" {
   description = "The chat engines created."
-  value       = google_discovery_engine_chat_engine.chat_engines
+  value       = google_discovery_engine_chat_engine.default
 }
 
 output "data_store_ids" {
   description = "The ids of the data stores created."
   value = {
-    for k, v in google_discovery_engine_data_store.data_stores
+    for k, v in google_discovery_engine_data_store.default
     : k => v.id
   }
 }
 
 output "data_stores" {
   description = "The data stores resources created."
-  value       = google_discovery_engine_data_store.data_stores
+  value       = google_discovery_engine_data_store.default
 }
 
 output "search_engine_ids" {
   description = "The ids of the search engines created."
   value = {
-    for k, v in google_discovery_engine_search_engine.search_engines
+    for k, v in google_discovery_engine_search_engine.default
     : k => v.id
   }
 }
 
 output "search_engines" {
   description = "The search engines created."
-  value       = google_discovery_engine_search_engine.search_engines
+  value       = google_discovery_engine_search_engine.default
 }

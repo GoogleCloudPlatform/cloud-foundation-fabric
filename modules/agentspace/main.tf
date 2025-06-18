@@ -30,7 +30,7 @@ locals {
   }
 }
 
-resource "google_discovery_engine_data_store" "data_stores" {
+resource "google_discovery_engine_data_store" "default" {
   for_each                     = var.data_stores_configs
   data_store_id                = "${var.name}-${each.key}"
   project                      = var.project_id
@@ -160,34 +160,34 @@ resource "google_discovery_engine_data_store" "data_stores" {
   }
 }
 
-resource "google_discovery_engine_schema" "datastores_schemas" {
+resource "google_discovery_engine_schema" "default" {
   for_each = ({
     for k, v in var.data_stores_configs
     : k => v if try(v.json_schema, null) != null
   })
   schema_id     = "${var.name}-${each.key}"
   project       = var.project_id
-  location      = google_discovery_engine_data_store.data_stores[each.key].location
-  data_store_id = google_discovery_engine_data_store.data_stores[each.key].data_store_id
+  location      = google_discovery_engine_data_store.default[each.key].location
+  data_store_id = google_discovery_engine_data_store.default[each.key].data_store_id
   json_schema   = each.value.json_schema
 }
 
-resource "google_discovery_engine_sitemap" "datastores_sitemap_uris" {
+resource "google_discovery_engine_sitemap" "default" {
   for_each = ({
     for k, v in var.data_stores_configs
     : k => v if try(v.sites_search_config.sitemap_uri, null) != null
   })
   project       = var.project_id
-  location      = google_discovery_engine_data_store.data_stores[each.key].location
-  data_store_id = google_discovery_engine_data_store.data_stores[each.key].data_store_id
+  location      = google_discovery_engine_data_store.default[each.key].location
+  data_store_id = google_discovery_engine_data_store.default[each.key].data_store_id
   uri           = each.value.sites_search_config.sitemap_uri
 }
 
-resource "google_discovery_engine_target_site" "datastores_target_sites" {
+resource "google_discovery_engine_target_site" "default" {
   for_each             = local.data_stores_target_sites
   project              = var.project_id
-  location             = google_discovery_engine_data_store.data_stores[each.value.data_store_id].location
-  data_store_id        = google_discovery_engine_data_store.data_stores[each.value.data_store_id].data_store_id
+  location             = google_discovery_engine_data_store.default[each.value.data_store_id].location
+  data_store_id        = google_discovery_engine_data_store.default[each.value.data_store_id].data_store_id
   provided_uri_pattern = each.value.provided_uri_pattern
   type                 = each.value.type
   exact_match          = each.value.exact_match
