@@ -136,7 +136,7 @@ variable "iap_config" {
   validation {
     condition = !(length(try(var.iap_config.iam, [])) > 0 && length(try(var.iap_config.iam_additive, [])) > 0)
 
-    error_message = "When 'iam' or 'iam_additive' lists are provided in iap_config, they must not be empty."
+    error_message = "Providing both 'iam' and 'iam_additive' in iap_config is not supported."
   }
 
   validation {
