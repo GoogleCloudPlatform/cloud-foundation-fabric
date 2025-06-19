@@ -14,23 +14,150 @@
  * limitations under the License.
  */
 
-resource "google_clouddeploy_delivery_pipeline_iam_binding" "default" {
-  project    = var.project_id
-  location   = var.region
-  for_each   = var.iam
-  name       = var.name
-  role       = each.key
-  members    = each.value
-  depends_on = [google_clouddeploy_delivery_pipeline.pipeline]
+
+# tfdoc:file:description IAM bindings.
+
+locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
+
+  _target_iam_principal_roles = { for k, v in var.targets : v.name => distinct(flatten(values(v.iam_by_principals))) }
+  _target_iam_principals = {
+    for k, v in var.targets : v.name => {
+      for r in local._target_iam_principal_roles[v.name] : r => [
+        for kp, vp in v.iam_by_principals :
+        kp if try(index(vp, r), null) != null
+      ]
+    }
+  }
+  _merge_target_iam = flatten([
+    for kt, vt in var.targets : [
+      for role in distinct(concat(keys(vt.iam), keys(local._target_iam_principals[vt.name]))) :
+      {
+        "project_id" = vt.project_id
+        "region"     = vt.region
+        "name"       = vt.name
+        "role"       = role
+        "members" = concat(
+          try(vt.iam[role], []),
+          try(local._target_iam_principals[vt.name][role], [])
+        )
+      }
+    ]
+  ])
+  target_iam = {
+    for k, v in local._merge_target_iam : k => v
+  }
+
+  target_iam_bindings = merge([
+    for k, v in var.targets : {
+      for ki, vi in v.iam_bindings :
+      "${ki}_${k}" => merge(vi, { "project_id" = v.project_id, "region" = v.region, "name" = v.name })
+    }
+  ]...)
+
+  target_iam_bindings_additive = merge([
+    for k, v in var.targets : {
+      for ki, vi in v.iam_bindings_additive :
+      "${ki}_${k}" => merge(vi, { "project_id" = v.project_id, "region" = v.region, "name" = v.name })
+    }
+  ]...)
 }
 
-resource "google_clouddeploy_target_iam_binding" "default" {
-  for_each = local.target_iam_attributes
+resource "google_clouddeploy_delivery_pipeline_iam_binding" "authoritative" {
+  for_each = local.iam
+  project  = var.project_id
+  location = var.region
+  name     = var.name
+  role     = each.key
+  members  = each.value
+}
 
-  project    = each.value.project_id
-  location   = each.value.region
-  name       = each.value.target_id
-  role       = each.value.role
-  members    = each.value.members
-  depends_on = [google_clouddeploy_target.target]
+resource "google_clouddeploy_delivery_pipeline_iam_binding" "bindings" {
+  for_each = var.iam_bindings
+  project  = var.project_id
+  location = var.region
+  name     = var.name
+  role     = each.value.role
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_clouddeploy_delivery_pipeline_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
+  project  = var.project_id
+  location = var.region
+  name     = var.name
+  role     = each.value.role
+  member   = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_clouddeploy_target_iam_binding" "authoritative" {
+  for_each = local.target_iam
+  project  = coalesce(each.value.project_id, var.project_id)
+  location = coalesce(each.value.region, var.region)
+  name     = each.value.name
+  role     = each.value.role
+  members  = each.value.members
+}
+
+resource "google_clouddeploy_target_iam_binding" "bindings" {
+  for_each = local.target_iam_bindings
+  project  = coalesce(each.value.project_id, var.project_id)
+  location = coalesce(each.value.region, var.region)
+  name     = each.value.name
+  role     = each.value.role
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_clouddeploy_target_iam_member" "bindings" {
+  for_each = local.target_iam_bindings_additive
+  project  = coalesce(each.value.project_id, var.project_id)
+  location = coalesce(each.value.region, var.region)
+  name     = each.value.name
+  role     = each.value.role
+  member   = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }

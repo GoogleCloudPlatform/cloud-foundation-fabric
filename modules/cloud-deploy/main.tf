@@ -15,20 +15,9 @@
  */
 
 locals {
-  pipeline_type = "serial"
-  target_iam_attributes = { for i, v in flatten([
-    for target_key, target in var.targets : [
-      for iam_key, iam in target.iam : {
-        project_id = coalesce(target.project_id, var.project_id)
-        region     = coalesce(target.region, var.region)
-        target_id  = target.name
-        role       = iam_key
-        members    = iam
-      }
-    ]
-    ]) : "${v.target_id}_${replace(v.role, "roles/", "")}" => v
-  }
+  pipeline_type                   = "serial"
   compute_default_service_account = length(data.google_compute_default_service_account.default) > 0 ? data.google_compute_default_service_account.default[0].email : null
+  validated_automations           = { for k, v in var.automations : k => v if length(v.promote_release_rule) > 0 || length(v.advance_rollout_rule) > 0 || length(v.repair_rollout_rule) > 0 || length(v.timed_promote_release_rule) > 0 }
 }
 
 data "google_compute_default_service_account" "default" {

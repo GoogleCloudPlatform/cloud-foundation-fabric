@@ -15,7 +15,7 @@
  */
 
 
-resource "google_clouddeploy_delivery_pipeline" "pipeline" {
+resource "google_clouddeploy_delivery_pipeline" "default" {
   location    = var.region
   name        = var.name
   description = var.description
@@ -27,16 +27,16 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
     content {
       dynamic "stages" {
         for_each = {
-          for index, target in var.targets :
-          index => target if target.exclude_from_pipeline == false
+          for k, v in var.targets :
+          k => v if v.exclude_from_pipeline == false
         }
         iterator = each_target
 
         content {
           dynamic "deploy_parameters" {
             for_each = {
-              for index, deploy_parameter in each_target.value.delivery_pipeline_deploy_parameters :
-              index => deploy_parameter
+              for k, v in each_target.value.delivery_pipeline_deploy_parameters :
+              k => v
             }
             iterator = each_deploy_parameter
 

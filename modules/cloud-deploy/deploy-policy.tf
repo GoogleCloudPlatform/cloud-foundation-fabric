@@ -15,7 +15,7 @@
  */
 
 
-resource "google_clouddeploy_deploy_policy" "deploy-policy" {
+resource "google_clouddeploy_deploy_policy" "default" {
   for_each = var.deploy_policies
 
   name        = each.key
@@ -27,8 +27,8 @@ resource "google_clouddeploy_deploy_policy" "deploy-policy" {
 
   dynamic "selectors" {
     for_each = {
-      for index, each_selector in each.value.selectors :
-      index => each_selector
+      for k, v in each.value.selectors :
+      k => v
     }
     iterator = each_selector
 
@@ -46,7 +46,7 @@ resource "google_clouddeploy_deploy_policy" "deploy-policy" {
         for_each = upper(each_selector.value.type) == "TARGET" ? [""] : []
 
         content {
-          id     = each_selector.key
+          id     = each_selector.value.id
           labels = each_selector.value.labels
         }
       }
@@ -70,8 +70,8 @@ resource "google_clouddeploy_deploy_policy" "deploy-policy" {
 
           dynamic "weekly_windows" {
             for_each = {
-              for index, each_weekly_window in each_rule.value.weekly_windows :
-              index => each_weekly_window
+              for k, v in each_rule.value.weekly_windows :
+              k => v
             }
             iterator = each_weekly_window
 
@@ -106,8 +106,8 @@ resource "google_clouddeploy_deploy_policy" "deploy-policy" {
 
           dynamic "one_time_windows" {
             for_each = {
-              for index, each_one_time_window in each_rule.value.one_time_windows :
-              index => each_one_time_window
+              for k, v in each_rule.value.one_time_windows :
+              k => v
             }
             iterator = each_one_time_window
 

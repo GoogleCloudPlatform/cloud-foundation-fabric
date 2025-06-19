@@ -363,10 +363,10 @@ module "cloud_deploy" {
 
   deploy_policies = {
     "deploy-policy" = {
-      selector = {
+      selectors = [{
         id   = "*"
         type = "DELIVERY_PIPELINE"
-      }
+      }]
       rollout_restrictions = {
         "restriction-1" = {
           time_zone = "Australia/Melbourne"

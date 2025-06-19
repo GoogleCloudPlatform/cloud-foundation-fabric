@@ -18,6 +18,7 @@ variable "annotations" {
   description = "Resource annotations."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "automations" {
@@ -68,7 +69,7 @@ variable "automations" {
     }))
   }))
   default  = {}
-  nullable = true
+  nullable = false
   validation {
     condition = alltrue([
       for k, v in var.automations :
@@ -140,7 +141,7 @@ variable "deploy_policies" {
     }))
   }))
   default  = {}
-  nullable = true
+  nullable = false
   validation {
     condition = alltrue([
       for k, v in var.deploy_policies :
@@ -150,28 +151,33 @@ variable "deploy_policies" {
     At least one window should be defined (weekly_windows or one_time_windows)
     EOF
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.deploy_policies :
+      sum([for kk, vv in v.selectors : upper(vv.type) == "DELIVERY_PIPELINE" || upper(vv.type) == "TARGET" ? 0 : 1]) == 0
+    ])
+    error_message = <<EOF
+    Selector type should either be "DELIVERY_PIPELINE" or "TARGET"
+    EOF
+  }
 }
 
 variable "description" {
   description = "Cloud Deploy Delivery Pipeline description."
   type        = string
   default     = "Terraform managed."
+  nullable    = true
   validation {
     condition     = length(var.description) <= 255
     error_message = "Description cannot be longer than 255 characters."
   }
 }
 
-variable "iam" {
-  description = "IAM bindings for Cloud Deploy Delivery Pipeline resource in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
 variable "labels" {
   description = "Cloud Deploy Delivery Pipeline resource labels."
   type        = map(string)
   default     = {}
+  nullable    = false
   validation {
     condition = alltrue([
       for k, v in var.labels :
@@ -185,6 +191,7 @@ variable "labels" {
 variable "name" {
   description = "Cloud Deploy Delivery Pipeline name."
   type        = string
+  nullable    = false
   validation {
     condition     = can(regex("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$", var.name))
     error_message = "Delivery pipeline name must be between 1 and 63 characters and match the regular expression [a-z]([a-z0-9-]{0,61}[a-z0-9])?."
@@ -205,6 +212,7 @@ variable "suspended" {
   description = "Configuration to suspend a delivery pipeline."
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "targets" {
@@ -247,6 +255,25 @@ variable "targets" {
       stable_revision_tags      = optional(list(string), null)
     }))
     iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_by_principals = optional(map(list(string)), {})
   }))
   default  = []
   nullable = false

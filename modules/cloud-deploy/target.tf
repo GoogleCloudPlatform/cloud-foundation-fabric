@@ -15,7 +15,7 @@
  */
 
 
-resource "google_clouddeploy_target" "target" {
+resource "google_clouddeploy_target" "default" {
   for_each = {
     for name, target in var.targets :
     name => target if target.create_target == true

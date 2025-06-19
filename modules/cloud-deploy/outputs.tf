@@ -17,21 +17,21 @@
 
 output "automation_ids" {
   description = "Automation ids."
-  value       = values(google_clouddeploy_automation.automation)[*].id
+  value       = values(google_clouddeploy_automation.default)[*].id
 }
 
 output "deploy_policy_ids" {
   description = "Deploy Policy ids."
-  value       = values(google_clouddeploy_deploy_policy.deploy-policy)[*].id
+  value       = values(google_clouddeploy_deploy_policy.default)[*].id
 }
 
 output "pipeline_id" {
   description = "Delivery pipeline id."
-  value       = google_clouddeploy_delivery_pipeline.pipeline.id
+  value       = google_clouddeploy_delivery_pipeline.default.id
 }
 
 output "target_ids" {
   description = "Target ids."
-  value       = values(google_clouddeploy_target.target)[*].id
+  value       = values(google_clouddeploy_target.default)[*].id
 }
 

@@ -15,16 +15,13 @@
  */
 
 
-resource "google_clouddeploy_automation" "automation" {
-  for_each = {
-    for key, each_automation in var.automations :
-    key => each_automation if length(each_automation.promote_release_rule) > 0 || length(each_automation.advance_rollout_rule) > 0 || length(each_automation.repair_rollout_rule) > 0 || length(each_automation.timed_promote_release_rule) > 0
-  }
+resource "google_clouddeploy_automation" "default" {
+  for_each = local.validated_automations
 
   name              = each.key
   project           = coalesce(each.value.project_id, var.project_id)
   location          = coalesce(each.value.region, var.region)
-  delivery_pipeline = google_clouddeploy_delivery_pipeline.pipeline.name
+  delivery_pipeline = google_clouddeploy_delivery_pipeline.default.name
   service_account   = coalesce(each.value.service_account, local.compute_default_service_account)
   annotations       = each.value.annotations
   labels            = each.value.labels
@@ -32,8 +29,8 @@ resource "google_clouddeploy_automation" "automation" {
   selector {
     dynamic "targets" {
       for_each = {
-        for index, each_target in each.value.selector :
-        index => each_target
+        for k, v in each.value.selector :
+        k => v
       }
       iterator = each_target
 
