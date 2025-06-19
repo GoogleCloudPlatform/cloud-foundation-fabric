@@ -18,6 +18,10 @@
 
 module "projects" {
   source = "../../../modules/project-factory"
+  automation_outputs = {
+    local_path = var.outputs_location
+    stage_name = var.stage_name
+  }
   data_defaults = {
     # more defaults are available, check the project factory variables
     billing_account  = var.billing_account.id
@@ -69,4 +73,5 @@ module "projects" {
       )
     }
   })
+  template_search_path = "${path.module}/templates"
 }

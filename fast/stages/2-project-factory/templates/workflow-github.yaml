@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: "${workflow_name}"
+name: "${global.workflow_name}"
 
 on:
   pull_request:
@@ -24,12 +24,12 @@ on:
       - synchronize
 
 env:
-  SERVICE_ACCOUNT: ${service_accounts.apply}
-  SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
-  WIF_PROVIDER: ${identity_provider}
+  SERVICE_ACCOUNT: ${vars.apply_service_account}
+  SERVICE_ACCOUNT_PLAN: ${vars.plan_service_account}
+  WIF_PROVIDER: ${global.identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  TF_PROVIDERS_FILE: ${tf_providers_files.apply}
-  TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
+  TF_PROVIDERS_FILE: ${global.provider_file.ro}
+  TF_PROVIDERS_FILE_PLAN: ${global.provider_file.rw}
   TF_VERSION: 1.11.4
 
 jobs:
@@ -90,7 +90,7 @@ jobs:
         name: Copy Terraform provider file
         run: |
           gcloud storage cp -r \
-            "gs://${outputs_bucket}/providers/$${{env.provider_file}}" ./
+            "gs://${global.outputs_bucket}/providers/$${{env.provider_file}}" ./
 
       - id: tf-setup
         name: Set up Terraform

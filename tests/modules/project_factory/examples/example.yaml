@@ -24,7 +24,6 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
-    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU

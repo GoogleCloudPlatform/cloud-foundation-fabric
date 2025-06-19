@@ -14,8 +14,8 @@
 
 variables:
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
-  OUTPUTS_BUCKET: ${outputs_bucket}
-  WIF_PROVIDER: ${identity_provider}
+  OUTPUTS_BUCKET: ${global.outputs_bucket}
+  WIF_PROVIDER: ${global.identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 workflow:
@@ -24,14 +24,14 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       variables:
         COMMAND: apply
-        SERVICE_ACCOUNT: ${service_accounts.apply}
-        TF_PROVIDERS_FILE: ${tf_providers_files.apply}
+        SERVICE_ACCOUNT: ${vars.apply_service_account}
+        TF_PROVIDERS_FILE: ${global.provider_file.rw}
     # pr / plan
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       variables:
         COMMAND: plan
-        SERVICE_ACCOUNT: ${service_accounts.plan}
-        TF_PROVIDERS_FILE: ${tf_providers_files.plan}
+        SERVICE_ACCOUNT: ${vars.plan_service_account}
+        TF_PROVIDERS_FILE: ${global.provider_file.ro}
 
 stages:
   - gcp-setup
@@ -48,7 +48,7 @@ gcp-setup:
   id_tokens:
     GITLAB_TOKEN:
       aud:
-      %{~ for aud in audiences ~}
+      %{~ for aud in global.audiences ~}
         - ${aud}
       %{~ endfor ~}
   before_script:
@@ -71,7 +71,7 @@ tf-plan-apply:
   id_tokens:
     GITLAB_TOKEN:
       aud:
-      %{~ for aud in audiences ~}
+      %{~ for aud in global.audiences ~}
         - ${aud}
       %{~ endfor ~}
   image:

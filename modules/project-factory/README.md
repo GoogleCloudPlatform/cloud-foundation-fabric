@@ -520,11 +520,12 @@ automation:
         - rw
         - ro
   outputs_bucket:
-    description: CI/CD outputs bucket for Team B app 0.
-    iam:
-      roles/storage.objectViewer:
-        - cicd-ro
-        - cicd-rw
+    create_new:
+      description: CI/CD outputs bucket for Team B app 0.
+      iam:
+        roles/storage.objectViewer:
+          - cicd-ro
+          - cicd-rw
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```

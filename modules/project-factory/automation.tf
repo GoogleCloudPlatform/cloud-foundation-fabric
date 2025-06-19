@@ -17,39 +17,48 @@
 # tfdoc:file:description Automation projects locals and resources.
 
 locals {
-  _outputs = {
-    for k, v in local.automation_outputs_buckets :
-    "${k}-outputs" => merge(v, {
-      bucket_name = "outputs"
-      iam         = lookup(v, "iam", {})
-    })
+  _existing_outputs_buckets = {
+    for k, v in local.projects : k => v.automation.outputs_bucket.name
+    if try(v.automation.outputs_bucket.name, null) != null
   }
-  _tf_state = {
-    for k, v in local.automation_buckets :
-    k => merge(v, {
-      project_key = k
-      bucket_name = "tf-state"
-      iam         = lookup(v, "iam", {})
-    })
+  _tf_state_buckets_to_create = {
+    for k, v in local.projects : k => merge(
+      {
+        bucket_name : "tf-state"
+      },
+      try(v.automation.bucket, {}),
+      {
+        automation_project : v.automation.project,
+        project_key : k,
+        prefix : coalesce(
+          try(v.automation.bucket.prefix, null),
+          try(v.automation.prefix, null),
+          "${v.prefix}-${v.name}"
+        )
+      }
+    ) if try(v.automation.bucket, null) != null
   }
-  automation_bucket_specs = merge(local._tf_state, local._outputs)
-  automation_buckets = {
-    for k, v in local.projects :
-    k => merge(try(v.automation.bucket, {}), {
-      automation_project = v.automation.project
-      prefix             = coalesce(try(v.automation.prefix, null), "${v.prefix}-${v.name}")
-      project_name       = v.name
-    }) if try(v.automation.bucket, null) != null
+  _outputs_buckets_to_create = {
+    for k, v in local.projects : "${k}-outputs" => merge(
+      {
+        bucket_name : "outputs"
+      },
+      try(v.automation.outputs_bucket.create_new, {}),
+      {
+        automation_project : v.automation.project,
+        project_key : k,
+        prefix : coalesce(
+          try(v.automation.outputs_bucket.create_new.prefix, null),
+          try(v.automation.prefix, null),
+          v.automation.project
+        )
+      }
+    ) if try(v.automation.outputs_bucket.create_new, null) != null
   }
-  automation_outputs_buckets = {
-    for k, v in local.projects :
-    k => merge(try(v.automation.outputs_bucket, {}), {
-      automation_project = v.automation.project
-      prefix             = coalesce(try(v.automation.prefix, null), v.automation.project)
-      project_name       = v.name
-      project_key        = k
-    }) if try(v.automation.outputs_bucket, null) != null
-  }
+  automation_bucket_specs = merge(
+    local._tf_state_buckets_to_create,
+    local._outputs_buckets_to_create
+  )
   automation_sa = flatten([
     for k, v in local.projects :
     [
@@ -268,4 +277,9 @@ module "automation_sa_impersonation" {
   depends_on = [
     module.automation-service-accounts
   ]
+}
+
+data "google_storage_bucket" "outputs_existing" {
+  for_each = local._existing_outputs_buckets
+  name     = each.value
 }
