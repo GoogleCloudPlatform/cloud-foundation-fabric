@@ -166,7 +166,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   stack_type = (
     try(each.value.ipv6, null) != null
     ? (
-      each.value.ipv6.ipv6_only
+      try(each.value.ipv6.ipv6_only, null) == true
       ? "IPV6_ONLY"
       : "IPV4_IPV6"
     )

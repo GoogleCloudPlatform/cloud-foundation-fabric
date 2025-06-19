@@ -716,7 +716,7 @@ module "vpc" {
 ### IPv6-Only and IP Collections
 
 An IPv6-only subnetwork can be specified by setting `ipv6_only` to `true` and
-setting or `ip_cidr_range` to `null` or omitting it entirely.  An IP Collection
+setting `ip_cidr_range` to `null` or omitting it entirely.  An IP Collection
 may be specified with `ip_collection` and a
 [reference](https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks/insert)
 to a collection source, like a PublicDelegatedPrefix (PDP) for BYOIPv6. The PDP
@@ -747,6 +747,7 @@ module "vpc" {
         access_type = "EXTERNAL"
         ipv6_only   = true
       }
+      #ip_collection = "https://www.googleapis.com/compute/v1/projects/<projectId>/regions/<region>/publicDelegatedPrefixes/<sub-pdp-name>"
     }
   ]
 }
