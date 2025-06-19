@@ -259,7 +259,7 @@ module "automation-service-accounts" {
   iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
 }
 
-module "automation_sa_impersonation" {
+module "automation-sa-impersonation" {
   source                 = "../iam-service-account"
   for_each               = local.impersonators_by_impersonated
   service_account_create = false
