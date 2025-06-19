@@ -78,6 +78,7 @@ resource "google_compute_backend_service" "default" {
     for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
+      preference      = backend.value.preferred ? "PREFERRED" : null
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description

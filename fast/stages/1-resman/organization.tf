@@ -60,7 +60,7 @@ locals {
         }
       )
       description = try(
-        local.tags.environment.values[v].description, null
+        local.tags.environment.values[v.tag_name].description, null
       )
     }
   }
