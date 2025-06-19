@@ -107,7 +107,7 @@ Automation resources are defined via the `automation` attribute in project confi
 - an optional `bucket` which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
 - an optional `cicd_config` which defines the CI/CD automation configurations for the project that configures Workload Identity Federation (WIF) and impersonation roles
 - an optional `outputs_bucket` which defines a bucket in the controlling project containing CI/CD provider and workflow files
-- an optional `templates` which defines a set of templates for CI/CD workflows and provider files, which can be used to generate CI/CD pipelines or Terraform provider files. Note, this module does not generate any files; see [an example](../../fast/stages/2-project-factory/outputs-automation.tf)
+- an optional `templates` which defines a set of templates for CI/CD workflows and provider files, which can be used to generate CI/CD pipelines or Terraform provider files
 
 Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while buckets use a default `tf-state` suffix.
 
