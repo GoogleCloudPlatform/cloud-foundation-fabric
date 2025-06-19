@@ -424,7 +424,6 @@ The approach is not shown here but reasonably easy to implement. The main projec
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
-| [outputs-automation.tf](./outputs-automation.tf) | This file defines local values for selecting projects with CI/CD configuration and generating workflow templates for each project based on the `automation.templates` attribute. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
