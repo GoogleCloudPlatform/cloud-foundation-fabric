@@ -150,7 +150,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   ip_cidr_range = (
     try(each.value.ipv6, null) != null
     ? (
-      each.value.ipv6.ipv6_only
+      try(each.value.ipv6.ipv6_only, false)
       ? null
       : each.value.ip_cidr_range
     )
@@ -166,7 +166,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   stack_type = (
     try(each.value.ipv6, null) != null
     ? (
-      try(each.value.ipv6.ipv6_only, null) == true
+      try(each.value.ipv6.ipv6_only, false)
       ? "IPV6_ONLY"
       : "IPV4_IPV6"
     )
