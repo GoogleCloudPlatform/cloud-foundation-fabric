@@ -54,6 +54,8 @@ locals {
     var.eventarc_triggers.service_account_email,
     null
   )
+
+  iap_enabled = var.iap_config != null
 }
 
 resource "google_cloud_run_v2_service_iam_member" "default" {
