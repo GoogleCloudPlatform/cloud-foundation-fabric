@@ -135,17 +135,17 @@ values:
     member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
-  ? module.project-factory.module.automation_sa_impersonation["dev-tb-app0-0/automation/ro"].data.google_service_account.service_account[0]
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].data.google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-ro
     project: test-pf-teams-iac-0
-  ? module.project-factory.module.automation_sa_impersonation["dev-tb-app0-0/automation/ro"].google_service_account_iam_member.bindings["token-creator-0"]
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].google_service_account_iam_member.bindings["token-creator-0"]
   : condition: []
     member: serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
-  ? module.project-factory.module.automation_sa_impersonation["dev-tb-app0-0/automation/rw"].data.google_service_account.service_account[0]
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].data.google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-rw
     project: test-pf-teams-iac-0
-  ? module.project-factory.module.automation_sa_impersonation["dev-tb-app0-0/automation/rw"].google_service_account_iam_member.bindings["token-creator-0"]
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].google_service_account_iam_member.bindings["token-creator-0"]
   : condition: []
     member: serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
