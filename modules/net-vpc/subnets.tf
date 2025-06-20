@@ -141,21 +141,13 @@ locals {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  provider = google-beta
-  for_each = local.subnets
-  project  = var.project_id
-  network  = local.network.name
-  name     = each.value.name
-  region   = each.value.region
-  ip_cidr_range = (
-    try(each.value.ipv6, null) != null
-    ? (
-      try(each.value.ipv6.ipv6_only, false)
-      ? null
-      : each.value.ip_cidr_range
-    )
-    : each.value.ip_cidr_range
-  )
+  provider                         = google-beta
+  for_each                         = local.subnets
+  project                          = var.project_id
+  network                          = local.network.name
+  name                             = each.value.name
+  region                           = each.value.region
+  ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   description = (
     each.value.description == null
