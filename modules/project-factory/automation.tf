@@ -18,28 +18,13 @@
 
 locals {
   _existing_outputs_buckets = {
-    for k, v in local.projects : k => v.automation.outputs_bucket.name
+    for k, v in local.projects :
+    k => v.automation.outputs_bucket.name
     if try(v.automation.outputs_bucket.name, null) != null
   }
-  _tf_state_buckets_to_create = {
-    for k, v in local.projects : k => merge(
-      {
-        bucket_name : "tf-state"
-      },
-      try(v.automation.bucket, {}),
-      {
-        automation_project : v.automation.project,
-        project_key : k,
-        prefix : coalesce(
-          try(v.automation.bucket.prefix, null),
-          try(v.automation.prefix, null),
-          "${v.prefix}-${v.name}"
-        )
-      }
-    ) if try(v.automation.bucket, null) != null
-  }
   _outputs_buckets_to_create = {
-    for k, v in local.projects : "${k}-outputs" => merge(
+    for k, v in local.projects :
+    "${k}-outputs" => merge(
       {
         bucket_name : "outputs"
       },
@@ -54,6 +39,24 @@ locals {
         )
       }
     ) if try(v.automation.outputs_bucket.create_new, null) != null
+  }
+  _tf_state_buckets_to_create = {
+    for k, v in local.projects :
+    k => merge(
+      {
+        bucket_name : "tf-state"
+      },
+      try(v.automation.bucket, {}),
+      {
+        automation_project : v.automation.project,
+        prefix : coalesce(
+          try(v.automation.bucket.prefix, null),
+          try(v.automation.prefix, null),
+          "${v.prefix}-${v.name}"
+        ),
+        project_key : k
+      }
+    ) if try(v.automation.bucket, null) != null
   }
   automation_bucket_specs = merge(
     local._tf_state_buckets_to_create,
@@ -72,48 +75,12 @@ locals {
       })
     ]
   ])
-  wif_binding_additive_map = {
-    for wif in local.wif_configs_flat :
-    "${wif.project_key}/automation/${wif.sa_key}" => {
-      "wif-binding" = {
-        role = "roles/iam.workloadIdentityUser"
-        member = (
-          wif.branch == null
-          ? format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_repo,
-            var.factories_config.context.federated_identity_pool,
-          wif.repository)
-          : format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_branch,
-            var.factories_config.context.federated_identity_pool,
-            wif.repository,
-          wif.branch)
-        )
-      }
-    }
-  }
-  wif_configs_flat = flatten([
-    for project_key, project_config in local.projects : [
-      for impersonator, impersonated in try(project_config.automation.cicd_config.impersonations, {}) :
-      {
-        project_key        = project_key
-        automation_project = project_config.automation.project
-        sa_key             = impersonator
-        impersonated_sa    = impersonated
-        identity_provider  = project_config.automation.cicd_config.identity_provider
-        repository         = project_config.automation.cicd_config.repository
-        branch             = try(project_config.automation.cicd_config.branch, null)
-        prefix = coalesce(
-          try(project_config.automation.prefix, null),
-          "${project_config.prefix}-${project_config.name}"
-        )
-      } if try(project_config.automation.cicd_config, null) != null
-    ]
-  ])
   impersonated_sa_metadata = {
     for c in local.wif_configs_flat :
     "${c.project_key}/automation/${c.impersonated_sa}" => {
-      project_id = c.automation_project
-      prefix     = c.prefix
       name       = c.impersonated_sa
+      prefix     = c.prefix
+      project_id = c.automation_project
     }
   }
   impersonators_by_impersonated = {
@@ -128,6 +95,42 @@ locals {
       if "${config.project_key}/automation/${config.impersonated_sa}" == target_sa_key
     ]
   }
+  wif_binding_additive_map = {
+    for wif in local.wif_configs_flat :
+    "${wif.project_key}/automation/${wif.sa_key}" => {
+      "wif-binding" = {
+        member = (
+          wif.branch == null
+          ? format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_repo,
+            var.factories_config.context.federated_identity_pool,
+          wif.repository)
+          : format(var.factories_config.context.federated_identity_providers[wif.identity_provider].principal_branch,
+            var.factories_config.context.federated_identity_pool,
+            wif.repository,
+          wif.branch)
+        )
+        role = "roles/iam.workloadIdentityUser"
+      }
+    }
+  }
+  wif_configs_flat = flatten([
+    for project_key, project_config in local.projects : [
+      for impersonator, impersonated in try(project_config.automation.cicd_config.impersonations, {}) :
+      {
+        automation_project = project_config.automation.project
+        branch             = try(project_config.automation.cicd_config.branch, null)
+        identity_provider  = project_config.automation.cicd_config.identity_provider
+        impersonated_sa    = impersonated
+        prefix = coalesce(
+          try(project_config.automation.prefix, null),
+          "${project_config.prefix}-${project_config.name}"
+        )
+        project_key = project_key
+        repository  = project_config.automation.cicd_config.repository
+        sa_key      = impersonator
+      } if try(project_config.automation.cicd_config, null) != null
+    ]
+  ])
 }
 
 module "automation-bucket" {
@@ -140,46 +143,46 @@ module "automation-bucket" {
   name           = each.value.bucket_name
   encryption_key = lookup(each.value, "encryption_key", null)
   iam = {
-    for role, members in lookup(each.value, "iam", {}) :
-    role => distinct([
-      for m in members :
+    for k, v in lookup(each.value, "iam", {}) :
+    k => distinct([
+      for vv in v :
       try(
-        module.automation-service-accounts["${each.value.project_key}/automation/${m}"].iam_email,
-        var.factories_config.context.iam_principals[m],
-        m
+        module.automation-service-accounts["${each.value.project_key}/automation/${vv}"].iam_email,
+        var.factories_config.context.iam_principals[vv],
+        vv
       )
     ])
   }
   iam_bindings = {
-    for role_key, binding in lookup(each.value, "iam_bindings", {}) :
-    role_key => merge(binding, {
+    for k, v in lookup(each.value, "iam_bindings", {}) :
+    k => merge(v, {
       members = [
-        for m in binding.members : try(
+        for vv in v.members : try(
           # rw (infer local project and automation prefix)
-          module.automation-service-accounts["${each.key}/automation/${m}"].iam_email,
+          module.automation-service-accounts["${each.key}/automation/${vv}"].iam_email,
           # automation/rw or sa (infer local project)
-          module.automation-service-accounts["${each.key}/${m}"].iam_email,
+          module.automation-service-accounts["${each.key}/${vv}"].iam_email,
           # project/automation/rw project/sa
-          var.factories_config.context.iam_principals[m],
+          var.factories_config.context.iam_principals[vv],
           # fully specified principal
-          m,
+          vv,
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
-            strcontains(m, ":")
-            ? m
-            : tonumber("[Error] Invalid member: '${m}' in automation bucket '${each.key}'")
+            strcontains(vv, ":")
+            ? vv
+            : tonumber("[Error] Invalid member: '${vv}' in automation bucket '${each.key}'")
           )
         )
       ]
     })
   }
   iam_bindings_additive = {
-    for role_key, binding in lookup(each.value, "iam_bindings_additive", {}) :
-    role_key => merge(binding, {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) :
+    k => merge(v, {
       member = try(
-        module.automation-service-accounts["${each.value.project_key}/automation/${binding.member}"].iam_email,
-        var.factories_config.context.iam_principals[binding.member],
-        binding.member
+        module.automation-service-accounts["${each.value.project_key}/automation/${v.member}"].iam_email,
+        var.factories_config.context.iam_principals[v.member],
+        v.member
       )
     })
   }
@@ -213,40 +216,44 @@ module "automation-service-accounts" {
   prefix      = each.value.prefix
   name        = each.value.name
   description = lookup(each.value, "description", null)
-  display_name = lookup(each.value, "display_name",
-  "Service account ${each.value.name} for ${each.value.project}.")
+  display_name = lookup(
+    each.value,
+    "display_name",
+    "Service account ${each.value.name} for ${each.value.project}."
+  )
   # TODO: also support short form for service accounts in this project
   iam = {
-    for role, members in lookup(each.value, "iam", {}) : role => [
-      for m in members : lookup(
+    for k, v in lookup(each.value, "iam", {}) :
+    k => [
+      for vv in v : lookup(
         var.factories_config.context.iam_principals,
-        m,
-        m
+        vv,
+        vv
       )
     ]
   }
   iam_bindings = {
-    for role, binding in lookup(each.value, "iam_bindings", {}) :
-    role => merge(binding, {
+    for k, v in lookup(each.value, "iam_bindings", {}) :
+    k => merge(v, {
       members = [
-        for m in binding.members : lookup(
+        for vv in v.members : lookup(
           var.factories_config.context.iam_principals,
-          m,
-          m
+          vv,
+          vv
         )
       ]
     })
   }
   iam_bindings_additive = {
-    for role_key, binding in merge(
+    for k, v in merge(
       lookup(each.value, "iam_bindings_additive", {}),
       lookup(local.wif_binding_additive_map, each.key, {})
     ) :
-    role_key => merge(binding, {
+    k => merge(v, {
       member = lookup(
         var.factories_config.context.iam_principals,
-        binding.member,
-        binding.member
+        v.member,
+        v.member
       )
     })
   }
