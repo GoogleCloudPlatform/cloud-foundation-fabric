@@ -15,10 +15,6 @@
  */
 
 locals {
-  _project_numbers = {
-    for p in module.projects :
-    p.name => p.number
-  }
   cicd_projects = {
     for k, v in local.projects :
     k => v if try(v.automation.templates.workflow, null) != null
@@ -38,11 +34,11 @@ locals {
     k => templatefile(
       "${var.template_search_path}/${v.provider_template}",
       {
-        bucket          = v.bucket
-        outputs_bucket  = v.outputs_bucket
-        project_id      = v.project_id
-        project_number  = v.project_number
-        service_account = v.service_account
+        global = {
+          bucket          = v.bucket
+          project_id      = v.project_id
+          service_account = v.service_account
+        }
       }
     )
   }
@@ -58,7 +54,6 @@ locals {
           bucket            = try(module.automation-bucket[key].name, "")
           outputs_bucket    = try(local.project_outputs_bucket_names[key], "")
           project_id        = p.automation.project
-          project_number    = local._project_numbers[p.automation.project]
           service_account   = module.automation-service-accounts["${key}/automation/${impersonated_sa}"].email
         }
       ]
@@ -75,7 +70,7 @@ locals {
           try(module.automation-service-accounts["${v.project_key}/automation/${var_v}"].email, var_v)
         },
         global = {
-          workflow_name  = "Project ${v.project_key} - ${v.workflow_key}"
+          workflow_name  = "${v.project_key} - ${v.workflow_key}"
           outputs_bucket = try(v.outputs_bucket, "")
           identity_provider = try(var.factories_config.context.federated_identity_providers[
             local.projects[v.project_key].automation.cicd_config.identity_provider

@@ -13,6 +13,112 @@
 # limitations under the License.
 
 values:
+  module.project-factory.google_storage_bucket_object.providers["dev-tb-app0-0-ro-provider"]:
+    bucket: test-pf-teams-iac-0-outputs
+    cache_control: null
+    content: "/**\n * Copyright 2025 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\n# test-pf-teams-iac-0\n\nterraform {\n  backend \"gcs\" {\n\
+      \    bucket                      = \"test-pf-dev-tb-app0-0-tf-state\"\n    impersonate_service_account\
+      \ = \"test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/dev-tb-app0-0-ro-provider.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.project-factory.google_storage_bucket_object.providers["dev-tb-app0-0-rw-provider"]:
+    bucket: test-pf-teams-iac-0-outputs
+    cache_control: null
+    content: "/**\n * Copyright 2025 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\n# test-pf-teams-iac-0\n\nterraform {\n  backend \"gcs\" {\n\
+      \    bucket                      = \"test-pf-dev-tb-app0-0-tf-state\"\n    impersonate_service_account\
+      \ = \"test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: providers/dev-tb-app0-0-rw-provider.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  module.project-factory.google_storage_bucket_object.workflows["dev-tb-app0-0-gitlab-plan-and-apply"]:
+    bucket: test-pf-teams-iac-0-outputs
+    cache_control: null
+    content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
+      \ Version 2.0 (the \"License\");\n# you may not use this file except in compliance\
+      \ with the License.\n# You may obtain a copy of the License at\n#\n#      http://www.apache.org/licenses/LICENSE-2.0\n\
+      #\n# Unless required by applicable law or agreed to in writing, software\n#\
+      \ distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT\
+      \ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the\
+      \ License for the specific language governing permissions and\n# limitations\
+      \ under the License.\n# baz\n\nvariables:\n  GOOGLE_CREDENTIALS: cicd-sa-credentials.json\n\
+      \  OUTPUTS_BUCKET: test-pf-teams-iac-0-outputs\n  WIF_PROVIDER: projects/my-project/locations/global/workloadIdentityPools/my-pool/providers/gitlab-provider\n\
+      \  SSH_AUTH_SOCK: /tmp/ssh_agent.sock\n\nworkflow:\n  rules:\n    # merge /\
+      \ apply\n    - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH\n\
+      \      variables:\n        COMMAND: apply\n        SERVICE_ACCOUNT: test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com\n\
+      \        TF_PROVIDERS_FILE: dev-tb-app0-0-rw-provider.tf\n    # pr / plan\n\
+      \    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'\n      variables:\n\
+      \        COMMAND: plan\n        SERVICE_ACCOUNT: test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com\n\
+      \        TF_PROVIDERS_FILE: dev-tb-app0-0-ro-provider.tf\n\nstages:\n  - gcp-setup\n\
+      \  - tf-plan-apply\n\ngcp-setup:\n  stage: gcp-setup\n  image:\n    name: google/cloud-sdk:slim\n\
+      \  artifacts:\n    paths:\n      - cicd-sa-credentials.json\n      - providers.tf\n\
+      \  id_tokens:\n    GITLAB_TOKEN:\n      aud:\n        - https://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/xxxx-bootstrap/providers/xxxx-bootstrap-gitlab\n\
+      \  before_script:\n    - echo \"$GITLAB_TOKEN\" > token.txt\n  script:\n   \
+      \ - |\n      gcloud iam workload-identity-pools create-cred-config \\\n    \
+      \    $WIF_PROVIDER \\\n        --service-account=$SERVICE_ACCOUNT \\\n     \
+      \   --service-account-token-lifetime-seconds=900 \\\n        --output-file=$GOOGLE_CREDENTIALS\
+      \ \\\n        --credential-source-file=token.txt\n    - gcloud config set auth/credential_file_override\
+      \ $GOOGLE_CREDENTIALS\n    - gcloud storage cp -r \"gs://$OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE\"\
+      \ ./providers.tf\n\ntf-plan-apply:\n  stage: tf-plan-apply\n  dependencies:\n\
+      \    - gcp-setup\n  id_tokens:\n    GITLAB_TOKEN:\n      aud:\n        - https://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/xxxx-bootstrap/providers/xxxx-bootstrap-gitlab\n\
+      \  image:\n    name: hashicorp/terraform\n    entrypoint:\n      - \"/usr/bin/env\"\
+      \n  variables:\n    SSH_AUTH_SOCK: /tmp/ssh-agent.sock\n  script:\n    - echo\
+      \ \"$GITLAB_TOKEN\" > token.txt\n    - terraform init\n    - terraform validate\n\
+      \    - \"if [ $COMMAND == 'plan' ]; then terraform plan -input=false -no-color\
+      \ -lock=false; fi\"\n    - \"if [ $COMMAND == 'apply' ]; then terraform apply\
+      \ -input=false -no-color -auto-approve; fi\"\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: workflows/dev-tb-app0-0-gitlab-plan-and-apply.yaml
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
   module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -87,6 +193,20 @@ values:
     - serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     - serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].data.google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-ro
+    project: test-pf-teams-iac-0
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].google_service_account_iam_member.bindings["token-creator-0"]
+  : condition: []
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].data.google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-rw
+    project: test-pf-teams-iac-0
+  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].google_service_account_iam_member.bindings["token-creator-0"]
+  : condition: []
+    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-ro"].google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-cicd-ro
     create_ignore_already_exists: null
@@ -99,7 +219,7 @@ values:
     timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-ro"].google_service_account_iam_member.bindings["wif-binding"]
   : condition: []
-    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/attribute.fast_sub/repo:my-org/my-repo:ref:refs/heads/main
+    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/project_path/my-org/my-repo:ref_type:branch:ref:main
     role: roles/iam.workloadIdentityUser
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-rw"].google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-cicd-rw
@@ -113,7 +233,7 @@ values:
     timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/cicd-rw"].google_service_account_iam_member.bindings["wif-binding"]
   : condition: []
-    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/attribute.fast_sub/repo:my-org/my-repo:ref:refs/heads/main
+    member: principalSet://iam.googleapis.com/projects/my-project/locations/global/workloadIdentityPools/my-pool/project_path/my-org/my-repo:ref_type:branch:ref:main
     role: roles/iam.workloadIdentityUser
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
   : account_id: test-pf-dev-tb-app0-0-ro
@@ -135,20 +255,6 @@ values:
     member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
-  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].data.google_service_account.service_account[0]
-  : account_id: test-pf-dev-tb-app0-0-ro
-    project: test-pf-teams-iac-0
-  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/ro"].google_service_account_iam_member.bindings["token-creator-0"]
-  : condition: []
-    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
-    role: roles/iam.serviceAccountTokenCreator
-  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].data.google_service_account.service_account[0]
-  : account_id: test-pf-dev-tb-app0-0-rw
-    project: test-pf-teams-iac-0
-  ? module.project-factory.module.automation-sa-impersonation["dev-tb-app0-0/automation/rw"].google_service_account_iam_member.bindings["token-creator-0"]
-  : condition: []
-    member: serviceAccount:test-pf-dev-tb-app0-0-cicd-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
-    role: roles/iam.serviceAccountTokenCreator
   module.project-factory.module.billing-account[0].google_billing_budget.default["test-100"]:
     all_updates_rule:
     - disable_default_iam_recipients: true
@@ -264,18 +370,6 @@ values:
     - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
-  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
-    condition: []
-    members:
-    - serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
-    project: test-pf-dev-tb-app0-1
-    role: roles/run.admin
-  ? module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.developer"]
-  : condition: []
-    members:
-    - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
-    project: test-pf-dev-tb-app0-1
-    role: roles/run.developer
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
@@ -431,68 +525,6 @@ values:
     project: test-pf-dev-tb-app0-0
     service: run.googleapis.com
     timeouts: null
-  module.project-factory.module.projects["dev-tb-app0-1"].data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-pf-dev-tb-app0-1
-    user_project: null
-  module.project-factory.module.projects["dev-tb-app0-1"].google_essential_contacts_contact.contact["admin@example.org"]:
-    email: admin@example.org
-    language_tag: en
-    notification_category_subscriptions:
-    - ALL
-    parent: projects/test-pf-dev-tb-app0-1
-    timeouts: null
-  module.project-factory.module.projects["dev-tb-app0-1"].google_project.project[0]:
-    auto_create_network: false
-    billing_account: 012345-67890A-BCDEF0
-    deletion_policy: DELETE
-    effective_labels:
-      app: app-0
-      environment: test
-      goog-terraform-provisioned: 'true'
-      team: team-b
-    labels:
-      app: app-0
-      environment: test
-      team: team-b
-    name: test-pf-dev-tb-app0-1
-    project_id: test-pf-dev-tb-app0-1
-    tags: null
-    terraform_labels:
-      app: app-0
-      environment: test
-      goog-terraform-provisioned: 'true'
-      team: team-b
-    timeouts: null
-  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["container-engine-robot"]:
-    condition: []
-    project: test-pf-dev-tb-app0-1
-    role: roles/container.serviceAgent
-  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["gkenode"]:
-    condition: []
-    project: test-pf-dev-tb-app0-1
-    role: roles/container.defaultNodeServiceAgent
-  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["container.googleapis.com"]
-  : disable_dependent_services: false
-    disable_on_destroy: false
-    project: test-pf-dev-tb-app0-1
-    service: container.googleapis.com
-    timeouts: null
-  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["stackdriver.googleapis.com"]
-  : disable_dependent_services: false
-    disable_on_destroy: false
-    project: test-pf-dev-tb-app0-1
-    service: stackdriver.googleapis.com
-    timeouts: null
-  module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["storage.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: test-pf-dev-tb-app0-1
-    service: storage.googleapis.com
-    timeouts: null
-  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service_identity.default["container.googleapis.com"]
-  : project: test-pf-dev-tb-app0-1
-    service: container.googleapis.com
-    timeouts: null
   module.project-factory.module.projects["teams-iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-teams-iac-0
     user_project: null
@@ -618,24 +650,6 @@ values:
     members:
     - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
-  : condition: []
-    project: test-pf-dev-tb-app0-1
-    role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
-  : condition: []
-    project: test-pf-dev-tb-app0-1
-    role: roles/monitoring.metricWriter
-  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
-    account_id: app-0-be
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Backend instances.
-    email: app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
-    member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
-    project: test-pf-dev-tb-app0-1
-    timeouts: null
 
 counts:
   google_billing_budget: 1
@@ -656,12 +670,13 @@ counts:
   google_service_account_iam_member: 4
   google_storage_bucket: 2
   google_storage_bucket_iam_binding: 3
+  google_storage_bucket_object: 3
   google_storage_project_service_account: 4
   google_tags_tag_binding: 1
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 26
-  resources: 93
+  resources: 96
 
 outputs: {}

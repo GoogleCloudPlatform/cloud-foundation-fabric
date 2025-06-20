@@ -169,6 +169,7 @@ variable "factories_config" {
       notification_channels   = optional(map(string), {})
       federated_identity_pool = optional(string)
       federated_identity_providers = optional(map(object({
+        audiences        = optional(list(string))
         issuer           = string
         name             = string
         principal_branch = string
