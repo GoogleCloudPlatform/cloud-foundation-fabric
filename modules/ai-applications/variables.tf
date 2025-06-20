@@ -15,7 +15,7 @@
  */
 
 variable "data_stores_configs" {
-  description = "The Agentspace datastore configurations."
+  description = "The ai-applications datastore configurations."
   type = map(object({
     advanced_site_search_config = optional(object({
       disable_initial_index     = optional(bool)
@@ -110,7 +110,7 @@ variable "data_stores_configs" {
 }
 
 variable "engines_configs" {
-  description = "The Agentspace engines configurations."
+  description = "The ai-applications engines configurations."
   type = map(object({
     data_store_ids = list(string)
     collection_id  = optional(string, "default_collection")

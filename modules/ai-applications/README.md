@@ -1,9 +1,9 @@
-# Agentspace
+# AI Applications
 
-This module handles the creation of Agentspace data sources, engines and related configurations.
+This module handles the creation of [AI Applications](https://cloud.google.com/generative-ai-app-builder/docs/introduction) data sources, engines and related configurations.
 
 <!-- TOC -->
-* [Agentspace module](#agentspace)
+* [AI Applications module](#ai-applications)
   * [APIs](#apis)
   * [Quota Project](#quota-project)
   * [Examples](#examples)
@@ -38,8 +38,8 @@ export USER_PROJECT_OVERRIDE=true
 This is a minimal example to create a Chat Engine agent.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-chat-app"
   project_id = var.project_id
   data_stores_configs = {
@@ -66,8 +66,8 @@ module "agentspace" {
 This is a minimal example to create a Search Engine agent.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-search-app"
   project_id = var.project_id
   data_stores_configs = {
@@ -90,8 +90,8 @@ module "agentspace" {
 By default services are deployed globally. You optionally specify a region where to deploy them.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-chat-app"
   project_id = var.project_id
   location   = var.region
@@ -119,8 +119,8 @@ module "agentspace" {
 You can reference from engines existing data sources created outside this module, by passing their ids. In this case, you'll need to configure in the engine valid `industry_vertical` and `location`.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-search-app"
   project_id = var.project_id
   engines_configs = {
@@ -141,8 +141,8 @@ module "agentspace" {
 You can create and connect from your engines multiple data stores.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-chat-app"
   project_id = var.project_id
   data_stores_configs = {
@@ -176,8 +176,8 @@ module "agentspace" {
 You can configure JSON data store schema definitions directly in your data store configuration.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-search-app"
   project_id = var.project_id
   data_stores_configs = {
@@ -195,8 +195,8 @@ module "agentspace" {
 You can make data stores point to multiple websites and optionally specify their sitemap.
 
 ```hcl
-module "agentspace" {
-  source     = "./fabric/modules/agentspace"
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
   name       = "my-search-app"
   project_id = var.project_id
   data_stores_configs = {
@@ -210,7 +210,7 @@ module "agentspace" {
           }
           exclude-one-page = {
             exact_match          = true
-            provided_uri_pattern = "https://cloud.google.com/agentspace"
+            provided_uri_pattern = "https://cloud.google.com/ai-applications"
             type                 = "EXCLUDE"
           }
         }
@@ -236,8 +236,8 @@ module "agentspace" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L159) | The name of the resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L165) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
-| [data_stores_configs](variables.tf#L17) | The Agentspace datastore configurations. | <code title="map&#40;object&#40;&#123;&#10;  advanced_site_search_config &#61; optional&#40;object&#40;&#123;&#10;    disable_initial_index     &#61; optional&#40;bool&#41;&#10;    disable_automatic_refresh &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  content_config              &#61; optional&#40;string, &#34;NO_CONTENT&#34;&#41;&#10;  create_advanced_site_search &#61; optional&#40;bool&#41;&#10;  display_name                &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  document_processing_config &#61; optional&#40;object&#40;&#123;&#10;    chunking_config &#61; optional&#40;object&#40;&#123;&#10;      layout_based_chunking_config &#61; optional&#40;object&#40;&#123;&#10;        chunk_size                &#61; optional&#40;number&#41;&#10;        include_ancestor_headings &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    default_parsing_config &#61; optional&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    parsing_config_overrides &#61; map&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical            &#61; optional&#40;string, &#34;GENERIC&#34;&#41;&#10;  json_schema                  &#61; optional&#40;string&#41;&#10;  location                     &#61; optional&#40;string&#41;&#10;  skip_default_schema_creation &#61; optional&#40;bool&#41;&#10;  solution_types               &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sites_search_config &#61; optional&#40;object&#40;&#123;&#10;    sitemap_uri &#61; optional&#40;string&#41;&#10;    target_sites &#61; map&#40;object&#40;&#123;&#10;      provided_uri_pattern &#61; string&#10;      exact_match          &#61; optional&#40;bool, false&#41;&#10;      type                 &#61; optional&#40;string, &#34;INCLUDE&#34;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L112) | The Agentspace engines configurations. | <code title="map&#40;object&#40;&#123;&#10;  data_store_ids &#61; list&#40;string&#41;&#10;  collection_id  &#61; optional&#40;string, &#34;default_collection&#34;&#41;&#10;  chat_engine_config &#61; optional&#40;object&#40;&#123;&#10;    allow_cross_region       &#61; optional&#40;bool&#41;&#10;    business                 &#61; optional&#40;string&#41;&#10;    company_name             &#61; optional&#40;string&#41;&#10;    default_language_code    &#61; optional&#40;string&#41;&#10;    dialogflow_agent_to_link &#61; optional&#40;string&#41;&#10;    time_zone                &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical &#61; optional&#40;string&#41;&#10;  location          &#61; optional&#40;string&#41;&#10;  search_engine_config &#61; optional&#40;object&#40;&#123;&#10;    search_add_ons &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    search_tier    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_stores_configs](variables.tf#L17) | The ai-applications datastore configurations. | <code title="map&#40;object&#40;&#123;&#10;  advanced_site_search_config &#61; optional&#40;object&#40;&#123;&#10;    disable_initial_index     &#61; optional&#40;bool&#41;&#10;    disable_automatic_refresh &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  content_config              &#61; optional&#40;string, &#34;NO_CONTENT&#34;&#41;&#10;  create_advanced_site_search &#61; optional&#40;bool&#41;&#10;  display_name                &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  document_processing_config &#61; optional&#40;object&#40;&#123;&#10;    chunking_config &#61; optional&#40;object&#40;&#123;&#10;      layout_based_chunking_config &#61; optional&#40;object&#40;&#123;&#10;        chunk_size                &#61; optional&#40;number&#41;&#10;        include_ancestor_headings &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    default_parsing_config &#61; optional&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    parsing_config_overrides &#61; map&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical            &#61; optional&#40;string, &#34;GENERIC&#34;&#41;&#10;  json_schema                  &#61; optional&#40;string&#41;&#10;  location                     &#61; optional&#40;string&#41;&#10;  skip_default_schema_creation &#61; optional&#40;bool&#41;&#10;  solution_types               &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sites_search_config &#61; optional&#40;object&#40;&#123;&#10;    sitemap_uri &#61; optional&#40;string&#41;&#10;    target_sites &#61; map&#40;object&#40;&#123;&#10;      provided_uri_pattern &#61; string&#10;      exact_match          &#61; optional&#40;bool, false&#41;&#10;      type                 &#61; optional&#40;string, &#34;INCLUDE&#34;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [engines_configs](variables.tf#L112) | The ai-applications engines configurations. | <code title="map&#40;object&#40;&#123;&#10;  data_store_ids &#61; list&#40;string&#41;&#10;  collection_id  &#61; optional&#40;string, &#34;default_collection&#34;&#41;&#10;  chat_engine_config &#61; optional&#40;object&#40;&#123;&#10;    allow_cross_region       &#61; optional&#40;bool&#41;&#10;    business                 &#61; optional&#40;string&#41;&#10;    company_name             &#61; optional&#40;string&#41;&#10;    default_language_code    &#61; optional&#40;string&#41;&#10;    dialogflow_agent_to_link &#61; optional&#40;string&#41;&#10;    time_zone                &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical &#61; optional&#40;string&#41;&#10;  location          &#61; optional&#40;string&#41;&#10;  search_engine_config &#61; optional&#40;object&#40;&#123;&#10;    search_add_ons &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    search_tier    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L153) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 
 ## Outputs
