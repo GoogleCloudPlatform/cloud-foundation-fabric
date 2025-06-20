@@ -6,7 +6,7 @@
 
 accounts:
   dns_name: "accounts.google.com."
-  behavior: bypassResponsePolicy
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 aiplatform-notebook-cloud-all:
   dns_name: "*.aiplatform-notebook.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
@@ -19,6 +19,7 @@ appengine:
 appspot-all:
   dns_name: "*.appspot.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+
 backupdr-cloud:
   dns_name: "backupdr.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
