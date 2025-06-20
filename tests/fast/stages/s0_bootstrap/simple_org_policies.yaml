@@ -356,7 +356,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - C00000000
+          - is:C00000000
           denied_values: null
       - allow_all: 'TRUE'
         condition:
