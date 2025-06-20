@@ -15,7 +15,7 @@
  */
 
 variable "data_stores_configs" {
-  description = "The Agentspace datastore configurations."
+  description = "The ai-applications datastore configurations."
   type = map(object({
     advanced_site_search_config = optional(object({
       disable_initial_index     = optional(bool)
@@ -23,7 +23,7 @@ variable "data_stores_configs" {
     }))
     content_config              = optional(string, "NO_CONTENT")
     create_advanced_site_search = optional(bool)
-    display_name                = optional(string, "Terraform managed.")
+    display_name                = optional(string)
     document_processing_config = optional(object({
       chunking_config = optional(object({
         layout_based_chunking_config = optional(object({
@@ -110,7 +110,7 @@ variable "data_stores_configs" {
 }
 
 variable "engines_configs" {
-  description = "The Agentspace engines configurations."
+  description = "The ai-applications engines configurations."
   type = map(object({
     data_store_ids = list(string)
     collection_id  = optional(string, "default_collection")
