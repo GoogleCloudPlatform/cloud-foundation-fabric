@@ -166,7 +166,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - INTERNAL
+          - is:INTERNAL
           denied_values: null
     timeouts: null
   module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
