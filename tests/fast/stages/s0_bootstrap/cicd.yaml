@@ -1332,7 +1332,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - INTERNAL
+          - is:INTERNAL
           denied_values: null
     timeouts: null
   module.organization.google_org_policy_policy.default["compute.setNewProjectDefaultToZonalDNSOnly"]:
@@ -1522,7 +1522,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - C00000000
+          - is:C00000000
           denied_values: null
       - allow_all: 'TRUE'
         condition:
@@ -1612,7 +1612,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - DISABLE_KEY
+          - is:DISABLE_KEY
           denied_values: null
     timeouts: null
   module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"]:

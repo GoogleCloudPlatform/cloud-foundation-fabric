@@ -28,15 +28,15 @@ locals {
     # top-level folders
     {
       for k, v in local.top_level_folders : k => {
-        iam         = try(local.tags.context.values.iam[k], {})
-        description = try(local.tags.context.values.description[k], null)
+        iam         = try(local.tags[var.tag_names.context].values.iam[k], {})
+        description = try(local.tags[var.tag_names.context].values.description[k], null)
       } if v.is_fast_context == true
     },
     # stage 2s
     {
       for k, v in local._context_tag_values_stage2 : v => {
-        iam         = try(local.tags.context.values.iam[v], {})
-        description = try(local.tags.context.values.description[v], null)
+        iam         = try(local.tags[var.tag_names.context].values.iam[v], {})
+        description = try(local.tags[var.tag_names.context].values.description[v], null)
       }
     },
     # stage 3 define no context as they attach to a top-level folder
@@ -46,21 +46,21 @@ locals {
     for k, v in var.environments : v.tag_name => {
       iam = merge(
         # user-defined configuration
-        try(local.tags.environment.values[v.tag_name].iam, {}),
+        try(local.tags[var.tag_names.environment].values[v.tag_name].iam, {}),
         # stage 2 service accounts
         {
           "roles/resourcemanager.tagUser" = distinct(concat(
-            try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
+            try(local.tags[var.tag_names.environment].values[v.tag_name].iam["roles/resourcemanager.tagUser"], []),
             [for k, v in module.stage2-sa-rw : v.iam_email]
           ))
           "roles/resourcemanager.tagViewer" = distinct(concat(
-            try(local.tags.environment.values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
+            try(local.tags[var.tag_names.environment].values[v.tag_name].iam["roles/resourcemanager.tagViewer"], []),
             [for k, v in module.stage2-sa-ro : v.iam_email]
           ))
         }
       )
       description = try(
-        local.tags.environment.values[v.tag_name].description, null
+        local.tags[var.tag_names.environment].values[v.tag_name].description, null
       )
     }
   }
@@ -121,13 +121,13 @@ module "organization" {
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {
     (var.tag_names.context) = {
-      description = "Resource management context."
-      iam         = try(local.tags.context.iam, {})
+      description = try(local.tags[var.tag_names.context].description, "Resource management context.")
+      iam         = try(local.tags[var.tag_names.context].iam, {})
       values      = local.context_tag_values
     },
     (var.tag_names.environment) = {
-      description = "Environment definition."
-      iam         = try(local.tags.environment.iam, {})
+      description = try(local.tags[var.tag_names.environment].description, "Environment definition.")
+      iam         = try(local.tags[var.tag_names.environment].iam, {})
       values      = local.environment_tag_values
     }
   })

@@ -35,12 +35,14 @@ resource "google_discovery_engine_data_store" "default" {
   data_store_id                = "${var.name}-${each.key}"
   project                      = var.project_id
   location                     = coalesce(each.value.location, var.location)
-  display_name                 = each.value.display_name
   industry_vertical            = each.value.industry_vertical
   content_config               = each.value.content_config
   solution_types               = each.value.solution_types
   create_advanced_site_search  = each.value.create_advanced_site_search
   skip_default_schema_creation = each.value.skip_default_schema_creation
+  display_name = coalesce(
+    each.value.display_name, "${var.name}-${each.key}"
+  )
 
   dynamic "advanced_site_search_config" {
     for_each = (
