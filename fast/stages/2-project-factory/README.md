@@ -14,7 +14,7 @@
   - [Local Development State Bootstrapping](#local-development-state-bootstrapping)
     - [Step 1: Grant Impersonation Permissions](#step-1-grant-impersonation-permissions)
     - [Step 2: Bootstrap the New Project's State](#step-2-bootstrap-the-new-projects-state)
-    - [Step 3: Rely on CI/CD](#step-3-rely-on-cicd)
+    - [Step 3: Manage Infrastructure via Pull Requests](#step-3-manage-infrastructure-via-pull-requests)
 - [Alternative patterns](#alternative-patterns)
   - [Per-environment Factories](#per-environment-factories)
 - [Files](#files)
@@ -292,10 +292,14 @@ services:
 Once a controlling project is in place, it can be used in any other project declaration to host service accounts and bucket for automation. The service accounts can be used in IAM bindings in the same file by referring to their name via substitutions, as shown here.
 
 ```yaml
-# team or application-level project with automation resources
+# The project's location in the folder hierarchy defined in `data/hierarchy/`.
 parent: team-a/dev
-# project prefix is forced via override in `main.tf`
+
+# The base name for the new project.
+# Note: The final project ID may be prefixed by the stage configuration.
 name: dev-ta-app-0
+
+# Project-level IAM grants for the service accounts defined below.
 iam:
   roles/owner:
     # refer to the rw service account defined below
@@ -303,33 +307,29 @@ iam:
   roles/viewer:
     # refer to the ro service account defined below
     - ro
+
+# --- Automation Configuration ---
+# Defines resources to be created in a central automation project.
 automation:
-  # no context is possible here
-  # use the complete project id
+  # The full project ID where automation resources (SAs, buckets) will live.
   project: xxx-prod-iac-teams-0
+
+  # Service Accounts to be created for this project's automation.
   service_accounts:
-    # resulting sa name: xxx-dev-ta-app-0-rw
+    # 'rw' -> xxx-dev-ta-app-0-rw
     rw:
-      description: Read/write automation sa for team a app 0.
-    # resulting sa name: xxx-dev-ta-app-0-ro
+      description: Read/write automation SA for team a app 0.
+    # 'ro' -> xxx-dev-ta-app-0-ro
     ro:
-      description: Read-only automation sa for team a app 0.
-    # resulting sa name: xxx-dev-ta-app-0-cicd-ro
-    cicd-ro:
-      description: Read-only WIF CI/CD service account
-    # resulting sa name: xxx-dev-ta-app-0-cicd-rw
+      description: Read-only automation SA for team a app 0.
+    # 'cicd-rw' -> xxx-dev-ta-app-0-cicd-rw
     cicd-rw:
-      description: Read-write WIF CI/CD service account
-  # Configure CI/CD Workload Identity Federation (WIF) for the given provider
-  # and setup impersonation roles for the service accounts.
-  cicd_config:
-    workload_identity_provider: github-public-sample
-    impersonations:
-      # cicd-ro can impersonate the ro service account
-      cicd-ro: ro
-      # cicd-rw can impersonate the rw service account
-      cicd-rw: rw
-    repository: my-org/my-repo
+      description: Read-write WIF service account for CI/CD pipelines.
+    # 'cicd-ro' -> xxx-dev-ta-app-0-cicd-ro
+    cicd-ro:
+      description: Read-only WIF service account for CI/CD pipelines.
+
+  # GCS bucket for storing this project's Terraform state.
   bucket:
     # resulting bucket name: xxx-dev-ta-app-0-tf-state
     description: Terraform state bucket for team a app 0.
@@ -340,36 +340,55 @@ automation:
       roles/storage.objectViewer:
         - rw
         - ro
-        - group:devops@example.org
-  # Defines the GCS bucket for storing CI/CD artifacts like provider configurations.
+  # ---------------------------------------------------------------------
+  # Optional: CI/CD configuration and artifact generation.
+  # The following three blocks ('cicd_config', 'outputs_bucket', 'templates')
+  # are optional but work together to enable automated CI/CD.
+  # ---------------------------------------------------------------------
+
+  # (Optional) Enables Workload Identity Federation and automatic provider file generation.
+  cicd_config:
+    # Key of the WIF provider from the bootstrap stage's configuration.
+    identity_provider: github-public-sample
+    # The Git repository allowed to authenticate via WIF.
+    repository: my-org/my-repo
+    # This map is the single source of truth for generating provider files
+    # and configuring impersonation.
+    # Example: 'cicd-ro' can impersonate the 'ro' service account.
+    impersonations:
+      cicd-ro: ro
+      cicd-rw: rw
+    # (Optional) Restrict impersonation to a specific branch.
+    # branch: main
+  # (Optional) GCS bucket for storing generated artifacts (e.g., workflows, providers).
   outputs_bucket:
-    # The bucket name is based on the controlling 'automation.project' ID, not this project's name.
-    # e.g., resulting name: xxx-prod-iac-teams-0-outputs
-    description: CI/CD outputs bucket for team a app 0.
-    iam:
-      # Allow the CI/CD service accounts to download the pre-configured
-      # provider files needed for pipeline execution.
-      roles/storage.objectViewer:
-        - cicd-ro
-        - cicd-rw
-  # Generate provider files and CI/CD workflow templates for the IaC project and inject
-  # the service accounts.
+    # Use 'create_new' to have the module create a bucket for you.
+    create_new:
+      description: CI/CD outputs bucket for team a app 0.
+      iam:
+        roles/storage.objectViewer:
+          - cicd-ro
+          - cicd-rw
+    # Or, use 'name' to point to a pre-existing central bucket.
+    # name: "my-orgs-central-cicd-bucket"
+
+  # (Optional) Generates CI/CD workflow files from templates.
   templates:
-    # Optional. If present, generates a CI/CD workflow file.
-    # The `plan` and `apply` blocks specify which CI/CD service account
-    # will execute each respective step in the pipeline. The provider file
-    # used for impersonation is automatically determined from the `impersonations`
-    # map in the `cicd_config` block.
+    # Optional: Specify a custom template for provider files.
+    # Defaults to 'providers.tf.tpl' in the stage's 'templates/' directory.
+    # provider: "my-custom-provider.tf.tpl"
+
+    # Define one or more CI/CD workflows to generate.
     workflow:
-      plan:
-        service_account: cicd-ro
-      apply:
-        service_account: cicd-rw
-    # Optional. Generates individual Terraform provider files for each service
-    # account listed, which are used by the CI/CD pipeline for impersonation.
-    provider_files:
-      - service_account: ro
-      - service_account: rw
+      # 'plan-and-apply' is the logical name for this workflow.
+      plan-and-apply:
+        # Filename of the template to use from the stage's 'templates/' directory.
+        template: workflow-github.yaml
+        # Variables passed to the template. The module resolves SA names to emails.
+        vars:
+          plan_service_account: cicd-ro
+          apply_service_account: cicd-rw
+          foo: bar
 ```
 
 ### Local Development State Bootstrapping
@@ -393,9 +412,34 @@ With permissions in place, you can initialize the project:
 
 3.  **Apply and Create State:** Run `terraform apply` to create the project's resources and write the initial `default.tfstate` file to the GCS bucket.
 
-#### Step 3: Rely on CI/CD
+#### Step 3: Manage Infrastructure via Pull Requests
 
-Once the state is bootstrapped, all future infrastructure management should go through the automated CI/CD pipeline, which uses keyless Workload Identity Federation.
+Once the project's state has been bootstrapped in GCS, all future infrastructure management should go through the automated CI/CD pipeline defined for the project's repository. The project factory has already generated the necessary workflow file for you.
+
+Your next steps are to integrate this file into your application repository and adopt the Pull Request-based workflow.
+
+1.  **Locate the Workflow File:** The generated workflow file is stored in the CI/CD outputs bucket. Using the example `dev-ta-app-0` project, you can find its workflow file at:
+  * `gs://xxx-prod-iac-teams-0-outputs/workflows/dev-ta-app-0-plan-and-apply.yaml`
+
+2.  **Download and Commit to a New Branch:**
+  * In your local application repository, create and switch to a new feature branch (e.g., `git checkout -b feature/setup-cicd`).
+  * Download the workflow file from GCS:
+    ```bash
+    gcloud storage cp gs://xxx-prod-iac-teams-0-outputs/workflows/dev-ta-app-0-plan-and-apply.yaml .github/workflows/terraform.yaml
+    ```
+  * Commit the new workflow file to your feature branch.
+
+3.  **Open a Pull Request to `terraform plan`:**
+  * Push your branch to the remote repository and open a Pull Request targeting the `main` branch (for example).
+  * The workflow will trigger on the `opened` event. It will run `terraform plan` with a read-only service account and post the plan's output as a comment on your PR.
+  * If you push any additional changes to your branch, the workflow will trigger again on the `synchronize` event, updating the plan in the PR comment.
+
+4.  **Merge the Pull Request to `terraform apply`:**
+  * Once the plan is reviewed and approved, merge the Pull Request.
+  * The workflow will trigger on the `closed` and `merged: true` event.
+  * This time, it will run `terraform apply` using the higher-privilege service account, deploying your changes.
+
+From this point forward, all infrastructure changes are managed declaratively. The pipeline provides a secure and auditable trail, with manual `terraform apply` from a developer's machine no longer being necessary. While this `plan on PR / apply on merge` workflow is a secure default, you can of course adjust the triggers in the workflow YAML file to match your team's specific branching strategy.
 
 ## Alternative patterns
 

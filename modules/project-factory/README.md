@@ -28,9 +28,16 @@ The code is meant to be executed by a high level service accounts with powerful 
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
   - [Service accounts and buckets](#service-accounts-and-buckets)
   - [Automation project and resources](#automation-project-and-resources)
+    - [Template Variables](#template-variables)
+    - [Workflow Templates](#workflow-templates)
+      - [vars.*](#vars)
+    - [global.*](#global)
+  - [Provider Templates](#provider-templates)
+    - [global.*](#global)
+  - [Config Example](#config-example)
 - [Billing budgets](#billing-budgets)
 - [Interpolation in YAML configuration attributes](#interpolation-in-yaml-configuration-attributes)
-- [Example](#example)
+- [Full Example](#full-example)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -102,15 +109,64 @@ Other than creating automation resources within the project via the `service_acc
 
 Automation resources are defined via the `automation` attribute in project configurations, which supports:
 
-- a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
-- an optional `service_accounts` list where each element defines a service account in the controlling project
-- an optional `bucket` which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
-- an optional `cicd_config` which defines the CI/CD automation configurations for the project that configures Workload Identity Federation (WIF) and grants impersonation permission
-- an optional `outputs_bucket` which defines a bucket in the controlling project containing CI/CD provider and workflow files
-- an optional `templates` which defines a set of templates for CI/CD workflows and provider files, which can be used to generate CI/CD pipelines or Terraform provider files
+- **`project`**: (Required) attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
+- **`service_accounts`**: (Optional) list where each element defines a service account in the controlling project
+- **`bucket`**: (Optional) which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+- **`cicd_config`**: (Optional) This block enables Workload Identity Federation (WIF). Its presence is the primary trigger for CI/CD setup. The `impersonations` map within this block is the **single source of truth** that both grants the necessary IAM permissions and automatically triggers the generation of a corresponding Terraform provider file for each target role. This removes the need to define the roles in multiple places.
+- **`outputs_bucket`**: (Optional) Defines a GCS bucket for storing the generated CI/CD artifacts (workflows and provider files). This block supports two modes: using `create_new` to have the module provision a bucket for you, or using `name` to point to a pre-existing bucket. If this block is omitted, artifacts can only be generated locally by setting the `automation_outputs.local_path` variable.
+- **`templates`**: (Optional) This block drives the artifact generation process.
+  - **`provider`**: An optional key to specify the filename of a custom template for provider files. If omitted, it defaults to `providers.tf.tpl`.
+  - **`workflow`**: An optional flexible map that allows you to define one or more CI/CD pipelines. Each entry consists of a `template` to specify the workflow file and a `vars` block to pass parameters directly into that template. The module intelligently resolves service account names in the `vars` block to their full email addresses.
 
-Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while buckets use a default `tf-state` suffix.
+Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while `bucket` uses a default `tf-state` suffix.
 
+#### Template Variables
+
+The module provides a rich set of variables to the `templatefile()` function, allowing for powerful and flexible templates. The variables are scoped into namespaces to prevent name collisions and clarify their origin.
+
+#### Workflow Templates
+
+Workflow templates (e.g., `workflow-github.yaml`) receive a map containing two top-level keys: `vars` and `global`.
+
+##### `vars.*`
+
+This namespace contains all key-value pairs that you define in the `vars:` block of your project's YAML configuration. The module provides the following "smart" resolution:
+
+* If a value corresponds to a service account name defined in `cicd_config.impersonations`, it is automatically replaced with that service account's full email address.
+* All other values (strings, numbers, etc.) are passed through as-is.
+
+**Example Usage in Template:**
+
+* `${vars.plan_service_account}` -\> `cicd-ro@...iam.gserviceaccount.com`
+* `${vars.foo}` -\> `"bar"`
+
+#### `global.*`
+
+This namespace contains variables that are automatically generated and provided by the module for context.
+
+| Variable | Description |
+|---|---|
+| `global.workflow_name` | A descriptive name for the workflow run, combining the project and workflow keys (e.g., `dev-tb-0-plan-and-apply`). |
+| `global.outputs_bucket` | The name of the GCS bucket where artifacts are stored. Will be an empty string if no bucket is configured. |
+| `global.identity_provider` | The full resource ID of the Workload Identity Pool Provider. Example: `projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider` |
+| `global.audiences` | A list of audiences for JWT tokens, used by some WIF providers like GitLab. |
+| `global.provider_file` | A map of generated provider filenames, keyed by the **target role**. This allows the template to explicitly request the provider file it needs for a given step. Example: `${global.provider_file.ro}` -\> `"dev-tb-0-ro-provider.tf"` |
+
+-----
+
+### Provider Templates
+
+Provider templates (e.g., `providers.tf.tpl`) receive a map containing a single `global` namespace.
+
+#### `global.*`
+
+| Variable | Description |
+|---|---|
+| `global.bucket` | The name of the GCS bucket for storing **Terraform state**. |
+| `global.project_id` | The Project ID of the central **automation project** where service accounts are hosted. |
+| `global.service_account`| The full email address of the **target service account** that will be impersonated by this provider configuration. |
+
+### Config Example
 ```yaml
 # file name: prod-app-example-0
 # prefix via factory defaults: foo
@@ -140,16 +196,8 @@ automation:
     # sa name: foo-prod-app-example-0-cicd-rw
     cicd-rw:
       description: Read-write WIF CI/CD service account
-  # Configure CI/CD Workload Identity Federation (WIF) for the given provider
-  # and setup impersonation roles for the service accounts.
-  cicd_config:
-    identity_provider: github-public-sample
-    impersonations:
-      # cicd-ro can impersonate the ro service account
-      cicd-ro: ro
-      # cicd-rw can impersonate the rw service account
-      cicd-rw: rw
-    repository: my-org/my-repo
+
+  # GCS bucket for storing this project's Terraform state.      
   bucket:
     # bucket name: foo-prod-app-example-0-tf-state
     description: Terraform state bucket for app example 0.
@@ -160,29 +208,58 @@ automation:
         - rw
         - ro
         - group:devops@example.org
-  # Defines the GCS bucket for storing CI/CD artifacts like provider configurations.
+  # ---------------------------------------------------------------------
+  # Optional: CI/CD configuration and artifact generation.
+  # The following three blocks ('cicd_config', 'outputs_bucket', 'templates')
+  # are optional but work together to enable automated CI/CD.
+  # ---------------------------------------------------------------------
+
+  # (Optional) Enables Workload Identity Federation and automatic provider file generation.
+  cicd_config:
+    # Key of the WIF provider in the `factories_config.context.federated_identity_providers` variable.
+    identity_provider: github-public-sample
+    # The Git repository allowed to authenticate via WIF.
+    repository: my-org/my-repo
+    # This map is the single source of truth for generating provider files
+    # and configuring impersonation.
+    # Example: 'cicd-ro' can impersonate the 'ro' service account.
+    impersonations:
+      # cicd-ro can impersonate the ro service account
+      cicd-ro: ro
+      # cicd-rw can impersonate the rw service account
+      cicd-rw: rw
+    # (Optional) Restrict impersonation to a specific branch.
+    # branch: main
+
+  # (Optional) GCS bucket for storing generated artifacts (e.g., workflows, providers).
   outputs_bucket:
-    # The bucket name is based on the controlling 'automation.project' ID, not this project's name.
-    # e.g., resulting name: foo-prod-iac-core-0-outputs
-    description: CI/CD outputs bucket for team a app 0.
-    iam:
-      # Allow the CI/CD service accounts to download the pre-configured
-      # provider files needed for pipeline execution.
-      roles/storage.objectViewer:
-        - cicd-ro
-        - cicd-rw
-  # Defines a mapping of providers to configurations that can be used for
-  # templating purposes, such as generating CI/CD workflows or Terraform
-  # provider files.
+    # Use 'create_new' to have the module create a bucket for you.
+    # e.g., resulting name: foo-prod-iac-core-0-outputs if a 'name' is not specified.
+    create_new:
+      description: CI/CD outputs bucket for team a app 0.
+      iam:
+        roles/storage.objectViewer:
+          - cicd-ro
+          - cicd-rw
+    # Or, use 'name' to point to a pre-existing central bucket.
+    # name: "my-orgs-central-cicd-bucket"
+  # (Optional) Generates CI/CD workflow files from templates.
   templates:
+    # Optional: Specify a custom template for provider files.
+    # Defaults to 'providers.tf.tpl'
+    # provider: "my-custom-provider.tf.tpl"
+
+    # Define one or more CI/CD workflows to generate.
     workflow:
-      plan:
-        service_account: cicd-ro
-      apply:
-        service_account: cicd-rw
-    provider_files:
-      - service_account: ro
-      - service_account: rw
+      # 'plan-and-apply' is the logical name for this workflow.
+      plan-and-apply:
+        # Filename of the template to use
+        template: workflow-github.yaml
+        # Variables passed to the template. The module resolves SA names to emails.
+        vars:
+          plan_service_account: cicd-ro
+          apply_service_account: cicd-rw
+          foo: bar
 ```
 
 ## Billing budgets
@@ -271,7 +348,7 @@ The following table lists the available context interpolations. External context
 | IaC bucket          | IAM principals       | `iam_principals`    | IaC service accounts               |
 | IaC service account | IAM principals       | `iam_principals`    |                                    |
 
-## Example
+## Full Example
 
 The module invocation using all optional features:
 
