@@ -214,16 +214,19 @@ The following table lists the available context interpolations. External context
 |                     |                      |                     | IaC service accounts               |
 |                     |                      |                     | other project service accounts     |
 |                     |                      |                     | other project IaC service accounts |
+|                     |                      |                     | project number in principals |
 | project             | tag bindings         | `tag_values`        |                                    |
 | project             | IAM principals       | `iam_principals`    | project service accounts           |
 |                     |                      |                     | IaC service accounts               |
 |                     |                      |                     | other project service accounts     |
 |                     |                      |                     | other project service agents     |
 |                     |                      |                     | other project IaC service accounts |
+|                     |                      |                     | project number in principals |
 | bucket              | IAM principals       | `iam_principals`    | project service accounts           |
 |                     |                      |                     | IaC service accounts               |
 |                     |                      |                     | other project service accounts     |
 |                     |                      |                     | other project IaC service accounts |
+|                     |                      |                     | project number in principals |
 | service account     | IAM projects         | `vpc_host_projects` |                                    |
 | service account     | `iam_sa_roles` |                     | service accounts in the same project |
 | IaC bucket          | IAM principals       | `iam_principals`    | IaC service accounts               |
