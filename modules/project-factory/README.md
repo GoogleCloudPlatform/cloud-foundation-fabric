@@ -355,7 +355,7 @@ module "project-factory" {
   }
   template_search_path = "./fabric/tests/modules/project_factory/templates"
 }
-# tftest files=0,1,2,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=0,1,2,3,4,5,6,7,8,9,10,11 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -396,6 +396,13 @@ tag_bindings:
 # tftest-file id=4 path=data/hierarchy/team-b/app-0/_config.yaml schema=folder.schema.json
 ```
 
+```yaml
+name: App 1
+tag_bindings:
+  drs-allow-all: org-policies/drs-allow-all
+# tftest-file id=5 path=data/hierarchy/team-b/app-1/_config.yaml schema=folder.schema.json
+```
+
 One project defined within the folder hierarchy:
 
 ```yaml
@@ -403,7 +410,7 @@ billing_account: 012345-67890A-BCDEF0
 services:
   - container.googleapis.com
   - storage.googleapis.com
-# tftest-file id=5 path=data/hierarchy/teams-iac-0.yaml schema=project.schema.json
+# tftest-file id=6 path=data/hierarchy/teams-iac-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -467,7 +474,7 @@ tags:
         iam:
           roles/resourcemanager.tagUser:
             - user:user@example.com
-# tftest-file id=6 path=data/projects/dev-ta-app0-be.yaml schema=project.schema.json
+# tftest-file id=7 path=data/projects/dev-ta-app0-be.yaml schema=project.schema.json
 ```
 
 This project defines a controlling project via the `automation` attributes using github:
@@ -539,13 +546,13 @@ automation:
           plan_service_account: cicd-ro
           apply_service_account: cicd-rw
           test_var_foo: "bar"
-# tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
+# tftest-file id=8 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
 
 This project defines a controlling project via the `automation` attributes using gitlab:
 
 ```yaml
-parent: team-b/app-0
+parent: team-b/app-1
 services:
 - run.googleapis.com
 - storage.googleapis.com
@@ -568,12 +575,12 @@ service_accounts:
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
-  # prefix: test-pf-dev-tb-0-0
+  # prefix: test-pf-dev-tb-1-0
   service_accounts:
     rw:
-      description: Team B app 0 read/write automation sa.
+      description: Team B app 1 read/write automation sa.
     ro:
-      description: Team B app 0 read-only automation sa.
+      description: Team B app 1 read-only automation sa.
     cicd-ro:
       description: RO CI/CD service account
     cicd-rw:
@@ -586,7 +593,7 @@ automation:
     repository: my-org/my-repo
     branch: main
   bucket:
-    description: Team B app 0 Terraform state bucket.
+    description: Team B app 1 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
         - rw
@@ -597,7 +604,7 @@ automation:
         - ro
   outputs_bucket:
     create_new:
-      description: CI/CD outputs bucket for Team B app 0.
+      description: CI/CD outputs bucket for Team B app 1.
       iam:
         roles/storage.objectViewer:
           - cicd-ro
@@ -611,7 +618,7 @@ automation:
           plan_service_account: cicd-ro
           apply_service_account: cicd-rw
           test_var_fiz: "baz"
-# tftest-file id=8 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
+# tftest-file id=9 path=data/projects/dev-tb-app1-0.yaml schema=project.schema.json
 ```
 
 A billing budget:
@@ -634,7 +641,7 @@ update_rules:
     disable_default_iam_recipients: true
     monitoring_notification_channels:
     - billing-default
-# tftest-file id=9 path=data/budgets/test-100.yaml schema=budget.schema.json
+# tftest-file id=10 path=data/budgets/test-100.yaml schema=budget.schema.json
 ```
 
 Granting permissions to service accounts defined in other project through interpolation:
@@ -659,7 +666,7 @@ service_accounts:
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
-# tftest-file id=10 path=data/projects/dev-tb-app0-1.yaml schema=project.schema.json
+# tftest-file id=11 path=data/projects/dev-tb-app0-1.yaml schema=project.schema.json
 ```
 
 <!-- TFDOC OPTS files:1 -->
