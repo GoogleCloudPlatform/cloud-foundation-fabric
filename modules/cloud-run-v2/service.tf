@@ -30,6 +30,7 @@ resource "google_cloud_run_v2_service" "service" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
+  iap_enabled          = local.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -274,6 +275,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   launch_stage         = var.launch_stage
   custom_audiences     = var.custom_audiences
   deletion_protection  = var.deletion_protection
+  iap_enabled          = local.iap_enabled
 
   template {
     labels         = var.revision.labels
@@ -521,4 +523,29 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
       each.value, ["serviceAccount:${local.trigger_sa_email}"]
     )
   )
+}
+
+locals {
+
+  iap_iam_additive = local.iap_enabled ? var.iap_config.iam_additive : []
+  iap_iam          = local.iap_enabled ? var.iap_config.iam : []
+
+}
+
+resource "google_iap_web_cloud_run_service_iam_member" "member" {
+  for_each               = toset(local.iap_iam_additive)
+  project                = local.service.project
+  location               = local.service.location
+  cloud_run_service_name = local.service.name
+  role                   = "roles/iap.httpsResourceAccessor"
+  member                 = each.key
+}
+
+resource "google_iap_web_cloud_run_service_iam_binding" "binding" {
+  for_each               = length(local.iap_iam) == 0 ? {} : { 1 = 1 }
+  project                = local.service.project
+  location               = local.service.location
+  cloud_run_service_name = local.service.name
+  role                   = "roles/iap.httpsResourceAccessor"
+  members                = local.iap_iam
 }
