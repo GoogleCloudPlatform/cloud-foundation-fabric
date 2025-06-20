@@ -23,7 +23,7 @@ variable "data_stores_configs" {
     }))
     content_config              = optional(string, "NO_CONTENT")
     create_advanced_site_search = optional(bool)
-    display_name                = optional(string, "Terraform managed.")
+    display_name                = optional(string)
     document_processing_config = optional(object({
       chunking_config = optional(object({
         layout_based_chunking_config = optional(object({
