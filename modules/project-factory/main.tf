@@ -155,7 +155,9 @@ module "projects-iam" {
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
-          ? vv
+          ? templatestring(
+            vv, { project_number = module.projects[each.key].number }
+          )
           : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
         )
       )
@@ -180,7 +182,9 @@ module "projects-iam" {
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
-            ? vv
+            ? templatestring(
+              vv, { project_number = module.projects[each.key].number }
+            )
             : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
           )
         )
@@ -206,7 +210,9 @@ module "projects-iam" {
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")
-          ? v.member
+          ? templatestring(
+            v.member, { project_number = module.projects[each.key].number }
+          )
           : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
         )
       )
@@ -231,7 +237,9 @@ module "projects-iam" {
       # passthrough + error handling using tonumber until Terraform gets fail/raise function
       (
         strcontains(k, ":")
-        ? k
+        ? templatestring(
+          k, { project_number = module.projects[each.key].number }
+        )
         : tonumber("[Error] Invalid member: '${k}' in project '${each.key}'")
       )
       ) => [
@@ -267,7 +275,9 @@ module "projects-iam" {
             # passthrough + error handling using tonumber until Terraform gets fail/raise function
             (
               strcontains(v.member, ":")
-              ? v.member
+              ? templatestring(
+                v.member, { project_number = module.projects[each.key].number }
+              )
               : tonumber("[Error] Invalid member: '${v.member}' in project '${each.key}'")
             )
           )
@@ -290,7 +300,9 @@ module "projects-iam" {
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
-            ? vv
+            ? templatestring(
+              vv, { project_number = module.projects[each.key].number }
+            )
             : tonumber("[Error] Invalid member: '${vv}' in project '${each.key}'")
           )
         )
@@ -329,7 +341,9 @@ module "buckets" {
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(vv, ":")
-          ? vv
+          ? templatestring(
+            vv, { project_number = module.projects[each.key].number }
+          )
           : tonumber("[Error] Invalid member: '${vv}' in project '${each.value.project_key}'")
         )
       )
@@ -352,7 +366,9 @@ module "buckets" {
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
-            ? vv
+            ? templatestring(
+              vv, { project_number = module.projects[each.key].number }
+            )
             : tonumber("[Error] Invalid member: '${vv}' in project '${each.value.project}'")
           )
         )
@@ -375,7 +391,9 @@ module "buckets" {
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")
-          ? v.member
+          ? templatestring(
+            v.member, { project_number = module.projects[each.key].number }
+          )
           : tonumber("[Error] Invalid member: '${v.member}' in project '${each.value.project}'")
         )
       )
