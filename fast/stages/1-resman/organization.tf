@@ -117,6 +117,9 @@ module "organization" {
       condition = lookup(v, "condition", null)
     }
   }
+  factories_config = {
+    tags = var.factories_config.tags
+  }
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {

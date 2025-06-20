@@ -22,6 +22,7 @@ variable "factories_config" {
   type = object({
     stage_2           = optional(string, "data/stage-2")
     stage_3           = optional(string, "data/stage-3")
+    tags              = optional(string, "data/tags")
     top_level_folders = optional(string, "data/top-level-folders")
   })
   nullable = false
