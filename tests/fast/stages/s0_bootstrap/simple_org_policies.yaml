@@ -446,7 +446,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - DISABLE_KEY
+          - is:DISABLE_KEY
           denied_values: null
     timeouts: null
   module.organization.google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"]:
