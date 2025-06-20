@@ -22,7 +22,7 @@ variable "annotations" {
 }
 
 variable "automations" {
-  description = "Configuration for automations associated with the deployment pipeline in a name => attributes format"
+  description = "Configuration for automations associated with the deployment pipeline in a name => attributes format."
   type = map(object({
     project_id      = optional(string, null)
     region          = optional(string, null)
@@ -76,13 +76,13 @@ variable "automations" {
       !(v.promote_release_rule == null && v.advance_rollout_rule == null && v.repair_rollout_rule == null && v.timed_promote_release_rule == null)
     ])
     error_message = <<EOF
-    At least one rule should be defined (promote_release_rule, advance_rollout_rule, repair_rollout_rule or timed_promote_release_rule)
+    At least one rule should be defined (promote_release_rule, advance_rollout_rule, repair_rollout_rule or timed_promote_release_rule).
     EOF
   }
 }
 
 variable "deploy_policies" {
-  description = "Configurations for Deployment Policies in a name => attributes format"
+  description = "Configurations for Deployment Policies in a name => attributes format."
   type = map(object({
     project_id  = optional(string, null)
     region      = optional(string, null)
@@ -148,7 +148,7 @@ variable "deploy_policies" {
       sum([for kk, vv in v.rollout_restrictions : (length(vv.weekly_windows) > 0 || length(vv.one_time_windows) > 0) ? 0 : 1]) == 0
     ])
     error_message = <<EOF
-    At least one window should be defined (weekly_windows or one_time_windows)
+    At least one window should be defined (weekly_windows or one_time_windows).
     EOF
   }
   validation {
@@ -157,7 +157,7 @@ variable "deploy_policies" {
       sum([for kk, vv in v.selectors : upper(vv.type) == "DELIVERY_PIPELINE" || upper(vv.type) == "TARGET" ? 0 : 1]) == 0
     ])
     error_message = <<EOF
-    Selector type should either be "DELIVERY_PIPELINE" or "TARGET"
+    Selector type should either be "DELIVERY_PIPELINE" or "TARGET."
     EOF
   }
 }
@@ -216,7 +216,7 @@ variable "suspended" {
 }
 
 variable "targets" {
-  description = "Configuration for new targets associated with the delivery pipeline in a list format. Order of the targets are defined by the order within the list"
+  description = "Configuration for new targets associated with the delivery pipeline in a list format. Order of the targets are defined by the order within the list."
   type = list(object({
     name                  = string
     create_target         = optional(bool, true)
@@ -286,10 +286,10 @@ variable "targets" {
   }
   validation {
     condition = alltrue([
-      for target in var.targets :
-      target.strategy != "CANARY" || alltrue([
-        for i, p in target.deployment_percentages :
-        p >= 0 && p < 100 && (i == 0 || p > target.deployment_percentages[i - 1])
+      for v in var.targets :
+      v.strategy != "CANARY" || alltrue([
+        for i, p in v.deployment_percentages :
+        i == 0 ? p >= 0 && p < 100 : p >= 0 && p < 100 && p > v.deployment_percentages[i - 1]
       ])
     ])
     error_message = "For canary strategy, deployment percentages must be in ascending order and each percentage must be between 0 and 99."
