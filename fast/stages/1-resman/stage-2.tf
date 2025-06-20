@@ -196,7 +196,7 @@ module "stage2-folder" {
   }
   org_policies = each.value.folder_config.org_policies
   tag_bindings = merge({
-    context = local.tag_values["${var.tag_names.context}/${each.key}"].id
+    var.tag_names.context = local.tag_values["${var.tag_names.context}/${each.key}"].id
     }, {
     for k, v in each.value.folder_config.tag_bindings : k => try(
       local.tag_values[v].id, v
@@ -213,7 +213,7 @@ module "stage2-folder-env" {
   parent   = module.stage2-folder[each.value.stage].id
   name     = each.value.name
   tag_bindings = {
-    environment = try(
+    var.tag_names.environment = try(
       local.tag_values["${var.tag_names.environment}/${each.value.tag_name}"].id,
       null
     )
