@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `fast/stages/0-bootstrap`: two new custom roles for KMS keys have been added: re-run stage 0 so that they are available to the resman stage, where they are required. [[#3147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3147)]
 - `modules/gke-nodepool`: renamed variable `network_config.additional_pod_network_config` to `network_config.additional_pod_network_configs` [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)]
 
 
@@ -17,6 +18,11 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3163)] Allow custom roles in context, add support for shared VPC IAM to project and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-15 08:01:22+00:00 -->
+- [[#3160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3160)] Add notebooks, appengine and appspot to dns policy routing in FAST networking stage ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-13 14:46:44+00:00 -->
+- [[#3162](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3162)] Improve and document org policy tags use in FAST resman stage ([ludoo](https://github.com/ludoo)) <!-- 2025-06-13 13:57:48+00:00 -->
+- [[#3154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3154)] Allow configuring project key format in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-11 11:18:03+00:00 -->
+- [[#3147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3147)] Fix IAM delegation for project factory on security KMS keys ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 10:56:30+00:00 -->
 - [[#3146](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3146)] Bump requests from 2.32.2 to 2.32.4 in /fast/project-templates/secops-anonymization-pipeline/source ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-06-10 08:51:36+00:00 -->
 - [[#3145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3145)] Add KMS keys interpolation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 08:24:25+00:00 -->
 - [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)] fix additional pod networks config creation in GKE node pool ([jacek-jablonski](https://github.com/jacek-jablonski)) <!-- 2025-06-05 11:41:51+00:00 -->
@@ -27,8 +33,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3163)] Allow custom roles in context, add support for shared VPC IAM to project and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-15 08:01:22+00:00 -->
 - [[#3156](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3156)] Allow to directly specify service agents for CMEK in project module (Composer v2 support) ([jnahelou](https://github.com/jnahelou)) <!-- 2025-06-12 18:27:41+00:00 -->
 - [[#3157](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3157)] Fixed problem with backend preference, changed it to boolean. Backend… ([apichick](https://github.com/apichick)) <!-- 2025-06-12 05:40:39+00:00 -->
+- [[#3154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3154)] Allow configuring project key format in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-11 11:18:03+00:00 -->
 - [[#3153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3153)] Bring back master ipv4 cidr block ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-06-11 09:51:47+00:00 -->
 - [[#3140](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3140)] Added recipe for Apigee X with SWP ([apichick](https://github.com/apichick)) <!-- 2025-06-11 05:40:17+00:00 -->
 - [[#3150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3150)] Added default compute network tier to project module ([apichick](https://github.com/apichick)) <!-- 2025-06-10 21:44:39+00:00 -->
@@ -61,6 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3160)] Add notebooks, appengine and appspot to dns policy routing in FAST networking stage ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-13 14:46:44+00:00 -->
 - [[#3126](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3126)] Allow multiple types in JSON schema docs tool ([ludoo](https://github.com/ludoo)) <!-- 2025-05-31 09:58:20+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 

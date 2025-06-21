@@ -234,7 +234,16 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project             = string
+    host_project = string
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
     network_users            = optional(list(string), [])
     service_agent_iam        = optional(map(list(string)), {})
     service_agent_subnet_iam = optional(map(list(string)), {})

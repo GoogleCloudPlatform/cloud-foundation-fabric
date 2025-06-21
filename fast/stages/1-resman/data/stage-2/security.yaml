@@ -28,17 +28,14 @@ folder_config:
       - roles/viewer
       - roles/resourcemanager.folderViewer
       - roles/resourcemanager.tagViewer
-    project-factory-rw:
-      - roles/cloudkms.cryptoKeyEncrypterDecrypter
     project-factory-ro:
-      - roles/cloudkms.viewer
-      - project_iam_viewer
+      - kms_key_viewer
     gcp-security-admins:
       - roles/editor
   # project factory delegated IAM grant
   iam_bindings:
     project_factory:
-      role: roles/resourcemanager.projectIamAdmin
+      role: kms_key_encryption_admin
       members:
         - project-factory-rw
       condition:

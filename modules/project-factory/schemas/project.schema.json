@@ -310,6 +310,9 @@
         "host_project": {
           "type": "string"
         },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
         "network_users": {
           "type": "array",
           "items": {
@@ -557,7 +560,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^[a-zA-Z0-9_/]+$"
             },
             "condition": {
               "type": "object",

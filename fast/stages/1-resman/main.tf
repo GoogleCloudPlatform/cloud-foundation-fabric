@@ -51,6 +51,9 @@ locals {
     { for k, v in local.stage3 : "${k}-rw" => module.stage3-sa-rw[k].email },
     { for k, v in local.stage3 : "${k}-ro" => module.stage3-sa-ro[k].email },
   )
+  stage_service_accounts_iam = {
+    for k, v in local.stage_service_accounts : k => "serviceAccount:${v}"
+  }
   tag_keys = (
     var.root_node == null
     ? module.organization[0].tag_keys

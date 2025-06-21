@@ -56,6 +56,9 @@ variable "custom_roles" {
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     billing_viewer                  = string
+    dns_zone_binder                 = string
+    kms_key_encryption_admin        = string
+    kms_key_viewer                  = string
     organization_admin_viewer       = string
     project_iam_viewer              = string
     service_project_network_admin   = string

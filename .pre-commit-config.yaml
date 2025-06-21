@@ -83,7 +83,7 @@ repos:
     entry: python3 tools/duplicate-diff.py
     language: python
     language_version: python3
-    files: '.*(\.sh|\.tf|\.tftpl|\.tpl)$'
+    files: '.*(\.sh|\.tf|\.tftpl|\.tpl|\.yaml)$'
     pass_filenames: true
     require_serial: true
 
