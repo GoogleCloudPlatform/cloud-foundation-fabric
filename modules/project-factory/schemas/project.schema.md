@@ -8,9 +8,18 @@
 
 - **automation**: *object*
   <br>*additional properties: false*
-  - **prefix**: *string*
+  - **cicd_config**: *object*
+    - ⁺**identity_provider**: *string*
+    - ⁺**repository**: *string*
+    - **branch**: *string*
+    - **impersonations**: *object*
+      - **`^[a-z0-9-]+$`**: *string*
   - ⁺**project**: *string*
   - **bucket**: *reference([bucket](#refs-bucket))*
+  - **outputs_bucket**: *object*
+    <br>*additional properties: false*
+    - **name**: *string*
+    - **create_new**: *reference([automation_outputs_bucket](#refs-automation_outputs_bucket))*
   - **service_accounts**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
@@ -25,6 +34,13 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+  - **templates**: *object*
+    <br>*additional properties: false*
+    - **workflow**: *object*
+      - **`^[a-z0-9_-]+$`**: *object*
+        - ⁺**template**: *string*
+        - **vars**: *object*
+    - **provider**: *string*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*
@@ -130,6 +146,20 @@
 
 ## Definitions
 
+- **automation_outputs_bucket**<a name="refs-automation_outputs_bucket"></a>: *object*
+  - **description**: *string*
+  - **iam**: *reference([iam](#refs-iam))*
+  - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+  - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **labels**: *object*
+    *additional properties: String*
+  - **location**: *string*
+  - **name**: *string*
+    <br>*default: outputs*
+  - **prefix**: *string*
+  - **storage_class**: *string*
+  - **uniform_bucket_level_access**: *boolean*
+  - **versioning**: *boolean*
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **description**: *string*
