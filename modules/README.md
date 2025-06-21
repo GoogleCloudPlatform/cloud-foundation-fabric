@@ -103,7 +103,7 @@ These modules are used in the examples included in this repository. If you are u
 
 ## AI
 
-- [Agentspace](./agentspace/README.md)
+- [AI Applications](./ai-applications/README.md)
 
 ## Development
 

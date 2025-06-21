@@ -22,7 +22,7 @@ iam.allowedPolicyMemberDomains:
   rules:
     - allow:
         values:
-          - ${organization.customer_id}
+          - is:${organization.customer_id}
       condition:
         title: Restrict member domains
         expression: |
@@ -54,7 +54,7 @@ iam.serviceAccountKeyExposureResponse:
   rules:
     - allow:
         values:
-          - DISABLE_KEY
+          - is:DISABLE_KEY
 
 iam.workloadIdentityPoolAwsAccounts:
   rules:

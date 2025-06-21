@@ -56,8 +56,14 @@
       "properties": {
         "access_type": {
           "type": "string"
+        },
+        "ipv6_only": {
+          "type": "boolean"
         }
       }
+    },
+    "ip_collection": {
+      "type": "string"
     },
     "name": {
       "type": "string"
