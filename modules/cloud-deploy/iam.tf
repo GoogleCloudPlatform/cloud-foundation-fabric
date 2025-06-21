@@ -25,23 +25,6 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
-  iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
-    role => concat(
-      try(var.iam[role], []),
-      try(local._iam_principals[role], [])
-    )
-  }
-
-  _target_iam_principal_roles = { for k, v in var.targets : v.name => distinct(flatten(values(v.iam_by_principals))) }
-  _target_iam_principals = {
-    for k, v in var.targets : v.name => {
-      for r in local._target_iam_principal_roles[v.name] : r => [
-        for kp, vp in v.iam_by_principals :
-        kp if try(index(vp, r), null) != null
-      ]
-    }
-  }
   _merge_target_iam = flatten([
     for kt, vt in var.targets : [
       for role in distinct(concat(keys(vt.iam), keys(local._target_iam_principals[vt.name]))) :
@@ -57,21 +40,44 @@ locals {
       }
     ]
   ])
+  _target_iam_principal_roles = {
+    for k, v in var.targets :
+    v.name => distinct(flatten(values(v.iam_by_principals)))
+  }
+  _target_iam_principals = {
+    for k, v in var.targets : v.name => {
+      for r in local._target_iam_principal_roles[v.name] : r => [
+        for kp, vp in v.iam_by_principals :
+        kp if try(index(vp, r), null) != null
+      ]
+    }
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
   target_iam = {
     for k, v in local._merge_target_iam : k => v
   }
-
   target_iam_bindings = merge([
     for k, v in var.targets : {
       for ki, vi in v.iam_bindings :
-      "${ki}_${k}" => merge(vi, { "project_id" = v.project_id, "region" = v.region, "name" = v.name })
+      "${ki}_${k}" => merge(
+        vi,
+        { "project_id" = v.project_id, "region" = v.region, "name" = v.name }
+      )
     }
   ]...)
-
   target_iam_bindings_additive = merge([
     for k, v in var.targets : {
       for ki, vi in v.iam_bindings_additive :
-      "${ki}_${k}" => merge(vi, { "project_id" = v.project_id, "region" = v.region, "name" = v.name })
+      "${ki}_${k}" => merge(
+        vi,
+        { "project_id" = v.project_id, "region" = v.region, "name" = v.name }
+      )
     }
   ]...)
 }

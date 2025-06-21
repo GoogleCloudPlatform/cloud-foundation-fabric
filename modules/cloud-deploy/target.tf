@@ -20,45 +20,41 @@ resource "google_clouddeploy_target" "default" {
     for name, target in var.targets :
     name => target if target.create_target == true
   }
-
   project           = coalesce(each.value.project_id, var.project_id)
   location          = coalesce(each.value.region, var.region)
   name              = each.value.name
+  annotations       = each.value.annotations
   deploy_parameters = each.value.target_deploy_parameters
   description       = each.value.description
-
+  labels            = each.value.labels
+  require_approval  = each.value.require_approval
   dynamic "execution_configs" {
-    for_each = each.value.execution_configs_usages == null && each.value.execution_configs_timeout == null ? [] : [""]
+    for_each = (
+      each.value.execution_configs_usages == null &&
+      each.value.execution_configs_timeout == null
+      ? []
+      : [""]
+    )
     iterator = each_exec_config
-
     content {
       usages            = each.value.execution_configs_usages
       execution_timeout = each.value.execution_configs_timeout
     }
   }
-
   dynamic "multi_target" {
     for_each = each.value.multi_target_target_ids == null ? [] : [""]
     iterator = each_multi_target
-
     content {
       target_ids = each.value.multi_target_target_ids
     }
   }
-
   dynamic "run" {
     for_each = each.value.cloud_run_configs == null ? [] : [""]
-
     content {
-      location = "projects/${coalesce(each.value.cloud_run_configs.project_id, each.value.project_id, var.project_id)}/locations/${coalesce(each.value.cloud_run_configs.region, each.value.region, var.region)}"
+      location = (
+        "projects/${coalesce(each.value.cloud_run_configs.project_id, each.value.project_id, var.project_id)}/locations/${coalesce(each.value.cloud_run_configs.region, each.value.region, var.region)}"
+      )
     }
   }
-
-
-  require_approval = each.value.require_approval
-
-  annotations = each.value.annotations
-
-  labels = each.value.labels
 }
 

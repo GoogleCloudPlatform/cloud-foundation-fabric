@@ -16,14 +16,15 @@
 
 
 resource "google_clouddeploy_delivery_pipeline" "default" {
+  project     = var.project_id
   location    = var.region
   name        = var.name
+  annotations = var.annotations
   description = var.description
-  project     = var.project_id
-
+  labels      = var.labels
+  suspended   = var.suspended
   dynamic "serial_pipeline" {
     for_each = lower(local.pipeline_type) == "serial" ? [""] : []
-
     content {
       dynamic "stages" {
         for_each = {
@@ -31,7 +32,6 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
           k => v if v.exclude_from_pipeline == false
         }
         iterator = each_target
-
         content {
           dynamic "deploy_parameters" {
             for_each = {
@@ -39,23 +39,18 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
               k => v
             }
             iterator = each_deploy_parameter
-
             content {
               values              = each_deploy_parameter.value.values
               match_target_labels = each_deploy_parameter.value.matching_target_labels
             }
           }
           profiles = each_target.value.profiles
-
           dynamic "strategy" {
             for_each = each_target.value.strategy == null ? [] : [""]
-
             content {
               dynamic "standard" {
                 for_each = upper(each_target.value.strategy) == "STANDARD" ? [""] : []
-
                 content {
-
                   verify = each_target.value.verify
                   dynamic "predeploy" {
                     for_each = each_target.value.predeploy_actions == null ? [] : [""]
@@ -71,10 +66,8 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
                   }
                 }
               }
-
               dynamic "canary" {
                 for_each = upper(each_target.value.strategy) == "CANARY" ? [""] : []
-
                 content {
                   canary_deployment {
                     percentages = each_target.value.deployment_percentages
@@ -92,15 +85,17 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
                       }
                     }
                   }
-
                   dynamic "custom_canary_deployment" {
-                    for_each = each_target.value.custom_canary_phase_configs != null && length(each_target.value.custom_canary_phase_configs) > 0 ? [""] : []
-
+                    for_each = (
+                      each_target.value.custom_canary_phase_configs != null &&
+                      length(each_target.value.custom_canary_phase_configs) > 0
+                      ? [""]
+                      : []
+                    )
                     content {
                       dynamic "phase_configs" {
                         for_each = each_target.value.custom_canary_phase_configs
                         iterator = each_phase_config
-
                         content {
                           phase_id   = each_phase_config.key
                           percentage = each_phase_config.value.percentage
@@ -121,16 +116,22 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
                       }
                     }
                   }
-
                   runtime_config {
                     dynamic "cloud_run" {
                       for_each = each_target.value.cloud_run_configs == null ? [] : [""]
-
                       content {
-                        automatic_traffic_control = each_target.value.cloud_run_configs.automatic_traffic_control
-                        canary_revision_tags      = each_target.value.cloud_run_configs.canary_revision_tags
-                        prior_revision_tags       = each_target.value.cloud_run_configs.prior_revision_tags
-                        stable_revision_tags      = each_target.value.cloud_run_configs.stable_revision_tags
+                        automatic_traffic_control = (
+                          each_target.value.cloud_run_configs.automatic_traffic_control
+                        )
+                        canary_revision_tags = (
+                          each_target.value.cloud_run_configs.canary_revision_tags
+                        )
+                        prior_revision_tags = (
+                          each_target.value.cloud_run_configs.prior_revision_tags
+                        )
+                        stable_revision_tags = (
+                          each_target.value.cloud_run_configs.stable_revision_tags
+                        )
                       }
                     }
 
@@ -139,17 +140,10 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
               }
             }
           }
-
           target_id = each_target.value.name
         }
       }
     }
   }
-
-  suspended = var.suspended
-
-  annotations = var.annotations
-
-  labels = var.labels
 }
 

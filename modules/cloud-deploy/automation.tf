@@ -16,16 +16,18 @@
 
 
 resource "google_clouddeploy_automation" "default" {
-  for_each = local.validated_automations
-
-  name              = each.key
+  for_each          = local.validated_automations
   project           = coalesce(each.value.project_id, var.project_id)
   location          = coalesce(each.value.region, var.region)
-  delivery_pipeline = google_clouddeploy_delivery_pipeline.default.name
-  service_account   = coalesce(each.value.service_account, local.compute_default_service_account)
+  name              = each.key
   annotations       = each.value.annotations
-  labels            = each.value.labels
+  delivery_pipeline = google_clouddeploy_delivery_pipeline.default.name
   description       = each.value.description
+  service_account = coalesce(
+    each.value.service_account, local.compute_default_service_account
+  )
+  labels    = each.value.labels
+  suspended = each.value.suspended
   selector {
     dynamic "targets" {
       for_each = {
@@ -40,16 +42,11 @@ resource "google_clouddeploy_automation" "default" {
       }
     }
   }
-
-  suspended = each.value.suspended
-
   dynamic "rules" {
     for_each = each.value.promote_release_rule == null ? [] : [""]
-
     content {
       dynamic "promote_release_rule" {
         for_each = each.value.promote_release_rule == null ? [] : [""]
-
         content {
           id                    = each.value.promote_release_rule.id
           wait                  = each.value.promote_release_rule.wait
@@ -59,14 +56,11 @@ resource "google_clouddeploy_automation" "default" {
       }
     }
   }
-
   dynamic "rules" {
     for_each = each.value.advance_rollout_rule == null ? [] : [""]
-
     content {
       dynamic "advance_rollout_rule" {
         for_each = each.value.advance_rollout_rule == null ? [] : [""]
-
         content {
           id            = each.value.advance_rollout_rule.id
           source_phases = each.value.advance_rollout_rule.source_phases
@@ -75,23 +69,17 @@ resource "google_clouddeploy_automation" "default" {
       }
     }
   }
-
   dynamic "rules" {
     for_each = each.value.repair_rollout_rule == null ? [] : [""]
-
     content {
-
       dynamic "repair_rollout_rule" {
         for_each = each.value.repair_rollout_rule == null ? [] : [""]
-
         content {
           id     = each.value.repair_rollout_rule.id
           phases = each.value.repair_rollout_rule.phases
           jobs   = each.value.repair_rollout_rule.jobs
-
           dynamic "repair_phases" {
             for_each = each.value.repair_rollout_rule.retry == null ? [] : [""]
-
             content {
               retry {
                 attempts     = each.value.repair_rollout_rule.retry.attempts
@@ -102,11 +90,14 @@ resource "google_clouddeploy_automation" "default" {
           }
           dynamic "repair_phases" {
             for_each = each.value.repair_rollout_rule.rollback == null ? [] : [""]
-
             content {
               rollback {
-                destination_phase                   = each.value.repair_rollout_rule.rollback.destination_phase
-                disable_rollback_if_rollout_pending = each.value.repair_rollout_rule.rollback.disable_rollback_if_rollout_pending
+                destination_phase = (
+                  each.value.repair_rollout_rule.rollback.destination_phase
+                )
+                disable_rollback_if_rollout_pending = (
+                  each.value.repair_rollout_rule.rollback.disable_rollback_if_rollout_pending
+                )
               }
             }
           }
@@ -114,15 +105,11 @@ resource "google_clouddeploy_automation" "default" {
       }
     }
   }
-
   dynamic "rules" {
     for_each = each.value.timed_promote_release_rule == null ? [] : [""]
-
     content {
-
       dynamic "timed_promote_release_rule" {
         for_each = each.value.timed_promote_release_rule == null ? [] : [""]
-
         content {
           id                    = each.value.timed_promote_release_rule.id
           destination_target_id = each.value.timed_promote_release_rule.destination_target_id
