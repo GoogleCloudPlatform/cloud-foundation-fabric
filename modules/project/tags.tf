@@ -14,10 +14,39 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Manages GCP Secure Tags and their bindings, with factory support.
+
 locals {
+  _factory_data_path = pathexpand(coalesce(var.factories_config.tags, "-"))
+  _factory_data_raw = {
+    for f in try(fileset(local._factory_data_path, "*.yaml"), []) :
+    f => yamldecode(file("${local._factory_data_path}/${f}"))
+  }
+  _factory_data = {
+    for f, v in local._factory_data_raw :
+    coalesce(lookup(v, "name", null), trimsuffix(f, ".yaml")) => {
+      description           = lookup(v, "description", null)
+      id                    = lookup(v, "id", null)
+      iam                   = lookup(v, "iam", {})
+      iam_bindings          = lookup(v, "iam_bindings", {})
+      iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
+      network               = lookup(v, "network", null)
+      values = {
+        for val in lookup(v, "values", []) :
+        val.short_name => {
+          description           = lookup(val, "description", null)
+          id                    = lookup(val, "id", null)
+          iam                   = lookup(val, "iam", {})
+          iam_bindings          = lookup(val, "iam_bindings", {})
+          iam_bindings_additive = lookup(val, "iam_bindings_additive", {})
+        } if lookup(val, "short_name", null) != null
+      }
+    }
+  }
+  tags = merge(local._factory_data, var.tags, var.network_tags)
   _tag_iam = flatten([
     for k, v in local.tags : [
-      for role in keys(v.iam) : {
+      for role in keys(lookup(v, "iam", {})) : {
         # we cycle on keys here so we don't risk injecting dynamic values
         role   = role
         tag    = k
@@ -38,18 +67,18 @@ locals {
   ])
   _tag_values = flatten([
     for k, v in local.tags : [
-      for vk, vv in v.values : {
-        description           = vv.description,
+      for vk, vv in lookup(v, "values", {}) : {
+        description           = lookup(vv, "description", null),
         key                   = "${k}/${vk}"
-        iam_bindings          = keys(vv.iam_bindings)
-        iam_bindings_additive = keys(vv.iam_bindings_additive)
-        id                    = try(vv.id, null)
+        iam_bindings          = keys(lookup(vv, "iam_bindings", {}))
+        iam_bindings_additive = keys(lookup(vv, "iam_bindings_additive", {}))
+        id                    = lookup(vv, "id", null)
         name                  = vk
         # we only store keys here so we don't risk injecting dynamic values
-        roles       = keys(vv.iam)
+        roles       = keys(lookup(vv, "iam", {}))
         tag         = k
         tag_id      = v.id
-        tag_network = try(v.network, null) != null
+        tag_network = lookup(v, "network", null) != null
       }
     ]
   ])
@@ -58,7 +87,7 @@ locals {
   }
   tag_iam_bindings = merge([
     for k, v in local.tags : {
-      for bk in keys(v.iam_bindings) : "${k}:${bk}" => {
+      for bk in keys(lookup(v, "iam_bindings", {})) : "${k}:${bk}" => {
         binding = bk
         tag     = k
         tag_id  = v.id
@@ -67,7 +96,7 @@ locals {
   ]...)
   tag_iam_bindings_additive = merge([
     for k, v in local.tags : {
-      for bk in keys(v.iam_bindings_additive) : "${k}:${bk}" => {
+      for bk in keys(lookup(v, "iam_bindings_additive", {})) : "${k}:${bk}" => {
         binding = bk
         tag     = k
         tag_id  = v.id
@@ -104,13 +133,12 @@ locals {
   tag_values = {
     for v in local._tag_values : v.key => v
   }
-  tags = merge(var.tags, var.network_tags)
 }
 
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each = { for k, v in local.tags : k => v if v.id == null }
+  for_each = { for k, v in local.tags : k => v if lookup(v, "id", null) == null }
   parent   = "projects/${local.project.project_id}"
   purpose = (
     lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
@@ -167,7 +195,7 @@ resource "google_tags_tag_key_iam_member" "bindings" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each = { for k, v in local.tag_values : k => v if v.id == null }
+  for_each = { for k, v in local.tag_values : k => v if lookup(v, "id", null) == null }
   parent = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id
