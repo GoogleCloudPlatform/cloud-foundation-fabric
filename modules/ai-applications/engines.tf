@@ -56,8 +56,12 @@ resource "google_discovery_engine_chat_engine" "default" {
     }
   }
 
-  common_config {
-    company_name = each.value.chat_engine_config.company_name
+  dynamic "common_config" {
+    for_each = each.value.chat_engine_config.company_name == null ? [] : [""]
+
+    content {
+      company_name = each.value.chat_engine_config.company_name
+    }
   }
 }
 
