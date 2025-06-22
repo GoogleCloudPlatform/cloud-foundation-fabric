@@ -15,9 +15,12 @@
  */
 
 locals {
-  pipeline_type                   = "serial"
   compute_default_service_account = length(data.google_compute_default_service_account.default) > 0 ? data.google_compute_default_service_account.default[0].email : null
-  validated_automations           = { for k, v in var.automations : k => v if length(v.promote_release_rule) > 0 || length(v.advance_rollout_rule) > 0 || length(v.repair_rollout_rule) > 0 || length(v.timed_promote_release_rule) > 0 }
+  pipeline_type                   = "serial"
+  validated_automations = {
+    for k, v in var.automations :
+    k => v if v != null && (length(v.promote_release_rule) > 0 || length(v.advance_rollout_rule) > 0 || length(v.repair_rollout_rule) > 0 || length(v.timed_promote_release_rule) > 0)
+  }
 }
 
 data "google_compute_default_service_account" "default" {

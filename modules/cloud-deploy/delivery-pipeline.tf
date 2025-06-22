@@ -16,10 +16,13 @@
 
 
 resource "google_clouddeploy_delivery_pipeline" "default" {
+  project     = var.project_id
   location    = var.region
   name        = var.name
+  annotations = var.annotations
   description = var.description
-  project     = var.project_id
+  labels      = var.labels
+  suspended   = var.suspended
 
   dynamic "serial_pipeline" {
     for_each = lower(local.pipeline_type) == "serial" ? [""] : []
@@ -30,91 +33,78 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
           for k, v in var.targets :
           k => v if v.exclude_from_pipeline == false
         }
-        iterator = each_target
+        iterator = et
 
         content {
+          profiles  = et.value.profiles
+          target_id = et.value.name
+
           dynamic "deploy_parameters" {
             for_each = {
-              for k, v in each_target.value.delivery_pipeline_deploy_parameters :
+              for k, v in et.value.delivery_pipeline_deploy_parameters :
               k => v
             }
-            iterator = each_deploy_parameter
+            iterator = edp
 
             content {
-              values              = each_deploy_parameter.value.values
-              match_target_labels = each_deploy_parameter.value.matching_target_labels
+              match_target_labels = edp.value.matching_target_labels
+              values              = edp.value.values
             }
           }
-          profiles = each_target.value.profiles
 
           dynamic "strategy" {
-            for_each = each_target.value.strategy == null ? [] : [""]
+            for_each = et.value.strategy == null ? [] : [""]
 
             content {
-              dynamic "standard" {
-                for_each = upper(each_target.value.strategy) == "STANDARD" ? [""] : []
-
-                content {
-
-                  verify = each_target.value.verify
-                  dynamic "predeploy" {
-                    for_each = each_target.value.predeploy_actions == null ? [] : [""]
-                    content {
-                      actions = each_target.value.predeploy_actions
-                    }
-                  }
-                  dynamic "postdeploy" {
-                    for_each = each_target.value.postdeploy_actions == null ? [] : [""]
-                    content {
-                      actions = each_target.value.postdeploy_actions
-                    }
-                  }
-                }
-              }
-
               dynamic "canary" {
-                for_each = upper(each_target.value.strategy) == "CANARY" ? [""] : []
+                for_each = upper(et.value.strategy) == "CANARY" ? [""] : []
 
                 content {
                   canary_deployment {
-                    percentages = each_target.value.deployment_percentages
-                    verify      = each_target.value.verify
-                    dynamic "predeploy" {
-                      for_each = each_target.value.predeploy_actions == null ? [] : [""]
+                    percentages = et.value.deployment_percentages
+                    verify      = et.value.verify
+
+                    dynamic "postdeploy" {
+                      for_each = et.value.postdeploy_actions == null ? [] : [""]
                       content {
-                        actions = each_target.value.predeploy_actions
+                        actions = et.value.postdeploy_actions
                       }
                     }
-                    dynamic "postdeploy" {
-                      for_each = each_target.value.postdeploy_actions == null ? [] : [""]
+
+                    dynamic "predeploy" {
+                      for_each = et.value.predeploy_actions == null ? [] : [""]
                       content {
-                        actions = each_target.value.postdeploy_actions
+                        actions = et.value.predeploy_actions
                       }
                     }
                   }
 
                   dynamic "custom_canary_deployment" {
-                    for_each = each_target.value.custom_canary_phase_configs != null && length(each_target.value.custom_canary_phase_configs) > 0 ? [""] : []
+                    for_each = length(et.value.custom_canary_phase_configs) > 0 ? [""] : []
 
                     content {
                       dynamic "phase_configs" {
-                        for_each = each_target.value.custom_canary_phase_configs
-                        iterator = each_phase_config
+                        for_each = et.value.custom_canary_phase_configs
+                        iterator = epc
 
                         content {
-                          phase_id   = each_phase_config.key
-                          percentage = each_phase_config.value.percentage
-                          verify     = each_phase_config.value.verify
-                          dynamic "predeploy" {
-                            for_each = each_phase_config.value.predeploy_actions == null ? [] : [""]
+                          percentage = epc.value.percentage
+                          phase_id   = epc.key
+                          verify     = epc.value.verify
+
+                          dynamic "postdeploy" {
+                            for_each = epc.value.postdeploy_actions == null ? [] : [""]
+
                             content {
-                              actions = each_phase_config.value.predeploy_actions
+                              actions = epc.value.postdeploy_actions
                             }
                           }
-                          dynamic "postdeploy" {
-                            for_each = each_phase_config.value.postdeploy_actions == null ? [] : [""]
+
+                          dynamic "predeploy" {
+                            for_each = epc.value.predeploy_actions == null ? [] : [""]
+
                             content {
-                              actions = each_phase_config.value.postdeploy_actions
+                              actions = epc.value.predeploy_actions
                             }
                           }
                         }
@@ -124,32 +114,45 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
 
                   runtime_config {
                     dynamic "cloud_run" {
-                      for_each = each_target.value.cloud_run_configs == null ? [] : [""]
+                      for_each = et.value.cloud_run_configs == null ? [] : [""]
 
                       content {
-                        automatic_traffic_control = each_target.value.cloud_run_configs.automatic_traffic_control
-                        canary_revision_tags      = each_target.value.cloud_run_configs.canary_revision_tags
-                        prior_revision_tags       = each_target.value.cloud_run_configs.prior_revision_tags
-                        stable_revision_tags      = each_target.value.cloud_run_configs.stable_revision_tags
+                        automatic_traffic_control = et.value.cloud_run_configs.automatic_traffic_control
+                        canary_revision_tags      = et.value.cloud_run_configs.canary_revision_tags
+                        prior_revision_tags       = et.value.cloud_run_configs.prior_revision_tags
+                        stable_revision_tags      = et.value.cloud_run_configs.stable_revision_tags
                       }
                     }
+                  }
+                }
+              }
 
+              dynamic "standard" {
+                for_each = upper(et.value.strategy) == "STANDARD" ? [""] : []
+
+                content {
+                  verify = et.value.verify
+
+                  dynamic "postdeploy" {
+                    for_each = et.value.postdeploy_actions == null ? [] : [""]
+                    content {
+                      actions = et.value.postdeploy_actions
+                    }
+                  }
+
+                  dynamic "predeploy" {
+                    for_each = et.value.predeploy_actions == null ? [] : [""]
+                    content {
+                      actions = et.value.predeploy_actions
+                    }
                   }
                 }
               }
             }
           }
-
-          target_id = each_target.value.name
         }
       }
     }
   }
-
-  suspended = var.suspended
-
-  annotations = var.annotations
-
-  labels = var.labels
 }
 

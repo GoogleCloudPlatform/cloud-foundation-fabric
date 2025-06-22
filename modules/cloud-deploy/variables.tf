@@ -26,25 +26,21 @@ variable "automations" {
   type = map(object({
     project_id      = optional(string, null)
     region          = optional(string, null)
-    service_account = optional(string, null)
     annotations     = optional(map(string))
-    labels          = optional(map(string))
     description     = optional(string, null)
+    labels          = optional(map(string))
+    service_account = optional(string, null)
     suspended       = optional(bool, false)
-    selector = optional(list(object({
-      id     = optional(string, "*")
-      labels = optional(map(string), {})
-    })), [{ id = "*" }])
+    advance_rollout_rule = optional(object({
+      id            = optional(string, "advance-rollout")
+      source_phases = optional(list(string), null)
+      wait          = optional(string, null)
+    }))
     promote_release_rule = optional(object({
       id                    = optional(string, "promote-release")
       wait                  = optional(string, null)
       destination_target_id = optional(string, null)
       destination_phase     = optional(string, null)
-    }))
-    advance_rollout_rule = optional(object({
-      id            = optional(string, "advance-rollout")
-      source_phases = optional(list(string), null)
-      wait          = optional(string, null)
     }))
     repair_rollout_rule = optional(object({
       id     = optional(string, "repair-rollout")
@@ -67,6 +63,10 @@ variable "automations" {
       time_zone             = optional(string, null)
       destination_phase     = optional(string, null)
     }))
+    selector = optional(list(object({
+      id     = optional(string, "*")
+      labels = optional(map(string), {})
+    })), [{ id = "*" }])
   }))
   default  = {}
   nullable = false
@@ -86,20 +86,16 @@ variable "deploy_policies" {
   type = map(object({
     project_id  = optional(string, null)
     region      = optional(string, null)
-    description = optional(string, null)
     annotations = optional(map(string))
+    description = optional(string, null)
     labels      = optional(map(string))
     suspended   = optional(bool, false)
-    selectors = optional(list(object({
-      id     = optional(string, "*")
-      type   = optional(string, "DELIVERY_PIPELINE")
-      labels = optional(map(string), {})
-    })), [{ id = "*", type = "DELIVERY_PIPELINE" }])
     rollout_restrictions = map(object({
-      invokers  = optional(list(string), null)
       actions   = optional(list(string), null)
+      invokers  = optional(list(string), null)
       time_zone = optional(string)
       weekly_windows = optional(list(object({
+        days_of_week = optional(list(string))
         start_time = optional(object({
           hours   = optional(string)
           minutes = optional(string)
@@ -112,13 +108,12 @@ variable "deploy_policies" {
           seconds = optional(string)
           nanos   = optional(string)
         }))
-        days_of_week = optional(list(string))
       })), [])
       one_time_windows = optional(list(object({
         start_date = optional(object({
-          year  = optional(string)
-          month = optional(string)
           day   = optional(string)
+          month = optional(string)
+          year  = optional(string)
         }))
         start_time = optional(object({
           hours   = optional(string)
@@ -127,9 +122,9 @@ variable "deploy_policies" {
           nanos   = optional(string)
         }))
         end_date = optional(object({
-          year  = optional(string)
-          month = optional(string)
           day   = optional(string)
+          month = optional(string)
+          year  = optional(string)
         }))
         end_time = optional(object({
           hours   = optional(string)
@@ -139,6 +134,11 @@ variable "deploy_policies" {
         }))
       })), [])
     }))
+    selectors = optional(list(object({
+      id     = optional(string, "*")
+      type   = optional(string, "DELIVERY_PIPELINE")
+      labels = optional(map(string), {})
+    })), [{ id = "*", type = "DELIVERY_PIPELINE" }])
   }))
   default  = {}
   nullable = false
@@ -218,34 +218,25 @@ variable "suspended" {
 variable "targets" {
   description = "Configuration for new targets associated with the delivery pipeline in a list format. Order of the targets are defined by the order within the list."
   type = list(object({
-    name                  = string
-    create_target         = optional(bool, true)
-    exclude_from_pipeline = optional(bool, false)
-    description           = optional(string, null)
-    project_id            = optional(string, null)
-    region                = optional(string, null)
-    profiles              = optional(list(string), [])
-    delivery_pipeline_deploy_parameters = optional(list(object({
-      values                 = optional(map(string), null)
-      matching_target_labels = optional(map(string), null)
-    })), [])
-    target_deploy_parameters  = optional(map(string), null)
+    project_id                = optional(string, null)
+    region                    = optional(string, null)
+    name                      = string
+    create_target             = optional(bool, true)
+    exclude_from_pipeline     = optional(bool, false)
+    annotations               = optional(map(string))
+    description               = optional(string, null)
+    deployment_percentages    = optional(list(number), [10])
     execution_configs_usages  = optional(list(string))
     execution_configs_timeout = optional(string, null)
-    multi_target_target_ids   = optional(list(string))
-    require_approval          = optional(bool, false)
-    annotations               = optional(map(string))
     labels                    = optional(map(string))
-    strategy                  = optional(string, "STANDARD")
-    verify                    = optional(bool, false)
+    multi_target_target_ids   = optional(list(string))
+    profiles                  = optional(list(string), [])
     predeploy_actions         = optional(list(string))
     postdeploy_actions        = optional(list(string))
-    deployment_percentages    = optional(list(number), [10])
-    custom_canary_phase_configs = optional(map(object({
-      deployment_percentage = string
-      predeploy_actions     = optional(list(string))
-      postdeploy_actions    = optional(list(string))
-    })), {})
+    require_approval          = optional(bool, false)
+    strategy                  = optional(string, "STANDARD")
+    target_deploy_parameters  = optional(map(string), null)
+    verify                    = optional(bool, false)
     cloud_run_configs = optional(object({
       project_id                = optional(string, null)
       region                    = optional(string, null)
@@ -254,6 +245,15 @@ variable "targets" {
       prior_revision_tags       = optional(list(string), null)
       stable_revision_tags      = optional(list(string), null)
     }))
+    custom_canary_phase_configs = optional(map(object({
+      deployment_percentage = string
+      predeploy_actions     = optional(list(string))
+      postdeploy_actions    = optional(list(string))
+    })), {})
+    delivery_pipeline_deploy_parameters = optional(list(object({
+      values                 = optional(map(string), null)
+      matching_target_labels = optional(map(string), null)
+    })), [])
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
