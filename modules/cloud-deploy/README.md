@@ -372,7 +372,7 @@ module "cloud_deploy" {
           time_zone = "Australia/Melbourne"
           weekly_windows = [{
             days_of_week = ["MONDAY", "TUESDAY"]
-            
+
             start_time = {
               hours   = "10"
               minutes = "30"
