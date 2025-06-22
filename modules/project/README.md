@@ -21,6 +21,7 @@ This module implements the creation and management of one GCP project including 
 - [Log Scopes](#log-scopes)
 - [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
 - [Tags](#tags)
+  - [Tag Factory](#tag-factory)
 - [Tag Bindings](#tag-bindings)
 - [Project-scoped Tags](#project-scoped-tags)
 - [Custom Roles](#custom-roles)
