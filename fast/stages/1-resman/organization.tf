@@ -43,13 +43,13 @@ module "organization" {
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {
     (var.tag_names.context) = {
-      description = "Resource management context."
-      iam         = try(local.tags.context.iam, {})
+      description = try(local.tags[var.tag_names.context].description, "Resource management context.")
+      iam         = try(local.tags[var.tag_names.context].iam, {})
       values      = local.context_tag_values
     },
     (var.tag_names.environment) = {
-      description = "Environment definition."
-      iam         = try(local.tags.environment.iam, {})
+      description = try(local.tags[var.tag_names.environment].description, "Environment definition.")
+      iam         = try(local.tags[var.tag_names.environment].iam, {})
       values      = local.environment_tag_values
     }
   })
