@@ -193,7 +193,7 @@ resource "google_tags_tag_key_iam_member" "bindings" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each = { for k, v in local.tag_values : k => v if v.id == null }
+  for_each = { for k, v in local.tag_values : k => v if lookup(v, "id", null) == null }
   parent = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id

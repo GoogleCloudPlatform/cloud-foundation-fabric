@@ -135,7 +135,7 @@ Refer to the [project module](../project/README.md#iam) for examples of the IAM 
 
 ### Organization Policy Factory
 
-See the [organization policy factory in the project module](../project#organization-policy-factory).
+See the [organization policy factory in the project module](../project/README.md#organization-policy-factory).
 
 ### Organization Policy Custom Constraints
 
