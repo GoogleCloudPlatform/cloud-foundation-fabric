@@ -17,13 +17,13 @@
 # tfdoc:file:description Manages GCP Secure Tags and their bindings, with factory support.
 
 locals {
-  _factory_data_path = pathexpand(coalesce(var.factories_config.tags, "-"))
-  _factory_data_raw = {
-    for f in try(fileset(local._factory_data_path, "*.yaml"), []) :
-    f => yamldecode(file("${local._factory_data_path}/${f}"))
+  _factory_tags_data_path = pathexpand(coalesce(var.factories_config.tags, "-"))
+  _factory_tags_data_raw = {
+    for f in try(fileset(local._factory_tags_data_path, "*.yaml"), []) :
+    f => yamldecode(file("${local._factory_tags_data_path}/${f}"))
   }
-  _factory_data = {
-    for f, v in local._factory_data_raw :
+  _factory_tags_data = {
+    for f, v in local._factory_tags_data_raw :
     coalesce(lookup(v, "name", null), trimsuffix(f, ".yaml")) => {
       description           = lookup(v, "description", null)
       id                    = lookup(v, "id", null)
@@ -43,7 +43,7 @@ locals {
       }
     }
   }
-  tags = merge(local._factory_data, var.tags, var.network_tags)
+  tags = merge(local._factory_tags_data, var.tags, var.network_tags)
   _tag_iam = flatten([
     for k, v in local.tags : [
       for role in keys(lookup(v, "iam", {})) : {
