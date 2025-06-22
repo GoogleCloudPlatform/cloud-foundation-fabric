@@ -19,7 +19,7 @@ locals {
   pipeline_type                   = "serial"
   validated_automations = {
     for k, v in var.automations :
-    k => v if v != null && ( try(length(v.promote_release_rule), 0) > 0 || try(length(v.advance_rollout_rule), 0) > 0 || try(length(v.repair_rollout_rule), 0) > 0 || try(length(v.timed_promote_release_rule), 0) > 0)
+    k => v if v != null && (try(length(v.promote_release_rule), 0) > 0 || try(length(v.advance_rollout_rule), 0) > 0 || try(length(v.repair_rollout_rule), 0) > 0 || try(length(v.timed_promote_release_rule), 0) > 0)
   }
 }
 
