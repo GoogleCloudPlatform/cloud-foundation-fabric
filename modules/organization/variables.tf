@@ -34,8 +34,11 @@ variable "factories_config" {
     custom_roles                  = optional(string)
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
+    tags                          = optional(string)
     context = optional(object({
       org_policies = optional(map(map(string)), {})
+      tag_keys     = optional(map(string), {})
+      tag_values   = optional(map(string), {})
     }), {})
   })
   nullable = false
