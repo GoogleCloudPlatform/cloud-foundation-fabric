@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Manages GCP Secure Tags and their bindings, with factory support.
+# tfdoc:file:description Manages GCP Secure Tags, keys, values, and IAM.
 
 locals {
   _factory_tags_data_path = pathexpand(coalesce(var.factories_config.tags, "-"))
@@ -23,34 +23,32 @@ locals {
     f => yamldecode(file("${local._factory_tags_data_path}/${f}"))
   }
   _factory_tags_data = {
-    for f, v in local._factory_tags_data_raw :
-    coalesce(lookup(v, "name", null), trimsuffix(f, ".yaml")) => {
-      description           = lookup(v, "description", null)
-      id                    = lookup(v, "id", null)
-      iam                   = lookup(v, "iam", {})
-      iam_bindings          = lookup(v, "iam_bindings", {})
-      iam_bindings_additive = lookup(v, "iam_bindings_additive", {})
-      network               = lookup(v, "network", null)
+    for f, v_raw in local._factory_tags_data_raw :
+    coalesce(lookup(v_raw, "name", null), trimsuffix(f, ".yaml")) => {
+      description           = lookup(v_raw, "description", null)
+      iam                   = lookup(v_raw, "iam", {})
+      iam_bindings          = lookup(v_raw, "iam_bindings", {})
+      iam_bindings_additive = lookup(v_raw, "iam_bindings_additive", {})
+      network               = lookup(v_raw, "network", null)
       values = {
-        for val in lookup(v, "values", []) :
-        val.short_name => {
-          description           = lookup(val, "description", null)
-          id                    = lookup(val, "id", null)
-          iam                   = lookup(val, "iam", {})
-          iam_bindings          = lookup(val, "iam_bindings", {})
-          iam_bindings_additive = lookup(val, "iam_bindings_additive", {})
-        } if lookup(val, "short_name", null) != null
+        for vk, vv_raw in lookup(v_raw, "values", {}) : vk => {
+          description           = lookup(vv_raw, "description", null)
+          iam                   = lookup(vv_raw, "iam", {})
+          iam_bindings          = lookup(vv_raw, "iam_bindings", {})
+          iam_bindings_additive = lookup(vv_raw, "iam_bindings_additive", {})
+        }
       }
     }
   }
   tags = merge(local._factory_tags_data, var.tags, var.network_tags)
+
   _tag_iam = flatten([
     for k, v in local.tags : [
       for role in keys(lookup(v, "iam", {})) : {
         # we cycle on keys here so we don't risk injecting dynamic values
         role   = role
         tag    = k
-        tag_id = v.id
+        tag_id = lookup(v, "id", null)
       }
     ]
   ])
@@ -68,7 +66,7 @@ locals {
   _tag_values = flatten([
     for k, v in local.tags : [
       for vk, vv in lookup(v, "values", {}) : {
-        description           = lookup(vv, "description", null),
+        description           = vv.description,
         key                   = "${k}/${vk}"
         iam_bindings          = keys(lookup(vv, "iam_bindings", {}))
         iam_bindings_additive = keys(lookup(vv, "iam_bindings_additive", {}))
@@ -77,7 +75,7 @@ locals {
         # we only store keys here so we don't risk injecting dynamic values
         roles       = keys(lookup(vv, "iam", {}))
         tag         = k
-        tag_id      = v.id
+        tag_id      = lookup(v, "id", null)
         tag_network = lookup(v, "network", null) != null
       }
     ]
@@ -90,7 +88,7 @@ locals {
       for bk in keys(lookup(v, "iam_bindings", {})) : "${k}:${bk}" => {
         binding = bk
         tag     = k
-        tag_id  = v.id
+        tag_id  = lookup(v, "id", null)
       }
     }
   ]...)
@@ -99,7 +97,7 @@ locals {
       for bk in keys(lookup(v, "iam_bindings_additive", {})) : "${k}:${bk}" => {
         binding = bk
         tag     = k
-        tag_id  = v.id
+        tag_id  = lookup(v, "id", null)
       }
     }
   ]...)

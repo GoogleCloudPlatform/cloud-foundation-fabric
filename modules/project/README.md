@@ -21,7 +21,7 @@ This module implements the creation and management of one GCP project including 
 - [Log Scopes](#log-scopes)
 - [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
 - [Tags](#tags)
-  - [Tag Factory](#tag-factory)
+  - [Tags Factory](#tags-factory)
 - [Tag Bindings](#tag-bindings)
 - [Project-scoped Tags](#project-scoped-tags)
 - [Custom Roles](#custom-roles)
@@ -996,9 +996,43 @@ module "project" {
 # tftest modules=1 resources=8 inventory=tags-network.yaml
 ```
 
-### Tag Factory
+### Tags Factory
 
-See the [tag factory in the organization module](../organization/README.md#tags-factory).
+Tags can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to tag key, where
+
+- the key name defaults to the file name but can be overridden via a `name` attribute in the yaml
+- The structure of the YAML file allows defining the `description`, `iam` bindings, and a map of `values` for the tag key, including their own descriptions and IAM.
+- Tags defined via the `tags` and `network_tags` variables are merged with those from the factory, and will override factory definitions in case of duplicate names.
+
+The example below deploys a `workloads` tag key and its values from a YAML file.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  factories_config = {
+    tags = "data/tags"
+  }
+}
+# tftest modules=1 resources=5 files=workload-tags inventory=tags-factory.yaml
+```
+
+```yaml
+# tftest-file id=workload-tags path=data/tags/workloads.yaml
+
+description: "Tag for workload classifications."
+iam:
+  "roles/resourcemanager.tagViewer":
+    - "group:devops@example.com"
+values:
+  frontend:
+    description: "Frontend workloads."
+  backend:
+    description: "Backend workloads."
+```
 
 ## Tag Bindings
 
@@ -1683,7 +1717,7 @@ alerts:
 | [quotas.tf](./quotas.tf) | None | <code>google_cloud_quotas_quota_preference</code> |
 | [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_project_default_service_accounts</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
-| [tags.tf](./tags.tf) | Manages GCP Secure Tags and their bindings, with factory support. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
+| [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-observability.tf](./variables-observability.tf) | None |  |
 | [variables-quotas.tf](./variables-quotas.tf) | None |  |
