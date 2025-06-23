@@ -40,8 +40,32 @@ locals {
       }
     }
   }
-  tags = merge(local._factory_tags_data, var.tags, var.network_tags)
-
+  _tags_merged = merge(local._factory_tags_data, var.tags, var.network_tags)
+  tags = {
+    for k, v in local._tags_merged : k => {
+      description           = v.description
+      iam                   = v.iam
+      iam_bindings          = v.iam_bindings
+      iam_bindings_additive = v.iam_bindings_additive
+      network               = lookup(v, "network", null)
+      id = try(coalesce(
+        lookup(v, "id", null),
+        lookup(var.factories_config.context.tag_keys, k, null)
+      ), null)
+      values = {
+        for vk, vv in lookup(v, "values", {}) : vk => {
+          description           = vv.description
+          iam                   = vv.iam
+          iam_bindings          = vv.iam_bindings
+          iam_bindings_additive = vv.iam_bindings_additive
+          id = try(coalesce(
+            lookup(vv, "id", null),
+            lookup(var.factories_config.context.tag_values, "${k}/${vk}", null)
+          ), null)
+        }
+      }
+    }
+  }
   _tag_iam = flatten([
     for k, v in local.tags : [
       for role in keys(lookup(v, "iam", {})) : {

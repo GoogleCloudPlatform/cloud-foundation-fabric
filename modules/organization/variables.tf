@@ -37,6 +37,8 @@ variable "factories_config" {
     tags                          = optional(string)
     context = optional(object({
       org_policies = optional(map(map(string)), {})
+      tag_keys     = optional(map(string), {})
+      tag_values   = optional(map(string), {})
     }), {})
   })
   nullable = false

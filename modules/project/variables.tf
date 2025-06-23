@@ -94,6 +94,8 @@ variable "factories_config" {
     context = optional(object({
       notification_channels = optional(map(string), {})
       org_policies          = optional(map(map(string)), {})
+      tag_keys              = optional(map(string), {})
+      tag_values            = optional(map(string), {})
     }), {})
   })
   nullable = false
