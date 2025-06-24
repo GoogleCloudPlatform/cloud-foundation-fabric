@@ -283,6 +283,7 @@ module "buckets" {
   prefix         = each.value.prefix
   name           = "${each.value.project_name}-${each.value.name}"
   encryption_key = each.value.encryption_key
+  force_destroy  = each.value.force_destroy
   iam = {
     for k, v in each.value.iam : k => [
       for vv in v : try(
