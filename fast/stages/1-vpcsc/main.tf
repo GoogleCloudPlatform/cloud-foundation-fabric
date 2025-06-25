@@ -43,6 +43,7 @@ module "vpc-sc-discovery" {
   ignore_folders   = var.resource_discovery.ignore_folders
   ignore_projects  = var.resource_discovery.ignore_projects
   include_projects = var.resource_discovery.include_projects
+  query            = "state:ACTIVE"
 }
 
 module "vpc-sc" {
