@@ -150,6 +150,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
     ? "Terraform-managed."
     : each.value.description
@@ -218,6 +219,7 @@ resource "google_compute_subnetwork" "private_nat" {
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
   description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
     ? "Terraform-managed private NAT subnet."
     : each.value.description
@@ -233,6 +235,7 @@ resource "google_compute_subnetwork" "psc" {
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
   description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
     ? "Terraform-managed subnet for Private Service Connect (PSC NAT)."
     : each.value.description
