@@ -40,6 +40,18 @@
               "default": "github"
             }
           }
+        },
+        "workflows_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tf_var_files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },

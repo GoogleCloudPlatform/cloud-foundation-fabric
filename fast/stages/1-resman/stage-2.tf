@@ -43,6 +43,9 @@ locals {
             branch = try(v.cicd_config.repository.branch, null)
             type   = try(v.cicd_config.repository.type, "github")
           })
+          workflows_config = {
+            tf_var_files = try(v.cicd_config.workflows_config.tf_var_files, [])
+          }
         }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
           name                  = v.folder_config.name

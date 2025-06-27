@@ -34,3 +34,14 @@ organization_config:
     sa_pf_vpcsc_rw:
       member: rw
       role: roles/accesscontextmanager.policyEditor
+# CI/CD config for this stage should reference the networking and security
+# tfvar output files, like in the following example
+# cicd_config:
+#   identity_provider: my-provider
+#   repository:
+#     name: my-org/my-repository
+#     type: github
+#   workflows_config:
+#     tf_var_files:
+#       - 2-networking.auto.tfvars.json
+#       - 2-security.auto.tfvars.json
