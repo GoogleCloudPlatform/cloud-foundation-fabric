@@ -29,6 +29,12 @@ variable "encryption_keys" {
   default  = {}
 }
 
+variable "impersonate_service_account" {
+  description = "Service account to impersonate for Google Cloud providers."
+  type        = string
+  nullable    = false
+}
+
 variable "location" {
   description = "Default location used when no location is specified."
   type        = string
