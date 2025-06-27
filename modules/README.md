@@ -101,6 +101,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Pub/Sub](./pubsub)
 - [Spanner instance](./spanner-instance)
 
+## AI
+
+- [AI Applications](./ai-applications/README.md)
+
 ## Development
 
 - [API Gateway](./api-gateway)
@@ -108,6 +112,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Cloud Deploy](./cloud-deploy)
 - [Secure Source Manager instance](./secure-source-manager-instance)
 - [Workstation cluster](./workstation-cluster)
 

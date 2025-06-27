@@ -415,6 +415,23 @@ variable "node_locations" {
   nullable    = false
 }
 
+variable "node_pool_auto_config" {
+  description = "Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters."
+  type = object({
+    cgroup_mode                   = optional(string)
+    kubelet_readonly_port_enabled = optional(bool, true)
+    network_tags                  = optional(list(string), [])
+    resource_manager_tags         = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition = contains(["CGROUPMODE_UNSPECIFIED", "CGROUPMODE_V1", "CGROUPMODE_V2"],
+    coalesce(var.node_pool_auto_config.cgroup_mode, "CGROUPMODE_UNSPECIFIED"))
+    error_message = "node_pool_auto_config.cgroup_mode must be CGROUPMODE_UNSPECIFIED, CGROUPMODE_V1 or CGROUPMODE_V2"
+  }
+}
+
 variable "project_id" {
   description = "Cluster project id."
   type        = string
