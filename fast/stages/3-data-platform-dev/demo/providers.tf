@@ -15,10 +15,10 @@
  */
 
 provider "google" {
-  impersonate_service_account = "AUTOMATION_DATA_PRODUCT_SERVICE_ACCOUNT"
+  impersonate_service_account = var.impersonate_service_account
 }
 provider "google-beta" {
-  impersonate_service_account = "AUTOMATION_DATA_PRODUCT_SERVICE_ACCOUNT"
+  impersonate_service_account = var.impersonate_service_account
 }
 
 # end provider.tf for data-product

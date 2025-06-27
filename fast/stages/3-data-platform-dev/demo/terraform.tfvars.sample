@@ -1,3 +1,5 @@
-project_id = "<replace-with-your-project-id>"
 authorized_dataset_on_curated = "<replace-with-your-dataset-id>"
-prefix="demo"
+location                      = "europe-west8"
+prefix                        = "demo"
+project_id                    = "<replace-with-your-project-id>"
+impersonate_service_account   = "<replace-with-service-account>"
