@@ -66,25 +66,21 @@ with models.DAG('data_pipeline_dag', default_args=default_args,
 
   customers_load = GCSToBigQueryOperator(
       task_id='customers_load', bucket=LAND_GCS,
-      source_objects=['customers.csv'], 
-      destination_project_dataset_table='{}:{}.{}'.format(
+      source_objects=['customers.csv'
+                     ], destination_project_dataset_table='{}:{}.{}'.format(
                          DP_PROJECT, LAND_BQ_DATASET, 'customers'),
-      create_disposition='CREATE_IF_NEEDED',
-      write_disposition='WRITE_APPEND',
-      schema_object="schema/customers.json",
-      schema_object_bucket=LAND_GCS,
+      create_disposition='CREATE_IF_NEEDED', write_disposition='WRITE_APPEND',
+      schema_object="schema/customers.json", schema_object_bucket=LAND_GCS,
       schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
       project_id=DP_PROJECT, impersonation_chain=[DP_SERVICE_ACCOUNT])
 
   purchases_load = GCSToBigQueryOperator(
       task_id='purchases_load', bucket=LAND_GCS,
-      source_objects=['purchases.csv'], 
-      destination_project_dataset_table='{}:{}.{}'.format(
+      source_objects=['purchases.csv'
+                     ], destination_project_dataset_table='{}:{}.{}'.format(
                          DP_PROJECT, LAND_BQ_DATASET, 'purchases'),
-      create_disposition='CREATE_IF_NEEDED',
-      write_disposition='WRITE_APPEND',
-      schema_object="schema/purchases.json", 
-      schema_object_bucket=LAND_GCS,
+      create_disposition='CREATE_IF_NEEDED', write_disposition='WRITE_APPEND',
+      schema_object="schema/purchases.json", schema_object_bucket=LAND_GCS,
       schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
       project_id=DP_PROJECT, impersonation_chain=[DP_SERVICE_ACCOUNT])
 
@@ -116,7 +112,6 @@ with models.DAG('data_pipeline_dag', default_args=default_args,
               "useLegacySql":
                   False
           }
-      }, impersonation_chain=[DP_SERVICE_ACCOUNT]
-  )
+      }, impersonation_chain=[DP_SERVICE_ACCOUNT])
 
 start >> [customers_load, purchases_load] >> join_customer_purchase >> end
