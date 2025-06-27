@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 variable "authorized_dataset_on_curated" {
-  description = "Authorized Dataset"
+  description = "Authorized Dataset."
   type        = string
 }
 
@@ -36,12 +36,6 @@ variable "location" {
   default     = "europe-west8"
 }
 
-variable "project_id" {
-  description = "Project ID to deploy resources."
-  type        = string
-  nullable    = false
-}
-
 variable "prefix" {
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
@@ -51,4 +45,8 @@ variable "prefix" {
   }
 }
 
-
+variable "project_id" {
+  description = "Project ID to deploy resources."
+  type        = string
+  nullable    = false
+}

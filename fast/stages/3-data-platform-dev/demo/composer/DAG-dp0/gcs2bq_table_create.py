@@ -65,54 +65,42 @@ with models.DAG('table_creation', default_args=default_args,
   end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
   customers_create = BigQueryCreateTableOperator(
-      task_id='customers_create',
-      project_id=DP_PROJECT,
-      dataset_id=LAND_BQ_DATASET,
-      table_id="customers",
-      table_resource={},
+      task_id='customers_create', project_id=DP_PROJECT,
+      dataset_id=LAND_BQ_DATASET, table_id="customers", table_resource={},
       if_exists="skip",
       gcs_schema_object="gs://{}/schema/customers.json".format(LAND_GCS),
-      impersonation_chain=[DP_SERVICE_ACCOUNT]
-  )
+      impersonation_chain=[DP_SERVICE_ACCOUNT])
 
   purchases_create = BigQueryCreateTableOperator(
-      task_id='purchases_create',
-      project_id=DP_PROJECT,
-      dataset_id=LAND_BQ_DATASET,
-      table_id="purchases",
-      table_resource={},
+      task_id='purchases_create', project_id=DP_PROJECT,
+      dataset_id=LAND_BQ_DATASET, table_id="purchases", table_resource={},
       if_exists="skip",
       gcs_schema_object="gs://{}/schema/purchases.json".format(LAND_GCS),
-      impersonation_chain=[DP_SERVICE_ACCOUNT]
-  )  
+      impersonation_chain=[DP_SERVICE_ACCOUNT])
 
   customer_purchase_create = BigQueryCreateTableOperator(
-      task_id='customer_purchase_create',
-      project_id=DP_PROJECT,
-      dataset_id=CURATED_BQ_DATASET,
-      table_id="customer_purchase",
-      table_resource={},
-      if_exists="skip",
-      gcs_schema_object="gs://{}/schema/customer_purchase.json".format(LAND_GCS),
-      impersonation_chain=[DP_SERVICE_ACCOUNT]
-  )
+      task_id='customer_purchase_create', project_id=DP_PROJECT,
+      dataset_id=CURATED_BQ_DATASET, table_id="customer_purchase",
+      table_resource={}, if_exists="skip",
+      gcs_schema_object="gs://{}/schema/customer_purchase.json".format(
+          LAND_GCS), impersonation_chain=[DP_SERVICE_ACCOUNT])
 
   exposure_view = BigQueryCreateTableOperator(
-      task_id="exposure_view",
-      project_id=DP_PROJECT,    
-      dataset_id=EXPOSURE_BQ_DATASET,
-      table_id="customer_purchase",
+      task_id="exposure_view", project_id=DP_PROJECT,
+      dataset_id=EXPOSURE_BQ_DATASET, table_id="customer_purchase",
       table_resource={
           "view": {
-              "query": """
+              "query":
+                  """
                   SELECT * FROM `{dp_prj}.{dp_curated_dataset}.customer_purchase`
               """.format(
                       dp_prj=DP_PROJECT,
                       dp_curated_dataset=CURATED_BQ_DATASET,
                   ),
-              "useLegacySql": False,
+              "useLegacySql":
+                  False,
           },
-      }, impersonation_chain=[DP_SERVICE_ACCOUNT]
-  )
+      }, impersonation_chain=[DP_SERVICE_ACCOUNT])
 
-start >> [customers_create, purchases_create, customer_purchase_create] >> exposure_view >> end
+start >> [customers_create, purchases_create, customer_purchase_create
+         ] >> exposure_view >> end
