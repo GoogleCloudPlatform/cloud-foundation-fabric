@@ -459,6 +459,9 @@
         "iam_bindings_additive": {
           "$ref": "#/$defs/iam_bindings_additive"
         },
+        "force_destroy": {
+          "type": "boolean"
+        },
         "labels": {
           "type": "object",
           "additionalProperties": {

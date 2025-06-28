@@ -83,11 +83,12 @@ resource "google_project_service" "project_service" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  location      = var.region
-  name          = "${local.prefix}-bucket"
-  project       = google_project.project.project_id
-  force_destroy = true
-  depends_on    = [google_project_service.project_service]
+  location                    = var.region
+  name                        = "${local.prefix}-bucket"
+  project                     = google_project.project.project_id
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  depends_on                  = [google_project_service.project_service]
 }
 
 resource "google_compute_network" "network" {

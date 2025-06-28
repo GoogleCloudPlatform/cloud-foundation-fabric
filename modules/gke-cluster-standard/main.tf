@@ -88,6 +88,18 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
+  node_pool_auto_config {
+    network_tags {
+      tags = var.node_pool_auto_config.network_tags
+    }
+    resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
+    node_kubelet_config {
+      insecure_kubelet_readonly_port_enabled = upper(var.node_pool_auto_config.kubelet_readonly_port_enabled)
+    }
+    linux_node_config {
+      cgroup_mode = var.node_pool_auto_config.cgroup_mode
+    }
+  }
   addons_config {
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
