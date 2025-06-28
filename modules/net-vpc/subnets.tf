@@ -203,6 +203,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
   description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
     ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
     : each.value.description
