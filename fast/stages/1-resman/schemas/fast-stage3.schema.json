@@ -56,7 +56,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "tf_var_files": {
+            "extra_files": {
               "type": "array",
               "items": {
                 "type": "string"

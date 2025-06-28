@@ -15,6 +15,11 @@ fast_stage_2 = {
         name   = "cloud-foundation-fabric/1-resman"
         branch = "main"
       }
+      workflows_config = {
+        extra_files = [
+          "99-user.auto.tfvars.json"
+        ]
+      }
     }
     organization_config = {
       iam_bindings_additive = {

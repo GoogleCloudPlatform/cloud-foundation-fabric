@@ -31,6 +31,122 @@ counts:
   modules: 45
   resources: 271
 
+values:
+  google_storage_bucket_object.workflows["2-project-factory"]:
+    bucket: fast2-prod-iac-core-outputs
+    cache_control: null
+    content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
+      \ Version 2.0 (the \"License\");\n# you may not use this file except in compliance\
+      \ with the License.\n# You may obtain a copy of the License at\n#\n#      http://www.apache.org/licenses/LICENSE-2.0\n\
+      #\n# Unless required by applicable law or agreed to in writing, software\n#\
+      \ distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT\
+      \ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the\
+      \ License for the specific language governing permissions and\n# limitations\
+      \ under the License.\n\nname: \"FAST project-factory stage\"\n\non:\n  pull_request:\n\
+      \    branches:\n      - main\n    types:\n      - closed\n      - opened\n \
+      \     - synchronize\n\nenv:\n  FAST_SERVICE_ACCOUNT: fast2-prod-resman-pf-1@fast2-prod-automation.iam.gserviceaccount.com\n\
+      \  FAST_SERVICE_ACCOUNT_PLAN: fast2-prod-resman-pf-1r@fast2-prod-automation.iam.gserviceaccount.com\n\
+      \  FAST_WIF_PROVIDER: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno\n\
+      \  SSH_AUTH_SOCK: /tmp/ssh_agent.sock\n  TF_PROVIDERS_FILE: 2-project-factory-providers.tf\n\
+      \  TF_PROVIDERS_FILE_PLAN: 2-project-factory-r-providers.tf\n  TF_VERSION: 1.11.4\n\
+      \njobs:\n  fast-pr:\n    # Skip PRs which are closed without being merged.\n\
+      \    if: >-\n      github.event.action == 'closed' && \n      github.event.pull_request.merged\
+      \ == true ||\n      github.event.action == 'opened' ||\n      github.event.action\
+      \ == 'synchronize'\n    permissions:\n      contents: read\n      id-token:\
+      \ write\n      issues: write\n      pull-requests: write\n    runs-on: ubuntu-latest\n\
+      \    steps:\n      - id: checkout\n        name: Checkout repository\n     \
+      \   uses: actions/checkout@v4\n\n      # set up SSH key authentication to the\
+      \ modules repository\n\n      - id: ssh-config\n        name: Configure SSH\
+      \ authentication\n        run: |\n          ssh-agent -a \"$SSH_AUTH_SOCK\"\
+      \ > /dev/null\n          ssh-add - <<< \"${{ secrets.CICD_MODULES_KEY }}\"\n\
+      \n      # set up step variables for plan / apply\n\n      - id: vars-plan\n\
+      \        if: github.event.pull_request.merged != true && success()\n       \
+      \ name: Set up plan variables\n        run: |\n          echo \"plan_opts=-lock=false\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"provider_file=${{env.TF_PROVIDERS_FILE_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n\n      - id: vars-apply\n        if: github.event.pull_request.merged\
+      \ == true && success()\n        name: Set up apply variables\n        run: |\n\
+      \          echo \"provider_file=${{env.TF_PROVIDERS_FILE}}\" >> \"$GITHUB_ENV\"\
+      \n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT}}\" >> \"$GITHUB_ENV\"\
+      \n\n      # set up authentication via Workload identity Federation and gcloud\n\
+      \n      - id: gcp-auth\n        name: Authenticate to Google Cloud\n       \
+      \ uses: google-github-actions/auth@v2\n        with:\n          workload_identity_provider:\
+      \ ${{env.FAST_WIF_PROVIDER}}\n          service_account: ${{env.service_account}}\n\
+      \          access_token_lifetime: 900s\n\n      - id: gcp-sdk\n        name:\
+      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v2\n  \
+      \      with:\n          install_components: alpha\n\n      # copy provider file\n\
+      \n      - id: tf-config-provider\n        name: Copy Terraform provider file\n\
+      \        run: |\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/providers/${{env.provider_file}}\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/0-bootstrap.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/1-resman.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/0-globals.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/99-user.auto.tfvars.json\"\
+      \ ./\n\n      - id: tf-setup\n        name: Set up Terraform\n        uses:\
+      \ hashicorp/setup-terraform@v3\n        with:\n          terraform_version:\
+      \ ${{env.TF_VERSION}}\n\n      # run Terraform init/validate/plan\n\n      -\
+      \ id: tf-init\n        name: Terraform init\n        continue-on-error: true\n\
+      \        run: |\n          terraform init -no-color\n\n      - id: tf-validate\n\
+      \        continue-on-error: true\n        name: Terraform validate\n       \
+      \ run: terraform validate -no-color\n\n      - id: tf-plan\n        name: Terraform\
+      \ plan\n        continue-on-error: true\n        run: |\n          terraform\
+      \ plan -input=false -out ../plan.out -no-color ${{env.plan_opts}}\n\n      -\
+      \ id: tf-apply\n        if: github.event.pull_request.merged == true && success()\n\
+      \        name: Terraform apply\n        continue-on-error: true\n        run:\
+      \ |\n          terraform apply -input=false -auto-approve -no-color ../plan.out\n\
+      \n      # PR comment with Terraform result from previous steps\n      # length\
+      \ is checked and trimmed for length so as to stay within the limit\n\n     \
+      \ - id: pr-comment\n        name: Post comment to Pull Request\n        continue-on-error:\
+      \ true\n        uses: actions/github-script@v7\n        if: github.event_name\
+      \ == 'pull_request'\n        env:\n          PLAN: ${{steps.tf-plan.outputs.stdout}}\\\
+      n${{steps.tf-plan.outputs.stderr}}\n        with:\n          script: |\n   \
+      \         const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            <details><summary>Validation Output</summary>\n\n         \
+      \   \\`\\`\\`\\n\n            ${{steps.tf-validate.outputs.stdout}}\n      \
+      \      \\`\\`\\`\n\n            </details>\n\n            ### Terraform Plan\
+      \ \\`${{steps.tf-plan.outcome}}\\`\n\n            <details><summary>Show Plan</summary>\n\
+      \n            \\`\\`\\`\\n\n            ${process.env.PLAN.split('\\n').filter(l\
+      \ => l.match(/^([A-Z\\s].*|)$$/)).join('\\n')}\n            \\`\\`\\`\n\n  \
+      \          </details>\n\n            ### Terraform Apply \\`${{steps.tf-apply.outcome}}\\\
+      `\n\n            *Pusher: @${{github.actor}}, Action: \\`${{github.event_name}}\\\
+      `, Working Directory: \\`${{env.tf_actions_working_dir}}\\`, Workflow: \\`${{github.workflow}}\\\
+      `*`;\n\n            github.rest.issues.createComment({\n              issue_number:\
+      \ context.issue.number,\n              owner: context.repo.owner,\n        \
+      \      repo: context.repo.repo,\n              body: output\n            })\n\
+      \n      - id: pr-short-comment\n        name: Post comment to Pull Request (abbreviated)\n\
+      \        uses: actions/github-script@v7\n        if: github.event_name == 'pull_request'\
+      \ && steps.pr-comment.outcome != 'success'\n        with:\n          script:\
+      \ |\n            const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            ### Terraform Plan \\`${{steps.tf-plan.outcome}}\\`\n\n   \
+      \         Plan output is in the action log.\n\n            ### Terraform Apply\
+      \ \\`${{steps.tf-apply.outcome}}\\`\n\n            *Pusher: @${{github.actor}},\
+      \ Action: \\`${{github.event_name}}\\`, Working Directory: \\`${{env.tf_actions_working_dir}}\\\
+      `, Workflow: \\`${{github.workflow}}\\`*`;\n\n            github.rest.issues.createComment({\n\
+      \              issue_number: context.issue.number,\n              owner: context.repo.owner,\n\
+      \              repo: context.repo.repo,\n              body: output\n      \
+      \      })\n\n      # exit on error from previous steps\n\n      - id: check-init\n\
+      \        name: Check init failure\n        if: steps.tf-init.outcome != 'success'\n\
+      \        run: exit 1\n\n      - id: check-validate\n        name: Check validate\
+      \ failure\n        if: steps.tf-validate.outcome != 'success'\n        run:\
+      \ exit 1\n\n      - id: check-plan\n        name: Check plan failure\n     \
+      \   if: steps.tf-plan.outcome != 'success'\n        run: exit 1\n\n      - id:\
+      \ check-apply\n        name: Check apply failure\n        if: github.event.pull_request.merged\
+      \ == true && steps.tf-apply.outcome != 'success'\n        run: exit 1\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: workflows/2-project-factory-workflow.yaml
+    retention: []
+    source: null
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+
 outputs:
   cicd_repositories:
     project-factory:
