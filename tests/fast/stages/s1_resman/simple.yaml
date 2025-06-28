@@ -34,7 +34,6 @@ counts:
 values:
   google_storage_bucket_object.workflows["2-project-factory"]:
     bucket: fast2-prod-iac-core-outputs
-    cache_control: null
     content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
       \ Version 2.0 (the \"License\");\n# you may not use this file except in compliance\
       \ with the License.\n# You may obtain a copy of the License at\n#\n#      http://www.apache.org/licenses/LICENSE-2.0\n\
@@ -133,19 +132,7 @@ values:
       \   if: steps.tf-plan.outcome != 'success'\n        run: exit 1\n\n      - id:\
       \ check-apply\n        name: Check apply failure\n        if: github.event.pull_request.merged\
       \ == true && steps.tf-apply.outcome != 'success'\n        run: exit 1\n"
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    detect_md5hash: different hash
-    event_based_hold: null
-    metadata: null
     name: workflows/2-project-factory-workflow.yaml
-    retention: []
-    source: null
-    source_md5hash: null
-    temporary_hold: null
-    timeouts: null
 
 outputs:
   cicd_repositories:
