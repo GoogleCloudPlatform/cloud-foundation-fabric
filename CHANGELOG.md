@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/ai-applications`: renamed `agentspace` module to `ai-applications` [[#3184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3184)]
 - `modules/gke-nodepool`: renamed variable `network_config.additional_pod_network_config` to `network_config.additional_pod_network_configs` [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)]
 
 
@@ -17,6 +18,10 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3193](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3193)] Only consider active projects to default VPC SC perimeter ([juliocc](https://github.com/juliocc)) <!-- 2025-06-25 16:01:01+00:00 -->
+- [[#3180](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3180)] Fixed hard-coded resource management tags (!var.tag_names) ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-20 09:50:58+00:00 -->
+- [[#3187](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3187)] Clean fast 2 security from vpcsc ([aumohr](https://github.com/aumohr)) <!-- 2025-06-20 09:22:22+00:00 -->
+- [[#3174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3174)] Fixed option to set descriptions for environment tag values ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-19 07:00:17+00:00 -->
 - [[#3146](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3146)] Bump requests from 2.32.2 to 2.32.4 in /fast/project-templates/secops-anonymization-pipeline/source ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-06-10 08:51:36+00:00 -->
 - [[#3145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3145)] Add KMS keys interpolation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 08:24:25+00:00 -->
 - [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)] fix additional pod networks config creation in GKE node pool ([jacek-jablonski](https://github.com/jacek-jablonski)) <!-- 2025-06-05 11:41:51+00:00 -->
@@ -27,6 +32,19 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3197](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3197)] Create (or import) subnets with empty description ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-28 02:15:05+00:00 -->
+- [[#3196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3196)] Added node_pool_auto_config to GKE cluster ([apichick](https://github.com/apichick)) <!-- 2025-06-26 18:26:09+00:00 -->
+- [[#3192](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3192)] Added option to set force_destroy on pf buckets ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-25 23:20:41+00:00 -->
+- [[#3191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3191)] fix failing E2E test for net-vpc ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-24 11:20:53+00:00 -->
+- [[#3189](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3189)] [module/ai-applications] fix module for unexpected updates from APIs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-06-22 20:59:16+00:00 -->
+- [[#3169](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3169)] Addition of Cloud Deploy Module ([vineeteldochan](https://github.com/vineeteldochan)) <!-- 2025-06-22 18:39:14+00:00 -->
+- [[#3177](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3177)] Add support for IPv6 only subnets and IP collections ([cmm-cisco](https://github.com/cmm-cisco)) <!-- 2025-06-20 16:22:09+00:00 -->
+- [[#3184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3184)] Rename agentspace module to ai-applications ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-06-20 07:53:18+00:00 -->
+- [[#3170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3170)] Add new Agentspace module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-06-19 09:36:28+00:00 -->
+- [[#3172](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3172)] feat: Update session affinity validation for ALB ([williamsmt](https://github.com/williamsmt)) <!-- 2025-06-18 13:38:35+00:00 -->
+- [[#3165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3165)] Cloud run direct iap ([msikora-rtb](https://github.com/msikora-rtb)) <!-- 2025-06-18 10:28:54+00:00 -->
+- [[#3149](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3149)] Add support for DNS zones to Apigee module ([apichick](https://github.com/apichick)) <!-- 2025-06-18 08:44:00+00:00 -->
+- [[#3161](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3161)] feat: ignores labels added by gh action in unmanaged cloud run service / job ([msikora-rtb](https://github.com/msikora-rtb)) <!-- 2025-06-16 08:09:14+00:00 -->
 - [[#3156](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3156)] Allow to directly specify service agents for CMEK in project module (Composer v2 support) ([jnahelou](https://github.com/jnahelou)) <!-- 2025-06-12 18:27:41+00:00 -->
 - [[#3157](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3157)] Fixed problem with backend preference, changed it to boolean. Backend… ([apichick](https://github.com/apichick)) <!-- 2025-06-12 05:40:39+00:00 -->
 - [[#3153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3153)] Bring back master ipv4 cidr block ([jacklever-hub24](https://github.com/jacklever-hub24)) <!-- 2025-06-11 09:51:47+00:00 -->
