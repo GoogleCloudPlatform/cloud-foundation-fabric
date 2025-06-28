@@ -54,7 +54,7 @@ locals {
             "2-security.auto.tfvars.json"
           ]
           ),
-          v.workflows_config.tf_var_files
+          v.workflows_config.extra_files
         )
       }
     )

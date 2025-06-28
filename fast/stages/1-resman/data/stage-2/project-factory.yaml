@@ -42,6 +42,6 @@ organization_config:
 #     name: my-org/my-repository
 #     type: github
 #   workflows_config:
-#     tf_var_files:
+#     extra_files:
 #       - 2-networking.auto.tfvars.json
 #       - 2-security.auto.tfvars.json

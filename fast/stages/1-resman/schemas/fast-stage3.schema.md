@@ -20,7 +20,7 @@
       <br>*default: github*, *enum: ['github', 'gitlab']*
   - **workflows_config**: *object*
     <br>*additional properties: false*
-    - **tf_var_files**: *array*
+    - **extra_files**: *array*
       - items: *string*
 - **folder_config**: *object*
   <br>*additional properties: false*

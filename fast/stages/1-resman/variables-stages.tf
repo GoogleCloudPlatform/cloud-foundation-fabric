@@ -26,7 +26,7 @@ variable "fast_stage_2" {
         type   = optional(string, "github")
       })
       workflows_config = optional(object({
-        tf_var_files = optional(list(string), [])
+        extra_files = optional(list(string), [])
       }), {})
     }))
     folder_config = optional(object({
@@ -128,7 +128,7 @@ variable "fast_stage_3" {
         type   = optional(string, "github")
       })
       workflows_config = optional(object({
-        tf_var_files = optional(list(string), [])
+        extra_files = optional(list(string), [])
       }), {})
     }))
     folder_config = optional(object({
