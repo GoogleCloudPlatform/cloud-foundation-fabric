@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/alloydb:40.1.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/ai-applications:40.1.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/alloydb:40.1.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/ai-applications:40.1.0-tofu"
   }
 }
