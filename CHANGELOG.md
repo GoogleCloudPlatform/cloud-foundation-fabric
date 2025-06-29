@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#3201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3201)] Update service-agents.yaml ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 17:59:06+00:00 -->
+- [[#3200](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3200)] Remove blueprint metadata validation ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 17:06:11+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 - [[#3114](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3114)] Allow creation of regional templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-05-27 12:18:40+00:00 -->
 
@@ -32,6 +34,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3201)] Update service-agents.yaml ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 17:59:06+00:00 -->
+- [[#3202](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3202)] Fix ai-applications provider_meta ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 17:44:05+00:00 -->
 - [[#3197](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3197)] Create (or import) subnets with empty description ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-28 02:15:05+00:00 -->
 - [[#3196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3196)] Added node_pool_auto_config to GKE cluster ([apichick](https://github.com/apichick)) <!-- 2025-06-26 18:26:09+00:00 -->
 - [[#3192](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3192)] Added option to set force_destroy on pf buckets ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-25 23:20:41+00:00 -->
@@ -79,6 +83,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3203](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3203)] Add PEP 723 dependencies to tfdoc.py, versions.py and build_service_agents.py ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 18:48:07+00:00 -->
+- [[#3200](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3200)] Remove blueprint metadata validation ([juliocc](https://github.com/juliocc)) <!-- 2025-06-28 17:06:11+00:00 -->
 - [[#3126](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3126)] Allow multiple types in JSON schema docs tool ([ludoo](https://github.com/ludoo)) <!-- 2025-05-31 09:58:20+00:00 -->
 - [[#3120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3120)] Bump Terraform to 1.11 ([juliocc](https://github.com/juliocc)) <!-- 2025-05-29 09:11:39+00:00 -->
 
