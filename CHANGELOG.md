@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-05-21 14:22:05+00:00 to: None since: v40.1.0 -->
 
+## [40.2.0] - 2025-06-29
+
 ### BREAKING CHANGES
 
 - `modules/ai-applications`: renamed `agentspace` module to `ai-applications` [[#3184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3184)]
 - `modules/gke-nodepool`: renamed variable `network_config.additional_pod_network_config` to `network_config.additional_pod_network_configs` [[#3134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3134)]
-
 
 ### BLUEPRINTS
 
@@ -1255,7 +1256,8 @@ All notable changes to this project will be documented in this file.
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...HEAD
+[40.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...40.2.0
 [40.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...40.1.0
 [40.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.2.0...v40.0.0
 [39.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.1.0...v39.2.0

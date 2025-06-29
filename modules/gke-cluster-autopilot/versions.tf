@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: 40.1.0
+# Fabric release: 40.2.0
 
 terraform {
   required_version = ">= 1.11.4"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gke-cluster-autopilot:40.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gke-cluster-autopilot:40.2.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gke-cluster-autopilot:40.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/gke-cluster-autopilot:40.2.0-tf"
   }
 }
