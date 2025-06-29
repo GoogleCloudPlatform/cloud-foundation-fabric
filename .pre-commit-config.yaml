@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,12 +62,6 @@ repos:
     files: (versions.tofu|^default-versions.tofu)$
     pass_filenames: false
     entry: /usr/bin/find . -type f -name 'versions.tofu' -exec cp default-versions.tofu {} \;
-  - id: validate_metadata
-    name: Validate blueprints metadata
-    language: system
-    pass_filenames: false
-    files: ^blueprints
-    entry: tools/validate_metadata.py -v --failed-only blueprints
   - id: check-names
     name: Check name lengths for FAST
     language: system

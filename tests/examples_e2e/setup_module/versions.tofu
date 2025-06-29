@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: 40.1.0
+# Fabric release: 41.0.0
 
 terraform {
   required_version = ">= 1.9.0"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/tests/examples_e2e/setup_module:40.1.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/tests/examples_e2e/setup_module:41.0.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/tests/examples_e2e/setup_module:40.1.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/tests/examples_e2e/setup_module:41.0.0-tofu"
   }
 }
