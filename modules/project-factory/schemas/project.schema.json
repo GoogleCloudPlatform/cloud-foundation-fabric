@@ -11,14 +11,73 @@
         "project"
       ],
       "properties": {
-        "prefix": {
-          "type": "string"
+        "cicd_config": {
+          "type": "object",
+          "required": [
+            "identity_provider",
+            "repository"
+          ],
+          "properties": {
+            "identity_provider": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "impersonations": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         },
         "project": {
           "type": "string"
         },
         "bucket": {
           "$ref": "#/$defs/bucket"
+        },
+        "outputs_bucket": {
+          "description": "Specifies the GCS bucket for automation outputs. Provide either 'name' for an existing bucket or 'create_new' to define a new one.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of an existing GCS bucket."
+            },
+            "create_new": {
+              "$ref": "#/$defs/automation_outputs_bucket"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "name"
+              ],
+              "not": {
+                "required": [
+                  "create_new"
+                ]
+              }
+            },
+            {
+              "required": [
+                "create_new"
+              ],
+              "not": {
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          ]
         },
         "service_accounts": {
           "type": "object",
@@ -59,6 +118,30 @@
                   "$ref": "#/$defs/iam_storage_roles"
                 }
               }
+            }
+          }
+        },
+        "templates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "workflow": {
+              "description": "A map of CI/CD workflows to generate for the project.",
+              "type": "object",
+              "patternProperties": {
+                "^[a-z0-9_-]+$": {
+                  "type": "object",
+                  "properties": {
+                    "template": { "type": "string" },
+                    "vars": { "type": "object" }
+                  },
+                  "required": ["template"]
+                }
+              }
+            },
+            "provider": {
+              "type": "string",
+              "description": "Optional. Path to a custom provider template file, relative to the stage's template directory. Defaults to 'providers.tf.tpl'."
             }
           }
         }
@@ -443,6 +526,50 @@
     }
   },
   "$defs": {
+    "automation_outputs_bucket": {
+      "description": "Definition for a new automation outputs bucket.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name component (suffix) of the bucket.",
+          "default": "outputs"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "uniform_bucket_level_access": {
+          "type": "boolean"
+        },
+        "versioning": {
+          "type": "boolean"
+        }
+      }
+    },
     "bucket": {
       "type": "object",
       "additionalProperties": false,

@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "automation_outputs" {
+  description = "Configuration for generating automation artifact files."
+  type = object({
+    local_path = optional(string, null)
+    stage_name = optional(string, "project-factory")
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "data_defaults" {
   description = "Optional default values used when corresponding project data from files are missing."
   type = object({
@@ -149,14 +159,22 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
-      custom_roles          = optional(map(string), {})
-      folder_ids            = optional(map(string), {})
-      iam_principals        = optional(map(string), {})
-      kms_keys              = optional(map(string), {})
-      perimeters            = optional(map(string), {})
-      tag_values            = optional(map(string), {})
-      vpc_host_projects     = optional(map(string), {})
-      notification_channels = optional(map(string), {})
+      custom_roles            = optional(map(string), {})
+      folder_ids              = optional(map(string), {})
+      iam_principals          = optional(map(string), {})
+      kms_keys                = optional(map(string), {})
+      perimeters              = optional(map(string), {})
+      tag_values              = optional(map(string), {})
+      vpc_host_projects       = optional(map(string), {})
+      notification_channels   = optional(map(string), {})
+      federated_identity_pool = optional(string)
+      federated_identity_providers = optional(map(object({
+        audiences        = optional(list(string))
+        issuer           = string
+        name             = string
+        principal_branch = string
+        principal_repo   = string
+      })))
     }), {})
     projects_config = optional(object({
       key_ignores_path = optional(bool, false)
@@ -243,6 +261,12 @@ variable "factories_data" {
     projects = optional(map(object({
       automation = optional(object({
         project = string
+        cicd_config = optional(object({
+          identity_provider = string
+          repository        = optional(string)
+          branch            = optional(string)
+          impersonations    = optional(map(string))
+        }))
         bucket = optional(object({
           location                    = string
           description                 = optional(string)
@@ -260,6 +284,22 @@ variable "factories_data" {
               description = optional(string)
             }))
           })), {})
+          outputs_bucket = optional(object({
+            name = optional(string)
+            create_new = optional(object({
+              description                 = optional(string)
+              iam                         = optional(map(list(string)), {})
+              iam_bindings                = optional(map(any), {})
+              iam_bindings_additive       = optional(map(any), {})
+              labels                      = optional(map(string), {})
+              location                    = optional(string)
+              name                        = optional(string, "outputs")
+              prefix                      = optional(string)
+              storage_class               = optional(string, "STANDARD")
+              uniform_bucket_level_access = optional(bool, true)
+              versioning                  = optional(bool)
+            }))
+          }), {})
           iam_bindings_additive = optional(map(object({
             member = string
             role   = string
@@ -299,6 +339,13 @@ variable "factories_data" {
           iam_sa_roles           = optional(map(list(string)), {})
           iam_storage_roles      = optional(map(list(string)), {})
         })), {})
+        templates = optional(object({
+          provider = optional(string)
+          workflow = optional(map(object({
+            template = string
+            vars     = optional(map(any), {})
+          })), {})
+        }))
       }))
       billing_account = optional(string)
       billing_budgets = optional(list(string), [])
@@ -405,6 +452,36 @@ variable "factories_data" {
       }))
     })), {})
   })
+  validation {
+    # This check iterates through all projects that have an 'outputs_bucket' defined.
+    # For each one, it ensures that 'name' and 'create_new' are mutually exclusive.
+    condition = alltrue([
+      for p in var.factories_data.projects :
+      (
+        try(p.automation.outputs_bucket.name, null) == null ||
+        try(p.automation.outputs_bucket.create_new, null) == null
+      ) if try(p.automation.outputs_bucket, null) != null
+    ])
+    error_message = "In 'outputs_bucket', you must specify either 'name' (for an existing bucket) or 'create_new' (to create a new one), but not both."
+  }
+  validation {
+    # This check ensures that if 'outputs_bucket' is defined, it's not empty.
+    condition = alltrue([
+      for p in var.factories_data.projects :
+      (
+        try(p.automation.outputs_bucket.name, null) != null ||
+        try(p.automation.outputs_bucket.create_new, null) != null
+      ) if try(p.automation.outputs_bucket, null) != null && length(keys(p.automation.outputs_bucket)) > 0
+    ])
+    error_message = "In 'outputs_bucket', you must specify either 'name' or 'create_new'."
+  }
   nullable = false
   default  = {}
+}
+
+variable "template_search_path" {
+  description = "The absolute path to the directory where templates are located. The module will use this as the base for resolving the 'template_path' values from the YAML data."
+  type        = string
+  default     = "templates"
+  nullable    = false
 }

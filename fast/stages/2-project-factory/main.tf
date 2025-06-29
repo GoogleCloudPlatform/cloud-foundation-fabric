@@ -18,6 +18,10 @@
 
 module "projects" {
   source = "../../../modules/project-factory"
+  automation_outputs = {
+    local_path = var.outputs_location
+    stage_name = var.stage_name
+  }
   data_defaults = {
     # more defaults are available, check the project factory variables
     billing_account  = var.billing_account.id
@@ -36,6 +40,8 @@ module "projects" {
       custom_roles = merge(
         var.custom_roles, var.factories_config.context.custom_roles
       )
+      federated_identity_pool      = var.automation.federated_identity_pool
+      federated_identity_providers = var.automation.federated_identity_providers
       folder_ids = merge(
         { for k, v in var.folder_ids : k => v if v != null },
         var.factories_config.context.folder_ids
@@ -67,4 +73,5 @@ module "projects" {
       )
     }
   })
+  template_search_path = "${path.module}/templates"
 }
