@@ -142,6 +142,7 @@ module "automation-bucket" {
   prefix         = each.value.prefix
   name           = each.value.bucket_name
   encryption_key = lookup(each.value, "encryption_key", null)
+  force_destroy  = lookup(each.value, "force_destroy", null)
   iam = {
     for k, v in lookup(each.value, "iam", {}) :
     k => distinct([

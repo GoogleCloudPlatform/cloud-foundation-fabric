@@ -39,13 +39,13 @@ variable "data_stores_configs" {
         }))
       }))
       # Accepted keys: docx, html, pdf
-      parsing_config_overrides = map(object({
+      parsing_config_overrides = optional(map(object({
         digital_parsing_config = optional(bool)
         layout_parsing_config  = optional(bool)
         ocr_parsing_config = optional(object({
           use_native_text = optional(bool)
         }))
-      }))
+      })))
     }))
     industry_vertical            = optional(string, "GENERIC")
     json_schema                  = optional(string)
@@ -115,7 +115,7 @@ variable "engines_configs" {
     data_store_ids = list(string)
     collection_id  = optional(string, "default_collection")
     chat_engine_config = optional(object({
-      allow_cross_region       = optional(bool)
+      allow_cross_region       = optional(bool, null)
       business                 = optional(string)
       company_name             = optional(string)
       default_language_code    = optional(string)

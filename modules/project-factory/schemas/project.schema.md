@@ -166,6 +166,7 @@
   - **iam**: *reference([iam](#refs-iam))*
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **force_destroy**: *boolean*
   - **labels**: *object*
     *additional properties: String*
   - **location**: *string*

@@ -73,6 +73,7 @@ locals {
         name                  = name
         description           = lookup(opts, "description", "Terraform-managed.")
         encryption_key        = lookup(opts, "encryption_key", null)
+        force_destroy         = lookup(opts, "force_destroy", null)
         iam                   = lookup(opts, "iam", {})
         iam_bindings          = lookup(opts, "iam_bindings", {})
         iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})

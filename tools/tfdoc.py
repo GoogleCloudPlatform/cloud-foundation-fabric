@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#    "click",
+#    "marko",
+# ]
+# ///
 '''Generate tables for Terraform root module files, outputs and variables.
 
 This tool generates nicely formatted Markdown tables from Terraform source

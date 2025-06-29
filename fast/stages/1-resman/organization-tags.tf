@@ -69,7 +69,7 @@ locals {
     for k, v in var.org_policy_tags.values :
     "${var.org_policy_tags.key_name}/${k}" => v
   }
-  # IAM principal expansion for user-specified tag values
+  # context expansion for user-specified tag values
   tags = {
     for k, v in var.tags : k => merge(v, {
       iam = {

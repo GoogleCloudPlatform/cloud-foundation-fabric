@@ -123,7 +123,7 @@ resource "google_discovery_engine_data_store" "default" {
       }
 
       dynamic "parsing_config_overrides" {
-        for_each = each.value.document_processing_config.parsing_config_overrides
+        for_each = coalesce(each.value.document_processing_config.parsing_config_overrides, {})
 
         content {
           file_type = parsing_config_overrides.key
