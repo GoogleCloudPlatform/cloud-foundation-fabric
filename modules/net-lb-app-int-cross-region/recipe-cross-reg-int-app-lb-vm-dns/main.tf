@@ -26,7 +26,9 @@ module "vpc" {
   count      = var.vpc_config.proxy_subnets_config == null ? 0 : 1
   project_id = regex("projects/([^/]+)/", var.vpc_config.network)[0]
   name       = regex("global/networks/([^/]+)$", var.vpc_config.network)[0]
-  vpc_create = false
+  vpc_reuse = {
+    use_data_source = true
+  }
   subnets_proxy_only = [
     for k, v in var.vpc_config.proxy_subnets_config : {
       ip_cidr_range = v

@@ -63,7 +63,9 @@ module "shared_vpc" {
   source     = "../../../modules/net-vpc"
   project_id = var.project_config.shared_vpc_service_config.host_project
   name       = var.network_config.shared_vpc.name
-  vpc_create = false
+  vpc_reuse = {
+    use_data_source = true
+  }
 }
 
 module "apigee_vpc" {
@@ -71,7 +73,12 @@ module "apigee_vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = coalesce(var.network_config.apigee_vpc.name, "apigee-vpc")
-  vpc_create = var.network_config.apigee_vpc.auto_create
+  vpc_reuse = (
+    var.network_config.apigee_vpc.auto_create == true
+    ? {
+      use_data_source = true
+    } : null
+  )
   psa_configs = [{
     ranges = merge(flatten([for k, v in var.apigee_config.instances : merge(
       v.runtime_ip_cidr_range == null ? {} : { "apigee-22-${k}" = v.runtime_ip_cidr_range },

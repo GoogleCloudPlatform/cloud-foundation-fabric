@@ -100,8 +100,20 @@ variable "psc_config" {
   nullable    = false
 }
 
-variable "vpc_create" {
-  description = "Boolean flag indicating whether the VPC should be created or not."
-  type        = bool
-  default     = true
+variable "vpc_reuse" {
+  description = "Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used."
+  type = object({
+    use_data_source = optional(bool, true)
+    vpc_attributes = optional(object({
+      network_id = number
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      try(var.vpc_reuse.use_data_source, null) != false ||
+      try(var.vpc_reuse.vpc_attributes, null) != null
+    )
+    error_message = "Reuse datasource can be disabled only if VPC attributes are set."
+  }
 }

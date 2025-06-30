@@ -35,7 +35,7 @@ locals {
       tags          = null
     }
     if(
-      var.vpc_create &&
+      var.vpc_reuse == null &&
       lookup(coalesce(var.create_googleapis_routes, {}), k, false)
     )
   }
