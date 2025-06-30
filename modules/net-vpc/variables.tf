@@ -384,7 +384,7 @@ variable "vpc_reuse" {
   description = "Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used."
   type = object({
     use_data_source = optional(bool, true)
-    vpc_attributes = optional(object({
+    attributes = optional(object({
       network_id = number
     }))
   })
@@ -392,8 +392,8 @@ variable "vpc_reuse" {
   validation {
     condition = (
       try(var.vpc_reuse.use_data_source, null) != false ||
-      try(var.vpc_reuse.vpc_attributes, null) != null
+      try(var.vpc_reuse.attributes, null) != null
     )
-    error_message = "Reuse datasource can be disabled only if VPC attributes are set."
+    error_message = "Reuse datasource can be disabled only if attributes are set."
   }
 }

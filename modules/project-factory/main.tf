@@ -129,7 +129,7 @@ module "projects-iam" {
   name     = module.projects[each.key].project_id
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name             = module.projects[each.key].name
       number           = module.projects[each.key].number
       services_enabled = module.projects[each.key].services

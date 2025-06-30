@@ -32,7 +32,7 @@ locals {
           var.name
         )
         name       = var.name
-        network_id = try(var.vpc_reuse.vpc_attributes.network_id, null)
+        network_id = try(var.vpc_reuse.attributes.network_id, null)
         self_link = format(
           "https://www.googleapis.com/compute/v1/projects/%s/global/networks/%s",
           var.project_id,

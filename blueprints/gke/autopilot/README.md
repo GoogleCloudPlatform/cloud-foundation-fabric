@@ -70,7 +70,7 @@ Alternatively you can also check all the above using the dashboards available in
 | [project_create](variables.tf#L66) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L80) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [vpc_name](variables.tf#L86) | VPC name. | <code>string</code> |  | <code>&#34;vpc&#34;</code> |
-| [vpc_reuse](variables.tf#L93) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  vpc_attributes &#61; optional&#40;object&#40;&#123;&#10;    network_id &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_reuse](variables.tf#L93) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  attributes &#61; optional&#40;object&#40;&#123;&#10;    network_id &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

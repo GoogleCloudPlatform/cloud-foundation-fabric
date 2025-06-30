@@ -41,8 +41,8 @@ module "project" {
   source = "../../../modules/project"
   name   = var.project_id
   project_reuse = {
-    use_data_source    = var._testing == null
-    project_attributes = var._testing
+    use_data_source = var._testing == null
+    attributes      = var._testing
   }
   services = [
     "apigee.googleapis.com",

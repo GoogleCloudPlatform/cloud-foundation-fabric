@@ -38,8 +38,8 @@ locals {
       try(var.project_reuse.use_data_source, null) == false
       ? {
         project_id = local.project_id
-        number     = try(var.project_reuse.project_attributes.number, null)
-        name       = try(var.project_reuse.project_attributes.name, null)
+        number     = try(var.project_reuse.attributes.number, null)
+        name       = try(var.project_reuse.attributes.name, null)
       }
       : {
         project_id = local.project_id

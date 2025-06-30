@@ -118,7 +118,7 @@ module "dd-projects-iam" {
   name     = module.dd-projects[each.key].project_id
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name             = module.dd-projects[each.key].name
       number           = module.dd-projects[each.key].number
       services_enabled = local.dd_services[each.key]
