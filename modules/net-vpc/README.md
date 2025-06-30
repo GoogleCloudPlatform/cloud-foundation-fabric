@@ -752,7 +752,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=6 inventory=ipv6_only.yaml e2e
+# tftest modules=1 resources=6 inventory=ipv6_only.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

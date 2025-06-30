@@ -24,3 +24,6 @@ tests:
   data_overrides_defaults:
     extra_dirs:
       - ../../tests/modules/project_factory/data/data_overrides_defaults/projects
+  key_ignores_path:
+    extra_dirs:
+      - ../../tests/modules/project_factory/data/key_ignores_path

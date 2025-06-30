@@ -48,7 +48,8 @@ folder_config:
         expression: |
           api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
             'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
-            'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
+            'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user',
+            '${custom_roles.dns_zone_binder}'
           ])
   # example conditional grants for stage 3s
   iam_bindings_additive: {}

@@ -41,7 +41,16 @@ variable "data_defaults" {
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project             = string
+      host_project = string
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
       network_users            = optional(list(string), [])
       service_agent_iam        = optional(map(list(string)), {})
       service_agent_subnet_iam = optional(map(list(string)), {})
@@ -131,6 +140,8 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
+    folders_data_path  = optional(string)
+    projects_data_path = optional(string)
     budgets = optional(object({
       billing_account   = string
       budgets_data_path = string
@@ -138,6 +149,7 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
+      custom_roles          = optional(map(string), {})
       folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
       kms_keys              = optional(map(string), {})
@@ -146,8 +158,9 @@ variable "factories_config" {
       vpc_host_projects     = optional(map(string), {})
       notification_channels = optional(map(string), {})
     }), {})
-    folders_data_path  = optional(string)
-    projects_data_path = optional(string)
+    projects_config = optional(object({
+      key_ignores_path = optional(bool, false)
+    }), {})
   })
   nullable = false
 }

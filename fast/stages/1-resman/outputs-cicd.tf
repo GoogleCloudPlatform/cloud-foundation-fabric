@@ -39,7 +39,7 @@ locals {
           apply = replace(local.cicd_workflow_providers[k], "_", "-")
           plan  = replace(local.cicd_workflow_providers["${k}-r"], "_", "-")
         }
-        tf_var_files = (
+        tf_var_files = concat((
           v.level == 2 ?
           [
             "0-bootstrap.auto.tfvars.json",
@@ -53,6 +53,8 @@ locals {
             "2-networking.auto.tfvars.json",
             "2-security.auto.tfvars.json"
           ]
+          ),
+          v.workflows_config.extra_files
         )
       }
     )

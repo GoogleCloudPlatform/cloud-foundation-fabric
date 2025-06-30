@@ -51,6 +51,18 @@
               "default": "github"
             }
           }
+        },
+        "workflows_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "extra_files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },

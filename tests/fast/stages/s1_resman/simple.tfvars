@@ -15,6 +15,11 @@ fast_stage_2 = {
         name   = "cloud-foundation-fabric/1-resman"
         branch = "main"
       }
+      workflows_config = {
+        extra_files = [
+          "99-user.auto.tfvars.json"
+        ]
+      }
     }
     organization_config = {
       iam_bindings_additive = {
@@ -133,8 +138,11 @@ automation = {
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
   billing_viewer                  = "organizations/123456789012/roles/billingViewer"
+  dns_zone_binder                 = "organizations/123456789012/roles/dnsZoneBinder"
   gcve_network_admin              = "organizations/123456789012/roles/gcveNetworkAdmin"
   gcve_network_viewer             = "organizations/123456789012/roles/gcveNetworkViewer"
+  kms_key_encryption_admin        = "organizations/123456789012/roles/kmsKeyEncryptionAdmin"
+  kms_key_viewer                  = "organizations/123456789012/roles/kmsKeyViewer"
   network_firewall_policies_admin = "organizations/123456789012/roles/networkFirewallPoliciesAdmin"
   ngfw_enterprise_admin           = "organizations/123456789012/roles/ngfwEnterpriseAdmin"
   ngfw_enterprise_viewer          = "organizations/123456789012/roles/ngfwEnterpriseViewer"
