@@ -1342,7 +1342,7 @@ module "project" {
   # avoid use of a data source when project attributes are available
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name   = module.create-project.name
       number = module.create-project.number
     }

@@ -210,7 +210,7 @@
         "use_data_source": {
           "type": "boolean"
         },
-        "project_attributes": {
+        "attributes": {
           "type": "object",
           "required": [
             "name",
