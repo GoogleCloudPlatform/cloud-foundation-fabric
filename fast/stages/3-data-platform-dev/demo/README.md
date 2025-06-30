@@ -13,7 +13,7 @@ The Data Product example will cover a Batch Cloud Storage to Bigquery data produ
 The data product example comes with:
 
 - Terraform file to deploy GCP resources in the Data Product Project
-- Simple CSV files to import, transform and expose
+- Schemas to create tables in BigQuery
 - Cloud Composer DAGs to create needed tables and perform the ELT pipeline on sample data
 
 ## Running the demo
@@ -28,7 +28,8 @@ terraform apply
 Copy sample data in the landing folder just created:
 
 ```bash
-gsutil cp -r data/* gs://LANDING_BUCKET/
+export LANDING_BUCKET=$(terraform output -raw landing_gcs_bucket)
+gcloud storage cp -r schemas/* gs://$LANDING_BUCKET/schemas
 ```
 
 Copy sample Airflow DAGs in the composer DAG GCS bucket:
@@ -48,6 +49,7 @@ From the composer UI run the DAG to create
 | name | description | modules |
 |---|---|---|
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>bigquery-dataset</code> · <code>gcs</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 
 ## Variables
@@ -60,4 +62,10 @@ From the composer UI run the DAG to create
 | [project_id](variables.tf#L54) | Project ID to deploy resources. | <code>string</code> | ✓ |  |  |
 | [encryption_keys](variables.tf#L21) | Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis. | <code title="object&#40;&#123;&#10;  bigquery &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  composer &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [location](variables.tf#L38) | Default location used when no location is specified. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |  |
+
+## Outputs
+
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| [landing_gcs_bucket](outputs.tf#L17) | The name of the landing GCS bucket. |  |  |
 <!-- END TFDOC -->
