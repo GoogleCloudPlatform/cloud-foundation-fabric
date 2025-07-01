@@ -33,7 +33,6 @@ gcloud storage cp -r schemas/* gs://$LANDING_BUCKET/schemas
 ```
 
 Copy sample Airflow DAGs in the composer DAG GCS bucket:
-
 ```bash
 export COMPOSER_GCS_BUCKET=$(terraform output -raw composer_gcs_bucket)
 gcloud storage cp -r composer/DAG-dp0/* gs://$COMPOSER_GCS_BUCKET/dags/DAG-dp0/
@@ -47,7 +46,7 @@ From the composer UI run the DAG to create
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>bigquery-dataset</code> · <code>gcs</code> | <code>google_storage_bucket_object</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>bigquery-dataset</code> · <code>gcs</code> | <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -68,8 +67,6 @@ From the composer UI run the DAG to create
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [composer_gcs_bucket](outputs.tf#L18) | The name of the Composer GCS bucket. |  |  |
-| [composer_variables_json](outputs.tf#L23) | A JSON object of variables for Composer. |  |  |
-| [dp_processing_service_account](outputs.tf#L36) | Service account for data processing. |  |  |
-| [landing_gcs_bucket](outputs.tf#L41) | The name of the landing GCS bucket. |  |  |
+| [dp_processing_service_account](outputs.tf#L17) | Service account for data processing. |  |  |
+| [landing_gcs_bucket](outputs.tf#L22) | The name of the landing GCS bucket. |  |  |
 <!-- END TFDOC -->

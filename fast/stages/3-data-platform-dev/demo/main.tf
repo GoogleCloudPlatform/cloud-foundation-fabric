@@ -47,20 +47,8 @@ module "cur-bq-0" {
   ]
 }
 
-data "google_composer_environment" "composer_env" {
-  project = var.composer_project_id
-  region  = var.location
-  name    = "jb-dp-domain-0"
-}
-
-data "google_storage_bucket" "composer_bucket" {
-  name = data.google_composer_environment.composer_env.storage_config[0]["bucket"]
-}
-
-resource "google_storage_bucket_object" "composer_variables" {
-  name   = "data/variables.json"
-  bucket = data.google_storage_bucket.composer_bucket.name
-  content = templatefile("composer/composer-variables.tf.tpl", {
+resource "local_file" "composer_variables" {
+  content = templatefile("composer/variables.tf.tpl", {
     dp_project                    = var.project_id
     location                      = var.location
     dp_processing_service_account = var.dp_processing_service_account
@@ -69,4 +57,5 @@ resource "google_storage_bucket_object" "composer_variables" {
     curated_bq_dataset            = module.cur-bq-0.dataset_id
     exposure_bq_dataset           = var.authorized_dataset_on_curated
   })
+  filename = "${path.module}/composer/variables.json"
 }
