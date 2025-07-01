@@ -29,7 +29,7 @@ Copy sample data in the landing folder just created:
 
 ```bash
 export LANDING_BUCKET=$(terraform output -raw landing_gcs_bucket)
-gcloud storage cp -r schemas/* gs://$LANDING_BUCKET/schemas
+gcloud storage cp -r data/schemas/* gs://$LANDING_BUCKET/schemas
 ```
 
 Copy sample Airflow DAGs in the composer DAG GCS bucket:
