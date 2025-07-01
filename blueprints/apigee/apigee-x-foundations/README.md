@@ -193,6 +193,9 @@ module "apigee-x-foundations" {
         europe-west4 = "projects/my-host-project/regions/europe-west4/subnetworks/my-subnet-psc-eu4"
       }
     }
+    apigee_vpc = {
+      name = "apigee-vpc"
+    }
   }
   ext_lb_config = {
     ssl_certificates = {
@@ -217,7 +220,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=6 resources=63
+# tftest modules=8 resources=63
 ```
 
 ### Apigee X in service project with peering disabled and exposed using Global LB
