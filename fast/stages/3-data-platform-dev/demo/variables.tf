@@ -24,6 +24,12 @@ variable "composer_project_id" {
   nullable    = false
 }
 
+variable "dp_processing_service_account" {
+  description = "Service account for data processing via Composer impersonation."
+  type        = string
+  nullable    = false
+}
+
 variable "encryption_keys" {
   description = "Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis."
   type = object({

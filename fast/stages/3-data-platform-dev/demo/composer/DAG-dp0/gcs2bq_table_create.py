@@ -35,7 +35,7 @@ CURATED_BQ_DATASET = Variable.get("CURATED_BQ_DATASET")
 LAND_BQ_DATASET = Variable.get("LAND_BQ_DATASET")
 LAND_GCS = Variable.get("LAND_GCS")
 DP_PROJECT = Variable.get("DP_PROJECT")
-DP_SERVICE_ACCOUNT = Variable.get("DP_SERVICE_ACCOUNT")
+DP_PROCESSING_SERVICE_ACCOUNT = Variable.get("DP_PROCESSING_SERVICE_ACCOUNT")
 
 # --------------------------------------------------------------------------------
 # Set default arguments
@@ -78,7 +78,7 @@ with models.DAG('table_creation', default_args=default_args,
         if_exists="skip",
         gcs_schema_object="gs://{}/schemas/landing/{}.json".format(
             LAND_GCS, table),
-        impersonation_chain=[DP_SERVICE_ACCOUNT],
+        impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT],
     )
     create_land_tables.append(task)
 
@@ -93,7 +93,7 @@ with models.DAG('table_creation', default_args=default_args,
         if_exists="skip",
         gcs_schema_object="gs://{}/schemas/curated/{}.json".format(
             LAND_GCS, table),
-        impersonation_chain=[DP_SERVICE_ACCOUNT],
+        impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT],
     )
     create_curated_tables.append(task)
 
@@ -112,7 +112,7 @@ with models.DAG('table_creation', default_args=default_args,
               "useLegacySql":
                   False,
           },
-      }, impersonation_chain=[DP_SERVICE_ACCOUNT])
+      }, impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT])
 
   all_creations = create_land_tables + create_curated_tables
   start >> all_creations >> exposure_view >> end

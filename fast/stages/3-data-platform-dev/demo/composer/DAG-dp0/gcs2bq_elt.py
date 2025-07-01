@@ -35,7 +35,7 @@ CURATED_BQ_DATASET = Variable.get("CURATED_BQ_DATASET")
 LAND_BQ_DATASET = Variable.get("LAND_BQ_DATASET")
 LAND_GCS = Variable.get("LAND_GCS")
 DP_PROJECT = Variable.get("DP_PROJECT")
-DP_SERVICE_ACCOUNT = Variable.get("DP_SERVICE_ACCOUNT")
+DP_PROCESSING_SERVICE_ACCOUNT = Variable.get("DP_PROCESSING_SERVICE_ACCOUNT")
 
 # --------------------------------------------------------------------------------
 # Set default arguments
@@ -71,8 +71,9 @@ with models.DAG('data_pipeline_dag', default_args=default_args,
                          DP_PROJECT, LAND_BQ_DATASET, 'customers'),
       create_disposition='CREATE_IF_NEEDED', write_disposition='WRITE_APPEND',
       schema_object="schema/customers.json", schema_object_bucket=LAND_GCS,
-      schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
-      project_id=DP_PROJECT, impersonation_chain=[DP_SERVICE_ACCOUNT])
+      schema_update_options=['ALLOW_FIELD_RELAXATION',
+                             'ALLOW_FIELD_ADDITION'], project_id=DP_PROJECT,
+      impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT])
 
   purchases_load = GCSToBigQueryOperator(
       task_id='purchases_load', bucket=LAND_GCS,
@@ -81,8 +82,9 @@ with models.DAG('data_pipeline_dag', default_args=default_args,
                          DP_PROJECT, LAND_BQ_DATASET, 'purchases'),
       create_disposition='CREATE_IF_NEEDED', write_disposition='WRITE_APPEND',
       schema_object="schema/purchases.json", schema_object_bucket=LAND_GCS,
-      schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
-      project_id=DP_PROJECT, impersonation_chain=[DP_SERVICE_ACCOUNT])
+      schema_update_options=['ALLOW_FIELD_RELAXATION',
+                             'ALLOW_FIELD_ADDITION'], project_id=DP_PROJECT,
+      impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT])
 
   join_customer_purchase = BigQueryInsertJobOperator(
       task_id='bq_join_customer_purchase', gcp_conn_id='bigquery_default',
@@ -112,6 +114,6 @@ with models.DAG('data_pipeline_dag', default_args=default_args,
               "useLegacySql":
                   False
           }
-      }, impersonation_chain=[DP_SERVICE_ACCOUNT])
+      }, impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT])
 
 start >> [customers_load, purchases_load] >> join_customer_purchase >> end

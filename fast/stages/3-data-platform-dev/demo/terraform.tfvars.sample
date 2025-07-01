@@ -1,6 +1,7 @@
 authorized_dataset_on_curated = "<replace-with-your-dataset-id>"
 composer_project_id           = "<replace-with-domain-shared-project-id>"
 impersonate_service_account   = "<replace-with-service-account>"
+dp_processing_service_account = "<replace-with-service-account-email>
 location                      = "europe-west8"
 prefix                        = "demo"
 project_id                    = "<replace-with-your-project-id>"

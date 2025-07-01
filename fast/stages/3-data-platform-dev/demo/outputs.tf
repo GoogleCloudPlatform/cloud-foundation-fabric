@@ -20,6 +20,24 @@ output "composer_gcs_bucket" {
   value       = data.google_storage_bucket.composer_bucket.name
 }
 
+output "composer_variables_json" {
+  description = "A JSON object of variables for Composer."
+  value = jsonencode({
+    DP_PROJECT                    = var.project_id
+    LOCATION                      = var.location
+    DP_PROCESSING_SERVICE_ACCOUNT = var.dp_processing_service_account
+    LAND_GCS                      = module.land-cs-0.name
+    LAND_BQ_DATASET               = module.land-bq-0.dataset_id
+    CURATED_BQ_DATASET            = module.cur-bq-0.dataset_id
+    EXPOSURE_BQ_DATASET           = var.authorized_dataset_on_curated
+  })
+}
+
+output "dp_processing_service_account" {
+  description = "Service account for data processing."
+  value       = var.dp_processing_service_account
+}
+
 output "landing_gcs_bucket" {
   description = "The name of the landing GCS bucket."
   value       = module.land-cs-0.name
