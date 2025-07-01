@@ -217,7 +217,7 @@ module "apigee-x-foundations" {
     }
   }
 }
-# tftest modules=8 resources=63
+# tftest modules=6 resources=63
 ```
 
 ### Apigee X in service project with peering disabled and exposed using Global LB
