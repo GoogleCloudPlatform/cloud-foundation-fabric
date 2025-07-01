@@ -67,6 +67,7 @@ module "shared_vpc" {
     var.network_config.shared_vpc.network_id == null
     ? {
       use_data_source = true
+      attributes      = null
     }
     : {
       use_data_source = false
@@ -75,7 +76,6 @@ module "shared_vpc" {
       }
     }
   )
-
 }
 
 module "apigee_vpc" {
