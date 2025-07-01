@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+
+output "composer_gcs_bucket" {
+  description = "The name of the Composer GCS bucket."
+  value       = data.google_storage_bucket.composer_bucket.name
+}
+
 output "landing_gcs_bucket" {
   description = "The name of the landing GCS bucket."
   value       = module.land-cs-0.name

@@ -18,6 +18,12 @@ variable "authorized_dataset_on_curated" {
   type        = string
 }
 
+variable "composer_project_id" {
+  description = "Project ID where the shared Composer environment for the domain is located."
+  type        = string
+  nullable    = false
+}
+
 variable "encryption_keys" {
   description = "Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis."
   type = object({

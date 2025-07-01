@@ -46,3 +46,13 @@ module "cur-bq-0" {
     }
   ]
 }
+
+data "google_composer_environment" "composer_env" {
+  project = var.composer_project_id
+  region  = var.location
+  name    = "jb-dp-domain-0"
+}
+
+data "google_storage_bucket" "composer_bucket" {
+  name = data.google_composer_environment.composer_env.storage_config[0]["bucket"]
+}
