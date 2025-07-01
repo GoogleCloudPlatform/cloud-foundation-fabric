@@ -69,7 +69,7 @@ module "shared_vpc" {
       use_data_source = true
     }
     : {
-      user_data_source = false
+      use_data_source = false
       attributes = {
         network_id = var.network_config.shared_vpc.network_id
       }
