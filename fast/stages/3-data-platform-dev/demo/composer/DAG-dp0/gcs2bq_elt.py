@@ -33,10 +33,9 @@ from airflow import models
 from airflow.decorators import task
 from airflow.models import Variable
 from airflow.operators import empty
+from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.providers.google.cloud.operators.bigquery import (
-    BigQueryCheckOperator,
-    BigQueryInsertJobOperator,
-)
+    BigQueryInsertJobOperator,)
 from airflow.providers.google.cloud.sensors.bigquery import (
     BigQueryTableExistenceSensor,)
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import (
@@ -350,18 +349,51 @@ with models.DAG(
       ],
   )
 
-  # Validate that the customer_purchases table has data after the join
-  validate_customer_purchases_data = BigQueryCheckOperator(
-      task_id="validate_customer_purchases_data",
-      sql=
-      ("SELECT COUNT(*) > 0 FROM `{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}."
-       "{{ ti.xcom_pull(task_ids='load_config')['CURATED_BQ_DATASET'] }}.customer_purchases`"
-      ),
-      use_legacy_sql=False,
-      impersonation_chain=[
-          "{{ ti.xcom_pull(task_ids='load_config')['DP_PROCESSING_SERVICE_ACCOUNT'] }}"
-      ],
-  )
+  @task(task_id="validate_customer_purchases_data")
+  def validate_customer_purchases_data_python(ti=None):
+    """
+        Checks if the customer_purchases table has data using BigQueryHook
+        for robust cross-project execution.
+        """
+    config = ti.xcom_pull(task_ids="load_config")
+    project_id = config["DP_PROJECT"]
+    dataset_id = config["CURATED_BQ_DATASET"]
+    table_id = "customer_purchases"
+    impersonation_account = config["DP_PROCESSING_SERVICE_ACCOUNT"]
+
+    logging.info(
+        f"Executing data validation check on table: {project_id}.{dataset_id}.{table_id}"
+    )
+
+    # The hook will use the impersonation chain for all interactions
+    hook = BigQueryHook(
+        gcp_conn_id="google_cloud_default",  # Assumes default connection
+        impersonation_chain=[impersonation_account],
+        location=config["LOCATION"],
+    )
+
+    sql = f"SELECT COUNT(*) FROM `{project_id}.{dataset_id}.{table_id}`"
+
+    # Use insert_job for cross-project execution with explicit project_id
+    job_config = {"query": {"query": sql, "useLegacySql": False}}
+
+    job = hook.insert_job(configuration=job_config, project_id=project_id)
+
+    # Extract results from the completed job
+    results = job.result()
+    records = [list(row) for row in results]
+
+    if not records or not records[0] or records[0][0] == 0:
+      raise ValueError(
+          f"Data quality check failed: Table {project_id}.{dataset_id}.{table_id} is empty or has no rows."
+      )
+    else:
+      row_count = records[0][0]
+      logging.info(
+          f"Data quality check passed: Table {project_id}.{dataset_id}.{table_id} contains {row_count} rows."
+      )
+
+  validate_customer_purchases_data = validate_customer_purchases_data_python()
 
   # Define dependencies
   start >> config_task
