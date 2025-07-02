@@ -58,7 +58,7 @@ for table in "${TABLES[@]}"; do
 	echo -n "Exporting $table..."
 
 	# Create destination path
-	DESTINATION="${GCS_BUCKET}/data/${table}/${table}*.csv"
+	DESTINATION="${GCS_BUCKET}/data/${table}/${table}_*.csv"
 
 	# Execute bq extract command
 	if bq extract \
