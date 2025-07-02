@@ -80,6 +80,7 @@ gcloud auth application-default login
    ```
 
 **5. Deploy Airflow DAGs**
+
    ```bash
    gcloud composer environments storage dags import \
        --project=$COMPOSER_PROJECT_ID \
@@ -87,6 +88,8 @@ gcloud auth application-default login
        --location=$LOCATION \
        --source="composer/DAG-dp0"
    ```
+
+   > **Note**: It may take several minutes for the DAGs to be parsed and become available in Composer.
 
 ### 3. Pipeline Execution
 
