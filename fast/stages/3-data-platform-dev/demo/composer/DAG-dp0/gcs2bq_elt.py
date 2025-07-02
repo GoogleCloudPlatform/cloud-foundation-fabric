@@ -23,12 +23,9 @@ Dependencies: Requires gcs2bq_table_create DAG to complete first
 """
 
 import datetime
-import json
 import logging
 import os
-from typing import Dict
 
-import jsonschema
 from airflow import models
 from airflow.decorators import task
 from airflow.models import Variable
@@ -41,103 +38,36 @@ from airflow.providers.google.cloud.sensors.bigquery import (
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import (
     GCSToBigQueryOperator,)
 from airflow.utils.task_group import TaskGroup
-from google.api_core import retry
-from google.cloud import storage
 
 # Configuration
-GCS_CONFIG_PATH = "variables.json"
 LANDING_TABLES = ["users", "orders", "order_items", "products"]
 
-# Configuration schema for validation
-CONFIG_SCHEMA = {
-    "type":
-        "object",
-    "properties": {
-        "DP_PROJECT": {
-            "type": "string"
-        },
-        "LAND_BQ_DATASET": {
-            "type": "string"
-        },
-        "CURATED_BQ_DATASET": {
-            "type": "string"
-        },
-        "LAND_GCS": {
-            "type": "string"
-        },
-        "DP_PROCESSING_SERVICE_ACCOUNT": {
-            "type": "string"
-        },
-        "LOCATION": {
-            "type": "string"
-        },
-    },
-    "required": [
-        "DP_PROJECT",
-        "LAND_BQ_DATASET",
-        "CURATED_BQ_DATASET",
-        "LAND_GCS",
-        "DP_PROCESSING_SERVICE_ACCOUNT",
-        "LOCATION",
-    ],
+# Environment variables (set from composer/variables.json)
+DP_PROJECT = os.environ.get("DP_PROJECT")
+LAND_BQ_DATASET = os.environ.get("LAND_BQ_DATASET")
+CURATED_BQ_DATASET = os.environ.get("CURATED_BQ_DATASET")
+LAND_GCS = os.environ.get("LAND_GCS")
+DP_PROCESSING_SERVICE_ACCOUNT = os.environ.get("DP_PROCESSING_SERVICE_ACCOUNT")
+LOCATION = os.environ.get("LOCATION")
+
+# Validate required environment variables
+required_vars = {
+    "DP_PROJECT": DP_PROJECT,
+    "LAND_BQ_DATASET": LAND_BQ_DATASET,
+    "CURATED_BQ_DATASET": CURATED_BQ_DATASET,
+    "LAND_GCS": LAND_GCS,
+    "DP_PROCESSING_SERVICE_ACCOUNT": DP_PROCESSING_SERVICE_ACCOUNT,
+    "LOCATION": LOCATION,
 }
+
+missing_vars = [var for var, value in required_vars.items() if not value]
+if missing_vars:
+  raise ValueError(f"Missing required environment variables: {missing_vars}")
 
 logger = logging.getLogger(__name__)
 
 
-@task(task_id="load_config", retries=3)
-def load_config_from_gcs() -> Dict:
-  """
-    Reads and validates JSON config file from GCS /data folder.
-
-    Returns:
-        Dict: Configuration dictionary
-    """
-  try:
-    # Read directly from mounted data folder (recommended for Composer)
-    data_path = "/home/airflow/gcs/data"
-    config_path = os.path.join(data_path, GCS_CONFIG_PATH)
-
-    if os.path.exists(config_path):
-      with open(config_path, "r") as f:
-        config = json.load(f)
-    else:
-      # Use GCS client as fallback
-      bucket_name = Variable.get("composer_gcs_bucket", default_var=None)
-      if not bucket_name:
-        raise ValueError("Could not determine GCS bucket name")
-
-      @retry.Retry(timeout=30, deadline=60)
-      def download_config():
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(f"data/{GCS_CONFIG_PATH}")
-
-        if not blob.exists():
-          raise FileNotFoundError(
-              f"Config file not found at gs://{bucket_name}/data/{GCS_CONFIG_PATH}"
-          )
-
-        return blob.download_as_string()
-
-      config_str = download_config()
-      config = json.loads(config_str)
-
-    # Validate configuration against schema
-    jsonschema.validate(config, CONFIG_SCHEMA)
-    logger.info(
-        f"Successfully loaded and validated configuration for project: {config['DP_PROJECT']}"
-    )
-
-    return config
-
-  except Exception as e:
-    logger.error(f"Failed to load configuration: {str(e)}")
-    raise
-
-
-def create_gcs_to_bq_task(project_id: str,
-                          table_name: str) -> GCSToBigQueryOperator:
+def create_gcs_to_bq_task(table_name: str) -> GCSToBigQueryOperator:
   """
     Factory function to create GCS to BigQuery load tasks.
 
@@ -149,36 +79,31 @@ def create_gcs_to_bq_task(project_id: str,
     """
   return GCSToBigQueryOperator(
       task_id=f"{table_name}_load",
-      bucket="{{ ti.xcom_pull(task_ids='load_config')['LAND_GCS'] }}",
+      bucket=LAND_GCS,
       source_objects=f"data/{table_name}/{table_name}_*.csv",
-      destination_project_dataset_table=(
-          "{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}"
-          ".{{ ti.xcom_pull(task_ids='load_config')['LAND_BQ_DATASET'] }}"
-          f".{table_name}"),
+      destination_project_dataset_table=
+      f"{DP_PROJECT}.{LAND_BQ_DATASET}.{table_name}",
       source_format="CSV",
       create_disposition="CREATE_IF_NEEDED",
       write_disposition="WRITE_TRUNCATE",
       schema_object=f"schemas/landing/{table_name}.json",
-      schema_object_bucket=
-      "{{ ti.xcom_pull(task_ids='load_config')['LAND_GCS'] }}",
+      schema_object_bucket=LAND_GCS,
       autodetect=False,
       max_bad_records=1,
-      project_id=project_id,
-      impersonation_chain=[
-          "{{ ti.xcom_pull(task_ids='load_config')['DP_PROCESSING_SERVICE_ACCOUNT'] }}"
-      ],
+      project_id=DP_PROJECT,
+      impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT],
   )
 
 
 def create_table_validation_task(
-    table_name: str, dataset_key: str = "LAND_BQ_DATASET",
+    table_name: str, dataset_name: str,
     task_prefix: str = "validate") -> BigQueryTableExistenceSensor:
   """
     Factory function to create table validation tasks using sensor.
 
     Args:
         table_name: Name of the table to validate
-        dataset_key: Config key for the dataset
+        dataset_name: Name of the dataset
         task_prefix: Prefix for task ID
 
     Returns:
@@ -186,16 +111,13 @@ def create_table_validation_task(
     """
   return BigQueryTableExistenceSensor(
       task_id=f"{task_prefix}_{table_name}_exists",
-      project_id="{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}",
-      dataset_id=
-      f"{{{{ ti.xcom_pull(task_ids='load_config')['{dataset_key}'] }}}}",
+      project_id=DP_PROJECT,
+      dataset_id=dataset_name,
       table_id=table_name,
       poke_interval=30,  # Check every 30 seconds
       timeout=600,  # Timeout after 10 minutes
       mode="reschedule",  # Release worker slot between checks
-      impersonation_chain=[
-          "{{ ti.xcom_pull(task_ids='load_config')['DP_PROCESSING_SERVICE_ACCOUNT'] }}"
-      ],
+      impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT],
   )
 
 
@@ -228,15 +150,6 @@ with models.DAG(
   start = empty.EmptyOperator(task_id="start", trigger_rule="all_success")
   end = empty.EmptyOperator(task_id="end", trigger_rule="all_done")
 
-  # Get project ID from an environment variable set in the Composer environment.
-  # This is used for operator fields that are not Jinja-templated.
-  dp_project_id_for_gcs_op = os.environ.get("DP_PROJECT")
-  if not dp_project_id_for_gcs_op:
-    raise ValueError("DP_PROJECT environment variable not set.")
-
-  # Load configuration from GCS. This is used by all templated fields.
-  config_task = load_config_from_gcs()
-
   # Validate that all required tables exist before starting data load
   with TaskGroup(
       "validate_prerequisites",
@@ -245,14 +158,14 @@ with models.DAG(
     prerequisite_validations = [
         create_table_validation_task(
             table_name=table,
-            dataset_key="LAND_BQ_DATASET",
+            dataset_name=LAND_BQ_DATASET,
             task_prefix="validate_landing",
         ) for table in LANDING_TABLES
     ]
     # Validate that the curated customer_purchases table exists from a previous run
     validate_customer_purchases_prereq = create_table_validation_task(
         table_name="customer_purchases",
-        dataset_key="CURATED_BQ_DATASET",
+        dataset_name=CURATED_BQ_DATASET,
         task_prefix="validate_curated",
     )
 
@@ -260,19 +173,18 @@ with models.DAG(
   with TaskGroup("load_landing_data",
                  tooltip="Load all data files to landing tables") as load_group:
     load_tasks = [
-        create_gcs_to_bq_task(project_id=dp_project_id_for_gcs_op,
-                              table_name=table) for table in LANDING_TABLES
+        create_gcs_to_bq_task(table_name=table) for table in LANDING_TABLES
     ]
 
   # Create comprehensive customer purchases join
   customer_purchases_join = BigQueryInsertJobOperator(
       task_id="create_customer_purchases",
-      project_id="{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}",
+      project_id=DP_PROJECT,
       configuration={
           "jobType": "QUERY",
           "query": {
               "query":
-                  """
+                  f"""
                 SELECT
                   -- User information
                   u.id as user_id,
@@ -322,21 +234,18 @@ with models.DAG(
                   p.sku,
                   p.distribution_center_id
 
-                FROM `{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}.{{ ti.xcom_pull(task_ids='load_config')['LAND_BQ_DATASET'] }}.users` u
-                JOIN `{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}.{{ ti.xcom_pull(task_ids='load_config')['LAND_BQ_DATASET'] }}.orders` o
+                FROM `{DP_PROJECT}.{LAND_BQ_DATASET}.users` u
+                JOIN `{DP_PROJECT}.{LAND_BQ_DATASET}.orders` o
                   ON u.id = o.user_id
-                JOIN `{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}.{{ ti.xcom_pull(task_ids='load_config')['LAND_BQ_DATASET'] }}.order_items` oi
+                JOIN `{DP_PROJECT}.{LAND_BQ_DATASET}.order_items` oi
                   ON o.order_id = oi.order_id
-                JOIN `{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}.{{ ti.xcom_pull(task_ids='load_config')['LAND_BQ_DATASET'] }}.products` p
+                JOIN `{DP_PROJECT}.{LAND_BQ_DATASET}.products` p
                   ON oi.product_id = p.id
               """,
               "destinationTable": {
-                  "projectId":
-                      "{{ ti.xcom_pull(task_ids='load_config')['DP_PROJECT'] }}",
-                  "datasetId":
-                      "{{ ti.xcom_pull(task_ids='load_config')['CURATED_BQ_DATASET'] }}",
-                  "tableId":
-                      "customer_purchases",
+                  "projectId": DP_PROJECT,
+                  "datasetId": CURATED_BQ_DATASET,
+                  "tableId": "customer_purchases",
               },
               "writeDisposition":
                   "WRITE_TRUNCATE",
@@ -344,22 +253,19 @@ with models.DAG(
                   False,
           },
       },
-      impersonation_chain=[
-          "{{ ti.xcom_pull(task_ids='load_config')['DP_PROCESSING_SERVICE_ACCOUNT'] }}"
-      ],
+      impersonation_chain=[DP_PROCESSING_SERVICE_ACCOUNT],
   )
 
   @task(task_id="validate_customer_purchases_data")
-  def validate_customer_purchases_data_python(ti=None):
+  def validate_customer_purchases_data_python():
     """
         Checks if the customer_purchases table has data using BigQueryHook
         for robust cross-project execution.
         """
-    config = ti.xcom_pull(task_ids="load_config")
-    project_id = config["DP_PROJECT"]
-    dataset_id = config["CURATED_BQ_DATASET"]
+    project_id = DP_PROJECT
+    dataset_id = CURATED_BQ_DATASET
     table_id = "customer_purchases"
-    impersonation_account = config["DP_PROCESSING_SERVICE_ACCOUNT"]
+    impersonation_account = DP_PROCESSING_SERVICE_ACCOUNT
 
     logging.info(
         f"Executing data validation check on table: {project_id}.{dataset_id}.{table_id}"
@@ -369,7 +275,7 @@ with models.DAG(
     hook = BigQueryHook(
         gcp_conn_id="google_cloud_default",  # Assumes default connection
         impersonation_chain=[impersonation_account],
-        location=config["LOCATION"],
+        location=LOCATION,
     )
 
     sql = f"SELECT COUNT(*) FROM `{project_id}.{dataset_id}.{table_id}`"
@@ -396,8 +302,7 @@ with models.DAG(
   validate_customer_purchases_data = validate_customer_purchases_data_python()
 
   # Define dependencies
-  start >> config_task
-  config_task >> prerequisites_group
+  start >> prerequisites_group
   prerequisites_group >> load_group
   load_group >> customer_purchases_join
   customer_purchases_join >> validate_customer_purchases_data >> end
