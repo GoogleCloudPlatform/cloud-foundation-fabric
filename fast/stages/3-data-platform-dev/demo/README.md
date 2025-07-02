@@ -18,7 +18,7 @@ This reference implementation includes:
 ### Prerequisites
 
 - Google Cloud SDK installed and configured
-- Terraform >= 1.0
+- Terraform >= 1.9.0
 - `jq` command-line JSON processor
 - Access to the automation service account from the previous stage
 
