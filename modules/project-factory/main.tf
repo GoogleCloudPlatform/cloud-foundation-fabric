@@ -178,7 +178,8 @@ module "projects-iam" {
           # other automation service account (project/automation/rw)
           local.context.iam_principals[vv],
           # project's service identities
-          local.service_agents_email[each.key][vv],
+          local.service_agents_email["${each.key}/${vv}"],
+          local.service_agents_email[vv],
           # passthrough + error handling using tonumber until Terraform gets fail/raise function
           (
             strcontains(vv, ":")
@@ -206,7 +207,8 @@ module "projects-iam" {
         # other automation service account (project/automation/rw)
         local.context.iam_principals[v.member],
         # project's service identities
-        local.service_agents_email[each.key][v.member],
+        local.service_agents_email["${each.key}/${vv}"],
+        local.service_agents_email[vv],
         # passthrough + error handling using tonumber until Terraform gets fail/raise function
         (
           strcontains(v.member, ":")
@@ -271,7 +273,8 @@ module "projects-iam" {
             # other automation service account (project/automation/rw)
             local.context.iam_principals[v.member],
             # project's service identities
-            local.service_agents_email[each.key][v.member],
+            local.service_agents_email["${each.key}/${vv}"],
+            local.service_agents_email[vv],
             # passthrough + error handling using tonumber until Terraform gets fail/raise function
             (
               strcontains(v.member, ":")
