@@ -21,3 +21,11 @@
 # custom.disableKubeletReadOnlyPort:
 #   rules:
 #     - enforce: true
+
+container.managed.enablePrivateNodes:
+  rules:
+    - enforce: true
+
+# container.managed.enableControlPlaneDNSOnlyAccess:
+#   rules:
+#     - enforce: true
