@@ -22,6 +22,36 @@ locals {
     ? null
     : var.billing_account.is_org_level ? "org" : "resource"
   )
+
+  _billing_iam_bindings = {
+    "roles/billing.admin" = [
+      local.principals.gcp-billing-admins,
+      local.principals.gcp-organization-admins,
+      module.automation-tf-bootstrap-sa.iam_email,
+      module.automation-tf-resman-sa.iam_email
+    ],
+    "roles/billing.viewer" = [
+      module.automation-tf-bootstrap-r-sa.iam_email,
+      module.automation-tf-resman-r-sa.iam_email
+    ],
+    "roles/logging.configWriter" = local.billing_mode == "org" || !var.billing_account.force_create.log_bucket ? [] : [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
+  }
+
+  _billing_iam_bindings_add = flatten([for role, bindings in local._billing_iam_bindings : [
+    for member in bindings : {
+      member = member,
+      role   = role
+    }
+  ]])
+
+  billing_iam_bindings_additive = {
+    for b in local._billing_iam_bindings_add : "${b.role}-${b.member}" => {
+      member = b.member
+      role   = b.role
+    }
+  }
 }
 
 # billing account in same org (IAM is in the organization.tf file)
@@ -72,7 +102,7 @@ module "billing-export-dataset" {
 
 module "billing-account-logbucket" {
   source        = "../../../modules/logging-bucket"
-  count         = local.billing_mode == "resource" ? 1 : 0
+  count         = local.billing_mode == "resource" && var.billing_account.force_create.log_bucket ? 1 : 0
   parent_type   = "project"
   parent        = module.log-export-project.project_id
   id            = "billing-account"
@@ -83,25 +113,11 @@ module "billing-account-logbucket" {
 }
 
 module "billing-account" {
-  source = "../../../modules/billing-account"
-  count  = local.billing_mode == "resource" ? 1 : 0
-  id     = var.billing_account.id
-  iam = {
-    "roles/billing.admin" = [
-      local.principals.gcp-billing-admins,
-      local.principals.gcp-organization-admins,
-      module.automation-tf-bootstrap-sa.iam_email,
-      module.automation-tf-resman-sa.iam_email
-    ],
-    "roles/billing.viewer" = [
-      module.automation-tf-bootstrap-r-sa.iam_email,
-      module.automation-tf-resman-r-sa.iam_email
-    ],
-    "roles/logging.configWriter" = [
-      module.automation-tf-bootstrap-sa.iam_email
-    ]
-  }
-  logging_sinks = {
+  source                = "../../../modules/billing-account"
+  count                 = local.billing_mode == "resource" ? 1 : 0
+  id                    = var.billing_account.id
+  iam_bindings_additive = local.billing_iam_bindings_additive
+  logging_sinks = !var.billing_account.force_create.log_bucket ? {} : {
     billing_bucket_log_sink = {
       destination = module.billing-account-logbucket[0].id
       type        = "logging"
