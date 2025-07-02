@@ -590,3 +590,33 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization.google_org_policy_policy.default["container.managed.enablePrivateNodes"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/container.managed.enablePrivateNodes
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization.google_org_policy_policy.default["iam.managed.disableServiceAccountApiKeyCreation"]:
+    dry_run_spec: []
+    name: organizations/123456789012/policies/iam.managed.disableServiceAccountApiKeyCreation
+    parent: organizations/123456789012
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null

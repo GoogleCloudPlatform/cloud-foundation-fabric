@@ -50,6 +50,10 @@ iam.managed.disableServiceAccountKeyUpload:
   rules:
     - enforce: true
 
+iam.managed.disableServiceAccountApiKeyCreation:
+  rules:
+    - enforce: true
+
 iam.serviceAccountKeyExposureResponse:
   rules:
     - allow:
