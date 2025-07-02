@@ -31,13 +31,13 @@ gcloud auth application-default login
 
 ### 1. Infrastructure Setup
 
-1. **Configure Terraform Variables**
+**1. Configure Terraform Variables**
    ```bash
    cp terraform.tfvars.sample terraform.tfvars
    # Edit terraform.tfvars with your specific values
    ```
 
-2. **Deploy Infrastructure**
+**2. Deploy Infrastructure**
    ```bash
    terraform init
    terraform apply
@@ -45,7 +45,7 @@ gcloud auth application-default login
 
 ### 2. Data Pipeline Setup
 
-1. **Set Environment Variables**
+**1. Set Environment Variables**
    ```bash
    export LANDING_BUCKET=$(terraform output -raw landing_gcs_bucket)
    export COMPOSER_PROJECT_ID=$(terraform output -raw composer_project_id)
@@ -53,17 +53,17 @@ gcloud auth application-default login
    export LOCATION=$(terraform output -raw location)
    ```
 
-2. **Deploy Data Schemas**
+**2. Deploy Data Schemas**
    ```bash
    gcloud storage cp -r data/schemas/* gs://$LANDING_BUCKET/schemas
    ```
 
-3. **Source Sample Data
+**3. Source Sample Data**
    ```bash
    ./data/get_thelook_data.sh gs://$LANDING_BUCKET
    ```
 
-4. **Configure Composer Environment**
+**4. Configure Composer Environment**
 
    Update Composer environment variables from `composer/variables.json`:
 
@@ -79,7 +79,7 @@ gcloud auth application-default login
        --update-env-variables $ENV_VARS
    ```
 
-5. **Deploy Airflow DAGs**
+**5. Deploy Airflow DAGs**
    ```bash
    gcloud composer environments storage dags import \
        --project=$COMPOSER_PROJECT_ID \
@@ -90,11 +90,11 @@ gcloud auth application-default login
 
 ### 3. Pipeline Execution
 
-1. **Verify DAG Import**
+**1. Verify DAG Import**
 
    Navigate to the Composer UI in the Domain Shared Resources project and confirm that the DAGs have been successfully imported.
 
-2. **Execute Pipeline**
+**2. Execute Pipeline**
 
    Trigger the DAGs in the following sequence (wait for each to complete):
 
