@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+output "composer_environment_name" {
+  description = "The name of the Composer environment."
+  value       = var.composer_environment_name
+}
+
+output "composer_project_id" {
+  description = "The project ID where the Composer environment is located."
+  value       = var.composer_project_id
+}
+
 output "dp_processing_service_account" {
   description = "Service account for data processing."
   value       = var.dp_processing_service_account
@@ -22,4 +32,9 @@ output "dp_processing_service_account" {
 output "landing_gcs_bucket" {
   description = "The name of the landing GCS bucket."
   value       = module.land-cs-0.name
+}
+
+output "location" {
+  description = "The location/region used for resources."
+  value       = var.location
 }

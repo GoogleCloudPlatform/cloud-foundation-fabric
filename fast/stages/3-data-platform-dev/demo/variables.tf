@@ -18,6 +18,12 @@ variable "authorized_dataset_on_curated" {
   type        = string
 }
 
+variable "composer_environment_name" {
+  description = "Name of the Composer environment."
+  type        = string
+  nullable    = false
+}
+
 variable "composer_project_id" {
   description = "Project ID where the shared Composer environment for the domain is located."
   type        = string
