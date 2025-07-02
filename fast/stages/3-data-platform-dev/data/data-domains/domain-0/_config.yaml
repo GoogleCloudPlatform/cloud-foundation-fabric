@@ -22,7 +22,21 @@ automation:
     - dp-product-a-0
 
 deploy_config:
-  composer: {}
+  composer:
+    environment_size: ENVIRONMENT_SIZE_MEDIUM
+    workloads_config:
+      dag_processor:
+        cpu: 1
+        memory_gb: 2
+      worker:
+        cpu: 2
+        memory_gb: 4
+      triggerer:
+        cpu: 1
+        memory_gb: 2
+      web_server:
+        cpu: 1
+        memory_gb: 2
     # Uncomment for VPC Network Connectivity
     # region defaults to var.location
     # node_config:
