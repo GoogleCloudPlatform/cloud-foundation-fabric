@@ -128,5 +128,5 @@ resource "google_monitoring_monitored_project" "primary" {
 resource "google_compute_project_default_network_tier" "default_network_tier" {
   count        = var.default_network_tier == null ? 0 : 1
   network_tier = var.default_network_tier
-  project      = google_project.project[0].id
+  project      = local.project.project_id
 }
