@@ -1,0 +1,47 @@
+[
+  {
+    "mode": "NULLABLE",
+    "name": "order_id",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "user_id",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "status",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "gender",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "created_at",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "returned_at",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "shipped_at",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "delivered_at",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "num_of_item",
+    "type": "INTEGER"
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "mode": "NULLABLE",
+    "name": "id",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "cost",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "category",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "brand",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "retail_price",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "department",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "sku",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "distribution_center_id",
+    "type": "INTEGER"
+  }
+]
