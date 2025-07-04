@@ -138,7 +138,7 @@ resource "google_compute_region_network_endpoint_group" "psc" {
 
 resource "google_compute_region_network_endpoint_group" "serverless" {
   for_each = local.neg_regional_serverless
-  project  = var.project_id
+  project  = each.value.project_id != null ? each.value.project_id : var.project_id
   region = try(
     each.value.cloudrun.region, each.value.cloudfunction.region, null
   )
