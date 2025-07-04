@@ -5,10 +5,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-06-29 12:22:45+00:00 to: None since: v41.0.0 -->
 
+### BREAKING CHANGES
+
+- modules/net-vpc: vpc_create(bool) replaced with vpc_reuse(object). Any existing code referencing net-vpc with vpc_create=false will need to change to the vpc_reuse object. [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)]
+- modules/project: "project_attributes" parameter in var.project_reuse to "attributes" [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)]
+
+
+### BLUEPRINTS
+
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
+
+### FAST
+
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
+- [[#3207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3207)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-07-02 13:53:58+00:00 -->
+
 ### MODULES
 
 - [[#3213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3213)] Fix network tier in project module when reusing an existing project ([apichick](https://github.com/apichick)) <!-- 2025-07-03 12:57:04+00:00 -->
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
 - [[#3210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3210)] Fix service agent substitutions in project factory additive bindings ([V0idC0de](https://github.com/V0idC0de)) <!-- 2025-07-02 16:14:17+00:00 -->
+
+### TOOLS
+
+- [[#3207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3207)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-07-02 13:53:58+00:00 -->
 
 ## [41.0.0] - 2025-06-29
 
