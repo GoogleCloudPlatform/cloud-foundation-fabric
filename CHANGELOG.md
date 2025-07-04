@@ -3,7 +3,12 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+## [Unreleased] <!-- from: 2025-06-29 12:22:45+00:00 to: None since: v41.0.0 -->
+
+### MODULES
+
+- [[#3213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3213)] Fix network tier in project module when reusing an existing project ([apichick](https://github.com/apichick)) <!-- 2025-07-03 12:57:04+00:00 -->
+- [[#3210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3210)] Fix service agent substitutions in project factory additive bindings ([V0idC0de](https://github.com/V0idC0de)) <!-- 2025-07-02 16:14:17+00:00 -->
 
 ## [41.0.0] - 2025-06-29
 
