@@ -19,8 +19,9 @@ variable "billing_account" {
   type = object({
     id = string
     force_create = optional(object({
-      dataset = optional(bool, false)
-      project = optional(bool, false)
+      dataset    = optional(bool, false)
+      project    = optional(bool, false)
+      log_bucket = optional(bool, false)
     }), {})
     is_org_level = optional(bool, true)
     no_iam       = optional(bool, false)
