@@ -47,5 +47,6 @@ The [blueprints](./blueprints/) in this repository are split into several main s
 
 Testing jj
 Change 2 content
+Change 3
 
 <!-- $Id$ -->
