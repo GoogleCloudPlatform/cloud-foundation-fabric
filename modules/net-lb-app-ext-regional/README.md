@@ -312,11 +312,11 @@ This example shows how to use the module with a manage instance group as backend
 
 ```hcl
 module "win-template" {
-  source          = "./fabric/modules/compute-vm"
-  project_id      = var.project_id
-  zone            = "${var.region}-a"
-  name            = "win-template"
-  instance_type   = "n2d-standard-2"
+  source        = "./fabric/modules/compute-vm"
+  project_id    = var.project_id
+  zone          = "${var.region}-a"
+  name          = "win-template"
+  instance_type = "n2d-standard-2"
   create_template = {
     regional = false
   }
