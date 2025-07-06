@@ -36,8 +36,5 @@ yapf -p -d -r \
      tools/*.py \
      blueprints
 
-echo -- Blueprint metadata --
-python3 tools/validate_metadata.py -v blueprints --verbose --failed-only
-
 echo -- Version checks --
 find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;

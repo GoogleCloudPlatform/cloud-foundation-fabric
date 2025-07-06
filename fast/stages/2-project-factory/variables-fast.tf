@@ -36,6 +36,14 @@ variable "billing_account" {
   }
 }
 
+variable "custom_roles" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders created in the resource management stage."

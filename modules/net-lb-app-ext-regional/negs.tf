@@ -27,6 +27,20 @@ locals {
   neg_endpoints_zonal = {
     for v in local._neg_endpoints_zonal : (v.key) => v
   }
+
+  neg_regional_internet = {
+    for k, v in var.neg_configs :
+    k => merge(v, {
+      # Calculate the endpoint type based on the first endpoint
+      # If any endpoint has fqdn, we'll use FQDN_PORT, otherwise IP_PORT
+      endpoint_type = length(v.internet.endpoints) > 0 ? (
+        alltrue([
+          for e_key, e in v.internet.endpoints : e.fqdn == null
+        ]) ? "INTERNET_IP_PORT" : "INTERNET_FQDN_PORT"
+      ) : "INTERNET_FQDN_PORT" # Default if no endpoints
+    }) if v.internet != null
+  }
+
   neg_regional_psc = {
     for k, v in var.neg_configs :
     k => v if v.psc != null
@@ -45,6 +59,24 @@ locals {
       type        = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
       zone        = v.gce != null ? v.gce.zone : v.hybrid.zone
     } if v.gce != null || v.hybrid != null
+  }
+
+  # Create a map of Internet NEG endpoints for for_each
+  internet_neg_endpoints = {
+    for endpoint in flatten([
+      for neg_key, neg in local.neg_regional_internet : [
+        for endpoint_key, endpoint in neg.internet.endpoints : {
+          id            = "${neg_key}-${endpoint_key}"
+          neg_key       = neg_key
+          endpoint_key  = endpoint_key
+          region        = neg.internet.region
+          fqdn          = try(endpoint.fqdn, null)
+          ip_address    = try(endpoint.ip_address, null)
+          port          = endpoint.port
+          endpoint_type = neg.endpoint_type
+        }
+      ]
+    ]) : endpoint.id => endpoint
   }
 }
 
@@ -77,6 +109,28 @@ resource "google_compute_network_endpoint" "default" {
   ip_address = each.value.ip_address
   port       = each.value.port
   zone       = each.value.zone
+}
+
+resource "google_compute_region_network_endpoint_group" "internet" {
+  for_each              = local.neg_regional_internet
+  project               = var.project_id
+  region                = each.value.internet.region
+  name                  = "${var.name}-${each.key}"
+  description           = coalesce(each.value.description, var.description)
+  network_endpoint_type = each.value.endpoint_type
+  network               = each.value.internet.network
+}
+
+resource "google_compute_region_network_endpoint" "internet" {
+  for_each                      = local.internet_neg_endpoints
+  region                        = each.value.region
+  region_network_endpoint_group = google_compute_region_network_endpoint_group.internet[each.value.neg_key].name
+  # Only set fqdn if endpoint type is FQDN_PORT
+  fqdn = each.value.endpoint_type == "INTERNET_FQDN_PORT" ? each.value.fqdn : null
+  # Only set ip_address if endpoint type is IP_PORT
+  ip_address = each.value.endpoint_type == "INTERNET_IP_PORT" ? each.value.ip_address : null
+  port       = each.value.port
+  project    = var.project_id
 }
 
 resource "google_compute_region_network_endpoint_group" "psc" {

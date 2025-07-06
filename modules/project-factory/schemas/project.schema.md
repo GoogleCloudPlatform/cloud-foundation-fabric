@@ -103,6 +103,7 @@
 - **shared_vpc_service_config**: *object*
   <br>*additional properties: false*
   - ⁺**host_project**: *string*
+  - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **network_users**: *array*
     - items: *string*
   - **service_agent_iam**: *object*
@@ -172,7 +173,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^[a-zA-Z0-9_/]+$*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*

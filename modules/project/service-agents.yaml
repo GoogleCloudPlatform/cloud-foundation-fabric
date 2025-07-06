@@ -72,7 +72,7 @@
   display_name: API Hub Service Account
   api: apihub.googleapis.com
   identity: service-${project_number}@gcp-sa-apihub.${universe_domain}iam.gserviceaccount.com
-  role: null
+  role: roles/apihub.runtimeProjectServiceAgent
   is_primary: true
   aliases: []
 - name: apikeys
@@ -329,6 +329,13 @@
   is_primary: false
   aliases:
   - bq
+- name: biglakerestcatalog
+  display_name: BigLake Iceberg Rest Catalog API Service Agent
+  api: biglake.googleapis.com
+  identity: blirc-${project_number}-IDENTIFIER@gcp-sa-biglakerestcatalog.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: bigqueryconnection
   display_name: BigQuery Connection Service Agent
   api: bigqueryconnection.googleapis.com
@@ -632,6 +639,13 @@
   role: null
   is_primary: true
   aliases: []
+- name: observability
+  display_name: Cloud Observability Service Account
+  api: observability.googleapis.com
+  identity: service-${project_number}@gcp-sa-observability.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
 - name: cloudoptim
   display_name: Cloud Optimization Service Agent
   api: cloudoptimization.googleapis.com
@@ -735,6 +749,13 @@
   api: workflows.googleapis.com
   identity: service-${project_number}@gcp-sa-workflows.${universe_domain}iam.gserviceaccount.com
   role: roles/workflows.serviceAgent
+  is_primary: true
+  aliases: []
+- name: workstations
+  display_name: Cloud Workstations Service Agent
+  api: workstations.googleapis.com
+  identity: service-${project_number}@gcp-sa-workstations.${universe_domain}iam.gserviceaccount.com
+  role: roles/workstations.serviceAgent
   is_primary: true
   aliases: []
 - name: compute-system
@@ -896,7 +917,7 @@
   display_name: Developer Connect Service Account
   api: developerconnect.googleapis.com
   identity: service-${project_number}@gcp-sa-devconnect.${universe_domain}iam.gserviceaccount.com
-  role: null
+  role: roles/developerconnect.serviceAgent
   is_primary: true
   aliases: []
 - name: dialogflow-cmek
@@ -974,6 +995,13 @@
   api: cloudkms.googleapis.com
   identity: service-${project_number}@gcp-sa-ekms.${universe_domain}iam.gserviceaccount.com
   role: null
+  is_primary: true
+  aliases: []
+- name: firebasevertexai
+  display_name: Firebase AI Logic Service Account
+  api: firebasevertexai.googleapis.com
+  identity: service-${project_number}@gcp-sa-firebasevertexai.${universe_domain}iam.gserviceaccount.com
+  role: roles/firebaseml.serviceAgent
   is_primary: true
   aliases: []
 - name: firebaseappcheck
@@ -1094,7 +1122,7 @@
   display_name: Google Cloud Dataproc Resource Manager Node Service Agent
   api: dataprocrm.googleapis.com
   identity: service-${project_number}@gcp-sa-dataprocrmnode.${universe_domain}iam.gserviceaccount.com
-  role: roles/dataprocrm.defaultNodeServiceAgent
+  role: roles/dataprocrm.nodeServiceAgent
   is_primary: true
   aliases: []
 - name: dataproc-accounts
@@ -1208,13 +1236,6 @@
   role: null
   is_primary: false
   aliases: []
-- name: issuerswitch
-  display_name: Issuer Switch Service Account
-  api: issuerswitch.googleapis.com
-  identity: service-${project_number}@gcp-sa-issuerswitch.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: true
-  aliases: []
 - name: krmapihosting
   display_name: KRM API Hosting Service Account
   api: krmapihosting.googleapis.com
@@ -1264,6 +1285,13 @@
   api: looker.googleapis.com
   identity: service-${project_number}@gcp-sa-looker.${universe_domain}iam.gserviceaccount.com
   role: roles/looker.serviceAgent
+  is_primary: true
+  aliases: []
+- name: lustre
+  display_name: Lustre Service Agent
+  api: lustre.googleapis.com
+  identity: service-${project_number}@gcp-sa-lustre.${universe_domain}iam.gserviceaccount.com
+  role: null
   is_primary: true
   aliases: []
 - name: managedflink
@@ -1372,6 +1400,13 @@
   role: roles/parallelstore.serviceAgent
   is_primary: true
   aliases: []
+- name: pm
+  display_name: Parameter Manager Service Account
+  api: parametermanager.googleapis.com
+  identity: service-${project_number}@gcp-sa-pm.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
 - name: privateca
   display_name: Private CA Service Account
   api: privateca.googleapis.com
@@ -1426,6 +1461,13 @@
   api: retail.googleapis.com
   identity: service-${project_number}@gcp-sa-retail.${universe_domain}iam.gserviceaccount.com
   role: roles/retail.serviceAgent
+  is_primary: true
+  aliases: []
+- name: saasservicemgmt
+  display_name: SaaS Service Management Service Account
+  api: saasservicemgmt.googleapis.com
+  identity: service-${project_number}@gcp-sa-saasservicemgmt.${universe_domain}iam.gserviceaccount.com
+  role: roles/saasservicemgmt.serviceAgent
   is_primary: true
   aliases: []
 - name: secretmanager
@@ -1589,6 +1631,20 @@
   role: roles/aiplatform.extensionCustomCodeServiceAgent
   is_primary: false
   aliases: []
+- name: vertex-logging
+  display_name: Vertex AI Logging Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-logging.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: vertex-moss-ft
+  display_name: Vertex AI Managed OSS Fine Tuning Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-moss-ft.${universe_domain}iam.gserviceaccount.com
+  role: roles/aiplatform.tuningServiceAgent
+  is_primary: false
+  aliases: []
 - name: vertex-mm
   display_name: Vertex AI Model Monitoring Service Agent
   api: aiplatform.googleapis.com
@@ -1616,13 +1672,6 @@
   identity: service-${project_number}@gcp-sa-vertex-tune.${universe_domain}iam.gserviceaccount.com
   role: roles/aiplatform.tuningServiceAgent
   is_primary: false
-  aliases: []
-- name: firebasevertexai
-  display_name: Vertex AI in Firebase Service Account
-  api: firebasevertexai.googleapis.com
-  identity: service-${project_number}@gcp-sa-firebasevertexai.${universe_domain}iam.gserviceaccount.com
-  role: roles/firebaseml.serviceAgent
-  is_primary: true
   aliases: []
 - name: vertex-agent
   display_name: Vertex Agent Service Agent
@@ -1657,13 +1706,6 @@
   api: workloadmanager.googleapis.com
   identity: service-${project_number}@gcp-sa-workloadmanager.${universe_domain}iam.gserviceaccount.com
   role: roles/workloadmanager.serviceAgent
-  is_primary: true
-  aliases: []
-- name: workstations
-  display_name: Workstations Service Account
-  api: workstations.googleapis.com
-  identity: service-${project_number}@gcp-sa-workstations.${universe_domain}iam.gserviceaccount.com
-  role: roles/workstations.serviceAgent
   is_primary: true
   aliases: []
 - name: workstationsvm

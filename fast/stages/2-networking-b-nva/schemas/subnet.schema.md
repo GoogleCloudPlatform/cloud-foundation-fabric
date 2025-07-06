@@ -23,6 +23,8 @@
 - **ipv6**: *object*
   <br>*additional properties: false*
   - **access_type**: *string*
+  - **ipv6_only**: *boolean*
+- **ip_collection**: *string*
 - **name**: *string*
 - ⁺**region**: *string*
 - **psc**: *boolean*

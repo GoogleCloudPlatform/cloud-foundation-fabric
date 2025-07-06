@@ -116,6 +116,17 @@ variable "iam_by_principals" {
   nullable    = false
 }
 
+variable "ip_filter" {
+  description = "The bucket's IP filter configuration."
+  type = object({
+    allow_cross_org_vpcs           = optional(bool)
+    allow_all_service_agent_access = optional(bool)
+    public_network_sources         = optional(list(string))
+    vpc_network_sources            = optional(map(list(string)), {})
+  })
+  default = null
+}
+
 variable "labels" {
   description = "Labels to be attached to all buckets."
   type        = map(string)
