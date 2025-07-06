@@ -38,6 +38,7 @@ resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
   project       = var.project_id
+  location      = var.location != null ? var.location : "global"
   membership_id = each.key
   endpoint {
     gke_cluster {
@@ -68,15 +69,24 @@ resource "google_gke_hub_feature" "default" {
       }
     }
   }
+  dynamic "fleet_default_member_config" {
+    for_each = each.key == "servicemesh" && each.value != null ? { 1 = 1 } : {}
+    content {
+      mesh {
+        management = "MANAGEMENT_AUTOMATIC"
+      }
+    }
+  }
 }
 
 resource "google_gke_hub_feature_membership" "servicemesh" {
-  provider   = google-beta
-  for_each   = var.features.servicemesh ? var.clusters : {}
-  project    = var.project_id
-  location   = "global"
-  feature    = google_gke_hub_feature.default["servicemesh"].name
-  membership = google_gke_hub_membership.default[each.key].membership_id
+  provider            = google-beta
+  for_each            = var.features.servicemesh ? var.clusters : {}
+  project             = var.project_id
+  location            = "global"
+  feature             = google_gke_hub_feature.default["servicemesh"].name
+  membership          = google_gke_hub_membership.default[each.key].membership_id
+  membership_location = var.location
 
   mesh {
     management = "MANAGEMENT_AUTOMATIC"
@@ -84,12 +94,13 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
 }
 
 resource "google_gke_hub_feature_membership" "default" {
-  provider   = google-beta
-  for_each   = local.cluster_cm_config
-  project    = var.project_id
-  location   = "global"
-  feature    = google_gke_hub_feature.default["configmanagement"].name
-  membership = google_gke_hub_membership.default[each.key].membership_id
+  provider            = google-beta
+  for_each            = local.cluster_cm_config
+  project             = var.project_id
+  location            = "global"
+  feature             = google_gke_hub_feature.default["configmanagement"].name
+  membership          = google_gke_hub_membership.default[each.key].membership_id
+  membership_location = var.location
 
   configmanagement {
     version = each.value.version

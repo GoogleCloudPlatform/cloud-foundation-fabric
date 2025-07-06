@@ -82,6 +82,13 @@ variable "project_id" {
   type        = string
 }
 
+variable "location" {
+  description = "GKE hub location, will also be used for the membership location."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
 variable "workload_identity_clusters" {
   description = "Clusters that will use Fleet Workload Identity."
   type        = list(string)
