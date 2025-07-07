@@ -55,6 +55,7 @@ module "landing-dns-fwd-onprem-rev-10" {
 
 module "landing-dns-priv-gcp" {
   source     = "../../../modules/dns"
+  count      = var.dns.gcp_domain != null ? 1 : 0
   project_id = module.landing-project.project_id
   name       = replace(var.dns.gcp_domain, ".", "-")
   zone_config = {

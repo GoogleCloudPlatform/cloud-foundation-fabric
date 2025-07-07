@@ -260,7 +260,9 @@ Spokes can optionally define private zones (e.g. `prod-dns-private-zone`) - gran
 
 #### Cloud to on-prem
 
-Leveraging the forwarding zones defined on Landing (e.g. `onprem-example-dns-forwarding` and `reverse-10-dns-forwarding`), the cloud environment can resolve `in-addr.arpa.` and `onprem.example.com.` using the on-premises DNS infrastructure. Onprem resolvers IPs are set in variable `dns.onprem`.
+Leveraging the forwarding zones defined on Landing (e.g. `landing-dns-fwd-onprem` and `landing-dns-fwd-onprem-rev-10`), the cloud environment can resolve `in-addr.arpa.` and domains defined in `var.dns.onprem_domain` using the on-premises DNS infrastructure. Onprem resolvers IPs are set in variable `var.dns.resolvers`.
+
+Domains defined in `var.dns.onprem_domain` can also optionally overwrite the resolver IPs
 
 DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/19` source range, which is only accessible from within a VPC or networks connected to one.
 
