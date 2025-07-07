@@ -38,7 +38,7 @@ resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
   project       = var.project_id
-  location      = var.location != null ? var.location : "global"
+  location      = var.location
   membership_id = each.key
   endpoint {
     gke_cluster {
@@ -70,10 +70,10 @@ resource "google_gke_hub_feature" "default" {
     }
   }
   dynamic "fleet_default_member_config" {
-    for_each = each.key == "servicemesh" && each.value != null ? { 1 = 1 } : {}
+    for_each = var.fleet_default_member_config != null ? { 1 = 1 } : {}
     content {
       mesh {
-        management = "MANAGEMENT_AUTOMATIC"
+        management = var.fleet_default_member_config.management
       }
     }
   }

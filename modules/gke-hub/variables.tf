@@ -63,6 +63,15 @@ variable "configmanagement_templates" {
   nullable = false
 }
 
+variable "fleet_default_member_config" {
+  description = "Fleet default member config."
+  type = object({
+    management = optional(string, "MANAGEMENT_AUTOMATIC")
+  })
+  default  = null
+  nullable = true
+}
+
 variable "features" {
   description = "Enable and configure fleet features."
   type = object({
