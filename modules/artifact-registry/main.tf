@@ -217,3 +217,10 @@ resource "google_artifact_registry_repository" "registry" {
   }
 
 }
+
+resource "google_tags_location_tag_binding" "binding" {
+  for_each  = var.tag_bindings
+  parent    = "//artifactregistry.googleapis.com/${google_artifact_registry_repository.registry.id}"
+  location = var.location
+  tag_value = each.value
+}

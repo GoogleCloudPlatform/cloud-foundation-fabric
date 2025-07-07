@@ -223,3 +223,10 @@ variable "project_id" {
   description = "Registry project id."
   type        = string
 }
+
+variable "tag_bindings" {
+  description = "Tag bindings for this repository, in key => tag value id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
