@@ -20,6 +20,7 @@
 
 module "prod-dns-private-zone" {
   source     = "../../../modules/dns"
+  count      = var.dns.gcp_domain != null ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "prod-${replace(var.dns.gcp_domain, ".", "-")}"
   zone_config = {
@@ -33,16 +34,19 @@ module "prod-dns-private-zone" {
   }
 }
 
-module "prod-dns-fwd-onprem-example" {
+module "prod-dns-fwd-onprem" {
   source     = "../../../modules/dns"
-  count      = length(var.dns.prod_resolvers) > 0 ? 1 : 0
+  for_each   = local.onprem_domain_map
   project_id = module.prod-spoke-project.project_id
-  name       = "example-com"
+  name       = replace(each.key, ".", "-")
   zone_config = {
-    domain = "onprem.example.com."
+    domain = "${each.key}."
     forwarding = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      forwarders      = { for ip in var.dns.prod_resolvers : ip => null }
+      forwarders = (each.value.overwrite_resolver == null ?
+        { for ip in var.dns.prod_resolvers : ip => null }
+        : { for ip in each.value.overwrite_resolver : ip => null }
+      )
     }
   }
 }

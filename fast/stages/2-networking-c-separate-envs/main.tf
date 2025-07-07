@@ -36,6 +36,7 @@ locals {
   iam_viewer = try(
     var.stage_configs["networking"].iam_viewer, {}
   )
+  onprem_domain_map = { for i in var.dns.onprem_domain : i.domain => i }
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),

@@ -42,12 +42,19 @@ variable "alert_config" {
 variable "dns" {
   description = "DNS configuration."
   type = object({
-    gcp_domain    = optional(string, "gcp.example.com")
-    onprem_domain = optional(string, "onprem.example.com")
-    resolvers     = optional(list(string), [])
+    gcp_domain = optional(string, "gcp.example.com")
+    onprem_domain = optional(list(object({
+      domain             = string
+      overwrite_resolver = optional(list(string), null)
+    })), [])
+    resolvers = optional(list(string), [])
   })
   default  = {}
   nullable = false
+  validation {
+    condition     = length(var.dns.onprem_domain) > 0 == length(var.dns.resolvers) > 0
+    error_message = "The 'resolvers' and 'onprem_domain' attributes must be used together. Please provide values for both or leave both empty."
+  }
 }
 
 variable "essential_contacts" {
