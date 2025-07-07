@@ -10,7 +10,7 @@ custom_roles = {
 }
 dns = {
   onprem_domain = [
-    { domain = onprem.example.com }
+    { domain = "onprem.example.com" }
   ]
   resolvers = ["10.10.10.10"]
 }
