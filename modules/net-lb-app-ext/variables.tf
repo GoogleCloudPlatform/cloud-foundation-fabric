@@ -98,7 +98,6 @@ variable "https_proxy_config" {
     mtls_policy                      = optional(string) # id of the mTLS policy to use for the target proxy.
   })
   default  = {}
-  nullable = false
 }
 
 variable "labels" {
