@@ -36,9 +36,9 @@ locals {
     : "MIGRATE"
   )
   region = join("-", slice(split("-", var.zone), 0,
-  	startswith(var.zone, "u-") ? 3 : 2
-  	))
-  gpu    = var.gpu != null
+    startswith(var.zone, "u-") ? 3 : 2
+  ))
+  gpu = var.gpu != null
   service_account = var.service_account == null ? null : {
     email = (
       var.service_account.auto_create

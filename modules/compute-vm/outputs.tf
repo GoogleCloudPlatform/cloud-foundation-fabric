@@ -86,12 +86,12 @@ output "service_account_iam_email" {
 
 output "template" {
   description = "Template resource."
-  value       = try(coalesce(google_compute_region_instance_template.default[0],
-                    google_compute_region_instance_template.default[0]),null)
+  value = try(coalesce(google_compute_region_instance_template.default[0],
+  google_compute_region_instance_template.default[0]), null)
 }
 
 output "template_name" {
   description = "Template name."
-  value       = try(coalesce(google_compute_region_instance_template.default[0].name,
-                    google_compute_region_instance_template.default[0].name),null)
+  value = try(coalesce(google_compute_region_instance_template.default[0].name,
+  google_compute_region_instance_template.default[0].name), null)
 }
