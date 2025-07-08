@@ -20,6 +20,7 @@ variable "backend_service_configs" {
   description = "Backend service level configuration."
   type = map(object({
     name                            = optional(string)
+    description                     = optional(string, "Terraform managed.")
     affinity_cookie_ttl_sec         = optional(number)
     compression_mode                = optional(string)
     connection_draining_timeout_sec = optional(number)
@@ -41,7 +42,7 @@ variable "backend_service_configs" {
       preferred       = optional(bool, false)
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
-      description     = optional(string)
+      description     = optional(string, "Terraform managed.")
       failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
