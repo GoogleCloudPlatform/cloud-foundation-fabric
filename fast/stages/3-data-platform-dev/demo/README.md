@@ -122,7 +122,7 @@ Curated data will be made accessible through authorized views within the `exposu
 
 ### Data Storage Layers
 
-- **Landing Zone** (`land-cs-0`): Raw CSV files stored in Cloud Storage
+- **Landing Zone** (`{prefix}-land-cs-0`): Raw CSV files stored in Cloud Storage
 - **Raw Layer** (`{prefix}_lnd_bq_0`): Raw data loaded into BigQuery for processing
 - **Curated Layer** (`{prefix}_cur_bq_0`): Processed, analytics-ready datasets
 

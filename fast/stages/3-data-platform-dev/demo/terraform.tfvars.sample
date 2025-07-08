@@ -1,8 +1,10 @@
 authorized_dataset_on_curated = "<replace-with-your-dataset-id>"
-composer_environment_name     = "<replace-with-domain-shared-composer-name"
-composer_project_id           = "<replace-with-domain-shared-project-id>"
+composer_config = {
+  environment_name = "<replace-with-domain-shared-composer-name",
+  project_id       = "<replace-with-domain-shared-project-id>"
+}
 impersonate_service_account   = "<replace-with-service-account-email>"
-dp_processing_service_account = "<replace-with-service-account-email>
+dp_processing_service_account = "<replace-with-service-account-email>"
 location                      = "europe-west8"
 prefix                        = "demo"
 project_id                    = "<replace-with-your-project-id>"
