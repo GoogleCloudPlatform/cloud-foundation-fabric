@@ -16,25 +16,36 @@
 
 locals {
   network = (
-    var.vpc_create
+    var.vpc_reuse == null
     ? {
-      id        = try(google_compute_network.network[0].id, null)
-      name      = try(google_compute_network.network[0].name, null)
-      self_link = try(google_compute_network.network[0].self_link, null)
+      id         = try(google_compute_network.network[0].id, null)
+      name       = try(google_compute_network.network[0].name, null)
+      network_id = try(google_compute_network.network[0].network_id, null)
+      self_link  = try(google_compute_network.network[0].self_link, null)
     }
-    : {
-      id = format(
-        "projects/%s/global/networks/%s",
-        var.project_id,
-        var.name
-      )
-      name = var.name
-      self_link = format(
-        "https://www.googleapis.com/compute/v1/projects/%s/global/networks/%s",
-        var.project_id,
-        var.name
-      )
-    }
+    : (
+      try(var.vpc_reuse.use_data_source, null) == false
+      ? {
+        id = format(
+          "projects/%s/global/networks/%s",
+          var.project_id,
+          var.name
+        )
+        name       = var.name
+        network_id = try(var.vpc_reuse.attributes.network_id, null)
+        self_link = format(
+          "https://www.googleapis.com/compute/v1/projects/%s/global/networks/%s",
+          var.project_id,
+          var.name
+        )
+      }
+      : {
+        id         = try(data.google_compute_network.network[0].id, null)
+        name       = try(data.google_compute_network.network[0].name, null)
+        network_id = try(data.google_compute_network.network[0].network_id, null)
+        self_link  = try(data.google_compute_network.network[0].self_link, null)
+      }
+    )
   )
   peer_network = (
     var.peering_config == null
@@ -43,8 +54,14 @@ locals {
   )
 }
 
+data "google_compute_network" "network" {
+  count   = try(var.vpc_reuse.use_data_source, null) == true ? 1 : 0
+  name    = var.name
+  project = var.project_id
+}
+
 resource "google_compute_network" "network" {
-  count                                     = var.vpc_create ? 1 : 0
+  count                                     = var.vpc_reuse == null ? 1 : 0
   project                                   = var.project_id
   name                                      = var.name
   description                               = var.description

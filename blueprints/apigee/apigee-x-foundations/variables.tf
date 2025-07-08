@@ -292,12 +292,17 @@ variable "network_config" {
   type = object({
     shared_vpc = optional(object({
       name        = string
+      network_id  = optional(number)
       subnets     = map(string)
       subnets_psc = map(string)
     }))
     apigee_vpc = optional(object({
-      name        = optional(string)
-      auto_create = optional(bool, true)
+      name = optional(string)
+      vpc_reuse = optional(object({
+        use_data_source = optional(bool, true)
+        attributes = optional(object({
+          network_id = number
+      })) }))
       subnets = optional(map(object({
         id            = optional(string)
         name          = optional(string)

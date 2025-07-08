@@ -56,7 +56,12 @@ module "project" {
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account, null)
   name            = var.project_id
-  project_create  = var.project_create != null
+  project_reuse = (
+    var.project_create == null
+    ? {
+      use_data_source = true
+    } : null
+  )
   services = compact([
     "anthos.googleapis.com",
     var.registry_create ? "artifactregistry.googleapis.com" : null,

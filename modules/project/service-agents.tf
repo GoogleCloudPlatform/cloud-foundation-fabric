@@ -18,7 +18,7 @@
 
 locals {
   services = distinct(concat(
-    local.available_services, try(var.project_reuse.project_attributes.services_enabled, [])
+    local.available_services, try(var.project_reuse.attributes.services_enabled, [])
   ))
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents

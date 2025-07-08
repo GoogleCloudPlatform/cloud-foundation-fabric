@@ -172,7 +172,7 @@ variable "project_reuse" {
   description = "Reuse existing project if not null. If name and number are not passed in, a data source is used."
   type = object({
     use_data_source = optional(bool, true)
-    project_attributes = optional(object({
+    attributes = optional(object({
       name             = string
       number           = number
       services_enabled = optional(list(string), [])
@@ -182,9 +182,9 @@ variable "project_reuse" {
   validation {
     condition = (
       try(var.project_reuse.use_data_source, null) != false ||
-      try(var.project_reuse.project_attributes, null) != null
+      try(var.project_reuse.attributes, null) != null
     )
-    error_message = "Reuse datasource can be disabled only if project attributes are set."
+    error_message = "Reuse datasource can be disabled only if attributes are set."
   }
 }
 
