@@ -63,6 +63,15 @@ variable "configmanagement_templates" {
   nullable = false
 }
 
+variable "fleet_default_member_config" {
+  description = "Fleet default member config."
+  type = object({
+    management = optional(string, "MANAGEMENT_AUTOMATIC")
+  })
+  default  = null
+  nullable = true
+}
+
 variable "features" {
   description = "Enable and configure fleet features."
   type = object({
@@ -80,6 +89,13 @@ variable "features" {
 variable "project_id" {
   description = "GKE hub project ID."
   type        = string
+}
+
+variable "location" {
+  description = "GKE hub location, will also be used for the membership location."
+  type        = string
+  default     = null
+  nullable    = true
 }
 
 variable "workload_identity_clusters" {
