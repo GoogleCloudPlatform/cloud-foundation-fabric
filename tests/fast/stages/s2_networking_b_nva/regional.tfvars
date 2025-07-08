@@ -9,7 +9,7 @@ custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
 dns = {
-  onprem_domain = [
+  onprem_domains = [
     { domain = "onprem.example.com" }
   ]
   resolvers = ["10.10.10.10"]
