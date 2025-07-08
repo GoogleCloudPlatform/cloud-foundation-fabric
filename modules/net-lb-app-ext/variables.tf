@@ -89,6 +89,8 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy connfiguration."
   type = object({
+    name                             = optional(string)
+    description                      = optional(string)
     certificate_manager_certificates = optional(list(string))
     certificate_map                  = optional(string)
     quic_override                    = optional(string)
@@ -228,6 +230,7 @@ variable "ssl_certificates" {
       private_key = string
     })), {})
     managed_configs = optional(map(object({
+      name        = optional(string)
       domains     = list(string)
       description = optional(string)
     })), {})
