@@ -19,6 +19,7 @@
 variable "health_check_configs" {
   description = "Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = map(object({
+    name                = optional(string)
     check_interval_sec  = optional(number)
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)

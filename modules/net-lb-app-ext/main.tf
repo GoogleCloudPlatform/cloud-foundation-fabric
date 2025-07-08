@@ -46,7 +46,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   project     = var.project_id
   name        = coalesce(each.value.name, local.fwd_rule_names[each.key])
-  description = coalesce(each.value.description, var.description)
+  description = each.value.description
   ip_address  = each.value.address
   ip_protocol = "TCP"
   ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
@@ -73,7 +73,7 @@ resource "google_compute_ssl_certificate" "default" {
 resource "google_compute_managed_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.managed_configs
   project     = var.project_id
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   managed {
     domains = each.value.domains
@@ -93,8 +93,8 @@ resource "google_compute_target_http_proxy" "default" {
 resource "google_compute_target_https_proxy" "default" {
   count                            = var.protocol == "HTTPS" ? 1 : 0
   project                          = var.project_id
-  name                             = var.name
-  description                      = var.description
+  name                             = coalesce(var.https_proxy_config.name, var.name)
+  description                      = var.https_proxy_config.description
   certificate_map                  = var.https_proxy_config.certificate_map
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
   quic_override                    = var.https_proxy_config.quic_override
