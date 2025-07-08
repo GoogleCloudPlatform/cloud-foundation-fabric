@@ -64,7 +64,7 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    project_id = optional(string)
+    project_id  = optional(string)
     description = optional(string)
     cloudfunction = optional(object({
       region          = string
