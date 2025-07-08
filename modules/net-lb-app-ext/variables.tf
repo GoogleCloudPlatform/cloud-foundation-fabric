@@ -57,7 +57,7 @@ variable "forwarding_rules_config" {
   description = "The optional forwarding rules configuration."
   type = map(object({
     address     = optional(string)
-    description = optional(string)
+    description = optional(string, "Terraform managed.")
     ipv6        = optional(bool, false)
     name        = optional(string)
     ports       = optional(list(number), null)
@@ -90,7 +90,7 @@ variable "https_proxy_config" {
   description = "HTTPS proxy connfiguration."
   type = object({
     name                             = optional(string)
-    description                      = optional(string)
+    description                      = optional(string, "Terraform managed.")
     certificate_manager_certificates = optional(list(string))
     certificate_map                  = optional(string)
     quic_override                    = optional(string)
@@ -98,6 +98,7 @@ variable "https_proxy_config" {
     mtls_policy                      = optional(string) # id of the mTLS policy to use for the target proxy.
   })
   default  = {}
+  nullable = false
 }
 
 variable "labels" {
