@@ -46,16 +46,3 @@ module "cur-bq-0" {
     }
   ]
 }
-
-resource "local_file" "composer_variables" {
-  content = templatefile("composer/variables.tf.tpl", {
-    dp_project                    = var.project_id
-    location                      = var.location
-    dp_processing_service_account = var.dp_processing_service_account
-    land_gcs                      = module.land-cs-0.bucket.name
-    land_bq_dataset               = module.land-bq-0.dataset_id
-    curated_bq_dataset            = module.cur-bq-0.dataset_id
-    exposure_bq_dataset           = var.authorized_dataset_on_curated
-  })
-  filename = "${path.module}/composer/variables.json"
-}

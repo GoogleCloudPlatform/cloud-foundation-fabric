@@ -16,12 +16,12 @@
 
 output "composer_environment_name" {
   description = "The name of the Composer environment."
-  value       = var.composer_environment_name
+  value       = var.composer_config.environment_name
 }
 
 output "composer_project_id" {
   description = "The project ID where the Composer environment is located."
-  value       = var.composer_project_id
+  value       = var.composer_config.project_id
 }
 
 output "dp_processing_service_account" {
@@ -37,4 +37,17 @@ output "landing_gcs_bucket" {
 output "location" {
   description = "The location/region used for resources."
   value       = var.location
+}
+
+resource "local_file" "composer_variables" {
+  content = templatefile("composer/variables.tf.tpl", {
+    dp_project                    = var.project_id
+    location                      = var.location
+    dp_processing_service_account = var.dp_processing_service_account
+    land_gcs                      = module.land-cs-0.bucket.name
+    land_bq_dataset               = module.land-bq-0.dataset_id
+    curated_bq_dataset            = module.cur-bq-0.dataset_id
+    exposure_bq_dataset           = var.authorized_dataset_on_curated
+  })
+  filename = "${path.module}/composer/variables.json"
 }
