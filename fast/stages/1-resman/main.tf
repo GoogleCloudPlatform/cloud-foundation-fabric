@@ -75,6 +75,9 @@ locals {
   top_level_service_accounts = {
     for k, v in module.top-level-sa : k => try(v.email)
   }
+  top_level_service_accounts_iam = {
+    for k, v in local.top_level_service_accounts : k => "serviceAccount:${v}"
+  }
   # leaving this here to document how to get self identity in a stage
   # automation_resman_sa = try(
   #   data.google_client_openid_userinfo.provider_identity[0].email, null
