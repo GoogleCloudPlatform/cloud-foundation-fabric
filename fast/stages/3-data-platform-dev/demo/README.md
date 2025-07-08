@@ -24,6 +24,7 @@ This reference implementation includes:
 
 Ensure that you are authenticated with the `gcloud` CLI using the user that has the relevant access to
 both the Domain Shared Resources as well as the Data Product GCP projects:
+
 ```bash
 gcloud auth login
 gcloud auth application-default login
@@ -32,12 +33,14 @@ gcloud auth application-default login
 ### 1. Infrastructure Setup
 
 **1. Configure Terraform Variables**
+
    ```bash
    cp terraform.tfvars.sample terraform.tfvars
    # Edit terraform.tfvars with your specific values
    ```
 
 **2. Deploy Infrastructure**
+
    ```bash
    terraform init
    terraform apply
@@ -46,6 +49,7 @@ gcloud auth application-default login
 ### 2. Data Pipeline Setup
 
 **1. Set Environment Variables**
+
    ```bash
    export LANDING_BUCKET=$(terraform output -raw landing_gcs_bucket)
    export COMPOSER_PROJECT_ID=$(terraform output -raw composer_project_id)
@@ -54,11 +58,13 @@ gcloud auth application-default login
    ```
 
 **2. Deploy Data Schemas**
+
    ```bash
    gcloud storage cp -r data/schemas/* gs://$LANDING_BUCKET/schemas
    ```
 
 **3. Source Sample Data**
+
    ```bash
    ./data/get_thelook_data.sh gs://$LANDING_BUCKET
    ```
@@ -112,7 +118,10 @@ The data product implements a three-tier architecture:
   <img src="diagram.png" alt="High level diagram.">
 </p>
 
+Curated data will be made accessible through authorized views within the `exposure` dataset.
+
 ### Data Storage Layers
+
 - **Landing Zone** (`land-cs-0`): Raw CSV files stored in Cloud Storage
 - **Raw Layer** (`{prefix}_lnd_bq_0`): Raw data loaded into BigQuery for processing
 - **Curated Layer** (`{prefix}_cur_bq_0`): Processed, analytics-ready datasets
