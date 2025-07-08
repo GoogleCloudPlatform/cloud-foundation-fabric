@@ -46,7 +46,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   project     = var.project_id
   name        = coalesce(each.value.name, local.fwd_rule_names[each.key])
-  description = each.value.description
+  description = try(each.value.description, var.description)
   ip_address  = each.value.address
   ip_protocol = "TCP"
   ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
@@ -94,7 +94,7 @@ resource "google_compute_target_https_proxy" "default" {
   count                            = var.protocol == "HTTPS" ? 1 : 0
   project                          = var.project_id
   name                             = coalesce(var.https_proxy_config.name, var.name)
-  description                      = var.https_proxy_config.description
+  description                      = try(var.https_proxy_config.description,var.description)
   certificate_map                  = var.https_proxy_config.certificate_map
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
   quic_override                    = var.https_proxy_config.quic_override
