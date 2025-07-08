@@ -408,3 +408,13 @@ variable "factories_data" {
   nullable = false
   default  = {}
 }
+
+variable "universe" {
+  description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
+  type = object({
+    domain               = string
+    prefix               = string
+    unavailable_services = optional(list(string), [])
+  })
+  default = null
+}

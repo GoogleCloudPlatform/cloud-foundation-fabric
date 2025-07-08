@@ -107,7 +107,8 @@ module "projects" {
     for k, v in merge(each.value.tag_bindings, var.data_merges.tag_bindings) :
     k => lookup(var.factories_config.context.tag_values, v, v)
   }
-  tags = each.value.tags
+  tags     = each.value.tags
+  universe = var.universe
   vpc_sc = each.value.vpc_sc == null ? null : {
     perimeter_name = (
       each.value.vpc_sc.perimeter_name == null
@@ -126,7 +127,7 @@ module "projects" {
 module "projects-iam" {
   source   = "../project"
   for_each = local.projects
-  name     = module.projects[each.key].project_id
+  name     = module.projects[each.key].name
   project_reuse = {
     use_data_source = false
     attributes = {
