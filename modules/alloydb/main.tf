@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,6 +182,7 @@ resource "google_alloydb_cluster" "primary" {
 }
 
 resource "google_alloydb_instance" "primary" {
+  provider          = google-beta
   annotations       = var.annotations
   availability_type = var.availability_type
   cluster           = google_alloydb_cluster.primary.id
@@ -367,6 +368,7 @@ resource "google_alloydb_cluster" "secondary" {
 }
 
 resource "google_alloydb_instance" "secondary" {
+  provider          = google-beta
   count             = var.cross_region_replication.enabled ? 1 : 0
   annotations       = var.annotations
   availability_type = var.availability_type
@@ -436,6 +438,7 @@ resource "google_alloydb_instance" "secondary" {
 # * gce_zone
 # * network_config.enable_outbound_public_ip
 resource "google_alloydb_instance" "read_pool" {
+  provider       = google-beta
   for_each       = local.read_pool
   annotations    = var.annotations
   cluster        = google_alloydb_cluster.primary.id
