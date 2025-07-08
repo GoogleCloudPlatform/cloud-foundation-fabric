@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,11 +216,4 @@ resource "google_artifact_registry_repository" "registry" {
     }
   }
 
-}
-
-resource "google_tags_location_tag_binding" "binding" {
-  for_each  = var.tag_bindings
-  parent    = "//artifactregistry.googleapis.com/${google_artifact_registry_repository.registry.id}"
-  location  = var.location
-  tag_value = each.value
 }

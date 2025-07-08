@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,19 +31,12 @@ variable "project_id" {
   type        = string
 }
 
-variable "project_number" {
-  description = "Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings."
-  type        = string
-  default     = null
-}
-
 variable "secrets" {
   description = "Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
   type = map(object({
     expire_time         = optional(string)
     locations           = optional(list(string))
     keys                = optional(map(string))
-    tag_bindings        = optional(map(string))
     version_destroy_ttl = optional(string)
   }))
   default = {}
