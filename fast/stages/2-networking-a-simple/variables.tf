@@ -43,7 +43,7 @@ variable "dns" {
   description = "DNS configuration."
   type = object({
     gcp_domain = optional(string, "gcp.example.com")
-    onprem_domain = optional(list(object({
+    onprem_domains = optional(list(object({
       domain             = string
       overwrite_resolver = optional(list(string), null)
     })), [])
@@ -52,8 +52,8 @@ variable "dns" {
   default  = {}
   nullable = false
   validation {
-    condition     = length(var.dns.onprem_domain) > 0 == length(var.dns.resolvers) > 0
-    error_message = "The 'resolvers' and 'onprem_domain' attributes must be used together. Please provide values for both or leave both empty."
+    condition     = length(var.dns.onprem_domains) > 0 == length(var.dns.resolvers) > 0
+    error_message = "The 'resolvers' and 'onprem_domains' attributes must be used together. Please provide values for both or leave both empty."
   }
 }
 

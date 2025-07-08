@@ -17,7 +17,7 @@
 # tfdoc:file:description Landing DNS zones and peerings setup.
 
 locals {
-  onprem_domain_map = { for i in var.dns.onprem_domain : i.domain => i }
+  onprem_domain_map = { for i in var.dns.onprem_domains : i.domain => i }
 }
 
 # forwarding to on-prem DNS resolvers
