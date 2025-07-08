@@ -92,6 +92,7 @@ variable "factories_config" {
     quotas        = optional(string)
     tags          = optional(string)
     context = optional(object({
+      iam_principals        = optional(map(string), {})
       notification_channels = optional(map(string), {})
       org_policies          = optional(map(map(string)), {})
       tag_keys              = optional(map(string), {})
