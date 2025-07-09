@@ -3,59 +3,53 @@
   "title": "Resource Manager Tags",
   "type": "object",
   "additionalProperties": false,
-  "patternProperties": {
-    "^[a-z-][a-z0-9-]+$": {
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "network": {
+      "type": "string"
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "values": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "network": {
-          "type": "string"
-        },
-        "iam": {
-          "$ref": "#/$defs/iam"
-        },
-        "iam_bindings": {
-          "$ref": "#/$defs/iam_bindings"
-        },
-        "iam_bindings_additive": {
-          "$ref": "#/$defs/iam_bindings_additive"
-        },
-        "values": {
+      "patternProperties": {
+        "^[a-z-][a-z0-9-]+$": {
           "type": "object",
           "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z-][a-z0-9-]+$": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "iam": {
-                  "$ref": "#/$defs/iam"
-                },
-                "iam_bindings": {
-                  "$ref": "#/$defs/iam_bindings"
-                },
-                "iam_bindings_additive": {
-                  "$ref": "#/$defs/iam_bindings_additive"
-                }
-              }
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
             }
           }
         }

@@ -6,25 +6,23 @@
 
 *additional properties: false*
 
-- **`^[a-z-][a-z0-9-]+$`**: *object*
+- **name**: *string*
+- **description**: *string*
+- **id**: *string*
+- **network**: *string*
+- **iam**: *reference([iam](#refs-iam))*
+- **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+- **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+- **values**: *object*
   <br>*additional properties: false*
-  - **name**: *string*
-  - **description**: *string*
-  - **id**: *string*
-  - **network**: *string*
-  - **iam**: *reference([iam](#refs-iam))*
-  - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
-  - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
-  - **values**: *object*
+  - **`^[a-z-][a-z0-9-]+$`**: *object*
     <br>*additional properties: false*
-    - **`^[a-z-][a-z0-9-]+$`**: *object*
-      <br>*additional properties: false*
-      - **name**: *string*
-      - **description**: *string*
-      - **id**: *string*
-      - **iam**: *reference([iam](#refs-iam))*
-      - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
-      - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+    - **name**: *string*
+    - **description**: *string*
+    - **id**: *string*
+    - **iam**: *reference([iam](#refs-iam))*
+    - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+    - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 
 ## Definitions
 
