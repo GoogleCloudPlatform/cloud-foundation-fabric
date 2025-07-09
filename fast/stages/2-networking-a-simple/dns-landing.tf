@@ -16,18 +16,25 @@
 
 # tfdoc:file:description Landing DNS zones and peerings setup.
 
+locals {
+  onprem_domain_map = { for i in var.dns.onprem_domains : i.domain => i }
+}
+
 # forwarding to on-prem DNS resolvers
 
-module "landing-dns-fwd-onprem-example" {
+module "landing-dns-fwd-onprem" {
   source     = "../../../modules/dns"
-  count      = length(var.dns.resolvers) > 0 ? 1 : 0
+  for_each   = local.onprem_domain_map
   project_id = module.landing-project.project_id
-  name       = replace(var.dns.onprem_domain, ".", "-")
+  name       = replace(each.key, ".", "-")
   zone_config = {
-    domain = "${var.dns.onprem_domain}."
+    domain = "${each.key}."
     forwarding = {
       client_networks = [module.landing-vpc.self_link]
-      forwarders      = { for ip in var.dns.resolvers : ip => null }
+      forwarders = (each.value.overwrite_resolver == null ?
+        { for ip in var.dns.resolvers : ip => null }
+        : { for ip in each.value.overwrite_resolver : ip => null }
+      )
     }
   }
 }
@@ -48,6 +55,7 @@ module "landing-dns-fwd-onprem-rev-10" {
 
 module "landing-dns-priv-gcp" {
   source     = "../../../modules/dns"
+  count      = var.dns.gcp_domain != null ? 1 : 0
   project_id = module.landing-project.project_id
   name       = replace(var.dns.gcp_domain, ".", "-")
   zone_config = {
