@@ -20,6 +20,7 @@
 
 module "prod-dns-priv-example" {
   source     = "../../../modules/dns"
+  count      = var.dns.gcp_domain != null ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "prod-${replace(var.dns.gcp_domain, ".", "-")}"
   zone_config = {
