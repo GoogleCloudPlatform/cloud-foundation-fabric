@@ -76,13 +76,19 @@ gcloud auth application-default login
    > **Note**: This step may take several minutes to complete.
 
    ```bash
-   # Convert JSON to comma-separated KEY=VALUE format
-   ENV_VARS=$(jq -r 'to_entries|map("\(.key)=\(.value)")|join(",")' composer/variables.json)
+   # Copy Airflow JSON variable file into Composer data folder
+   gcloud composer environments storage data import \
+       --project $COMPOSER_PROJECT_ID \
+       --environment=$COMPOSER_ENV_NAME \
+       --location $LOCATION \
+       --source="composer/variables.json"
 
-   gcloud composer environments update $COMPOSER_ENV_NAME \
+   # Import Airflow variables
+   gcloud composer environments run $COMPOSER_ENV_NAME \
        --project $COMPOSER_PROJECT_ID \
        --location $LOCATION \
-       --update-env-variables $ENV_VARS
+       variables \
+       -- import /home/airflow/gcs/data/variables.json
    ```
 
 **5. Deploy Airflow DAGs**
