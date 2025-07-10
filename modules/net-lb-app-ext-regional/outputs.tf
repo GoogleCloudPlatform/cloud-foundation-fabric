@@ -15,8 +15,15 @@
  */
 
 output "address" {
-  description = "Forwarding rule address."
-  value       = google_compute_forwarding_rule.default.ip_address
+  description = "Forwarding rule address (legacy - use addresses for multiple proxies)."
+  value       = values(google_compute_forwarding_rule.default)[0].ip_address
+}
+
+output "addresses" {
+  description = "Forwarding rule addresses by proxy key."
+  value = {
+    for k, v in google_compute_forwarding_rule.default : k => v.ip_address
+  }
 }
 
 output "backend_service_ids" {
@@ -34,7 +41,12 @@ output "backend_service_names" {
 }
 
 output "forwarding_rule" {
-  description = "Forwarding rule resource."
+  description = "Forwarding rule resource (legacy - use forwarding_rules for multiple proxies)."
+  value       = values(google_compute_forwarding_rule.default)[0]
+}
+
+output "forwarding_rules" {
+  description = "Forwarding rule resources by proxy key."
   value       = google_compute_forwarding_rule.default
 }
 
@@ -53,8 +65,15 @@ output "health_check_ids" {
 }
 
 output "id" {
-  description = "Fully qualified forwarding rule id."
-  value       = google_compute_forwarding_rule.default.id
+  description = "Fully qualified forwarding rule id (legacy - use ids for multiple proxies)."
+  value       = values(google_compute_forwarding_rule.default)[0].id
+}
+
+output "ids" {
+  description = "Fully qualified forwarding rule ids by proxy key."
+  value = {
+    for k, v in google_compute_forwarding_rule.default : k => v.id
+  }
 }
 
 output "neg_ids" {
@@ -71,6 +90,18 @@ output "neg_ids" {
     },
     {
       for k, v in google_compute_region_network_endpoint_group.serverless : k => v.id
+    }
+  )
+}
+
+output "target_proxy_ids" {
+  description = "Target proxy ids by proxy key."
+  value = merge(
+    {
+      for k, v in google_compute_region_target_http_proxy.default : k => v.id
+    },
+    {
+      for k, v in google_compute_region_target_https_proxy.default : k => v.id
     }
   )
 }

@@ -199,6 +199,60 @@ variable "protocol" {
   }
 }
 
+variable "proxy_configs" {
+  description = "Multiple proxy configurations. When specified, takes precedence over protocol, address, ports, https_proxy_config, and ssl_certificates variables."
+  type = map(object({
+    protocol = string
+    address  = optional(string)
+    ports    = optional(list(string))
+
+    # HTTPS-specific options
+    certificate_manager_certificates = optional(list(string))
+    ssl_certificates = optional(object({
+      certificate_ids = optional(list(string), [])
+      create_configs = optional(map(object({
+        certificate = string
+        private_key = string
+      })), {})
+    }), {})
+    ssl_policy = optional(string)
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.proxy_configs : contains(["HTTP", "HTTPS"], v.protocol)
+    ])
+    error_message = "Protocol must be HTTP or HTTPS for each proxy."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.proxy_configs : length(coalesce(v.ports, [])) <= 1
+    ])
+    error_message = "Application Load Balancer supports at most one port per forwarding rule."
+  }
+  validation {
+    condition     = var.address != null || alltrue([for v in var.proxy_configs : v.address != null])
+    error_message = "If the top-level 'address' variable is not set, an 'address' must be specified for each proxy in 'proxy_configs'."
+  }
+  validation {
+    condition = length([
+      for v in values(var.proxy_configs) : (
+        length(coalesce(v.ports, [])) == 1
+        ? "${coalesce(v.address, var.address)}:${v.ports[0]}"
+        : v.protocol
+      )
+      ]) == length(distinct([
+        for v in values(var.proxy_configs) : (
+          length(coalesce(v.ports, [])) == 1
+          ? "${coalesce(v.address, var.address)}:${v.ports[0]}"
+          : v.protocol
+        )
+    ]))
+    error_message = "Each proxy configuration must be unique. Either a specific address:port combination is duplicated, or multiple proxies share the same protocol without specifying any port(s)."
+  }
+}
+
 variable "region" {
   description = "Region where the load balancer is created."
   type        = string
