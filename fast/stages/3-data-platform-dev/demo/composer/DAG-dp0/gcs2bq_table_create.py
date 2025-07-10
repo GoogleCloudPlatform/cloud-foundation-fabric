@@ -36,12 +36,12 @@ LANDING_TABLES = ["users", "orders", "order_items", "products"]
 CURATED_TABLES = ["customer_purchases"]
 
 # Environment variables (set from Composer variables.json)
-DP_PROJECT = os.environ.get("DP_PROJECT")
-LAND_BQ_DATASET = os.environ.get("LAND_BQ_DATASET")
-CURATED_BQ_DATASET = os.environ.get("CURATED_BQ_DATASET")
-EXPOSURE_BQ_DATASET = os.environ.get("EXPOSURE_BQ_DATASET")
-LAND_GCS = os.environ.get("LAND_GCS")
-DP_PROCESSING_SERVICE_ACCOUNT = os.environ.get("DP_PROCESSING_SERVICE_ACCOUNT")
+DP_PROJECT = Variable.get("DP_PROJECT")
+LAND_BQ_DATASET = Variable.get("LAND_BQ_DATASET")
+CURATED_BQ_DATASET = Variable.get("CURATED_BQ_DATASET")
+EXPOSURE_BQ_DATASET = Variable.get("EXPOSURE_BQ_DATASET")
+LAND_GCS = Variable.get("LAND_GCS")
+DP_PROCESSING_SERVICE_ACCOUNT = Variable.get("DP_PROCESSING_SERVICE_ACCOUNT")
 
 # Validate required environment variables
 required_vars = {
