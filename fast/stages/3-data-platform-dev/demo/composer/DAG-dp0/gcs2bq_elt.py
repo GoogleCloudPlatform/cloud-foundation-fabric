@@ -43,12 +43,12 @@ from airflow.utils.task_group import TaskGroup
 LANDING_TABLES = ["users", "orders", "order_items", "products"]
 
 # Environment variables (set from composer/variables.json)
-DP_PROJECT = os.environ.get("DP_PROJECT")
-LAND_BQ_DATASET = os.environ.get("LAND_BQ_DATASET")
-CURATED_BQ_DATASET = os.environ.get("CURATED_BQ_DATASET")
-LAND_GCS = os.environ.get("LAND_GCS")
-DP_PROCESSING_SERVICE_ACCOUNT = os.environ.get("DP_PROCESSING_SERVICE_ACCOUNT")
-LOCATION = os.environ.get("LOCATION")
+DP_PROJECT = Variable.get("DP_PROJECT")
+LAND_BQ_DATASET = Variable.get("LAND_BQ_DATASET")
+CURATED_BQ_DATASET = Variable.get("CURATED_BQ_DATASET")
+LAND_GCS = Variable.get("LAND_GCS")
+DP_PROCESSING_SERVICE_ACCOUNT = Variable.get("DP_PROCESSING_SERVICE_ACCOUNT")
+LOCATION = Variable.get("LOCATION")
 
 # Validate required environment variables
 required_vars = {
