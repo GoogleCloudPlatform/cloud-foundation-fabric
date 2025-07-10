@@ -52,7 +52,7 @@ values:
       prefix_redirect: null
       redirect_response_code: MOVED_PERMANENTLY_DEFAULT
       strip_query: false
-    description: Terraform managed.
+    description: URL redirect for glb-test-0.
     header_action: []
     host_rule: []
     name: glb-test-0-redirect
