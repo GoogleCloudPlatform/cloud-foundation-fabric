@@ -15,7 +15,7 @@
  */
 
 output "address" {
-  description = "Forwarding rule address (legacy - use addresses for multiple proxies)."
+  description = "Forwarding rule address (use addresses for multiple proxies)."
   value       = values(google_compute_forwarding_rule.default)[0].ip_address
 }
 
@@ -41,7 +41,7 @@ output "backend_service_names" {
 }
 
 output "forwarding_rule" {
-  description = "Forwarding rule resource (legacy - use forwarding_rules for multiple proxies)."
+  description = "Forwarding rule resource (use forwarding_rules for multiple proxies)."
   value       = values(google_compute_forwarding_rule.default)[0]
 }
 
@@ -65,7 +65,7 @@ output "health_check_ids" {
 }
 
 output "id" {
-  description = "Fully qualified forwarding rule id (legacy - use ids for multiple proxies)."
+  description = "Fully qualified forwarding rule id (use ids for multiple proxies)."
   value       = values(google_compute_forwarding_rule.default)[0].id
 }
 
