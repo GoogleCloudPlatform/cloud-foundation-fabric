@@ -310,6 +310,38 @@ http:
       - 80
 ```
 <!-- BEGIN TFDOC -->
+### Dynamic Rule Matching
+
+This module simplifies firewall rule creation by using generic, context-aware variables within the `match` block. Based on the rule's specified `direction` (`INGRESS` or `EGRESS`), the module maps these generic variables to the correct source- (`src_*`) or destination-specific (`dest_*`) arguments in the underlying resource.
+
+The tables below provide a complete reference for these dynamic mappings.
+
+#### Ingress Rules (`direction = "INGRESS"`)
+
+| Module Variable (`match.*`) | Mapped Resource Attribute |
+| :--- | :--- |
+| `address_groups` | `src_address_groups` |
+| `fqdns` | `src_fqdns` |
+| `region_codes` | `src_region_codes` |
+| `source_tags` | `src_secure_tags` |
+| `threat_intelligences` | `src_threat_intelligences` |
+
+#### Egress Rules (`direction = "EGRESS"`)
+
+| Module Variable (`match.*`) | Mapped Resource Attribute |
+| :--- | :--- |
+| `address_groups` | `dest_address_groups` |
+| `fqdns` | `dest_fqdns` |
+| `region_codes` | `dest_region_codes` |
+| `threat_intelligences` | `dest_threat_intelligences` |
+
+#### Rule-Level Mappings
+
+The following variable is defined at the top level of the rule (not within the `match` block) and is mapped directly, regardless of the rule's direction.
+
+| Module Variable | Mapped Resource Attribute |
+| :--- | :--- |
+| `target_tags` | `target_secure_tags` |
 ## Variables
 
 | name | description | type | required | default |
