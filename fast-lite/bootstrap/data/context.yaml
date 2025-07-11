@@ -1,0 +1,4 @@
+iam_principals:
+  net-admins: "group:net-admins@foo.bar"
+organization:
+  id: 561859074576

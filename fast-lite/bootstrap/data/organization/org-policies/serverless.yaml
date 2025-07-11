@@ -1,0 +1,57 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../schemas/org-policies.schema.json
+
+run.allowedIngress:
+  rules:
+    - allow:
+        values:
+          - is:internal-and-cloud-load-balancing
+
+run.managed.requireInvokerIam:
+  rules:
+    - enforce: true
+
+# run.allowedVPCEgress:
+#   rules:
+#   - allow:
+#       values:
+#       - is:private-ranges-only
+
+# cloudfunctions.allowedIngressSettings:
+#   rules:
+#   - allow:
+#       values:
+#       - is:ALLOW_INTERNAL_ONLY
+
+# cloudfunctions.allowedVpcConnectorEgressSettings:
+#   rules:
+#   - allow:
+#       values:
+#       - is:PRIVATE_RANGES_ONLY
+
+# cloudfunctions.requireVPCConnector:
+#   rules:
+#   - enforce: true
+
+# cloudfunctions.restrictAllowedGenerations:
+#   rules:
+#   - allow:
+#       values:
+#       - is:2ndGen

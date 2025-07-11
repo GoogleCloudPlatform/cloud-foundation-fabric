@@ -1,0 +1,82 @@
+# TODO: data access logs
+id: ${context.organization.id}
+essential_contacts:
+  - ${context.emails.org_admins}
+iam:
+  roles/billing.creator: []
+iam_by_principals:
+  "domain:${context.organization.domain}":
+    - roles/browser
+  ${context.iam_principals.billing_admins}:
+    - roles/billing.admin
+  ${context.iam_principals.network_admins}:
+    - roles/cloudasset.owner
+    - roles/cloudsupport.techSupportEditor
+  ${context.iam_principals.org_admins}:
+    - roles/billing.admin
+    - roles/cloudasset.owner
+    - roles/cloudsupport.admin
+    - roles/compute.osAdminLogin
+    - roles/compute.osLoginExternalUser
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.organizationAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.tagAdmin
+  ${context.iam_principals.sec_admins}:
+    - roles/cloudasset.owner
+    - roles/cloudsupport.techSupportEditor
+    - roles/iam.securityReviewer
+    - roles/logging.admin
+    - roles/securitycenter.admin
+  ${fast.projects.service_accounts.bootstrap-rw}:
+    - roles/essentialcontacts.admin
+    - roles/logging.admin
+    - roles/resourcemanager.organizationAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectMover
+    - roles/resourcemanager.tagAdmin
+iam_bindings_additive:
+  net_xpn_admin:
+    member: ${context.iam_principals.network_admins}
+    role: roles/compute.xpnAdmin
+  org_orgpol_admin:
+    member: ${context.iam_principals.org_admins}
+    role: roles/orgpolicy.policyAdmin
+  sec_access_admin:
+    member: ${context.iam_principals.sec_admins}
+    role: roles/accesscontextmanager.policyAdmin
+  sec_orgpol_admin:
+    member: ${context.iam_principals.sec_admins}
+    role: roles/orgpolicy.policyAdmin
+  sec_role_admin:
+    member: ${context.iam_principals.sec_admins}
+    role: roles/iam.organizationRoleAdmin
+logging:
+  # disable_default_log_sink: false
+  storage_location: ${defaults.logging_storage_location}
+  sinks:
+    vpc_sc:
+      destination:
+        project_id: ${fast.projects.ids.logging-0}
+        type: logging
+        location: europe-west8
+      filter: |
+        foo
+    vpc_sc2:
+      destination:
+        project_id: ${fast.projects.ids.logging-0}
+        type: bigquery
+        # location: defaults/bq_location
+      description: foo
+      exclusions: {}
+      filter: |
+        foo
+    vpc_sc3:
+      destination:
+        project_id: ${fast.projects.ids.logging-0}
+        type: project
+      description: foo
+      exclusions: {}
+      filter: |
+        foo

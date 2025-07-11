@@ -1,0 +1,5 @@
+defaults:
+  storage_location: europe-west1
+overrides:
+  prefix: foo
+  billing_account: 123

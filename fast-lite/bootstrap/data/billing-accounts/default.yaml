@@ -1,0 +1,4 @@
+id: ${defaults.billing_account_id}
+iam:
+  roles/billing.admin:
+    - ${context.iam_principals.org_admins}

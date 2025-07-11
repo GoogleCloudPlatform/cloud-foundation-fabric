@@ -1,0 +1,9 @@
+description: "Organization-level environments."
+# iam:
+#   "roles/resourcemanager.tagViewer":
+#     - "group:finance-team@example.com"
+values:
+  dev:
+    description: "Development."
+  prod:
+    description: "Production."

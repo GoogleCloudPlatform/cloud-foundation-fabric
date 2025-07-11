@@ -1,0 +1,33 @@
+services:
+  - accesscontextmanager.googleapis.com
+  - bigquery.googleapis.com
+  - bigqueryreservation.googleapis.com
+  - bigquerystorage.googleapis.com
+  - billingbudgets.googleapis.com
+  - cloudasset.googleapis.com
+  - cloudbilling.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudquotas.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - datacatalog.googleapis.com
+  - essentialcontacts.googleapis.com
+  - iam.googleapis.com
+  - iamcredentials.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - networksecurity.googleapis.com
+  - orgpolicy.googleapis.com
+  - pubsub.googleapis.com
+  - servicenetworking.googleapis.com
+  - serviceusage.googleapis.com
+  - storage-component.googleapis.com
+  - storage.googleapis.com
+  - sts.googleapis.com
+  - cloudbuild.googleapis.com
+  - compute.googleapis.com
+  - container.googleapis.com
+buckets:
+  voc-sc-state: {}
+service_accounts:
+  vpc-sc-ro: {}
+  vpc-sc-rw: {}
