@@ -309,6 +309,33 @@ http:
       ports:
       - 80
 ```
+#### Firewall Rule Factory Schema 
+The following schema outlines all available fields for defining a rule within a factory YAML file. Use this as a reference, and note the inline comments for fields that apply only to specific policy types.
+
+```yaml
+rule-name:
+  priority:
+  action:
+  description:
+  disabled:
+  enable_logging:
+  security_profile_group: # Not for Regional policies
+  target_service_accounts: []
+  target_tags: [] # Not for Hierarchical policies
+  target_resources: [] # For Hierarchical policies only
+  tls_inspect: # Not for Regional policies
+  match:
+    source_ranges: []
+    destination_ranges: []
+    source_tags: [] # Not for Hierarchical policies
+    threat_intelligences: []
+    fqdns: []
+    address_groups: []
+    region_codes: []
+    layer4_configs:
+      - protocol:
+        ports: []
+```
 <!-- BEGIN TFDOC -->
 ### Dynamic Rule Matching
 
