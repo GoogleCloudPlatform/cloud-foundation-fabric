@@ -173,7 +173,7 @@ Factory configuration is via three optional attributes in the `rules_factory_con
 - `egress_rules_file_path` specifying the path to the egress rules file
 - `ingress_rules_file_path` specifying the path to the ingress rules file
 
-Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key.
+Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key. Additionally, the factory applies implicit defaults: `action` defaults to `deny` for egress and `allow` for ingress, while omitting `layer4_configs`  makes the rule match all protocols.
 
 This is an example of a simple factory:
 
@@ -309,6 +309,7 @@ http:
       ports:
       - 80
 ```
+
 #### Firewall Rule Factory Schema 
 The following schema outlines all available fields for defining a rule within a factory YAML file. Use this as a reference, and note the inline comments for fields that apply only to specific policy types.
 
