@@ -1,9 +1,4 @@
-description: "Organization-level environments."
-# iam:
-#   "roles/resourcemanager.tagViewer":
-#     - "group:finance-team@example.com"
+description: "Control enforcement of compute.vmExternalIpAccess org policy."
 values:
-  dev:
-    description: "Development."
-  prod:
-    description: "Production."
+  enabled:
+    description: "Disables enforcing of compute.vmExternalIpAccess."

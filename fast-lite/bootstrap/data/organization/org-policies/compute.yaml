@@ -86,10 +86,10 @@ compute.trustedImageProjects:
         - "is:projects/ubuntu-os-gke-cloud"
 
 
-compute.vmExternalIpAccess:
-  rules:
-    - deny:
-        all: true
+# compute.vmExternalIpAccess:
+#   rules:
+#     - deny:
+#         all: true
 
 # compute.disableInternetNetworkEndpointGroup:
 #   rules:

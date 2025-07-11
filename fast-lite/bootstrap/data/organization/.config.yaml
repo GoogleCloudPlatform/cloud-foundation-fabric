@@ -1,11 +1,15 @@
 # TODO: data access logs
+
+# yaml-language-server: $schema=../../schemas/organization.schema.json
+
 id: ${context.organization.id}
-essential_contacts:
-  - ${context.emails.org_admins}
+contacts:
+  foo:
+    - ${context.emails.org_admins}
 iam:
   roles/billing.creator: []
 iam_by_principals:
-  "domain:${context.organization.domain}":
+  domain:${context.organization.domain}:
     - roles/browser
   ${context.iam_principals.billing_admins}:
     - roles/billing.admin

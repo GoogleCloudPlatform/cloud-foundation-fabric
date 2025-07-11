@@ -18,12 +18,9 @@
 
 # yaml-language-server: $schema=../../schemas/org-policies.schema.json
 
-compute.restrictLoadBalancerCreationForTypes:
-  rules:
-    - allow:
-        all: true
+# TODO: just an example, this should be set in the default set at org level
 
 compute.vmExternalIpAccess:
   rules:
-    - allow:
+    - deny:
         all: true
