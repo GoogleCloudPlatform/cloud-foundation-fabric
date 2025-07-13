@@ -60,4 +60,4 @@ blueprints/gke/autopilot/bundle.tar.gz
 blueprints/gke/patterns/batch/job-*.yaml
 modules/apigee/recipe-apigee-swp/bundle.zip
 modules/apigee/recipe-apigee-swp/deploy-apiproxy.sh
-
+**/org_permissions.sh
