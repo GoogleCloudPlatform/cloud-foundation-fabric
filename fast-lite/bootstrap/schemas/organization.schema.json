@@ -274,7 +274,7 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:\\$\\{.*}$|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:\\$|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[$a-z])"
             },
             "role": {
               "type": "string",
@@ -307,7 +307,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:\\$\\{.*}$|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+        "^(?:\\$|domain:|group:|serviceAccount:|user:|principal:|principalSet:)[$a-z]": {
           "type": "array",
           "items": {
             "type": "string",

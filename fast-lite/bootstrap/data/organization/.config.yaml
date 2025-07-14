@@ -16,21 +16,25 @@
 
 # yaml-language-server: $schema=../../schemas/organization.schema.json
 
-id: ${context.organization.id}
+# context.organization.id
+id: $organization_id
 contacts:
   foo:
-    - ${context.emails.org_admins}
+    # context.emails
+    - $org_admins
 iam:
   roles/billing.creator: []
 iam_by_principals:
-  domain:${context.organization.domain}:
+  # context.organization.domain
+  domain:$organization_domain:
     - roles/browser
-  ${context.iam_principals.billing_admins}:
+  # context.iam_principals
+  $principals.billing_admins:
     - roles/billing.admin
-  ${context.iam_principals.network_admins}:
+  $principals.network_admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
-  ${context.iam_principals.org_admins}:
+  $principals.org_admins:
     - roles/billing.admin
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
@@ -41,13 +45,14 @@ iam_by_principals:
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
-  ${context.iam_principals.sec_admins}:
+  $principals.security_admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
     - roles/iam.securityReviewer
     - roles/logging.admin
     - roles/securitycenter.admin
-  ${fast.projects.service_accounts.bootstrap-rw}:
+  # dynamic service_accounts
+  $service_accounts.automation.iac-0.bootstrap-rw:
     - roles/essentialcontacts.admin
     - roles/logging.admin
     - roles/resourcemanager.organizationAdmin
@@ -56,43 +61,45 @@ iam_by_principals:
     - roles/resourcemanager.tagAdmin
 iam_bindings_additive:
   net_xpn_admin:
-    member: ${context.iam_principals.network_admins}
+    member: $principals.network_admins
     role: roles/compute.xpnAdmin
   org_orgpol_admin:
-    member: ${context.iam_principals.org_admins}
+    member: $principals.org_admins
     role: roles/orgpolicy.policyAdmin
   sec_access_admin:
-    member: ${context.iam_principals.sec_admins}
+    member: $principals.security_admins
     role: roles/accesscontextmanager.policyAdmin
   sec_orgpol_admin:
-    member: ${context.iam_principals.sec_admins}
+    member: $principals.security_admins
     role: roles/orgpolicy.policyAdmin
   sec_role_admin:
-    member: ${context.iam_principals.sec_admins}
+    member: $principals.security_admins
     role: roles/iam.organizationRoleAdmin
 logging:
   # disable_default_log_sink: false
-  storage_location: ${defaults.logging_storage_location}
+  # context.defaults.locations.logging
+  storage_location: $defaults.locations.storage
   sinks:
     vpc_sc:
       destination:
-        project_id: ${fast.projects.ids.logging-0}
+        # dynamic projects
+        project_id: $projects.logging-0
         type: logging
         location: europe-west8
       filter: |
         foo
     vpc_sc2:
       destination:
-        project_id: ${fast.projects.ids.logging-0}
+        project_id: $projects.logging-0
         type: bigquery
-        # location: defaults/bq_location
+        # location: $defaults.locations.bigquery
       description: foo
       exclusions: {}
       filter: |
         foo
     vpc_sc3:
       destination:
-        project_id: ${fast.projects.ids.logging-0}
+        project_id: $projects.logging-0
         type: project
       description: foo
       exclusions: {}
