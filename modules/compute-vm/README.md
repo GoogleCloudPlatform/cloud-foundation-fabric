@@ -991,7 +991,7 @@ module "sole-tenancy" {
 | [service_account_email](outputs.tf#L73) | Service account email. |  |
 | [service_account_iam_email](outputs.tf#L78) | Service account email. |  |
 | [template](outputs.tf#L87) | Template resource. |  |
-| [template_name](outputs.tf#L92) | Template name. |  |
+| [template_name](outputs.tf#L96) | Template name. |  |
 
 ## Fixtures
 
