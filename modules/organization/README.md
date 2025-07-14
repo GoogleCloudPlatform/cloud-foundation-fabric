@@ -129,7 +129,56 @@ IAM is managed via several variables that implement different features and level
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
+IAM supports variable interpolation for both roles and principals, via the respective attributes in the `var.factories_config.context` variable. Some usage examples are provided below.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  factories_config = {
+    context = {
+      custom_roles = {
+        my_role_one = "organizations/1234567890/roles/myRoleOne"
+        my_role_two = "organizations/1234567890/roles/myRoleTwo"
+      }
+      iam_principals = {
+        org_admins = "group:gcp-organization-admins@example.com"
+      }
+    }
+  }
+  iam = {
+    "$my_role_one" = [
+      "domain:example.org"
+    ]
+    "roles/viewer" = [
+      "group:gcp-devops@example.com",
+      "$org_admins"
+    ]
+  }
+  iam_by_principals = {
+    "$org_admins" = [
+      "roles/resourcemanager.projectCreator",
+      "$my_role_one"
+    ]
+  }
+  iam_bindings = {
+    my_role = {
+      role = "$my_role_one"
+      members = [
+      "group:gcp-devops@example.com",
+      "$org_admins"
+      ]
+    }
+  }
+  iam_bindings_additive = {
+    my_role_two = {
+      role = "$my_role_two"
+      member = "$org_admins"
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=iam-context.yaml
+```
 
 ## Organization Policies
 

@@ -60,6 +60,10 @@ module "organization-iam" {
       }
     }
   }
+  iam                   = local.organization.iam
+  iam_by_principals     = local.organization.iam_by_principals
+  iam_bindings          = local.organization.iam_bindings
+  iam_bindings_additive = local.organization.iam_bindings_additive
 }
 
 # output "foo" { value = local.organization }

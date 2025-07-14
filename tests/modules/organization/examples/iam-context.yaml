@@ -1,0 +1,41 @@
+values:
+  module.org.google_organization_iam_binding.authoritative["$my_role_one"]:
+    condition: []
+    members:
+    - domain:example.org
+    - group:gcp-organization-admins@example.com
+    org_id: '1122334455'
+    role: organizations/1234567890/roles/myRoleOne
+  module.org.google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@example.com
+    org_id: '1122334455'
+    role: roles/resourcemanager.projectCreator
+  module.org.google_organization_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@example.com
+    - group:gcp-organization-admins@example.com
+    org_id: '1122334455'
+    role: roles/viewer
+  module.org.google_organization_iam_binding.bindings["my_role"]:
+    condition: []
+    members:
+    - group:gcp-devops@example.com
+    - group:gcp-organization-admins@example.com
+    org_id: '1122334455'
+    role: organizations/1234567890/roles/myRoleOne
+  module.org.google_organization_iam_member.bindings["my_role_two"]:
+    condition: []
+    member: group:gcp-organization-admins@example.com
+    org_id: '1122334455'
+    role: organizations/1234567890/roles/myRoleTwo
+
+counts:
+  google_organization_iam_binding: 4
+  google_organization_iam_member: 1
+  modules: 1
+  resources: 5
+
+outputs: {}
