@@ -36,6 +36,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "customer_id": {
+          "type": "string"
+        },
         "domain": {
           "type": "string"
         },

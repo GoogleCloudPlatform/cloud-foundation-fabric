@@ -86,7 +86,7 @@ iam_bindings_additive: {}
 logging:
   # disable_default_log_sink: false
   # context.defaults.locations.logging
-  storage_location: $defaults.locations.storage
+  storage_location: $context.locations.logging
   sinks:
     audit-logs:
       # description: foo

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+locals {
+  organization = try(
+    yamldecode(file("${local._paths.organization}/.config.yaml")), {}
+  )
+}
+
 resource "terraform_data" "precondition" {
   lifecycle {
     precondition {
-      condition     = try(local.context.organization.id, null) != null
+      condition     = try(local.ctx.organization.id, null) != null
       error_message = "No organization id available from context."
     }
   }
@@ -25,5 +31,35 @@ resource "terraform_data" "precondition" {
 
 module "organization" {
   source          = "../../modules/organization"
-  organization_id = "organizations/${try(local.context.organization.id, 000)}"
+  organization_id = "organizations/${try(local.ctx.organization.id, 000)}"
+  logging_settings = (
+    try(local.organization.logging.storage_location, null) == null
+    ? {}
+    : {
+      storage_location = lookup(
+        local.ctx_locations,
+        local.organization.logging.storage_location,
+        local.organization.logging.storage_location
+      )
+    }
+  )
+  factories_config = {
+    custom_roles = "${local._paths.organization}/custom-roles"
+  }
 }
+
+module "organization-iam" {
+  source          = "../../modules/organization"
+  organization_id = module.organization.id
+  factories_config = {
+    org_policies = "${local._paths.organization}/org-policies"
+    tags         = "${local._paths.organization}/tags"
+    context = {
+      org_policies = {
+        organization = local.ctx.organization
+      }
+    }
+  }
+}
+
+# output "foo" { value = local.organization }

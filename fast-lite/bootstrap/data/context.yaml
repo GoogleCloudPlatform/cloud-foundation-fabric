@@ -21,6 +21,7 @@ locations:
 iam_principals:
   net-admins: "group:net-admins@foo.bar"
 organization:
-  # TODO: fail if id is missing
   domain: example.org
   id: 561859074576
+  # use our customer id for testing
+  customer_id: C02h8e9nw
