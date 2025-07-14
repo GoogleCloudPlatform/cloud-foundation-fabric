@@ -498,11 +498,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:\\$|roles/)[a-z]": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:)"
           }
         }
       }
@@ -519,12 +519,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:\\$|roles/)[a-z]"
             },
             "condition": {
               "type": "object",
@@ -559,11 +559,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
             },
             "role": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_/]+$"
+              "pattern": "^(?:\\$|roles/)[a-z]"
             },
             "condition": {
               "type": "object",
@@ -592,11 +592,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+        "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^roles/"
+            "pattern": "^(?:\\$|roles/)[a-z]"
           }
         }
       }

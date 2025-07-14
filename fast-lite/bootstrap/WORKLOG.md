@@ -47,12 +47,17 @@ contacts:
 
 ### Interpolation Table
 
-| object.attribute          | examples                            | manual context    | dynamic context                     |
-| :------------------------ | :---------------------------------- | :---------------- | :---------------------------------- |
-| organization.id           | `$organization_id`                    | `organization.id` |                                     |
-| organization.contacts.foo | `$org_admins`                         | `email_addresses` |                                     |
-| \*.iam\* (role)             | `$my_role`                            | `custom_roles`    | `organization.custom_roles`         |
-| \*.iam\* (principals)       | `$principals.org_admins`              | `principals`      |                                     |
-|                           | `$service_accounts.foo.bar`           |                   | project service accounts            |
-|                           | `$service_accounts.automation.foo.rw` |                   | project automation service accounts |
-|                           | `$service_agents.foo.compute`         |                   | project service agents              |
+| object.attribute          | examples                                   | manual context    | dynamic context                     |
+| :------------------------ | :----------------------------------------- | :---------------- | :---------------------------------- |
+| organization.id           | `$organization_id`                         | `organization.id` |                                     |
+| organization.contacts.foo | `$org_admins`                              | `email_addresses` |                                     |
+| \*.iam\* (role)           | `$my_role`                                 | `custom_roles`    | `organization.custom_roles`         |
+| \*.iam\* (principals)     | `$principals.org_admins`                   | `principals`      |                                     |
+|                           | `$projects.foo.service_accounts.bar`       |                   | project service accounts            |
+|                           | `$service_accounts.bar` (short form)       |                   | project service accounts            |
+|                           | `$projects.foo.service_accounts.iac.rw`    |                   | project automation service accounts |
+|                           | `$service_accounts.iac.rw` (short form)    |                   | project automation service accounts |
+|                           | `$projects.foo.service_agents.compute`     |                   | project service agents              |
+|                           | `$service_agents.foo.compute` (short form) |                   | project service agents              |
+| [any project id]          | `$project_ids.foo`                         | `project_ids`     | project ids                         |
+| [any location or region]  | `$locations.bigquery`                      | `locations`       |                                     |

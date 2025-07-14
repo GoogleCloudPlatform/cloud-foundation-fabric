@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bootstrap Context",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "locations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bigquery": {
+          "type": "string",
+          "default": "eu"
+        },
+        "logging": {
+          "type": "string",
+          "default": "global"
+        },
+        "pubsub": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "storage": {
+          "type": "string",
+          "default": "eu"
+        }
+      }
+    },
+    "iam_principals": {
+      "type": "object"
+    },
+    "organization": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  "required": [
+    "organization"
+  ]
+}

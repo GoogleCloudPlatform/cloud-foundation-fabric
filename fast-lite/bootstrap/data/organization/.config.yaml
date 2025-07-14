@@ -40,68 +40,82 @@ iam_by_principals:
     - roles/cloudsupport.admin
     - roles/compute.osAdminLogin
     - roles/compute.osLoginExternalUser
+    - roles/compute.xpnAdmin
+    - roles/orgpolicy.policyAdmin
     - roles/owner
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
+    - roles/iam.workforcePoolAdmin
   $principals.security_admins:
+    - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
+    - roles/iam.organizationRoleAdmin
     - roles/iam.securityReviewer
     - roles/logging.admin
+    - roles/orgpolicy.policyAdmin
     - roles/securitycenter.admin
   # dynamic service_accounts
-  $service_accounts.automation.iac-0.bootstrap-rw:
+  $projects.iac-0.service_accounts.bootstrap-rw:
+    - roles/accesscontextmanager.policyAdmin
+    - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
+    - roles/iam.organizationRoleAdmin
+    - roles/iam.workforcePoolAdmin
     - roles/logging.admin
+    - roles/orgpolicy.policyAdmin
+    - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
-iam_bindings_additive:
-  net_xpn_admin:
-    member: $principals.network_admins
-    role: roles/compute.xpnAdmin
-  org_orgpol_admin:
-    member: $principals.org_admins
-    role: roles/orgpolicy.policyAdmin
-  sec_access_admin:
-    member: $principals.security_admins
-    role: roles/accesscontextmanager.policyAdmin
-  sec_orgpol_admin:
-    member: $principals.security_admins
-    role: roles/orgpolicy.policyAdmin
-  sec_role_admin:
-    member: $principals.security_admins
-    role: roles/iam.organizationRoleAdmin
+    - roles/resourcemanager.tagUser
+  $projects.iac-0.service_accounts.bootstrap-ro:
+    - roles/cloudasset.viewer
+    - roles/essentialcontacts.viewer
+    - roles/iam.organizationRoleViewer
+    - roles/iam.workforcePoolViewer
+    - roles/logging.viewer
+    - roles/orgpolicy.policyViewer
+    - roles/resourcemanager.folderViewer
+    - roles/resourcemanager.tagViewer
+    - roles/serviceusage.serviceUsageViewer
+iam_bindings_additive: {}
 logging:
   # disable_default_log_sink: false
   # context.defaults.locations.logging
   storage_location: $defaults.locations.storage
   sinks:
-    vpc_sc:
+    audit-logs:
+      # description: foo
+      # exclusions: {}
       destination:
-        # dynamic projects
-        project_id: $projects.logging-0
-        type: logging
-        location: europe-west8
+        project_id: $project_ids.logging-0
+        # type: logging
+        # location: $locations.bigquery
       filter: |
-        foo
-    vpc_sc2:
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+    iam:
       destination:
-        project_id: $projects.logging-0
-        type: bigquery
-        # location: $defaults.locations.bigquery
-      description: foo
-      exclusions: {}
+        project_id: $project_ids.logging-0
       filter: |
-        foo
-    vpc_sc3:
+        protoPayload.serviceName="iamcredentials.googleapis.com" OR
+        protoPayload.serviceName="iam.googleapis.com" OR
+        protoPayload.serviceName="sts.googleapis.com"
+    vpc-sc:
       destination:
-        project_id: $projects.logging-0
-        type: project
-      description: foo
-      exclusions: {}
+        project_id: $project_ids.logging-0
       filter: |
-        foo
+        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+    workspace-audit-logs:
+      destination:
+        project_id: $project_ids.logging-0
+      filter: |
+        protoPayload.serviceName="admin.googleapis.com" OR
+        protoPayload.serviceName="cloudidentity.googleapis.com" OR
+        protoPayload.serviceName="login.googleapis.com"

@@ -42,7 +42,7 @@
           "type": "object",
           "additionalProperties": false,
           "patternProperties": {
-            "^[a-z][a-z0-9_-]+$": {
+            "^[a-z][a-z0-9-]+$": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
@@ -60,6 +60,7 @@
                       "type": "string"
                     },
                     "type": {
+                      "default": "logging",
                       "enum": [
                         "bigquery",
                         "logging",

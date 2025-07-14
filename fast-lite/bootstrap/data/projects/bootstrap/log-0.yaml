@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../schemas/context.schema.json
+# yaml-language-server: $schema=../../../schemas/project.schema.json
 
-# TODO: embed defaults in locals if these are missing
-locations:
-  bigquery: europe-west8
-  logging: europe-west8
-iam_principals:
-  net-admins: "group:net-admins@foo.bar"
-organization:
-  # TODO: fail if id is missing
-  domain: example.org
-  id: 561859074576
+name: prod-audit-logs-0
+iam_by_principals:
+  $projects.iac-0.service_accounts.iac-bootstrap-ro:
+    - roles/viewer
+  $projects.iac-0.service_accounts.iac-bootstrap-rw:
+    - roles/owner
+services:
+  - bigquery.googleapis.com
+  - logging.googleapis.com
+  - pubsub.googleapis.com
+  - storage.googleapis.com
+  - sts.googleapis.com
