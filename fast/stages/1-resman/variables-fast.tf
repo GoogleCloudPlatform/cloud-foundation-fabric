@@ -37,7 +37,7 @@ variable "automation" {
       resman-r = string
     })
   })
-  nullable = false
+  default = null
 }
 
 variable "billing_account" {
@@ -48,7 +48,7 @@ variable "billing_account" {
     is_org_level = optional(bool, true)
     no_iam       = optional(bool, false)
   })
-  nullable = false
+  default = null
 }
 
 variable "custom_roles" {
@@ -81,9 +81,9 @@ variable "environments" {
     tag_name   = string
     is_default = optional(bool, false)
   }))
-  nullable = false
+  default = null
   validation {
-    condition = anytrue([
+    condition = var.environments == null || anytrue([
       for k, v in var.environments : v.is_default == true
     ])
     error_message = "At least one environment should be marked as default."
@@ -129,7 +129,7 @@ variable "logging" {
       type   = string
     })), {})
   })
-  nullable = false
+  default = null
 }
 
 variable "organization" {
@@ -140,7 +140,7 @@ variable "organization" {
     id          = number
     customer_id = string
   })
-  nullable = false
+  default = null
 }
 
 check "prefix_validator" {
@@ -166,6 +166,7 @@ variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
+  default     = null
 }
 
 variable "root_node" {

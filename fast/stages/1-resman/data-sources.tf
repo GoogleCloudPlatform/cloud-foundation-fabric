@@ -26,10 +26,11 @@ locals {
     try(local.bootstrap_outputs.tfvars.automation, null),
     var.automation
   )
-  billing_account = coalesce(
-    try(local.bootstrap_outputs.tfvars_globals.billing_account, null),
-    var.billing_account
-  )
+  #   # var.billing_account not currently in use.
+  #   billing_account = coalesce(
+  #     try(local.bootstrap_outputs.tfvars_globals.billing_account, null),
+  #     var.billing_account
+  #   )
   custom_roles = coalesce(
     try(local.bootstrap_outputs.tfvars.custom_roles, null),
     var.custom_roles
