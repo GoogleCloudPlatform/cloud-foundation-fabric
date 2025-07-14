@@ -22,7 +22,7 @@ iam_by_principals:
     - ${context.iam_roles.my_custom_role}:
 ```
 
-users should assume that all principals (manually passed in + derived at runtime) are available at that place, and custom roles are available for roles.
+users should assume that all principals (manually passed in + derived at runtime) are available as values in `iam`, keys in `iam_principals`, etc. An initial table of which contexts are available where is at the bottom of this doc, and we will need to document it well and provide examples.
 
 ```yaml
 iam_by_principals:
