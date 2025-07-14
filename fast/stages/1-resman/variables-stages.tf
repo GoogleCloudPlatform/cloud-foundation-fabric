@@ -175,7 +175,7 @@ variable "fast_stage_3" {
   validation {
     condition = alltrue([
       for k, v in var.fast_stage_3 : contains(
-        keys(var.environments),
+        keys(local.environments),
         coalesce(v.environment, "-")
       )
     ])

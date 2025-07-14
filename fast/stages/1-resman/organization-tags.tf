@@ -43,7 +43,7 @@ locals {
   )
   # environment tag values and their IAM bindings for stage 2 service accounts
   environment_tag_values = {
-    for k, v in var.environments : v.tag_name => {
+    for k, v in local.environments : v.tag_name => {
       iam = merge(
         # user-defined configuration
         try(local.tags.environment.values[v.tag_name].iam, {}),
@@ -66,8 +66,8 @@ locals {
   }
   # organization policy tags managed in stage 0
   org_policy_tags = {
-    for k, v in var.org_policy_tags.values :
-    "${var.org_policy_tags.key_name}/${k}" => v
+    for k, v in local.org_policy_tags_output.values :
+    "${local.org_policy_tags_output.key_name}/${k}" => v
   }
   # context expansion for user-specified tag values
   tags = {
@@ -78,9 +78,9 @@ locals {
         ]
       }
       id = (
-        v.id == null || v.id != var.org_policy_tags.key_name
+        v.id == null || v.id != local.org_policy_tags_output.key_name
         ? v.id
-        : var.org_policy_tags.key_id
+        : local.org_policy_tags_output.key_id
       )
       values = {
         for vk, vv in v.values : vk => merge(vv, {
@@ -94,10 +94,10 @@ locals {
             ]
           }
           id = (
-            vv.id == null || v.id != var.org_policy_tags.key_name
+            vv.id == null || v.id != local.org_policy_tags_output.key_name
             ? null
             : try(
-              local.org_policy_tags["${var.org_policy_tags.key_name}/${vv.id}"],
+              local.org_policy_tags["${local.org_policy_tags_output.key_name}/${vv.id}"],
               vv.id
             )
           )

@@ -68,62 +68,62 @@ locals {
 module "cicd-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-cicd_rw"], {
     name = each.value.short_name
   })
   display_name = (
     "CI/CD ${each.value.level}-${each.value.short_name} ${each.value.env} service account."
   )
-  prefix = "${var.prefix}-${var.environments[each.value.env].short_name}"
+  prefix = "${local.prefix}-${local.environments[each.value.env].short_name}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       each.value.repository.branch == null
       ? format(
         local.identity_providers[each.value.identity_provider].principal_repo,
-        var.automation.federated_identity_pool,
+        local.automation.federated_identity_pool,
         each.value.repository.name
       )
       : format(
         local.identity_providers[each.value.identity_provider].principal_branch,
-        var.automation.federated_identity_pool,
+        local.automation.federated_identity_pool,
         each.value.repository.name,
         each.value.repository.branch
       )
     ]
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/logging.logWriter"]
+    (local.automation.project_id) = ["roles/logging.logWriter"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+    (local.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }
 
 module "cicd-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.cicd_repositories
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-cicd_ro"], {
     name = each.value.short_name
   })
   display_name = (
     "CI/CD ${each.value.level}-${each.value.short_name} ${each.value.env} service account (read-only)."
   )
-  prefix = "${var.prefix}-${var.environments[each.value.env].short_name}"
+  prefix = "${local.prefix}-${local.environments[each.value.env].short_name}"
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
         local.identity_providers[each.value.identity_provider].principal_repo,
-        var.automation.federated_identity_pool,
+        local.automation.federated_identity_pool,
         each.value.repository.name
       )
     ]
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/logging.logWriter"]
+    (local.automation.project_id) = ["roles/logging.logWriter"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+    (local.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

@@ -34,8 +34,8 @@ locals {
     module.log-export-logbucket
   )
   log_sinks = (
-    length(var.logging.log_sinks) > 0 || var.root_node == null
-    ? var.logging.log_sinks
+    length(local.logging.log_sinks) > 0 || var.root_node == null
+    ? local.logging.log_sinks
     # provide default log sinks to tenants
     : {
       audit-logs = {
@@ -73,10 +73,10 @@ module "log-export-dataset" {
   count = (
     var.root_node != null && contains(local.log_types, "bigquery") ? 1 : 0
   )
-  project_id    = var.logging.project_id
+  project_id    = local.logging.project_id
   id            = "logs"
   friendly_name = "Audit logs export."
-  location      = var.locations.bq
+  location      = local.locations.bq
 }
 
 module "log-export-gcs" {
@@ -84,10 +84,10 @@ module "log-export-gcs" {
   count = (
     var.root_node != null && contains(local.log_types, "storage") ? 1 : 0
   )
-  project_id = var.logging.project_id
+  project_id = local.logging.project_id
   name       = "logs"
-  prefix     = var.prefix
-  location   = var.locations.gcs
+  prefix     = local.prefix
+  location   = local.locations.gcs
 }
 
 module "log-export-logbucket" {
@@ -96,9 +96,9 @@ module "log-export-logbucket" {
     for k, v in local.log_sinks : k if v.type == "logging"
   ])
   parent_type   = "project"
-  parent        = var.logging.project_id
+  parent        = local.logging.project_id
   id            = each.key
-  location      = var.locations.logging
+  location      = local.locations.logging
   log_analytics = { enable = true }
 }
 
@@ -107,7 +107,7 @@ module "log-export-pubsub" {
   for_each = toset(var.root_node == null ? [] : [
     for k, v in local.log_sinks : k if v.type == "pubsub"
   ])
-  project_id = var.logging.project_id
+  project_id = local.logging.project_id
   name       = each.key
-  regions    = var.locations.pubsub
+  regions    = local.locations.pubsub
 }

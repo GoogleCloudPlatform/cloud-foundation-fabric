@@ -44,27 +44,27 @@ resource "local_file" "workflows" {
 
 resource "google_storage_bucket_object" "providers" {
   for_each = local.providers
-  bucket   = var.automation.outputs_bucket
+  bucket   = local.automation.outputs_bucket
   name     = "providers/${each.key}-providers.tf"
   content  = each.value
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  bucket  = var.automation.outputs_bucket
+  bucket  = local.automation.outputs_bucket
   name    = "tfvars/1-resman.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "workflows" {
   for_each = local.cicd_workflows
-  bucket   = var.automation.outputs_bucket
+  bucket   = local.automation.outputs_bucket
   name     = "workflows/${replace(each.key, "_", "-")}-workflow.yaml"
   content  = each.value
 }
 
 resource "google_storage_bucket_object" "version" {
   count  = fileexists("fast_version.txt") ? 1 : 0
-  bucket = var.automation.outputs_bucket
+  bucket = local.automation.outputs_bucket
   name   = "versions/1-resman-version.txt"
   source = "fast_version.txt"
 }

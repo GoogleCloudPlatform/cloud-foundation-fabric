@@ -92,8 +92,8 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
-                custom_roles = var.custom_roles
-                organization = var.organization
+                custom_roles = local.custom_roles
+                organization = local.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
               })
@@ -109,8 +109,8 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
-                custom_roles = var.custom_roles
-                organization = var.organization
+                custom_roles = local.custom_roles
+                organization = local.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
               })
@@ -131,8 +131,8 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
-                custom_roles = var.custom_roles
-                organization = var.organization
+                custom_roles = local.custom_roles
+                organization = local.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
               })
@@ -146,7 +146,7 @@ locals {
   # environment folder permutations
   stage2_env_folders = flatten([
     for k, v in local.stage2 : [
-      for ek, ev in var.environments : {
+      for ek, ev in local.environments : {
         key      = "${k}-${ek}"
         name     = ev.name
         stage    = k
@@ -176,7 +176,7 @@ module "stage2-folder" {
   name = each.value.folder_config.name
   iam = {
     for k, v in each.value.folder_config.iam :
-    lookup(var.custom_roles, k, k) => [
+    lookup(local.custom_roles, k, k) => [
       for m in v : lookup(local.principals_iam, m, m)
     ]
   }
@@ -185,19 +185,19 @@ module "stage2-folder" {
       members = [
         for m in v.members : lookup(local.principals_iam, m, m)
       ]
-      role = lookup(var.custom_roles, v.role, v.role)
+      role = lookup(local.custom_roles, v.role, v.role)
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.folder_config.iam_bindings_additive : k => merge(v, {
       member = lookup(local.principals_iam, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      role   = lookup(local.custom_roles, v.role, v.role)
     })
   }
   iam_by_principals = {
     for k, v in each.value.folder_config.iam_by_principals :
     lookup(local.principals_iam, k, k) => [
-      for r in v : lookup(var.custom_roles, r, r)
+      for r in v : lookup(local.custom_roles, r, r)
     ]
   }
   org_policies = each.value.folder_config.org_policies
@@ -231,48 +231,48 @@ module "stage2-folder-env" {
 module "stage2-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage2
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-stage2_rw"], {
     name = each.value.short_name
   })
   display_name = (
     "Terraform resman ${each.key} service account."
   )
-  prefix = "${var.prefix}-${local.environment_default.short_name}"
+  prefix = "${local.prefix}-${local.environment_default.short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-rw[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+    (local.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+    (local.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
 module "stage2-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage2
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-stage2_ro"], {
     name = each.value.short_name
   })
   display_name = (
     "Terraform resman ${each.key} service account (read-only)."
   )
-  prefix = "${var.prefix}-${local.environment_default.short_name}"
+  prefix = "${local.prefix}-${local.environment_default.short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-ro[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+    (local.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+    (local.automation.outputs_bucket) = [local.custom_roles["storage_viewer"]]
   }
 }
 
@@ -281,12 +281,12 @@ module "stage2-sa-ro" {
 module "stage2-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.stage2
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["gcs-stage2"], {
     name = each.value.short_name
   })
-  prefix     = "${var.prefix}-${local.environment_default.short_name}"
-  location   = var.locations.gcs
+  prefix     = "${local.prefix}-${local.environment_default.short_name}"
+  location   = local.locations.gcs
   versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.stage2-sa-rw[each.key].iam_email]

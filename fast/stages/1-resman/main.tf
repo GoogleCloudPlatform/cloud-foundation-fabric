@@ -16,16 +16,16 @@
 
 locals {
   environment_default = [
-    for k, v in var.environments : v if v.is_default
+    for k, v in local.environments : v if v.is_default
   ][0]
   identity_providers = coalesce(
-    try(var.automation.federated_identity_providers, null), {}
+    try(local.automation.federated_identity_providers, null), {}
   )
   principals = {
-    for k, v in var.groups : k => (
+    for k, v in local.groups : k => (
       can(regex("^[a-zA-Z]+:", v))
       ? v
-      : "group:${v}@${var.organization.domain}"
+      : "group:${v}@${local.organization.domain}"
     )
   }
   principals_iam = merge(local.principals, {
@@ -34,7 +34,7 @@ locals {
   })
   root_node = (
     var.root_node == null
-    ? "organizations/${var.organization.id}"
+    ? "organizations/${local.organization.id}"
     : var.root_node
   )
   # normalize parent stages
@@ -61,8 +61,8 @@ locals {
   )
   tag_root = (
     var.root_node == null
-    ? var.organization.id
-    : var.automation.project_id
+    ? local.organization.id
+    : local.automation.project_id
   )
   tag_values = (
     var.root_node == null

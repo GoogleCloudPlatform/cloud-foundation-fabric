@@ -85,7 +85,7 @@ module "top-level-folder" {
   logging_sinks       = each.value.logging_sinks
   iam = {
     for role, members in each.value.iam :
-    lookup(var.custom_roles, role, role) => [
+    lookup(local.custom_roles, role, role) => [
       for member in members :
       (each.value.automation != null && member == "self")
       ? module.top-level-sa[each.key].iam_email
@@ -100,7 +100,7 @@ module "top-level-folder" {
         ? module.top-level-sa[each.key].iam_email
         : lookup(local.top_level_sa, member, member)
       ]
-      role = lookup(var.custom_roles, v.role, v.role)
+      role = lookup(local.custom_roles, v.role, v.role)
     }
   }
   iam_bindings_additive = {
@@ -110,7 +110,7 @@ module "top-level-folder" {
         ? module.top-level-sa[each.key].iam_email
         : lookup(local.principals_iam, v.member, v.member)
       )
-      role = lookup(var.custom_roles, v.role, v.role)
+      role = lookup(local.custom_roles, v.role, v.role)
     })
   }
   iam_by_principals = {
@@ -119,7 +119,7 @@ module "top-level-folder" {
       (each.value.automation != null && k == "self")
       ? module.top-level-sa[each.key].iam_email
       : lookup(local.principals_iam, k, k)
-    ) => [for r in v : lookup(var.custom_roles, r, r)]
+    ) => [for r in v : lookup(local.custom_roles, r, r)]
   }
   org_policies = each.value.org_policies
   tag_bindings = merge(
@@ -137,28 +137,28 @@ module "top-level-folder" {
 module "top-level-sa" {
   source       = "../../../modules/iam-service-account"
   for_each     = local.top_level_automation
-  project_id   = var.automation.project_id
+  project_id   = local.automation.project_id
   name         = "${each.value.environment_name}-resman-${coalesce(each.value.short_name, each.key)}-0"
   display_name = "Terraform resman ${each.key} folder service account."
-  prefix       = var.prefix
+  prefix       = local.prefix
   iam = each.value.sa_impersonation_principals == null ? {} : {
     "roles/iam.serviceAccountTokenCreator" = each.value.sa_impersonation_principals
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+    (local.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+    (local.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
 module "top-level-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.top_level_automation
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name       = "${each.value.environment_name}-resman-${coalesce(each.value.short_name, each.key)}-0"
-  prefix     = var.prefix
-  location   = var.locations.gcs
+  prefix     = local.prefix
+  location   = local.locations.gcs
   versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.top-level-sa[each.key].iam_email]

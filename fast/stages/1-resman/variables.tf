@@ -41,6 +41,45 @@ variable "outputs_location" {
   default     = null
 }
 
+variable "remote_output" {
+  description = "Fetches stage outputs from a remote state or TFE workspace instead of a local tfvars file."
+  type = object({
+    bootstrap = optional(object({
+      state = optional(object({
+        s3 = optional(object({
+          bucket     = string
+          key        = string
+          kms_key_id = optional(string)
+          region     = string
+          role_arn   = optional(string)
+        }))
+        gcs = optional(object({
+          bucket                      = string
+          impersonate_service_account = optional(string)
+          kms_encryption_key          = optional(string)
+          prefix                      = optional(string)
+        }))
+      }))
+      tfe = optional(object({
+        organization = string
+        workspace    = string
+      }))
+    }))
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = sum([
+      for v in [
+        try(var.remote_output.bootstrap.tfe, null),
+        try(var.remote_output.bootstrap.state.aws, null),
+        try(var.remote_output.bootstrap.state.gcs, null)
+      ] : v != null ? 1 : 0
+    ]) <= 1
+    error_message = "Only one remote state source can be defined. Please provide configuration for either `tfe`, `state.s3`, or `state.gcs`, but not more than one."
+  }
+}
+
 variable "resource_names" {
   description = "Resource names overrides for specific resources. Stage names are interpolated via `$${name}`. Prefix is always set via code, except where noted in the variable type."
   type = object({

@@ -81,8 +81,8 @@ locals {
             condition = vv.condition == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
-                custom_roles = var.custom_roles
-                organization = var.organization
+                custom_roles = local.custom_roles
+                organization = local.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
               })
@@ -98,8 +98,8 @@ locals {
             condition = vv.condition == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
-                custom_roles = var.custom_roles
-                organization = var.organization
+                custom_roles = local.custom_roles
+                organization = local.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
               })
@@ -157,7 +157,7 @@ module "stage3-folder" {
   org_policies      = each.value.folder_config.org_policies
   tag_bindings = merge(
     {
-      (var.tag_names.environment) = local.tag_values["${var.tag_names.environment}/${var.environments[each.value.environment].tag_name}"].id
+      (var.tag_names.environment) = local.tag_values["${var.tag_names.environment}/${local.environments[each.value.environment].tag_name}"].id
     },
     {
       for k, v in each.value.folder_config.tag_bindings : k => try(
@@ -173,48 +173,48 @@ module "stage3-folder" {
 module "stage3-sa-rw" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage3
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-stage3_rw"], {
     name = each.value.short_name
   })
   display_name = (
     "Terraform resman ${each.key} service account."
   )
-  prefix = "${var.prefix}-${var.environments[each.value.environment].short_name}"
+  prefix = "${local.prefix}-${local.environments[each.value.environment].short_name}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-rw[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+    (local.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+    (local.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
 module "stage3-sa-ro" {
   source     = "../../../modules/iam-service-account"
   for_each   = local.stage3
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["sa-stage3_ro"], {
     name = each.value.short_name
   })
   display_name = (
     "Terraform resman ${each.key} service account (read-only)."
   )
-  prefix = "${var.prefix}-${each.value.environment}"
+  prefix = "${local.prefix}-${each.value.environment}"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.cicd-sa-ro[each.key].iam_email, null)
     ])
   }
   iam_project_roles = {
-    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+    (local.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+    (local.automation.outputs_bucket) = [local.custom_roles["storage_viewer"]]
   }
 }
 
@@ -223,12 +223,12 @@ module "stage3-sa-ro" {
 module "stage3-bucket" {
   source     = "../../../modules/gcs"
   for_each   = local.stage3
-  project_id = var.automation.project_id
+  project_id = local.automation.project_id
   name = templatestring(var.resource_names["gcs-stage3"], {
     name = each.value.short_name
   })
-  prefix     = "${var.prefix}-${each.value.environment}"
-  location   = var.locations.gcs
+  prefix     = "${local.prefix}-${each.value.environment}"
+  location   = local.locations.gcs
   versioning = true
   iam = {
     "roles/storage.objectAdmin"  = [module.stage3-sa-rw[each.key].iam_email]

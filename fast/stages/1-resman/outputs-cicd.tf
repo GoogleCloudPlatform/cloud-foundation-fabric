@@ -29,7 +29,7 @@ locals {
         identity_provider = try(
           local.identity_providers[v.identity_provider].name, ""
         )
-        outputs_bucket = var.automation.outputs_bucket
+        outputs_bucket = local.automation.outputs_bucket
         service_accounts = {
           apply = try(module.cicd-sa-rw[k].email, "")
           plan  = try(module.cicd-sa-ro[k].email, "")

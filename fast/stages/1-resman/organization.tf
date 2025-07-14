@@ -30,11 +30,11 @@ locals {
 module "organization" {
   source          = "../../../modules/organization"
   count           = var.root_node == null ? 1 : 0
-  organization_id = "organizations/${var.organization.id}"
+  organization_id = "organizations/${local.organization.id}"
   # additive bindings leveraging the delegated IAM grant set in stage 0
   iam_bindings_additive = {
     for k, v in local.iam_bindings_additive : k => {
-      role      = lookup(var.custom_roles, v.role, v.role)
+      role      = lookup(local.custom_roles, v.role, v.role)
       member    = lookup(local.principals_iam, v.member, v.member)
       condition = lookup(v, "condition", null)
     }
@@ -50,14 +50,14 @@ module "organization" {
       tag_keys = merge(
         var.factories_config.context.tag_keys,
         {
-          (var.org_policy_tags.key_name) = var.org_policy_tags.key_id
+          (local.org_policy_tags_output.key_name) = local.org_policy_tags_output.key_id
         }
       )
       tag_values = merge(
         var.factories_config.context.tag_values,
         {
-          for k, v in var.org_policy_tags.values :
-          "${var.org_policy_tags.key_name}/${k}" => v
+          for k, v in local.org_policy_tags_output.values :
+          "${local.org_policy_tags_output.key_name}/${k}" => v
         }
       )
     }
