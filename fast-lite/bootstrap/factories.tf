@@ -15,42 +15,39 @@
  */
 
 locals {
-  _data = {
-    context = try(
-      yamldecode(file(local._paths.context)), {}
-    )
-    # folders = {}
-    organization = merge(
-      # organization config
-      {
-        config = try(
-          yamldecode(file("${local._paths.organization}/.config.yaml")), {}
-        )
-      },
-      # custom roles, org policies, tags
-      {
-        for attr in ["custom-roles", "org-policies", "tags"] :
-        replace(attr, "-", "_") => {
-          for f in try(
-            fileset("${local._paths.organization}/${attr}", "**/*.yaml"), []
-            ) : trimsuffix(f, ".yaml") => yamldecode(file(
-              "${local._paths.organization}/${attr}/${f}"
-          ))
-        }
+  context = try(
+    yamldecode(file(local._paths.context)), {}
+  )
+  organization = merge(
+    # organization config
+    {
+      config = try(
+        yamldecode(file("${local._paths.organization}/.config.yaml")), {}
+      )
+    },
+    # custom roles, org policies, tags
+    {
+      for attr in ["custom-roles", "org-policies", "tags"] :
+      replace(attr, "-", "_") => {
+        for f in try(
+          fileset("${local._paths.organization}/${attr}", "**/*.yaml"), []
+          ) : trimsuffix(f, ".yaml") => yamldecode(file(
+            "${local._paths.organization}/${attr}/${f}"
+        ))
       }
-    )
-    project_defaults = try(
-      yamldecode(file(local._paths.files.project_defaults)), {}
-    )
-    # projects = {}
-  }
+    }
+  )
+  project_defaults = try(
+    yamldecode(file(local._paths.files.project_defaults)), {}
+  )
   _paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
 }
-output "foo" {
-  value = {
-    data  = local._data
-    paths = local._paths
-  }
-}
+
+# output "foo" {
+#   value = {
+#     data  = local._data
+#     paths = local._paths
+#   }
+# }
