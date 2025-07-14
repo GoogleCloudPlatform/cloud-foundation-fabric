@@ -11,7 +11,7 @@
 
 (ludo)
 
-We should can not build a single interpolation namespace, as using certain values in specific places will trigger a cycle. What we should do is provide different "flat" interpolation namespaces depending on context (principals, roles, tags, etc.).
+We can not build a single interpolation namespace, as we must be careful about which values are used where: certain values in specific places will trigger a cycle. What we should do is provide different "flat" interpolation namespaces depending on context (principals, roles, tags, etc.).
 
 Instead of this
 
