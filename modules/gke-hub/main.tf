@@ -72,8 +72,41 @@ resource "google_gke_hub_feature" "default" {
   dynamic "fleet_default_member_config" {
     for_each = var.fleet_default_member_config != null ? { 1 = 1 } : {}
     content {
-      mesh {
-        management = var.fleet_default_member_config.management
+      dynamic "mesh" {
+        for_each = var.fleet_default_member_config.mesh != null ? { 1 = 1 } : {}
+        content {
+          management = try(mesh.value.management, "MANAGEMENT_AUTOMATIC")
+        }
+      }
+
+      dynamic "configmanagement" {
+        for_each = var.fleet_default_member_config.configmanagement != null ? { 1 = 1 } : {}
+        content {
+          version = configmanagement.value.version
+
+          dynamic "config_sync" {
+            for_each = configmanagement.value.config_sync != null ? { 1 = 1 } : {}
+            content {
+              prevent_drift = config_sync.value.prevent_drift
+              source_format = config_sync.value.source_format
+              enabled       = config_sync.value.enabled
+
+              dynamic "git" {
+                for_each = config_sync.value.git != null ? { 1 = 1 } : {}
+                content {
+                  gcp_service_account_email = git.value.gcp_service_account_email
+                  https_proxy               = git.value.https_proxy
+                  policy_dir                = git.value.policy_dir
+                  secret_type               = git.value.secret_type
+                  sync_branch               = git.value.sync_branch
+                  sync_repo                 = git.value.sync_repo
+                  sync_rev                  = git.value.sync_rev
+                  sync_wait_secs            = git.value.sync_wait_secs
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
