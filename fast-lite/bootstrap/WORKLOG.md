@@ -1,9 +1,10 @@
 # Work Log
 
-## TODO
+## Issues
 
-- [ ] support data access logs in organization/folder/project schema
-- [ ]
+### Two-stage IAM
+
+Project creation and a bunch of other stuff needs permissions on our IaC service accounts, so we can't refer to these service accounts in IAM.
 
 ## Design Notes
 
