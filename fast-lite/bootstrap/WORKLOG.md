@@ -45,8 +45,8 @@ contacts:
 | :------------------------ | :---------------------------------- | :---------------- | :---------------------------------- |
 | organization.id           | `$organization_id`                    | `organization.id` |                                     |
 | organization.contacts.foo | `$org_admins`                         | `email_addresses` |                                     |
-| *.iam* (role)             | `$my_role`                            | `custom_roles`    | `organization.custom_roles`         |
-| *.iam* (principals)       | `$principals.org_admins`              | `principals`      |                                     |
+| \*.iam\* (role)             | `$my_role`                            | `custom_roles`    | `organization.custom_roles`         |
+| \*.iam\* (principals)       | `$principals.org_admins`              | `principals`      |                                     |
 |                           | `$service_accounts.foo.bar`           |                   | project service accounts            |
 |                           | `$service_accounts.automation.foo.rw` |                   | project automation service accounts |
 |                           | `$service_agents.foo.compute`         |                   | project service agents              |
