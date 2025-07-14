@@ -7,6 +7,12 @@
 
 ## Design Notes
 
+### Push factory/context support to modules?
+
+Should the project and folder modules support receiving raw data from YAML and expanding context? This would make each module owner of their own parsing/interpolation/schema, and remove a lot of complexity from the project factory.
+
+(ludo) in favour of this approach
+
 ### Interpolation Approach
 
 (ludo)
