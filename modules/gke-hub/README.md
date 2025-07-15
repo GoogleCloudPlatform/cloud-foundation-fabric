@@ -310,23 +310,23 @@ module "hub" {
     configmanagement = true
     servicemesh      = true
   }
-  
+
   # Fleet default member configuration
   fleet_default_member_config = {
     # Service Mesh configuration
     mesh = {
       management = "MANAGEMENT_AUTOMATIC"
     }
-    
+
     # Config Management configuration
     configmanagement = {
       version = "v1"
-      
+
       # Config Sync configuration
       config_sync = {
         prevent_drift = true
         source_format = "hierarchy"
-        enabled = true
+        enabled       = true
         git = {
           sync_repo                 = "https://github.com/your-org/config-repo"
           policy_dir                = "configsync"
@@ -339,14 +339,14 @@ module "hub" {
       }
     }
   }
-  
+
   # Individual cluster configurations (these will override fleet defaults if specified)
   configmanagement_templates = {
     cluster-specific = {
       config_sync = {
         git = {
-          sync_repo  = "https://github.com/your-org/cluster-specific-config"
-          policy_dir = "cluster-specific"
+          sync_repo   = "https://github.com/your-org/cluster-specific-config"
+          policy_dir  = "cluster-specific"
           sync_branch = "main"
         }
         source_format = "hierarchy"
