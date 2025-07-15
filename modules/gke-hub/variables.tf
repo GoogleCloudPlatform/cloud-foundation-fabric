@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,20 @@ variable "configmanagement_templates" {
   nullable = false
 }
 
+variable "features" {
+  description = "Enable and configure fleet features."
+  type = object({
+    appdevexperience             = optional(bool, false)
+    configmanagement             = optional(bool, false)
+    identityservice              = optional(bool, false)
+    multiclusteringress          = optional(string, null)
+    multiclusterservicediscovery = optional(bool, false)
+    servicemesh                  = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "fleet_default_member_config" {
   description = "Fleet default member config."
   type = object({
@@ -90,20 +104,6 @@ variable "fleet_default_member_config" {
   })
   default  = null
   nullable = true
-}
-
-variable "features" {
-  description = "Enable and configure fleet features."
-  type = object({
-    appdevexperience             = optional(bool, false)
-    configmanagement             = optional(bool, false)
-    identityservice              = optional(bool, false)
-    multiclusteringress          = optional(string, null)
-    multiclusterservicediscovery = optional(bool, false)
-    servicemesh                  = optional(bool, false)
-  })
-  default  = {}
-  nullable = false
 }
 
 variable "project_id" {
