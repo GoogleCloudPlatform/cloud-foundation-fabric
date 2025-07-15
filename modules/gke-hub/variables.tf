@@ -106,16 +106,16 @@ variable "fleet_default_member_config" {
   nullable = true
 }
 
-variable "project_id" {
-  description = "GKE hub project ID."
-  type        = string
-}
-
 variable "location" {
   description = "GKE hub location, will also be used for the membership location."
   type        = string
   default     = null
   nullable    = true
+}
+
+variable "project_id" {
+  description = "GKE hub project ID."
+  type        = string
 }
 
 variable "workload_identity_clusters" {
