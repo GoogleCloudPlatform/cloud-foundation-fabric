@@ -72,6 +72,7 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
+    in_transit_encryption_config: null
     initial_node_count: 1
     location: europe-west1
     logging_config:
@@ -96,6 +97,7 @@ values:
       managed_prometheus:
       - enabled: true
     name: cluster-1
+    network_performance_config: []
     network_policy: []
     node_config:
     - advanced_machine_features: []
@@ -124,6 +126,14 @@ values:
       storage_pools: null
       tags: null
       taint: []
+    node_pool_auto_config:
+    - linux_node_config:
+      - {}
+      network_tags:
+      - tags: []
+      node_kubelet_config:
+      - insecure_kubelet_readonly_port_enabled: 'TRUE'
+      resource_manager_tags: null
     node_pool_defaults:
     - node_config_defaults:
       - containerd_config: []
@@ -192,7 +202,7 @@ values:
     feature: configmanagement
     location: global
     membership: cluster-1
-    membership_location: null
+    membership_location: europe-west1
     mesh: []
     policycontroller: []
     project: gkehub-test
@@ -206,7 +216,7 @@ values:
     - gke_cluster:
       - {}
     labels: null
-    location: global
+    location: europe-west1
     membership_id: cluster-1
     project: gkehub-test
     terraform_labels:
@@ -321,6 +331,7 @@ values:
     name: network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
+    params: []
     project: gkehub-test
     routing_mode: GLOBAL
     timeouts: null
@@ -333,6 +344,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -346,6 +358,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -359,6 +372,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
