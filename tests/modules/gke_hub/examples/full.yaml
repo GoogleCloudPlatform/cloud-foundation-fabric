@@ -344,7 +344,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -358,7 +357,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -372,7 +370,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: gkehub-test
     tags: null
