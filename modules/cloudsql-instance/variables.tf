@@ -239,13 +239,22 @@ variable "region" {
 }
 
 variable "replicas" {
-  description = "Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation."
+  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation."
   type = map(object({
     region              = string
     encryption_key_name = optional(string)
+    availability_type   = optional(string)
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.replicas :
+      contains(["ZONAL", "REGIONAL"], v.availability_type) || v.availability_type == null
+      ]
+    )
+    error_message = "Valid values for availability_type are 'ZONAL' or 'REGIONAL'."
+  }
 }
 
 variable "root_password" {
