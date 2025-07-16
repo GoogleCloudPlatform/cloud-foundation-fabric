@@ -93,9 +93,11 @@ variable "factories_config" {
     tags          = optional(string)
     context = optional(object({
       custom_roles          = optional(map(string), {})
+      folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
       notification_channels = optional(map(string), {})
       org_policies          = optional(map(map(string)), {})
+      project_ids           = optional(map(string), {})
       tag_keys              = optional(map(string), {})
       tag_values            = optional(map(string), {})
     }), {})
@@ -155,8 +157,12 @@ variable "parent" {
   type        = string
   default     = null
   validation {
-    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+    condition = (
+      var.parent == null ||
+      startswith(var.parent, "$") ||
+      can(regex("(organizations|folders)/[0-9]+", var.parent))
+    )
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id or refer to a context variable via the '$' prefix."
   }
 }
 

@@ -56,7 +56,7 @@ locals {
       network               = lookup(v, "network", null)
       id = try(coalesce(
         lookup(v, "id", null),
-        lookup(var.factories_config.context.tag_keys, k, null)
+        lookup(local.ctx.tag_keys, k, null)
       ), null)
       values = {
         for vk, vv in lookup(v, "values", {}) : vk => {
@@ -72,7 +72,7 @@ locals {
           iam_bindings_additive = vv.iam_bindings_additive
           id = try(coalesce(
             lookup(vv, "id", null),
-            lookup(var.factories_config.context.tag_values, "${k}/${vk}", null)
+            lookup(local.ctx.tag_values, "${k}.${vk}", null)
           ), null)
         }
       }
@@ -194,12 +194,12 @@ resource "google_tags_tag_key_iam_binding" "default" {
   tag_key = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id
-    : each.value.tag_id
+    : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
   role = each.value.role
   members = [
     for v in local.tags[each.value.tag]["iam"][each.value.role] :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
@@ -208,12 +208,12 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
   tag_key = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id
-    : each.value.tag_id
+    : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
   role = local.tags[each.value.tag]["iam_bindings"][each.value.binding].role
   members = [
     for v in local.tags[each.value.tag]["iam_bindings"][each.value.binding].members :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
@@ -222,11 +222,11 @@ resource "google_tags_tag_key_iam_member" "bindings" {
   tag_key = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id
-    : each.value.tag_id
+    : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
   role = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
   member = lookup(
-    var.factories_config.context.iam_principals,
+    local.ctx.iam_principals,
     local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member,
     local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member
   )
@@ -239,7 +239,7 @@ resource "google_tags_tag_value" "default" {
   parent = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id
-    : each.value.tag_id
+    : lookup(local.ctx.tag_keys, each.value.tag_id, each.value.tag_id)
   )
   short_name  = each.value.name
   description = each.value.description
@@ -250,12 +250,12 @@ resource "google_tags_tag_value_iam_binding" "default" {
   tag_value = (
     each.value.id == null
     ? google_tags_tag_value.default[each.value.key].id
-    : each.value.id
+    : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
   role = each.value.role
   members = [
     for v in local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role] :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
@@ -264,14 +264,14 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
   tag_value = (
     each.value.id == null
     ? google_tags_tag_value.default[each.value.key].id
-    : each.value.id
+    : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
   role = (
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].role
   )
   members = [
     for v in local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].members :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
@@ -280,13 +280,13 @@ resource "google_tags_tag_value_iam_member" "bindings" {
   tag_value = (
     each.value.id == null
     ? google_tags_tag_value.default[each.value.key].id
-    : each.value.id
+    : lookup(local.ctx.tag_values, each.value.id, each.value.id)
   )
   role = (
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].role
   )
   member = lookup(
-    var.factories_config.context.iam_principals,
+    local.ctx.iam_principals,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member
   )
@@ -297,5 +297,5 @@ resource "google_tags_tag_value_iam_member" "bindings" {
 resource "google_tags_tag_binding" "binding" {
   for_each  = coalesce(var.tag_bindings, {})
   parent    = "//cloudresourcemanager.googleapis.com/projects/${local.project.number}"
-  tag_value = each.value
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
 }

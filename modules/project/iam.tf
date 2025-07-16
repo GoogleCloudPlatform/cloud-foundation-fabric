@@ -34,17 +34,6 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
-  ctx = {
-    custom_roles = {
-      for k, v in merge(
-        var.factories_config.context.custom_roles, local.custom_role_ids
-      ) : join("", ["$", k]) => v
-    }
-    iam_principals = {
-      for k, v in var.factories_config.context.iam_principals :
-      join("", ["$", k]) => v
-    }
-  }
   custom_role_ids = {
     for k, v in google_project_iam_custom_role.roles :
     # build the string manually so that role IDs can be used as map
