@@ -103,8 +103,8 @@ module "project" {
     "roles/container.hostServiceAgentUser" = [
       "serviceAccount:${local.gke_service_account}"
     ]
-    "$my_role" = [
-      "$org_admins"
+    "$custom_roles:my_role" = [
+      "$iam_principals:org_admins"
     ]
   }
 }
@@ -136,9 +136,9 @@ module "project" {
       "roles/cloudsupport.techSupportEditor",
       "roles/iam.securityReviewer",
       "roles/logging.admin",
-      "$my_role"
+      "$custom_roles:my_role"
     ]
-    "$org_admins" = [
+    "$iam_principals:org_admins" = [
       "roles/owner"
     ]
   }
@@ -172,7 +172,7 @@ module "project" {
     iam_admin_conditional = {
       members = [
         "group:${var.group_email}",
-        "$org_admins"
+        "$iam_principals:org_admins"
       ]
       role = "roles/resourcemanager.projectIamAdmin"
       condition = {
@@ -209,9 +209,6 @@ module "project" {
   ]
   factories_config = {
     context = {
-      custom_roles = {
-        my_role = "organizations/1234567890/roles/myRole"
-      }
       iam_principals = {
         org_admins = "group:gcp-organization-admins@example.com"
       }
@@ -223,7 +220,7 @@ module "project" {
       role   = "roles/owner"
     }
     org-admins-viewer = {
-      member = "$org_admins"
+      member = "$iam_principals:org_admins"
       role   = "roles/viewer"
     }
   }
@@ -393,13 +390,13 @@ module "service-project" {
     host_project = module.host-project.project_id
     service_agent_iam = {
       "roles/compute.networkUser" = [
-        "$cloudservices", "$container-engine"
+        "$service_agents:cloudservices", "$service_agents:container-engine"
       ]
       "roles/vpcaccess.user" = [
-        "$cloudrun"
+        "$service_agents:cloudrun"
       ]
       "roles/container.hostServiceAgentUser" = [
-        "$container-engine"
+        "$service_agents:container-engine"
       ]
     }
   }
@@ -433,7 +430,10 @@ module "service-project" {
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
     # reuse the list of services from the module's outputs
-    service_iam_grants = module.service-project.services
+    service_iam_grants = [
+      for v in module.service-project.services :
+      "$service_agents:${v}"
+    ]
   }
 }
 # tftest modules=2 resources=12 inventory=shared-vpc-auto-grants.yaml e2e
@@ -477,7 +477,10 @@ module "service-project" {
     host_project  = module.host-project.project_id
     network_users = ["group:${var.group_email}"]
     # reuse the list of services from the module's outputs
-    service_iam_grants = module.service-project.services
+    service_iam_grants = [
+      for v in module.service-project.services :
+      "$service_agents:${v}"
+    ]
   }
 }
 # tftest modules=2 resources=14 inventory=shared-vpc-host-project-iam.yaml e2e
@@ -1524,11 +1527,15 @@ module "project" {
     }
   }
   shared_vpc_service_config = {
-    host_project       = module.host-project.project_id
-    service_iam_grants = module.project.services
+    host_project = module.host-project.project_id
+    service_iam_grants = [
+      for v in module.project.services :
+      "$service_agents:${v}"
+    ]
     service_agent_iam = {
       "roles/cloudasset.owner" = [
-        "cloudservices", "container-engine"
+        "$service_agents:cloudservices",
+        "$service_agents:container-engine"
       ]
     }
   }

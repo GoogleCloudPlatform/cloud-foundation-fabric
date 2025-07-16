@@ -21,27 +21,27 @@ locals {
     custom_roles = {
       # mixing in locally managed roles triggers a cycle
       for k, v in var.factories_config.context.custom_roles :
-      "${local.ctx_p}${k}" => v
+      "${local.ctx_p}custom_roles:${k}" => v
     }
     folder_ids = {
       for k, v in var.factories_config.context.folder_ids :
-      "${local.ctx_p}${replace(k, "/", ".")}" => v
+      "${local.ctx_p}folder_ids:${k}" => v
     }
     iam_principals = {
       for k, v in var.factories_config.context.iam_principals :
-      "${local.ctx_p}${k}" => v
+      "${local.ctx_p}iam_principals:${k}" => v
     }
     project_ids = {
       for k, v in var.factories_config.context.project_ids :
-      "${local.ctx_p}${k}" => v
+      "${local.ctx_p}project_ids:${k}" => v
     }
     tag_keys = {
       for k, v in var.factories_config.context.tag_keys :
-      "${local.ctx_p}${k}" => v
+      "${local.ctx_p}tag_keys:${k}" => v
     }
     tag_values = {
       for k, v in var.factories_config.context.tag_values :
-      "${local.ctx_p}${replace(k, "/", ".")}" => v
+      "${local.ctx_p}tag_values:${k}" => v
     }
   }
   ctx_p = "$"
@@ -61,8 +61,12 @@ locals {
       : "folders"
     )
   )
-  parent_id = try(split("/", var.parent)[1], var.parent)
-  prefix    = var.prefix == null ? "" : "${var.prefix}-"
+  parent_id = (
+    var.parent == null || startswith(var.parent, "$")
+    ? var.parent
+    : split("/", var.parent)[1]
+  )
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   project = (
     var.project_reuse == null
     ? {

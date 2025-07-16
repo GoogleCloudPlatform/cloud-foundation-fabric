@@ -28,7 +28,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.project.google_project_iam_binding.authoritative["$my_role"]:
+  module.project.google_project_iam_binding.authoritative["$custom_roles:my_role"]:
     condition: []
     members:
     - group:gcp-organization-admins@example.com

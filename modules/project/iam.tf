@@ -20,14 +20,18 @@
 # - external users need to have accepted the invitation email to join
 
 locals {
-  _custom_roles_path = pathexpand(coalesce(var.factories_config.custom_roles, "-"))
+  _custom_roles_path = pathexpand(
+    coalesce(var.factories_config.custom_roles, "-")
+  )
   _custom_roles = {
     for f in try(fileset(local._custom_roles_path, "*.yaml"), []) :
     replace(f, ".yaml", "") => yamldecode(
       file("${local._custom_roles_path}/${f}")
     )
   }
+  # get the set of IAM by principals roles
   _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  # recompose the principals under each role
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
       for k, v in var.iam_by_principals :
@@ -104,7 +108,8 @@ resource "google_project_iam_binding" "authoritative" {
   project  = local.project.project_id
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
-    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+    for v in each.value :
+    lookup(local.ctx.iam_principals, v, v)
   ]
   depends_on = [
     google_project_service.project_services,

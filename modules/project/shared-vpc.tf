@@ -25,7 +25,7 @@ locals {
   # filter the list and keep services for which we need to create IAM bindings
   _svpc_agent_config_filtered = [
     for v in local._svpc_agent_config : v
-    if contains(local._svpc.service_iam_grants, "${local.ctx_p}${v.service}")
+    if contains(local._svpc.service_iam_grants, "${local.ctx_p}service_agents:${v.service}")
   ]
   # normalize the list of service/role tuples
   _svpc_agent_grants = flatten(flatten([
@@ -34,7 +34,9 @@ locals {
         for role in roles : {
           role = role
           service = (
-            startswith(service, local.ctx_p) ? substr(service, 1, -1) : service
+            startswith(service, "${local.ctx_p}service_agents:")
+            ? replace(service, "/\\${local.ctx_p}service_agents:/", "")
+            : service
           )
         }
       ]
@@ -46,7 +48,9 @@ locals {
       for service in services : {
         role = role
         service = (
-          startswith(service, local.ctx_p) ? substr(service, 1, -1) : service
+          startswith(service, "${local.ctx_p}service_agents:")
+          ? replace(service, "/\\${local.ctx_p}service_agents:/", "")
+          : service
         )
       }
     ]

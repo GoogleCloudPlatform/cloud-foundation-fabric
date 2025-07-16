@@ -33,7 +33,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  google_project_iam_binding.authoritative["$myrole_one"]:
+  google_project_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
     - group:test-group@example.com
@@ -67,7 +67,7 @@ values:
     condition: []
     project: my-project
     role: roles/compute.serviceAgent
-  google_project_iam_member.shared_vpc_host_iam["$mysa"]:
+  google_project_iam_member.shared_vpc_host_iam["$iam_principals:mysa"]:
     condition: []
     member: serviceAccount:test@test-project.iam.gserviceaccount.com
     project: test-vpc-host
