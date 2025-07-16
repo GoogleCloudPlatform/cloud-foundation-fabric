@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,42 @@ variable "features" {
   })
   default  = {}
   nullable = false
+}
+
+variable "fleet_default_member_config" {
+  description = "Fleet default member config."
+  type = object({
+    mesh = optional(object({
+      management = optional(string, "MANAGEMENT_AUTOMATIC")
+    }))
+    configmanagement = optional(object({
+      version = optional(string)
+      config_sync = optional(object({
+        prevent_drift = optional(bool)
+        source_format = optional(string, "hierarchy")
+        enabled       = optional(bool)
+        git = optional(object({
+          gcp_service_account_email = optional(string)
+          https_proxy               = optional(string)
+          policy_dir                = optional(string)
+          secret_type               = optional(string, "none")
+          sync_branch               = optional(string)
+          sync_repo                 = optional(string)
+          sync_rev                  = optional(string)
+          sync_wait_secs            = optional(number)
+        }))
+      }))
+    }))
+  })
+  default  = null
+  nullable = true
+}
+
+variable "location" {
+  description = "GKE hub location, will also be used for the membership location."
+  type        = string
+  default     = null
+  nullable    = true
 }
 
 variable "project_id" {
