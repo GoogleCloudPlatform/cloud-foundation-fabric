@@ -75,7 +75,7 @@ locals {
         encryption_key = lookup(opts, "encryption_key", null)
         force_destroy = try(coalesce(
           var.data_overrides.bucket.force_destroy,
-          opts.force_destroy,
+          try(opts.force_destroy, null),
           var.data_defaults.bucket.force_destroy,
         ), null)
         iam                   = lookup(opts, "iam", {})
