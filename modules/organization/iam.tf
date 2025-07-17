@@ -31,23 +31,6 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
-  ctx = {
-    custom_roles = {
-      for k, v in merge(
-        var.factories_config.context.custom_roles, local.custom_role_ids
-      ) : join("", ["$", k]) => v
-    }
-    iam_principals = {
-      for k, v in var.factories_config.context.iam_principals :
-      join("", ["$", k]) => v
-    }
-  }
-  custom_role_ids = {
-    for k, v in google_organization_iam_custom_role.roles :
-    # build the string manually so that role IDs can be used as map
-    # keys (useful for folder/organization/project-level iam bindings)
-    (k) => "${var.organization_id}/roles/${local.custom_roles[k].name}"
-  }
   custom_roles = merge(
     {
       for k, v in local._custom_roles : k => {
@@ -110,20 +93,16 @@ resource "google_organization_iam_custom_role" "roles" {
 resource "google_organization_iam_binding" "authoritative" {
   for_each = local.iam
   org_id   = local.organization_id_numeric
-  role     = lookup(local.ctx.custom_roles, each.key, each.key)
-  members = [
-    for v in each.value : lookup(local.ctx.iam_principals, v, v)
-  ]
+  role     = each.key
+  members  = each.value
   # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
 }
 
 resource "google_organization_iam_binding" "bindings" {
   for_each = var.iam_bindings
   org_id   = local.organization_id_numeric
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
-  ]
+  role     = each.value.role
+  members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -138,8 +117,8 @@ resource "google_organization_iam_binding" "bindings" {
 resource "google_organization_iam_member" "bindings" {
   for_each = local.iam_bindings_additive
   org_id   = local.organization_id_numeric
-  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
+  role     = each.value.role
+  member   = each.value.member
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
