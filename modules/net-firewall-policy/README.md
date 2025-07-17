@@ -173,7 +173,7 @@ Factory configuration is via three optional attributes in the `rules_factory_con
 - `egress_rules_file_path` specifying the path to the egress rules file
 - `ingress_rules_file_path` specifying the path to the ingress rules file
 
-Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key. 
+Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key.
 Also, the factory applies implicit defaults: `action` defaults to `deny` for egress and `allow` for ingress, while omitting `layer4_configs`  makes the rule match all protocols.
 
 This is an example of a simple factory:
@@ -311,7 +311,8 @@ http:
       - 80
 ```
 
-#### Firewall Rule Factory Schema 
+#### Firewall Rule Factory Schema
+
 The following schema outlines all available fields for defining a rule within a factory YAML file. Use this as a reference, and note the inline comments for fields that apply only to specific policy types.
 
 ```yaml
@@ -338,7 +339,7 @@ rule-name:
       - protocol:
         ports: []
 ```
-<!-- BEGIN TFDOC -->
+
 ### Dynamic Rule Matching
 
 This module simplifies firewall rule creation by using generic, context-aware variables within the `match` block. Based on the rule's specified `direction` (`INGRESS` or `EGRESS`), the module maps these generic variables to the correct source- (`src_*`) or destination-specific (`dest_*`) arguments in the underlying resource.
@@ -371,6 +372,9 @@ The following variable is defined at the top level of the rule (not within the `
 | Module Variable | Mapped Resource Attribute |
 | :--- | :--- |
 | `target_tags` | `target_secure_tags` |
+
+<!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
