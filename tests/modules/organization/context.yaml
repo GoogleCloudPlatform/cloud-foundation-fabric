@@ -1,0 +1,101 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_organization_iam_binding.authoritative["$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    - user:test-user@example.com
+    org_id: '1234567890'
+    role: organizations/366118655033/roles/myRoleOne
+  google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    org_id: '1234567890'
+    role: roles/owner
+  google_organization_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/viewer
+  google_organization_iam_binding.bindings["myrole_two"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/366118655033/roles/myRoleTwo
+  google_organization_iam_member.bindings["myrole_two"]:
+    condition: []
+    member: user:test-user@example.com
+    org_id: '1234567890'
+    role: organizations/366118655033/roles/myRoleTwo
+  google_tags_tag_key_iam_binding.bindings["test:tag_user"]:
+    condition: []
+    members:
+    - user:test-user@example.com
+    role: roles/tagUser
+    tag_key: tagKeys/1234567890
+  google_tags_tag_key_iam_binding.default["test:roles/tagAdmin"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: roles/tagAdmin
+    tag_key: tagKeys/1234567890
+  google_tags_tag_key_iam_member.bindings["test:tag_viewer"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/tagViewer
+    tag_key: tagKeys/1234567890
+  google_tags_tag_value_iam_binding.bindings["test/one:tag_user"]:
+    condition: []
+    members:
+    - user:test-user@example.com
+    role: roles/tagUser
+    tag_value: tagValues/1234567890
+  google_tags_tag_value_iam_binding.default["test/one:roles/tagAdmin"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: roles/tagAdmin
+    tag_value: tagValues/1234567890
+  google_tags_tag_value_iam_member.bindings["test/one:tag_viewer"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/tagViewer
+    tag_value: tagValues/1234567890
+
+counts:
+  google_organization_iam_binding: 4
+  google_organization_iam_member: 1
+  google_tags_tag_key_iam_binding: 2
+  google_tags_tag_key_iam_member: 1
+  google_tags_tag_value_iam_binding: 2
+  google_tags_tag_value_iam_member: 1
+  modules: 0
+  resources: 11
+
+outputs:
+  custom_constraint_ids: {}
+  custom_role_id: {}
+  custom_roles: {}
+  id: organizations/1234567890
+  network_tag_keys: {}
+  network_tag_values: {}
+  organization_id: organizations/1234567890
+  sink_writer_identities: {}
+  tag_keys: {}
+  tag_values: {}
