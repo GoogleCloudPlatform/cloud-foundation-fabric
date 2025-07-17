@@ -1071,13 +1071,21 @@ module "project" {
   parent          = var.folder_id
   factories_config = {
     tags = "data/tags"
+    context = {
+      tag_keys = {
+        service = "tagKeys/1234567890"
+      }
+      tag_values = {
+        "service/nginx" = "tagValues/1234567890"
+      }
+    }
   }
 }
-# tftest modules=1 resources=5 files=workload-tags inventory=tags-factory.yaml
+# tftest modules=1 resources=8 files=0,1 inventory=tags-factory.yaml
 ```
 
 ```yaml
-# tftest-file id=workload-tags path=data/tags/workloads.yaml
+# tftest-file id=0 path=data/tags/workload.yaml
 
 description: "Tag for workload classifications."
 iam:
@@ -1085,9 +1093,26 @@ iam:
     - "group:devops@example.com"
 values:
   frontend:
-    description: "Frontend workloads."
+    description: "Frontend workload."
   backend:
-    description: "Backend workloads."
+    description: "Backend workload."
+```
+
+```yaml
+# tftest-file id=1 path=data/tags/service.yaml
+
+id: $tag_keys:service
+iam:
+  "roles/resourcemanager.tagViewer":
+    - "group:devops@example.com"
+values:
+  apache:
+    description: "Apache."
+  nginx:
+    id: $tag_values:service/nginx
+    iam:
+      "roles/resourcemanager.tagUser":
+        - "group:devops@example.com"
 ```
 
 ## Tag Bindings

@@ -56,7 +56,7 @@ locals {
       network               = lookup(v, "network", null)
       id = try(coalesce(
         lookup(v, "id", null),
-        lookup(local.ctx.tag_keys, k, null)
+        lookup(local.ctx.tag_keys, "${local.ctx_p}tag_keys:${k}", null)
       ), null)
       values = {
         for vk, vv in lookup(v, "values", {}) : vk => {
@@ -72,7 +72,7 @@ locals {
           iam_bindings_additive = vv.iam_bindings_additive
           id = try(coalesce(
             lookup(vv, "id", null),
-            lookup(local.ctx.tag_values, "${k}.${vk}", null)
+            lookup(local.ctx.tag_values, "${local.ctx_p}tag_values:${k}/${vk}", null)
           ), null)
         }
       }
