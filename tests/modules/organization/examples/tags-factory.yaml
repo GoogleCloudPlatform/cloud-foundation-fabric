@@ -25,11 +25,10 @@ values:
     members:
     - group:finance-team@example.com
     role: roles/resourcemanager.tagViewer
-  module.org.google_tags_tag_key_iam_binding.default["foo:roles/resourcemanager.tagViewer"]:
+  module.org.google_tags_tag_key_iam_binding.default["environment:roles/resourcemanager.tagViewer"]:
     condition: []
     members:
-    - group:finance-team@example.com
-    - group:gcp-organization-admins@example.com
+    - group:gcp-devops@example.com
     role: roles/resourcemanager.tagViewer
     tag_key: tagKeys/1234567890
   module.org.google_tags_tag_value.default["cost-center/engineering"]:
@@ -40,17 +39,17 @@ values:
     description: Marketing department.
     short_name: marketing
     timeouts: null
-  module.org.google_tags_tag_value.default["foo/baz"]:
-    description: This tag value will be created.
+  module.org.google_tags_tag_value.default["environment/development"]:
+    description: Development.
     parent: tagKeys/1234567890
-    short_name: baz
+    short_name: development
     timeouts: null
-  module.org.google_tags_tag_value_iam_binding.default["foo/bar:roles/resourcemanager.tagViewer"]:
+  module.org.google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"]:
     condition: []
     members:
-    - group:gcp-organization-admins@example.com
-    role: roles/resourcemanager.tagViewer
-    tag_value: tagValues/789012345
+    - group:gcp-devops@example.com
+    role: roles/resourcemanager.tagUser
+    tag_value: tagValues/1234567890
 
 counts:
   google_tags_tag_key: 1

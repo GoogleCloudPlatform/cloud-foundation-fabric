@@ -15,6 +15,26 @@
  */
 
 locals {
+  ctx = {
+    custom_roles = {
+      # mixing in locally managed roles triggers a cycle
+      for k, v in var.factories_config.context.custom_roles :
+      "${local.ctx_p}custom_roles:${k}" => v
+    }
+    iam_principals = {
+      for k, v in var.factories_config.context.iam_principals :
+      "${local.ctx_p}iam_principals:${k}" => v
+    }
+    tag_keys = {
+      for k, v in var.factories_config.context.tag_keys :
+      "${local.ctx_p}tag_keys:${k}" => v
+    }
+    tag_values = {
+      for k, v in var.factories_config.context.tag_values :
+      "${local.ctx_p}tag_values:${k}" => v
+    }
+  }
+  ctx_p = "$"
   organization_id_numeric = split("/", var.organization_id)[1]
 }
 
