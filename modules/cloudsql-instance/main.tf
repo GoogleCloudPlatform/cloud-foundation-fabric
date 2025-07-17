@@ -215,12 +215,12 @@ resource "google_sql_database_instance" "replicas" {
     disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
-    # availability_type = var.availability_type
-    user_labels           = var.labels
-    activation_policy     = var.activation_policy
-    collation             = var.collation
-    connector_enforcement = var.connector_enforcement
-    time_zone             = var.time_zone
+    availability_type           = each.value.availability_type
+    user_labels                 = var.labels
+    activation_policy           = var.activation_policy
+    collation                   = var.collation
+    connector_enforcement       = var.connector_enforcement
+    time_zone                   = var.time_zone
 
 
     ip_configuration {
