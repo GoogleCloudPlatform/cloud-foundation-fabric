@@ -73,8 +73,7 @@ shared_vpc_service_config = {
 }
 tags = {
   test = {
-    description = "Test tag."
-    id          = "$tag_keys:test"
+    id = "$tag_keys:test"
     iam = {
       "roles/tagAdmin" = ["$iam_principals:mygroup"]
     }
@@ -92,8 +91,7 @@ tags = {
     }
     values = {
       one = {
-        description = "Test value one."
-        id          = "$tag_values:test/one"
+        id = "$tag_values:test/one"
         iam = {
           "roles/tagAdmin" = ["$iam_principals:mygroup"]
         }
