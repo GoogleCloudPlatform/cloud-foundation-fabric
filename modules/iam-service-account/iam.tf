@@ -17,6 +17,20 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -24,6 +38,19 @@ locals {
       ]
     ]
   ])
+  iam_bindings_additive = merge(
+    var.iam_bindings_additive,
+    [
+      for principal, roles in var.iam_by_principals_additive : {
+        for role in roles :
+        "iam-bpa:${principal}-${role}" => {
+          member    = principal
+          role      = role
+          condition = null
+        }
+      }
+    ]...
+  )
   iam_folder_pairs = flatten([
     for entity, roles in var.iam_folder_roles : [
       for role in roles : [
@@ -62,7 +89,7 @@ locals {
 }
 
 resource "google_service_account_iam_binding" "authoritative" {
-  for_each           = var.iam
+  for_each           = local.iam
   service_account_id = local.service_account.name
   role               = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
@@ -91,7 +118,7 @@ resource "google_service_account_iam_binding" "bindings" {
 }
 
 resource "google_service_account_iam_member" "bindings" {
-  for_each           = var.iam_bindings_additive
+  for_each           = local.iam_bindings_additive
   service_account_id = local.service_account.name
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
@@ -163,7 +190,7 @@ resource "google_service_account_iam_member" "additive" {
     "${pair.entity}-${pair.role}" => pair
   }
   service_account_id = lookup(
-    local.ctx.service_accounts, each.value.entity, each.value.entity
+    local.ctx.service_account_ids, each.value.entity, each.value.entity
   )
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role

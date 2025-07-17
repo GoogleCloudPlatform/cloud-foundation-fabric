@@ -40,96 +40,17 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     context = optional(object({
-      custom_roles     = optional(map(string), {})
-      folder_ids       = optional(map(string), {})
-      iam_principals   = optional(map(string), {})
-      project_ids      = optional(map(string), {})
-      service_accounts = optional(map(string), {})
-      storage_buckets  = optional(map(string), {})
-      tag_values       = optional(map(string), {})
+      custom_roles        = optional(map(string), {})
+      folder_ids          = optional(map(string), {})
+      iam_principals      = optional(map(string), {})
+      project_ids         = optional(map(string), {})
+      service_account_ids = optional(map(string), {})
+      storage_buckets     = optional(map(string), {})
+      tag_values          = optional(map(string), {})
     }), {})
   })
   nullable = false
   default  = {}
-}
-
-variable "iam" {
-  description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_billing_roles" {
-  description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings on the service account. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_folder_roles" {
-  description = "Folder roles granted to this service account, by folder id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_organization_roles" {
-  description = "Organization roles granted to this service account, by organization id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_project_roles" {
-  description = "Project roles granted to this service account, by project id."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_sa_roles" {
-  description = "Service account roles granted to this service account, by service account name."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_storage_roles" {
-  description = "Storage roles granted to this service account, by bucket name."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "name" {
