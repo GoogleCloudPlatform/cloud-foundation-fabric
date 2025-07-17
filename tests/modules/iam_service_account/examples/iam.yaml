@@ -1,0 +1,26 @@
+values:
+  module.service-account-with-tags.google_billing_account_iam_member.billing-roles["ABCDE-12345-ABCDE-roles/billing.user"]:
+    billing_account_id: ABCDE-12345-ABCDE
+    condition: []
+    role: roles/billing.user
+  ? module.service-account-with-tags.google_folder_iam_member.folder-roles["$folder_ids:test-roles/resourcemanager.folderAdmin"]
+  : condition: []
+    folder: folders/1234567890
+    role: roles/resourcemanager.folderAdmin
+  module.service-account-with-tags.google_service_account.service_account[0]:
+    account_id: test-service-account
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: test-service-account@project-id.iam.gserviceaccount.com
+    member: serviceAccount:test-service-account@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+
+counts:
+  google_billing_account_iam_member: 1
+  google_folder_iam_member: 1
+  google_service_account: 1
+  modules: 1
+  resources: 3

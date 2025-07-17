@@ -64,15 +64,22 @@ locals {
 resource "google_service_account_iam_binding" "authoritative" {
   for_each           = var.iam
   service_account_id = local.service_account.name
-  role               = each.key
-  members            = each.value
+  role               = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value :
+    lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_service_account_iam_binding" "bindings" {
   for_each           = var.iam_bindings
   service_account_id = local.service_account.name
-  role               = each.value.role
-  members            = each.value.members
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -86,8 +93,12 @@ resource "google_service_account_iam_binding" "bindings" {
 resource "google_service_account_iam_member" "bindings" {
   for_each           = var.iam_bindings_additive
   service_account_id = local.service_account.name
-  role               = each.value.role
-  member             = each.value.member
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -104,8 +115,10 @@ resource "google_billing_account_iam_member" "billing-roles" {
     "${pair.entity}-${pair.role}" => pair
   }
   billing_account_id = each.value.entity
-  role               = each.value.role
-  member             = local.resource_iam_email
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_folder_iam_member" "folder-roles" {
@@ -113,9 +126,11 @@ resource "google_folder_iam_member" "folder-roles" {
     for pair in local.iam_folder_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  folder = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  folder = lookup(local.ctx.folder_ids, each.value.entity, each.value.entity)
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_organization_iam_member" "organization-roles" {
@@ -124,8 +139,10 @@ resource "google_organization_iam_member" "organization-roles" {
     "${pair.entity}-${pair.role}" => pair
   }
   org_id = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_project_iam_member" "project-roles" {
@@ -133,9 +150,11 @@ resource "google_project_iam_member" "project-roles" {
     for pair in local.iam_project_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  project = each.value.entity
-  role    = each.value.role
-  member  = local.resource_iam_email
+  project = lookup(local.ctx.project_ids, each.value.entity, each.value.entity)
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_service_account_iam_member" "additive" {
@@ -143,9 +162,13 @@ resource "google_service_account_iam_member" "additive" {
     for pair in local.iam_sa_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  service_account_id = each.value.entity
-  role               = each.value.role
-  member             = local.resource_iam_email
+  service_account_id = lookup(
+    local.ctx.service_accounts, each.value.entity, each.value.entity
+  )
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_storage_bucket_iam_member" "bucket-roles" {
@@ -153,7 +176,11 @@ resource "google_storage_bucket_iam_member" "bucket-roles" {
     for pair in local.iam_storage_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  bucket = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  bucket = lookup(
+    local.ctx.storage_buckets, each.value.entity, each.value.entity
+  )
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }

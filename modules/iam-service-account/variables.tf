@@ -36,6 +36,23 @@ variable "display_name" {
   default     = "Terraform-managed."
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    context = optional(object({
+      custom_roles     = optional(map(string), {})
+      folder_ids       = optional(map(string), {})
+      iam_principals   = optional(map(string), {})
+      project_ids      = optional(map(string), {})
+      service_accounts = optional(map(string), {})
+      storage_buckets  = optional(map(string), {})
+      tag_values       = optional(map(string), {})
+    }), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "iam" {
   description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
