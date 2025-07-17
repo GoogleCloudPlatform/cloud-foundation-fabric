@@ -15,6 +15,11 @@ The module also makes fewer assumptions about implicit defaults, only using one 
   - [Global Network policy](#global-network-policy)
   - [Regional Network policy](#regional-network-policy)
   - [Factory](#factory)
+    - [Firewall Rule Factory Schema](#firewall-rule-factory-schema)
+  - [Dynamic Rule Matching](#dynamic-rule-matching)
+    - [Ingress Rules (](#ingress-rules-)
+    - [Egress Rules (](#egress-rules-)
+    - [Rule-Level Mappings](#rule-level-mappings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -174,6 +179,7 @@ Factory configuration is via three optional attributes in the `rules_factory_con
 - `ingress_rules_file_path` specifying the path to the ingress rules file
 
 Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key.
+Also, the factory applies implicit defaults: `action` defaults to `deny` for egress and `allow` for ingress, while omitting `layer4_configs`  makes the rule match all protocols.
 
 This is an example of a simple factory:
 
@@ -309,7 +315,71 @@ http:
       ports:
       - 80
 ```
+
+#### Firewall Rule Factory Schema
+
+The following schema outlines all available fields for defining a rule within a factory YAML file. Use this as a reference, and note the inline comments for fields that apply only to specific policy types.
+
+```yaml
+rule-name:
+  priority:
+  action:
+  description:
+  disabled:
+  enable_logging:
+  security_profile_group: # Not for Regional policies
+  target_service_accounts: []
+  target_tags: [] # Not for Hierarchical policies
+  target_resources: [] # For Hierarchical policies only
+  tls_inspect: # Not for Regional policies
+  match:
+    source_ranges: []
+    destination_ranges: []
+    source_tags: [] # Not for Hierarchical policies
+    threat_intelligences: []
+    fqdns: []
+    address_groups: []
+    region_codes: []
+    layer4_configs:
+      - protocol:
+        ports: []
+```
+
+### Dynamic Rule Matching
+
+This module simplifies firewall rule creation by using generic, context-aware variables within the `match` block. Based on the rule's specified `direction` (`INGRESS` or `EGRESS`), the module maps these generic variables to the correct source- (`src_*`) or destination-specific (`dest_*`) arguments in the underlying resource.
+
+The tables below provide a complete reference for these dynamic mappings.
+
+#### Ingress Rules (`direction = "INGRESS"`)
+
+| Module Variable (`match.*`) | Mapped Resource Attribute |
+| :--- | :--- |
+| `address_groups` | `src_address_groups` |
+| `fqdns` | `src_fqdns` |
+| `region_codes` | `src_region_codes` |
+| `source_tags` | `src_secure_tags` |
+| `threat_intelligences` | `src_threat_intelligences` |
+
+#### Egress Rules (`direction = "EGRESS"`)
+
+| Module Variable (`match.*`) | Mapped Resource Attribute |
+| :--- | :--- |
+| `address_groups` | `dest_address_groups` |
+| `fqdns` | `dest_fqdns` |
+| `region_codes` | `dest_region_codes` |
+| `threat_intelligences` | `dest_threat_intelligences` |
+
+#### Rule-Level Mappings
+
+The following variable is defined at the top level of the rule (not within the `match` block) and is mapped directly, regardless of the rule's direction.
+
+| Module Variable | Mapped Resource Attribute |
+| :--- | :--- |
+| `target_tags` | `target_secure_tags` |
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |

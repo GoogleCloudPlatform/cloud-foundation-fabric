@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ locals {
     "artifactregistry.googleapis.com" : ["artifactregistry"]
     "bigtableadmin.googleapis.com" : ["bigtable"]
     "bigquery.googleapis.com" : ["bigquery-encryption"]
-    # the list for composer now track composer 3
+    # the list for composer now tracks composer 3
     # https://cloud.google.com/composer/docs/composer-3/configure-cmek-encryption#grant-roles-permissions
     "composer.googleapis.com" : ["composer", "storage"]
     "compute.googleapis.com" : ["compute"]
@@ -49,20 +49,28 @@ locals {
     "storage.googleapis.com" : ["storage"]
     "run.googleapis.com" : ["cloudrun"]
   }
-  _cmek_members = merge(flatten([
+  _all_cmek_bindings = flatten([
     for service, keys in var.service_encryption_key_ids : [
-      # use the deps listed above, if the service does not appear
-      # there, use all the service agents belonging to the service
-      for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name], [service]) : {
-        # use index in map key, to allow specifying keys, that will be created in the same apply
-        for index, key in keys :
-        "key-${index}.${local._aliased_service_agents[dep].name}" => {
-          key   = key
-          agent = local._aliased_service_agents[dep].iam_email
+      for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name], [service]) : [
+        for key in keys : {
+          key_id      = key
+          agent_name  = local._aliased_service_agents[dep].name
+          agent_email = local._aliased_service_agents[dep].iam_email
         }
-      }
+      ]
     ]
-  ])...)
+  ])
+  _cmek_bindings_grouped_by_agent = {
+    for binding in local._all_cmek_bindings : binding.agent_name => binding...
+  }
+  _cmek_members = merge([
+    for agent_name, bindings in local._cmek_bindings_grouped_by_agent : {
+      for i, binding in bindings : "key-${i}.${agent_name}" => {
+        key   = binding.key_id
+        agent = binding.agent_email
+      }
+    }
+  ]...)
 }
 
 resource "google_kms_crypto_key_iam_member" "service_agent_cmek" {
