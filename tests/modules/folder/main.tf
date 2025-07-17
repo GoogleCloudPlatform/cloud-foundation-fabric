@@ -25,10 +25,6 @@ locals {
       for k, v in var.factories_config.context.iam_principals :
       "${local.ctx_p}iam_principals:${k}" => v
     }
-    tag_values = {
-      for k, v in var.factories_config.context.tag_values :
-      "${local.ctx_p}tag_values:${k}" => v
-    }
   }
   ctx_p = "$"
   folder_id = (

@@ -85,7 +85,10 @@ variable "factories_config" {
   type = object({
     org_policies = optional(string)
     context = optional(object({
-      org_policies = optional(map(map(string)), {})
+      custom_roles   = optional(map(string), {})
+      iam_principals = optional(map(string), {})
+      org_policies   = optional(map(map(string)), {})
+      tag_values     = optional(map(string), {})
     }), {})
   })
   nullable = false
