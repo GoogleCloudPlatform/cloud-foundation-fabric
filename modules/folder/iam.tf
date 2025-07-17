@@ -77,7 +77,9 @@ resource "google_folder_iam_member" "bindings" {
   for_each = local.iam_bindings_additive
   folder   = local.folder_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
