@@ -15,6 +15,11 @@ The module also makes fewer assumptions about implicit defaults, only using one 
   - [Global Network policy](#global-network-policy)
   - [Regional Network policy](#regional-network-policy)
   - [Factory](#factory)
+    - [Firewall Rule Factory Schema](#firewall-rule-factory-schema)
+  - [Dynamic Rule Matching](#dynamic-rule-matching)
+    - [Ingress Rules (](#ingress-rules-)
+    - [Egress Rules (](#egress-rules-)
+    - [Rule-Level Mappings](#rule-level-mappings)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
