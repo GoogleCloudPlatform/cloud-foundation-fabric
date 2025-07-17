@@ -474,7 +474,7 @@ module "vpc" {
 
 ### Subnet Factory
 
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only and PSC subnets via the `purpose` attribute. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
+The `net-vpc` module includes a subnet factory for massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only and PSC subnets via the `purpose` attribute. The `name` attribute is optional and defaults to the file name, allowing to use the same name for subnets in different regions. The `context` attribute of `var.factories_config` can optionally contain the map `regions`, which allows for the templatization of the `region` attribute (e.g. see `config/subnets/subnet-simple.yaml` below)
 
 ```hcl
 module "vpc" {
