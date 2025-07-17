@@ -71,6 +71,9 @@ shared_vpc_service_config = {
   }
   service_iam_grants = ["$service_agents:compute"]
 }
+tag_bindings = {
+  foo = "$tag_values:test/one"
+}
 tags = {
   test = {
     id = "$tag_keys:test"

@@ -18,21 +18,6 @@ values:
     host_project: test-vpc-host
     service_project: my-project
     timeouts: null
-  google_project.project[0]:
-    auto_create_network: false
-    billing_account: null
-    deletion_policy: DELETE
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    folder_id: '6789012345'
-    labels: null
-    name: my-project
-    org_id: null
-    project_id: my-project
-    tags: null
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
   google_project_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -91,6 +76,9 @@ values:
     project: my-project
     service: compute.googleapis.com
     timeouts: null
+  google_tags_tag_binding.binding["foo"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
   google_tags_tag_key_iam_binding.bindings["test:tag_user"]:
     condition: []
     members:
@@ -132,31 +120,10 @@ counts:
   google_project_iam_binding: 4
   google_project_iam_member: 6
   google_project_service: 1
+  google_tags_tag_binding: 1
   google_tags_tag_key_iam_binding: 2
   google_tags_tag_key_iam_member: 1
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 19
-
-outputs:
-  alert_ids: {}
-  custom_role_id: {}
-  custom_roles: {}
-  default_service_accounts: __missing__
-  id: my-project
-  name: my-project
-  network_tag_keys: {}
-  network_tag_values: {}
-  notification_channel_names: {}
-  notification_channels: {}
-  number: __missing__
-  project_id: my-project
-  quota_configs: {}
-  quotas: {}
-  service_agents: __missing__
-  services:
-  - compute.googleapis.com
-  sink_writer_identities: {}
-  tag_keys: {}
-  tag_values: {}
+  resources: 20

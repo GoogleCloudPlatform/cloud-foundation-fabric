@@ -1,4 +1,3 @@
-id = 1234567890
 factories_config = {
   context = {
     custom_roles = {
@@ -45,6 +44,9 @@ iam_bindings_additive = {
     role   = "$custom_roles:myrole_two"
     member = "$iam_principals:myuser"
   }
+}
+tag_bindings = {
+  foo = "$tag_values:test/one"
 }
 tags = {
   test = {

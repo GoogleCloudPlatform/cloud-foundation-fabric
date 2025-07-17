@@ -129,7 +129,7 @@ IAM is managed via several variables that implement different features and level
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
+IAM also supports variable interpolation for both roles and principals, via the respective attributes in the `var.factories_config.context` variable. Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
 
 ## Organization Policies
 
