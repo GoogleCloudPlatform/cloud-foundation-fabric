@@ -37,6 +37,16 @@ variable "cors" {
   default = null
 }
 
+variable "context" {
+  description = "XXX"
+  type = object({
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "custom_placement_config" {
   type        = list(string)
   default     = null

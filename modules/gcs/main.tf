@@ -15,7 +15,17 @@
  */
 
 locals {
-  _name        = "${local.prefix}${lower(var.name)}"
+  _name = "${local.prefix}${lower(var.name)}"
+  ctx = {
+    custom_roles = {
+      for k, v in var.context.custom_roles :
+      "$custom_roles:${k}" => v
+    }
+    iam_principals = {
+      for k, v in var.context.iam_principals :
+      "$iam_principals:${k}" => v
+    }
+  }
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
   topic_create = try(var.notification_config.create_topic, null) != null
