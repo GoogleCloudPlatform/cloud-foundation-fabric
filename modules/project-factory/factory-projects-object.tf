@@ -302,6 +302,7 @@ locals {
         try(v.logging_data_access, null),
         local.__projects_config.data_defaults.logging_data_access
       )
+      quotas = try(v.quotas, {})
     })
   }
   # tflint-ignore: terraform_unused_declarations
