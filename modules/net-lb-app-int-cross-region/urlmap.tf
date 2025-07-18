@@ -26,7 +26,7 @@ resource "google_compute_url_map" "default" {
   provider    = google-beta
   project     = var.project_id
   name        = var.name
-  description = var.description
+  description = var.urlmap_config.description
   default_service = (
     var.urlmap_config.default_service == null ? null : lookup(
       local.backend_ids,

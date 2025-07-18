@@ -23,6 +23,8 @@ variable "address" {
 variable "backend_service_config" {
   description = "Backend service level configuration."
   type = object({
+    name                            = optional(string)
+    description                     = optional(string, "Terraform managed.")
     affinity_cookie_ttl_sec         = optional(number)
     connection_draining_timeout_sec = optional(number)
     health_checks                   = optional(list(string), ["default"])
@@ -106,6 +108,7 @@ variable "health_check" {
 variable "health_check_config" {
   description = "Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
+    name                = optional(string)
     check_interval_sec  = optional(number)
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)

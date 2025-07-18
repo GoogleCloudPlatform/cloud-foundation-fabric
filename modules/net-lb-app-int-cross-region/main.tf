@@ -90,8 +90,8 @@ resource "google_compute_target_http_proxy" "default" {
 resource "google_compute_target_https_proxy" "default" {
   count                            = var.protocol == "HTTPS" ? 1 : 0
   project                          = var.project_id
-  name                             = var.name
-  description                      = var.description
+  name                             = coalesce(var.https_proxy_config.name, var.name)
+  description                      = var.https_proxy_config.description
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy

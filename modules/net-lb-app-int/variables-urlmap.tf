@@ -19,6 +19,7 @@
 variable "urlmap_config" {
   description = "The URL map configuration."
   type = object({
+    description     = optional(string, "Terraform managed.")
     default_service = optional(string)
     default_url_redirect = optional(object({
       host          = optional(string)
