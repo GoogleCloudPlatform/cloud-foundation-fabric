@@ -55,7 +55,7 @@ resource "google_compute_region_backend_service" "default" {
   project                         = var.project_id
   region                          = var.region
   name                            = coalesce(var.backend_service_config.name, var.name)
-  description                     = var.description
+  description                     = var.backend_service_config.description
   load_balancing_scheme           = "EXTERNAL"
   protocol                        = var.backend_service_config.protocol
   health_checks                   = [local.health_check]

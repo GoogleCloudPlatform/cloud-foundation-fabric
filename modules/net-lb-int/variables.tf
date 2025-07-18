@@ -31,6 +31,7 @@ variable "backend_service_config" {
     }))
     log_sample_rate  = optional(number)
     name             = optional(string)
+    description      = optional(string, "Terraform managed.")
     protocol         = optional(string, "UNSPECIFIED")
     session_affinity = optional(string)
     timeout_sec      = optional(number)

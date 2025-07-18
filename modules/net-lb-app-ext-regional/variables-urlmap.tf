@@ -19,6 +19,7 @@
 variable "urlmap_config" {
   description = "The URL map configuration."
   type = object({
+    description = optional(string, "Terraform managed.")
     default_route_action = optional(object({
       request_mirror_backend = optional(string)
       cors_policy = optional(object({
