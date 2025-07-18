@@ -538,14 +538,6 @@ module "org" {
   factories_config = {
     tags = "data/tags"
   }
-  context = {
-    tag_keys = {
-      environment = "tagKeys/1234567890"
-    }
-    tag_values = {
-      "environment/production" = "tagValues/1234567890"
-    }
-  }
 }
 # tftest modules=1 resources=7 files=0,1 inventory=tags-factory.yaml
 ```

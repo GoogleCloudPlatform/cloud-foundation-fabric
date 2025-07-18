@@ -183,9 +183,6 @@ module "folder" {
       }
     }
   }
-  factories_config = {
-    org_policies = "configs/org-policies/"
-  }
 }
 # tftest modules=1 resources=9 files=boolean,list inventory=org-policies.yaml e2e
 ```
