@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ locals {
 
 resource "google_access_context_manager_service_perimeter_resource" "default" {
   for_each = toset(
-    local.vpc_sc_dry_run ? [] : compact([var.vpc_sc.perimeter_name])
+    local.vpc_sc_dry_run ? [] : compact([try(var.vpc_sc.perimeter_name, null)])
   )
   perimeter_name = lookup(local.ctx.vpc_sc_perimeters, each.key, each.key)
   resource       = "projects/${local.project.number}"
@@ -32,9 +32,8 @@ resource "google_access_context_manager_service_perimeter_resource" "default" {
 
 resource "google_access_context_manager_service_perimeter_dry_run_resource" "default" {
   for_each = toset(
-    local.vpc_sc_dry_run ? compact([var.vpc_sc.perimeter_name]) : []
+    local.vpc_sc_dry_run ? compact([try(var.vpc_sc.perimeter_name, null)]) : []
   )
   perimeter_name = lookup(local.ctx.vpc_sc_perimeters, each.key, each.key)
   resource       = "projects/${local.project.number}"
 }
-output "foo" { value = local.ctx }

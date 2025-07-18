@@ -38,7 +38,7 @@ variable "cors" {
 }
 
 variable "context" {
-  description = "XXX"
+  description = "Context-specific interpolations."
   type = object({
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})

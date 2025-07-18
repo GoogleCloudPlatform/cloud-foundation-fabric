@@ -16,7 +16,7 @@
 
 locals {
   ctx = {
-    for k, v in var.factories_config.context : k => {
+    for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     }
   }

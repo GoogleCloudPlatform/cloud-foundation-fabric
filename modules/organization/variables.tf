@@ -21,6 +21,19 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    org_policies   = optional(map(map(string)), {})
+    tag_keys       = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -35,13 +48,6 @@ variable "factories_config" {
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
     tags                          = optional(string)
-    context = optional(object({
-      custom_roles   = optional(map(string), {})
-      iam_principals = optional(map(string), {})
-      org_policies   = optional(map(map(string)), {})
-      tag_keys       = optional(map(string), {})
-      tag_values     = optional(map(string), {})
-    }), {})
   })
   nullable = false
   default  = {}

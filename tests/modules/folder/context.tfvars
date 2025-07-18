@@ -1,18 +1,16 @@
 folder_id = 1234567890
-factories_config = {
-  context = {
-    custom_roles = {
-      myrole_one = "organizations/366118655033/roles/myRoleOne"
-      myrole_two = "organizations/366118655033/roles/myRoleTwo"
-    }
-    iam_principals = {
-      mygroup = "group:test-group@example.com"
-      mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
-      myuser  = "user:test-user@example.com"
-    }
-    tag_values = {
-      "test/one" = "tagValues/1234567890"
-    }
+context = {
+  custom_roles = {
+    myrole_one = "organizations/366118655033/roles/myRoleOne"
+    myrole_two = "organizations/366118655033/roles/myRoleTwo"
+  }
+  iam_principals = {
+    mygroup = "group:test-group@example.com"
+    mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
+    myuser  = "user:test-user@example.com"
+  }
+  tag_values = {
+    "test/one" = "tagValues/1234567890"
   }
 }
 iam = {

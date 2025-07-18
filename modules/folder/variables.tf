@@ -74,6 +74,19 @@ variable "contacts" {
   nullable    = false
 }
 
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    org_policies   = optional(map(map(string)), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "deletion_protection" {
   description = "Deletion protection setting for this folder."
   type        = bool
@@ -84,12 +97,6 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     org_policies = optional(string)
-    context = optional(object({
-      custom_roles   = optional(map(string), {})
-      iam_principals = optional(map(string), {})
-      org_policies   = optional(map(map(string)), {})
-      tag_values     = optional(map(string), {})
-    }), {})
   })
   nullable = false
   default  = {}

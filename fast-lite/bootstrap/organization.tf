@@ -51,14 +51,14 @@ module "organization" {
 module "organization-iam" {
   source          = "../../modules/organization"
   organization_id = module.organization.id
+  context = {
+    org_policies = {
+      organization = local.ctx.organization
+    }
+  }
   factories_config = {
     org_policies = "${local._paths.organization}/org-policies"
     tags         = "${local._paths.organization}/tags"
-    context = {
-      org_policies = {
-        organization = local.ctx.organization
-      }
-    }
   }
   iam                   = local.organization.iam
   iam_by_principals     = local.organization.iam_by_principals

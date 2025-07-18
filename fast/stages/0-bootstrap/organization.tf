@@ -194,6 +194,14 @@ module "organization" {
     }
   )
   custom_roles = var.custom_roles
+  context = {
+    org_policies = {
+      organization = var.organization
+      tags = {
+        org_policies_tag_name = local.org_policies_tag_name
+      }
+    }
+  }
   factories_config = {
     custom_roles = var.factories_config.custom_roles
     org_policy_custom_constraints = (
@@ -202,14 +210,6 @@ module "organization" {
     org_policies = (
       var.bootstrap_user != null ? null : var.factories_config.org_policies
     )
-    context = {
-      org_policies = {
-        organization = var.organization
-        tags = {
-          org_policies_tag_name = local.org_policies_tag_name
-        }
-      }
-    }
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {

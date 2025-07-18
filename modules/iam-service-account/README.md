@@ -59,18 +59,16 @@ The following variables control **additive** IAM bindings on external resources 
 - `iam_sa_roles`
 - `iam_storage_roles`
 
-IAM also supports variable interpolation for both roles and principals and for the foreign resources where the service account is the principal, via the respective attributes in the `var.factories_config.context` variable. Basic usage is shown in the example below.
+IAM also supports variable interpolation for both roles and principals and for the foreign resources where the service account is the principal, via the respective attributes in the `var.context` variable. Basic usage is shown in the example below.
 
 ```hcl
 module "service-account-with-tags" {
   source     = "./fabric/modules/iam-service-account"
   project_id = var.project_id
   name       = "test-service-account"
-  factories_config = {
-    context = {
-      folder_ids = {
-        test = "folders/1234567890"
-      }
+  context = {
+    folder_ids = {
+      test = "folders/1234567890"
     }
   }
   iam_billing_roles = {
@@ -121,12 +119,12 @@ module "service-account-with-tags" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L56) | Name of the service account to create. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L71) | Project id where service account will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L54) | Name of the service account to create. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L69) | Project id where service account will be created. | <code>string</code> | ✓ |  |
+| [context](variables.tf#L33) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage_buckets     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [create_ignore_already_exists](variables.tf#L17) | If set to true, skip service account creation if a service account with the same email already exists. | <code>bool</code> |  | <code>null</code> |
 | [description](variables.tf#L27) | Optional description. | <code>string</code> |  | <code>null</code> |
-| [display_name](variables.tf#L33) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
-| [factories_config](variables.tf#L39) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  context &#61; optional&#40;object&#40;&#123;&#10;    custom_roles        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    folder_ids          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    iam_principals      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    project_ids         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    service_account_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    storage_buckets     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    tag_values          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [display_name](variables.tf#L48) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_billing_roles](variables-iam.tf#L24) | Billing account roles granted to this service account, by billing account id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L31) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -138,10 +136,10 @@ module "service-account-with-tags" {
 | [iam_project_roles](variables-iam.tf#L89) | Project roles granted to this service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_sa_roles](variables-iam.tf#L96) | Service account roles granted to this service account, by service account name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_storage_roles](variables-iam.tf#L103) | Storage roles granted to this service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L61) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L76) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L82) | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
-| [tag_bindings](variables.tf#L89) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L59) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L74) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L80) | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
+| [tag_bindings](variables.tf#L87) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

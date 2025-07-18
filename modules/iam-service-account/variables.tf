@@ -30,27 +30,25 @@ variable "description" {
   default     = null
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles        = optional(map(string), {})
+    folder_ids          = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    service_account_ids = optional(map(string), {})
+    storage_buckets     = optional(map(string), {})
+    tag_values          = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "display_name" {
   description = "Display name of the service account to create."
   type        = string
   default     = "Terraform-managed."
-}
-
-variable "factories_config" {
-  description = "Paths to data files and folders that enable factory functionality."
-  type = object({
-    context = optional(object({
-      custom_roles        = optional(map(string), {})
-      folder_ids          = optional(map(string), {})
-      iam_principals      = optional(map(string), {})
-      project_ids         = optional(map(string), {})
-      service_account_ids = optional(map(string), {})
-      storage_buckets     = optional(map(string), {})
-      tag_values          = optional(map(string), {})
-    }), {})
-  })
-  nullable = false
-  default  = {}
 }
 
 variable "name" {

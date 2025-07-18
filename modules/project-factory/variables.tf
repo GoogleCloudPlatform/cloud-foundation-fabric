@@ -68,9 +68,8 @@ variable "data_defaults" {
       iam_self_roles = optional(list(string))
     })), {})
     vpc_sc = optional(object({
-      perimeter_name    = string
-      perimeter_bridges = optional(list(string), [])
-      is_dry_run        = optional(bool, false)
+      perimeter_name = string
+      is_dry_run     = optional(bool, false)
     }))
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
@@ -129,9 +128,8 @@ variable "data_overrides" {
       iam_self_roles = optional(list(string))
     })))
     vpc_sc = optional(object({
-      perimeter_name    = string
-      perimeter_bridges = optional(list(string), [])
-      is_dry_run        = optional(bool, false)
+      perimeter_name = string
+      is_dry_run     = optional(bool, false)
     }))
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
@@ -407,9 +405,8 @@ variable "factories_data" {
       }))
       tag_bindings = optional(map(string), {})
       vpc_sc = optional(object({
-        perimeter_name    = string
-        perimeter_bridges = optional(list(string), [])
-        is_dry_run        = optional(bool, false)
+        perimeter_name = string
+        is_dry_run     = optional(bool, false)
       }))
     })), {})
   })
