@@ -38,8 +38,8 @@ resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = var.project_id
   region                          = var.region
-  name                            = var.name
-  description                     = var.description
+  name                            = coalesce(var.backend_service_config.name, var.name)
+  description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
   health_checks                   = [local.health_check]

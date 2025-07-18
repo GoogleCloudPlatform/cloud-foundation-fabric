@@ -51,8 +51,8 @@ resource "google_compute_region_backend_service" "default" {
     : each.value.project_id
   )
   region                          = var.region
-  name                            = "${var.name}-${each.key}"
-  description                     = var.description
+  name                            = coalesce(each.value.name, "${var.name}-${each.key}")
+  description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
   health_checks = length(each.value.health_checks) == 0 ? null : [
