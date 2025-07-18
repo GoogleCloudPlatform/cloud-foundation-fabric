@@ -80,6 +80,17 @@ variable "access_policy_create" {
   default = null
 }
 
+variable "context" {
+  description = ""
+  type = object({
+    resource_sets = optional(map(list(string)), {})
+    service_sets  = optional(map(list(string)), {})
+    identity_sets = optional(map(list(string)), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "egress_policies" {
   description = "Egress policy definitions that can be referenced in perimeters."
   type = map(object({
@@ -130,11 +141,6 @@ variable "factories_config" {
     egress_policies  = optional(string)
     ingress_policies = optional(string)
     perimeters       = optional(string)
-    context = optional(object({
-      resource_sets = optional(map(list(string)), {})
-      service_sets  = optional(map(list(string)), {})
-      identity_sets = optional(map(list(string)), {})
-    }), {})
   })
   nullable = false
   default  = {}
