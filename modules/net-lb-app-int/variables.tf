@@ -48,6 +48,8 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy configuration."
   type = object({
+    name                             = optional(string)
+    description                      = optional(string, "Terraform managed.")
     certificate_manager_certificates = optional(list(string))
     ssl_policy                       = optional(string)
   })
@@ -213,6 +215,7 @@ variable "ssl_certificates" {
   type = object({
     certificate_ids = optional(list(string), [])
     create_configs = optional(map(object({
+      name        = optional(string)
       certificate = string
       private_key = string
     })), {})

@@ -19,6 +19,8 @@
 variable "backend_service_configs" {
   description = "Backend service level configuration."
   type = map(object({
+    name                            = optional(string)
+    description                     = optional(string, "Terraform managed.")
     affinity_cookie_ttl_sec         = optional(number)
     connection_draining_timeout_sec = optional(number)
     health_checks                   = optional(list(string), ["default"])

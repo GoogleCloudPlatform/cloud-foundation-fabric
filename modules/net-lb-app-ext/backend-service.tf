@@ -49,8 +49,8 @@ resource "google_compute_backend_service" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  name                            = "${var.name}-${each.key}"
-  description                     = var.description
+  name                            = coalesce(each.value.name, "${var.name}-${each.key}")
+  description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   compression_mode                = each.value.compression_mode
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
