@@ -13,6 +13,9 @@
 # limitations under the License.
 
 values:
+  google_access_context_manager_service_perimeter_resource.default["$vpc_sc_perimeters:default"]:
+    perimeter_name: accessPolicies/888933661165/servicePerimeters/default
+    timeouts: null
   google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     deletion_policy: null
     host_project: test-vpc-host
@@ -115,6 +118,7 @@ values:
     tag_value: tagValues/1234567890
 
 counts:
+  google_access_context_manager_service_perimeter_resource: 1
   google_compute_shared_vpc_service_project: 1
   google_project: 1
   google_project_iam_binding: 4
@@ -126,4 +130,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 20
+  resources: 21

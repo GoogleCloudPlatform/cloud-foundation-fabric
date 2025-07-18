@@ -21,6 +21,9 @@ factories_config = {
     tag_values = {
       "test/one" = "tagValues/1234567890"
     }
+    vpc_sc_perimeters = {
+      default = "accessPolicies/888933661165/servicePerimeters/default"
+    }
   }
 }
 parent = "$folder_ids:test/prod"
@@ -113,4 +116,7 @@ tags = {
       }
     }
   }
+}
+vpc_sc = {
+  perimeter_name = "$vpc_sc_perimeters:default"
 }
