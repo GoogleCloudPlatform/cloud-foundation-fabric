@@ -24,6 +24,21 @@ variable "create_ignore_already_exists" {
   }
 }
 
+variable "context" {
+  description = "External context used in replacements."
+  type = object({
+    custom_roles        = optional(map(string), {})
+    folder_ids          = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    service_account_ids = optional(map(string), {})
+    storage_buckets     = optional(map(string), {})
+    tag_values          = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "Optional description."
   type        = string
