@@ -15,8 +15,8 @@
 values:
   google_folder.folder[0]:
     deletion_protection: false
-    display_name: folder-a
-    parent: organizations/12345678
+    display_name: Test Context
+    parent: organizations/1234567890
     tags: null
     timeouts: null
   google_folder_iam_binding.authoritative["$custom_roles:myrole_one"]:

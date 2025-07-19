@@ -14,9 +14,6 @@
 
 module: modules/folder
 
-common_tfvars:
-  - common.tfvars
-
 tests:
   context:
   iam_by_principals_additive:

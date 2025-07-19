@@ -45,7 +45,7 @@ locals {
 resource "google_folder" "folder" {
   count               = var.folder_create && var.assured_workload_config == null ? 1 : 0
   display_name        = var.name
-  parent              = var.parent
+  parent              = lookup(local.ctx.parent_ids, var.parent, var.parent)
   deletion_protection = var.deletion_protection
 }
 
@@ -71,14 +71,15 @@ resource "google_compute_firewall_policy_association" "default" {
 }
 
 resource "google_assured_workloads_workload" "folder" {
-  count                     = (var.assured_workload_config != null && var.folder_create) ? 1 : 0
-  compliance_regime         = var.assured_workload_config.compliance_regime
-  display_name              = var.assured_workload_config.display_name
-  location                  = var.assured_workload_config.location
-  organization              = var.assured_workload_config.organization
-  enable_sovereign_controls = var.assured_workload_config.enable_sovereign_controls
-  labels                    = var.assured_workload_config.labels
-  partner                   = var.assured_workload_config.partner
+  count                        = (var.assured_workload_config != null && var.folder_create) ? 1 : 0
+  compliance_regime            = var.assured_workload_config.compliance_regime
+  display_name                 = var.assured_workload_config.display_name
+  location                     = var.assured_workload_config.location
+  organization                 = var.assured_workload_config.organization
+  enable_sovereign_controls    = var.assured_workload_config.enable_sovereign_controls
+  labels                       = var.assured_workload_config.labels
+  partner                      = var.assured_workload_config.partner
+  provisioned_resources_parent = local.aw_parent
   dynamic "partner_permissions" {
     for_each = try(var.assured_workload_config.partner_permissions, null) == null ? [] : [""]
     content {
@@ -87,9 +88,6 @@ resource "google_assured_workloads_workload" "folder" {
       service_access_approver      = var.assured_workload_config.partner_permissions.service_access_approver
     }
   }
-
-  provisioned_resources_parent = local.aw_parent
-
   resource_settings {
     display_name  = var.name
     resource_type = "CONSUMER_FOLDER"

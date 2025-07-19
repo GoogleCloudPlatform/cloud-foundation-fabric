@@ -1,4 +1,5 @@
-folder_id = 1234567890
+parent = "$parent_ids:organization"
+name   = "Test Context"
 context = {
   custom_roles = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
@@ -8,6 +9,9 @@ context = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
+  }
+  parent_ids = {
+    organization = "organizations/1234567890"
   }
   tag_values = {
     "test/one" = "tagValues/1234567890"
