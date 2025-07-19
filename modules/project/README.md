@@ -1072,14 +1072,6 @@ module "project" {
   factories_config = {
     tags = "data/tags"
   }
-  context = {
-    tag_keys = {
-      service = "tagKeys/1234567890"
-    }
-    tag_values = {
-      "service/nginx" = "tagValues/1234567890"
-    }
-  }
 }
 # tftest modules=1 resources=8 files=0,1 inventory=tags-factory.yaml
 ```

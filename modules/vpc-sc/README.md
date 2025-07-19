@@ -207,7 +207,6 @@ The caller must have `cloudasset.assets.searchAllResources` permission to perfor
 module "vpc-sc" {
   source                  = "./fabric/modules/vpc-sc"
   project_id_search_scope = var.org_id
-
   access_policy = "12345678"
   ingress_policies = {
     i1 = {
@@ -226,7 +225,6 @@ module "vpc-sc" {
       }
     }
   }
-
   perimeters = {
     p = {
       spec = {
@@ -252,16 +250,16 @@ JSON Schema files for each factory object are available in the [`schemas`](./sch
 module "test" {
   source        = "./fabric/modules/vpc-sc"
   access_policy = "12345678"
+  context = {
+    resource_sets = {
+      foo_projects = ["projects/321", "projects/654"]
+    }
+  }
   factories_config = {
     access_levels    = "data/access-levels"
     egress_policies  = "data/egress-policies"
     ingress_policies = "data/ingress-policies"
     perimeters       = "data/perimeters"
-    context = {
-      resource_sets = {
-        foo_projects = ["projects/321", "projects/654"]
-      }
-    }
   }
 }
 # tftest modules=1 resources=3 files=p1,a1,a2,e1,i1,i2 inventory=factory.yaml
