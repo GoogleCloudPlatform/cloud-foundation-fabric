@@ -90,8 +90,8 @@ module "prod-spoke-vpc" {
     inbound = true
     logging = local.prod_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/prod"
   }
   delete_default_routes_on_create   = true

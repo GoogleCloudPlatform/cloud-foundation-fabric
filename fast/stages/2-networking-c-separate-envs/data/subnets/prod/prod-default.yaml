@@ -3,6 +3,6 @@
 # yaml-language-server: $schema=../../../schemas/subnet.schema.json
 
 name: prod-default
-region: primary
+region: $regions:primary
 ip_cidr_range: 10.72.0.0/24
 description: Default subnet for prod

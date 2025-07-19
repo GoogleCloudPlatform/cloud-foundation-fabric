@@ -76,8 +76,8 @@ module "landing-vpc" {
     inbound = true
     logging = local.landing_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/landing"
   }
   firewall_policy_enforcement_order = local.landing_cfg.fw_order

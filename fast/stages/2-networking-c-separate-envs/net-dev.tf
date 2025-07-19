@@ -93,8 +93,8 @@ module "dev-spoke-vpc" {
     inbound = true
     logging = local.dev_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/dev"
   }
   firewall_policy_enforcement_order = local.dev_cfg.fw_order
