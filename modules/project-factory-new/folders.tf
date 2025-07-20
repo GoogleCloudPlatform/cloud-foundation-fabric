@@ -19,6 +19,14 @@
 # TODO: folder automation
 # TODO: add project sa to context
 
+locals {
+  folder_ids = merge(
+    { for k, v in module.folder-1 : k => v.id },
+    { for k, v in module.folder-2 : k => v.id },
+    { for k, v in module.folder-3 : k => v.id }
+  )
+}
+
 module "folder-1" {
   source = "../folder"
   for_each = {

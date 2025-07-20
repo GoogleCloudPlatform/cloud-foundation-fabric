@@ -21,7 +21,7 @@
 #     data_defaults = ...
 #   })
 # outputs:
-#   local.projects - map
+#   local._projects_output - map
 
 locals {
   __projects_config = {
@@ -147,7 +147,7 @@ locals {
       )
     )
   }
-  projects = {
+  _projects_output = {
     # Semantics of the merges are:
     #   - if data_overrides.<field> is not null, use this value
     #   - if  _projects_inputs.<field> is not null, use this value
@@ -333,7 +333,7 @@ locals {
   _projects_uniqueness_validation = {
     # will raise error, if the same project (derived from file name, or provided in the YAML file)
     # is used more than once
-    for k, v in local.projects :
+    for k, v in local._projects_input :
     "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
   }
 }
