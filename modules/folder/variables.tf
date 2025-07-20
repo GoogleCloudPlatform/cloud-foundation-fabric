@@ -79,9 +79,9 @@ variable "context" {
   description = "Context-specific interpolations."
   type = object({
     custom_roles   = optional(map(string), {})
+    folder_ids     = optional(map(string), {})
     iam_principals = optional(map(string), {})
     org_policies   = optional(map(map(string)), {})
-    parent_ids     = optional(map(string), {})
     tag_values     = optional(map(string), {})
   })
   default  = {}
@@ -165,7 +165,7 @@ variable "parent" {
   validation {
     condition = (
       var.parent == null ||
-      startswith(var.parent, "$parent_ids:") ||
+      startswith(var.parent, "$folder_ids:") ||
       can(regex("(organizations|folders)/[0-9]+", var.parent))
     )
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."

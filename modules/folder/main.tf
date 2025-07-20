@@ -45,7 +45,7 @@ locals {
 resource "google_folder" "folder" {
   count               = var.folder_create && var.assured_workload_config == null ? 1 : 0
   display_name        = var.name
-  parent              = lookup(local.ctx.parent_ids, var.parent, var.parent)
+  parent              = lookup(local.ctx.folder_ids, var.parent, var.parent)
   deletion_protection = var.deletion_protection
 }
 
