@@ -168,7 +168,7 @@ variable "parent" {
       startswith(var.parent, "$folder_ids:") ||
       can(regex("(organizations|folders)/[0-9]+", var.parent))
     )
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id, or map to a context variable via $folder_ids:."
   }
 }
 
