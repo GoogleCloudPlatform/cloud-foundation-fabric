@@ -169,9 +169,6 @@ variable "factories_config" {
       # TODO: allow defining notification channels via YAML files
       notification_channels = optional(map(any), {})
     }))
-    projects_config = optional(object({
-      key_ignores_path = optional(bool, false)
-    }), {})
   })
   nullable = false
 }

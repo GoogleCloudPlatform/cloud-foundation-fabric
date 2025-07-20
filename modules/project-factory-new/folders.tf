@@ -93,10 +93,10 @@ module "folder-3" {
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
-  # add level 1 folder ids to context
+  # add level 2 folder ids to context
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
-      for k, v in module.folder-1 : k => v.id
+      for k, v in module.folder-2 : k => v.id
     })
   })
 }
