@@ -20,3 +20,10 @@ iam_by_principals:
   "$iam_principals:security-admins":
     - roles/owner
     - roles/resourcemanager.projectCreator
+  "$iam_principals:service_accounts/prod-iac-core-0/iac-security-ro":
+    - roles/viewer
+    - roles/resourcemanager.folderViewer
+  "$iam_principals:service_accounts/prod-iac-core-0/iac-security-rw":
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator

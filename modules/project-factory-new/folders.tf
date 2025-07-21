@@ -17,7 +17,6 @@
 # tfdoc:file:description Folder hierarchy factory resources.
 
 # TODO: folder automation
-# TODO: add project sa to context
 
 locals {
   _folders_path = try(
