@@ -41,6 +41,9 @@ locals {
       }
     ]
   ])
+  projects_sas_iam_emails = {
+    for k, v in module.service-accounts : "service_accounts/${k}" => v.iam_email
+  }
 }
 
 module "service-accounts" {
@@ -53,11 +56,14 @@ module "service-accounts" {
   name         = each.value.name
   display_name = each.value.display_name
   context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, local.project_ids)
   })
   iam = lookup(each.value, "iam", {})
   iam_project_roles = merge(
     each.value.iam_project_roles,
-    coalesce(each.value.iam_self_roles, {})
+    {
+      "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
+    }
   )
 }
 
@@ -72,6 +78,12 @@ module "service_accounts-iam" {
   name                   = each.value.name
   service_account_create = false
   context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, local.project_ids)
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      local.projects_sas_iam_emails,
+      local.automation_sas_iam_emails
+    )
   })
   iam_sa_roles = each.value.iam_sa_roles
   # {

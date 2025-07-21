@@ -18,6 +18,47 @@ iam_by_principals:
   $iam_principals:org_admins:
     - roles/iam.serviceAccountTokenCreator
     - roles/iam.workloadIdentityPoolAdmin
+  $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro:
+    - roles/browser
+    - roles/cloudbuild.builds.viewer
+    - roles/iam.serviceAccountViewer
+    - roles/iam.workloadIdentityPoolViewer
+    - $custom_roles:storage_viewer
+    - roles/viewer
+  $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw:
+    - roles/cloudbuild.builds.editor
+    - roles/iam.serviceAccountAdmin
+    - roles/iam.workloadIdentityPoolAdmin
+    - roles/owner
+    - roles/storage.admin
+buckets:
+  iac-bootstrap-state:
+    description: Terraform state for the org-level automation.
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
+      roles/viewer:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
+  iac-outputs:
+    description: Terraform state for the org-level automation.
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
+      roles/viewer:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
+service_accounts:
+  iac-bootstrap-ro:
+    display_name: IaC service account for bootstrap (read-only).
+  iac-bootstrap-rw:
+    display_name: IaC service account for bootstrap (read-write).
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          values:
+            - https://token.actions.githubusercontent.com
+            - https://gitlab.com
+            - https://app.terraform.io
 services:
   - accesscontextmanager.googleapis.com
   - bigquery.googleapis.com

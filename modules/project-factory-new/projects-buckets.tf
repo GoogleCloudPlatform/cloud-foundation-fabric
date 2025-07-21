@@ -63,6 +63,12 @@ module "buckets" {
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, local.project_ids)
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      local.projects_sas_iam_emails,
+      local.automation_sas_iam_emails
+    )
   })
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})

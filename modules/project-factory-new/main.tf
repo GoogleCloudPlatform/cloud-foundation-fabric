@@ -19,3 +19,15 @@
 locals {
   ctx = var.context
 }
+
+resource "terraform_data" "defaults_preconditions" {
+  lifecycle {
+    precondition {
+      condition = (
+        var.data_defaults.storage_location != null ||
+        var.data_overrides.storage_location != null
+      )
+      error_message = "No default storage location defined in defaults or ovverides variables."
+    }
+  }
+}

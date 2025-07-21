@@ -571,7 +571,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -610,7 +610,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_/]+$"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -643,7 +643,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^roles/"
+            "pattern": "^(?:roles/|\\$custom_roles:)"
           }
         }
       }

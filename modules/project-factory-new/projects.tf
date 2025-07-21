@@ -38,6 +38,9 @@ locals {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
   }
+  project_ids = {
+    for k, v in module.projects : k => v.project_id
+  }
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -112,6 +115,11 @@ module "projects-iam" {
   }
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, local.folder_ids)
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      local.projects_sas_iam_emails,
+      local.automation_sas_iam_emails
+    )
   })
   iam                    = lookup(each.value, "iam", {})
   iam_bindings           = lookup(each.value, "iam_bindings", {})
