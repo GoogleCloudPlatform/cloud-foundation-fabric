@@ -1,10 +1,10 @@
 billing_account = {
-  id = "000000-111111-222222"
+  id           = "000000-111111-222222"
   is_org_level = false
   force_create = {
-     dataset    = true
-      project    = true
-      log_bucket = true
+    dataset    = true
+    project    = true
+    log_bucket = true
   }
 }
 essential_contacts = "gcp-organization-admins@fast.example.com"
