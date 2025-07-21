@@ -1604,6 +1604,7 @@ outputs:
       force_create:
         dataset: false
         project: false
+        log_bucket: false
       id: 000000-111111-222222
       is_org_level: true
       no_iam: false

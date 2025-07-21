@@ -13,68 +13,6 @@
 # limitations under the License.
 
 values:
-  google_iam_workload_identity_pool.default[0]:
-    description: null
-    disabled: null
-    display_name: null
-    project: fast-prod-iac-core-0
-    timeouts: null
-    workload_identity_pool_id: fast-bootstrap
-  google_iam_workload_identity_pool_provider.default["gh-test"]:
-    attribute_condition: attribute.repository_owner=="fast"
-    attribute_mapping:
-      attribute.actor: assertion.actor
-      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
-      attribute.ref: assertion.ref
-      attribute.repository: assertion.repository
-      attribute.repository_owner: assertion.repository_owner
-      attribute.sub: assertion.sub
-      google.subject: assertion.sub
-    aws: []
-    description: null
-    disabled: null
-    display_name: null
-    oidc:
-    - allowed_audiences: []
-      issuer_uri: https://token.actions.githubusercontent.com
-      jwks_json: null
-    project: fast-prod-iac-core-0
-    saml: []
-    timeouts: null
-    workload_identity_pool_id: fast-bootstrap
-    workload_identity_pool_provider_id: fast-bootstrap-gh-test
-    x509: []
-  google_iam_workload_identity_pool_provider.default["gl-test"]:
-    attribute_condition: attribute.namespace_path=="fast"
-    attribute_mapping:
-      attribute.environment: assertion.environment
-      attribute.environment_protected: assertion.environment_protected
-      attribute.namespace_id: assertion.namespace_id
-      attribute.namespace_path: assertion.namespace_path
-      attribute.pipeline_id: assertion.pipeline_id
-      attribute.pipeline_source: assertion.pipeline_source
-      attribute.project_id: assertion.project_id
-      attribute.project_path: assertion.project_path
-      attribute.ref: assertion.ref
-      attribute.ref_protected: assertion.ref_protected
-      attribute.ref_type: assertion.ref_type
-      attribute.repository: assertion.project_path
-      attribute.sub: assertion.sub
-      google.subject: assertion.sub
-    aws: []
-    description: null
-    disabled: null
-    display_name: null
-    oidc:
-    - allowed_audiences: []
-      issuer_uri: https://gitlab.com
-      jwks_json: null
-    project: fast-prod-iac-core-0
-    saml: []
-    timeouts: null
-    workload_identity_pool_id: fast-bootstrap
-    workload_identity_pool_provider_id: fast-bootstrap-gl-test
-    x509: []
   module.automation-project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: fast-prod-iac-core-0
   module.automation-project.data.google_storage_project_service_account.gcs_sa[0]:
@@ -522,6 +460,7 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -557,8 +496,7 @@ values:
     timeouts: null
   ? module.automation-tf-bootstrap-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
-    members:
-    - serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-bootstrap-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -576,139 +514,12 @@ values:
     timeouts: null
   module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
     condition: []
-    members:
-    - serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-bootstrap-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
   : bucket: fast-prod-iac-core-outputs-0
     condition: []
     role: roles/storage.admin
-  ? module.automation-tf-cicd-r-sa["bootstrap"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["bootstrap"].google_service_account.service_account[0]:
-    account_id: fast-prod-bootstrap-1r
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD bootstrap service account (read-only).
-    email: fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-bootstrap-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  ? module.automation-tf-cicd-r-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-r-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
-  ? module.automation-tf-cicd-r-sa["resman"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["resman"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-1r
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD resman service account (read-only).
-    email: fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  ? module.automation-tf-cicd-r-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-r-sa["resman"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
-  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-tenants-1r
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD resman-tenants service account (read-only).
-    email: fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-r-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
-  ? module.automation-tf-cicd-sa["bootstrap"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["bootstrap"].google_service_account.service_account[0]:
-    account_id: fast-prod-bootstrap-1
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD bootstrap service account.
-    email: fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-bootstrap-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  ? module.automation-tf-cicd-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
-  ? module.automation-tf-cicd-sa["resman"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["resman"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-1
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD resman service account.
-    email: fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  module.automation-tf-cicd-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
-    condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-sa["resman"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
-  ? module.automation-tf-cicd-sa["resman-tenants"].google_project_iam_member.project-roles["fast-prod-iac-core-0-roles/logging.logWriter"]
-  : condition: []
-    project: fast-prod-iac-core-0
-    role: roles/logging.logWriter
-  module.automation-tf-cicd-sa["resman-tenants"].google_service_account.service_account[0]:
-    account_id: fast-prod-resman-tenants-1
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform CI/CD resman-tenants service account.
-    email: fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    project: fast-prod-iac-core-0
-    timeouts: null
-  ? module.automation-tf-cicd-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-  ? module.automation-tf-cicd-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.objectViewer"]
-  : bucket: fast-prod-iac-core-outputs-0
-    condition: []
-    role: roles/storage.objectViewer
   module.automation-tf-output-gcs.google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -720,6 +531,7 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -746,6 +558,7 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -793,9 +606,7 @@ values:
     timeouts: null
   module.automation-tf-resman-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
     condition: []
-    members:
-    - serviceAccount:fast-prod-resman-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast-prod-resman-tenants-1r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-resman-r-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-organizations/123456789012/roles/storageViewer"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -813,9 +624,7 @@ values:
     timeouts: null
   module.automation-tf-resman-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
     condition: []
-    members:
-    - serviceAccount:fast-prod-resman-1@fast-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:fast-prod-resman-tenants-1@fast-prod-iac-core-0.iam.gserviceaccount.com
+    members: null
     role: roles/iam.serviceAccountTokenCreator
   ? module.automation-tf-resman-sa.google_storage_bucket_iam_member.bucket-roles["fast-prod-iac-core-outputs-0-roles/storage.admin"]
   : bucket: fast-prod-iac-core-outputs-0
@@ -832,6 +641,7 @@ values:
     encryption: []
     force_destroy: false
     hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -896,6 +706,61 @@ values:
   : bucket: fast-prod-iac-core-outputs-0
     condition: []
     role: roles/storage.admin
+  module.billing-account-logbucket[0].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: billing-account
+    cmek_settings: []
+    enable_analytics: true
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-prod-audit-logs-0
+    retention_days: 30
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.admin-group:gcp-billing-admins@fast.example.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: group:gcp-billing-admins@fast.example.com
+    role: roles/billing.admin
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.admin-group:gcp-organization-admins@fast.example.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: group:gcp-organization-admins@fast.example.com
+    role: roles/billing.admin
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.admin
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.admin
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.viewer
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.viewer
+  ? module.billing-account[0].google_billing_account_iam_member.bindings["roles/logging.configWriter-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : billing_account_id: 000000-111111-222222
+    condition: []
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.configWriter
+  module.billing-account[0].google_logging_billing_account_sink.sink["billing_bucket_log_sink"]:
+    billing_account: 000000-111111-222222
+    description: billing-account sink (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: null
+    name: billing_bucket_log_sink
+  module.billing-account[0].google_project_iam_member.bucket-sinks-binding["billing_bucket_log_sink"]:
+    condition:
+    - title: billing_bucket_log_sink bucket writer
+    role: roles/logging.bucketWriter
   module.billing-export-dataset[0].google_bigquery_dataset.default:
     dataset_id: billing_export
     default_encryption_configuration: []
@@ -1903,15 +1768,6 @@ values:
     - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/serviceusage.serviceUsageViewer
-  module.organization.google_organization_iam_binding.bindings["organization_billing_conditional"]:
-    condition:
-    - description: Automation service account delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/billing.admin','roles/billing.costsManager','roles/billing.user'])
-      title: automation_sa_delegated_grants
-    members:
-    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: organizations/123456789012/roles/organizationIamAdmin
   module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
     condition:
     - description: Automation service account delegated grants.
@@ -1946,6 +1802,14 @@ values:
     role_id: billingViewer
     stage: GA
     title: Custom role billingViewer
+  module.organization.google_organization_iam_custom_role.roles["dns_zone_binder"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - dns.networks.bindPrivateDNSZone
+    role_id: dnsZoneBinder
+    stage: GA
+    title: Custom role dnsZoneBinder
   module.organization.google_organization_iam_custom_role.roles["gcve_network_admin"]:
     description: Terraform-managed.
     org_id: '123456789012'
@@ -1968,6 +1832,31 @@ values:
     role_id: gcveNetworkViewer
     stage: GA
     title: Custom role gcveNetworkViewer
+  module.organization.google_organization_iam_custom_role.roles["kms_key_encryption_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - cloudkms.cryptoKeyVersions.get
+    - cloudkms.cryptoKeyVersions.list
+    - cloudkms.cryptoKeys.get
+    - cloudkms.cryptoKeys.getIamPolicy
+    - cloudkms.cryptoKeys.list
+    - cloudkms.cryptoKeys.setIamPolicy
+    role_id: kmsKeyEncryptionAdmin
+    stage: GA
+    title: Custom role kmsKeyEncryptionAdmin
+  module.organization.google_organization_iam_custom_role.roles["kms_key_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - cloudkms.cryptoKeyVersions.get
+    - cloudkms.cryptoKeyVersions.list
+    - cloudkms.cryptoKeys.get
+    - cloudkms.cryptoKeys.getIamPolicy
+    - cloudkms.cryptoKeys.list
+    role_id: kmsKeyViewer
+    stage: GA
+    title: Custom role kmsKeyViewer
   module.organization.google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
     description: Terraform-managed.
     org_id: '123456789012'
@@ -2170,36 +2059,6 @@ values:
     member: serviceAccount:fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/accesscontextmanager.policyReader
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-group:gcp-billing-admins@fast.example.com"]
-  : condition: []
-    member: group:gcp-billing-admins@fast.example.com
-    org_id: '123456789012'
-    role: roles/billing.admin
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-group:gcp-organization-admins@fast.example.com"]
-  : condition: []
-    member: group:gcp-organization-admins@fast.example.com
-    org_id: '123456789012'
-    role: roles/billing.admin
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
-  : condition: []
-    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/billing.admin
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
-  : condition: []
-    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/billing.admin
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
-  : condition: []
-    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/billing.viewer
-  ? module.organization.google_organization_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
-  : condition: []
-    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '123456789012'
-    role: roles/billing.viewer
   ? module.organization.google_organization_iam_member.bindings["roles/cloudasset.viewer-serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
   : condition: []
     member: serviceAccount:fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com
@@ -2311,223 +2170,3 @@ values:
     description: Managed by the Terraform organization module.
     short_name: allowed-policy-member-domains-all
     timeouts: null
-
-counts:
-  google_bigquery_dataset: 1
-  google_bigquery_default_service_account: 3
-  google_essential_contacts_contact: 3
-  google_iam_workload_identity_pool: 1
-  google_iam_workload_identity_pool_provider: 2
-  google_logging_organization_settings: 1
-  google_logging_organization_sink: 4
-  google_logging_project_bucket_config: 4
-  google_org_policy_custom_constraint: 1
-  google_org_policy_policy: 38
-  google_organization_iam_binding: 26
-  google_organization_iam_custom_role: 16
-  google_organization_iam_member: 31
-  google_project: 3
-  google_project_iam_audit_config: 1
-  google_project_iam_binding: 19
-  google_project_iam_member: 23
-  google_project_service: 33
-  google_project_service_identity: 8
-  google_service_account: 12
-  google_service_account_iam_binding: 12
-  google_storage_bucket: 4
-  google_storage_bucket_iam_binding: 4
-  google_storage_bucket_iam_member: 12
-  google_storage_bucket_object: 14
-  google_storage_project_service_account: 3
-  google_tags_tag_key: 1
-  google_tags_tag_value: 2
-  local_file: 13
-  modules: 26
-  resources: 295
-
-outputs:
-  custom_roles:
-    billing_viewer: organizations/123456789012/roles/billingViewer
-    dns_zone_binder: organizations/123456789012/roles/dnsZoneBinder
-    gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
-    gcve_network_viewer: organizations/123456789012/roles/gcveNetworkViewer
-    kms_key_encryption_admin: organizations/123456789012/roles/kmsKeyEncryptionAdmin
-    kms_key_viewer: organizations/123456789012/roles/kmsKeyViewer
-    network_firewall_policies_admin: organizations/123456789012/roles/networkFirewallPoliciesAdmin
-    ngfw_enterprise_admin: organizations/123456789012/roles/ngfwEnterpriseAdmin
-    ngfw_enterprise_viewer: organizations/123456789012/roles/ngfwEnterpriseViewer
-    organization_admin_viewer: organizations/123456789012/roles/organizationAdminViewer
-    organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
-    project_iam_viewer: organizations/123456789012/roles/projectIamViewer
-    service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
-    storage_viewer: organizations/123456789012/roles/storageViewer
-    tag_viewer: organizations/123456789012/roles/tagViewer
-    tenant_network_admin: organizations/123456789012/roles/tenantNetworkAdmin
-  outputs_bucket: fast-prod-iac-core-outputs-0
-  project_ids:
-    automation: fast-prod-iac-core-0
-    billing-export: fast-prod-billing-exp-0
-    log-export: fast-prod-audit-logs-0
-  providers:
-    0-bootstrap: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for bootstrap\n"
-    0-bootstrap-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-bootstrap-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for bootstrap\n"
-    1-resman: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for resman\n"
-    1-resman-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
-      \ }\n}\nprovider \"google\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for resman\n"
-    1-resman-resman-tenants: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under\
-      \ the Apache License, Version 2.0 (the \"License\");\n * you may not use this\
-      \ file except in compliance with the License.\n * You may obtain a copy of the\
-      \ License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n *\
-      \ Unless required by applicable law or agreed to in writing, software\n * distributed\
-      \ under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES\
-      \ OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License\
-      \ for the specific language governing permissions and\n * limitations under\
-      \ the License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket        \
-      \              = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
-      \  prefix = \"addons/resman-tenants\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for 1-resman-resman-tenants\n"
-    1-resman-resman-tenants-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed\
-      \ under the Apache License, Version 2.0 (the \"License\");\n * you may not use\
-      \ this file except in compliance with the License.\n * You may obtain a copy\
-      \ of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n\
-      \ *\n * Unless required by applicable law or agreed to in writing, software\n\
-      \ * distributed under the License is distributed on an \"AS IS\" BASIS,\n *\
-      \ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n\
-      \ * See the License for the specific language governing permissions and\n *\
-      \ limitations under the License.\n */\n\nterraform {\n  backend \"gcs\" {\n\
-      \    bucket                      = \"fast-prod-iac-core-resman-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n \
-      \   prefix = \"addons/resman-tenants\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for 1-resman-resman-tenants\n"
-    1-vpcsc: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n   \
-      \ prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for vpcsc\n"
-    1-vpcsc-r: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"fast-prod-iac-core-vpcsc-0\"\n    impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n  \
-      \  prefix = \"vpcsc\"\n  }\n}\nprovider \"google\" {\n  impersonate_service_account\
-      \ = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\n}\n\
-      provider \"google-beta\" {\n  impersonate_service_account = \"fast-prod-vpcsc-0r@fast-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n\n# end provider.tf for vpcsc\n"
-  service_accounts:
-    bootstrap: fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-    resman: fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-  tfvars_globals:
-    billing_account:
-      force_create:
-        dataset: false
-        project: false
-        log_bucket: false
-      id: 000000-111111-222222
-      is_org_level: true
-      no_iam: false
-    environments:
-      dev:
-        is_default: false
-        key: dev
-        name: Development
-        short_name: dev
-        tag_name: development
-      prod:
-        is_default: true
-        key: prod
-        name: Production
-        short_name: prod
-        tag_name: production
-    groups:
-      gcp-billing-admins: group:gcp-billing-admins@fast.example.com
-      gcp-devops: group:gcp-devops@fast.example.com
-      gcp-network-admins: group:gcp-vpc-network-admins@fast.example.com
-      gcp-organization-admins: group:gcp-organization-admins@fast.example.com
-      gcp-secops-admins: group:gcp-security-admins@fast.example.com
-      gcp-security-admins: group:gcp-security-admins@fast.example.com
-      gcp-support: group:gcp-support@example.com
-    locations:
-      bq: EU
-      gcs: EU
-      logging: global
-      pubsub: []
-    organization:
-      customer_id: C00000000
-      domain: fast.example.com
-      id: 123456789012
-    prefix: fast
-  workforce_identity_pool:
-    pool: null
-  workload_identity_pool: __missing__
