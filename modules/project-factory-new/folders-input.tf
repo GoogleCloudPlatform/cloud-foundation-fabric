@@ -37,6 +37,13 @@ locals {
       key        = key
       level      = length(split("/", key))
       parent_key = dirname(key)
+      parent = try( # type: string, nullable
+        coalesce(
+          local.data_defaults.overrides.parent,
+          try(data.parent, null),
+          local.data_defaults.defaults.parent
+        ), null
+      )
     })
   }
 }

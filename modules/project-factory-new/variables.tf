@@ -32,7 +32,7 @@ variable "context" {
 }
 
 variable "data_defaults" {
-  description = "Optional default values used when corresponding project data from files are missing."
+  description = "Optional default values used when corresponding project or folder data from files are missing."
   type = object({
     billing_account = optional(string)
     bucket = optional(object({

@@ -22,7 +22,7 @@ locals {
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => merge(
-        { parent = dirname(f) == "." ? "default" : dirname(f) },
+        { parent = dirname(f) == "." ? null : dirname(f) },
         yamldecode(file("${local._folders_path}/${f}"))
       ) if !endswith(f, "/.config.yaml")
     }
@@ -35,10 +35,6 @@ locals {
   #     }
   #   ]
   # ])
-  _projects_config = {
-    data_defaults  = var.data_defaults
-    data_overrides = var.data_overrides
-  }
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
     basename(k) => v

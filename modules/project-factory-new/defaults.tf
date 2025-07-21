@@ -15,17 +15,18 @@
  */
 
 # inputs:
-#   local._projects_input - raw projects data
-#   local._projects_config = object({
-#     data_overrides = ...
-#     data_defaults = ...
-#   })
+#   local._projects_input: raw projects data
 # outputs:
-#   local._projects_output - map
+#   local.data_defaults: normalized defaults/overrides
+#   local._projects_output: normalized project data
 
 locals {
-  __projects_config = {
-    data_defaults = merge(
+  _data_defaults = {
+    defaults  = try(var.data_defaults, {})
+    overrides = try(var.data_overrides, {})
+  }
+  data_defaults = {
+    defaults = merge(
       {
         billing_account = null
         contacts        = {}
@@ -37,7 +38,7 @@ locals {
             org_policies  = null
             quotas        = null
           },
-          try(local._projects_config.data_defaults.factories_config, {
+          try(local._data_defaults.defaults.factories_config, {
             custom_roles  = null
             observability = null
             org_policies  = null
@@ -54,7 +55,7 @@ locals {
             use_data_source = true
             attributes      = null
           },
-          try(local._projects_config.data_defaults.project_reuse, {
+          try(local._data_defaults.defaults.project_reuse, {
             use_data_source = true
             attributes      = null
             }
@@ -72,7 +73,7 @@ locals {
             service_iam_grants       = []
             network_subnet_users     = {}
           },
-          try(local._projects_config.data_defaults.shared_vpc_service_config, {
+          try(local._data_defaults.defaults.shared_vpc_service_config, {
             host_project             = null
             iam_bindings_additive    = {}
             network_users            = []
@@ -91,7 +92,7 @@ locals {
             perimeter_name = null
             is_dry_run     = false
           },
-          try(local._projects_config.data_defaults.vpc_sc, {
+          try(local._data_defaults.defaults.vpc_sc, {
             perimeter_name = null
             is_dry_run     = false
             }
@@ -100,11 +101,11 @@ locals {
         logging_data_access = {}
       },
       try(
-        local._projects_config.data_defaults, {}
+        local._data_defaults.defaults, {}
       )
     )
     # data_overrides default to null's, to mark that they should not override
-    data_overrides = merge({
+    overrides = merge({
       billing_account = null
       contacts        = null
       deletion_policy = null
@@ -115,7 +116,7 @@ locals {
           org_policies  = null
           quotas        = null
         },
-        try(local._projects_config.data_overrides.factories_config, {
+        try(local._data_defaults.overrides.factories_config, {
           custom_roles  = null
           observability = null
           org_policies  = null
@@ -136,14 +137,14 @@ locals {
             perimeter_name = null
             is_dry_run     = false
           },
-          local._projects_config.data_overrides.vpc_sc
+          local._data_defaults.overrides.vpc_sc
         ),
         null
       )
       logging_data_access = null
       },
       try(
-        local._projects_config.data_overrides, {}
+        local._data_defaults.overrides, {}
       )
     )
   }
@@ -157,48 +158,48 @@ locals {
     # the same in _projects_input to prevent falling back to default value
     for k, v in local._projects_input : k => merge(v, {
       billing_account = try(coalesce( # type: string
-        local.__projects_config.data_overrides.billing_account,
+        local.data_defaults.overrides.billing_account,
         try(v.billing_account, null),
-        local.__projects_config.data_defaults.billing_account
+        local.data_defaults.defaults.billing_account
       ), null)
       deletion_policy = try(coalesce( # type: string
-        local.__projects_config.data_overrides.deletion_policy,
+        local.data_defaults.overrides.deletion_policy,
         try(v.deletion_policy, null),
-        local.__projects_config.data_defaults.deletion_policy
+        local.data_defaults.defaults.deletion_policy
       ), null)
       contacts = coalesce( # type: map
-        local.__projects_config.data_overrides.contacts,
+        local.data_defaults.overrides.contacts,
         try(v.contacts, null),
-        local.__projects_config.data_defaults.contacts
+        local.data_defaults.defaults.contacts
       )
       factories_config = {  # type: object
         custom_roles = try( # type: string
           coalesce(
-            local.__projects_config.data_overrides.factories_config.custom_roles,
+            local.data_defaults.overrides.factories_config.custom_roles,
             try(v.factories_config.custom_roles, null),
-            local.__projects_config.data_defaults.factories_config.custom_roles
+            local.data_defaults.defaults.factories_config.custom_roles
           ),
           null
         )
         observability = try( # type: string
           coalesce(
-            local.__projects_config.data_overrides.factories_config.observability,
+            local.data_defaults.overrides.factories_config.observability,
             try(v.factories_config.observability, null),
-            local.__projects_config.data_defaults.factories_config.observability
+            local.data_defaults.defaults.factories_config.observability
           ),
         null)
         org_policies = try( # type: string
           coalesce(
-            local.__projects_config.data_overrides.factories_config.org_policies,
+            local.data_defaults.overrides.factories_config.org_policies,
             try(v.factories_config.org_policies, null),
-            local.__projects_config.data_defaults.factories_config.org_policies
+            local.data_defaults.defaults.factories_config.org_policies
           ),
         null)
         quotas = try( # type: string
           coalesce(
-            local.__projects_config.data_overrides.factories_config.quotas,
+            local.data_defaults.overrides.factories_config.quotas,
             try(v.factories_config.quotas, null),
-            local.__projects_config.data_defaults.factories_config.quotas
+            local.data_defaults.defaults.factories_config.quotas
           ),
         null)
       }
@@ -209,26 +210,26 @@ locals {
       iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
       labels = coalesce(                                                 # type: map(string)
         try(v.labels, null),
-        local.__projects_config.data_defaults.labels
+        local.data_defaults.defaults.labels
       )
       metric_scopes = coalesce( # type: list(string)
         try(v.metric_scopes, null),
-        local.__projects_config.data_defaults.metric_scopes
+        local.data_defaults.defaults.metric_scopes
       )
       name         = lookup(v, "name", basename(k)) # type: string
       org_policies = try(v.org_policies, {})        # type: map(object({...}))
       parent = try(                                 # type: string, nullable
         coalesce(
-          local.__projects_config.data_overrides.parent,
+          local.data_defaults.overrides.parent,
           try(v.parent, null),
-          local.__projects_config.data_defaults.parent
+          local.data_defaults.defaults.parent
         ), null
       )
       prefix = try( # type: string, nullable
         coalesce(
-          local.__projects_config.data_overrides.prefix,
+          local.data_defaults.overrides.prefix,
           try(v.prefix, null),
-          local.__projects_config.data_defaults.prefix
+          local.data_defaults.defaults.prefix
         ), null
       )
       project_reuse = ( # type: object({...})
@@ -240,17 +241,17 @@ locals {
           },
           v.project_reuse
         )
-        : local.__projects_config.data_defaults.project_reuse
+        : local.data_defaults.defaults.project_reuse
       )
       service_encryption_key_ids = coalesce( # type: map(list(string))
-        local.__projects_config.data_overrides.service_encryption_key_ids,
+        local.data_defaults.overrides.service_encryption_key_ids,
         try(v.service_encryption_key_ids, null),
-        local.__projects_config.data_defaults.service_encryption_key_ids
+        local.data_defaults.defaults.service_encryption_key_ids
       )
       services = coalesce( # type: list(string)
-        local.__projects_config.data_overrides.services,
+        local.data_defaults.overrides.services,
         try(v.services, null),
-        local.__projects_config.data_defaults.services
+        local.data_defaults.defaults.services
       )
       shared_vpc_host_config = ( # type: object({...})
         try(v.shared_vpc_host_config, null) != null
@@ -274,12 +275,12 @@ locals {
           },
           v.shared_vpc_service_config
         )
-        : local.__projects_config.data_defaults.shared_vpc_service_config
+        : local.data_defaults.defaults.shared_vpc_service_config
       )
       tag_bindings = coalesce( # type: map(string)
-        local.__projects_config.data_overrides.tag_bindings,
+        local.data_defaults.overrides.tag_bindings,
         try(v.tag_bindings, null),
-        local.__projects_config.data_defaults.tag_bindings
+        local.data_defaults.defaults.tag_bindings
       )
       tags = {
         for tag_name, tag_data in try(v.tags, {}) : tag_name => {
@@ -307,8 +308,8 @@ locals {
         }
       }
       vpc_sc = (
-        local.__projects_config.data_overrides.vpc_sc != null
-        ? local.__projects_config.data_overrides.vpc_sc
+        local.data_defaults.overrides.vpc_sc != null
+        ? local.data_defaults.overrides.vpc_sc
         : (
           try(v.vpc_sc, null) != null
           ? merge(
@@ -318,13 +319,13 @@ locals {
             },
             v.vpc_sc
           )
-          : local.__projects_config.data_defaults.vpc_sc
+          : local.data_defaults.defaults.vpc_sc
         )
       )
       logging_data_access = coalesce( # type: map(object({...}))
-        local.__projects_config.data_overrides.logging_data_access,
+        local.data_defaults.overrides.logging_data_access,
         try(v.logging_data_access, null),
-        local.__projects_config.data_defaults.logging_data_access
+        local.data_defaults.defaults.logging_data_access
       )
       quotas = try(v.quotas, {})
     })
@@ -333,7 +334,7 @@ locals {
   _projects_uniqueness_validation = {
     # will raise error, if the same project (derived from file name, or provided in the YAML file)
     # is used more than once
-    for k, v in local._projects_input :
+    for k, v in local._projects_output :
     "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
   }
 }
