@@ -34,7 +34,6 @@ module "folder-1" {
   }
   parent              = each.value.parent
   name                = each.value.name
-  iam                 = lookup(each.value, "iam", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
@@ -48,6 +47,7 @@ module "folder-1-iam" {
   }
   id                    = module.folder-1[each.key].id
   folder_create         = false
+  iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
@@ -63,7 +63,6 @@ module "folder-2" {
     each.value, "parent", module.folder-1[each.value.parent_key].id
   )
   name                = each.value.name
-  iam                 = lookup(each.value, "iam", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
@@ -82,6 +81,7 @@ module "folder-2-iam" {
   }
   id                    = module.folder-2[each.key].id
   folder_create         = false
+  iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
@@ -97,7 +97,6 @@ module "folder-3" {
     each.value, "parent", module.folder-1[each.value.parent_key].id
   )
   name                = each.value.name
-  iam                 = lookup(each.value, "iam", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
@@ -116,6 +115,7 @@ module "folder-3-iam" {
   }
   id                    = module.folder-3[each.key].id
   folder_create         = false
+  iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})

@@ -65,11 +65,32 @@ module "projects" {
     each.value.services,
     var.data_merges.services
   ))
-  shared_vpc_host_config = each.value.shared_vpc_host_config
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
   tags   = each.value.tags
   vpc_sc = each.value.vpc_sc
   quotas = each.value.quotas
+}
+
+module "projects-iam" {
+  source   = "../project"
+  for_each = local.projects_input
+  name     = module.projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name             = module.projects[each.key].name
+      number           = module.projects[each.key].number
+      services_enabled = module.projects[each.key].services
+    }
+  }
+  context = merge(local.ctx, {
+    folder_ids = merge(local.ctx.folder_ids, local.folder_ids)
+  })
+  iam                    = lookup(each.value, "iam", {})
+  iam_bindings           = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive  = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals      = lookup(each.value, "iam_by_principals", {})
+  shared_vpc_host_config = each.value.shared_vpc_host_config
 }
