@@ -16,6 +16,31 @@
 
 # TODO: add project sa to context
 
+locals {
+  # project data from folders tree
+  _folder_projects_raw = (
+    {
+      for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
+      trimsuffix(f, ".yaml") => merge(
+        { parent = dirname(f) == "." ? null : dirname(f) },
+        yamldecode(file("${local._folders_path}/${f}"))
+      ) if !endswith(f, "/.config.yaml")
+    }
+  )
+  _projects_input = {
+    for k, v in merge(local._folder_projects_raw, local._projects_raw) :
+    basename(k) => v
+  }
+  _projects_path = try(
+    pathexpand(var.factories_config.projects_data_path), null
+  )
+  _projects_raw = {
+    for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+  }
+  projects_input = merge(var.projects, local._projects_output)
+}
+
 module "projects" {
   source              = "../project"
   for_each            = local.projects_input

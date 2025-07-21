@@ -20,11 +20,40 @@
 # TODO: add project sa to context
 
 locals {
+  _folders_path = try(
+    pathexpand(var.factories_config.folders_data_path), null
+  )
+  _folders_files = try(
+    fileset(local._folders_path, "**/**/.config.yaml"),
+    []
+  )
+  _folders_raw = merge(
+    var.folders,
+    {
+      for f in local._folders_files : dirname(f) => yamldecode(file(
+        "${coalesce(var.factories_config.folders_data_path, "-")}/${f}"
+      ))
+    }
+  )
   folder_ids = merge(
     { for k, v in module.folder-1 : k => v.id },
     { for k, v in module.folder-2 : k => v.id },
     { for k, v in module.folder-3 : k => v.id }
   )
+  folders_input = {
+    for key, data in local._folders_raw : key => merge(data, {
+      key        = key
+      level      = length(split("/", key))
+      parent_key = dirname(key)
+      parent = try( # type: string, nullable
+        coalesce(
+          local.data_defaults.overrides.parent,
+          try(data.parent, null),
+          local.data_defaults.defaults.parent
+        ), null
+      )
+    })
+  }
 }
 
 module "folder-1" {
