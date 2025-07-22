@@ -4,6 +4,66 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project"
+      ],
+      "properties": {
+        "prefix": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "bucket": {
+          "$ref": "#/$defs/bucket"
+        },
+        "service_accounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z0-9-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "iam_billing_roles": {
+                  "$ref": "#/$defs/iam_billing_roles"
+                },
+                "iam_folder_roles": {
+                  "$ref": "#/$defs/iam_folder_roles"
+                },
+                "iam_organization_roles": {
+                  "$ref": "#/$defs/iam_organization_roles"
+                },
+                "iam_project_roles": {
+                  "$ref": "#/$defs/iam_project_roles"
+                },
+                "iam_sa_roles": {
+                  "$ref": "#/$defs/iam_sa_roles"
+                },
+                "iam_storage_roles": {
+                  "$ref": "#/$defs/iam_storage_roles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
@@ -111,6 +171,48 @@
     }
   },
   "$defs": {
+    "bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "force_destroy": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "uniform_bucket_level_access": {
+          "type": "boolean"
+        },
+        "versioning": {
+          "type": "boolean"
+        }
+      }
+    },
     "iam": {
       "type": "object",
       "additionalProperties": false,
@@ -214,6 +316,78 @@
           "items": {
             "type": "string",
             "pattern": "^roles/"
+          }
+        }
+      }
+    },
+    "iam_billing_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_folder_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_organization_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_project_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_sa_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_storage_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

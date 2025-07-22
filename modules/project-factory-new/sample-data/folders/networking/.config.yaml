@@ -16,6 +16,11 @@
 
 parent: "$folder_ids:default"
 name: Networking
+automation:
+  project: prod-iac-core-0
+  service_accounts:
+    iac-networking-ro: {}
+    iac-networking-rw: {}
 iam_by_principals:
   "$iam_principals:network-admins":
     - roles/owner

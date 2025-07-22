@@ -95,3 +95,12 @@ services:
   - storage-component.googleapis.com
   - storage.googleapis.com
   - sts.googleapis.com
+automation:
+  project: test-prj
+  bucket:
+    description: foo bar baz
+  service_accounts:
+    ro:
+      description: bar baz foo
+    rw:
+      description: baz bar foo

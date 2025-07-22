@@ -15,44 +15,74 @@
  */
 
 locals {
-  automation_buckets = {
-    for k, v in local.projects_input :
-    k => merge(try(v.automation.bucket, {}), {
-      automation_project = v.automation.project
-      prefix = coalesce(
-        try(v.automation.prefix, null),
-        "${v.prefix}-${v.name}"
-      )
-      project_name = v.name
-    }) if try(v.automation.bucket, null) != null
-  }
-  automation_sa = flatten([
-    for k, v in local.projects_input : [
-      for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
-        automation_project = v.automation.project
-        name               = ks
-        prefix = coalesce(
-          try(v.automation.prefix, null),
-          "${v.prefix}-${v.name}"
-        )
-        project      = k
-        project_name = v.name
-      })
+  automation_buckets = merge(
+    {
+      for k, v in local.folders_input : k => merge(
+        try(v.automation.bucket, {}), {
+          automation_project = v.automation.project
+          name               = lookup(v, "name", "iac-${replace(k, "/", "-")}")
+          prefix = try(coalesce(
+            try(v.automation.prefix, null),
+            local.data_defaults.overrides.prefix,
+            local.data_defaults.defaults.prefix
+          ), null)
+        }
+      ) if try(v.automation.bucket, null) != null
+    },
+    {
+      for k, v in local.projects_input : k => merge(
+        try(v.automation.bucket, {}), {
+          automation_project = v.automation.project
+          name               = lookup(v, "name", k)
+          prefix = coalesce(
+            try(v.automation.prefix, null),
+            v.prefix == null ? v.name : "${v.prefix}-${v.name}"
+          )
+        }
+      ) if try(v.automation.bucket, null) != null
+    }
+  )
+  automation_sa = flatten(concat(
+    [
+      for k, v in local.folders_input : [
+        for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
+          automation_project = v.automation.project
+          name               = ks
+          parent             = k
+          prefix             = null
+        })
+      ]
+    ],
+    [
+      for k, v in local.projects_input : [
+        for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
+          automation_project = v.automation.project
+          name               = ks
+          parent             = k
+          prefix = coalesce(
+            try(v.automation.prefix, null),
+            v.prefix == null ? v.name : "${v.prefix}-${v.name}"
+          )
+        })
+      ]
     ]
-  ])
+  ))
   automation_sas_iam_emails = {
-    for k, v in module.automation-service-accounts : "automation/service_accounts/${k}" => v.iam_email
+    for k, v in module.automation-service-accounts : "service_accounts/${k}" => v.iam_email
   }
 }
 
 module "automation-bucket" {
-  source   = "../gcs"
-  for_each = local.automation_buckets
+  source = "../gcs"
+  for_each = {
+    for k, v in local.automation_buckets :
+    "${v.automation_project}/${v.name}" => v
+  }
   # we cannot use interpolation here as we would get a cycle
   # from the IAM dependency in the outputs of the main project
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
-  name           = "tf-state"
+  name           = each.value.name
   encryption_key = lookup(each.value, "encryption_key", null)
   force_destroy = try(coalesce(
     local.data_defaults.overrides.bucket.force_destroy,
@@ -89,7 +119,8 @@ module "automation-bucket" {
 module "automation-service-accounts" {
   source = "../iam-service-account"
   for_each = {
-    for k in local.automation_sa : "${k.project}/automation/${k.name}" => k
+    for k in local.automation_sa :
+    "${k.automation_project}/${k.name}" => k
   }
   # we cannot use interpolation here as we would get a cycle
   # from the IAM dependency in the outputs of the main project
@@ -100,7 +131,7 @@ module "automation-service-accounts" {
   display_name = lookup(
     each.value,
     "display_name",
-    "Service account ${each.value.name} for ${each.value.project}."
+    "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
     project_ids = merge(local.ctx.project_ids, local.project_ids)
