@@ -237,6 +237,9 @@ module "projects-iam" {
       module.service-accounts[k].iam_email,
       # other automation service account (project/automation/rw)
       local.context.iam_principals[k],
+      # project's service identities
+      local.service_agents_email["${each.key}/${k}"],
+      local.service_agents_email[k],
       # passthrough + error handling using tonumber until Terraform gets fail/raise function
       (
         strcontains(k, ":")
