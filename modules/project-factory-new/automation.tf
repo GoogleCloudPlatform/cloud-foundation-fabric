@@ -93,7 +93,8 @@ module "automation-bucket" {
     project_ids = merge(local.ctx.project_ids, local.project_ids)
     iam_principals = merge(
       local.ctx.iam_principals,
-      local.projects_sas_iam_emails
+      local.projects_sas_iam_emails,
+      local.automation_sas_iam_emails
     )
   })
   iam                   = lookup(each.value, "iam", {})

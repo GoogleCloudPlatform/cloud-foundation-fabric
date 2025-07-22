@@ -51,10 +51,6 @@ service_accounts:
     display_name: IaC service account for bootstrap (read-only).
   iac-bootstrap-rw:
     display_name: IaC service account for bootstrap (read-write).
-  iac-networking-ro:
-    display_name: IaC service account for networking (read-only).
-  iac-networking-rw:
-    display_name: IaC service account for networking (read-write).
   iac-security-ro:
     display_name: IaC service account for security (read-only).
   iac-security-rw:
@@ -96,7 +92,7 @@ services:
   - storage.googleapis.com
   - sts.googleapis.com
 automation:
-  project: test-prj
+  project: dev-iac-test-0
   bucket:
     description: foo bar baz
   service_accounts:
