@@ -72,5 +72,15 @@ variable "repositories" {
       license        = optional(string)
       readme         = optional(string)
     }))
+    branch_rules = optional(map(object({
+      disabled                  = optional(bool, false)
+      include_pattern           = string
+      require_pull_request      = optional(bool)
+      minimum_approvals_count   = optional(number)
+      minimum_reviews_count     = optional(number)
+      require_comments_resolved = optional(bool)
+      allow_stale_reviews       = optional(bool)
+      require_linear_history    = optional(bool)
+    })), {})
   }))
 }
