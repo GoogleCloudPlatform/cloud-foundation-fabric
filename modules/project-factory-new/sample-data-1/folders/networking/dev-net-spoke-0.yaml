@@ -12,11 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/folder.schema.json
+# yaml-language-server: $schema=../../../schemas/project.schema.json
 
-parent: "$folder_ids:default"
-name: Services
-iam_by_principals:
-  "$iam_principals:devops":
-    - roles/owner
-    - roles/resourcemanager.projectCreator
+iam_bindings_additive:
+  vm_default_logging:
+    member: "$iam_principals:service_accounts/dev-net-spoke-0/vm-default"
+    role: roles/logging.logWriter
+  vm_default_monitoring:
+    member: "$iam_principals:service_accounts/dev-net-spoke-0/vm-default"
+    role: roles/monitoring.metricWriter
+service_accounts:
+  vm-default:
+    display_name: VM default service account.
+services:
+  - compute.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+shared_vpc_host_config:
+  enabled: true

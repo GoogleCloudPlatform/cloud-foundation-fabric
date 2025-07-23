@@ -175,6 +175,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -217,7 +220,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|\\$custom_roles:)": {
           "type": "array",
           "items": {
             "type": "string",

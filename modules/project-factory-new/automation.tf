@@ -15,71 +15,72 @@
  */
 
 locals {
-  automation_buckets = merge(
+  _automation = merge(
     {
-      for k, v in local.folders_input : k => merge(
-        try(v.automation.bucket, {}), {
-          automation_project = v.automation.project
-          name               = lookup(v, "name", "iac-${replace(k, "/", "-")}")
-          prefix = try(coalesce(
-            try(v.automation.prefix, null),
-            local.data_defaults.overrides.prefix,
-            local.data_defaults.defaults.prefix
-          ), null)
-        }
-      ) if try(v.automation.bucket, null) != null
+      for k, v in local.folders_input : k => {
+        bucket           = try(v.automation.bucket, {})
+        parent_type      = "folder"
+        prefix           = try(v.automation.prefix, null)
+        project          = try(v.automation.project, null)
+        service_accounts = try(v.automation.service_accounts, {})
+      } if try(v.automation.bucket, null) != null
     },
     {
-      for k, v in local.projects_input : k => merge(
-        try(v.automation.bucket, {}), {
-          automation_project = v.automation.project
-          name               = lookup(v, "name", k)
-          prefix = coalesce(
-            try(v.automation.prefix, null),
-            v.prefix == null ? v.name : "${v.prefix}-${v.name}"
-          )
-        }
-      ) if try(v.automation.bucket, null) != null
+      for k, v in local.projects_input : k => {
+        bucket      = try(v.automation.bucket, {})
+        parent_type = "project"
+        prefix = coalesce(
+          try(v.automation.prefix, null),
+          v.prefix == null ? v.name : "${v.prefix}-${v.name}"
+        )
+        project          = try(v.automation.project, null)
+        service_accounts = try(v.automation.service_accounts, {})
+      } if try(v.automation.bucket, null) != null
     }
   )
-  automation_sa = flatten(concat(
-    [
-      for k, v in local.folders_input : [
-        for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
-          automation_project = v.automation.project
-          name               = ks
-          parent             = k
-          prefix             = null
-        })
-      ]
-    ],
-    [
-      for k, v in local.projects_input : [
-        for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
-          automation_project = v.automation.project
-          name               = ks
-          parent             = k
-          prefix = coalesce(
-            try(v.automation.prefix, null),
-            v.prefix == null ? v.name : "${v.prefix}-${v.name}"
-          )
-        })
-      ]
+  _automation_buckets = {
+    for k, v in local._automation : k => merge(v.bucket, {
+      automation_project = v.project
+      name               = lookup(v, "name", "iac-${replace(k, "/", "-")}")
+      # project automation always has a prefix
+      prefix = try(coalesce(
+        v.prefix,
+        local.data_defaults.overrides.prefix,
+        local.data_defaults.defaults.prefix
+      ), null)
+    })
+  }
+  _automation_sas = flatten(concat([
+    for k, v in local._automation : [
+      for sk, sv in v.service_accounts : merge(sv, {
+        automation_project = v.project
+        name               = sk
+        parent             = k
+        prefix             = v.prefix
+      })
     ]
-  ))
+  ]))
+  automation_buckets = {
+    for k, v in local._automation_buckets :
+    "${k}/${v.name}" => v
+  }
+  automation_sas = {
+    for k in local._automation_sas :
+    "${k.parent}/${k.name}" => k
+  }
   automation_sas_iam_emails = {
-    for k, v in module.automation-service-accounts : "service_accounts/${k}" => v.iam_email
+    for k, v in local.automation_sas :
+    "service_accounts/${v.parent}/${v.name}" => module.automation-service-accounts[k].iam_email
   }
 }
 
+output "foo" {
+  value = local.project_ids
+}
+
 module "automation-bucket" {
-  source = "../gcs"
-  for_each = {
-    for k, v in local.automation_buckets :
-    "${v.automation_project}/${v.name}" => v
-  }
-  # we cannot use interpolation here as we would get a cycle
-  # from the IAM dependency in the outputs of the main project
+  source         = "../gcs"
+  for_each       = local.automation_buckets
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
   name           = each.value.name
@@ -90,7 +91,7 @@ module "automation-bucket" {
     local.data_defaults.defaults.force_destroy,
   ), null)
   context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, local.project_ids)
+    project_ids = local.project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
@@ -118,13 +119,8 @@ module "automation-bucket" {
 }
 
 module "automation-service-accounts" {
-  source = "../iam-service-account"
-  for_each = {
-    for k in local.automation_sa :
-    "${k.automation_project}/${k.name}" => k
-  }
-  # we cannot use interpolation here as we would get a cycle
-  # from the IAM dependency in the outputs of the main project
+  source      = "../iam-service-account"
+  for_each    = local.automation_sas
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
   name        = each.value.name
@@ -135,7 +131,7 @@ module "automation-service-accounts" {
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, local.project_ids)
+    project_ids = local.project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails

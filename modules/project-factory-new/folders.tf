@@ -44,13 +44,8 @@ locals {
       key        = key
       level      = length(split("/", key))
       parent_key = dirname(key)
-      parent = try( # type: string, nullable
-        coalesce(
-          local.data_defaults.overrides.parent,
-          try(data.parent, null),
-          local.data_defaults.defaults.parent
-        ), null
-      )
+      # do not enforce overrides / defaults on folders
+      parent = lookup(data, "parent", null)
     })
   }
 }
@@ -60,7 +55,7 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  parent              = each.value.parent
+  parent              = coalesce(each.value.parent, "$folder_ids:default")
   name                = each.value.name
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
@@ -93,14 +88,19 @@ module "folder-2" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  parent = lookup(
-    each.value, "parent", module.folder-1[each.value.parent_key].id
+  parent = coalesce(
+    each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
   name                = each.value.name
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
-  context             = local.ctx
+  context = merge(local.ctx, {
+    folder_ids = merge(local.ctx.folder_ids, {
+      for k, v in module.folder-1 : k => v.id
+    })
+  })
+  depends_on = [module.folder-1]
 }
 
 module "folder-2-iam" {
@@ -131,14 +131,19 @@ module "folder-3" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  parent = lookup(
-    each.value, "parent", module.folder-1[each.value.parent_key].id
+  parent = coalesce(
+    each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
   name                = each.value.name
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
-  context             = local.ctx
+  context = merge(local.ctx, {
+    folder_ids = merge(local.ctx.folder_ids, {
+      for k, v in module.folder-2 : k => v.id
+    })
+  })
+  depends_on = [module.folder-2]
 }
 
 module "folder-3-iam" {

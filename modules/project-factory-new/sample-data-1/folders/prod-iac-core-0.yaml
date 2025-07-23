@@ -15,7 +15,7 @@
 # yaml-language-server: $schema=../../schemas/project.schema.json
 
 iam_by_principals:
-  $iam_principals:org_admins:
+  $iam_principals:org-admins:
     - roles/iam.serviceAccountTokenCreator
     - roles/iam.workloadIdentityPoolAdmin
   $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro:
@@ -37,24 +37,24 @@ buckets:
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
-      roles/viewer:
+      $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
   iac-outputs:
     description: Terraform state for the org-level automation.
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
-      roles/viewer:
+      $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
 service_accounts:
   iac-bootstrap-ro:
     display_name: IaC service account for bootstrap (read-only).
   iac-bootstrap-rw:
     display_name: IaC service account for bootstrap (read-write).
-  iac-security-ro:
-    display_name: IaC service account for security (read-only).
-  iac-security-rw:
-    display_name: IaC service account for security (read-write).
+  iac-vpcsc-ro:
+    display_name: IaC service account for vpc-sc (read-only).
+  iac-vpcsc-rw:
+    display_name: IaC service account for vpc-sc (read-write).
 org_policies:
   iam.workloadIdentityPoolProviders:
     rules:
@@ -91,12 +91,3 @@ services:
   - storage-component.googleapis.com
   - storage.googleapis.com
   - sts.googleapis.com
-automation:
-  project: dev-iac-test-0
-  bucket:
-    description: foo bar baz
-  service_accounts:
-    ro:
-      description: bar baz foo
-    rw:
-      description: baz bar foo

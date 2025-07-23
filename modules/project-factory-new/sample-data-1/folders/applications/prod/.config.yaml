@@ -12,23 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/folder.schema.json
+# yaml-language-server: $schema=../../../../schemas/folder.schema.json
 
-parent: "$folder_ids:default"
-name: Networking
-automation:
-  project: prod-iac-core-0
-  service_accounts:
-    iac-networking-ro: {}
-    iac-networking-rw: {}
+name: Development
 iam_by_principals:
-  "$iam_principals:network-admins":
-    - roles/owner
-    - roles/resourcemanager.projectCreator
-  "$iam_principals:service_accounts/prod-iac-core-0/iac-networking-ro":
+  "$iam_principals:app0-devs":
     - roles/viewer
-    - roles/resourcemanager.folderViewer
-  "$iam_principals:service_accounts/prod-iac-core-0/iac-networking-rw":
-    - roles/owner
-    - roles/resourcemanager.folderAdmin
-    - roles/resourcemanager.projectCreator

@@ -22,7 +22,7 @@ locals {
     {
       for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => merge(
-        { parent = dirname(f) == "." ? null : dirname(f) },
+        { parent = dirname(f) == "." ? null : "$folder_ids:${dirname(f)}" },
         yamldecode(file("${local._folders_path}/${f}"))
       ) if !endswith(f, "/.config.yaml")
     }
@@ -38,9 +38,10 @@ locals {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
   }
-  project_ids = {
+  _project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  project_ids    = merge(local.ctx.project_ids, local._project_ids)
   projects_input = merge(var.projects, local._projects_output)
 }
 
