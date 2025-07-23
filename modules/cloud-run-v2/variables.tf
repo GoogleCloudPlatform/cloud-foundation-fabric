@@ -125,6 +125,31 @@ variable "iam" {
   default     = {}
 }
 
+variable "iap_config" {
+  description = "If present, turns on Identity-Aware Proxy (IAP) for the Cloud Run service."
+  type = object({
+    iam          = optional(list(string), [])
+    iam_additive = optional(list(string), [])
+  })
+  default = null
+
+  validation {
+    condition = !(length(try(var.iap_config.iam, [])) > 0 && length(try(var.iap_config.iam_additive, [])) > 0)
+
+    error_message = "Providing both 'iam' and 'iam_additive' in iap_config is not supported."
+  }
+
+  validation {
+    condition     = var.iap_config == null || !var.create_job
+    error_message = "IAP is only supported for Cloud Run services, not Cloud Run jobs. Set create_job to false when using iap_config."
+  }
+
+  validation {
+    condition     = var.iap_config == null || var.launch_stage != "GA"
+    error_message = "iap is currently not supported in GA. Set launch_stage to 'BETA' or lower."
+  }
+}
+
 variable "ingress" {
   description = "Ingress settings."
   type        = string

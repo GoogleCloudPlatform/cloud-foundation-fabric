@@ -1,0 +1,238 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.hierarchy-folder-lvl-1["team-a"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team A
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-1["team-b"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team B
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-a/dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-a/dev"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/development
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-a/prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-a/prod"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/production
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-b/dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-b/dev"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/development
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-b/prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-2["team-b/prod"].google_tags_tag_binding.binding["environment"]:
+    tag_value: environment/production
+    timeouts: null
+  module.projects-iam["dev-ta-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: test-pf-dev-net-spoke-0
+    service_project: test-pf-dev-ta-0
+    timeouts: null
+  module.projects-iam["dev-ta-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects-iam["dev-tb-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: test-pf-dev-net-spoke-0
+    service_project: test-pf-dev-tb-0
+    timeouts: null
+  module.projects-iam["dev-tb-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects-iam["prod-ta-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: prod-spoke-0
+    service_project: test-pf-prod-ta-0
+    timeouts: null
+  module.projects-iam["prod-ta-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: prod-spoke-0
+    role: roles/compute.networkUser
+  module.projects-iam["prod-tb-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: prod-spoke-0
+    service_project: test-pf-prod-tb-0
+    timeouts: null
+  module.projects-iam["prod-tb-0"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]:
+    condition: []
+    member: group:gcp-devops@example.org
+    project: prod-spoke-0
+    role: roles/compute.networkUser
+  module.projects["dev-ta-0"].google_essential_contacts_contact.contact["admin-default@example.org"]:
+    email: admin-default@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-dev-ta-0
+    timeouts: null
+  module.projects["dev-ta-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 1245-5678-9012
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-pf-dev-ta-0
+    project_id: test-pf-dev-ta-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["dev-ta-0"].google_project_service.project_services["default-service.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-0
+    service: default-service.googleapis.com
+    timeouts: null
+  module.projects["dev-ta-0"].google_tags_tag_binding.binding["name1"]:
+    tag_value: default-id1
+    timeouts: null
+  module.projects["dev-ta-0"].google_tags_tag_binding.binding["name2"]:
+    tag_value: default-id2
+    timeouts: null
+  module.projects["dev-tb-0"].google_essential_contacts_contact.contact["admin-default@example.org"]:
+    email: admin-default@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-dev-tb-0
+    timeouts: null
+  module.projects["dev-tb-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 1245-5678-9012
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-pf-dev-tb-0
+    project_id: test-pf-dev-tb-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["dev-tb-0"].google_project_service.project_services["default-service.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-0
+    service: default-service.googleapis.com
+    timeouts: null
+  module.projects["dev-tb-0"].google_tags_tag_binding.binding["name1"]:
+    tag_value: default-id1
+    timeouts: null
+  module.projects["dev-tb-0"].google_tags_tag_binding.binding["name2"]:
+    tag_value: default-id2
+    timeouts: null
+  module.projects["prod-ta-0"].google_essential_contacts_contact.contact["admin-default@example.org"]:
+    email: admin-default@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-prod-ta-0
+    timeouts: null
+  module.projects["prod-ta-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 1245-5678-9012
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-pf-prod-ta-0
+    project_id: test-pf-prod-ta-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["prod-ta-0"].google_project_service.project_services["default-service.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-prod-ta-0
+    service: default-service.googleapis.com
+    timeouts: null
+  module.projects["prod-ta-0"].google_tags_tag_binding.binding["name1"]:
+    tag_value: default-id1
+    timeouts: null
+  module.projects["prod-ta-0"].google_tags_tag_binding.binding["name2"]:
+    tag_value: default-id2
+    timeouts: null
+  module.projects["prod-tb-0"].google_essential_contacts_contact.contact["admin-default@example.org"]:
+    email: admin-default@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-prod-tb-0
+    timeouts: null
+  module.projects["prod-tb-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 1245-5678-9012
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-pf-prod-tb-0
+    project_id: test-pf-prod-tb-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["prod-tb-0"].google_project_service.project_services["default-service.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-prod-tb-0
+    service: default-service.googleapis.com
+    timeouts: null
+  module.projects["prod-tb-0"].google_tags_tag_binding.binding["name1"]:
+    tag_value: default-id1
+    timeouts: null
+  module.projects["prod-tb-0"].google_tags_tag_binding.binding["name2"]:
+    tag_value: default-id2
+    timeouts: null
+
+counts:
+  google_compute_shared_vpc_service_project: 4
+  google_essential_contacts_contact: 4
+  google_folder: 6
+  google_project: 4
+  google_project_iam_member: 4
+  google_project_service: 4
+  google_tags_tag_binding: 12
+  modules: 14
+  resources: 38

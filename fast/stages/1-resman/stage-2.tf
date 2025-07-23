@@ -43,6 +43,9 @@ locals {
             branch = try(v.cicd_config.repository.branch, null)
             type   = try(v.cicd_config.repository.type, "github")
           })
+          workflows_config = {
+            extra_files = try(v.cicd_config.workflows_config.extra_files, [])
+          }
         }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
           name                  = v.folder_config.name
@@ -89,6 +92,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -105,6 +109,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -126,6 +131,7 @@ locals {
             condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -196,7 +202,7 @@ module "stage2-folder" {
   }
   org_policies = each.value.folder_config.org_policies
   tag_bindings = merge({
-    context = local.tag_values["context/${each.key}"].id
+    (var.tag_names.context) = local.tag_values["${var.tag_names.context}/${each.key}"].id
     }, {
     for k, v in each.value.folder_config.tag_bindings : k => try(
       local.tag_values[v].id, v
@@ -213,7 +219,7 @@ module "stage2-folder-env" {
   parent   = module.stage2-folder[each.value.stage].id
   name     = each.value.name
   tag_bindings = {
-    environment = try(
+    (var.tag_names.environment) = try(
       local.tag_values["${var.tag_names.environment}/${each.value.tag_name}"].id,
       null
     )

@@ -41,6 +41,8 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy configuration."
   type = object({
+    name                             = optional(string)
+    description                      = optional(string, "Terraform managed.")
     certificate_manager_certificates = optional(list(string), [])
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)

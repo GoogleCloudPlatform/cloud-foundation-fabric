@@ -43,7 +43,9 @@ locals {
       ip_cidr_range = v.ip_cidr_range
       ipv6 = !can(v.ipv6) ? null : {
         access_type = try(v.ipv6.access_type, "INTERNAL")
+        ipv6_only   = try(v.ipv6.ipv6_only, false)
       }
+      ip_collection       = try(v.ip_collection, null)
       name                = try(v.name, k)
       region              = v.region_computed
       secondary_ip_ranges = try(v.secondary_ip_ranges, null)
@@ -145,21 +147,29 @@ resource "google_compute_subnetwork" "subnetwork" {
   network                          = local.network.name
   name                             = each.value.name
   region                           = each.value.region
-  ip_cidr_range                    = each.value.ip_cidr_range
+  ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
     ? "Terraform-managed."
     : each.value.description
   )
   private_ip_google_access = each.value.enable_private_access
   stack_type = (
-    try(each.value.ipv6, null) != null ? "IPV4_IPV6" : null
+    try(each.value.ipv6, null) != null
+    ? (
+      try(each.value.ipv6.ipv6_only, false)
+      ? "IPV6_ONLY"
+      : "IPV4_IPV6"
+    )
+    : null
   )
   ipv6_access_type = (
     try(each.value.ipv6, null) != null ? each.value.ipv6.access_type : null
   )
   private_ipv6_google_access       = try(each.value.ipv6.enable_private_access, null)
+  ip_collection                    = each.value.ip_collection
   send_secondary_ip_range_if_empty = true
 
   dynamic "secondary_ip_range" {
@@ -192,9 +202,11 @@ resource "google_compute_subnetwork" "proxy_only" {
   name          = each.value.name
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  description = coalesce(
-    each.value.description,
-    "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
+  description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
+    each.value.description == null
+    ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
+    : each.value.description
   )
   purpose = each.value.global ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
   role    = each.value.active ? "ACTIVE" : "BACKUP"
@@ -207,9 +219,11 @@ resource "google_compute_subnetwork" "private_nat" {
   name          = each.value.name
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  description = coalesce(
-    each.value.description,
-    "Terraform-managed private NAT subnet."
+  description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
+    each.value.description == null
+    ? "Terraform-managed private NAT subnet."
+    : each.value.description
   )
   purpose = "PRIVATE_NAT"
 }
@@ -221,9 +235,11 @@ resource "google_compute_subnetwork" "psc" {
   name          = each.value.name
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  description = coalesce(
-    each.value.description,
-    "Terraform-managed subnet for Private Service Connect (PSC NAT)."
+  description = (
+    # Set description to an empty string (eg "") to create subnet without a description.
+    each.value.description == null
+    ? "Terraform-managed subnet for Private Service Connect (PSC NAT)."
+    : each.value.description
   )
   purpose = "PRIVATE_SERVICE_CONNECT"
 }

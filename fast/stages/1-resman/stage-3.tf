@@ -42,6 +42,9 @@ locals {
             branch = try(v.cicd_config.repository.branch, null)
             type   = try(v.cicd_config.repository.type, "github")
           })
+          workflows_config = {
+            extra_files = try(v.cicd_config.workflows_config.extra_files, [])
+          }
         }
         folder_config = lookup(v, "folder_config", null) == null ? null : {
           name                  = v.folder_config.name
@@ -78,6 +81,7 @@ locals {
             condition = vv.condition == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -94,6 +98,7 @@ locals {
             condition = vv.condition == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
+                custom_roles = var.custom_roles
                 organization = var.organization
                 tag_names    = var.tag_names
                 tag_root     = local.tag_root
@@ -152,7 +157,7 @@ module "stage3-folder" {
   org_policies      = each.value.folder_config.org_policies
   tag_bindings = merge(
     {
-      environment = local.tag_values["environment/${var.environments[each.value.environment].tag_name}"].id
+      (var.tag_names.environment) = local.tag_values["${var.tag_names.environment}/${var.environments[each.value.environment].tag_name}"].id
     },
     {
       for k, v in each.value.folder_config.tag_bindings : k => try(

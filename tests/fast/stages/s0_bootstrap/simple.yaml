@@ -956,20 +956,6 @@ values:
     resource_types:
     - accesscontextmanager.googleapis.com/ServicePerimeter
     timeouts: null
-  module.organization.google_org_policy_custom_constraint.constraint["custom.disableKubeletReadOnlyPort"]:
-    action_type: DENY
-    condition: resource.nodeConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled
-      == true
-    description: Disallows the use of Kubelet read-only port 10255 to enhance security
-    display_name: Disable Kubelet Read-Only Port 10255
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.disableKubeletReadOnlyPort
-    parent: organizations/123456789012
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
   module.organization.google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
     dry_run_spec: []
     name: organizations/123456789012/policies/cloudbuild.disableCreateDefaultServiceAccount
@@ -1562,10 +1548,10 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
-  google_org_policy_custom_constraint: 2
-  google_org_policy_policy: 39
+  google_org_policy_custom_constraint: 1
+  google_org_policy_policy: 38
   google_organization_iam_binding: 26
-  google_organization_iam_custom_role: 13
+  google_organization_iam_custom_role: 16
   google_organization_iam_member: 31
   google_project: 3
   google_project_iam_audit_config: 1
@@ -1584,14 +1570,17 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 257
+  resources: 258
 
 outputs:
   cicd_repositories: {}
   custom_roles:
     billing_viewer: organizations/123456789012/roles/billingViewer
+    dns_zone_binder: organizations/123456789012/roles/dnsZoneBinder
     gcve_network_admin: organizations/123456789012/roles/gcveNetworkAdmin
     gcve_network_viewer: organizations/123456789012/roles/gcveNetworkViewer
+    kms_key_encryption_admin: organizations/123456789012/roles/kmsKeyEncryptionAdmin
+    kms_key_viewer: organizations/123456789012/roles/kmsKeyViewer
     network_firewall_policies_admin: organizations/123456789012/roles/networkFirewallPoliciesAdmin
     ngfw_enterprise_admin: organizations/123456789012/roles/ngfwEnterpriseAdmin
     ngfw_enterprise_viewer: organizations/123456789012/roles/ngfwEnterpriseViewer
@@ -1615,6 +1604,7 @@ outputs:
       force_create:
         dataset: false
         project: false
+        log_bucket: false
       id: 000000-111111-222222
       is_org_level: true
       no_iam: false

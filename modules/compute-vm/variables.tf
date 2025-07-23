@@ -295,7 +295,12 @@ variable "network_interfaces" {
       internal = optional(string)
       external = optional(string)
     }), null)
+    network_tier = optional(string)
   }))
+  validation {
+    condition     = alltrue([for v in var.network_interfaces : contains(["STANDARD", "PREMIUM"], coalesce(v.network_tier, "PREMIUM"))])
+    error_message = "Allowed values for network tier are: 'STANDARD' or 'PREMIUM'"
+  }
 }
 
 variable "network_tag_bindings" {

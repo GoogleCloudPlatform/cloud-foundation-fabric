@@ -18,6 +18,9 @@ variable "data_defaults" {
   description = "Optional default values used when corresponding project data from files are missing."
   type = object({
     billing_account = optional(string)
+    bucket = optional(object({
+      force_destroy = optional(bool)
+    }), {})
     contacts        = optional(map(list(string)), {})
     deletion_policy = optional(string)
     factories_config = optional(object({
@@ -41,7 +44,16 @@ variable "data_defaults" {
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project             = string
+      host_project = string
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
       network_users            = optional(list(string), [])
       service_agent_iam        = optional(map(list(string)), {})
       service_agent_subnet_iam = optional(map(list(string)), {})
@@ -94,6 +106,9 @@ variable "data_overrides" {
   type = object({
     # data overrides default to null to mark that they should not override
     billing_account = optional(string)
+    bucket = optional(object({
+      force_destroy = optional(bool)
+    }), {})
     contacts        = optional(map(list(string)))
     deletion_policy = optional(string)
     factories_config = optional(object({
@@ -131,6 +146,8 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
+    folders_data_path  = optional(string)
+    projects_data_path = optional(string)
     budgets = optional(object({
       billing_account   = string
       budgets_data_path = string
@@ -138,16 +155,18 @@ variable "factories_config" {
       notification_channels = optional(map(any), {})
     }))
     context = optional(object({
-      # TODO: add KMS keys
+      custom_roles          = optional(map(string), {})
       folder_ids            = optional(map(string), {})
       iam_principals        = optional(map(string), {})
+      kms_keys              = optional(map(string), {})
       perimeters            = optional(map(string), {})
       tag_values            = optional(map(string), {})
       vpc_host_projects     = optional(map(string), {})
       notification_channels = optional(map(string), {})
     }), {})
-    folders_data_path  = optional(string)
-    projects_data_path = optional(string)
+    projects_config = optional(object({
+      key_ignores_path = optional(bool, false)
+    }), {})
   })
   nullable = false
 }
@@ -233,6 +252,7 @@ variable "factories_data" {
         bucket = optional(object({
           location                    = string
           description                 = optional(string)
+          force_destroy               = optional(bool)
           prefix                      = optional(string)
           storage_class               = optional(string, "STANDARD")
           uniform_bucket_level_access = optional(bool, true)
@@ -292,6 +312,7 @@ variable "factories_data" {
       buckets = optional(map(object({
         location                    = string
         description                 = optional(string)
+        force_destroy               = optional(bool)
         prefix                      = optional(string)
         storage_class               = optional(string, "STANDARD")
         uniform_bucket_level_access = optional(bool, true)

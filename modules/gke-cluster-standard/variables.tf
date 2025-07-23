@@ -28,7 +28,8 @@ variable "access_config" {
         global_access       = optional(bool, true)
       }))
     }))
-    private_nodes = optional(bool, true)
+    master_ipv4_cidr_block = optional(string)
+    private_nodes          = optional(bool, true)
   })
   nullable = false
   default  = {}
@@ -412,6 +413,23 @@ variable "node_locations" {
   type        = list(string)
   default     = []
   nullable    = false
+}
+
+variable "node_pool_auto_config" {
+  description = "Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters."
+  type = object({
+    cgroup_mode                   = optional(string)
+    kubelet_readonly_port_enabled = optional(bool, true)
+    network_tags                  = optional(list(string), [])
+    resource_manager_tags         = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition = contains(["CGROUPMODE_UNSPECIFIED", "CGROUPMODE_V1", "CGROUPMODE_V2"],
+    coalesce(var.node_pool_auto_config.cgroup_mode, "CGROUPMODE_UNSPECIFIED"))
+    error_message = "node_pool_auto_config.cgroup_mode must be CGROUPMODE_UNSPECIFIED, CGROUPMODE_V1 or CGROUPMODE_V2"
+  }
 }
 
 variable "project_id" {

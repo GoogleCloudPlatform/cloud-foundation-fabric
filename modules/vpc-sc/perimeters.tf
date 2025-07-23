@@ -20,6 +20,14 @@ locals {
   egress_policies  = merge(local.data.egress_policies, var.egress_policies)
   ingress_policies = merge(local.data.ingress_policies, var.ingress_policies)
   perimeters       = merge(local.data.perimeters, var.perimeters)
+  _undefined_egress_policies = {
+    for k, v in local.perimeters :
+    k => setsubtract(concat(try(v.spec.egress_policies, []), try(v.status.egress_policies, [])), keys(local.egress_policies))
+  }
+  _undefined_ingress_policies = {
+    for k, v in local.perimeters :
+    k => setsubtract(concat(try(v.spec.ingress_policies, []), try(v.status.ingress_policies, [])), keys(local.ingress_policies))
+  }
 }
 
 resource "google_access_context_manager_service_perimeter" "regular" {
@@ -54,8 +62,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       ])
 
       dynamic "egress_policies" {
-        for_each = spec.value.egress_policies == null ? [] : [
-          for k in spec.value.egress_policies :
+        for_each = [
+          for k in coalesce(spec.value.egress_policies, []) :
           merge(local.egress_policies[k], { key = k })
         ]
         iterator = policy
@@ -135,8 +143,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "ingress_policies" {
-        for_each = spec.value.ingress_policies == null ? [] : [
-          for k in spec.value.ingress_policies :
+        for_each = [
+          for k in coalesce(spec.value.ingress_policies, []) :
           merge(local.ingress_policies[k], { key = k })
         ]
         iterator = policy
@@ -241,8 +249,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       ])
 
       dynamic "egress_policies" {
-        for_each = status.value.egress_policies == null ? [] : [
-          for k in status.value.egress_policies :
+        for_each = [
+          for k in coalesce(status.value.egress_policies, []) :
           merge(local.egress_policies[k], { key = k })
         ]
         iterator = policy
@@ -321,8 +329,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       }
 
       dynamic "ingress_policies" {
-        for_each = status.value.ingress_policies == null ? [] : [
-          for k in status.value.ingress_policies :
+        for_each = [
+          for k in coalesce(status.value.ingress_policies, []) :
           merge(local.ingress_policies[k], { key = k })
         ]
         iterator = policy
@@ -404,6 +412,16 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         }
       }
 
+    }
+  }
+  lifecycle {
+    precondition {
+      condition     = length(local._undefined_ingress_policies[each.key]) == 0
+      error_message = "Undefined ingress policies: ${join(", ", local._undefined_ingress_policies[each.key])}"
+    }
+    precondition {
+      condition     = length(local._undefined_egress_policies[each.key]) == 0
+      error_message = "Undefined egress policies: ${join(", ", local._undefined_egress_policies[each.key])}"
     }
   }
   depends_on = [

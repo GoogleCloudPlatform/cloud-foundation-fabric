@@ -49,8 +49,8 @@ resource "google_compute_backend_service" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  name                            = "${var.name}-${each.key}"
-  description                     = var.description
+  name                            = coalesce(each.value.name, "${var.name}-${each.key}")
+  description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   compression_mode                = each.value.compression_mode
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
@@ -78,6 +78,7 @@ resource "google_compute_backend_service" "default" {
     for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
+      preference      = backend.value.preferred ? "PREFERRED" : null
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description

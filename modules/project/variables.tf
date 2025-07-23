@@ -47,6 +47,12 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "default_network_tier" {
+  description = "Default compute network tier for the project."
+  type        = string
+  default     = null
+}
+
 variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"
@@ -84,9 +90,12 @@ variable "factories_config" {
     observability = optional(string)
     org_policies  = optional(string)
     quotas        = optional(string)
+    tags          = optional(string)
     context = optional(object({
       notification_channels = optional(map(string), {})
       org_policies          = optional(map(map(string)), {})
+      tag_keys              = optional(map(string), {})
+      tag_values            = optional(map(string), {})
     }), {})
   })
   nullable = false
@@ -228,7 +237,16 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project             = string
+    host_project = string
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
     network_users            = optional(list(string), [])
     service_agent_iam        = optional(map(list(string)), {})
     service_agent_subnet_iam = optional(map(list(string)), {})
