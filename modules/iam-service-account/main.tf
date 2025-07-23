@@ -26,14 +26,15 @@ locals {
     ? "serviceAccount:${local.service_account.email}"
     : local.static_iam_email
   )
-  name   = split("@", var.name)[0]
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  name       = split("@", var.name)[0]
+  prefix     = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   static_email = (
     "${local.prefix}${local.name}@${local.sa_domain}.iam.gserviceaccount.com"
   )
   static_iam_email = "serviceAccount:${local.static_email}"
   static_id = (
-    "projects/${var.project_id}/serviceAccounts/${local.static_email}"
+    "projects/${local.project_id}/serviceAccounts/${local.static_email}"
   )
   service_account = (
     var.service_account_create
@@ -41,8 +42,8 @@ locals {
     : try(data.google_service_account.service_account[0], null)
   )
   # universe-related locals
-  universe               = try(regex("^([^:]*):[a-z]", var.project_id)[0], "")
-  project_id_no_universe = element(split(":", var.project_id), 1)
+  universe               = try(regex("^([^:]*):[a-z]", local.project_id)[0], "")
+  project_id_no_universe = element(split(":", local.project_id), 1)
   sa_domain = join(".", compact([
     local.project_id_no_universe, local.universe
   ]))
@@ -50,13 +51,13 @@ locals {
 
 data "google_service_account" "service_account" {
   count      = var.service_account_create ? 0 : 1
-  project    = var.project_id
+  project    = local.project_id
   account_id = "${local.prefix}${local.name}"
 }
 
 resource "google_service_account" "service_account" {
   count                        = var.service_account_create ? 1 : 0
-  project                      = var.project_id
+  project                      = local.project_id
   account_id                   = "${local.prefix}${local.name}"
   display_name                 = var.display_name
   description                  = var.description

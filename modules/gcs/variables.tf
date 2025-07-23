@@ -42,6 +42,7 @@ variable "context" {
   type = object({
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
+    project_ids    = optional(map(string), {})
   })
   default  = {}
   nullable = false
