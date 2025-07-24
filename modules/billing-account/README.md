@@ -18,7 +18,7 @@ provider "google" {
 
 <!-- BEGIN TOC -->
 - [Examples](#examples)
-  - [IAM bindings](#iam-bindings)
+- [IAM](#iam)
   - [Log sinks](#log-sinks)
   - [Billing budgets](#billing-budgets)
     - [PubSub update rules](#pubsub-update-rules)
@@ -30,16 +30,30 @@ provider "google" {
 
 ## Examples
 
-### IAM bindings
+## IAM
 
-Billing account IAM bindings implement [the same interface](../../adrs/modules/20230816-iam-refactor.md) used for all other modules.
+IAM is managed via several variables that implement different features and levels of control:
+
+- `iam` and `iam_by_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
+- `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
+- `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
+
+The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+
+Refer to the [project module](../project/README.md#iam) for examples of the IAM interface. IAM also supports variable interpolation for both roles and principals and for the foreign resources where the service account is the principal, via the respective attributes in the `var.context` variable. Basic usage is shown in the example below.
 
 ```hcl
 module "billing-account" {
   source = "./fabric/modules/billing-account"
   id     = "012345-ABCDEF-012345"
+  context = {
+    iam_principals = {
+      org-admins = "group:gcp-organization-admins@example.com"
+    }
+  }
   iam = {
     "roles/billing.admin" = [
+      "$iam_principals:org-admins",
       "serviceAccount:foo@myprj.iam.gserviceaccount.com"
     ]
   }
@@ -264,16 +278,17 @@ update_rules:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L131) | Billing account id. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L143) | Billing account id. | <code>string</code> | ✓ |  |
 | [budget_notification_channels](variables.tf#L17) | Notification channels used by budget alerts. | <code title="map&#40;object&#40;&#123;&#10;  project_id   &#61; string&#10;  type         &#61; string&#10;  description  &#61; optional&#40;string&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  enabled      &#61; optional&#40;bool, true&#41;&#10;  force_delete &#61; optional&#40;bool&#41;&#10;  labels       &#61; optional&#40;map&#40;string&#41;&#41;&#10;  sensitive_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;    auth_token  &#61; optional&#40;string&#41;&#10;    password    &#61; optional&#40;string&#41;&#10;    service_key &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  user_labels &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [budgets](variables.tf#L47) | Billing budgets. Notification channels are either keys in corresponding variable, or external ids. | <code title="map&#40;object&#40;&#123;&#10;  amount &#61; object&#40;&#123;&#10;    currency_code   &#61; optional&#40;string&#41;&#10;    nanos           &#61; optional&#40;number&#41;&#10;    units           &#61; optional&#40;number&#41;&#10;    use_last_period &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#10;  display_name    &#61; optional&#40;string&#41;&#10;  ownership_scope &#61; optional&#40;string&#41;&#10;  filter &#61; optional&#40;object&#40;&#123;&#10;    credit_types_treatment &#61; optional&#40;object&#40;&#123;&#10;      exclude_all       &#61; optional&#40;bool&#41;&#10;      include_specified &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    label &#61; optional&#40;object&#40;&#123;&#10;      key   &#61; string&#10;      value &#61; string&#10;    &#125;&#41;&#41;&#10;    period &#61; optional&#40;object&#40;&#123;&#10;      calendar &#61; optional&#40;string&#41;&#10;      custom &#61; optional&#40;object&#40;&#123;&#10;        start_date &#61; object&#40;&#123;&#10;          day   &#61; number&#10;          month &#61; number&#10;          year  &#61; number&#10;        &#125;&#41;&#10;        end_date &#61; optional&#40;object&#40;&#123;&#10;          day   &#61; number&#10;          month &#61; number&#10;          year  &#61; number&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    projects           &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resource_ancestors &#61; optional&#40;list&#40;string&#41;&#41;&#10;    services           &#61; optional&#40;list&#40;string&#41;&#41;&#10;    subaccounts        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  threshold_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    percent          &#61; number&#10;    forecasted_spend &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  update_rules &#61; optional&#40;map&#40;object&#40;&#123;&#10;    disable_default_iam_recipients   &#61; optional&#40;bool&#41;&#10;    monitoring_notification_channels &#61; optional&#40;list&#40;string&#41;&#41;&#10;    pubsub_topic                     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L122) | Path to folder containing budget alerts data files. | <code title="object&#40;&#123;&#10;  budgets_data_path &#61; optional&#40;string, &#34;data&#47;billing-budgets&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L122) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L134) | Path to folder containing budget alerts data files. | <code title="object&#40;&#123;&#10;  budgets_data_path &#61; optional&#40;string, &#34;data&#47;billing-budgets&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L54) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L136) | Logging sinks to create for the billing account. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  bq_partitioned_table &#61; optional&#40;bool, false&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions &#61; optional&#40;map&#40;object&#40;&#123;&#10;    filter      &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;    disabled    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  filter &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [projects](variables.tf#L169) | Projects associated with this billing account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [logging_sinks](variables.tf#L148) | Logging sinks to create for the billing account. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  bq_partitioned_table &#61; optional&#40;bool, false&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions &#61; optional&#40;map&#40;object&#40;&#123;&#10;    filter      &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;    disabled    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  filter &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [projects](variables.tf#L181) | Projects associated with this billing account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

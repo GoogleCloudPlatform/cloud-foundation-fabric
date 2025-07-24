@@ -20,7 +20,9 @@ resource "google_monitoring_notification_channel" "default" {
   display_name = coalesce(
     each.value.display_name, "Budget email notification ${each.key}."
   )
-  project      = each.value.project_id
+  project = lookup(
+    local.ctx.project_ids, each.value.project_id, each.value.project_id
+  )
   enabled      = each.value.enabled
   force_delete = each.value.force_delete
   type         = each.value.type
@@ -71,10 +73,16 @@ resource "google_billing_budget" "default" {
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }
-    projects           = each.value.filter.projects
-    resource_ancestors = each.value.filter.resource_ancestors
-    services           = each.value.filter.services
-    subaccounts        = each.value.filter.subaccounts
+    projects = [
+      for v in each.value.filter.projects :
+      lookup(local.ctx.project_ids, v, v)
+    ]
+    resource_ancestors = [
+      for v in each.value.filter.resource_ancestors :
+      lookup(local.ctx.folder_ids, v, v)
+    ]
+    services    = each.value.filter.services
+    subaccounts = each.value.filter.subaccounts
     dynamic "custom_period" {
       for_each = try(each.value.filter.period.custom, null) != null ? [""] : []
       content {
