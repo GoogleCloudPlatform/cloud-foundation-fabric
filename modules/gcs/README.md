@@ -216,7 +216,7 @@ IAM is managed via several variables that implement different features and level
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
+Refer to the [project module](../project/README.md#iam) for examples of the IAM interface. IAM also supports variable interpolation for both roles and principals and for the foreign resources where the service account is the principal, via the respective attributes in the `var.context` variable. Basic usage is shown in the example below.
 
 ```hcl
 module "bucket" {
@@ -225,8 +225,13 @@ module "bucket" {
   prefix     = var.prefix
   name       = "my-bucket"
   location   = "EU"
+  context = {
+    iam_principals = {
+      mygroup = "group:${var.group_email}"
+    }
+  }
   iam = {
-    "roles/storage.admin" = ["group:${var.group_email}"]
+    "roles/storage.admin" = ["$iam_principals:mygroup"]
   }
 }
 # tftest modules=1 resources=2 inventory=iam-authoritative.yaml e2e
@@ -324,6 +329,7 @@ module "bucket" {
 ```
 
 ## Managed Folders
+
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
@@ -346,6 +352,7 @@ module "bucket" {
 ```
 
 ## Hierarchical Namespace
+
 ```hcl
 module "bucket" {
   source                        = "./fabric/modules/gcs"
