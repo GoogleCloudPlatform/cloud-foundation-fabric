@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-locals {
-  # _projects_budgets = flatten([
-  #   for k, v in local.projects_input : [
-  #     for b in lookup(v, "billing_budgets", []) : {
-  #       budget  = b
-  #       project = lookup(v, "name", k)
-  #     }
-  #   ]
-  # ])
-  # projects_budgets = {
-  #   for v in local._projects_budgets : v.budget => v.project...
-  # }
+# tfdoc:file:description Billing budget factory locals.
+
+module "billing-budgets" {
+  source = "../billing-account"
+  count  = var.factories_config.budgets != null ? 1 : 0
+  id     = var.factories_config.budgets.billing_account
+  context = merge(local.ctx, {
+    folder_ids  = merge(local.ctx.folder_ids, local.folder_ids)
+    project_ids = local.project_ids
+  })
+  factories_config = {
+    budgets_data_path = var.factories_config.budgets.data_path
+  }
 }
