@@ -15,13 +15,3 @@
 # yaml-language-server: $schema=../schemas/context.schema.json
 
 # TODO: embed defaults in locals if these are missing
-locations:
-  bigquery: europe-west8
-  logging: europe-west8
-iam_principals:
-  net-admins: "group:net-admins@foo.bar"
-organization:
-  domain: example.org
-  id: 561859074576
-  # use our customer id for testing
-  customer_id: C02h8e9nw

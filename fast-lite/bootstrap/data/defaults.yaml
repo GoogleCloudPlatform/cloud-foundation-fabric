@@ -12,14 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../schemas/project-defaults.schema.json
+# yaml-language-server: $schema=../schemas/defaults.schema.json
 
 # TODO: infer default location from context
 # TODO: this needs to be temmplatestring'ed
 
 # defaults:
 #   storage_location: europe-west1
-defaults:
-  prefix: ${prefix}
-overrides:
+global_defaults:
   billing_account: 017479-47ADAB-670295
+  locations:
+    bigquery: europe-west8
+    logging: europe-west8
+  organization:
+    domain: example.org
+    id: 561859074576
+    # use our customer id for testing
+    customer_id: C02h8e9nw
+project_defaults: {}
+project_overrides: {}

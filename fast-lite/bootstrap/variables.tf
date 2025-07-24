@@ -20,15 +20,30 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles          = optional(map(string), {})
+    folder_ids            = optional(map(string), {})
+    iam_principals        = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
+    notification_channels = optional(map(string), {})
+    project_ids           = optional(map(string), {})
+    tag_values            = optional(map(string), {})
+    vpc_host_projects     = optional(map(string), {})
+    vpc_sc_perimeters     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    billing_account  = optional(string, "data/billing-account")
-    context          = optional(string, "data/context.yaml")
-    folders          = optional(string, "data/folders")
-    organization     = optional(string, "data/organization")
-    project_defaults = optional(string, "data/defaults.yaml")
-    projects         = optional(string, "data/projects")
+    defaults     = optional(string, "data/defaults.yaml")
+    folders      = optional(string, "data/folders")
+    organization = optional(string, "data/organization")
+    projects     = optional(string, "data/projects")
   })
   nullable = false
   default  = {}
