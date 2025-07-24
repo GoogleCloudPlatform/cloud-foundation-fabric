@@ -107,10 +107,18 @@ variable "node_config" {
     gvnic                = optional(bool, false)
     image_type           = optional(string)
     kubelet_config = optional(object({
-      cpu_manager_policy   = string
-      cpu_cfs_quota        = optional(bool)
-      cpu_cfs_quota_period = optional(string)
-      pod_pids_limit       = optional(number)
+      cpu_manager_policy                     = string
+      cpu_cfs_quota                          = optional(bool)
+      cpu_cfs_quota_period                   = optional(string)
+      insecure_kubelet_readonly_port_enabled = optional(string)
+      pod_pids_limit                         = optional(number)
+      container_log_max_size                 = optional(string)
+      container_log_max_files                = optional(number)
+      image_gc_low_threshold_percent         = optional(number)
+      image_gc_high_threshold_percent        = optional(number)
+      image_minimum_gc_age                   = optional(string)
+      image_maximum_gc_age                   = optional(string)
+      allowed_unsafe_sysctls                 = optional(list(string), [])
     }))
     linux_node_config = optional(object({
       sysctls     = optional(map(string))
