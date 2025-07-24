@@ -122,10 +122,11 @@ variable "budgets" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    custom_roles   = optional(map(string), {})
-    folder_ids     = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    project_ids    = optional(map(string), {})
+    custom_roles          = optional(map(string), {})
+    folder_ids            = optional(map(string), {})
+    iam_principals        = optional(map(string), {})
+    notification_channels = optional(map(string), {})
+    project_ids           = optional(map(string), {})
   })
   default  = {}
   nullable = false

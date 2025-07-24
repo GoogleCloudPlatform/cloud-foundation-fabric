@@ -126,7 +126,9 @@ resource "google_billing_budget" "default" {
         ? null
         : [
           for v in rule.value.monitoring_notification_channels : try(
-            google_monitoring_notification_channel.default[v].id, v
+            google_monitoring_notification_channel.default[v].id,
+            local.ctx.notification_channels[v],
+            v
           )
         ]
       )

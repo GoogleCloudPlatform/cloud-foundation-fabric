@@ -55,7 +55,13 @@ values:
     member: serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleThree
   google_billing_budget.default["folder-net-month-current-100"]:
-    all_updates_rule: []
+    all_updates_rule:
+    - disable_default_iam_recipients: true
+      enable_project_level_recipients: false
+      monitoring_notification_channels:
+      - projects/my-prj/notificationChannels/7368953059300630624
+      pubsub_topic: null
+      schema_version: '1.0'
     amount:
     - last_period_amount: null
       specified_amount:

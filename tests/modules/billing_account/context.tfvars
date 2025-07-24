@@ -16,6 +16,14 @@ budgets = {
       { percent = 0.5 },
       { percent = 0.75 }
     ]
+    update_rules = {
+      default = {
+        disable_default_iam_recipients = true
+        monitoring_notification_channels = [
+          "$notification_channels:baz"
+        ]
+      }
+    }
   }
 }
 context = {
@@ -33,6 +41,9 @@ context = {
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
     myuser2 = "user:test-user2@example.com"
+  }
+  notification_channels = {
+    baz = "projects/my-prj/notificationChannels/7368953059300630624"
   }
   project_ids = {
     foo = "test-prj-foo"
