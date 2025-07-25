@@ -23,5 +23,8 @@ tests:
     inventory:
       - simple.yaml
       - managed_org_policies.yaml
+  external_billing_account:
+    inventory:
+      - external_billing_account.yaml
   iam_by_principals:
   cicd:
