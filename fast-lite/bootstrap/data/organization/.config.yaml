@@ -16,25 +16,21 @@
 
 # yaml-language-server: $schema=../../schemas/organization.schema.json
 
-# context.organization.id
-id: $organization_id
+id: $defaults:organization/id
 contacts:
   foo:
-    # context.emails
-    - $org_admins
+    - $iam_principals:org_admins
 iam:
   roles/billing.creator: []
 iam_by_principals:
-  # context.organization.domain
   domain:$organization_domain:
     - roles/browser
-  # context.iam_principals
-  $principals.billing_admins:
+  $iam_principals:billing_admins:
     - roles/billing.admin
-  $principals.network_admins:
+  $iam_principals:network_admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
-  $principals.org_admins:
+  $iam_principals:org_admins:
     - roles/billing.admin
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
@@ -48,7 +44,7 @@ iam_by_principals:
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
     - roles/iam.workforcePoolAdmin
-  $principals.security_admins:
+  $iam_principals:security_admins:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
@@ -57,8 +53,7 @@ iam_by_principals:
     - roles/logging.admin
     - roles/orgpolicy.policyAdmin
     - roles/securitycenter.admin
-  # dynamic service_accounts
-  $projects.iac-0.service_accounts.bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/bootstrap-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
@@ -72,7 +67,7 @@ iam_by_principals:
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
-  $projects.iac-0.service_accounts.bootstrap-ro:
+  $iam_principals:service_accounts/iac-0/bootstrap-ro:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.viewer
     - roles/iam.organizationRoleViewer
@@ -85,8 +80,7 @@ iam_by_principals:
 iam_bindings_additive: {}
 logging:
   # disable_default_log_sink: false
-  # context.defaults.locations.logging
-  storage_location: $context.locations.logging
+  storage_location: $defaults:locations/logging
   sinks:
     audit-logs:
       # description: foo

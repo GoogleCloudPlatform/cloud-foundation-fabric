@@ -18,11 +18,32 @@ locals {
   _paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
+  _defaults = try(yamldecode(file(var.factories_config.defaults)), {})
+  defaults = {
+    billing_account = try(local._defaults.global.billing_account, null)
+    locations = merge(try(local._defaults.global.locations, {}), {
+      bigquery = "eu"
+      logging  = "global"
+      pubsub   = []
+      storage  = "eu"
+    })
+    organization = (
+      try(local._defaults.global.organization.id, null) == null
+      ? null
+      : local._defaults.global.organization
+    )
+  }
+  project_defaults = {
+    defaults  = try(local._defaults.project.defaults, {})
+    overrides = try(local._defaults.project.overrides, {})
+  }
 }
 
-# output "foo" {
-#   value = {
-#     data  = local._data
-#     paths = local._paths
-#   }
-# }
+resource "terraform_data" "precondition" {
+  lifecycle {
+    precondition {
+      condition     = try(local.defaults.billing_account, null) != null
+      error_message = "No billing account set in global defaults."
+    }
+  }
+}
