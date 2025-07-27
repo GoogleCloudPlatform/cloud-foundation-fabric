@@ -29,6 +29,7 @@ global:
     id: 561859074576
     # use our customer id for testing
     customer_id: C02h8e9nw
-project:
-  defaults: {}
+projects:
+  defaults:
+    storage_location: eu
   overrides: {}

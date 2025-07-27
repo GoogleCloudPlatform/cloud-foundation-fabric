@@ -60,7 +60,7 @@
         "organization"
       ]
     },
-    "project": {
+    "projects": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

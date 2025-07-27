@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Projects and billing budgets factory resources.
-
-locals {
-  ctx = var.context
-}
-
-resource "terraform_data" "defaults_preconditions" {
-  lifecycle {
-    precondition {
-      condition = (
-        var.data_defaults.storage_location != null ||
-        var.data_overrides.storage_location != null
-      )
-      error_message = "No default storage location defined in defaults or overides variables."
-    }
+module "factory" {
+  source         = "../../modules/project-factory-new"
+  data_defaults  = local.project_defaults.defaults
+  data_overrides = local.project_defaults.overrides
+  context = merge(var.context, {
+    custom_roles = merge(
+      var.context.custom_roles, module.organization[0].custom_role_id
+    )
+  })
+  factories_config = {
+    folders  = var.factories_config.folders
+    projects = var.factories_config.projects
   }
 }

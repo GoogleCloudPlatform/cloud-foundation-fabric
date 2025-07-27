@@ -34,8 +34,8 @@ locals {
     )
   }
   project_defaults = {
-    defaults  = try(local._defaults.project.defaults, {})
-    overrides = try(local._defaults.project.overrides, {})
+    defaults  = try(local._defaults.projects.defaults, {})
+    overrides = try(local._defaults.projects.overrides, {})
   }
 }
 
@@ -44,6 +44,13 @@ resource "terraform_data" "precondition" {
     precondition {
       condition     = try(local.defaults.billing_account, null) != null
       error_message = "No billing account set in global defaults."
+    }
+    precondition {
+      condition = (
+        try(local.project_defaults.defaults.storage_location, null) != null ||
+        try(local.project_defaults.overrides.storage_location, null) != null
+      )
+      error_message = "Storage location must be set in project defaults or overrides."
     }
   }
 }
