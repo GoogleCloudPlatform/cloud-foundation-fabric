@@ -55,6 +55,7 @@ module "organization" {
   logging_settings = local.organization.logging
   factories_config = {
     custom_roles = "${local._paths.organization}/custom-roles"
+    tags         = "${local._paths.organization}/tags"
   }
 }
 
@@ -69,10 +70,12 @@ module "organization-iam" {
     org_policies = {
       organization = local.defaults.organization
     }
+    tag_values = merge(var.context.tag_values, {
+      for k, v in module.organization[0].tag_values : k => v.id
+    })
   })
   factories_config = {
     org_policies = "${local._paths.organization}/org-policies"
-    tags         = "${local._paths.organization}/tags"
   }
   iam = lookup(
     local.organization, "iam", {}
