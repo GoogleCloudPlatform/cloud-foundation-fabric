@@ -32,7 +32,7 @@ locals {
     basename(k) => v
   }
   _projects_path = try(
-    pathexpand(var.factories_config.projects_data_path), null
+    pathexpand(var.factories_config.projects), null
   )
   _projects_raw = {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
@@ -62,7 +62,7 @@ module "projects" {
     each.value.contacts, var.data_merges.contacts
   )
   context = merge(local.ctx, {
-    folder_ids = local.ctx.folder_ids
+    folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)

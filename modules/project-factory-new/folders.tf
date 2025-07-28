@@ -20,7 +20,7 @@
 
 locals {
   _folders_path = try(
-    pathexpand(var.factories_config.folders_data_path), null
+    pathexpand(var.factories_config.folders), null
   )
   _folders_files = try(
     fileset(local._folders_path, "**/**/.config.yaml"),
@@ -30,7 +30,7 @@ locals {
     var.folders,
     {
       for f in local._folders_files : dirname(f) => yamldecode(file(
-        "${coalesce(var.factories_config.folders_data_path, "-")}/${f}"
+        "${coalesce(local._folders_path, "-")}/${f}"
       ))
     }
   )

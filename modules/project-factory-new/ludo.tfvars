@@ -22,5 +22,6 @@ data_overrides = {
   prefix          = "pf00"
 }
 factories_config = {
-  folders_data_path = "sample-data-1/folders"
+  folders  = "sample-data-1/folders"
+  projects = "sample-data-1/projects"
 }

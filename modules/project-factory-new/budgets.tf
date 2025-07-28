@@ -19,12 +19,12 @@
 module "billing-budgets" {
   source = "../billing-account"
   count  = var.factories_config.budgets != null ? 1 : 0
-  id     = var.factories_config.budgets.billing_account
+  id     = var.factories_config.budgets.billing_account_id
   context = merge(local.ctx, {
     folder_ids  = local.ctx.folder_ids
     project_ids = local.ctx_project_ids
   })
   factories_config = {
-    budgets_data_path = var.factories_config.budgets.data_path
+    budgets_data_path = var.factories_config.budgets.data
   }
 }
