@@ -18,15 +18,13 @@
 
 locals {
   # project data from folders tree
-  _folder_projects_raw = (
-    {
-      for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
-      trimsuffix(f, ".yaml") => merge(
-        { parent = dirname(f) == "." ? null : "$folder_ids:${dirname(f)}" },
-        yamldecode(file("${local._folders_path}/${f}"))
-      ) if !endswith(f, "/.config.yaml")
-    }
-  )
+  _folder_projects_raw = {
+    for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => merge(
+      { parent = dirname(f) == "." ? null : "$folder_ids:${dirname(f)}" },
+      yamldecode(file("${local._folders_path}/${f}"))
+    ) if !endswith(f, "/.config.yaml")
+  }
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
     basename(k) => v

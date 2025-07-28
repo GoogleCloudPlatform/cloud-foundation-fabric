@@ -40,10 +40,11 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    defaults     = optional(string, "data/defaults.yaml")
-    folders      = optional(string, "data/folders")
-    organization = optional(string, "data/organization")
-    projects     = optional(string, "data/projects")
+    billing_accounts = optional(string, "data/billing-accounts")
+    defaults         = optional(string, "data/defaults.yaml")
+    folders          = optional(string, "data/folders")
+    organization     = optional(string, "data/organization")
+    projects         = optional(string, "data/projects")
   })
   nullable = false
   default  = {}

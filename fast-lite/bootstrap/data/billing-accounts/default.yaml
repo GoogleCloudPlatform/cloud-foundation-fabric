@@ -1,4 +1,4 @@
-id: ${defaults.billing_account_id}
+id: $defaults:billing_account
 iam:
   roles/billing.admin:
-    - ${context.iam_principals.org_admins}
+    - $iam_principals:gcp-organization-admins

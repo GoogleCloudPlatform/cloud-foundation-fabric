@@ -218,7 +218,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "pattern": "^(?:\\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)"
           }
         }
       }
@@ -230,12 +230,16 @@
         "^[a-z0-9_-]+$": {
           "type": "object",
           "additionalProperties": false,
+          "required": [
+            "members",
+            "role"
+          ],
           "properties": {
             "members": {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:\\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)"
               }
             },
             "role": {
@@ -272,10 +276,14 @@
         "^[a-z0-9_-]+$": {
           "type": "object",
           "additionalProperties": false,
+          "required": [
+            "member",
+            "role"
+          ],
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:\\$|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[$a-z])"
+              "pattern": "^(?:\\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)"
             },
             "role": {
               "type": "string",
@@ -308,7 +316,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:\\$|domain:|group:|serviceAccount:|user:|principal:|principalSet:)[$a-z]": {
+        "^(?:\\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
           "type": "array",
           "items": {
             "type": "string",

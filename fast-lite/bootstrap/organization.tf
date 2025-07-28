@@ -40,6 +40,9 @@ locals {
     gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
     gcp-support             = "group:gcp-support@${local.organization.domain}"
   }
+  org_tag_values = {
+    for k, v in module.organization[0].tag_values : k => v.id
+  }
 }
 
 module "organization" {
@@ -73,9 +76,10 @@ module "organization-iam" {
     org_policies = {
       organization = local.defaults.organization
     }
-    tag_values = merge(local.ctx.tag_values, {
-      for k, v in module.organization[0].tag_values : k => v.id
-    })
+    tag_values = merge(
+      local.ctx.tag_values,
+      local.org_tag_values
+    )
   })
   factories_config = {
     org_policies = "${local._paths.organization}/org-policies"
