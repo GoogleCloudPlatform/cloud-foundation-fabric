@@ -38,6 +38,7 @@ resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
   project       = var.project_id
+  location      = var.location
   membership_id = each.key
   endpoint {
     gke_cluster {
@@ -68,15 +69,57 @@ resource "google_gke_hub_feature" "default" {
       }
     }
   }
+  dynamic "fleet_default_member_config" {
+    for_each = var.fleet_default_member_config != null ? { 1 = 1 } : {}
+    content {
+      dynamic "mesh" {
+        for_each = var.fleet_default_member_config.mesh != null ? { 1 = 1 } : {}
+        content {
+          management = try(mesh.value.management, "MANAGEMENT_AUTOMATIC")
+        }
+      }
+
+      dynamic "configmanagement" {
+        for_each = var.fleet_default_member_config.configmanagement != null ? { 1 = 1 } : {}
+        content {
+          version = configmanagement.value.version
+
+          dynamic "config_sync" {
+            for_each = configmanagement.value.config_sync != null ? { 1 = 1 } : {}
+            content {
+              prevent_drift = config_sync.value.prevent_drift
+              source_format = config_sync.value.source_format
+              enabled       = config_sync.value.enabled
+
+              dynamic "git" {
+                for_each = config_sync.value.git != null ? { 1 = 1 } : {}
+                content {
+                  gcp_service_account_email = git.value.gcp_service_account_email
+                  https_proxy               = git.value.https_proxy
+                  policy_dir                = git.value.policy_dir
+                  secret_type               = git.value.secret_type
+                  sync_branch               = git.value.sync_branch
+                  sync_repo                 = git.value.sync_repo
+                  sync_rev                  = git.value.sync_rev
+                  sync_wait_secs            = git.value.sync_wait_secs
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 resource "google_gke_hub_feature_membership" "servicemesh" {
-  provider   = google-beta
-  for_each   = var.features.servicemesh ? var.clusters : {}
-  project    = var.project_id
-  location   = "global"
-  feature    = google_gke_hub_feature.default["servicemesh"].name
-  membership = google_gke_hub_membership.default[each.key].membership_id
+  provider            = google-beta
+  for_each            = var.features.servicemesh ? var.clusters : {}
+  project             = var.project_id
+  location            = "global"
+  feature             = google_gke_hub_feature.default["servicemesh"].name
+  membership          = google_gke_hub_membership.default[each.key].membership_id
+  membership_location = var.location
 
   mesh {
     management = "MANAGEMENT_AUTOMATIC"
@@ -84,12 +127,13 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
 }
 
 resource "google_gke_hub_feature_membership" "default" {
-  provider   = google-beta
-  for_each   = local.cluster_cm_config
-  project    = var.project_id
-  location   = "global"
-  feature    = google_gke_hub_feature.default["configmanagement"].name
-  membership = google_gke_hub_membership.default[each.key].membership_id
+  provider            = google-beta
+  for_each            = local.cluster_cm_config
+  project             = var.project_id
+  location            = "global"
+  feature             = google_gke_hub_feature.default["configmanagement"].name
+  membership          = google_gke_hub_membership.default[each.key].membership_id
+  membership_location = var.location
 
   configmanagement {
     version = each.value.version

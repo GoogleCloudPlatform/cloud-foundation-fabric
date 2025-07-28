@@ -41,6 +41,8 @@ variable "group_configs" {
 variable "https_proxy_config" {
   description = "HTTPS proxy connfiguration."
   type = object({
+    name                             = optional(string)
+    description                      = optional(string, "Terraform managed.")
     certificate_manager_certificates = optional(list(string))
     certificate_map                  = optional(string)
     quic_override                    = optional(string)
@@ -100,6 +102,15 @@ variable "neg_configs" {
         port       = number
       })))
     }))
+    internet = optional(object({
+      region  = string
+      network = string
+      endpoints = map(object({
+        fqdn       = optional(string)
+        ip_address = optional(string)
+        port       = number
+      }))
+    }))
     psc = optional(object({
       region         = string
       target_service = string
@@ -116,6 +127,7 @@ variable "neg_configs" {
         (try(v.cloudrun, null) == null ? 0 : 1) +
         (try(v.gce, null) == null ? 0 : 1) +
         (try(v.hybrid, null) == null ? 0 : 1) +
+        (try(v.internet, null) == null ? 0 : 1) +
         (try(v.psc, null) == null ? 0 : 1) == 1
       )
     ])
@@ -140,6 +152,18 @@ variable "neg_configs" {
       )
     ])
     error_message = "Cloud Function NEGs need either target function or target urlmask defined."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.internet == null
+        ? true
+        : alltrue([
+          for ek, ev in v.internet.endpoints : (ev.fqdn != null || ev.ip_address != null)
+        ])
+      )
+    ])
+    error_message = "Internet NEG endpoints must specify either fqdn or ip_address."
   }
 }
 
@@ -188,6 +212,7 @@ variable "ssl_certificates" {
   type = object({
     certificate_ids = optional(list(string), [])
     create_configs = optional(map(object({
+      name        = optional(string)
       certificate = string
       private_key = string
     })), {})

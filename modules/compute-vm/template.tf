@@ -332,13 +332,6 @@ resource "google_compute_region_instance_template" "default" {
     }
   }
 
-  dynamic "network_interface" {
-    for_each = var.network_attached_interfaces
-    content {
-      network_attachment = network_interface.value
-    }
-  }
-
   scheduling {
     automatic_restart           = !var.options.spot
     instance_termination_action = local.termination_action
