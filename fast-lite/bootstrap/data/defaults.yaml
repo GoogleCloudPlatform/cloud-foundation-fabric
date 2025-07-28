@@ -31,5 +31,6 @@ global:
     customer_id: C02h8e9nw
 projects:
   defaults:
+    prefix: flite00
     storage_location: eu
   overrides: {}

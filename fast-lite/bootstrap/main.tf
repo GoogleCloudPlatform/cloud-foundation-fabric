@@ -47,6 +47,13 @@ resource "terraform_data" "precondition" {
     }
     precondition {
       condition = (
+        try(local.project_defaults.defaults.prefix, null) != null ||
+        try(local.project_defaults.overrides.prefix, null) != null
+      )
+      error_message = "Prefix must be set in project defaults or overrides."
+    }
+    precondition {
+      condition = (
         try(local.project_defaults.defaults.storage_location, null) != null ||
         try(local.project_defaults.overrides.storage_location, null) != null
       )

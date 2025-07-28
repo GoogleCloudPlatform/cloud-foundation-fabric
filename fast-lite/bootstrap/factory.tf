@@ -19,12 +19,16 @@ module "factory" {
   data_defaults  = local.project_defaults.defaults
   data_overrides = local.project_defaults.overrides
   context = merge(var.context, {
-    custom_roles = merge(
-      var.context.custom_roles, module.organization[0].custom_role_id
-    )
+    # custom_roles = merge(
+    #   var.context.custom_roles, module.organization[0].custom_role_id
+    # )
   })
   factories_config = {
     folders  = var.factories_config.folders
     projects = var.factories_config.projects
   }
+}
+
+output "foo" {
+  value = module.factory
 }

@@ -48,47 +48,48 @@ locals {
   })
 }
 
-module "organization" {
-  source           = "../../modules/organization"
-  count            = local.organization.id != null ? 1 : 0
-  organization_id  = "organizations/${local.defaults.organization.id}"
-  logging_settings = local.organization.logging
-  factories_config = {
-    custom_roles = "${local._paths.organization}/custom-roles"
-    tags         = "${local._paths.organization}/tags"
-  }
-}
+# module "organization" {
+#   source           = "../../modules/organization"
+#   count            = local.organization.id != null ? 1 : 0
+#   organization_id  = "organizations/${local.defaults.organization.id}"
+#   logging_settings = local.organization.logging
+#   factories_config = {
+#     custom_roles = "${local._paths.organization}/custom-roles"
+#     tags         = "${local._paths.organization}/tags"
+#   }
+# }
 
-module "organization-iam" {
-  source          = "../../modules/organization"
-  count           = local.organization.id != null ? 1 : 0
-  organization_id = module.organization[0].id
-  context = merge(var.context, {
-    custom_roles = merge(
-      var.context.custom_roles, module.organization[0].custom_role_id
-    )
-    org_policies = {
-      organization = local.defaults.organization
-    }
-    tag_values = merge(var.context.tag_values, {
-      for k, v in module.organization[0].tag_values : k => v.id
-    })
-  })
-  factories_config = {
-    org_policies = "${local._paths.organization}/org-policies"
-  }
-  iam = lookup(
-    local.organization, "iam", {}
-  )
-  iam_by_principals = lookup(
-    local.organization, "iam_by_principals", {}
-  )
-  iam_bindings = lookup(
-    local.organization, "iam_bindings", {}
-  )
-  iam_bindings_additive = lookup(
-    local.organization, "iam_bindings_additive", {}
-  )
-}
-
-# output "foo" { value = local.organization }
+# module "organization-iam" {
+#   source          = "../../modules/organization"
+#   count           = local.organization.id != null ? 1 : 0
+#   organization_id = module.organization[0].id
+#   context = merge(var.context, {
+#     custom_roles = merge(
+#       var.context.custom_roles, module.organization[0].custom_role_id
+#     )
+#     iam_principals = merge(
+#       var.context.iam_principals, module.factory.iam_principals
+#     )
+#     org_policies = {
+#       organization = local.defaults.organization
+#     }
+#     tag_values = merge(var.context.tag_values, {
+#       for k, v in module.organization[0].tag_values : k => v.id
+#     })
+#   })
+#   factories_config = {
+#     org_policies = "${local._paths.organization}/org-policies"
+#   }
+#   iam = lookup(
+#     local.organization, "iam", {}
+#   )
+#   iam_by_principals = lookup(
+#     local.organization, "iam_by_principals", {}
+#   )
+#   iam_bindings = lookup(
+#     local.organization, "iam_bindings", {}
+#   )
+#   iam_bindings_additive = lookup(
+#     local.organization, "iam_bindings_additive", {}
+#   )
+# }

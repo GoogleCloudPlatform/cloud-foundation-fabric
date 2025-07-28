@@ -144,3 +144,8 @@ compute.restrictProtocolForwardingCreationForTypes:
 #   rules:
 #   - deny:
 #       all: true
+
+# compute.vmExternalIpAccess:
+#   rules:
+#     - deny:
+#         all: true

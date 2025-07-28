@@ -1,4 +1,0 @@
-description: "Control enforcement of compute.vmExternalIpAccess org policy."
-values:
-  enabled:
-    description: "Disables enforcing of compute.vmExternalIpAccess."

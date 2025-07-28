@@ -16,9 +16,9 @@
 
 name: prod-audit-logs-0
 iam_by_principals:
-  $projects.iac-0.service_accounts.iac-bootstrap-ro:
+  $iam_principals:service_accounts/iac-0/iac-bootstrap-r0:
     - roles/viewer
-  $projects.iac-0.service_accounts.iac-bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/owner
 services:
   - bigquery.googleapis.com
