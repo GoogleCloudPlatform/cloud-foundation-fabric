@@ -798,8 +798,6 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| name | description | type | required | default |
-|---|---|:---:|:---:|:---:|
 | [name](variables.tf#L61) | Load balancer name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L187) | Project id. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L205) | Region where the load balancer is created. | <code>string</code> | ✓ |  |
