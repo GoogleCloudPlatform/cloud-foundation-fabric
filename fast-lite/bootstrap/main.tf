@@ -19,6 +19,12 @@ locals {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
   _defaults = try(yamldecode(file(var.factories_config.defaults)), {})
+  ctx = merge(var.context, {
+    iam_principals = merge(
+      local.org_iam_principals,
+      var.context.iam_principals
+    )
+  })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)
     locations = merge(try(local._defaults.global.locations, {}), {

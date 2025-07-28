@@ -19,18 +19,18 @@
 id: $defaults:organization/id
 contacts:
   foo:
-    - $iam_principals:org_admins
+    - $iam_principals:gcp-organization-admins
 iam:
   roles/billing.creator: []
 iam_by_principals:
-  domain:$organization_domain:
+  $iam_principals:domain:
     - roles/browser
-  $iam_principals:billing_admins:
+  $iam_principals:gcp-billing-admins:
     - roles/billing.admin
-  $iam_principals:network_admins:
+  $iam_principals:gcp-network-admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
-  $iam_principals:org_admins:
+  $iam_principals:gcp-organization-admins:
     - roles/billing.admin
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
@@ -44,7 +44,7 @@ iam_by_principals:
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
     - roles/iam.workforcePoolAdmin
-  $iam_principals:security_admins:
+  $iam_principals:gcp-security-admins:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.owner
     - roles/cloudsupport.techSupportEditor
@@ -53,7 +53,7 @@ iam_by_principals:
     - roles/logging.admin
     - roles/orgpolicy.policyAdmin
     - roles/securitycenter.admin
-  $iam_principals:service_accounts/iac-0/bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
@@ -67,7 +67,7 @@ iam_by_principals:
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
-  $iam_principals:service_accounts/iac-0/bootstrap-ro:
+  $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.viewer
     - roles/iam.organizationRoleViewer
@@ -80,7 +80,7 @@ iam_by_principals:
 iam_bindings_additive: {}
 logging:
   # disable_default_log_sink: false
-  storage_location: $defaults:locations/logging
+  storage_location: $locations:default
   sinks:
     audit-logs:
       # description: foo

@@ -17,7 +17,7 @@
 # TODO: data access logs configuration
 name: prod-iac-core-0
 iam_by_principals:
-  $iam_principals:org_admins:
+  $iam_principals:gcp-organization-admins:
     - roles/iam.serviceAccountTokenCreator
     - roles/iam.workloadIdentityPoolAdmin
   $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
@@ -25,7 +25,7 @@ iam_by_principals:
     - roles/cloudbuild.builds.viewer
     - roles/iam.serviceAccountViewer
     - roles/iam.workloadIdentityPoolViewer
-    - $custom_roles.storage_viewer
+    - $custom_roles:storage_viewer
     - roles/viewer
   $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/cloudbuild.builds.editor

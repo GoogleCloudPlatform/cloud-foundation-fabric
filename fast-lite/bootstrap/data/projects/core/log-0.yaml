@@ -16,7 +16,7 @@
 
 name: prod-audit-logs-0
 iam_by_principals:
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-r0:
+  $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
     - roles/viewer
   $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/owner
