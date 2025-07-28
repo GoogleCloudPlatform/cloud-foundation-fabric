@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
+locals {
+  factory_parent = (
+    try(local.project_defaults.defaults.parent, null) != null ||
+    try(local.project_defaults.overrides.parent, null) != null
+  ) ? {} : { parent = "organizations/${local.organization_id}" }
+}
+
 module "factory" {
-  source         = "../../modules/project-factory-new"
-  data_defaults  = local.project_defaults.defaults
+  source = "../../modules/project-factory-new"
+  data_defaults = merge(
+    local.project_defaults.defaults,
+    local.factory_parent
+  )
   data_overrides = local.project_defaults.overrides
   context = merge(local.ctx, {
     custom_roles = merge(

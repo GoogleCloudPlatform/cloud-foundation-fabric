@@ -53,6 +53,14 @@ resource "terraform_data" "precondition" {
     }
     precondition {
       condition = (
+        local.organization_id != null ||
+        try(local.project_defaults.defaults.parent, null) != null ||
+        try(local.project_defaults.overrides.parent, null) != null
+      )
+      error_message = "Project parent must be set in project defaults or overrides if no organization id is set."
+    }
+    precondition {
+      condition = (
         try(local.project_defaults.defaults.prefix, null) != null ||
         try(local.project_defaults.overrides.prefix, null) != null
       )
