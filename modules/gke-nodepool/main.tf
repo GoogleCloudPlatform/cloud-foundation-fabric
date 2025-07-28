@@ -261,10 +261,18 @@ resource "google_container_node_pool" "nodepool" {
     dynamic "kubelet_config" {
       for_each = var.node_config.kubelet_config != null ? [""] : []
       content {
-        cpu_manager_policy   = var.node_config.kubelet_config.cpu_manager_policy
-        cpu_cfs_quota        = var.node_config.kubelet_config.cpu_cfs_quota
-        cpu_cfs_quota_period = var.node_config.kubelet_config.cpu_cfs_quota_period
-        pod_pids_limit       = var.node_config.kubelet_config.pod_pids_limit
+        cpu_manager_policy                     = var.node_config.kubelet_config.cpu_manager_policy
+        cpu_cfs_quota                          = var.node_config.kubelet_config.cpu_cfs_quota
+        cpu_cfs_quota_period                   = var.node_config.kubelet_config.cpu_cfs_quota_period
+        insecure_kubelet_readonly_port_enabled = var.node_config.kubelet_config.insecure_kubelet_readonly_port_enabled
+        pod_pids_limit                         = var.node_config.kubelet_config.pod_pids_limit
+        container_log_max_size                 = var.node_config.kubelet_config.container_log_max_size
+        container_log_max_files                = var.node_config.kubelet_config.container_log_max_files
+        image_gc_low_threshold_percent         = var.node_config.kubelet_config.image_gc_low_threshold_percent
+        image_gc_high_threshold_percent        = var.node_config.kubelet_config.image_gc_high_threshold_percent
+        image_minimum_gc_age                   = var.node_config.kubelet_config.image_minimum_gc_age
+        image_maximum_gc_age                   = var.node_config.kubelet_config.image_maximum_gc_age
+        allowed_unsafe_sysctls                 = var.node_config.kubelet_config.allowed_unsafe_sysctls
       }
     }
     dynamic "linux_node_config" {
