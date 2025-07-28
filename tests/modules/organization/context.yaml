@@ -13,6 +13,10 @@
 # limitations under the License.
 
 values:
+  google_logging_organization_settings.default[0]:
+    organization: '1234567890'
+    storage_location: europe-west8
+    timeouts: null
   google_organization_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -83,6 +87,7 @@ values:
     tag_value: tagValues/1234567890
 
 counts:
+  google_logging_organization_settings: 1
   google_organization_iam_binding: 4
   google_organization_iam_member: 1
   google_tags_tag_binding: 1
@@ -91,4 +96,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 12
+  resources: 13

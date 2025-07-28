@@ -26,6 +26,7 @@ variable "context" {
   type = object({
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
     org_policies   = optional(map(map(string)), {})
     tag_keys       = optional(map(string), {})
     tag_values     = optional(map(string), {})

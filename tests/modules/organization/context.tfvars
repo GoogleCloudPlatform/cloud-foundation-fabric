@@ -8,6 +8,9 @@ context = {
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
   }
+  locations = {
+    default = "europe-west8"
+  }
   tag_keys = {
     test = "tagKeys/1234567890"
   }
@@ -42,6 +45,9 @@ iam_bindings_additive = {
     role   = "$custom_roles:myrole_two"
     member = "$iam_principals:myuser"
   }
+}
+logging_settings = {
+  storage_location = "$locations:default"
 }
 tag_bindings = {
   foo = "$tag_values:test/one"

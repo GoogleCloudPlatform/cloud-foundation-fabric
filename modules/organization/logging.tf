@@ -38,7 +38,11 @@ resource "google_logging_organization_settings" "default" {
   count                = var.logging_settings != null ? 1 : 0
   organization         = local.organization_id_numeric
   disable_default_sink = var.logging_settings.disable_default_sink
-  storage_location     = var.logging_settings.storage_location
+  storage_location = lookup(
+    local.ctx.locations,
+    coalesce(var.logging_settings.storage_location, ""),
+    var.logging_settings.storage_location
+  )
 }
 
 resource "google_organization_iam_audit_config" "default" {
@@ -64,14 +68,12 @@ resource "google_logging_organization_sink" "sink" {
   include_children   = each.value.include_children
   intercept_children = each.value.intercept_children
   disabled           = each.value.disabled
-
   dynamic "bigquery_options" {
     for_each = each.value.type == "bigquery" ? [""] : []
     content {
       use_partitioned_tables = each.value.bq_partitioned_table
     }
   }
-
   dynamic "exclusions" {
     for_each = each.value.exclusions
     iterator = exclusion
@@ -115,7 +117,6 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
   member   = google_logging_organization_sink.sink[each.key].writer_identity
-
   condition {
     title       = "${each.key} bucket writer"
     description = "Grants bucketWriter to ${google_logging_organization_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${var.organization_id}"
