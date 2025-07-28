@@ -15,6 +15,10 @@
  */
 
 locals {
+  factory_billing = (
+    try(local.project_defaults.defaults.billing_account, null) != null ||
+    try(local.project_defaults.overrides.billing_account, null) != null
+  ) ? {} : { billing_account = local.defaults.billing_account }
   factory_parent = (
     try(local.project_defaults.defaults.parent, null) != null ||
     try(local.project_defaults.overrides.parent, null) != null
@@ -25,6 +29,7 @@ module "factory" {
   source = "../../modules/project-factory-new"
   data_defaults = merge(
     local.project_defaults.defaults,
+    local.factory_billing,
     local.factory_parent
   )
   data_overrides = local.project_defaults.overrides
