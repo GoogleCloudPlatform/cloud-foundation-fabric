@@ -55,6 +55,7 @@ resource "google_workstations_workstation_config" "configs" {
   workstation_config_id   = each.key
   workstation_cluster_id  = google_workstations_workstation_cluster.cluster.workstation_cluster_id
   location                = google_workstations_workstation_cluster.cluster.location
+  display_name            = each.value.display_name
   max_usable_workstations = each.value.max_workstations
   idle_timeout = (
     each.value.timeouts.idle == null ? null : "${each.value.timeouts.idle}s"
