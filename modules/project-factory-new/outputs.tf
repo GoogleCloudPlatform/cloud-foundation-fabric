@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Billing budget factory locals.
+output "folder_ids" {
+  value = local.folder_ids
+}
 
-module "billing-budgets" {
-  source = "../billing-account"
-  count  = var.factories_config.budgets != null ? 1 : 0
-  id     = var.factories_config.budgets.billing_account
-  context = merge(local.ctx, {
-    folder_ids  = local.ctx.folder_ids
-    project_ids = local.ctx_project_ids
-  })
-  factories_config = {
-    budgets_data_path = var.factories_config.budgets.data_path
-  }
+output "iam_principals" {
+  value = local.iam_principals
+}
+
+output "project_ids" {
+  value = local.project_ids
 }

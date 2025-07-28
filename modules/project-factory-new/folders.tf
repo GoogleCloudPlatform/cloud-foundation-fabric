@@ -34,6 +34,7 @@ locals {
       ))
     }
   )
+  ctx_folder_ids = merge(local.ctx.folder_ids, local.folder_ids)
   folder_ids = merge(
     { for k, v in module.folder-1 : k => v.id },
     { for k, v in module.folder-2 : k => v.id },
@@ -75,11 +76,7 @@ module "folder-1-iam" {
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
   context = merge(local.ctx, {
-    iam_principals = merge(
-      local.ctx.iam_principals,
-      local.projects_sas_iam_emails,
-      local.automation_sas_iam_emails
-    )
+    iam_principals = local.ctx_iam_principals
   })
 }
 
@@ -118,11 +115,7 @@ module "folder-2-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
-    iam_principals = merge(
-      local.ctx.iam_principals,
-      local.projects_sas_iam_emails,
-      local.automation_sas_iam_emails
-    )
+    iam_principals = local.ctx_iam_principals
   })
 }
 
@@ -161,11 +154,7 @@ module "folder-3-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
-    iam_principals = merge(
-      local.ctx.iam_principals,
-      local.projects_sas_iam_emails,
-      local.automation_sas_iam_emails
-    )
+    iam_principals = local.ctx_iam_principals
   })
 }
 

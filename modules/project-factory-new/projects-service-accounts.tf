@@ -56,7 +56,7 @@ module "service-accounts" {
   name         = each.value.name
   display_name = each.value.display_name
   context = merge(local.ctx, {
-    project_ids = local.project_ids
+    project_ids = local.ctx_project_ids
   })
   iam = lookup(each.value, "iam", {})
   iam_project_roles = merge(
@@ -78,7 +78,7 @@ module "service_accounts-iam" {
   name                   = each.value.name
   service_account_create = false
   context = merge(local.ctx, {
-    project_ids = local.project_ids
+    project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,

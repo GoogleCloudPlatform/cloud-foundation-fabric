@@ -74,10 +74,6 @@ locals {
   }
 }
 
-output "foo" {
-  value = local.project_ids
-}
-
 module "automation-bucket" {
   source         = "../gcs"
   for_each       = local.automation_buckets
@@ -91,12 +87,8 @@ module "automation-bucket" {
     local.data_defaults.defaults.force_destroy,
   ), null)
   context = merge(local.ctx, {
-    project_ids = local.project_ids
-    iam_principals = merge(
-      local.ctx.iam_principals,
-      local.projects_sas_iam_emails,
-      local.automation_sas_iam_emails
-    )
+    project_ids    = local.ctx_project_ids
+    iam_principals = local.ctx_iam_principals
   })
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -131,7 +123,7 @@ module "automation-service-accounts" {
     "Service account ${each.value.name} for ${each.value.parent}."
   )
   context = merge(local.ctx, {
-    project_ids = local.project_ids
+    project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails

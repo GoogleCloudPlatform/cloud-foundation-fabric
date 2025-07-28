@@ -18,6 +18,12 @@
 
 locals {
   ctx = var.context
+  ctx_iam_principals = merge(
+    local.ctx.iam_principals, local.iam_principals
+  )
+  iam_principals = merge(
+    local.projects_sas_iam_emails, local.automation_sas_iam_emails
+  )
 }
 
 resource "terraform_data" "defaults_preconditions" {
