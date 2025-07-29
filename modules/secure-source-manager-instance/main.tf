@@ -15,19 +15,22 @@
  */
 
 locals {
-  branch_rules = merge([for k1, v1 in var.repositories : { for k2, v2 in v1.branch_rules :
-    "${k1}.${k2}" => {
-      repository                = k1
-      branch_rule_id            = k2
-      include_pattern           = v2.include_pattern
-      minimum_approvals_count   = try(v2.minimum_approvals_count, null)
-      minimum_reviews_count     = try(v2.minimum_reviews_count, null)
-      require_comments_resolved = try(v2.require_comments_resolved, null)
-      require_linear_history    = try(v2.require_linear_history, null)
-      require_pull_request      = try(v2.require_pull_request, null)
-      disabled                  = try(v2.disabled, null)
-      allow_stale_reviews       = try(v2.allow_stale_reviews, null)
-  } }]...)
+  branch_rules = merge([
+    for k1, v1 in var.repositories : {
+      for k2, v2 in v1.branch_rules : "${k1}.${k2}" => {
+        repository                = k1
+        branch_rule_id            = k2
+        include_pattern           = v2.include_pattern
+        minimum_approvals_count   = v2.minimum_approvals_count
+        minimum_reviews_count     = v2.minimum_reviews_count
+        require_comments_resolved = v2.require_comments_resolved
+        require_linear_history    = v2.require_linear_history
+        require_pull_request      = v2.require_pull_request
+        disabled                  = v2.disabled
+        allow_stale_reviews       = v2.allow_stale_reviews
+      }
+    }
+  ]...)
 }
 
 resource "google_secure_source_manager_instance" "instance" {
