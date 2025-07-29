@@ -41,7 +41,8 @@ module "gke-cluster-standard" {
     kubelet_readonly_port_enabled = false
   }
   node_pool_auto_config = {
-    network_tags = ["foo"] # to avoid perma-diff
+    network_tags                  = ["foo"] # to avoid perma-diff
+    kubelet_readonly_port_enabled = false
   }
 }
 
