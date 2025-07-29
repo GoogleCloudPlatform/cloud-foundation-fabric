@@ -1,0 +1,55 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_logging_log_view.views["myview"]:
+    description: null
+    filter: LOG_ID("stdout")
+    location: europe-west8
+    name: myview
+    timeouts: null
+  google_logging_log_view_iam_binding.authoritative["myview.$custom_roles:myrole_one"]:
+    condition: []
+    location: europe-west8
+    members:
+    - user:test-user@example.com
+    name: myview
+    role: organizations/366118655033/roles/myRoleOne
+  google_logging_log_view_iam_binding.authoritative["myview.roles/viewer"]:
+    condition: []
+    location: europe-west8
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    name: myview
+    role: roles/viewer
+  google_logging_project_bucket_config.bucket[0]:
+    bucket_id: mybucket
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west8
+    locked: null
+    project: $projects:myproject
+    retention_days: 30
+  google_tags_tag_binding.binding["foo"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+
+counts:
+  google_logging_log_view: 1
+  google_logging_log_view_iam_binding: 2
+  google_logging_project_bucket_config: 1
+  google_tags_tag_binding: 1
+  modules: 0
+  resources: 5

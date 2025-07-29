@@ -21,12 +21,30 @@ locals {
     google_logging_organization_bucket_config.bucket[0],
     google_logging_billing_account_bucket_config.bucket[0],
   )
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  parent = (
+    var.parent_type == "project"
+    ? lookup(local.ctx.project_ids, var.parent, var.parent)
+    : lookup(local.ctx.folder_ids, var.parent, var.parent)
+  )
+  views = {
+    for k, v in var.views : k => merge(v, {
+      location = coalesce(v.location, var.location)
+    })
+  }
 }
 
 resource "google_logging_project_bucket_config" "bucket" {
-  count            = var.parent_type == "project" ? 1 : 0
-  project          = var.parent
-  location         = var.location
+  count   = var.parent_type == "project" ? 1 : 0
+  project = local.parent
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   retention_days   = var.retention
   bucket_id        = var.id
   description      = var.description
@@ -41,9 +59,11 @@ resource "google_logging_project_bucket_config" "bucket" {
 }
 
 resource "google_logging_folder_bucket_config" "bucket" {
-  count          = var.parent_type == "folder" ? 1 : 0
-  folder         = var.parent
-  location       = var.location
+  count  = var.parent_type == "folder" ? 1 : 0
+  folder = local.parent
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   retention_days = var.retention
   bucket_id      = var.id
   description    = var.description
@@ -59,9 +79,11 @@ resource "google_logging_linked_dataset" "dataset" {
 }
 
 resource "google_logging_organization_bucket_config" "bucket" {
-  count          = var.parent_type == "organization" ? 1 : 0
-  organization   = var.parent
-  location       = var.location
+  count        = var.parent_type == "organization" ? 1 : 0
+  organization = var.parent
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   retention_days = var.retention
   bucket_id      = var.id
   description    = var.description
@@ -70,23 +92,27 @@ resource "google_logging_organization_bucket_config" "bucket" {
 resource "google_logging_billing_account_bucket_config" "bucket" {
   count           = var.parent_type == "billing_account" ? 1 : 0
   billing_account = var.parent
-  location        = var.location
-  retention_days  = var.retention
-  bucket_id       = var.id
-  description     = var.description
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  retention_days = var.retention
+  bucket_id      = var.id
+  description    = var.description
 }
 
 resource "google_logging_log_view" "views" {
-  for_each    = var.views
+  for_each    = local.views
   name        = each.key
   bucket      = local.bucket.id
   description = each.value.description
-  location    = coalesce(each.value.location, var.location)
-  filter      = each.value.filter
+  location = lookup(
+    local.ctx.locations, each.value.location, each.value.location
+  )
+  filter = each.value.filter
 }
 
 resource "google_tags_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//logging.googleapis.com/${local.bucket.id}"
-  tag_value = each.value
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
 }
