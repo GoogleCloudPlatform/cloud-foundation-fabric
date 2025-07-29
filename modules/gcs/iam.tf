@@ -63,7 +63,9 @@ resource "google_storage_bucket_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   bucket   = local.bucket.name
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
