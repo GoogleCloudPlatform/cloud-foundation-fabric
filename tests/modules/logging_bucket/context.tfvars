@@ -23,7 +23,7 @@ context = {
 }
 id          = "mybucket"
 location    = "$locations:ew8"
-parent      = "$projects:myproject"
+parent      = "$project_ids:myproject"
 parent_type = "project"
 tag_bindings = {
   foo = "$tag_values:test/one"

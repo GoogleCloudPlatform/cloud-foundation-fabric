@@ -40,7 +40,7 @@ values:
     index_configs: []
     location: europe-west8
     locked: null
-    project: $projects:myproject
+    project: foo-logging-0
     retention_days: 30
   google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/1234567890
