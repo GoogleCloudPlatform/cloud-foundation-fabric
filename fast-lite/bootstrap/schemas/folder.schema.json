@@ -19,6 +19,60 @@
     "name": {
       "type": "string"
     },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "storage_location": {
+          "type": "string"
+        },
+        "sinks": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "project_id"
+                  ],
+                  "properties": {
+                    "location": {
+                      "type": "string"
+                    },
+                    "project_id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "default": "logging",
+                      "enum": [
+                        "logging",
+                        "project",
+                        "pubsub",
+                        "storage"
+                      ]
+                    }
+                  }
+                },
+                "exclusions": {
+                  "type": "object"
+                },
+                "filter": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "org_policies": {
       "type": "object",
       "additionalProperties": false,

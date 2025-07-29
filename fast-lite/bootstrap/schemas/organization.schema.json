@@ -52,6 +52,9 @@
                 "destination": {
                   "type": "object",
                   "additionalProperties": false,
+                  "required": [
+                    "project_id"
+                  ],
                   "properties": {
                     "location": {
                       "type": "string"
@@ -62,7 +65,6 @@
                     "type": {
                       "default": "logging",
                       "enum": [
-                        "bigquery",
                         "logging",
                         "project",
                         "pubsub",

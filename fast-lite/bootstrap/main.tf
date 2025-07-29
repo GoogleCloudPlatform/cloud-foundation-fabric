@@ -38,6 +38,11 @@ locals {
       ? null
       : local._defaults.global.organization
     )
+    prefix = try(
+      local.project_defaults.defaults.prefix,
+      local.project_defaults.overrides.prefix,
+      null
+    )
   }
   project_defaults = {
     defaults  = try(local._defaults.projects.defaults, {})

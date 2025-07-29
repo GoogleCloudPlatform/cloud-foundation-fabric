@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "data" {
+  value = {
+    folders  = local.folders_input
+    projects = local.projects_input
+  }
+}
+
 output "folder_ids" {
   value = local.folder_ids
 }
