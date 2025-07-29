@@ -254,6 +254,8 @@ resource "google_cloud_run_v2_service" "service" {
 
   lifecycle {
     ignore_changes = [
+      client,
+      client_version,
       template[0].annotations["run.googleapis.com/operation-id"],
     ]
   }
