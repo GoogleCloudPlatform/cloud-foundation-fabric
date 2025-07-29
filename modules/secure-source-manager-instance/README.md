@@ -10,6 +10,7 @@ This module allows to create a Secure Source Manager instance and repositories i
   - [Public instance with CMEK](#public-instance-with-cmek)
   - [Private instance](#private-instance)
   - [IAM](#iam)
+  - [Branch Protection Rules](#branch-protection-rules)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -144,6 +145,35 @@ module "ssm_instance" {
   }
 }
 # tftest modules=1 resources=4 inventory=iam-bindings-additive.yaml
+```
+
+### Branch Protection Rules
+
+```hcl
+module "ssm_instance" {
+  source      = "./fabric/modules/secure-source-manager-instance"
+  project_id  = var.project_id
+  instance_id = "my-instance"
+  location    = var.region
+  ca_pool     = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+  repositories = {
+    my-repository = {
+      branch_rules = {
+        rule1 = {
+          disabled                  = false
+          include_pattern           = "main"
+          require_pull_request      = true
+          minimum_approvals_count   = 1
+          minimum_reviews_count     = 1
+          require_comments_resolved = true
+          allow_stale_reviews       = false
+          require_linear_history    = true
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=branch-protection-rules.yaml 
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
