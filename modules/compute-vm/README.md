@@ -776,7 +776,7 @@ module "project" {
   name   = var.project_id
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name             = var.project_id
       number           = var.project_number
       services_enabled = ["compute.googleapis.com"]

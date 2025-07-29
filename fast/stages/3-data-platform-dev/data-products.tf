@@ -48,7 +48,7 @@ module "dp-projects-iam" {
   name     = module.dp-projects[each.key].project_id
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name             = module.dp-projects[each.key].name
       number           = module.dp-projects[each.key].number
       services_enabled = each.value.services

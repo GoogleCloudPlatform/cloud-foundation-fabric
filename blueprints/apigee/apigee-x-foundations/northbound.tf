@@ -29,15 +29,15 @@ locals {
   }
   network = try(module.shared_vpc[0].id, module.apigee_vpc[0].id)
   neg_subnets = (var.network_config.shared_vpc == null ?
-    (try(var.network_config.apigee_vpc.auto_create, false) ?
+    (try(var.network_config.apigee_vpc.vpc_reuse, null) == null ?
       { for k, v in module.apigee_vpc[0].subnets_psc : v.region => v.id } :
-    { for k, v in var.network_config.apigee_vpc.subnets_psc : v => v.id }) :
+    { for k, v in var.network_config.apigee_vpc.subnets_psc : k => v.id }) :
     var.network_config.shared_vpc.subnets_psc
   )
   ilb_subnets = (var.network_config.shared_vpc == null ?
-    (try(var.network_config.apigee_vpc.auto_create, false) ?
+    (try(var.network_config.apigee_vpc.vpc_reuse, null) == null ?
       { for k, v in module.apigee_vpc[0].subnets : v.region => v.id } :
-    { for k, v in var.network_config.apigee_vpc.subnets : v => v.id }) :
+    { for k, v in var.network_config.apigee_vpc.subnets : k => v.id }) :
     var.network_config.shared_vpc.subnets
   )
   ext_instances              = var.ext_lb_config == null ? {} : { for k, v in local.neg_subnets : k => module.apigee.instances[k] }

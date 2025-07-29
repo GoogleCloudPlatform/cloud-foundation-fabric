@@ -18,7 +18,7 @@ module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = var.vpc_name
-  vpc_create = var.vpc_create
+  vpc_reuse  = var.vpc_reuse
   subnets = [
     {
       ip_cidr_range = var.mgmt_subnet_cidr_block

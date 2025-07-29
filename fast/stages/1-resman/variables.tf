@@ -25,9 +25,10 @@ variable "factories_config" {
     tags              = optional(string, "data/tags")
     top_level_folders = optional(string, "data/top-level-folders")
     context = optional(object({
-      org_policies = optional(map(map(string)), {})
-      tag_keys     = optional(map(string), {})
-      tag_values   = optional(map(string), {})
+      iam_principals = optional(map(string), {})
+      org_policies   = optional(map(map(string)), {})
+      tag_keys       = optional(map(string), {})
+      tag_values     = optional(map(string), {})
     }), {})
   })
   nullable = false

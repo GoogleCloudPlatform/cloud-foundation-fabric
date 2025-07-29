@@ -1175,6 +1175,14 @@ values:
     role_id: billingViewer
     stage: GA
     title: Custom role billingViewer
+  module.organization.google_organization_iam_custom_role.roles["dns_zone_binder"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - dns.networks.bindPrivateDNSZone
+    role_id: dnsZoneBinder
+    stage: GA
+    title: Custom role dnsZoneBinder
   module.organization.google_organization_iam_custom_role.roles["gcve_network_admin"]:
     description: Terraform-managed.
     org_id: '123456789012'
@@ -1197,6 +1205,31 @@ values:
     role_id: gcveNetworkViewer
     stage: GA
     title: Custom role gcveNetworkViewer
+  module.organization.google_organization_iam_custom_role.roles["kms_key_encryption_admin"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - cloudkms.cryptoKeyVersions.get
+    - cloudkms.cryptoKeyVersions.list
+    - cloudkms.cryptoKeys.get
+    - cloudkms.cryptoKeys.getIamPolicy
+    - cloudkms.cryptoKeys.list
+    - cloudkms.cryptoKeys.setIamPolicy
+    role_id: kmsKeyEncryptionAdmin
+    stage: GA
+    title: Custom role kmsKeyEncryptionAdmin
+  module.organization.google_organization_iam_custom_role.roles["kms_key_viewer"]:
+    description: Terraform-managed.
+    org_id: '123456789012'
+    permissions:
+    - cloudkms.cryptoKeyVersions.get
+    - cloudkms.cryptoKeyVersions.list
+    - cloudkms.cryptoKeys.get
+    - cloudkms.cryptoKeys.getIamPolicy
+    - cloudkms.cryptoKeys.list
+    role_id: kmsKeyViewer
+    stage: GA
+    title: Custom role kmsKeyViewer
   module.organization.google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
     description: Terraform-managed.
     org_id: '123456789012'
@@ -1549,7 +1582,7 @@ counts:
   google_logging_organization_sink: 4
   google_logging_project_bucket_config: 4
   google_org_policy_custom_constraint: 1
-  google_org_policy_policy: 38
+  google_org_policy_policy: 40
   google_organization_iam_binding: 26
   google_organization_iam_custom_role: 16
   google_organization_iam_member: 31
@@ -1570,7 +1603,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 8
   modules: 20
-  resources: 258
+  resources: 260
 
 outputs:
   cicd_repositories: {}
