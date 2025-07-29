@@ -431,6 +431,11 @@ module "ralb-0" {
     default = {
       backends = [{
         backend = "hybrid-neg"
+        # Balancing mode must be RATE for Hybrid NEG
+        balancing_mode = "RATE"
+        max_rate = {
+          per_endpoint = 100
+        }
       }]
     }
   }
