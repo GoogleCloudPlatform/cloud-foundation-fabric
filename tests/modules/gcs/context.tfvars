@@ -11,10 +11,16 @@ context = {
     myuser  = "user:test-user@example.com"
     myuser2 = "user:test-user2@example.com"
   }
+  locations = {
+    ew8 = "europe-west8"
+  }
+  tag_values = {
+    "test/one" = "tagValues/1234567890"
+  }
 }
 project_id = "myproject"
 name       = "mybucket"
-location   = "mylocation"
+location   = "$locations:ew8"
 iam = {
   "$custom_roles:myrole_one" = [
     "$iam_principals:myuser"
@@ -44,7 +50,6 @@ iam_by_principals = {
     "roles/owner",
   ]
 }
-
 managed_folders = {
   folder1 = {
     iam = {
@@ -77,4 +82,7 @@ managed_folders = {
       ]
     }
   }
+}
+tag_bindings = {
+  foo = "$tag_values:test/one"
 }

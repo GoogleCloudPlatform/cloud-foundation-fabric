@@ -27,7 +27,7 @@ values:
     ip_filter: []
     labels: null
     lifecycle_rule: []
-    location: MYLOCATION
+    location: EUROPE-WEST8
     logging: []
     name: mybucket
     project: myproject
@@ -111,6 +111,11 @@ values:
     managed_folder: folder1/
     member: serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleThree
+  google_tags_location_tag_binding.binding["foo"]:
+    location: europe-west8
+    parent: //storage.googleapis.com/projects/_/buckets/mybucket
+    tag_value: tagValues/1234567890
+    timeouts: null
 
 counts:
   google_storage_bucket: 1
@@ -119,14 +124,6 @@ counts:
   google_storage_managed_folder: 1
   google_storage_managed_folder_iam_binding: 3
   google_storage_managed_folder_iam_member: 1
+  google_tags_location_tag_binding: 1
   modules: 0
-  resources: 13
-
-outputs:
-  bucket: __missing__
-  id: mybucket
-  name: mybucket
-  notification: null
-  objects: {}
-  topic: null
-  url: __missing__
+  resources: 14

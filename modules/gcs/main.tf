@@ -41,10 +41,12 @@ locals {
 }
 
 resource "google_storage_bucket" "bucket" {
-  count                       = var.bucket_create ? 1 : 0
-  name                        = local._name
-  project                     = local.project_id
-  location                    = var.location
+  count   = var.bucket_create ? 1 : 0
+  name    = local._name
+  project = local.project_id
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   storage_class               = var.storage_class
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
