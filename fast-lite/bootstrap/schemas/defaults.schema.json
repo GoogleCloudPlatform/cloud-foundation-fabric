@@ -492,17 +492,17 @@
               "additionalProperties": false,
               "required": [
                 "bucket",
-                "service_accounts"
+                "service_account"
               ],
               "properties": {
                 "bucket": {
                   "type": "string"
                 },
-                "service_accounts": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                "prefix": {
+                  "type": "string"
+                },
+                "service_account": {
+                  "type": "string"
                 }
               }
             }

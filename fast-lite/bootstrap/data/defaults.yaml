@@ -40,6 +40,4 @@ output_files:
   providers:
     0-bootstrap:
       bucket: $storage_buckets:iac-0/iac-bootstrap-state
-      service_accounts:
-        - $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
-        - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
+      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
