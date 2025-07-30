@@ -155,7 +155,6 @@ module "ssm_instance" {
   project_id  = var.project_id
   instance_id = "my-instance"
   location    = var.region
-  ca_pool     = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
   repositories = {
     my-repository = {
       branch_rules = {

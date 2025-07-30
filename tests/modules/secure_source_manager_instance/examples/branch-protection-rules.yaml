@@ -28,16 +28,13 @@ values:
     require_pull_request: true
     timeouts: null
   module.ssm_instance.google_secure_source_manager_instance.instance[0]:
-    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     instance_id: my-instance
     kms_key: null
     labels: null
     location: europe-west8
-    private_config:
-    - ca_pool: projects/another-project/locations/europe-west8/caPools/my-ca-pool
-      is_private: true
+    private_config: []
     project: project-id
     terraform_labels:
       goog-terraform-provisioned: 'true'
