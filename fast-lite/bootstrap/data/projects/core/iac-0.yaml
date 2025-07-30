@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=/home/ludomagno/dev/tf-playground/cloud-foundation-fabric/fast-lite/bootstrap/schemas/project.schema.json
+# yaml-language-server: $schema=../../../schemas/project.schema.json
 
 # TODO: data access logs configuration
 name: prod-iac-core-0
@@ -61,14 +61,14 @@ services:
   - storage-component.googleapis.com
   - storage.googleapis.com
   - sts.googleapis.com
-# org_policies:
-#   iam.workloadIdentityPoolProviders:
-#     rules:
-#       - allow:
-#           values:
-#             - https://token.actions.githubusercontent.com
-#             - https://gitlab.com
-#             - https://app.terraform.io
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          values:
+            - https://token.actions.githubusercontent.com
+            - https://gitlab.com
+            - https://app.terraform.io
 buckets:
   iac-bootstrap-state:
     description: Terraform state for the org-level automation.

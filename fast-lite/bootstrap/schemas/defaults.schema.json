@@ -472,6 +472,31 @@
           }
         }
       }
+    },
+    "output_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9][a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket",
+            "service_accounts"
+          ],
+          "properties": {
+            "bucket": {
+              "type": "string"
+            },
+            "service_accounts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
