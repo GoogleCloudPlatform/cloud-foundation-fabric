@@ -24,12 +24,17 @@ variable "contacts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    custom_roles   = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    locations      = optional(map(string), {})
-    org_policies   = optional(map(map(string)), {})
-    tag_keys       = optional(map(string), {})
-    tag_values     = optional(map(string), {})
+    bigquery_datasets = optional(map(string), {})
+    custom_roles      = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    locations         = optional(map(string), {})
+    log_buckets       = optional(map(string), {})
+    org_policies      = optional(map(map(string)), {})
+    project_ids       = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    storage_buckets   = optional(map(string), {})
+    tag_keys          = optional(map(string), {})
+    tag_values        = optional(map(string), {})
   })
   nullable = false
   default  = {}

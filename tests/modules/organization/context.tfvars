@@ -1,4 +1,7 @@
 context = {
+  bigquery_datasets = {
+    test = "projects/test-prod-audit-logs-0/datasets/logs"
+  }
   custom_roles = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
     myrole_two = "organizations/366118655033/roles/myRoleTwo"
@@ -10,6 +13,18 @@ context = {
   }
   locations = {
     default = "europe-west8"
+  }
+  log_buckets = {
+    test = "projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs"
+  }
+  project_ids = {
+    test = "test-prod-audit-logs-0"
+  }
+  pubsub_topics = {
+    test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
+  storage_buckets = {
+    test = "test-prod-logs-audit-0"
   }
   tag_keys = {
     test = "tagKeys/1234567890"
@@ -44,6 +59,33 @@ iam_bindings_additive = {
   myrole_two = {
     role   = "$custom_roles:myrole_two"
     member = "$iam_principals:myuser"
+  }
+}
+logging_sinks = {
+  test-bq = {
+    destination = "$bigquery_datasets:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "bigquery"
+  }
+  test-logging = {
+    destination = "$log_buckets:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "logging"
+  }
+  test-project = {
+    destination = "$project_ids:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "project"
+  }
+  test-pubsub = {
+    destination = "$pubsub_topics:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "pubsub"
+  }
+  test-storage = {
+    destination = "$storage_buckets:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "storage"
   }
 }
 logging_settings = {
