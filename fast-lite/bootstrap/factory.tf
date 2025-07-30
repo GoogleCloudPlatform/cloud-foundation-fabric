@@ -44,6 +44,10 @@ module "factory" {
         default = try(module.organization[0].id, null)
       }
     )
+    tag_values = merge(
+      local.ctx.tag_values,
+      local.org_tag_values
+    )
   })
   factories_config = {
     folders  = var.factories_config.folders
