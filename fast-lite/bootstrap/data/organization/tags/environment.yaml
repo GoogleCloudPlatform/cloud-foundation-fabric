@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/tags.schema.json
+# yaml-language-server: $schema=/home/ludomagno/dev/tf-playground/cloud-foundation-fabric/fast-lite/bootstrap/schemas/tags.schema.json
 
 description: "Organization-level environments."
 # iam:
 #   "roles/resourcemanager.tagViewer":
 #     - "group:finance-team@example.com"
 values:
-  dev:
+  development:
     description: "Development."
-  prod:
+  production:
     description: "Production."

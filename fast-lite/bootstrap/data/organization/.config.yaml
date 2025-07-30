@@ -14,7 +14,7 @@
 
 # TODO: data access logs
 
-# yaml-language-server: $schema=../../schemas/organization.schema.json
+# yaml-language-server: $schema=/home/ludomagno/dev/tf-playground/cloud-foundation-fabric/fast-lite/bootstrap/schemas/organization.schema.json
 
 id: $defaults:organization/id
 contacts:
@@ -22,16 +22,20 @@ contacts:
     - $iam_principals:gcp-organization-admins
 iam:
   roles/billing.creator: []
+  roles/cloudasset.viewer:
+    - mdb:oslo-chp-multiorg-enrichment-clients
+    - serviceAccount:gcp-metadata@system.gserviceaccount.com
+  roles/iam.organizationRoleAdmin:
+    - serviceAccount:latchkey-multiorg-ephemeral-custom-automation@system.gserviceaccount.com
+  roles/orgpolicy.policyAdmin:
+    - group:ops-security-incident_tools-cloud-chargeback@twosync-src.google.com
+    - serviceAccount:latchkey-multiorg-ephemeral-org-policy-automation@system.gserviceaccount.com
+  roles/orgpolicy.policyViewer:
+    - group:eip-cloud-multiorg@twosync.google.com
+  roles/resourcemanager.organizationAdmin:
+    - serviceAccount:latchkey-multiorg-ephemeral-iam-automation@system.gserviceaccount.com
 iam_by_principals:
-  $iam_principals:domain:
-    - roles/browser
-  $iam_principals:gcp-billing-admins:
-    - roles/billing.admin
-  $iam_principals:gcp-network-admins:
-    - roles/cloudasset.owner
-    - roles/cloudsupport.techSupportEditor
   $iam_principals:gcp-organization-admins:
-    - roles/billing.admin
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
     - roles/compute.osAdminLogin
@@ -44,15 +48,6 @@ iam_by_principals:
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
     - roles/iam.workforcePoolAdmin
-  $iam_principals:gcp-security-admins:
-    - roles/accesscontextmanager.policyAdmin
-    - roles/cloudasset.owner
-    - roles/cloudsupport.techSupportEditor
-    - roles/iam.organizationRoleAdmin
-    - roles/iam.securityReviewer
-    - roles/logging.admin
-    - roles/orgpolicy.policyAdmin
-    - roles/securitycenter.admin
   $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer
@@ -77,39 +72,32 @@ iam_by_principals:
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
     - roles/serviceusage.serviceUsageViewer
-iam_bindings_additive: {}
+  $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    - roles/compute.orgFirewallPolicyAdmin
+    - roles/compute.xpnAdmin
+  $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    - roles/compute.orgFirewallPolicyUser
+    - roles/compute.xpnAdmin
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:default
-  # sinks:
-  #   audit-logs:
-  #     # description: foo
-  #     # exclusions: {}
-  #     destination:
-  #       project_id: $project_ids.logging-0
-  #       # type: logging
-  #       # location: $locations.bigquery
-  #     filter: |
-  #       log_id("cloudaudit.googleapis.com/activity") OR
-  #       log_id("cloudaudit.googleapis.com/system_event") OR
-  #       log_id("cloudaudit.googleapis.com/policy") OR
-  #       log_id("cloudaudit.googleapis.com/access_transparency")
-  #   iam:
-  #     destination:
-  #       project_id: $project_ids.logging-0
-  #     filter: |
-  #       protoPayload.serviceName="iamcredentials.googleapis.com" OR
-  #       protoPayload.serviceName="iam.googleapis.com" OR
-  #       protoPayload.serviceName="sts.googleapis.com"
-  #   vpc-sc:
-  #     destination:
-  #       project_id: $project_ids.logging-0
-  #     filter: |
-  #       protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
-  #   workspace-audit-logs:
-  #     destination:
-  #       project_id: $project_ids.logging-0
-  #     filter: |
-  #       protoPayload.serviceName="admin.googleapis.com" OR
-  #       protoPayload.serviceName="cloudidentity.googleapis.com" OR
-  #       protoPayload.serviceName="login.googleapis.com"
+  sinks:
+    audit-logs:
+      # description: foo
+      # exclusions: {}
+      destination: $log_buckets:log-0/audit-logs
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+    iam:
+      destination: $log_buckets:log-0/iam
+      filter: |
+        protoPayload.serviceName="iamcredentials.googleapis.com" OR
+        protoPayload.serviceName="iam.googleapis.com" OR
+        protoPayload.serviceName="sts.googleapis.com"
+    vpc-sc:
+      destination: $log_buckets:log-0/vpc-sc
+      filter: |
+        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/project.schema.json
+# yaml-language-server: $schema=/home/ludomagno/dev/tf-playground/cloud-foundation-fabric/fast-lite/bootstrap/schemas/project.schema.json
 
 name: prod-audit-logs-0
 iam_by_principals:
@@ -21,8 +21,10 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
     - roles/owner
 services:
-  - bigquery.googleapis.com
   - logging.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
-  - sts.googleapis.com
+log_buckets:
+  audit-logs: {}
+  iam: {}
+  vpc-sc: {}
