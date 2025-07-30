@@ -37,3 +37,5 @@ shared_vpc_service_config:
   service_agent_iam:
     roles/compute.networkUser:
       - $service_agents:compute
+log_buckets:
+  test: {}

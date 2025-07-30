@@ -31,6 +31,7 @@ locals {
         iam                   = lookup(opts, "iam", {})
         iam_bindings          = lookup(opts, "iam_bindings", {})
         iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
+        iam_by_principals     = lookup(opts, "iam_by_principals", {})
         labels                = lookup(opts, "labels", {})
         location              = lookup(opts, "location", null)
         prefix = coalesce(
@@ -70,10 +71,10 @@ module "buckets" {
       local.automation_sas_iam_emails
     )
   })
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_by_principals     = each.value.iam_by_principals
   labels                = each.value.labels
   location = coalesce(
     local.data_defaults.overrides.storage_location,

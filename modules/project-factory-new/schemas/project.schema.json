@@ -105,6 +105,15 @@
     "labels": {
       "type": "object"
     },
+    "log_buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/log_bucket"
+        }
+      }
+    },
     "metric_scopes": {
       "type": "array",
       "items": {
@@ -714,6 +723,40 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "log_bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "kms_key_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "log_analytics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "dataset_link_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "retention": {
+          "type": "number"
         }
       }
     }
