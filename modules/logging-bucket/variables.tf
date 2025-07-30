@@ -34,11 +34,6 @@ variable "description" {
   default     = null
 }
 
-variable "id" {
-  description = "Name of the logging bucket."
-  type        = string
-}
-
 variable "kms_key_name" {
   description = "To enable CMEK for a project logging bucket, set this field to a valid name. The associated service account requires cloudkms.cryptoKeyEncrypterDecrypter roles assigned for the key."
   type        = string
@@ -62,14 +57,24 @@ variable "log_analytics" {
   default  = {}
 }
 
-variable "parent" {
-  description = "ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
+variable "name" {
+  description = "Name of the logging bucket."
   type        = string
 }
+
+variable "parent" {
+  description = "ID of the parent resource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
+  type        = string
+  nullable    = false
+}
+
+# parent type cannot be derived from parent id as that might be dynamic
 
 variable "parent_type" {
   description = "Parent object type for the bucket (project, folder, organization, billing_account)."
   type        = string
+  nullable    = false
+  default     = "project"
 }
 
 variable "retention" {

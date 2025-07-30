@@ -27,7 +27,7 @@ locals {
     }
   }
   ctx_p = "$"
-  parent = (
+  parent_id = (
     var.parent_type == "project"
     ? lookup(local.ctx.project_ids, var.parent, var.parent)
     : lookup(local.ctx.folder_ids, var.parent, var.parent)
@@ -41,15 +41,14 @@ locals {
 
 resource "google_logging_project_bucket_config" "bucket" {
   count   = var.parent_type == "project" ? 1 : 0
-  project = local.parent
+  project = local.parent_id
   location = lookup(
     local.ctx.locations, var.location, var.location
   )
   retention_days   = var.retention
-  bucket_id        = var.id
+  bucket_id        = var.name
   description      = var.description
   enable_analytics = var.log_analytics.enable
-
   dynamic "cmek_settings" {
     for_each = var.kms_key_name == null ? [] : [""]
     content {
@@ -60,12 +59,12 @@ resource "google_logging_project_bucket_config" "bucket" {
 
 resource "google_logging_folder_bucket_config" "bucket" {
   count  = var.parent_type == "folder" ? 1 : 0
-  folder = local.parent
+  folder = local.parent_id
   location = lookup(
     local.ctx.locations, var.location, var.location
   )
   retention_days = var.retention
-  bucket_id      = var.id
+  bucket_id      = var.name
   description    = var.description
 }
 
@@ -80,23 +79,23 @@ resource "google_logging_linked_dataset" "dataset" {
 
 resource "google_logging_organization_bucket_config" "bucket" {
   count        = var.parent_type == "organization" ? 1 : 0
-  organization = var.parent
+  organization = local.parent_id
   location = lookup(
     local.ctx.locations, var.location, var.location
   )
   retention_days = var.retention
-  bucket_id      = var.id
+  bucket_id      = var.name
   description    = var.description
 }
 
 resource "google_logging_billing_account_bucket_config" "bucket" {
   count           = var.parent_type == "billing_account" ? 1 : 0
-  billing_account = var.parent
+  billing_account = local.parent_id
   location = lookup(
     local.ctx.locations, var.location, var.location
   )
   retention_days = var.retention
-  bucket_id      = var.id
+  bucket_id      = var.name
   description    = var.description
 }
 
