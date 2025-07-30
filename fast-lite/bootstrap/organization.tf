@@ -74,9 +74,14 @@ module "organization-iam" {
       local.ctx.iam_principals,
       module.factory.iam_principals
     )
+    log_buckets = module.factory.log_buckets
     org_policies = {
       organization = local.defaults.organization
     }
+    project_ids = merge(
+      local.ctx.project_ids, module.factory.project_ids
+    )
+    storage_buckets = module.factory.storage_buckets
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
@@ -97,4 +102,5 @@ module "organization-iam" {
   iam_bindings_additive = lookup(
     local.organization, "iam_bindings_additive", {}
   )
+  logging_sinks = try(local.organization.logging.sinks, {})
 }

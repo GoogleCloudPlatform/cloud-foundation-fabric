@@ -57,6 +57,17 @@
                 },
                 "filter": {
                   "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "logging",
+                  "enum": [
+                    "bigquery",
+                    "logging",
+                    "project",
+                    "pubsub",
+                    "storage"
+                  ]
                 }
               }
             }

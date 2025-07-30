@@ -14,29 +14,11 @@
  * limitations under the License.
  */
 
-output "folder_ids" {
-  value = local.folder_ids
-}
-
-output "iam_principals" {
-  value = local.iam_principals
-}
-
-output "project_ids" {
-  value = local.project_ids
-}
-
-output "projects" {
-  value = {
+locals {
+  outputs_projects = {
     for k, v in local.projects_input : k => {
       number     = module.projects[k].number
       project_id = module.projects[k].project_id
-      buckets = {
-        for sk, sv in lookup(v, "buckets", {}) :
-        "${k}/${sk}" => (
-          module.buckets["${k}/${sk}"].name
-        )
-      }
       log_buckets = {
         for sk, sv in lookup(v, "log_buckets", {}) :
         "${k}/${sk}" => (
@@ -49,6 +31,46 @@ output "projects" {
           module.service-accounts["${k}/${sk}"].email
         )
       }
+      storage_buckets = {
+        for sk, sv in lookup(v, "buckets", {}) :
+        "${k}/${sk}" => (
+          module.buckets["${k}/${sk}"].name
+        )
+      }
     }
   }
+}
+
+output "folder_ids" {
+  value = local.folder_ids
+}
+
+output "log_buckets" {
+  value = merge([
+    for k, v in local.outputs_projects : v.log_buckets
+  ]...)
+}
+
+output "iam_principals" {
+  value = local.iam_principals
+}
+
+output "project_ids" {
+  value = local.project_ids
+}
+
+output "projects" {
+  value = local.outputs_projects
+}
+
+output "service_accounts" {
+  value = merge([
+    for k, v in local.outputs_projects : v.service_accounts
+  ]...)
+}
+
+output "storage_buckets" {
+  value = merge([
+    for k, v in local.outputs_projects : v.storage_buckets
+  ]...)
 }

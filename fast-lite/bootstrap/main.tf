@@ -54,6 +54,8 @@ locals {
   }
 }
 
+# TODO: streamine location replacements
+
 resource "terraform_data" "precondition" {
   lifecycle {
     precondition {
