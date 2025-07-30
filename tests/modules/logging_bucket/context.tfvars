@@ -21,10 +21,9 @@ context = {
     "test/one" = "tagValues/1234567890"
   }
 }
-id          = "mybucket"
-location    = "$locations:ew8"
-parent      = "$project_ids:myproject"
-parent_type = "project"
+name     = "mybucket"
+location = "$locations:ew8"
+parent   = "$project_ids:myproject"
 tag_bindings = {
   foo = "$tag_values:test/one"
 }
