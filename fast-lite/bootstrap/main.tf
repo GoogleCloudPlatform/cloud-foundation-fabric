@@ -48,6 +48,11 @@ locals {
       null
     )
   }
+  output_files = {
+    local_path     = try(local._defaults.output_files.local_path, null)
+    storage_bucket = try(local._defaults.output_files.storage_bucket, null)
+    providers      = try(local._defaults.output_files.providers, {})
+  }
   project_defaults = {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
