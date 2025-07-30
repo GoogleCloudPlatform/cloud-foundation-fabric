@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-output "data" {
-  value = {
-    folders  = local.folders_input
-    projects = local.projects_input
-  }
-}
-
 output "folder_ids" {
   value = local.folder_ids
 }
@@ -31,4 +24,31 @@ output "iam_principals" {
 
 output "project_ids" {
   value = local.project_ids
+}
+
+output "projects" {
+  value = {
+    for k, v in local.projects_input : k => {
+      number     = module.projects[k].number
+      project_id = module.projects[k].project_id
+      buckets = {
+        for sk, sv in lookup(v, "buckets", {}) :
+        "${k}/${sk}" => (
+          module.buckets["${k}/${sk}"].name
+        )
+      }
+      log_buckets = {
+        for sk, sv in lookup(v, "log_buckets", {}) :
+        "${k}/${sk}" => (
+          module.log-buckets["${k}/${sk}"].id
+        )
+      }
+      service_accounts = {
+        for sk, sv in lookup(v, "service_accounts", {}) :
+        "${k}/${sk}" => (
+          module.service-accounts["${k}/${sk}"].email
+        )
+      }
+    }
+  }
 }
