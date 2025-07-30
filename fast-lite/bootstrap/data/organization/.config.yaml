@@ -81,35 +81,35 @@ iam_bindings_additive: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:default
-  sinks:
-    audit-logs:
-      # description: foo
-      # exclusions: {}
-      destination:
-        project_id: $project_ids.logging-0
-        # type: logging
-        # location: $locations.bigquery
-      filter: |
-        log_id("cloudaudit.googleapis.com/activity") OR
-        log_id("cloudaudit.googleapis.com/system_event") OR
-        log_id("cloudaudit.googleapis.com/policy") OR
-        log_id("cloudaudit.googleapis.com/access_transparency")
-    iam:
-      destination:
-        project_id: $project_ids.logging-0
-      filter: |
-        protoPayload.serviceName="iamcredentials.googleapis.com" OR
-        protoPayload.serviceName="iam.googleapis.com" OR
-        protoPayload.serviceName="sts.googleapis.com"
-    vpc-sc:
-      destination:
-        project_id: $project_ids.logging-0
-      filter: |
-        protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
-    workspace-audit-logs:
-      destination:
-        project_id: $project_ids.logging-0
-      filter: |
-        protoPayload.serviceName="admin.googleapis.com" OR
-        protoPayload.serviceName="cloudidentity.googleapis.com" OR
-        protoPayload.serviceName="login.googleapis.com"
+  # sinks:
+  #   audit-logs:
+  #     # description: foo
+  #     # exclusions: {}
+  #     destination:
+  #       project_id: $project_ids.logging-0
+  #       # type: logging
+  #       # location: $locations.bigquery
+  #     filter: |
+  #       log_id("cloudaudit.googleapis.com/activity") OR
+  #       log_id("cloudaudit.googleapis.com/system_event") OR
+  #       log_id("cloudaudit.googleapis.com/policy") OR
+  #       log_id("cloudaudit.googleapis.com/access_transparency")
+  #   iam:
+  #     destination:
+  #       project_id: $project_ids.logging-0
+  #     filter: |
+  #       protoPayload.serviceName="iamcredentials.googleapis.com" OR
+  #       protoPayload.serviceName="iam.googleapis.com" OR
+  #       protoPayload.serviceName="sts.googleapis.com"
+  #   vpc-sc:
+  #     destination:
+  #       project_id: $project_ids.logging-0
+  #     filter: |
+  #       protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+  #   workspace-audit-logs:
+  #     destination:
+  #       project_id: $project_ids.logging-0
+  #     filter: |
+  #       protoPayload.serviceName="admin.googleapis.com" OR
+  #       protoPayload.serviceName="cloudidentity.googleapis.com" OR
+  #       protoPayload.serviceName="login.googleapis.com"

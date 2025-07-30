@@ -60,28 +60,3 @@ locals {
     )
   }
 }
-
-module "log-export-logbucket" {
-  source = "../../modules/logging-bucket"
-  for_each = {
-    for k, v in local.log_sinks : k => v if v.destination.type == "logging"
-  }
-  parent_type   = "project"
-  parent        = each.value.destination.project_id
-  id            = each.value.name
-  location      = try(each.value.destination.location, "$locations:default/logging")
-  log_analytics = { enable = true }
-  context       = local.logging_ctx
-}
-
-module "log-export-gcs" {
-  source = "../../modules/gcs"
-  for_each = {
-    for k, v in local.log_sinks : k => v if v.destination.type == "storage"
-  }
-  project_id = each.value.destination.project_id
-  name       = each.value.name
-  prefix     = local.defaults.prefix
-  location   = try(each.value.destination.location, "$locations:default/storage")
-  context    = local.logging_ctx
-}

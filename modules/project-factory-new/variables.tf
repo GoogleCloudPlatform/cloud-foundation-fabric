@@ -21,6 +21,7 @@ variable "context" {
     folder_ids            = optional(map(string), {})
     iam_principals        = optional(map(string), {})
     kms_keys              = optional(map(string), {})
+    locations             = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_values            = optional(map(string), {})

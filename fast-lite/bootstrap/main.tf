@@ -24,6 +24,10 @@ locals {
       local.org_iam_principals,
       var.context.iam_principals
     )
+    locations = {
+      for k, v in local.defaults.locations :
+      k => v if k != "pubsub"
+    }
   })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)

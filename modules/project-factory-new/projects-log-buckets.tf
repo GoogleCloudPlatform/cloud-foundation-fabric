@@ -18,12 +18,15 @@ locals {
   projects_log_buckets = flatten([
     for k, v in local.projects_input : [
       for name, opts in lookup(v, "log_buckets", {}) : {
-        project_key   = k
-        project_name  = v.name
-        name          = name
-        description   = lookup(opts, "description", "Terraform-managed.")
-        kms_key_name  = lookup(opts, "kms_key_name", null)
-        location      = lookup(opts, "location", "global")
+        project_key  = k
+        project_name = v.name
+        name         = name
+        description  = lookup(opts, "description", "Terraform-managed.")
+        kms_key_name = lookup(opts, "kms_key_name", null)
+        location = try(
+          lookup(local.ctx.locations, opts.location, opts.location),
+          "global"
+        )
         retention     = lookup(v, "retention", null)
         log_analytics = lookup(v, "log_analytics", {})
       }
@@ -41,6 +44,7 @@ module "log-buckets" {
   location     = each.value.location
   kms_key_name = each.value.kms_key_name
   context = merge(local.ctx, {
+    folder_ids  = local.ctx_folder_ids
     project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,

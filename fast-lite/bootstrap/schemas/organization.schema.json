@@ -50,28 +50,7 @@
                   "type": "string"
                 },
                 "destination": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "project_id"
-                  ],
-                  "properties": {
-                    "location": {
-                      "type": "string"
-                    },
-                    "project_id": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "default": "logging",
-                      "enum": [
-                        "logging",
-                        "project",
-                        "pubsub",
-                        "storage"
-                      ]
-                    }
-                  }
+                  "type": "string"
                 },
                 "exclusions": {
                   "type": "object"

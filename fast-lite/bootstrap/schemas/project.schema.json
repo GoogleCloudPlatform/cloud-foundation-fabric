@@ -67,12 +67,6 @@
     "billing_account": {
       "type": "string"
     },
-    "billing_budgets": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
     "buckets": {
       "$ref": "#/$defs/buckets"
     },
@@ -110,6 +104,15 @@
     },
     "labels": {
       "type": "object"
+    },
+    "log_buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/log_bucket"
+        }
+      }
     },
     "metric_scopes": {
       "type": "array",
@@ -192,6 +195,59 @@
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "quotas": {
+      "title": "Quotas",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "quota_id",
+            "preferred_value"
+          ],
+          "properties": {
+            "service": {
+              "type": "string"
+            },
+            "quota_id": {
+              "type": "string"
+            },
+            "preferred_value": {
+              "type": "number"
+            },
+            "dimensions": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "justification": {
+              "type": "string"
+            },
+            "contact_email": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "ignore_safety_checks": {
+              "type": "string",
+              "enum": [
+                "QUOTA_DECREASE_BELOW_USAGE",
+                "QUOTA_DECREASE_PERCENTAGE_TOO_HIGH",
+                "QUOTA_SAFETY_CHECK_UNSPECIFIED"
+              ]
             }
           }
         }
@@ -441,6 +497,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -492,11 +551,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:\\$|roles/)[a-z]": {
+        "^(?:roles/|\\$custom_roles:)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:)"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\\$iam_principals:[a-z0-9_-]+)"
           }
         }
       }
@@ -513,12 +572,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:\\$|roles/)[a-z]"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -553,11 +612,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:\\$|roles/)[a-z]"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -586,11 +645,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:\\$[a-z]|domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:\\$|roles/)[a-z]"
+            "pattern": "^(?:roles/|\\$custom_roles:)"
           }
         }
       }
@@ -664,6 +723,40 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "log_bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "kms_key_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "log_analytics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "dataset_link_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "retention": {
+          "type": "number"
         }
       }
     }

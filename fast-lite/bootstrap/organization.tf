@@ -15,21 +15,22 @@
  */
 
 locals {
+  # prepare organization data
   organization = merge(
-    {
-      domain = null
-      id     = null
-    },
+    # initialize required attributes
+    { domain = null, id = null },
+    # merge defaults
     lookup(local.defaults, "organization", {}),
-    try(
-      yamldecode(file("${local._paths.organization}/.config.yaml")), {}
-    )
+    # merge attributes defined in yaml
+    try(yamldecode(file("${local._paths.organization}/.config.yaml")), {})
   )
+  # interpolate organization id if required
   organization_id = (
     local.organization.id == "$defaults:organization/id"
     ? try(local.defaults.organization.id, local.organization.id)
     : local.organization.id
   )
+  # build map of predefined groups if organization domain is set
   org_iam_principals = local.organization.domain == null ? {} : {
     domain                  = "domain:${local.organization.domain}"
     gcp-billing-admins      = "group:gcp-billing-admins@${local.organization.domain}"
@@ -49,7 +50,7 @@ module "organization" {
   source           = "../../modules/organization"
   count            = local.organization_id != null ? 1 : 0
   organization_id  = "organizations/${local.organization_id}"
-  logging_settings = lookup(local.organization, "logging", {})
+  logging_settings = lookup(local.organization, "logging", null)
   context = {
     locations = {
       default = local.defaults.locations.logging
