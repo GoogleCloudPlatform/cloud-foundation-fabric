@@ -635,11 +635,10 @@ module "cloud_run" {
         path   = "/webhook"                   # optional: URL path for the Cloud Run service
       }
     }
-    service_account_create = true
   }
   deletion_protection = false
 }
-# tftest modules=2 resources=6 fixtures=fixtures/gcs.tf inventory=service-eventarc-storage.yaml e2e
+# tftest modules=2 resources=4 fixtures=fixtures/gcs.tf inventory=service-eventarc-storage.yaml e2e
 ```
 
 ### Using custom service accounts for triggers
@@ -694,6 +693,33 @@ module "cloud_run" {
   deletion_protection = false
 }
 # tftest modules=2 resources=6 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub-sa-create.yaml e2e
+```
+
+Example using automatically created service account for storage triggers:
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = var.region
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  eventarc_triggers = {
+    storage = {
+      bucket-upload = {
+        bucket = module.gcs.name
+        path   = "/webhook"                   # optional: URL path for the Cloud Run service
+      }
+    }
+    service_account_create = true
+  }
+  deletion_protection = false
+}
+# tftest modules=2 resources=6 fixtures=fixtures/gcs.tf inventory=service-eventarc-storage-sa-create.yaml e2e
 ```
 
 ## Cloud Run Invoker IAM Disable
