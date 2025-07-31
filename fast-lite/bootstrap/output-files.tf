@@ -45,3 +45,21 @@ resource "local_file" "providers" {
     )
   })
 }
+
+resource "google_storage_bucket_object" "providers" {
+  for_each = local.output_files.storage_bucket == null ? {} : local.output_files.providers
+  bucket = lookup(
+    local.of_buckets,
+    local.output_files.storage_bucket,
+    local.output_files.storage_bucket
+  )
+  name = "providers/${each.key}-providers.tf"
+  content = templatestring(local.of_template, {
+    bucket = lookup(
+      local.of_buckets, each.value.bucket, each.value.bucket
+    )
+    service_account = lookup(
+      local.of_service_accounts, each.value.service_account, each.value.service_account
+    )
+  })
+}
