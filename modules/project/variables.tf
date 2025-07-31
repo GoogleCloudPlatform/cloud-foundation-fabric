@@ -166,8 +166,8 @@ variable "parent" {
   validation {
     condition = (
       var.parent == null ||
-      startswith(var.parent, "$") ||
-      can(regex("(organizations|folders)/[0-9]+", var.parent))
+      startswith(coalesce(var.parent, "-"), "$") ||
+      can(regex("(organizations|folders)/[0-9]+", coalesce(var.parent, "-")))
     )
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id or refer to a context variable via the '$' prefix."
   }
