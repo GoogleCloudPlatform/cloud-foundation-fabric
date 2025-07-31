@@ -18,7 +18,6 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
     - [Using external files](#using-external-files)
     - [Running tests for specific examples](#running-tests-for-specific-examples)
     - [Generating the inventory automatically](#generating-the-inventory-automatically)
-    - [Building tests for blueprints](#building-tests-for-blueprints)
   - [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
     - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
   - [Running end-to-end tests](#running-end-to-end-tests)
@@ -598,19 +597,6 @@ locals {
 }
 ```
 
-For blueprints the prefix is mandatory:
-
-```hcl
-variable "prefix" {
-  description = "Prefix used for resource names."
-  type        = string
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty."
-  }
-}
-```
-
 ### Interacting with checks and tools
 
 Our modules are designed for composition and live in a monorepo together with several end-to-end blueprints, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
@@ -697,7 +683,7 @@ In the following sections we describe the three testing approaches we currently 
 
 ### Testing via README.md example blocks
 
-This is the preferred method to write tests for modules and blueprints. Example-based tests are triggered from [HCL Markdown fenced code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) in any file named README.md, hence there's no need to create any additional files or revert to Python to write a test. Most of our documentation examples are using this method.
+This is the preferred method to write tests for modules. Example-based tests are triggered from [HCL Markdown fenced code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) in any file named README.md, hence there's no need to create any additional files or revert to Python to write a test. Most of our documentation examples are using this method.
 
 To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources expected.
 
@@ -782,7 +768,7 @@ counts:
 
 #### Using external files
 
-In some situations your module might require additional files to properly test it. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resources from YAML files. If you're in this situation, you can still use example-based tests as described below:
+In some situations your module might require additional files to properly test it. This is a common situation with modules that implement factories that drive the creation of resources from YAML files. If you're in this situation, you can still use example-based tests as described below:
 
 - create your regular `hcl` code block example and add the `tftest` directive as described above.
 - create a new code block with the contents of the additional file and use the `tftest-file` directive. You have to specify a label for the file and a relative path where the file will live.
@@ -825,8 +811,6 @@ Here we show a few commonly used selection commands:
 
 - Run all examples:
   - `pytest tests/examples`
-- Run all examples for blueprints only:
-  - `pytest -k blueprints tests/examples`
 - Run all examples for modules only:
   - `pytest -k modules tests/examples`
 - Run all examples for the `net-vpc` module:
@@ -835,8 +819,6 @@ Here we show a few commonly used selection commands:
   - `pytest -k 'modules and net-vpc: and ipv6' tests/examples`
 - Run a specific example (identified by its full name) from the `net-vpc` module:
   - `pytest -v 'tests/examples/test_plan.py::test_example[modules/net-vpc:IPv6:1]'`
-- Run tests for all blueprints except those under the gke directory:
-  - `pytest -k 'blueprints and not gke' tests/examples`
 
 > [!NOTE]
 > The colon symbol (`:`) in `pytest` keyword expression `'modules and net-vpc:'` makes sure that `net-vpc` is matched but `net-vpc-firewall` or `net-vpc-peering` are not.
@@ -933,12 +915,6 @@ You can use that output to build the inventory file.
 
 Note that for complex modules, the output can be very large and includes a lot of details about the resources. Extract only those resources and fields that are relevant to your test. There is a fine balance between asserting the critical bits related to your test scenario and including too many details that end up making the test too specific.
 
-#### Building tests for blueprints
-
-Generally blueprints are used as top-level modules which means that usually their READMEs include sample values for their variables but there are no examples showing how to use them as modules.
-
-If you want to test a blueprint using an example, we suggest adding a "Test" section at the end of the README and include the example there. See any existing blueprint for a [concrete example](blueprints/cloud-operations/asset-inventory-feed-remediation#test).
-
 ### Testing via `tfvars` and `yaml` (aka `tftest`-based tests)
 
 The second approach to testing requires you to:
@@ -950,7 +926,7 @@ The second approach to testing requires you to:
 
 Let's go through each step in succession, assuming you are testing the new `net-lb-app-ext` module.
 
-First create a new folder under `tests/modules` replacing any dash in the module name with underscores. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
+First create a new folder under `tests/modules` replacing any dash in the module name with underscores.
 
 ```bash
 mkdir tests/modules/net_glb
@@ -1348,7 +1324,7 @@ git pull
 ./tools/changelog.py --write --token $YOURGITHUBTOKEN
 ```
 
-After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:blueprints, on:module, ...), and finally run again
+After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:module, ...), and finally run again
 
 ```bash
 ./tools/changelog.py --write --token $YOURGITHUBTOKEN

@@ -109,7 +109,7 @@ fe80::/10
 
 ### SecOps Rules Factory
 
-The module includes a secops rules and reference list factory (see [Resource Factories](../../blueprints/factories/)) for the configuration of rules and reference lists leveraging YAML configuration files. Each configuration file for rules and reference lists contains more than one rule with a structure that reflects the `rules_config` and `reference_lists_config` variables. Again rules and reference list definition is available in the corresponding yaral and txt files in the data folder.
+The module includes a secops rules and reference list factory for the configuration of rules and reference lists leveraging YAML configuration files. Each configuration file for rules and reference lists contains more than one rule with a structure that reflects the `rules_config` and `reference_lists_config` variables. Again rules and reference list definition is available in the corresponding yaral and txt files in the data folder.
 
 ```hcl
 module "secops" {

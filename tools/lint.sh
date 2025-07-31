@@ -23,7 +23,7 @@ echo -- Terraform format --
 terraform fmt -recursive -check -diff $PWD
 
 echo -- READMEs --
-python3 tools/check_documentation.py --no-show-summary modules fast blueprints
+python3 tools/check_documentation.py --no-show-summary modules fast
 
 echo -- Links --
 python3 tools/check_links.py --no-show-summary $PWD
@@ -33,8 +33,7 @@ python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
 echo -- Python formatting --
 yapf -p -d -r \
-     tools/*.py \
-     blueprints
+     tools/*.py
 
 echo -- Version checks --
 find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;
