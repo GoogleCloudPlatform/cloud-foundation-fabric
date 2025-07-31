@@ -28,7 +28,7 @@ locals {
     ? null
     : pathexpand(local.output_files.local_path)
   )
-  of_template = file("assets/providers.tf")
+  of_template = file("assets/providers.tf.tpl")
 }
 
 

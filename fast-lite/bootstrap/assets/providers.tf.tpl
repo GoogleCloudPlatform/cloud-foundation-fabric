@@ -16,13 +16,13 @@
 
 terraform {
   backend "gcs" {
-    bucket                      = ${bucket}
-    impersonate_service_account = ${service_account}
+    bucket                      = "${bucket}"
+    impersonate_service_account = "${service_account}"
   }
 }
 provider "google" {
-  impersonate_service_account = ${service_account}
+  impersonate_service_account = "${service_account}"
 }
 provider "google-beta" {
-  impersonate_service_account = ${service_account}
+  impersonate_service_account = "${service_account}"
 }
