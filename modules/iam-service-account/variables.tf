@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-variable "create_ignore_already_exists" {
-  description = "If set to true, skip service account creation if a service account with the same email already exists."
-  type        = bool
-  default     = null
-  validation {
-    condition     = !(var.create_ignore_already_exists == true && var.service_account_create == false)
-    error_message = "Cannot set create_ignore_already_exists when service_account_create is false."
-  }
-}
-
 variable "context" {
   description = "External context used in replacements."
   type = object({
@@ -37,6 +27,16 @@ variable "context" {
   })
   default  = {}
   nullable = false
+}
+
+variable "create_ignore_already_exists" {
+  description = "If set to true, skip service account creation if a service account with the same email already exists."
+  type        = bool
+  default     = null
+  validation {
+    condition     = !(var.create_ignore_already_exists == true && var.service_account_create == false)
+    error_message = "Cannot set create_ignore_already_exists when service_account_create is false."
+  }
 }
 
 variable "description" {

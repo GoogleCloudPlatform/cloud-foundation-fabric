@@ -26,17 +26,6 @@ variable "bucket_create" {
   default     = true
 }
 
-variable "cors" {
-  description = "CORS configuration for the bucket. Defaults to null."
-  type = object({
-    origin          = optional(list(string))
-    method          = optional(list(string))
-    response_header = optional(list(string))
-    max_age_seconds = optional(number)
-  })
-  default = null
-}
-
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
@@ -48,6 +37,17 @@ variable "context" {
   })
   default  = {}
   nullable = false
+}
+
+variable "cors" {
+  description = "CORS configuration for the bucket. Defaults to null."
+  type = object({
+    origin          = optional(list(string))
+    method          = optional(list(string))
+    response_header = optional(list(string))
+    max_age_seconds = optional(number)
+  })
+  default = null
 }
 
 variable "custom_placement_config" {
