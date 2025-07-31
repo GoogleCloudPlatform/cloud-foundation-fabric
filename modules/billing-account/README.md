@@ -90,10 +90,9 @@ Billing account log sinks use the same format used for log sinks in the resource
 
 ```hcl
 module "log-bucket-all" {
-  source      = "./fabric/modules/logging-bucket"
-  parent_type = "project"
-  parent      = "myprj"
-  id          = "billing-account-all"
+  source = "./fabric/modules/logging-bucket"
+  parent = "myprj"
+  name   = "billing-account-all"
 }
 
 module "billing-account" {
