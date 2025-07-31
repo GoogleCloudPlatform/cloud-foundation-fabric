@@ -42,7 +42,7 @@ locals {
     )
   )
   parent_id = (
-    var.parent == null || startswith(var.parent, "$")
+    var.parent == null || startswith(coalesce(var.parent, "-"), "$")
     ? var.parent
     : split("/", var.parent)[1]
   )
