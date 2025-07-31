@@ -29,8 +29,38 @@ locals {
     : pathexpand(local.output_files.local_path)
   )
   of_template = file("assets/providers.tf.tpl")
+  of_tfvars = {
+    globals = {
+      billing_account = {
+        id = local.defaults.billing_account
+      }
+      groups    = local.ctx.iam_principals
+      locations = local.defaults.locations
+      organization = {
+        customer_id = try(local.defaults.organization.customer_id, null)
+        domain      = local.organization.domain
+        id          = local.organization_id
+      }
+      prefix = local.defaults.prefix
+    }
+    boostrap = {
+      folder_ids = merge(
+        local.ctx.folder_ids,
+        module.factory.folder_ids
+      )
+      project_ids = merge(
+        local.ctx.project_ids,
+        module.factory.project_ids
+      )
+      # project_numbers = module.factory.project_numbers
+      service_accounts = module.factory.service_accounts
+      tag_values = merge(
+        local.ctx.project_ids,
+        local.org_tag_values
+      )
+    }
+  }
 }
-
 
 resource "local_file" "providers" {
   for_each        = local.of_path == null ? {} : local.output_files.providers
@@ -62,4 +92,22 @@ resource "google_storage_bucket_object" "providers" {
       local.of_service_accounts, each.value.service_account, each.value.service_account
     )
   })
+}
+
+resource "local_file" "tfvars" {
+  for_each        = toset(local.of_path == null ? [] : keys(local.of_tfvars))
+  file_permission = "0644"
+  filename        = "${local.of_path}/tfvars/0-${each.key}.auto.tfvars.json"
+  content         = jsonencode(local.of_tfvars[each.key])
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  for_each = toset(local.output_files.storage_bucket == null ? [] : keys(local.of_tfvars))
+  bucket = lookup(
+    local.of_buckets,
+    local.output_files.storage_bucket,
+    local.output_files.storage_bucket
+  )
+  name    = "tfvars/0-${each.key}.auto.tfvars.json"
+  content = jsonencode(local.of_tfvars[each.key])
 }
