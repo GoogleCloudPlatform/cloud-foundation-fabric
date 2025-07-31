@@ -73,11 +73,11 @@ resource "google_billing_budget" "default" {
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }
-    projects = [
+    projects = each.value.filter.projects == null ? [] : [
       for v in each.value.filter.projects :
       lookup(local.ctx.project_ids, v, v)
     ]
-    resource_ancestors = [
+    resource_ancestors = each.value.filter.resource_ancestors == null ? [] : [
       for v in each.value.filter.resource_ancestors :
       lookup(local.ctx.folder_ids, v, v)
     ]
