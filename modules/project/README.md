@@ -1618,10 +1618,9 @@ module "pubsub" {
 }
 
 module "bucket" {
-  source      = "./fabric/modules/logging-bucket"
-  parent_type = "project"
-  parent      = var.project_id
-  id          = "${var.prefix}-bucket"
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "${var.prefix}-bucket"
 }
 # tftest inventory=data.yaml e2e
 ```
