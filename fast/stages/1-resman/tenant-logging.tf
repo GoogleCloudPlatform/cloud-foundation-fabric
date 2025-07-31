@@ -95,9 +95,8 @@ module "log-export-logbucket" {
   for_each = toset(var.root_node == null ? [] : [
     for k, v in local.log_sinks : k if v.type == "logging"
   ])
-  parent_type   = "project"
   parent        = var.logging.project_id
-  id            = each.key
+  name          = each.key
   location      = var.locations.logging
   log_analytics = { enable = true }
 }
