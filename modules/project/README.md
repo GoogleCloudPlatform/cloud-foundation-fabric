@@ -713,10 +713,9 @@ module "pubsub" {
 }
 
 module "bucket" {
-  source      = "./fabric/modules/logging-bucket"
-  parent_type = "project"
-  parent      = var.project_id
-  id          = "${var.prefix}-bucket"
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "${var.prefix}-bucket"
 }
 
 module "destination-project" {
@@ -808,10 +807,9 @@ module "project" {
 
 ```hcl
 module "bucket" {
-  source      = "./fabric/modules/logging-bucket"
-  parent_type = "project"
-  parent      = "other-project"
-  id          = "mybucket"
+  source = "./fabric/modules/logging-bucket"
+  parent = "other-project"
+  name   = "mybucket"
   views = {
     view1 = {
       filter = "LOG_ID(\"stdout\")"
