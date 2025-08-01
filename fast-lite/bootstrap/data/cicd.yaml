@@ -35,11 +35,11 @@ workflows:
       name: bootstrap
       branch: main
     output_files:
-      storage_bucket: $storage_buckets:output_files
+      storage_bucket: $storage_buckets:iac-0/iac-outputs
       providers:
         apply: foo
         plan: foo
       files: []
     service_accounts:
-      apply: $iam_principals:foo
-      plan: $iam_principals:foo
+      apply: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-rw
+      plan: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-ro

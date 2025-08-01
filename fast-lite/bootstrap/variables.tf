@@ -30,6 +30,7 @@ variable "context" {
     kms_keys              = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    service_account_ids   = optional(map(string), {})
     tag_values            = optional(map(string), {})
     vpc_host_projects     = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})

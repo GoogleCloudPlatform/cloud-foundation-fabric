@@ -706,7 +706,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:\\$service_account_ids:|projects/)": {
           "type": "array",
           "items": {
             "type": "string"

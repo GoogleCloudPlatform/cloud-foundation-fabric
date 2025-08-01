@@ -44,6 +44,9 @@ locals {
   projects_sas_iam_emails = {
     for k, v in module.service-accounts : "service_accounts/${k}" => v.iam_email
   }
+  project_sas_ids = {
+    for k, v in module.service-accounts : k => v.id
+  }
 }
 
 module "service-accounts" {
@@ -84,12 +87,8 @@ module "service_accounts-iam" {
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails
     )
+    service_account_ids = local.project_sas_ids
   })
   iam_sa_roles = each.value.iam_sa_roles
-  # {
-  #   for k, v in each.value.iam_sa_roles : lookup(
-  #     local.service_accounts_names, "${each.value.project_key}/${k}", k
-  #   ) => v
-  # }
 }
 

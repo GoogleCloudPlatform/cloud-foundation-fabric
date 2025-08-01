@@ -54,6 +54,7 @@ locals {
       )
       # project_numbers = module.factory.project_numbers
       service_accounts = module.factory.service_accounts
+      storage_buckets  = module.factory.storage_buckets
       tag_values = merge(
         local.ctx.project_ids,
         local.org_tag_values
