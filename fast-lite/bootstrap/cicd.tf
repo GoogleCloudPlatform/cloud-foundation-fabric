@@ -16,10 +16,65 @@
 
 locals {
   _cicd = try(yamldecode(file(local.paths.cicd)))
+  _cicd_identity_providers = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    "$wif_providers:${k}" => v.id
+  }
+  _cicd_output_files = {
+    for k, v in google_storage_bucket_object.providers :
+    "$output_files:providers/${k}" => v.name
+  }
   cicd_project_ids = {
     for k, v in merge(
       var.context.project_ids, module.factory.project_ids
     ) : "$project_ids:${k}" => v
+  }
+  cicd_workflows = {
+    for k, v in lookup(local._cicd, "workflows", {}) : k => {
+      outputs_bucket = lookup(
+        local.of_buckets,
+        v.output_files.storage_bucket,
+        v.output_files.storage_bucket
+      )
+      workflow = templatefile("assets/workflow-${v.template}.yaml", {
+        identity_provider = lookup(
+          local._cicd_identity_providers,
+          v.workload_identity_provider.id,
+          v.workload_identity_provider.id
+        )
+        service_accounts = {
+          apply = lookup(
+            local.of_service_accounts,
+            v.service_accounts.apply,
+            v.service_accounts.apply
+          )
+          plan = lookup(
+            local.of_service_accounts,
+            v.service_accounts.plan,
+            v.service_accounts.plan
+          )
+        }
+        outputs_bucket = lookup(
+          local.of_buckets,
+          v.output_files.storage_bucket,
+          v.output_files.storage_bucket
+        )
+        stage_name = k
+        tf_providers_files = {
+          apply = lookup(
+            local._cicd_output_files,
+            v.output_files.providers.apply,
+            v.output_files.providers.apply
+          )
+          plan = lookup(
+            local._cicd_output_files,
+            v.output_files.providers.plan,
+            v.output_files.providers.plan
+          )
+        }
+        tf_var_files = try(v.output_files.files, [])
+      })
+    }
   }
   wif_project = try(local._cicd.workload_identity_federation.project, null)
   wif_providers = {
@@ -66,4 +121,18 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     # fetched from the `.well-known` path for the issuer_uri
     jwks_json = try(each.value.custom_settings.jwks_json, null)
   }
+}
+
+resource "local_file" "workflows" {
+  for_each        = local.of_path == null ? {} : local.cicd_workflows
+  file_permission = "0644"
+  filename        = "${local.of_path}/workflows/${each.key}.yaml"
+  content         = each.value.workflow
+}
+
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.cicd_workflows
+  bucket   = each.value.outputs_bucket
+  name     = "workflows/${each.key}.yaml"
+  content  = each.value.workflow
 }
