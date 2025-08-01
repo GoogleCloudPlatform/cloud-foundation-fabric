@@ -15,10 +15,10 @@
  */
 
 locals {
-  _paths = {
+  paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
-  _defaults = try(yamldecode(file(var.factories_config.defaults)), {})
+  _defaults = try(yamldecode(file(local.paths.defaults)), {})
   ctx = merge(var.context, {
     iam_principals = merge(
       local.org_iam_principals,

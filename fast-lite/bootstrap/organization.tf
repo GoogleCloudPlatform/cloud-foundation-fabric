@@ -22,7 +22,7 @@ locals {
     # merge defaults
     lookup(local.defaults, "organization", {}),
     # merge attributes defined in yaml
-    try(yamldecode(file("${local._paths.organization}/.config.yaml")), {})
+    try(yamldecode(file("${local.paths.organization}/.config.yaml")), {})
   )
   # interpolate organization id if required
   organization_id = (
@@ -57,8 +57,8 @@ module "organization" {
     }
   }
   factories_config = {
-    custom_roles = "${local._paths.organization}/custom-roles"
-    tags         = "${local._paths.organization}/tags"
+    custom_roles = "${local.paths.organization}/custom-roles"
+    tags         = "${local.paths.organization}/tags"
   }
 }
 
@@ -88,7 +88,7 @@ module "organization-iam" {
     )
   })
   factories_config = {
-    org_policies = "${local._paths.organization}/org-policies"
+    org_policies = "${local.paths.organization}/org-policies"
   }
   iam = lookup(
     local.organization, "iam", {}
