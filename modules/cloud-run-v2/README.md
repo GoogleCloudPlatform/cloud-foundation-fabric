@@ -632,7 +632,7 @@ module "cloud_run" {
     storage = {
       bucket-upload = {
         bucket = module.gcs.name
-        path   = "/webhook"                   # optional: URL path for the Cloud Run service
+        path   = "/webhook" # optional: URL path for the Cloud Run service
       }
     }
   }
@@ -712,7 +712,7 @@ module "cloud_run" {
     storage = {
       bucket-upload = {
         bucket = module.gcs.name
-        path   = "/webhook"                   # optional: URL path for the Cloud Run service
+        path   = "/webhook" # optional: URL path for the Cloud Run service
       }
     }
     service_account_create = true

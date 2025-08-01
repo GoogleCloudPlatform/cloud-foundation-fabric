@@ -41,25 +41,26 @@ values:
     matching_criteria:
       - attribute: bucket
         operator: ''
-        value: test-bucket
+        value: test-my-bucket
       - attribute: type
         operator: ''
         value: google.cloud.storage.object.v1.finalized
     name: storage-bucket-upload
     project: project-id
-    service_account: null
 
   module.cloud_run.google_service_account.trigger_service_account[0]:
     account_id: tf-cr-trigger-hello
+    description: null
+    disabled: false
     display_name: Terraform trigger for Cloud Run hello.
     project: project-id
+    timeouts: null
 
   module.cloud_run.google_cloud_run_v2_service_iam_member.default[0]:
     condition: []
     member: serviceAccount:tf-cr-trigger-hello@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/run.invoker
-    service: hello
 
 counts:
   google_cloud_run_v2_service: 1
