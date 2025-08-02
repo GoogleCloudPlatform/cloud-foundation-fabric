@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/billing-account.schema.json
+# yaml-language-server: $schema=../../../schemas/folder.schema.json
 
-id: $defaults:billing_account
-# additive IAM must be used with care here
-iam_bindings_additive:
-  billing_admin_org_admins:
-    role: roles/billing.admin
-    member: $iam_principals:gcp-organization-admins
-  billing_admin_bootstrap_sa:
-    role: roles/billing.admin
-    member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+name: Security
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-security-rw:
+    - roles/logging.admin
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.tagUser
+  $iam_principals:service_accounts/iac-0/iac-security-ro:
+    - roles/viewer
+    - roles/resourcemanager.folderViewer
+    - roles/resourcemanager.tagViewer

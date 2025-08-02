@@ -78,6 +78,8 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
     - roles/compute.orgFirewallPolicyUser
     - roles/compute.xpnAdmin
+  $iam_principals:service_accounts/iac-0/iac-security-rw:
+    - roles/cloudasset.viewer
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:default

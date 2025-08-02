@@ -88,6 +88,12 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-networking-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-networking-ro
+      security:
+        iam:
+          roles/storage.admin:
+            - $iam_principals:service_accounts/iac-0/iac-security-rw
+          $custom_roles:storage_viewer:
+            - $iam_principals:service_accounts/iac-0/iac-security-ro
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
@@ -120,3 +126,8 @@ service_accounts:
     display_name: IaC service account for networking (read-only).
   iac-networking-rw:
     display_name: IaC service account for networking (read-write).
+  # IaC service accounts for security stage
+  iac-security-ro:
+    display_name: IaC service account for security (read-only).
+  iac-security-rw:
+    display_name: IaC service account for security (read-write).
