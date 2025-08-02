@@ -1,0 +1,1 @@
+/home/ludomagno/dev/tf-playground/fast-config/ephemeral-1/providers/0-bootstrap-providers.tf

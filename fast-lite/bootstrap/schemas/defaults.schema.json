@@ -473,6 +473,18 @@
         }
       }
     },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam_principals": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "output_files": {
       "type": "object",
       "additionalProperties": false,

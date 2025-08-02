@@ -22,7 +22,8 @@ locals {
   ctx = merge(var.context, {
     iam_principals = merge(
       local.org_iam_principals,
-      var.context.iam_principals
+      var.context.iam_principals,
+      try(local._defaults.context.iam_principals)
     )
     locations = {
       for k, v in local.defaults.locations :
