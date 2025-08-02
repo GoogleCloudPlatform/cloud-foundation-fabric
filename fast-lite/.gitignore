@@ -1,3 +1,5 @@
-stages/[0-9]*/local-*.tf
-stages-multitenant/[0-9]*/local-*.tf
-**/*.excalidraw
+**/[0-9]*providers.tf
+**/terraform.tfvars
+**/terraform.tfvars.json
+**/terraform-*.auto.tfvars.json
+**/[0-9]*.auto.tfvars*
