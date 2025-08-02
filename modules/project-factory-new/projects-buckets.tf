@@ -34,6 +34,7 @@ locals {
         iam_by_principals     = lookup(opts, "iam_by_principals", {})
         labels                = lookup(opts, "labels", {})
         location              = lookup(opts, "location", null)
+        managed_folders       = lookup(opts, "managed_folders", {})
         prefix = coalesce(
           local.data_defaults.overrides.prefix,
           try(v.prefix, null),
@@ -81,6 +82,7 @@ module "buckets" {
     lookup(each.value, "location", null),
     local.data_defaults.defaults.storage_location
   )
+  managed_folders             = each.value.managed_folders
   storage_class               = each.value.storage_class
   uniform_bucket_level_access = each.value.uniform_bucket_level_access
   versioning                  = each.value.versioning

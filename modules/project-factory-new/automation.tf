@@ -94,6 +94,7 @@ module "automation-bucket" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   labels                = lookup(each.value, "labels", {})
+  managed_folders       = lookup(each.value, "managed_folders", {})
   location = coalesce(
     local.data_defaults.overrides.storage_location,
     lookup(each.value, "location", null),

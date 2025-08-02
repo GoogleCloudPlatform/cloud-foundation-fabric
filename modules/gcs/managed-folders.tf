@@ -21,7 +21,6 @@ locals {
     for k, v in var.managed_folders :
     (endswith(k, "/") ? k : "${k}/") => v
   }
-
   managed_folder_iam = flatten([
     for k, v in local.managed_folders : [
       for role, members in v.iam : {

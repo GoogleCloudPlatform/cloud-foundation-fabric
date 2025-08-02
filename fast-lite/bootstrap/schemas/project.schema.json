@@ -524,6 +524,30 @@
         "location": {
           "type": "string"
         },
+        "managed_folders": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9][a-zA-Z0-9_/-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "force_destroy": {
+                  "type": "boolean"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                }
+              }
+            }
+          }
+        },
         "prefix": {
           "type": "string"
         },

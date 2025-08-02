@@ -47,6 +47,28 @@ variable "projects" {
           }))
         })), {})
         labels = optional(map(string), {})
+        managed_folders = optional(map(object({
+          force_destroy = optional(bool)
+          iam           = optional(map(list(string)), {})
+          iam_bindings = optional(map(object({
+            members = list(string)
+            role    = string
+            condition = optional(object({
+              expression  = string
+              title       = string
+              description = optional(string)
+            }))
+          })), {})
+          iam_bindings_additive = optional(map(object({
+            member = string
+            role   = string
+            condition = optional(object({
+              expression  = string
+              title       = string
+              description = optional(string)
+            }))
+          })), {})
+        })), {})
       }))
       service_accounts = optional(map(object({
         description = optional(string)
@@ -107,6 +129,28 @@ variable "projects" {
         }))
       })), {})
       labels = optional(map(string), {})
+      managed_folders = optional(map(object({
+        force_destroy = optional(bool)
+        iam           = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+      })), {})
     })), {})
     contacts = optional(map(list(string)), {})
     iam      = optional(map(list(string)), {})
