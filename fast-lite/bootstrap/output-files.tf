@@ -71,6 +71,7 @@ resource "local_file" "providers" {
     bucket = lookup(
       local.of_buckets, each.value.bucket, each.value.bucket
     )
+    prefix = lookup(each.value, "prefix", null)
     service_account = lookup(
       local.of_service_accounts, each.value.service_account, each.value.service_account
     )
@@ -89,6 +90,7 @@ resource "google_storage_bucket_object" "providers" {
     bucket = lookup(
       local.of_buckets, each.value.bucket, each.value.bucket
     )
+    prefix = lookup(each.value, "prefix", null)
     service_account = lookup(
       local.of_service_accounts, each.value.service_account, each.value.service_account
     )

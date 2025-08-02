@@ -44,6 +44,10 @@ output_files:
     0-bootstrap-ro:
       bucket: $storage_buckets:iac-0/iac-bootstrap-state
       service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    2-networking:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-networking
+      service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
 context:
   iam_principals:
     gcp-organization-admins: group:fabric-fast-domainless-owners@twosync.google.com

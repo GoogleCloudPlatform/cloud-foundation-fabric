@@ -70,6 +70,7 @@ org_policies:
             - https://gitlab.com
             - https://app.terraform.io
 buckets:
+  # Terraform state bucket for this stage
   iac-bootstrap-state:
     description: Terraform state for the org-level automation.
     iam:
@@ -77,6 +78,7 @@ buckets:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
+  # Terraform state bucket for additional FAST stages
   iac-stage-state:
     description: Terraform state for stage automation.
     managed_folders:
@@ -86,6 +88,7 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-networking-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-networking-ro
+  # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
     iam:
@@ -96,10 +99,12 @@ buckets:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
 service_accounts:
+  # IaC service accounts for this stage
   iac-bootstrap-ro:
     display_name: IaC service account for bootstrap (read-only).
   iac-bootstrap-rw:
     display_name: IaC service account for bootstrap (read-write).
+  # CI/CD service accounts for this stage
   iac-bootstrap-cicd-ro:
     display_name: IaC service account for bootstrap CI/CD (read-only).
     iam_sa_roles:
@@ -110,6 +115,7 @@ service_accounts:
     iam_sa_roles:
       $service_account_ids:iac-0/iac-bootstrap-rw:
         - roles/iam.workloadIdentityUser
+  # IaC service accounts for networking stage
   iac-networking-ro:
     display_name: IaC service account for networking (read-only).
   iac-networking-rw:
