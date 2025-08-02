@@ -39,28 +39,28 @@ module "organization" {
       condition = lookup(v, "condition", null)
     }
   }
+  context = {
+    iam_principals = merge(
+      var.factories_config.context.iam_principals,
+      local.top_level_service_accounts_iam,
+      local.stage_service_accounts_iam
+    )
+    tag_keys = merge(
+      var.factories_config.context.tag_keys,
+      {
+        (var.org_policy_tags.key_name) = var.org_policy_tags.key_id
+      }
+    )
+    tag_values = merge(
+      var.factories_config.context.tag_values,
+      {
+        for k, v in var.org_policy_tags.values :
+        "${var.org_policy_tags.key_name}/${k}" => v
+      }
+    )
+  }
   factories_config = {
     tags = var.factories_config.tags
-    context = {
-      iam_principals = merge(
-        var.factories_config.context.iam_principals,
-        local.top_level_service_accounts_iam,
-        local.stage_service_accounts_iam
-      )
-      tag_keys = merge(
-        var.factories_config.context.tag_keys,
-        {
-          (var.org_policy_tags.key_name) = var.org_policy_tags.key_id
-        }
-      )
-      tag_values = merge(
-        var.factories_config.context.tag_values,
-        {
-          for k, v in var.org_policy_tags.values :
-          "${var.org_policy_tags.key_name}/${k}" => v
-        }
-      )
-    }
   }
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages

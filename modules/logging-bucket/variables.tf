@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    folder_ids     = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "Human-readable description for the logging bucket."
   type        = string
   default     = null
-}
-
-variable "id" {
-  description = "Name of the logging bucket."
-  type        = string
 }
 
 variable "kms_key_name" {
@@ -48,14 +57,24 @@ variable "log_analytics" {
   default  = {}
 }
 
-variable "parent" {
-  description = "ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
+variable "name" {
+  description = "Name of the logging bucket."
   type        = string
 }
+
+variable "parent" {
+  description = "ID of the parent resource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
+  type        = string
+  nullable    = false
+}
+
+# parent type cannot be derived from parent id as that might be dynamic
 
 variable "parent_type" {
   description = "Parent object type for the bucket (project, folder, organization, billing_account)."
   type        = string
+  nullable    = false
+  default     = "project"
 }
 
 variable "retention" {

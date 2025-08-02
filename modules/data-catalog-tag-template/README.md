@@ -72,7 +72,7 @@ module "data-catalog-tag-template" {
 
 ## Factory
 
-Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow tag template management via descriptive configuration files.
+Similarly to other modules, a rules factory is also included here to allow tag template management via descriptive configuration files.
 
 Factory configuration is done via a single optional attribute in the `factory_config_path` variable specifying the path where tag template files are stored.
 

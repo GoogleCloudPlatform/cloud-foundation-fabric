@@ -15,6 +15,12 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   network = (
     var.vpc_reuse == null
     ? {

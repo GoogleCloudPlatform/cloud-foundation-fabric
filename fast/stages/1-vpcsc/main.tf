@@ -53,13 +53,10 @@ module "vpc-sc" {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
-  access_levels   = var.access_levels
-  egress_policies = var.egress_policies
-  factories_config = merge(
-    var.factories_config, {
-      context = local.context
-    }
-  )
+  access_levels           = var.access_levels
+  egress_policies         = var.egress_policies
+  context                 = local.context
+  factories_config        = var.factories_config
   ingress_policies        = var.ingress_policies
   perimeters              = var.perimeters
   project_id_search_scope = "organizations/${var.organization.id}"

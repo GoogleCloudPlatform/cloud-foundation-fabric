@@ -118,8 +118,7 @@ module "projects" {
         each.value.vpc_sc.perimeter_name
       )
     )
-    perimeter_bridges = each.value.vpc_sc.perimeter_bridges
-    is_dry_run        = each.value.vpc_sc.is_dry_run
+    is_dry_run = each.value.vpc_sc.is_dry_run
   }
   quotas = each.value.quotas
 }
