@@ -19,6 +19,15 @@ locals {
     for k, v in module.factory.storage_buckets :
     "$storage_buckets:${k}" => v
   }
+  of_outputs_bucket = (
+    local.output_files.storage_bucket == null
+    ? null
+    : lookup(
+      local.of_buckets,
+      local.output_files.storage_bucket,
+      local.output_files.storage_bucket
+    )
+  )
   of_service_accounts = {
     for k, v in module.factory.service_accounts :
     "$iam_principals:service_accounts/${k}" => v
@@ -44,6 +53,9 @@ locals {
       prefix = local.defaults.prefix
     }
     boostrap = {
+      automation = {
+        outputs_bucket = local.of_outputs_bucket
+      }
       folder_ids = merge(
         local.ctx.folder_ids,
         module.factory.folder_ids
@@ -80,12 +92,8 @@ resource "local_file" "providers" {
 
 resource "google_storage_bucket_object" "providers" {
   for_each = local.output_files.storage_bucket == null ? {} : local.output_files.providers
-  bucket = lookup(
-    local.of_buckets,
-    local.output_files.storage_bucket,
-    local.output_files.storage_bucket
-  )
-  name = "providers/${each.key}-providers.tf"
+  bucket   = local.of_outputs_bucket
+  name     = "providers/${each.key}-providers.tf"
   content = templatestring(local.of_template, {
     bucket = lookup(
       local.of_buckets, each.value.bucket, each.value.bucket
@@ -106,11 +114,7 @@ resource "local_file" "tfvars" {
 
 resource "google_storage_bucket_object" "tfvars" {
   for_each = toset(local.output_files.storage_bucket == null ? [] : keys(local.of_tfvars))
-  bucket = lookup(
-    local.of_buckets,
-    local.output_files.storage_bucket,
-    local.output_files.storage_bucket
-  )
-  name    = "tfvars/0-${each.key}.auto.tfvars.json"
-  content = jsonencode(local.of_tfvars[each.key])
+  bucket   = local.of_outputs_bucket
+  name     = "tfvars/0-${each.key}.auto.tfvars.json"
+  content  = jsonencode(local.of_tfvars[each.key])
 }
