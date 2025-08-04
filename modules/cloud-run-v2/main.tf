@@ -128,6 +128,29 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
   service_account = local.trigger_sa_email
 }
 
+resource "google_eventarc_trigger" "storage_triggers" {
+  for_each = coalesce(var.eventarc_triggers.storage, tomap({}))
+  name     = "${local.prefix}storage-${each.key}"
+  location = google_cloud_run_v2_service.service[0].location
+  project  = google_cloud_run_v2_service.service[0].project
+  matching_criteria {
+    attribute = "type"
+    value     = "google.cloud.storage.object.v1.finalized"
+  }
+  matching_criteria {
+    attribute = "bucket"
+    value     = each.value.bucket
+  }
+  destination {
+    cloud_run_service {
+      service = google_cloud_run_v2_service.service[0].name
+      region  = google_cloud_run_v2_service.service[0].location
+      path    = try(each.value.path, null)
+    }
+  }
+  service_account = local.trigger_sa_email
+}
+
 resource "google_service_account" "trigger_service_account" {
   count        = local.trigger_sa_create ? 1 : 0
   project      = var.project_id

@@ -249,7 +249,7 @@
           }
         }
       }
-     },
+    },
     "parent": {
       "type": "string"
     },
@@ -610,7 +610,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_/]+$"
+              "pattern": "^[a-zA-Z0-9_/.]+$"
             },
             "condition": {
               "type": "object",
