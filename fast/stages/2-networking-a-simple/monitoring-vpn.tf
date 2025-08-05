@@ -29,20 +29,9 @@ resource "google_monitoring_alert_policy" "vpn_tunnel_established" {
   conditions {
     display_name = "VPN Tunnel Established"
 
-    condition_monitoring_query_language {
-      query = join("", [
-        "fetch vpn_gateway",
-        "| metric vpn.googleapis.com/tunnel_established",
-        "| group_by 5m, [value_tunnel_established_max: max(value.tunnel_established)]",
-        "| every 5m",
-        "| condition val() < 1 '1'",
-      ])
-
+    condition_prometheus_query_language {
+      query    = "max_over_time(vpn_googleapis_com:tunnel_established{monitored_resource=\"vpn_gateway\"}[5m]) < 1"
       duration = var.alert_config.vpn_tunnel_established.duration
-
-      trigger {
-        count = "1"
-      }
     }
   }
 
@@ -60,32 +49,25 @@ resource "google_monitoring_alert_policy" "vpn_tunnel_bandwidth" {
   count = var.alert_config.vpn_tunnel_bandwidth != null ? 1 : 0
 
   project               = module.landing-project.project_id
-  display_name          = "VPN Tunnel Bandwidth usage"
+  display_name          = "VPN Tunnel Bandwidth usage (MBy/s)"
   enabled               = var.alert_config.vpn_tunnel_bandwidth.enabled
   notification_channels = var.alert_config.vpn_tunnel_bandwidth.notification_channels
   user_labels           = var.alert_config.vpn_tunnel_bandwidth.user_labels
   combiner              = "OR"
 
   conditions {
-    display_name = "VPN Tunnel Bandwidth usage"
+    display_name = "VPN Tunnel Bandwidth usage (MBy/s)"
 
-    condition_monitoring_query_language {
+    condition_prometheus_query_language {
       query = join("", [
-        "fetch vpn_gateway",
-        "| { metric vpn.googleapis.com/network/sent_bytes_count",
-        "; metric vpn.googleapis.com/network/received_bytes_count }",
-        "| align rate (1m)",
-        "| group_by [metric.tunnel_name]",
-        "| outer_join 0,0",
-        "| value val(0) + val(1)",
-        "| condition val() > ${var.alert_config.vpn_tunnel_bandwidth.threshold_mbys} \"MBy/s\"",
+        "(sum by (tunnel_name) (",
+        "rate(vpn_googleapis_com:network_sent_bytes_count{monitored_resource=\"vpn_gateway\"}[1m])",
+        "+",
+        "rate(vpn_googleapis_com:network_received_bytes_count{monitored_resource=\"vpn_gateway\"}[1m])",
+        ")/1024/1024) > ${var.alert_config.vpn_tunnel_bandwidth.threshold_mbys}",
       ])
 
       duration = var.alert_config.vpn_tunnel_bandwidth.duration
-
-      trigger {
-        count = "1"
-      }
     }
   }
 
