@@ -149,3 +149,13 @@ variable "tags" {
     error_message = "Use an empty map instead of null as value."
   }
 }
+
+variable "tags_config" {
+  description = "Fine-grained control on tag resource and IAM creation."
+  type = object({
+    force_context_ids = optional(bool, false)
+    ignore_iam        = optional(bool, false)
+  })
+  nullable = false
+  default  = {}
+}

@@ -25,6 +25,7 @@ locals {
   _factory_tags_data = {
     for f, v_raw in local._factory_tags_data_raw :
     coalesce(lookup(v_raw, "name", null), trimsuffix(f, ".yaml")) => {
+      id                    = lookup(v_raw, "id", null)
       description           = lookup(v_raw, "description", null)
       iam                   = lookup(v_raw, "iam", {})
       iam_bindings          = lookup(v_raw, "iam_bindings", {})
@@ -32,6 +33,7 @@ locals {
       network               = lookup(v_raw, "network", null)
       values = {
         for vk, vv_raw in lookup(v_raw, "values", {}) : vk => {
+          id                    = lookup(vv_raw, "id", null)
           description           = lookup(vv_raw, "description", null)
           iam                   = lookup(vv_raw, "iam", {})
           iam_bindings          = lookup(vv_raw, "iam_bindings", {})
@@ -43,48 +45,50 @@ locals {
   _tags_merged = merge(local._factory_tags_data, var.tags, var.network_tags)
   tags = {
     for k, v in local._tags_merged : k => {
+      id = v.id != null ? v.id : (
+        var.tags_config.force_context_ids == true ? "$tag_keys:${k}" : null
+      )
       description = v.description
-      iam = {
+      iam = var.tags_config.ignore_iam == true ? {} : {
         for ik, iv in v.iam : ik => coalesce(iv, [])
       }
-      iam_bindings = {
+      iam_bindings = var.tags_config.ignore_iam == true ? {} : {
         for ik, iv in v.iam_bindings : ik => merge(iv, {
           members = coalesce(iv.members, [])
         })
       }
-      iam_bindings_additive = v.iam_bindings_additive
-      network               = lookup(v, "network", null)
-      id = try(coalesce(
-        lookup(v, "id", null),
-        lookup(local.ctx.tag_keys, "${local.ctx_p}tag_keys:${k}", null)
-      ), null)
+      iam_bindings_additive = (
+        var.tags_config.ignore_iam == true ? {} : v.iam_bindings_additive
+      )
+      network = lookup(v, "network", null)
       values = {
-        for vk, vv in lookup(v, "values", {}) : vk => {
+        for vk, vv in v.values : vk => {
+          id = vv.id != null ? vv.id : (
+            var.tags_config.force_context_ids == true ? "$tag_values:${k}/${vk}" : null
+          )
           description = vv.description
-          iam = {
+          iam = var.tags_config.ignore_iam == true ? {} : {
             for ik, iv in vv.iam : ik => coalesce(iv, [])
           }
-          iam_bindings = {
+          iam_bindings = var.tags_config.ignore_iam == true ? {} : {
             for ik, iv in vv.iam_bindings : ik => merge(iv, {
               members = coalesce(iv.members, [])
             })
           }
-          iam_bindings_additive = vv.iam_bindings_additive
-          id = try(coalesce(
-            lookup(vv, "id", null),
-            lookup(local.ctx.tag_values, "${local.ctx_p}tag_values:${k}/${vk}", null)
-          ), null)
+          iam_bindings_additive = (
+            var.tags_config.ignore_iam == true ? {} : vv.iam_bindings_additive
+          )
         }
       }
     }
   }
   _tag_iam = flatten([
     for k, v in local.tags : [
-      for role in keys(lookup(v, "iam", {})) : {
+      for role in keys(v.iam) : {
         # We cycle on keys here so we don't risk injecting dynamic values.
         role   = role
         tag    = k
-        tag_id = lookup(v, "id", null)
+        tag_id = v.id
       }
     ]
   ])
@@ -101,18 +105,18 @@ locals {
   ])
   _tag_values = flatten([
     for k, v in local.tags : [
-      for vk, vv in lookup(v, "values", {}) : {
+      for vk, vv in v.values : {
         description           = vv.description,
         key                   = "${k}/${vk}"
-        iam_bindings          = keys(lookup(vv, "iam_bindings", {}))
-        iam_bindings_additive = keys(lookup(vv, "iam_bindings_additive", {}))
-        id                    = lookup(vv, "id", null)
+        iam_bindings          = keys(vv.iam_bindings)
+        iam_bindings_additive = keys(vv.iam_bindings_additive)
+        id                    = vv.id
         name                  = vk
         # we only store keys here so we don't risk injecting dynamic values
-        roles       = keys(lookup(vv, "iam", {}))
+        roles       = keys(vv.iam)
         tag         = k
-        tag_id      = lookup(v, "id", null)
-        tag_network = lookup(v, "network", null) != null
+        tag_id      = v.id
+        tag_network = v.network
       }
     ]
   ])
@@ -121,19 +125,19 @@ locals {
   }
   tag_iam_bindings = merge([
     for k, v in local.tags : {
-      for bk in keys(lookup(v, "iam_bindings", {})) : "${k}:${bk}" => {
+      for bk in keys(v.iam_bindings) : "${k}:${bk}" => {
         binding = bk
         tag     = k
-        tag_id  = lookup(v, "id", null)
+        tag_id  = v.id
       }
     }
   ]...)
   tag_iam_bindings_additive = merge([
     for k, v in local.tags : {
-      for bk in keys(lookup(v, "iam_bindings_additive", {})) : "${k}:${bk}" => {
+      for bk in keys(v.iam_bindings_additive) : "${k}:${bk}" => {
         binding = bk
         tag     = k
-        tag_id  = lookup(v, "id", null)
+        tag_id  = v.id
       }
     }
   ]...)
@@ -172,7 +176,7 @@ locals {
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each = { for k, v in local.tags : k => v if lookup(v, "id", null) == null }
+  for_each = { for k, v in local.tags : k => v if v.id == null }
   parent   = var.organization_id
   purpose = (
     lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
@@ -235,7 +239,7 @@ resource "google_tags_tag_key_iam_member" "bindings" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each = { for k, v in local.tag_values : k => v if lookup(v, "id", null) == null }
+  for_each = { for k, v in local.tag_values : k => v if v.id == null }
   parent = (
     each.value.tag_id == null
     ? google_tags_tag_key.default[each.value.tag].id

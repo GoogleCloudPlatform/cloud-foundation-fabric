@@ -19,8 +19,10 @@ common_tfvars:
 
 tests:
   context:
+  iam_by_principals_additive:
   org_policies_list:
   org_policies_boolean:
   org_policies_custom_constraints:
   tags:
-  iam_by_principals_additive:
+  tags_force_context:
+  tags_skip_iam:
