@@ -82,13 +82,13 @@ buckets:
   iac-stage-state:
     description: Terraform state for stage automation.
     managed_folders:
-      networking:
+      2-networking:
         iam:
           roles/storage.admin:
             - $iam_principals:service_accounts/iac-0/iac-networking-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-networking-ro
-      security:
+      2-security:
         iam:
           roles/storage.admin:
             - $iam_principals:service_accounts/iac-0/iac-security-rw
@@ -101,9 +101,11 @@ buckets:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
+        - $iam_principals:service_accounts/iac-0/iac-security-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
+        - $iam_principals:service_accounts/iac-0/iac-security-ro
 service_accounts:
   # IaC service accounts for this stage
   iac-bootstrap-ro:

@@ -23,3 +23,6 @@ iam_bindings_additive:
   billing_admin_bootstrap_sa:
     role: roles/billing.admin
     member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+  billing_user_security_sa:
+    role: roles/billing.admin
+    member: $iam_principals:service_accounts/iac-0/iac-security-rw
