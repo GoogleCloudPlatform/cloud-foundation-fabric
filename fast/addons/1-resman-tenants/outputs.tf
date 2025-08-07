@@ -80,9 +80,9 @@ locals {
           tag_name   = v.tag_name != null ? v.tag_name : lower(v.name)
         }
       }
-      locations       = v.locations
-      organization    = v.organization
-      prefix          = v.prefix
+      locations    = v.locations
+      organization = v.organization
+      prefix       = v.prefix
     }
   }
   tenant_tfvars = {
