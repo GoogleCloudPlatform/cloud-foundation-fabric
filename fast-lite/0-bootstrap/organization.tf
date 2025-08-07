@@ -60,6 +60,9 @@ module "organization" {
     custom_roles = "${local.paths.organization}/custom-roles"
     tags         = "${local.paths.organization}/tags"
   }
+  tags_config = {
+    ignore_iam = true
+  }
 }
 
 module "organization-iam" {
@@ -89,6 +92,7 @@ module "organization-iam" {
   })
   factories_config = {
     org_policies = "${local.paths.organization}/org-policies"
+    tags         = "${local.paths.organization}/tags"
   }
   iam = lookup(
     local.organization, "iam", {}
@@ -103,4 +107,7 @@ module "organization-iam" {
     local.organization, "iam_bindings_additive", {}
   )
   logging_sinks = try(local.organization.logging.sinks, {})
+  tags_config = {
+    force_context_ids = true
+  }
 }
