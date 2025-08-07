@@ -83,7 +83,7 @@ output "network_tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default :
-    k => v if local.tag_values[k].tag_network
+    k => v if try(local.tag_values[k].tag_network, null) != null
   }
 }
 
@@ -190,6 +190,6 @@ output "tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default :
-    k => v if !local.tag_values[k].tag_network
+    k => v if try(local.tag_values[k].tag_network, null) == null
   }
 }

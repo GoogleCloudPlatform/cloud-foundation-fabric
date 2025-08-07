@@ -18,6 +18,8 @@ variable "network_tags" {
   description = "Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
     description = optional(string, "Managed by the Terraform organization module.")
+    id          = optional(string)
+    network     = string # project_id/vpc_name
     iam         = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
@@ -37,10 +39,9 @@ variable "network_tags" {
         description = optional(string)
       }))
     })), {})
-    id      = optional(string)
-    network = string # project_id/vpc_name
     values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
+      id          = optional(string)
       iam         = optional(map(list(string)), {})
       iam_bindings = optional(map(object({
         members = list(string)
