@@ -71,6 +71,15 @@ locals {
     for k, v in local.fast_tenants : k => {
       billing_account = v.billing_account
       groups          = v.principals
+      environments = {
+        for k, v in var.environments : k => {
+          is_default = v.is_default
+          key        = k
+          name       = v.name
+          short_name = v.short_name != null ? v.short_name : k
+          tag_name   = v.tag_name != null ? v.tag_name : lower(v.name)
+        }
+      }
       locations       = v.locations
       organization    = v.organization
       prefix          = v.prefix

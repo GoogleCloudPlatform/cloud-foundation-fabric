@@ -20,7 +20,13 @@ module "root-folder" {
   id            = var.root_node
   folder_create = false
   # additive bindings via delegated IAM grant set in stage 0
-  iam_bindings_additive = local.iam_bindings_additive
+  iam_bindings_additive = {
+    for k, v in local.iam_bindings_additive : k => {
+      role      = lookup(var.custom_roles, v.role, v.role)
+      member    = lookup(local.principals_iam, v.member, v.member)
+      condition = lookup(v, "condition", null)
+    }
+  }
   logging_sinks = {
     for name, attrs in local.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
