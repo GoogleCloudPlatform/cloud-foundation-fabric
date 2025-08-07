@@ -48,6 +48,10 @@ output_files:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-networking
       service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
+    2-security:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-security
+      service_account: $iam_principals:service_accounts/iac-0/iac-security-rw
 context:
   iam_principals:
     gcp-organization-admins: group:fabric-fast-domainless-owners@twosync.google.com

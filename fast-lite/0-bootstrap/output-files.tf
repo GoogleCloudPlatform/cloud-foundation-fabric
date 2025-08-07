@@ -52,7 +52,7 @@ locals {
       }
       prefix = local.defaults.prefix
     }
-    boostrap = {
+    bootstrap = {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
