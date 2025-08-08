@@ -20,11 +20,10 @@ locals {
     "projects/${v}"
   ]
   restricted_services = yamldecode(file(var.factories_config.restricted_services))
-
   # extend context with our own data
   context = {
     identity_sets = merge(var.factories_config.context.identity_sets, {
-      org_logging_writer_identities = distinct(values(var.logging.writer_identities))
+      logging_identities = distinct(values(var.logging.writer_identities))
     })
     resource_sets = merge(var.factories_config.context.resource_sets, {
       discovered_projects = local.discovered_projects

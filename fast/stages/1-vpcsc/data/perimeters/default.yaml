@@ -19,8 +19,8 @@ spec:
   access_levels:
     - geo
   resources:
-    - discovered_projects
+    - $resource_sets:discovered_projects
   ingress_policies:
     - fast-org-log-sinks
   restricted_services:
-    - restricted_services
+    - $resource_sets:restricted_services
