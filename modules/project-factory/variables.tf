@@ -35,7 +35,7 @@ variable "data_defaults" {
     prefix        = optional(string)
     project_reuse = optional(object({
       use_data_source = optional(bool, true)
-      project_attributes = optional(object({
+      attributes = optional(object({
         name             = string
         number           = number
         services_enabled = optional(list(string), [])

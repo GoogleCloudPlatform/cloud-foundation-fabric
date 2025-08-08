@@ -72,7 +72,12 @@ module "vpc" {
       region        = var.region
     }
   ] : []
-  vpc_create = var.project_create != null ? true : false
+  vpc_reuse = (
+    var.project_create == null
+    ? {
+      use_data_source = true
+    } : null
+  )
 }
 
 module "firewall" {

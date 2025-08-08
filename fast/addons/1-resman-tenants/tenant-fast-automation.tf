@@ -94,7 +94,7 @@ module "tenant-automation-project-iam" {
   name     = module.tenant-automation-project[each.key].project_id
   project_reuse = {
     use_data_source = false
-    project_attributes = {
+    attributes = {
       name   = module.tenant-automation-project[each.key].name
       number = module.tenant-automation-project[each.key].number
     }

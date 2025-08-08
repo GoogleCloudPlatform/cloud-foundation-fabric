@@ -20,7 +20,7 @@
   - **project_reuse**: *object*
     <br>*additional properties: false*
     - **use_data_source**: *boolean*
-    - **project_attributes**: *object*
+    - **attributes**: *object*
       - ⁺**name**: *string*
       - ⁺**number**: *number*
       - **services_enabled**: *array*

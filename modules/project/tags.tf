@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,15 @@ locals {
   _tags_merged = merge(local._factory_tags_data, var.tags, var.network_tags)
   tags = {
     for k, v in local._tags_merged : k => {
-      description           = v.description
-      iam                   = v.iam
-      iam_bindings          = v.iam_bindings
+      description = v.description
+      iam = {
+        for ik, iv in v.iam : ik => coalesce(iv, [])
+      }
+      iam_bindings = {
+        for ik, iv in v.iam_bindings : ik => merge(iv, {
+          members = coalesce(iv.members, [])
+        })
+      }
       iam_bindings_additive = v.iam_bindings_additive
       network               = lookup(v, "network", null)
       id = try(coalesce(
@@ -54,9 +60,15 @@ locals {
       ), null)
       values = {
         for vk, vv in lookup(v, "values", {}) : vk => {
-          description           = vv.description
-          iam                   = vv.iam
-          iam_bindings          = vv.iam_bindings
+          description = vv.description
+          iam = {
+            for ik, iv in vv.iam : ik => coalesce(iv, [])
+          }
+          iam_bindings = {
+            for ik, iv in vv.iam_bindings : ik => merge(iv, {
+              members = coalesce(iv.members, [])
+            })
+          }
           iam_bindings_additive = vv.iam_bindings_additive
           id = try(coalesce(
             lookup(vv, "id", null),
@@ -69,7 +81,7 @@ locals {
   _tag_iam = flatten([
     for k, v in local.tags : [
       for role in keys(lookup(v, "iam", {})) : {
-        # we cycle on keys here so we don't risk injecting dynamic values
+        # We cycle on keys here so we don't risk injecting dynamic values.
         role   = role
         tag    = k
         tag_id = lookup(v, "id", null)
@@ -185,9 +197,10 @@ resource "google_tags_tag_key_iam_binding" "default" {
     : each.value.tag_id
   )
   role = each.value.role
-  members = coalesce(
-    local.tags[each.value.tag]["iam"][each.value.role], []
-  )
+  members = [
+    for v in local.tags[each.value.tag]["iam"][each.value.role] :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
 }
 
 resource "google_tags_tag_key_iam_binding" "bindings" {
@@ -198,9 +211,10 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
     : each.value.tag_id
   )
   role = local.tags[each.value.tag]["iam_bindings"][each.value.binding].role
-  members = (
-    local.tags[each.value.tag]["iam_bindings"][each.value.binding].members
-  )
+  members = [
+    for v in local.tags[each.value.tag]["iam_bindings"][each.value.binding].members :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
 }
 
 resource "google_tags_tag_key_iam_member" "bindings" {
@@ -210,8 +224,12 @@ resource "google_tags_tag_key_iam_member" "bindings" {
     ? google_tags_tag_key.default[each.value.tag].id
     : each.value.tag_id
   )
-  role   = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
-  member = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member
+  role = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].role
+  member = lookup(
+    var.factories_config.context.iam_principals,
+    local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member,
+    local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member
+  )
 }
 
 # values
@@ -235,10 +253,10 @@ resource "google_tags_tag_value_iam_binding" "default" {
     : each.value.id
   )
   role = each.value.role
-  members = coalesce(
-    local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role],
-    []
-  )
+  members = [
+    for v in local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role] :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
 }
 
 resource "google_tags_tag_value_iam_binding" "bindings" {
@@ -251,9 +269,10 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
   role = (
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].role
   )
-  members = (
-    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].members
-  )
+  members = [
+    for v in local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].members :
+    lookup(var.factories_config.context.iam_principals, v, v)
+  ]
 }
 
 resource "google_tags_tag_value_iam_member" "bindings" {
@@ -266,7 +285,9 @@ resource "google_tags_tag_value_iam_member" "bindings" {
   role = (
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].role
   )
-  member = (
+  member = lookup(
+    var.factories_config.context.iam_principals,
+    local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member
   )
 }

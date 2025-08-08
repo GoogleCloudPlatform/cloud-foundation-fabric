@@ -19,7 +19,7 @@ locals {
     for k, v in local.data_domains : k => merge(
       { region = var.location, short_name = v.short_name },
       try(v.deploy_config.composer, {})
-    )
+    ) if(v.deploy_config.composer != null)
   }
   dd_composer_keys = {
     for k, v in local.dd_composer : k => try(

@@ -17,7 +17,6 @@ counts:
   google_bigquery_dataset_iam_binding: 1
   google_bigquery_default_service_account: 2
   google_composer_environment: 1
-  google_compute_shared_vpc_service_project: 1
   google_data_catalog_policy_tag: 3
   google_data_catalog_taxonomy: 1
   google_dataplex_aspect_type: 1
@@ -25,7 +24,7 @@ counts:
   google_folder_iam_binding: 3
   google_project: 3
   google_project_iam_binding: 23
-  google_project_iam_member: 13
+  google_project_iam_member: 12
   google_project_service: 18
   google_project_service_identity: 6
   google_service_account: 6
@@ -38,4 +37,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 19
-  resources: 111
+  resources: 109

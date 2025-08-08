@@ -34,11 +34,11 @@ iam.allowedPolicyMemberDomains:
         expression: |
           resource.matchTag('${tags.org_policies_tag_name}', 'allowed-policy-member-domains-all')
 
-iam.automaticIamGrantsForDefaultServiceAccounts:
+iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
 
-iam.disableAuditLoggingExemption:
+iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:
     - enforce: true
 
@@ -47,6 +47,10 @@ iam.disableServiceAccountKeyCreation:
     - enforce: true
 
 iam.disableServiceAccountKeyUpload:
+  rules:
+    - enforce: true
+
+iam.managed.disableServiceAccountApiKeyCreation:
   rules:
     - enforce: true
 
