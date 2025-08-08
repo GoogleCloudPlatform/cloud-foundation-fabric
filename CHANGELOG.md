@@ -3,7 +3,65 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-06-29 12:22:45+00:00 to: None since: v41.0.0 -->
+## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+
+## [42.0.0] - 2025-08-08
+
+### BREAKING CHANGES
+
+- modules/net-vpc: vpc_create(bool) replaced with vpc_reuse(object). Any existing code referencing net-vpc with vpc_create=false will need to change to the vpc_reuse object. [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)]
+- modules/project: "project_attributes" parameter in var.project_reuse to "attributes" [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)]
+- `fast/stages/0-bootstrap`: two new custom roles for KMS keys have been added: re-run stage 0 so that they are available to the resman stage, where they are required. [[#3147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3147)]
+
+### BLUEPRINTS
+
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
+- [[#3195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3195)] Add default route action to internal app lb path matcher ([sepehrjavid](https://github.com/sepehrjavid)) <!-- 2025-06-26 12:21:32+00:00 -->
+
+### FAST
+
+- [[#3265](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3265)] fix: Multi-tenant parameters from upstream bootstrap ([williamsmt](https://github.com/williamsmt)) <!-- 2025-08-08 06:35:33+00:00 -->
+- [[#3227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3227)] Improve and fix DAG variable retrieve method in FAST Data Platform ([lcaggio](https://github.com/lcaggio)) <!-- 2025-07-10 08:21:11+00:00 -->
+- [[#3211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3211)] Add Data Product Reference Example to FAST Data Platform Stage ([jayBana](https://github.com/jayBana)) <!-- 2025-07-09 08:53:50+00:00 -->
+- [[#3226](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3226)] Support IAM tag factory context expansion in organization / project modules and FAST resman stage ([ludoo](https://github.com/ludoo)) <!-- 2025-07-09 07:04:17+00:00 -->
+- [[#3219](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3219)] Allowing multiple on-prem domains ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-09 06:56:40+00:00 -->
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
+- [[#3207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3207)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-07-02 13:53:58+00:00 -->
+- [[#3199](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3199)] Rename workflows config variable introduced in #3198 ([ludoo](https://github.com/ludoo)) <!-- 2025-06-28 08:57:56+00:00 -->
+- [[#3198](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3198)] Support user-defined tfvar files in resman CI/CD definitions ([ludoo](https://github.com/ludoo)) <!-- 2025-06-27 14:58:54+00:00 -->
+- [[#3195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3195)] Add default route action to internal app lb path matcher ([sepehrjavid](https://github.com/sepehrjavid)) <!-- 2025-06-26 12:21:32+00:00 -->
+- [[#3190](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3190)] Added option for tag factory in resman ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-23 21:31:52+00:00 -->
+- [[#3185](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3185)] Bypass accounts.google.com in FAST DNS policy rules ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 08:00:01+00:00 -->
+- [[#3183](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3183)] Revert "Bypass accounts.google.com in FAST DNS policy rules" ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 06:19:43+00:00 -->
+- [[#3179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3179)] Bypass accounts.google.com in FAST DNS policy rules ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 05:55:50+00:00 -->
+- [[#3163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3163)] Allow custom roles in context, add support for shared VPC IAM to project and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-15 08:01:22+00:00 -->
+- [[#3160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3160)] Add notebooks, appengine and appspot to dns policy routing in FAST networking stage ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-13 14:46:44+00:00 -->
+- [[#3162](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3162)] Improve and document org policy tags use in FAST resman stage ([ludoo](https://github.com/ludoo)) <!-- 2025-06-13 13:57:48+00:00 -->
+- [[#3154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3154)] Allow configuring project key format in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-11 11:18:03+00:00 -->
+- [[#3147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3147)] Fix IAM delegation for project factory on security KMS keys ([ludoo](https://github.com/ludoo)) <!-- 2025-06-10 10:56:30+00:00 -->
+
+### MODULES
+
+- [[#3246](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3246)] feat: Add Service Agent substitution for Buckets and `iam_by_principal` in `project-factory` ([V0idC0de](https://github.com/V0idC0de)) <!-- 2025-07-29 08:26:49+00:00 -->
+- [[#3237](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3237)] Fixes force_destroy for project factory buckets ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-07-16 15:57:57+00:00 -->
+- [[#3233](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3233)] Allow setting default/override for project factory buckets force_destroy attribute ([ludoo](https://github.com/ludoo)) <!-- 2025-07-11 16:47:26+00:00 -->
+- [[#3226](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3226)] Support IAM tag factory context expansion in organization / project modules and FAST resman stage ([ludoo](https://github.com/ludoo)) <!-- 2025-07-09 07:04:17+00:00 -->
+- [[#3205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3205)] Standardise reuse variable from project module and implement for net-vpc ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-07-02 23:12:05+00:00 -->
+- [[#3199](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3199)] Rename workflows config variable introduced in #3198 ([ludoo](https://github.com/ludoo)) <!-- 2025-06-28 08:57:56+00:00 -->
+- [[#3195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3195)] Add default route action to internal app lb path matcher ([sepehrjavid](https://github.com/sepehrjavid)) <!-- 2025-06-26 12:21:32+00:00 -->
+- [[#3178](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3178)] Added tag factory option for organization module ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-06-23 06:24:43+00:00 -->
+- [[#3181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3181)] Support new style service account principalsets in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 06:10:21+00:00 -->
+- [[#3179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3179)] Bypass accounts.google.com in FAST DNS policy rules ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 05:55:50+00:00 -->
+- [[#3163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3163)] Allow custom roles in context, add support for shared VPC IAM to project and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-15 08:01:22+00:00 -->
+- [[#3154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3154)] Allow configuring project key format in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-06-11 11:18:03+00:00 -->
+- [[#3106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3106)] Revert "Make automation project in project factory module optional" ([ludoo](https://github.com/ludoo)) <!-- 2025-05-21 13:01:40+00:00 -->
+
+### TOOLS
+
+- [[#3207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3207)] Update default FAST org policies ([juliocc](https://github.com/juliocc)) <!-- 2025-07-02 13:53:58+00:00 -->
+- [[#3195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3195)] Add default route action to internal app lb path matcher ([sepehrjavid](https://github.com/sepehrjavid)) <!-- 2025-06-26 12:21:32+00:00 -->
+- [[#3179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3179)] Bypass accounts.google.com in FAST DNS policy rules ([ludoo](https://github.com/ludoo)) <!-- 2025-06-20 05:55:50+00:00 -->
+- [[#3160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3160)] Add notebooks, appengine and appspot to dns policy routing in FAST networking stage ([wiktorn](https://github.com/wiktorn)) <!-- 2025-06-13 14:46:44+00:00 -->
 
 ## [41.1.0] - 2025-08-08
 
@@ -1364,7 +1422,8 @@ All notable changes to this project will be documented in this file.
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.0.0...HEAD
+[42.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...41.0.0
 [41.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...41.1.0
 [41.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...41.0.0
 [40.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...40.2.0
