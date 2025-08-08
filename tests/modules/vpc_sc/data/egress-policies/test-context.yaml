@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../modules/vpc-sc/schemas/egress-policy.schema.json
+
+from:
+  identities:
+    - $identity_sets:test
+  resources:
+    - $project_numbers:test-0
+    - $resource_sets:test
+to:
+  operations:
+    - service_name: artifactregistry.googleapis.com
+      method_selectors:
+        - "*"
+  resources:
+    - $project_numbers:test-0
+    - $resource_sets:test

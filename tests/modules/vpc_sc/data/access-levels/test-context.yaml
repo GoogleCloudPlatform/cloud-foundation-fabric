@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../../modules/vpc-sc/schemas/access-level.schema.json
+
+conditions:
+  - members:
+    - $identity_sets:test
