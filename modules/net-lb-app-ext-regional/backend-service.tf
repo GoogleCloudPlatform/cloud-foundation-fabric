@@ -25,6 +25,9 @@ locals {
       for k, v in google_compute_network_endpoint_group.default : k => v.id
     },
     {
+      for k, v in google_compute_region_network_endpoint_group.internet : k => v.id
+    },
+    {
       for k, v in google_compute_region_network_endpoint_group.psc : k => v.id
     },
     {
@@ -44,9 +47,9 @@ resource "google_compute_region_backend_service" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  name                            = "${var.name}-${each.key}"
+  name                            = coalesce(each.value.name, "${var.name}-${each.key}")
   region                          = var.region
-  description                     = var.description
+  description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
   enable_cdn                      = each.value.enable_cdn

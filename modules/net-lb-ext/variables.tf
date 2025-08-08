@@ -31,6 +31,7 @@ variable "backend_service_config" {
     locality_lb_policy = optional(string)
     log_sample_rate    = optional(number)
     name               = optional(string)
+    description        = optional(string, "Terraform managed.")
     port_name          = optional(string)
     protocol           = optional(string, "UNSPECIFIED")
     session_affinity   = optional(string)

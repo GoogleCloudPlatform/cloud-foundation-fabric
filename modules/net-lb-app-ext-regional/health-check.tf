@@ -24,7 +24,7 @@ resource "google_compute_region_health_check" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  name                = "${var.name}-${each.key}"
+  name                = coalesce(each.value.name, "${var.name}-${each.key}")
   region              = var.region
   description         = each.value.description
   check_interval_sec  = each.value.check_interval_sec

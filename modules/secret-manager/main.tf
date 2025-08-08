@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,15 @@ locals {
       }
     ]
   ])
+  tag_bindings = merge([
+    for k, v in var.secrets : {
+      for kk, vv in v.tag_bindings : "${k}/${kk}" => {
+        parent    = "//secretmanager.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/secrets/${google_secret_manager_secret.default[k].secret_id}"
+        tag_value = vv
+      }
+    }
+    if v.tag_bindings != null
+  ]...)
   version_pairs = flatten([
     for secret, versions in var.versions : [
       for name, attrs in versions : merge(attrs, { name = name, secret = secret })
@@ -95,4 +104,10 @@ resource "google_secret_manager_secret_iam_binding" "default" {
   role      = each.value.role
   secret_id = google_secret_manager_secret.default[each.value.secret].id
   members   = each.value.members
+}
+
+resource "google_tags_tag_binding" "binding" {
+  for_each  = local.tag_bindings
+  parent    = each.value.parent
+  tag_value = each.value.tag_value
 }

@@ -45,4 +45,5 @@ module "projects" {
   iam_by_principals_additive = each.value.iam_by_principals_additive
   org_policies               = each.value.org_policies
   project_reuse              = each.value.project_reuse
+  quotas                     = each.value.quotas
 }

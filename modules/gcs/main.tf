@@ -156,6 +156,28 @@ resource "google_storage_bucket" "bucket" {
       not_found_page   = var.website.not_found_page
     }
   }
+
+  dynamic "ip_filter" {
+    for_each = var.ip_filter == null ? [] : [""]
+    content {
+      mode                           = "Enabled"
+      allow_cross_org_vpcs           = var.ip_filter.allow_cross_org_vpcs
+      allow_all_service_agent_access = var.ip_filter.allow_all_service_agent_access
+      dynamic "public_network_source" {
+        for_each = var.ip_filter.public_network_sources == null ? [] : [""]
+        content {
+          allowed_ip_cidr_ranges = var.ip_filter.public_network_sources
+        }
+      }
+      dynamic "vpc_network_sources" {
+        for_each = var.ip_filter.vpc_network_sources
+        content {
+          network                = vpc_network_sources.key
+          allowed_ip_cidr_ranges = vpc_network_sources.value
+        }
+      }
+    }
+  }
 }
 
 resource "google_storage_bucket_object" "objects" {

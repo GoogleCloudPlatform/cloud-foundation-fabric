@@ -33,7 +33,16 @@ module "gke-cluster-standard" {
   enable_features = {
     dataplane_v2        = true
     fqdn_network_policy = true
+    shielded_nodes      = true
     workload_identity   = true
+  }
+  node_config = {
+    service_account               = module.gke-service-accounts.email
+    kubelet_readonly_port_enabled = false
+  }
+  node_pool_auto_config = {
+    network_tags                  = ["foo"] # to avoid perma-diff
+    kubelet_readonly_port_enabled = false
   }
 }
 
@@ -48,5 +57,25 @@ module "gke-nodepool" {
       max_node_count = 2
       min_node_count = 1
     }
+  }
+  service_account = { email = module.gke-service-accounts.email }
+  node_config = {
+    shielded_instance_config = {
+      enable_integrity_monitoring = true
+      enable_secure_boot          = true
+    }
+  }
+}
+
+module "gke-service-accounts" {
+  source     = "./fabric/modules/iam-service-account"
+  project_id = var.project_id
+  name       = "gke-sa"
+  # non-authoritative roles granted *to* the service accounts on other resources
+  iam_project_roles = {
+    "${var.project_id}" = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+    ]
   }
 }

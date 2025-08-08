@@ -27,7 +27,7 @@ resource "google_compute_region_url_map" "default" {
   project     = var.project_id
   region      = var.region
   name        = var.name
-  description = var.description
+  description = var.urlmap_config.description
   default_service = (
     var.urlmap_config.default_service == null ? null : lookup(
       local.backend_ids,
