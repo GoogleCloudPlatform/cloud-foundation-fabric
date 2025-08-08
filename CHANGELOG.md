@@ -3,7 +3,54 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+## [Unreleased] <!-- from: 2025-06-29 12:22:45+00:00 to: None since: v41.0.0 -->
+
+## [41.1.0] - 2025-08-08
+
+### BLUEPRINTS
+
+- [[#3248](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3248)] Bump form-data from 2.5.1 to 2.5.5 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-07-22 06:45:34+00:00 -->
+- [[#3244](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3244)] Bump brace-expansion from 1.1.11 to 1.1.12 in /blueprints/apigee/apigee-x-foundations/functions/instance-monitor ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-07-19 06:47:53+00:00 -->
+- [[#3243](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3243)] Bump golang.org/x/oauth2 from 0.7.0 to 0.27.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2025-07-19 06:31:40+00:00 -->
+- [[#3216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3216)] Add IP filtering support to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-07-04 18:57:32+00:00 -->
+
+### FAST
+
+- [[#3262](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3262)] Fixing merge artifact in fast/stages/2-networking-b-nva/README.md ([Sacha-Guyot-01](https://github.com/Sacha-Guyot-01)) <!-- 2025-08-06 12:49:49+00:00 -->
+- [[#3259](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3259)] Migrated VPN alerting rules from MQL to PromQL ([SamuPert](https://github.com/SamuPert)) <!-- 2025-08-05 15:07:25+00:00 -->
+- [[#3258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3258)] Fixed schema pattern for iam_bindings_additive roles in project factory ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-08-01 06:48:04+00:00 -->
+- [[#3130](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3130)] Conditionally creates billing sink if the billing account is of type resource ([Ali-Aburub](https://github.com/Ali-Aburub)) <!-- 2025-07-21 15:09:37+00:00 -->
+- [[#3216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3216)] Add IP filtering support to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-07-04 18:57:32+00:00 -->
+
+### MODULES
+
+- [[#3254](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3254)] Fix E2E: Disable E2E for dataproc on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-03 13:15:32+00:00 -->
+- [[#3257](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3257)] feat: add GCS bucket trigger support for Cloud Run services ([MuhammadElsaeed](https://github.com/MuhammadElsaeed)) <!-- 2025-08-01 16:41:49+00:00 -->
+- [[#3258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3258)] Fixed schema pattern for iam_bindings_additive roles in project factory ([lnesteroff](https://github.com/lnesteroff)) <!-- 2025-08-01 06:48:04+00:00 -->
+- [[#3249](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3249)] Feat: Add branch protection object to the repositories variable ([Ali-Aburub](https://github.com/Ali-Aburub)) <!-- 2025-07-30 07:51:34+00:00 -->
+- [[#3252](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3252)] E2E fixes: load balancer and dataproc ([wiktorn](https://github.com/wiktorn)) <!-- 2025-07-29 14:30:44+00:00 -->
+- [[#3251](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3251)] Support `display_name` for workstation configurations ([kunzese](https://github.com/kunzese)) <!-- 2025-07-28 11:00:20+00:00 -->
+- [[#3215](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3215)] Add support for cross project NEGs ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-07-28 08:27:55+00:00 -->
+- [[#3245](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3245)] Added "client_version" and "client" to ignore_changes in cloud-run-v2… ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-07-25 16:39:43+00:00 -->
+- [[#3250](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3250)] feat(gke-nodepool): add missing options in the `kubelet_config` ([NitriKx](https://github.com/NitriKx)) <!-- 2025-07-25 16:23:48+00:00 -->
+- [[#3242](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3242)] Add support for quotas to project-factory module ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-07-18 11:58:29+00:00 -->
+- [[#3223](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3223)] Allow custom names and descriptions for load balancer components ([AyushGupta1-2-3](https://github.com/AyushGupta1-2-3)) <!-- 2025-07-18 06:09:50+00:00 -->
+- [[#3241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3241)] Fix collision in CMEK service agent bindings ([juliocc](https://github.com/juliocc)) <!-- 2025-07-17 12:54:17+00:00 -->
+- [[#3239](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3239)] Add support for cloudsql regional replicas ([eeila](https://github.com/eeila)) <!-- 2025-07-17 12:27:07+00:00 -->
+- [[#3232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3232)] Net firewall policy module documentation improvements ([la-luce](https://github.com/la-luce)) <!-- 2025-07-17 08:32:25+00:00 -->
+- [[#3238](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3238)] Add force destroy option to buckets in project factory module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-07-16 16:18:20+00:00 -->
+- [[#3218](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3218)] Fixed gke-hub module to support regional deployment ([Art1k](https://github.com/Art1k)) <!-- 2025-07-15 12:20:36+00:00 -->
+- [[#3224](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3224)] Support regional instance templates in compute-vm module outputs ([javiroger](https://github.com/javiroger)) <!-- 2025-07-08 15:10:54+00:00 -->
+- [[#3220](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3220)] Add `tag_bindings` to Artifact Registry and Secret Manager modules. ([juliocc](https://github.com/juliocc)) <!-- 2025-07-07 16:21:55+00:00 -->
+- [[#3206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3206)] Adding Regional Internet NEGs support ([Art1k](https://github.com/Art1k)) <!-- 2025-07-05 15:50:55+00:00 -->
+- [[#3216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3216)] Add IP filtering support to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-07-04 18:57:32+00:00 -->
+- [[#3214](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3214)] Changed psc address to be optional ([apichick](https://github.com/apichick)) <!-- 2025-07-04 12:13:47+00:00 -->
+- [[#3213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3213)] Fix network tier in project module when reusing an existing project ([apichick](https://github.com/apichick)) <!-- 2025-07-03 12:57:04+00:00 -->
+- [[#3210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3210)] Fix service agent substitutions in project factory additive bindings ([V0idC0de](https://github.com/V0idC0de)) <!-- 2025-07-02 16:14:17+00:00 -->
+
+### TOOLS
+
+- [[#3216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3216)] Add IP filtering support to `modules/gcs` ([juliocc](https://github.com/juliocc)) <!-- 2025-07-04 18:57:32+00:00 -->
 
 ## [41.0.0] - 2025-06-29
 
@@ -1317,7 +1364,8 @@ All notable changes to this project will be documented in this file.
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...HEAD
+[41.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...41.1.0
 [41.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...41.0.0
 [40.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...40.2.0
 [40.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...40.1.0
