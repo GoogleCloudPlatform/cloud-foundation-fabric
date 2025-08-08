@@ -123,7 +123,18 @@
                 }
               }
             },
-            "service_accounts": {},
+            "service_accounts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "apply": {
+                  "type": "string"
+                },
+                "plan": {
+                  "type": "string"
+                }
+              }
+            },
             "template": {
               "type": "string",
               "enum": [

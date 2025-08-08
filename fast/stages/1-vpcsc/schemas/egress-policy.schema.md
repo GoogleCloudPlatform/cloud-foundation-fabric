@@ -15,7 +15,7 @@
     <br>*enum: ['IDENTITY_TYPE_UNSPECIFIED', 'ANY_IDENTITY', 'ANY_USER_ACCOUNT', 'ANY_SERVICE_ACCOUNT', '']*
   - **identities**: *array*
     - items: *string*
-      <br>*pattern: ^(?:serviceAccount:|user:|group:|principal:)*
+      <br>*pattern: ^(?:serviceAccount:|user:|group:|principal:|\$identity_sets:)*
   - **resources**: *array*
     - items: *string*
 - ⁺**to**: *object*
