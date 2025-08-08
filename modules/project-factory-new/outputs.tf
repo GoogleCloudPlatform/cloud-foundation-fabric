@@ -59,6 +59,12 @@ output "project_ids" {
   value = local.project_ids
 }
 
+output "project_numbers" {
+  value = {
+    for k, v in local.outputs_projects : k => v.number
+  }
+}
+
 output "projects" {
   value = local.outputs_projects
 }

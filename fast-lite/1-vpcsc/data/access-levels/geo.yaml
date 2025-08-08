@@ -12,15 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/perimeter.schema.json
+# yaml-language-server: $schema=../../schemas/access-level.schema.json
 
-use_explicit_dry_run_spec: true
-spec:
-  access_levels:
-    - geo
-  resources:
-    - $resource_sets:discovered_projects
-  ingress_policies:
-    - fast-org-log-sinks
-  restricted_services:
-    - $service_sets:restricted_services
+# this is just an example that reflects the FAST core team members' locations
+# and needs to be edited, or not referenced in the perimeter variable
+conditions:
+  - regions:
+      - ES
+      - IT

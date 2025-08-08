@@ -80,6 +80,12 @@ iam_by_principals:
     - roles/compute.xpnAdmin
   $iam_principals:service_accounts/iac-0/iac-security-rw:
     - roles/cloudasset.viewer
+  $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
+    - roles/accesscontextmanager.policyAdmin
+    - roles/cloudasset.viewer
+  $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
+    - roles/accesscontextmanager.policyReader
+    - roles/cloudasset.viewer
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:default

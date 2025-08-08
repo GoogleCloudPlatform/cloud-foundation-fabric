@@ -60,10 +60,14 @@ locals {
         local.ctx.folder_ids,
         module.factory.folder_ids
       )
+      logging = {
+        writer_identities = module.organization-iam.0.sink_writer_identities
+      }
       project_ids = merge(
         local.ctx.project_ids,
         module.factory.project_ids
       )
+      project_numbers = module.factory.project_numbers
       # project_numbers = module.factory.project_numbers
       service_accounts = module.factory.service_accounts
       storage_buckets  = module.factory.storage_buckets

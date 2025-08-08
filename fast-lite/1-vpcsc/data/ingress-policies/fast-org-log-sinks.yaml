@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/perimeter.schema.json
+# yaml-language-server: $schema=../../schemas/ingress-policy.schema.json
 
-use_explicit_dry_run_spec: true
-spec:
+from:
   access_levels:
-    - geo
+    - "*"
+  identities:
+    - $identity_sets:logging_identities
+to:
+  operations:
+    - service_name: "*"
   resources:
-    - $resource_sets:discovered_projects
-  ingress_policies:
-    - fast-org-log-sinks
-  restricted_services:
-    - $service_sets:restricted_services
+    - $project_numbers:log-0

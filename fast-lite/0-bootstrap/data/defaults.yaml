@@ -44,6 +44,10 @@ output_files:
     0-bootstrap-ro:
       bucket: $storage_buckets:iac-0/iac-bootstrap-state
       service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    1-vpcsc:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 1-vpcsc
+      service_account: $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
     2-networking:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-networking
