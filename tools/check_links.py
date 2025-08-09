@@ -59,7 +59,8 @@ def check_docs(dir_name, external=False):
   for readme_path in sorted(dir_path.glob('**/*.md')):
     if '.terraform' in str(readme_path) or '.pytest' in str(readme_path):
       continue
-
+    if 'CHANGELOG' in str(readme_path):
+      continue
     root = parser.parse(readme_path.read_text())
     elements = collections.deque([root])
     links = []

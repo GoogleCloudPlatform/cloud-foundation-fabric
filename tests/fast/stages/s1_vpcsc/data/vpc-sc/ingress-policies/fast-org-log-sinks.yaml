@@ -18,9 +18,9 @@ from:
   access_levels:
     - "*"
   identities:
-    - org_logging_writer_identities
+    - $identity_sets:logging_identities
 to:
   operations:
     - service_name: "*"
   resources:
-    - logging_project
+    - $resource_sets:logging_project

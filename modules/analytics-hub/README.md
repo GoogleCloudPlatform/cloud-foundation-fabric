@@ -6,7 +6,7 @@ This module allows managing [Analytics Hub](https://cloud.google.com/bigquery/do
 
 ### Exchange
 
-Exchange argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange
+Exchange argument references can be found in: <https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange>
 
 ```hcl
 module "analytics-hub" {
@@ -23,7 +23,7 @@ module "analytics-hub" {
 
 ### Listings
 
-Listing definitions can be provided in the form {LISTING_ID => LISTING_CONFIGS}. Listing argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing
+Listing definitions can be provided in the form {LISTING_ID => LISTING_CONFIGS}. Listing argument references can be found in: <https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing>
 
 ```hcl
 module "analytics-hub" {
@@ -63,12 +63,13 @@ module "analytics-hub" {
 
 ### IAM
 
-This module supports setting IAM permissions on both the exchange and listing resources. IAM permissions on the exchange is inherited on the listings. 
+This module supports setting IAM permissions on both the exchange and listing resources. IAM permissions on the exchange is inherited on the listings.
 
 See [this page](https://cloud.google.com/bigquery/docs/analytics-hub-grant-roles) to see IAM roles that can be granted on exchange and listings.
 
 #### Exchange
-Input to variables `iam`, `iam_bindings`, and `iam_by_principals` will be merged, and are [authoritative for the given role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange_iam#google_bigquery_analytics_hub_data_exchange_iam_binding). Inputs to variable `iam_bindings_additive` are [additive](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange_iam#google_bigquery_analytics_hub_data_exchange_iam_member). 
+
+Input to variables `iam`, `iam_bindings`, and `iam_by_principals` will be merged, and are [authoritative for the given role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange_iam#google_bigquery_analytics_hub_data_exchange_iam_binding). Inputs to variable `iam_bindings_additive` are [additive](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange_iam#google_bigquery_analytics_hub_data_exchange_iam_member).
 
 In practice, you should only need to use either `iam` or `iam_bindings`.
 
@@ -105,6 +106,7 @@ module "analytics-hub" {
 ```
 
 #### Listings
+
 The listings variable block support the `iam` input which are [authoritative for the given role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing_iam#google_bigquery_analytics_hub_listing_iam_binding).
 
 ```hcl
@@ -137,7 +139,7 @@ module "analytics-hub" {
 
 ### Factory
 
-Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow managing listings inside the same exchange via descriptive configuration files.
+Similarly to other modules, a rules factory is also included here to allow managing listings inside the same exchange via descriptive configuration files.
 
 Factory configuration is via one optional attributes in the `factory_config_path` variable specifying the path where tags files are stored.
 

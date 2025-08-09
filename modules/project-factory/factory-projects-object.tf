@@ -79,13 +79,11 @@ locals {
       tag_bindings     = {}
       service_accounts = {}
       vpc_sc = merge({
-        perimeter_name    = null
-        perimeter_bridges = []
-        is_dry_run        = false
+        perimeter_name = null
+        is_dry_run     = false
         }, try(local._projects_config.data_defaults.vpc_sc, {
-          perimeter_name    = null
-          perimeter_bridges = []
-          is_dry_run        = false
+          perimeter_name = null
+          is_dry_run     = false
         })
       )
       logging_data_access = {}
@@ -119,9 +117,8 @@ locals {
       vpc_sc = try(
         merge(
           {
-            perimeter_name    = null
-            perimeter_bridges = []
-            is_dry_run        = false
+            perimeter_name = null
+            is_dry_run     = false
           },
           local._projects_config.data_overrides.vpc_sc
         ),
@@ -290,9 +287,8 @@ locals {
         : (
           try(v.vpc_sc, null) != null
           ? merge({
-            perimeter_name    = null
-            perimeter_bridges = []
-            is_dry_run        = false
+            perimeter_name = null
+            is_dry_run     = false
           }, v.vpc_sc)
           : local.__projects_config.data_defaults.vpc_sc
         )

@@ -36,15 +36,19 @@ locals {
 resource "google_billing_account_iam_binding" "authoritative" {
   for_each           = local.iam
   billing_account_id = var.id
-  role               = each.key
-  members            = each.value
+  role               = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_billing_account_iam_binding" "bindings" {
   for_each           = var.iam_bindings
   billing_account_id = var.id
-  role               = each.value.role
-  members            = each.value.members
+  role               = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -58,8 +62,8 @@ resource "google_billing_account_iam_binding" "bindings" {
 resource "google_billing_account_iam_member" "bindings" {
   for_each           = var.iam_bindings_additive
   billing_account_id = var.id
-  role               = each.value.role
-  member             = each.value.member
+  role               = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member             = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {

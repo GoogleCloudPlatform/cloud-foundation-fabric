@@ -78,7 +78,7 @@ jobs:
       - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py --show-diffs --no-show-summary modules fast blueprints
+          python3 tools/check_documentation.py --show-diffs --no-show-summary modules fast
 
       - name: Check documentation links
         id: documentation-links-fabric
@@ -95,7 +95,6 @@ jobs:
         run: |
           yapf -p -d -r \
             tools/*.py \
-            blueprints \
             fast
 
       - name: Check modules versions
