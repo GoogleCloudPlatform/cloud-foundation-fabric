@@ -27,8 +27,8 @@ variable "logging" {
   # tfdoc:variable:source 0-bootstrap
   description = "Log writer identities for organization / folders."
   type = object({
-    project_number    = string
     writer_identities = map(string)
+    project_number    = optional(string)
   })
   default = null
 }
