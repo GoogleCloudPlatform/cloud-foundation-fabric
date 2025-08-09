@@ -56,6 +56,7 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
+      custom_roles = module.organization[0].custom_role_id
       folder_ids = merge(
         local.ctx.folder_ids,
         module.factory.folder_ids
