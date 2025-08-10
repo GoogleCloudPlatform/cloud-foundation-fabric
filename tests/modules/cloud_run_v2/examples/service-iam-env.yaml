@@ -64,11 +64,8 @@ values:
     timeouts: null
   module.cloud_run.google_cloud_run_v2_service_iam_binding.binding["roles/run.invoker"]:
     condition: []
-    location: europe-west8
     members:
     - allUsers
-    name: hello
-    project: project-id
     role: roles/run.invoker
   module.secret-manager.google_secret_manager_secret.default["credentials"]:
     annotations: null

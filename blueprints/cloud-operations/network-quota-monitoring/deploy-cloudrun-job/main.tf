@@ -68,7 +68,7 @@ module "cr-job" {
   project_id = module.project.project_id
   name       = var.name
   region     = var.region
-  create_job = true
+  type       = "JOB"
   containers = {
     netmon = {
       image = "${module.ar.url}/${var.name}"
@@ -97,10 +97,8 @@ module "cr-job" {
       module.sa-invoker.iam_email
     ]
   }
-  revision = {
-    job = {
-      max_retries = 0
-    }
+  job_config = {
+    max_retries = 0
   }
   service_account     = module.sa.email
   deletion_protection = false

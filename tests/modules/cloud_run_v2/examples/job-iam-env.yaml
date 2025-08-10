@@ -39,11 +39,8 @@ values:
             vpc_access: []
   module.cloud_run.google_cloud_run_v2_job_iam_binding.binding["roles/run.invoker"]:
     condition: []
-    location: europe-west8
     members:
       - group:organization-admins@example.org
-    name: hello
-    project: project-id
     role: roles/run.invoker
 
 counts:
