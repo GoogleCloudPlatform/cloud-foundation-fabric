@@ -49,12 +49,12 @@ values:
         value: google.cloud.audit.log.v1.written
     name: audit-log-setiampolicy
     project: project-id
-    service_account: cloud-run-trigger@my-project.iam.gserviceaccount.com
+    service_account: fixture-service-account@project-id.iam.gserviceaccount.com
 
 counts:
   google_cloud_run_v2_service: 1
   google_eventarc_trigger: 1
-  modules: 1
-  resources: 2
+  modules: 2
+  resources: 3
 
 outputs: {}

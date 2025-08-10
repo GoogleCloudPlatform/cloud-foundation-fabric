@@ -644,10 +644,19 @@ module "cloud_run" {
         }
       }
     }
+    service_account_email = module.iam-service-account.email
   }
   deletion_protection = false
+  depends_on          = [google_project_iam_member.trigger_sa_event_receiver]
 }
-# tftest fixtures=fixtures/gcs.tf inventory=service-eventarc-storage.yaml e2e
+
+resource "google_project_iam_member" "trigger_sa_event_receiver" {
+  member  = module.iam-service-account.iam_email
+  project = var.project_id
+  role    = "roles/eventarc.eventReceiver"
+}
+
+# tftest fixtures=fixtures/gcs.tf,fixtures/iam-service-account.tf inventory=service-eventarc-storage.yaml e2e
 ```
 
 ### Using custom service accounts for triggers
@@ -675,11 +684,11 @@ module "cloud_run" {
           service = "cloudresourcemanager.googleapis.com"
         }
       }
-      service_account_email = "cloud-run-trigger@my-project.iam.gserviceaccount.com"
+      service_account_email = module.iam-service-account.email
     }
   }
 }
-# tftest inventory=service-eventarc-auditlogs-external-sa.yaml
+# tftest fixtures=fixtures/iam-service-account.tf inventory=service-eventarc-auditlogs-external-sa.yaml e2e
 ```
 
 Example using automatically created service account:
@@ -734,7 +743,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest modules=2 resources=6 fixtures=fixtures/gcs.tf inventory=service-eventarc-storage-sa-create.yaml e2e
+# tftest fixtures=fixtures/gcs.tf inventory=service-eventarc-storage-sa-create.yaml e2e
 ```
 
 ## Cloud Run Invoker IAM Disable

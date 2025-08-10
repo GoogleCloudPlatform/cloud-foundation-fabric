@@ -167,6 +167,9 @@ resource "google_eventarc_trigger" "storage_triggers" {
     }
   }
   service_account = local.trigger_sa_email
+  depends_on = [
+    google_project_iam_member.trigger_sa_event_receiver
+  ]
 }
 
 resource "google_service_account" "trigger_service_account" {
@@ -174,4 +177,11 @@ resource "google_service_account" "trigger_service_account" {
   project      = var.project_id
   account_id   = "tf-cr-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Run ${var.name}."
+}
+
+resource "google_project_iam_member" "trigger_sa_event_receiver" {
+  count   = local.trigger_sa_create ? 1 : 0
+  member  = google_service_account.trigger_service_account[0].member
+  project = var.project_id
+  role    = "roles/eventarc.eventReceiver"
 }
