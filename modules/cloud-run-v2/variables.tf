@@ -46,10 +46,7 @@ variable "containers" {
       name           = optional(string)
     })))
     resources = optional(object({
-      limits = optional(object({
-        cpu    = string
-        memory = string
-      }))
+      limits            = optional(map(string))
       cpu_idle          = optional(bool)
       startup_cpu_boost = optional(bool)
     }))
@@ -75,6 +72,18 @@ variable "containers" {
   }))
   default  = {}
   nullable = false
+
+  validation {
+    condition = alltrue([
+      for c in var.containers : (
+        c.resources == null ? true : 0 == length(setsubtract(
+          keys(lookup(c.resources, "limits", {})),
+          ["cpu", "memory", "nvidia.com/gpu"]
+        ))
+      )
+    ])
+    error_message = "Only following resource limits are available: 'cpu', 'memory' and 'nvidia.com/gpu'."
+  }
 }
 
 variable "deletion_protection" {
@@ -158,8 +167,12 @@ variable "region" {
 variable "revision" {
   description = "Revision template configurations."
   type = object({
-    labels = optional(map(string))
-    name   = optional(string)
+    gpu_zonal_redundancy_disabled = optional(bool)
+    labels                        = optional(map(string))
+    name                          = optional(string)
+    node_selector = optional(object({
+      accelerator = string
+    }))
     vpc_access = optional(object({
       connector = optional(string)
       egress    = optional(string)
