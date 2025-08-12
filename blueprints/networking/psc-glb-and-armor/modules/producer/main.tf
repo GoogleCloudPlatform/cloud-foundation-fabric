@@ -43,7 +43,9 @@ module "app" {
       }
     }
   }
-  ingress                = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  service_config = {
+    ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  }
   service_account_create = true
 }
 
