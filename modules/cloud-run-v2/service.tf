@@ -36,7 +36,14 @@ resource "google_cloud_run_v2_service" "service" {
       var.service_config.gen2_execution_environment
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"
     )
+    gpu_zonal_redundancy_disabled    = var.revision.gpu_zonal_redundancy_disabled
     max_instance_request_concurrency = var.service_config.max_concurrency
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
+      content {
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
     dynamic "scaling" {
       for_each = var.service_config.scaling == null ? [] : [""]
       content {
@@ -279,7 +286,14 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
       var.service_config.gen2_execution_environment
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"
     )
+    gpu_zonal_redundancy_disabled    = var.revision.gpu_zonal_redundancy_disabled
     max_instance_request_concurrency = var.service_config.max_concurrency
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
+      content {
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
     dynamic "scaling" {
       for_each = var.service_config.scaling == null ? [] : [""]
       content {

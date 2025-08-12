@@ -27,7 +27,14 @@ resource "google_cloud_run_v2_job" "job" {
     labels     = var.revision.labels
     task_count = var.job_config.task_count
     template {
-      encryption_key = var.encryption_key
+      encryption_key                = var.encryption_key
+      gpu_zonal_redundancy_disabled = var.revision.gpu_zonal_redundancy_disabled
+      dynamic "node_selector" {
+        for_each = var.revision.node_selector == null ? [] : [""]
+        content {
+          accelerator = var.revision.node_selector.accelerator
+        }
+      }
       dynamic "vpc_access" {
         for_each = local.connector == null ? [] : [""]
         content {
@@ -222,7 +229,14 @@ resource "google_cloud_run_v2_job" "job_unmanaged" {
     labels     = var.revision.labels
     task_count = var.job_config.task_count
     template {
-      encryption_key = var.encryption_key
+      encryption_key                = var.encryption_key
+      gpu_zonal_redundancy_disabled = var.revision.gpu_zonal_redundancy_disabled
+      dynamic "node_selector" {
+        for_each = var.revision.node_selector == null ? [] : [""]
+        content {
+          accelerator = var.revision.node_selector.accelerator
+        }
+      }
       dynamic "vpc_access" {
         for_each = local.connector == null ? [] : [""]
         content {

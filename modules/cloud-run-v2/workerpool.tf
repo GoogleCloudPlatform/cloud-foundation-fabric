@@ -39,6 +39,13 @@ resource "google_cloud_run_v2_worker_pool" "default_managed" {
     encryption_key = var.encryption_key
     revision       = local.revision_name
 
+    gpu_zonal_redundancy_disabled = var.revision.gpu_zonal_redundancy_disabled
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
+      content {
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
     # Serverless VPC connector is not supported
     # dynamic "vpc_access" {
     #   for_each = local.connector == null ? [] : [""]
@@ -178,7 +185,7 @@ resource "google_cloud_run_v2_worker_pool" "default_managed" {
 }
 
 resource "google_cloud_run_v2_worker_pool" "default_unmanaged" {
-  count               = var.type == "WORKERPOOL" && var.managed_revision ? 1 : 0
+  count               = var.type == "WORKERPOOL" && !var.managed_revision ? 1 : 0
   provider            = google-beta
   project             = var.project_id
   location            = var.region
@@ -201,6 +208,14 @@ resource "google_cloud_run_v2_worker_pool" "default_unmanaged" {
     labels         = var.revision.labels
     encryption_key = var.encryption_key
     revision       = local.revision_name
+
+    gpu_zonal_redundancy_disabled = var.revision.gpu_zonal_redundancy_disabled
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
+      content {
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
 
     # Serverless VPC connector is not supported
     # dynamic "vpc_access" {
