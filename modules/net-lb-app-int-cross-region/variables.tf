@@ -41,7 +41,7 @@ variable "group_configs" {
 variable "http_proxy_config" {
   description = "HTTPS proxy configuration."
   type = object({
-    http_keep_alive_timeout_sec = optional(number, 610)
+    http_keep_alive_timeout_sec = optional(number, null)
   })
   default  = {}
   nullable = false
@@ -55,7 +55,7 @@ variable "https_proxy_config" {
     certificate_manager_certificates = optional(list(string), [])
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
-    http_keep_alive_timeout_sec      = optional(number, 610)
+    http_keep_alive_timeout_sec      = optional(number, null)
   })
   default  = {}
   nullable = false
