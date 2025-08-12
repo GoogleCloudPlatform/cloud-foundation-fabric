@@ -23,6 +23,7 @@ variable "backend_buckets_config" {
     description             = optional(string)
     edge_security_policy    = optional(string)
     enable_cdn              = optional(bool)
+    project_id             = optional(string)
     cdn_policy = optional(object({
       bypass_cache_on_request_headers = optional(list(string))
       cache_mode                      = optional(string)
