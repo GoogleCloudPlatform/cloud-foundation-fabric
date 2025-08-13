@@ -964,7 +964,7 @@ module "job" {
   }
   deletion_protection = false
 }
-# tftest inventory=gpu-job.yaml e2e
+# tftest inventory=gpu-job.yaml
 ```
 
 ```hcl
