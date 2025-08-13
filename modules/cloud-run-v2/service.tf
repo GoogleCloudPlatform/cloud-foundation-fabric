@@ -523,14 +523,7 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
   location = local.resource.location
   name     = local.resource.name
   role     = each.key
-  members = (
-    each.key != "roles/run.invoker" || !local.trigger_sa_create
-    ? each.value
-    # if invoker role is present and we create trigger sa, add it as member
-    : concat(
-      each.value, ["serviceAccount:${local.trigger_sa_email}"]
-    )
-  )
+  members  = each.value
 }
 
 resource "google_iap_web_cloud_run_service_iam_member" "member" {

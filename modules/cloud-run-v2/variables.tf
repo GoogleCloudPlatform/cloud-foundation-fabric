@@ -252,7 +252,6 @@ variable "service_config" {
           path   = optional(string)
         })))
         service_account_email  = optional(string)
-        service_account_create = optional(bool, false)
     }), {})
     gen2_execution_environment = optional(bool, false)
     iap_config = optional(object({
