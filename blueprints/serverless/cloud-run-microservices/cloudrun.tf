@@ -24,7 +24,9 @@ module "cloud-run-svc-a" {
   project_id = module.main-project.project_id
   name       = local.svc_a_name
   region     = var.region
-  ingress    = "INGRESS_TRAFFIC_ALL"
+  service_config = {
+    ingress = "INGRESS_TRAFFIC_ALL"
+  }
   # Direct VPC Egress is currently in Beta. Checking its use to avoid permadiff,
   # when in GA it will need to be removed to avoid permadiff again.
   launch_stage = local.two_projects == true ? "BETA" : "GA"
@@ -62,7 +64,9 @@ module "cloud-run-svc-b" {
   project_id = try(module.service-project[0].project_id, module.main-project.project_id)
   name       = local.svc_b_name
   region     = var.region
-  ingress    = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  service_config = {
+    ingress = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  }
   containers = {
     default = {
       image = var.image_configs.svc_b
