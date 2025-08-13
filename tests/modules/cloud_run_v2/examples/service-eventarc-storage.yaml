@@ -53,6 +53,6 @@ counts:
   google_cloud_run_v2_service: 1
   google_eventarc_trigger: 1
   modules: 3
-  resources: 6
+  resources: 7
 
 outputs: {}
