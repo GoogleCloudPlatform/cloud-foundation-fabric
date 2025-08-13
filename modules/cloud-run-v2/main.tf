@@ -98,7 +98,7 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = var.eventarc_triggers.service_account_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
@@ -121,7 +121,7 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = var.eventarc_triggers.service_account_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "storage_triggers" {
@@ -144,5 +144,5 @@ resource "google_eventarc_trigger" "storage_triggers" {
       path    = try(each.value.path, null)
     }
   }
-  service_account = var.eventarc_triggers.service_account_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }

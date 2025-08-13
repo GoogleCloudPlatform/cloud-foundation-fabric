@@ -57,6 +57,6 @@ counts:
   google_eventarc_trigger: 1
   google_service_account: 1
   modules: 2
-  resources: 4
+  resources: 5
 
 outputs: {}
