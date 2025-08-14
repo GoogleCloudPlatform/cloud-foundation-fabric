@@ -251,8 +251,7 @@ variable "service_config" {
           bucket = string
           path   = optional(string)
         })))
-        service_account_email  = optional(string)
-        service_account_create = optional(bool, false)
+        service_account_email = optional(string)
     }), {})
     gen2_execution_environment = optional(bool, false)
     iap_config = optional(object({
@@ -272,8 +271,8 @@ variable "service_config" {
   nullable = false
 
   validation {
-    condition     = var.service_config.eventarc_triggers.audit_log == null || (var.service_config.eventarc_triggers.audit_log != null && (var.service_config.eventarc_triggers.service_account_email != null || var.service_config.eventarc_triggers.service_account_create))
-    error_message = "When setting var.eventarc_triggers.audit_log provide either service_account_email or set service_account_create to true"
+    condition     = var.service_config.eventarc_triggers.audit_log == null || var.service_config.eventarc_triggers.service_account_email != null
+    error_message = "When setting var.eventarc_triggers.audit_log provide service_account_email."
   }
 
   validation {
