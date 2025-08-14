@@ -20,56 +20,52 @@ locals {
     ? google_vpc_access_connector.connector[0].id
     : try(var.revision.vpc_access.connector, null)
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  _invoke_command = {
+    JOB        = <<-EOT
+      gcloud run jobs execute \
+        --project ${var.project_id} \
+        --region ${var.region} \
+        --wait ${local.resource.name} \
+        --args=
+    EOT
+    WORKERPOOL = ""
+    SERVICE    = <<-EOT
+    curl -H "Authorization: bearer $(gcloud auth print-identity-token)" \
+        ${local.resource.uri} \
+        -X POST -d 'data'
+    EOT
+  }
+  invoke_command = local._invoke_command[var.type]
+
   revision_name = (
     var.revision.name == null ? null : "${var.name}-${var.revision.name}"
   )
   service_account_email = (
     var.service_account_create
-    ? (
-      length(google_service_account.service_account) > 0
-      ? google_service_account.service_account[0].email
-      : null
-    )
+    ? google_service_account.service_account[0].email
     : var.service_account
   )
-  service = (
-    var.create_job
-    ? (
-      var.managed_revision
-      ? google_cloud_run_v2_job.job[0]
-      : google_cloud_run_v2_job.job_unmanaged[0]
+  _resource = {
+    "JOB" : (
+      var.managed_revision ?
+      try(google_cloud_run_v2_job.job[0], null) : try(google_cloud_run_v2_job.job_unmanaged[0], null)
     )
-    : (
-      var.managed_revision
-      ? google_cloud_run_v2_service.service[0]
-      : google_cloud_run_v2_service.service_unmanaged[0]
+    "WORKERPOOL" : (
+      var.managed_revision ?
+      try(google_cloud_run_v2_worker_pool.default_managed[0], null) : try(google_cloud_run_v2_worker_pool.default_unmanaged[0], null)
     )
-  )
-  trigger_sa_create = try(
-    var.eventarc_triggers.service_account_create, false
-  )
-  trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email,
-    var.eventarc_triggers.service_account_email,
-    null
-  )
-
-  iap_enabled = var.iap_config != null
-}
-
-resource "google_cloud_run_v2_service_iam_member" "default" {
-  # if authoritative invoker role is not present and we create trigger sa
-  # use additive binding to grant it the role
-  count = (
-    lookup(var.iam, "roles/run.invoker", null) == null &&
-    local.trigger_sa_create
-  ) ? 1 : 0
-  project  = google_cloud_run_v2_service.service[0].project
-  location = google_cloud_run_v2_service.service[0].location
-  name     = google_cloud_run_v2_service.service[0].name
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:${local.trigger_sa_email}"
+    "SERVICE" : (
+      var.managed_revision ?
+      try(google_cloud_run_v2_service.service[0], null) : try(google_cloud_run_v2_service.service_unmanaged[0], null)
+    )
+  }
+  resource = {
+    id       = local._resource[var.type].id
+    location = local._resource[var.type].location
+    name     = local._resource[var.type].name
+    project  = local._resource[var.type].project
+    uri      = var.type == "SERVICE" ? local._resource[var.type].uri : ""
+  }
 }
 
 resource "google_service_account" "service_account" {
@@ -80,8 +76,8 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_eventarc_trigger" "audit_log_triggers" {
-  for_each = coalesce(var.eventarc_triggers.audit_log, tomap({}))
-  name     = "${local.prefix}audit-log-${each.key}"
+  for_each = coalesce(var.service_config.eventarc_triggers.audit_log, tomap({}))
+  name     = "audit-log-${each.key}"
   location = google_cloud_run_v2_service.service[0].location
   project  = google_cloud_run_v2_service.service[0].project
   matching_criteria {
@@ -102,12 +98,12 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = local.trigger_sa_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
-  for_each = coalesce(var.eventarc_triggers.pubsub, tomap({}))
-  name     = "${local.prefix}pubsub-${each.key}"
+  for_each = coalesce(var.service_config.eventarc_triggers.pubsub, tomap({}))
+  name     = "pubsub-${each.key}"
   location = google_cloud_run_v2_service.service[0].location
   project  = google_cloud_run_v2_service.service[0].project
   matching_criteria {
@@ -125,12 +121,12 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = local.trigger_sa_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "storage_triggers" {
-  for_each = coalesce(var.eventarc_triggers.storage, tomap({}))
-  name     = "${local.prefix}storage-${each.key}"
+  for_each = coalesce(var.service_config.eventarc_triggers.storage, tomap({}))
+  name     = "storage-${each.key}"
   location = google_cloud_run_v2_service.service[0].location
   project  = google_cloud_run_v2_service.service[0].project
   matching_criteria {
@@ -148,12 +144,5 @@ resource "google_eventarc_trigger" "storage_triggers" {
       path    = try(each.value.path, null)
     }
   }
-  service_account = local.trigger_sa_email
-}
-
-resource "google_service_account" "trigger_service_account" {
-  count        = local.trigger_sa_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cr-trigger-${var.name}"
-  display_name = "Terraform trigger for Cloud Run ${var.name}."
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }

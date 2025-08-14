@@ -25,4 +25,8 @@ If your code introduces any breaking changes, uncomment and complete the section
 ```upgrade-note
 `modules/project`: example upgrade note 2.
 ```
+```upgrade-note
+`terraform-google-provider`: version updated to X.XX, because ...
+```
+
 -->

@@ -47,12 +47,12 @@ values:
         value: google.cloud.storage.object.v1.finalized
     name: storage-bucket-upload
     project: project-id
-    service_account: null
+    service_account: fixture-service-account@project-id.iam.gserviceaccount.com
 
 counts:
   google_cloud_run_v2_service: 1
   google_eventarc_trigger: 1
-  modules: 2
-  resources: 4
+  modules: 3
+  resources: 7
 
 outputs: {}

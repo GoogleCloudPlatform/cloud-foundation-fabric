@@ -15,37 +15,40 @@
  */
 
 resource "google_cloud_run_v2_service" "service" {
-  count = (
-    !var.create_job &&
-    var.managed_revision
-    ? 1 : 0
-  )
+  count                = var.type == "SERVICE" && var.managed_revision ? 1 : 0
   provider             = google-beta
   project              = var.project_id
   location             = var.region
-  name                 = "${local.prefix}${var.name}"
-  ingress              = var.ingress
-  invoker_iam_disabled = var.invoker_iam_disabled
+  name                 = var.name
+  ingress              = var.service_config.ingress
+  invoker_iam_disabled = var.service_config.invoker_iam_disabled
   labels               = var.labels
   launch_stage         = var.launch_stage
-  custom_audiences     = var.custom_audiences
+  custom_audiences     = var.service_config.custom_audiences
   deletion_protection  = var.deletion_protection
-  iap_enabled          = local.iap_enabled
+  iap_enabled          = var.service_config.iap_config != null
 
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key
     revision       = local.revision_name
     execution_environment = (
-      var.revision.gen2_execution_environment == true
+      var.service_config.gen2_execution_environment
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"
     )
-    max_instance_request_concurrency = var.revision.max_concurrency
-    dynamic "scaling" {
-      for_each = (var.revision.max_instance_count == null && var.revision.min_instance_count == null) ? [] : [""]
+    gpu_zonal_redundancy_disabled    = var.revision.gpu_zonal_redundancy_disabled
+    max_instance_request_concurrency = var.service_config.max_concurrency
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
       content {
-        max_instance_count = var.revision.max_instance_count
-        min_instance_count = var.revision.min_instance_count
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
+    dynamic "scaling" {
+      for_each = var.service_config.scaling == null ? [] : [""]
+      content {
+        max_instance_count = var.service_config.scaling.max_instance_count
+        min_instance_count = var.service_config.scaling.min_instance_count
       }
     }
     dynamic "vpc_access" {
@@ -66,7 +69,7 @@ resource "google_cloud_run_v2_service" "service" {
         }
       }
     }
-    timeout         = var.revision.timeout
+    timeout         = var.service_config.timeout
     service_account = local.service_account_email
     dynamic "containers" {
       for_each = var.containers
@@ -262,37 +265,40 @@ resource "google_cloud_run_v2_service" "service" {
 }
 
 resource "google_cloud_run_v2_service" "service_unmanaged" {
-  count = (
-    !var.create_job &&
-    !var.managed_revision
-    ? 1 : 0
-  )
+  count                = var.type == "SERVICE" && !var.managed_revision ? 1 : 0
   provider             = google-beta
   project              = var.project_id
   location             = var.region
-  name                 = "${local.prefix}${var.name}"
-  ingress              = var.ingress
-  invoker_iam_disabled = var.invoker_iam_disabled
+  name                 = var.name
+  ingress              = var.service_config.ingress
+  invoker_iam_disabled = var.service_config.invoker_iam_disabled
   labels               = var.labels
   launch_stage         = var.launch_stage
-  custom_audiences     = var.custom_audiences
+  custom_audiences     = var.service_config.custom_audiences
   deletion_protection  = var.deletion_protection
-  iap_enabled          = local.iap_enabled
+  iap_enabled          = var.service_config.iap_config != null
 
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key
     revision       = local.revision_name
     execution_environment = (
-      var.revision.gen2_execution_environment == true
+      var.service_config.gen2_execution_environment
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"
     )
-    max_instance_request_concurrency = var.revision.max_concurrency
-    dynamic "scaling" {
-      for_each = (var.revision.max_instance_count == null && var.revision.min_instance_count == null) ? [] : [""]
+    gpu_zonal_redundancy_disabled    = var.revision.gpu_zonal_redundancy_disabled
+    max_instance_request_concurrency = var.service_config.max_concurrency
+    dynamic "node_selector" {
+      for_each = var.revision.node_selector == null ? [] : [""]
       content {
-        max_instance_count = var.revision.max_instance_count
-        min_instance_count = var.revision.min_instance_count
+        accelerator = var.revision.node_selector.accelerator
+      }
+    }
+    dynamic "scaling" {
+      for_each = var.service_config.scaling == null ? [] : [""]
+      content {
+        max_instance_count = var.service_config.scaling.max_instance_count
+        min_instance_count = var.service_config.scaling.min_instance_count
       }
     }
     dynamic "vpc_access" {
@@ -313,7 +319,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
         }
       }
     }
-    timeout         = var.revision.timeout
+    timeout         = var.service_config.timeout
     service_account = local.service_account_email
     dynamic "containers" {
       for_each = var.containers
@@ -512,42 +518,31 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "binding" {
-  for_each = var.create_job ? {} : var.iam
-  project  = local.service.project
-  location = local.service.location
-  name     = local.service.name
+  for_each = var.type == "SERVICE" ? var.iam : {}
+  project  = local.resource.project
+  location = local.resource.location
+  name     = local.resource.name
   role     = each.key
-  members = (
-    each.key != "roles/run.invoker" || !local.trigger_sa_create
-    ? each.value
-    # if invoker role is present and we create trigger sa, add it as member
-    : concat(
-      each.value, ["serviceAccount:${local.trigger_sa_email}"]
-    )
-  )
-}
-
-locals {
-
-  iap_iam_additive = local.iap_enabled ? var.iap_config.iam_additive : []
-  iap_iam          = local.iap_enabled ? var.iap_config.iam : []
-
+  members  = each.value
 }
 
 resource "google_iap_web_cloud_run_service_iam_member" "member" {
-  for_each               = toset(local.iap_iam_additive)
-  project                = local.service.project
-  location               = local.service.location
-  cloud_run_service_name = local.service.name
+  for_each               = var.service_config.iap_config == null ? toset([]) : toset(var.service_config.iap_config.iam_additive)
+  project                = local.resource.project
+  location               = local.resource.location
+  cloud_run_service_name = local.resource.name
   role                   = "roles/iap.httpsResourceAccessor"
   member                 = each.key
 }
 
 resource "google_iap_web_cloud_run_service_iam_binding" "binding" {
-  for_each               = length(local.iap_iam) == 0 ? {} : { 1 = 1 }
-  project                = local.service.project
-  location               = local.service.location
-  cloud_run_service_name = local.service.name
+  for_each = (
+    var.service_config.iap_config == null ? {}
+    : length(var.service_config.iap_config.iam) == 0 ? {} : { 1 = 1 }
+  )
+  project                = local.resource.project
+  location               = local.resource.location
+  cloud_run_service_name = local.resource.name
   role                   = "roles/iap.httpsResourceAccessor"
-  members                = local.iap_iam
+  members                = var.service_config.iap_config.iam
 }
