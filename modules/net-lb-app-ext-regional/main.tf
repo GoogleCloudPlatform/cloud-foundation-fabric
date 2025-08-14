@@ -58,12 +58,13 @@ resource "google_compute_region_ssl_certificate" "default" {
 }
 
 resource "google_compute_region_target_http_proxy" "default" {
-  count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = var.project_id
-  region      = var.region
-  name        = var.name
-  description = var.description
-  url_map     = google_compute_region_url_map.default.id
+  count                       = var.protocol == "HTTPS" ? 0 : 1
+  project                     = var.project_id
+  region                      = var.region
+  name                        = var.name
+  description                 = var.description
+  url_map                     = google_compute_region_url_map.default.id
+  http_keep_alive_timeout_sec = var.http_proxy_config.http_keep_alive_timeout_sec
 }
 
 resource "google_compute_region_target_https_proxy" "default" {
@@ -76,4 +77,5 @@ resource "google_compute_region_target_https_proxy" "default" {
   ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_region_url_map.default.id
+  http_keep_alive_timeout_sec      = var.https_proxy_config.http_keep_alive_timeout_sec
 }
