@@ -3,7 +3,34 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-05-21 08:30:09+00:00 to: None since: v40.0.0 -->
+## [Unreleased] <!-- from: 2025-08-08 06:51:19+00:00 to: None since: v42.0.0 -->
+
+### BREAKING CHANGES
+
+- `modules/cloud-run-v2`: dropped support for `service_account_create` for `eventarc_triggers` as it was impossible to properly manage permissions for those SA [[#3269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3269)]
+- `terraform-provider-google`:  Bump provider to 6.47.0, to allow use of `gpu_zonal_redundancy_disabled` in modules/cloud-run-v2 [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)]
+- `modules/cloud-run-v2`: `create_job` bool was changed to `type` enum, `custom_audiences`, `eventarc_triggers`, `iap_config`, `ingress`  and `invoker_iam_disabled` were moved to `service_config`. `prefix` variable was removed. [[#3270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3270)]
+
+
+### BLUEPRINTS
+
+- [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
+- [[#3270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3270)] Add Cloud Run Worker Pools ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-12 17:59:51+00:00 -->
+
+### FAST
+
+- [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
+
+### MODULES
+
+- [[#3273](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3273)] Add cross project support for backend bucket ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-08-14 07:08:55+00:00 -->
+- [[#3269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3269)] E2E: Align bucket location to the triggers ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 20:11:07+00:00 -->
+- [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] **incompatible change:** Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
+- [[#3270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3270)] **incompatible change:** Add Cloud Run Worker Pools ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-12 17:59:51+00:00 -->
+
+### TOOLS
+
+- [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
 
 ## [42.0.0] - 2025-08-08
 

@@ -17,8 +17,12 @@
 # tfdoc:file:description Backend groups and backend buckets resources.
 
 resource "google_compute_backend_bucket" "default" {
-  for_each                = var.backend_buckets_config
-  project                 = var.project_id
+  for_each = var.backend_buckets_config
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   name                    = "${var.name}-${each.key}"
   bucket_name             = each.value.bucket_name
   compression_mode        = each.value.compression_mode
