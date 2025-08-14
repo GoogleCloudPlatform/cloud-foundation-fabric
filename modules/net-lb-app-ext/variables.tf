@@ -86,6 +86,15 @@ variable "group_configs" {
   nullable = false
 }
 
+variable "http_proxy_config" {
+  description = "HTTPS proxy configuration."
+  type = object({
+    http_keep_alive_timeout_sec = optional(number, null)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "https_proxy_config" {
   description = "HTTPS proxy connfiguration."
   type = object({
@@ -96,6 +105,7 @@ variable "https_proxy_config" {
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
     mtls_policy                      = optional(string) # id of the mTLS policy to use for the target proxy.
+    http_keep_alive_timeout_sec      = optional(number, null)
   })
   default  = {}
   nullable = false
