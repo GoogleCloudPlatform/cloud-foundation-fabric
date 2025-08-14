@@ -65,6 +65,9 @@ module "cluster_1" {
     dataplane_v2      = true
     workload_identity = true
   }
+  cluster_autoscaling = {
+    enabled = true
+  }
 }
 
 module "hub" {
