@@ -69,6 +69,15 @@ variable "folder_ids" {
   type        = map(string)
 }
 
+variable "organization" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization details."
+  type = object({
+    id = number
+  })
+  nullable = false
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

@@ -47,10 +47,11 @@ module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-landing-0"
-  parent = coalesce(
+  parent = try(
     var.folder_ids["networking-prod"],
     var.folder_ids["networking/prod"],
-    var.folder_ids.networking
+    var.folder_ids.networking,
+    "organizations/${var.organization.id}"
   )
   prefix = var.prefix
   services = [

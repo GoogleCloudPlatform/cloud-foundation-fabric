@@ -35,10 +35,11 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
-  parent = coalesce(
+  parent = try(
     var.folder_ids["networking-dev"],
     var.folder_ids["networking/dev"],
-    var.folder_ids.networking
+    var.folder_ids.networking,
+    "organizations/${var.organization.id}"
   )
   prefix = var.prefix
   services = [
