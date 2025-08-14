@@ -66,28 +66,6 @@ locals {
     project  = local._resource[var.type].project
     uri      = var.type == "SERVICE" ? local._resource[var.type].uri : ""
   }
-  trigger_sa_create = try(
-    var.service_config.eventarc_triggers.service_account_create, false
-  )
-  trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email,
-    var.service_config.eventarc_triggers.service_account_email,
-    null
-  )
-}
-
-resource "google_cloud_run_v2_service_iam_member" "default" {
-  # if authoritative invoker role is not present and we create trigger sa
-  # use additive binding to grant it the role
-  count = (
-    lookup(var.iam, "roles/run.invoker", null) == null &&
-    local.trigger_sa_create
-  ) ? 1 : 0
-  project  = google_cloud_run_v2_service.service[0].project
-  location = google_cloud_run_v2_service.service[0].location
-  name     = google_cloud_run_v2_service.service[0].name
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:${local.trigger_sa_email}"
 }
 
 resource "google_service_account" "service_account" {
@@ -120,7 +98,7 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = local.trigger_sa_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
@@ -143,7 +121,7 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
       region  = google_cloud_run_v2_service.service[0].location
     }
   }
-  service_account = local.trigger_sa_email
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
 
 resource "google_eventarc_trigger" "storage_triggers" {
@@ -166,12 +144,5 @@ resource "google_eventarc_trigger" "storage_triggers" {
       path    = try(each.value.path, null)
     }
   }
-  service_account = local.trigger_sa_email
-}
-
-resource "google_service_account" "trigger_service_account" {
-  count        = local.trigger_sa_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cr-trigger-${var.name}"
-  display_name = "Terraform trigger for Cloud Run ${var.name}."
+  service_account = var.service_config.eventarc_triggers.service_account_email
 }
