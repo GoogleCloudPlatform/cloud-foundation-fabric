@@ -66,11 +66,7 @@ variable "environments" {
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format."
-  type = object({
-    networking      = string
-    networking-dev  = optional(string)
-    networking-prod = optional(string)
-  })
+  type        = map(string)
 }
 
 variable "prefix" {
