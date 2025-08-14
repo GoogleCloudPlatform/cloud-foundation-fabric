@@ -36,7 +36,8 @@ module "dev-spoke-project" {
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
   parent = coalesce(
-    var.folder_ids.networking-dev,
+    var.folder_ids["networking-dev"],
+    var.folder_ids["networking/dev"],
     var.folder_ids.networking
   )
   prefix = var.prefix

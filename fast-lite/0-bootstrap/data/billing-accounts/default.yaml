@@ -24,5 +24,8 @@ iam_bindings_additive:
     role: roles/billing.admin
     member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
   billing_user_security_sa:
-    role: roles/billing.admin
+    role: roles/billing.user
     member: $iam_principals:service_accounts/iac-0/iac-security-rw
+  billing_user_networking_sa:
+    role: roles/billing.user
+    member: $iam_principals:service_accounts/iac-0/iac-networking-rw
