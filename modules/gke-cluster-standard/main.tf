@@ -89,7 +89,7 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "node_pool_auto_config" {
-    for_each = (local.cas != null && local.cas.enabled) ? [""] : []
+    for_each = try(local.cas.enabled, null) == true ? [""] : []
     content {
       network_tags {
         tags = var.node_pool_auto_config.network_tags
