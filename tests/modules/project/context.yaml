@@ -122,7 +122,7 @@ counts:
   google_compute_shared_vpc_service_project: 1
   google_project: 1
   google_project_iam_binding: 4
-  google_project_iam_member: 6
+  google_project_iam_member: 7
   google_project_service: 1
   google_tags_tag_binding: 1
   google_tags_tag_key_iam_binding: 2
@@ -130,4 +130,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 21
+  resources: 22

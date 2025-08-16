@@ -30,7 +30,7 @@ iam = {
     "$iam_principals:myuser"
   ]
   "roles/viewer" = [
-    "$iam_principals:mysa"
+    "$iam_principals:mysa",
   ]
 }
 iam_by_principals = {
@@ -51,6 +51,10 @@ iam_bindings_additive = {
   myrole_two = {
     role   = "$custom_roles:myrole_two"
     member = "$iam_principals:myuser"
+  }
+  sa_test = {
+    role   = "roles/browser"
+    member = "$service_agents:compute"
   }
 }
 services = [
