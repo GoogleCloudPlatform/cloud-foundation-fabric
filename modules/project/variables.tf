@@ -45,6 +45,7 @@ variable "context" {
   type = object({
     custom_roles          = optional(map(string), {})
     folder_ids            = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
     iam_principals        = optional(map(string), {})
     notification_channels = optional(map(string), {})
     org_policies          = optional(map(map(string)), {})

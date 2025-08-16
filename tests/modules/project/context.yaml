@@ -21,6 +21,10 @@ values:
     host_project: test-vpc-host
     service_project: my-project
     timeouts: null
+  google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
+    condition: []
+    crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   google_project_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -120,6 +124,7 @@ values:
 counts:
   google_access_context_manager_service_perimeter_resource: 1
   google_compute_shared_vpc_service_project: 1
+  google_kms_crypto_key_iam_member: 1
   google_project: 1
   google_project_iam_binding: 4
   google_project_iam_member: 7
@@ -130,4 +135,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 22
+  resources: 23

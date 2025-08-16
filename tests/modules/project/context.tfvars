@@ -6,6 +6,9 @@ context = {
   folder_ids = {
     "test/prod" = "folders/6789012345"
   }
+  kms_keys = {
+    compute-prod-ew1 = "projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -60,6 +63,11 @@ iam_bindings_additive = {
 services = [
   "compute.googleapis.com"
 ]
+service_encryption_key_ids = {
+  "compute.googleapis.com" = [
+    "$kms_keys:compute-prod-ew1"
+  ]
+}
 shared_vpc_service_config = {
   host_project = "$project_ids:vpc-host"
   iam_bindings_additive = {
