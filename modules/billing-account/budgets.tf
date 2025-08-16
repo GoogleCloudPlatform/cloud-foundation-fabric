@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+locals {
+  ctx_notification_channels = merge(
+    local.ctx.notification_channels,
+    {
+      for k, v in google_monitoring_notification_channel.default :
+      "$notification_channels:${k}" => v.id
+    }
+  )
+}
+
 resource "google_monitoring_notification_channel" "default" {
   for_each    = var.budget_notification_channels
   description = each.value.description
@@ -125,10 +135,8 @@ resource "google_billing_budget" "default" {
         rule.value.monitoring_notification_channels == null
         ? null
         : [
-          for v in rule.value.monitoring_notification_channels : try(
-            google_monitoring_notification_channel.default[v].id,
-            local.ctx.notification_channels[v],
-            v
+          for v in rule.value.monitoring_notification_channels : lookup(
+            local.ctx_notification_channels, v, v
           )
         ]
       )
