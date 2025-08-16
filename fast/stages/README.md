@@ -21,6 +21,11 @@ Stages encapsulate core designs and functionality that is common in most type of
 
 To destroy a previous FAST deployment follow the instructions detailed in [cleanup](CLEANUP.md).
 
+## Organization (experimental)
+
+- [Experimental Bootstrap](./0-bootstrap-experimental/README.md)
+  This stage combines the legacy bootstrap and resource management stages described below, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
+  
 ## Organization (0 and 1)
 
 - [Bootstrap](0-bootstrap/README.md)  

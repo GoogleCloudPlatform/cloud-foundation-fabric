@@ -26,7 +26,7 @@ locals {
 }
 
 module "factory" {
-  source = "../../modules/project-factory-new"
+  source = "../../../modules/project-factory-experimental"
   data_defaults = merge(
     local.project_defaults.defaults,
     local.factory_billing,
