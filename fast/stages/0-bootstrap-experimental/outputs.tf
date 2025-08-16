@@ -15,5 +15,6 @@
  */
 
 output "projects" {
-  value = module.factory.projects
+  description = "Attributes for managed projects."
+  value       = module.factory.projects
 }

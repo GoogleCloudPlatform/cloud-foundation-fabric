@@ -598,14 +598,14 @@ service_accounts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L44) |  |  |
-| [iam_principals](outputs.tf#L54) |  |  |
-| [log_buckets](outputs.tf#L48) |  |  |
-| [project_ids](outputs.tf#L58) |  |  |
-| [project_numbers](outputs.tf#L62) |  |  |
-| [projects](outputs.tf#L68) |  |  |
-| [service_accounts](outputs.tf#L72) |  |  |
-| [storage_buckets](outputs.tf#L78) |  |  |
+| [folder_ids](outputs.tf#L44) | Folder ids. |  |
+| [iam_principals](outputs.tf#L56) | IAM principals mappings. |  |
+| [log_buckets](outputs.tf#L49) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L61) | Project ids. |  |
+| [project_numbers](outputs.tf#L66) | Project numbers. |  |
+| [projects](outputs.tf#L73) | Project attributes. |  |
+| [service_accounts](outputs.tf#L78) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L85) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

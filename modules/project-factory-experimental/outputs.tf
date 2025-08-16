@@ -42,40 +42,48 @@ locals {
 }
 
 output "folder_ids" {
-  value = local.folder_ids
+  description = "Folder ids."
+  value       = local.folder_ids
 }
 
 output "log_buckets" {
+  description = "Log bucket ids."
   value = merge([
     for k, v in local.outputs_projects : v.log_buckets
   ]...)
 }
 
 output "iam_principals" {
-  value = local.iam_principals
+  description = "IAM principals mappings."
+  value       = local.iam_principals
 }
 
 output "project_ids" {
-  value = local.project_ids
+  description = "Project ids."
+  value       = local.project_ids
 }
 
 output "project_numbers" {
+  description = "Project numbers."
   value = {
     for k, v in local.outputs_projects : k => v.number
   }
 }
 
 output "projects" {
-  value = local.outputs_projects
+  description = "Project attributes."
+  value       = local.outputs_projects
 }
 
 output "service_accounts" {
+  description = "Service account emails."
   value = merge([
     for k, v in local.outputs_projects : v.service_accounts
   ]...)
 }
 
 output "storage_buckets" {
+  description = "Bucket names."
   value = merge([
     for k, v in local.outputs_projects : v.storage_buckets
   ]...)

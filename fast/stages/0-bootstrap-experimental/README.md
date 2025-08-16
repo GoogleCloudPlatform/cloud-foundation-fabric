@@ -53,5 +53,5 @@ to:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [projects](outputs.tf#L17) |  |  |
+| [projects](outputs.tf#L17) | Attributes for managed projects. |  |
 <!-- END TFDOC -->
