@@ -1,0 +1,571 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: test-pf-dev-tb-app0-0-tf-state
+    project: test-pf-teams-iac-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
+  : bucket: test-pf-dev-tb-app0-0-tf-state
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/storage.objectCreator
+  ? module.project-factory.module.automation-bucket["dev-tb-app0-0"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-dev-tb-app0-0-tf-state
+    condition: []
+    members:
+    - group:gcp-devops@example.org
+    - group:team-b-admins@example.org
+    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-ro
+    create_ignore_already_exists: null
+    description: Team B app 0 read-only automation sa.
+    disabled: false
+    display_name: Service account ro for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-teams-iac-0
+    timeouts: null
+  ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/rw"].google_service_account.service_account[0]
+  : account_id: test-pf-dev-tb-app0-0-rw
+    create_ignore_already_exists: null
+    description: Team B app 0 read/write automation sa.
+    disabled: false
+    display_name: Service account rw for dev-tb-app0-0.
+    email: test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-teams-iac-0
+    timeouts: null
+  module.project-factory.module.billing-account[0].google_billing_budget.default["test-100"]:
+    all_updates_rule:
+    - disable_default_iam_recipients: true
+      enable_project_level_recipients: false
+      pubsub_topic: null
+      schema_version: '1.0'
+    amount:
+    - last_period_amount: null
+      specified_amount:
+      - nanos: null
+        units: '100'
+    billing_account: 123456-123456-123456
+    budget_filter:
+    - calendar_period: null
+      credit_types_treatment: INCLUDE_ALL_CREDITS
+      custom_period: []
+      resource_ancestors:
+      - folders/1234567890
+    display_name: 100 dollars in current spend
+    ownership_scope: null
+    threshold_rules:
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.5
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.75
+    timeouts: null
+  module.project-factory.module.billing-account[0].google_monitoring_notification_channel.default["billing-default"]:
+    description: null
+    display_name: Budget email notification billing-default.
+    enabled: true
+    force_delete: false
+    labels:
+      email_address: gcp-billing-admins@example.org
+    project: foo-billing-audit
+    sensitive_labels: []
+    timeouts: null
+    type: email
+    user_labels: null
+  module.project-factory.module.hierarchy-folder-lvl-1["team-a"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team A
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-1["team-a"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@example.org
+    - group:team-a-admins@example.org
+    role: roles/viewer
+  module.project-factory.module.hierarchy-folder-lvl-1["team-b"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team B
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-1["team-c"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team C
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-2["team-a/app-0"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: App 0
+    tags: null
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: App 0
+    tags: null
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
+    tag_value: tagValues/123456
+    timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
+  : deletion_policy: null
+    host_project: test-pf-dev-net-spoke-0
+    service_project: test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_iam["group:gcp-devops@example.org"]
+  : condition: []
+    member: group:gcp-devops@example.org
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container-engine"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/container.hostServiceAgentUser
+  module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    role: roles/owner
+  module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    role: roles/viewer
+  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
+    condition: []
+    members:
+    - serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    role: roles/run.admin
+  ? module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.developer"]
+  : condition: []
+    members:
+    - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    role: roles/run.developer
+  module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-dev-ta-app0-be
+    user_project: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]
+  : condition: []
+    crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
+  : condition: []
+    crypto_key_id: projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-a
+    labels:
+      app: app-0
+      environment: test
+      team: team-a
+    name: test-pf-dev-ta-app0-be
+    project_id: test-pf-dev-ta-app0-be
+    tags: null
+    terraform_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-a
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["container-engine-robot"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/container.serviceAgent
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/container.defaultNodeServiceAgent
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["container.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-app0-be
+    service: container.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-app0-be
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-app0-be
+    service: storage.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service_identity.default["container.googleapis.com"]
+  : project: test-pf-dev-ta-app0-be
+    service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_key.default["my-tag-key-1"]:
+    description: Managed by the Terraform project-factory module.
+    parent: projects/test-pf-dev-ta-app0-be
+    purpose: null
+    purpose_data: null
+    short_name: my-tag-key-1
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value.default["my-tag-key-1/my-value-1"]:
+    description: My value 1
+    short_name: my-value-1
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value.default["my-tag-key-1/my-value-2"]:
+    description: My value 3
+    short_name: my-value-2
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - user:user@example.com
+    role: roles/resourcemanager.tagUser
+  module.project-factory.module.projects["dev-tb-app0-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-dev-tb-app0-0
+    user_project: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    project: test-pf-dev-tb-app0-0
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-dev-tb-app0-0
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-dev-tb-app0-0
+    project_id: test-pf-dev-tb-app0-0
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_project_iam_member.service_agents["serverless-robot-prod"]:
+    condition: []
+    project: test-pf-dev-tb-app0-0
+    role: roles/run.serviceAgent
+  module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["run.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-0
+    service: run.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-0"].google_project_service_identity.default["run.googleapis.com"]:
+    project: test-pf-dev-tb-app0-0
+    service: run.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-dev-tb-app0-1
+    user_project: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-dev-tb-app0-1
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-b
+    labels:
+      app: app-0
+      environment: test
+      team: team-b
+    name: test-pf-dev-tb-app0-1
+    project_id: test-pf-dev-tb-app0-1
+    tags: null
+    terraform_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-b
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/container.serviceAgent
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/container.defaultNodeServiceAgent
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["container.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: container.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-tb-app0-1
+    service: storage.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service_identity.default["container.googleapis.com"]
+  : project: test-pf-dev-tb-app0-1
+    service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-teams-iac-0
+    user_project: null
+  module.project-factory.module.projects["teams-iac-0"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-teams-iac-0
+    timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    folder_id: '5678901234'
+    labels:
+      environment: test
+    name: test-pf-teams-iac-0
+    org_id: null
+    project_id: test-pf-teams-iac-0
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-teams-iac-0
+    role: roles/container.serviceAgent
+  module.project-factory.module.projects["teams-iac-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-teams-iac-0
+    role: roles/container.defaultNodeServiceAgent
+  module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-teams-iac-0
+    service: container.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["stackdriver.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-teams-iac-0
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-teams-iac-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-teams-iac-0
+    service: container.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-net-spoke-0-roles/compute.networkUser"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-ta-app0-be-roles/logging.logWriter"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/logging.logWriter
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-ta-app0-be-roles/monitoring.metricWriter"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_service_account.service_account[0]:
+    account_id: app-0-be
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Backend instances.
+    email: app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    member: serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    project: test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["test-pf-dev-net-spoke-0-roles/compute.networkUser"]
+  : condition: []
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["test-pf-dev-ta-app0-be-roles/logging.logWriter"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/logging.logWriter
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["test-pf-dev-ta-app0-be-roles/monitoring.metricWriter"]
+  : condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_service_account.service_account[0]:
+    account_id: app-0-fe
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Frontend instances.
+    email: app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+    project: test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/logging.logWriter
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
+    account_id: vm-default
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: VM default service account.
+    email: vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
+    member: serviceAccount:vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-0
+    timeouts: null
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/logging.logWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/logging.logWriter
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["test-pf-dev-tb-app0-1-roles/monitoring.metricWriter"]
+  : condition: []
+    project: test-pf-dev-tb-app0-1
+    role: roles/monitoring.metricWriter
+  module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
+    account_id: app-0-be
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Backend instances.
+    email: app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
+    project: test-pf-dev-tb-app0-1
+    timeouts: null
+
+counts:
+  google_billing_budget: 1
+  google_compute_shared_vpc_host_project: 1
+  google_compute_shared_vpc_service_project: 1
+  google_essential_contacts_contact: 4
+  google_folder: 5
+  google_folder_iam_binding: 1
+  google_kms_crypto_key_iam_member: 2
+  google_monitoring_notification_channel: 1
+  google_project: 4
+  google_project_iam_binding: 6
+  google_project_iam_member: 21
+  google_project_service: 13
+  google_project_service_identity: 4
+  google_service_account: 6
+  google_service_account_iam_binding: 1
+  google_storage_bucket: 1
+  google_storage_bucket_iam_binding: 2
+  google_storage_project_service_account: 4
+  google_tags_tag_binding: 1
+  google_tags_tag_key: 1
+  google_tags_tag_value: 2
+  google_tags_tag_value_iam_binding: 1
+  modules: 21
+  resources: 83
+
+outputs: {}

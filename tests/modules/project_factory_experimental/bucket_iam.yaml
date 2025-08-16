@@ -1,0 +1,505 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.buckets["project2/state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: test-pf-project2-state
+    project: test-pf-project2
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  module.buckets["team-a/project1/state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: test-pf-project1-state
+    project: test-pf-project1
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  module.buckets["team-a/project1/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]:
+    bucket: test-pf-project1-state
+    condition: []
+    members:
+    - serviceAccount:terraform-rw@test-pf-project1.iam.gserviceaccount.com
+    role: roles/storage.admin
+  module.hierarchy-folder-lvl-1["team-a"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team A
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.hierarchy-folder-lvl-1["team-a"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@example.org
+    - group:team-a-admins@example.org
+    role: roles/viewer
+  module.hierarchy-folder-lvl-1["team-b"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Team B
+    parent: folders/5678901234
+    tags: null
+    timeouts: null
+  module.projects["project2"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-project2
+    timeouts: null
+  module.projects["project2"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-a
+    labels:
+      app: app-0
+      environment: test
+      team: team-a
+    name: test-pf-project2
+    project_id: test-pf-project2
+    tags: null
+    terraform_labels:
+      app: app-0
+      environment: test
+      goog-terraform-provisioned: 'true'
+      team: team-a
+    timeouts: null
+  module.projects["project2"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project2
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["project3"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-top-project3
+    user_project: null
+  module.projects["project3"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-top-project3
+    timeouts: null
+  module.projects["project3"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-top-project3
+    project_id: test-pf-top-project3
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["project3"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-top-project3
+    role: roles/container.serviceAgent
+  module.projects["project3"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-top-project3
+    role: roles/container.defaultNodeServiceAgent
+  module.projects["project3"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-top-project3
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["project3"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-top-project3
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["project3"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-top-project3
+    service: storage.googleapis.com
+    timeouts: null
+  module.projects["project3"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-top-project3
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-a/automation"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-auto-team-a
+    user_project: null
+  module.projects["team-a/automation"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-auto-team-a
+    timeouts: null
+  module.projects["team-a/automation"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-auto-team-a
+    project_id: test-pf-auto-team-a
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["team-a/automation"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-auto-team-a
+    role: roles/container.serviceAgent
+  module.projects["team-a/automation"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-auto-team-a
+    role: roles/container.defaultNodeServiceAgent
+  module.projects["team-a/automation"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-a
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-a/automation"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-a
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["team-a/automation"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-a
+    service: storage.googleapis.com
+    timeouts: null
+  module.projects["team-a/automation"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-auto-team-a
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-a/project1"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-project1
+    user_project: null
+  module.projects["team-a/project1"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-project1
+    timeouts: null
+  module.projects["team-a/project1"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-project1
+    project_id: test-pf-project1
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["team-a/project1"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-project1
+    role: roles/container.serviceAgent
+  module.projects["team-a/project1"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-project1
+    role: roles/container.defaultNodeServiceAgent
+  module.projects["team-a/project1"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project1
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-a/project1"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project1
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["team-a/project1"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project1
+    service: storage.googleapis.com
+    timeouts: null
+  module.projects["team-a/project1"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-project1
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-b/automation"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-auto-team-b
+    user_project: null
+  module.projects["team-b/automation"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-auto-team-b
+    timeouts: null
+  module.projects["team-b/automation"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-auto-team-b
+    project_id: test-pf-auto-team-b
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["team-b/automation"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-auto-team-b
+    role: roles/container.serviceAgent
+  module.projects["team-b/automation"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-auto-team-b
+    role: roles/container.defaultNodeServiceAgent
+  module.projects["team-b/automation"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-b
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-b/automation"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-b
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["team-b/automation"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-auto-team-b
+    service: storage.googleapis.com
+    timeouts: null
+  module.projects["team-b/automation"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-auto-team-b
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-b/project3"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-project3
+    user_project: null
+  module.projects["team-b/project3"].google_essential_contacts_contact.contact["admin@example.org"]:
+    email: admin@example.org
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: projects/test-pf-project3
+    timeouts: null
+  module.projects["team-b/project3"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: test
+    name: test-pf-project3
+    project_id: test-pf-project3
+    tags: null
+    terraform_labels:
+      environment: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["team-b/project3"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: test-pf-project3
+    role: roles/container.serviceAgent
+  module.projects["team-b/project3"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: test-pf-project3
+    role: roles/container.defaultNodeServiceAgent
+  module.projects["team-b/project3"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project3
+    service: container.googleapis.com
+    timeouts: null
+  module.projects["team-b/project3"].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project3
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.projects["team-b/project3"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-project3
+    service: storage.googleapis.com
+    timeouts: null
+  module.projects["team-b/project3"].google_project_service_identity.default["container.googleapis.com"]:
+    project: test-pf-project3
+    service: container.googleapis.com
+    timeouts: null
+  module.service-accounts["project2/app-be-0"].google_service_account.service_account[0]:
+    account_id: app-be-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: app-be-0@test-pf-project2.iam.gserviceaccount.com
+    member: serviceAccount:app-be-0@test-pf-project2.iam.gserviceaccount.com
+    project: test-pf-project2
+    timeouts: null
+  ? module.service-accounts["project2/app-fe-1"].google_project_iam_member.project-roles["my-host-project-roles/compute.networkUser"]
+  : condition: []
+    project: my-host-project
+    role: roles/compute.networkUser
+  ? module.service-accounts["project2/app-fe-1"].google_project_iam_member.project-roles["test-pf-project2-roles/storage.objectViewer"]
+  : condition: []
+    project: test-pf-project2
+    role: roles/storage.objectViewer
+  module.service-accounts["project2/app-fe-1"].google_service_account.service_account[0]:
+    account_id: app-fe-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: GCE frontend service account.
+    email: app-fe-1@test-pf-project2.iam.gserviceaccount.com
+    member: serviceAccount:app-fe-1@test-pf-project2.iam.gserviceaccount.com
+    project: test-pf-project2
+    timeouts: null
+  module.service-accounts["project2/terraform-rw"].google_service_account.service_account[0]:
+    account_id: terraform-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: terraform-rw@test-pf-project2.iam.gserviceaccount.com
+    member: serviceAccount:terraform-rw@test-pf-project2.iam.gserviceaccount.com
+    project: test-pf-project2
+    timeouts: null
+  module.service-accounts["team-a/project1/app-be-0"].google_service_account.service_account[0]:
+    account_id: app-be-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: app-be-0@test-pf-project1.iam.gserviceaccount.com
+    member: serviceAccount:app-be-0@test-pf-project1.iam.gserviceaccount.com
+    project: test-pf-project1
+    timeouts: null
+  ? module.service-accounts["team-a/project1/app-fe-1"].google_project_iam_member.project-roles["my-host-project-roles/compute.networkUser"]
+  : condition: []
+    project: my-host-project
+    role: roles/compute.networkUser
+  ? module.service-accounts["team-a/project1/app-fe-1"].google_project_iam_member.project-roles["test-pf-project1-roles/storage.objectViewer"]
+  : condition: []
+    project: test-pf-project1
+    role: roles/storage.objectViewer
+  module.service-accounts["team-a/project1/app-fe-1"].google_service_account.service_account[0]:
+    account_id: app-fe-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: GCE frontend service account.
+    email: app-fe-1@test-pf-project1.iam.gserviceaccount.com
+    member: serviceAccount:app-fe-1@test-pf-project1.iam.gserviceaccount.com
+    project: test-pf-project1
+    timeouts: null
+  module.service-accounts["team-a/project1/terraform-rw"].google_service_account.service_account[0]:
+    account_id: terraform-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: terraform-rw@test-pf-project1.iam.gserviceaccount.com
+    member: serviceAccount:terraform-rw@test-pf-project1.iam.gserviceaccount.com
+    project: test-pf-project1
+    timeouts: null
+
+counts:
+  google_essential_contacts_contact: 6
+  google_folder: 2
+  google_folder_iam_binding: 1
+  google_project: 6
+  google_project_iam_member: 14
+  google_project_service: 16
+  google_project_service_identity: 5
+  google_service_account: 6
+  google_storage_bucket: 2
+  google_storage_bucket_iam_binding: 1
+  google_storage_project_service_account: 5
+  modules: 16
+  resources: 64
+
+outputs:
+  buckets:
+    project2/state: test-pf-project2-state
+    team-a/project1/state: test-pf-project1-state
+  folders: __missing__
+  projects: __missing__
+  service_accounts: __missing__
