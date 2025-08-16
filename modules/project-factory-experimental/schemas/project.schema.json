@@ -67,6 +67,12 @@
     "billing_account": {
       "type": "string"
     },
+    "billing_budgets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "buckets": {
       "$ref": "#/$defs/buckets"
     },
@@ -718,7 +724,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^(?:[a-z0-9-]|\\$project_ids:[a-z0-9_-])+$": {
           "type": "array",
           "items": {
             "type": "string"

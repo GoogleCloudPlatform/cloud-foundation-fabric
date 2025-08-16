@@ -158,7 +158,7 @@
     },
     "parent": {
       "type": "string",
-      "pattern": "^($:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
+      "pattern": "^(?:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
     },
     "tag_bindings": {
       "type": "object",
