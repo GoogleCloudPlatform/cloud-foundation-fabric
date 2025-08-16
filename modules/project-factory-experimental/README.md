@@ -599,8 +599,8 @@ service_accounts:
 | name | description | sensitive |
 |---|---|:---:|
 | [folder_ids](outputs.tf#L44) | Folder ids. |  |
-| [iam_principals](outputs.tf#L56) | IAM principals mappings. |  |
-| [log_buckets](outputs.tf#L49) | Log bucket ids. |  |
+| [iam_principals](outputs.tf#L49) | IAM principals mappings. |  |
+| [log_buckets](outputs.tf#L54) | Log bucket ids. |  |
 | [project_ids](outputs.tf#L61) | Project ids. |  |
 | [project_numbers](outputs.tf#L66) | Project numbers. |  |
 | [projects](outputs.tf#L73) | Project attributes. |  |

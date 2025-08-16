@@ -46,16 +46,16 @@ output "folder_ids" {
   value       = local.folder_ids
 }
 
+output "iam_principals" {
+  description = "IAM principals mappings."
+  value       = local.iam_principals
+}
+
 output "log_buckets" {
   description = "Log bucket ids."
   value = merge([
     for k, v in local.outputs_projects : v.log_buckets
   ]...)
-}
-
-output "iam_principals" {
-  description = "IAM principals mappings."
-  value       = local.iam_principals
 }
 
 output "project_ids" {
