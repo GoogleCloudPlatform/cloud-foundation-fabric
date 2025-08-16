@@ -38,6 +38,10 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
+  ctx_iam_principals = merge(local.ctx.iam_principals, {
+    for k, v in local.aliased_service_agents :
+    "$service_agents:${k}" => v.iam_email
+  })
   custom_role_ids = {
     for k, v in google_project_iam_custom_role.roles :
     # build the string manually so that role IDs can be used as map
@@ -109,7 +113,7 @@ resource "google_project_iam_binding" "authoritative" {
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
     for v in each.value :
-    lookup(local.ctx.iam_principals, v, v)
+    lookup(local.ctx_iam_principals, v, v)
   ]
   depends_on = [
     google_project_service.project_services,
@@ -122,7 +126,7 @@ resource "google_project_iam_binding" "bindings" {
   project  = local.project.project_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
-    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+    for v in each.value.members : lookup(local.ctx_iam_principals, v, v)
   ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
@@ -142,7 +146,7 @@ resource "google_project_iam_member" "bindings" {
   for_each = local.iam_bindings_additive
   project  = local.project.project_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
+  member   = lookup(local.ctx_iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
