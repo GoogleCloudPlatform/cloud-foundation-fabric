@@ -22,7 +22,9 @@ locals {
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
   _factory_data = {
-    for k, v in local._factory_data_raw : k => merge(v, { region_computed = lookup(var.factories_config.context.regions, v.region, v.region) })
+    for k, v in local._factory_data_raw : k => merge(v, {
+      region_computed = lookup(local.ctx.regions, v.region, v.region)
+    })
   }
   _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
   _factory_subnets = {

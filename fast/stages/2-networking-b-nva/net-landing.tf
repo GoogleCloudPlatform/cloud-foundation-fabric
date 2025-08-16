@@ -47,9 +47,11 @@ module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-landing-0"
-  parent = coalesce(
-    var.folder_ids.networking-prod,
-    var.folder_ids.networking
+  parent = try(
+    var.folder_ids["networking-prod"],
+    var.folder_ids["networking/prod"],
+    var.folder_ids.networking,
+    "organizations/${var.organization.id}"
   )
   prefix = var.prefix
   services = [
@@ -82,8 +84,8 @@ module "dmz-vpc" {
     logging = local.dmz_cfg.dns_logging
   }
   create_googleapis_routes = null
+  context                  = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/dmz"
   }
   delete_default_routes_on_create   = true
@@ -182,8 +184,8 @@ module "landing-vpc" {
     inbound = true
     logging = local.landing_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/landing"
   }
   firewall_policy_enforcement_order = local.landing_cfg.fw_order

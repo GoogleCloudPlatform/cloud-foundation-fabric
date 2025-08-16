@@ -68,6 +68,21 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+- **quotas**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**service**: *string*
+    - ⁺**quota_id**: *string*
+    - ⁺**preferred_value**: *number*
+    - **dimensions**: *object*
+      *additional properties: String*
+    - **justification**: *string*
+    - **contact_email**: *string*
+    - **annotations**: *object*
+      *additional properties: String*
+    - **ignore_safety_checks**: *string*
+      <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
 - **parent**: *string*
 - **prefix**: *string*
 - **project_reuse**: *object*
@@ -124,8 +139,6 @@
   *additional properties: Object*
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
-  - **perimeter_bridges**: *array*
-    - items: *string*
   - **is_dry_run**: *boolean*
 
 ## Definitions
@@ -173,7 +186,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])*
     - **role**: *string*
-      <br>*pattern: ^[a-zA-Z0-9_/]+$*
+      <br>*pattern: ^[a-zA-Z0-9_/.]+$*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*

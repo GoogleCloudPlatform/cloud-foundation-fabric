@@ -35,7 +35,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:serviceAccount:|user:|group:|principal:)"
+            "pattern": "^(?:serviceAccount:|user:|group:|principal:|\\$identity_sets:)"
           }
         },
         "resources": {

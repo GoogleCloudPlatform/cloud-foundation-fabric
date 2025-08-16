@@ -20,6 +20,15 @@ variable "auto_create_subnetworks" {
   default     = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    regions = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "create_googleapis_routes" {
   description = "Toggle creation of googleapis private/restricted routes. Disabled when vpc creation is turned off, or when set to null."
   type = object({
@@ -61,9 +70,6 @@ variable "dns_policy" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    context = optional(object({
-      regions = optional(map(string), {})
-    }), {})
     subnets_folder = optional(string)
   })
   default = {}

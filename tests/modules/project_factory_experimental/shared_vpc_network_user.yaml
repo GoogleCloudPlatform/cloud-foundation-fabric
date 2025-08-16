@@ -1,0 +1,160 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.automation-service-accounts["service1/automation/ro"].google_service_account.service_account[0]:
+    account_id: my-prefix-service1-ro
+    create_ignore_already_exists: null
+    description: Service read-only automation sa.
+    disabled: false
+    display_name: Service account ro for service1.
+    email: my-prefix-service1-ro@service-iac.iam.gserviceaccount.com
+    member: serviceAccount:my-prefix-service1-ro@service-iac.iam.gserviceaccount.com
+    project: service-iac
+    timeouts: null
+  module.automation-service-accounts["service1/automation/rw"].google_service_account.service_account[0]:
+    account_id: my-prefix-service1-rw
+    create_ignore_already_exists: null
+    description: Service read/write automation sa.
+    disabled: false
+    display_name: Service account rw for service1.
+    email: my-prefix-service1-rw@service-iac.iam.gserviceaccount.com
+    member: serviceAccount:my-prefix-service1-rw@service-iac.iam.gserviceaccount.com
+    project: service-iac
+    timeouts: null
+  module.projects-iam["service1"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: test-pf-dev-net-spoke-0
+    service_project: my-prefix-service1
+    timeouts: null
+  ? module.projects-iam["service1"].google_project_iam_member.shared_vpc_host_iam["serviceAccount:my-prefix-service1-ro@service-iac.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:my-prefix-service1-ro@service-iac.iam.gserviceaccount.com
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.projects-iam["service1"].google_project_iam_member.shared_vpc_host_iam["serviceAccount:my-prefix-service1-rw@service-iac.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:my-prefix-service1-rw@service-iac.iam.gserviceaccount.com
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.projects-iam["service1"].google_project_iam_member.shared_vpc_host_iam["serviceAccount:terraform-rw@my-prefix-service1.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:terraform-rw@my-prefix-service1.iam.gserviceaccount.com
+    project: test-pf-dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.projects["service1"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1234'
+    labels: null
+    name: my-prefix-service1
+    org_id: null
+    project_id: my-prefix-service1
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["service2"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: my-prefix-service2
+    user_project: null
+  module.projects["service2"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1234'
+    labels: null
+    name: my-prefix-service2
+    org_id: null
+    project_id: my-prefix-service2
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.projects["service2"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: my-prefix-service2
+    role: roles/compute.serviceAgent
+  module.projects["service2"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-prefix-service2
+    service: compute.googleapis.com
+    timeouts: null
+  module.projects["service2"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: my-prefix-service2
+    service: storage.googleapis.com
+    timeouts: null
+  module.service-accounts["service1/app-be-0"].google_service_account.service_account[0]:
+    account_id: app-be-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: app-be-0@my-prefix-service1.iam.gserviceaccount.com
+    member: serviceAccount:app-be-0@my-prefix-service1.iam.gserviceaccount.com
+    project: my-prefix-service1
+    timeouts: null
+  module.service-accounts["service1/terraform-rw"].google_service_account.service_account[0]:
+    account_id: terraform-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: terraform-rw@my-prefix-service1.iam.gserviceaccount.com
+    member: serviceAccount:terraform-rw@my-prefix-service1.iam.gserviceaccount.com
+    project: my-prefix-service1
+    timeouts: null
+  module.service-accounts["service2/app-be-0"].google_service_account.service_account[0]:
+    account_id: app-be-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: app-be-0@my-prefix-service2.iam.gserviceaccount.com
+    member: serviceAccount:app-be-0@my-prefix-service2.iam.gserviceaccount.com
+    project: my-prefix-service2
+    timeouts: null
+  module.service-accounts["service2/terraform-rw"].google_service_account.service_account[0]:
+    account_id: terraform-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: terraform-rw@my-prefix-service2.iam.gserviceaccount.com
+    member: serviceAccount:terraform-rw@my-prefix-service2.iam.gserviceaccount.com
+    project: my-prefix-service2
+    timeouts: null
+
+counts:
+  google_compute_shared_vpc_service_project: 1
+  google_project: 2
+  google_project_iam_member: 4
+  google_project_service: 2
+  google_service_account: 6
+  google_storage_project_service_account: 1
+  modules: 9
+  resources: 16
+
+outputs:
+  buckets: {}
+  folders: {}
+  projects: __missing__
+  service_accounts: __missing__

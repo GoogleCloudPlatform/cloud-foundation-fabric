@@ -105,7 +105,7 @@ module "billing-account-logbucket" {
   count         = local.billing_mode == "resource" && var.billing_account.force_create.log_bucket ? 1 : 0
   parent_type   = "project"
   parent        = module.log-export-project.project_id
-  id            = "billing-account"
+  name          = "billing-account"
   location      = local.locations.logging
   log_analytics = { enable = true }
   # org-level logging settings ready before we create any logging buckets
