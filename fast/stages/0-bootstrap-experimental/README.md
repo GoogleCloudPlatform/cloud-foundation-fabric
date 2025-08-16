@@ -33,7 +33,7 @@ to:
 |---|---|---|---|
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [factory.tf](./factory.tf) | None | <code>project-factory-new</code> |  |
+| [factory.tf](./factory.tf) | None | <code>project-factory-experimental</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
 | [organization.tf](./organization.tf) | None | <code>organization</code> |  |
 | [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
