@@ -100,6 +100,12 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-security-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-security-ro
+      2-project-factory:
+        iam:
+          roles/storage.admin:
+            - $iam_principals:service_accounts/iac-0/iac-pf-rw
+          $custom_roles:storage_viewer:
+            - $iam_principals:service_accounts/iac-0/iac-pf-ro
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
@@ -108,11 +114,13 @@ buckets:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
         - $iam_principals:service_accounts/iac-0/iac-security-rw
+        - $iam_principals:service_accounts/iac-0/iac-pf-rw
         - $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
         - $iam_principals:service_accounts/iac-0/iac-security-ro
+        - $iam_principals:service_accounts/iac-0/iac-pf-ro
         - $iam_principals:service_accounts/iac-0/iac-vpcsc-ro
 service_accounts:
   # IaC service accounts for this stage
@@ -131,6 +139,11 @@ service_accounts:
     iam_sa_roles:
       $service_account_ids:iac-0/iac-bootstrap-rw:
         - roles/iam.workloadIdentityUser
+  # IaC service accounts for vpc-sc stage
+  iac-vpcsc-ro:
+    display_name: IaC service account for VPC service controls (read-only).
+  iac-vpcsc-rw:
+    display_name: IaC service account for VPC service controls (read-write).
   # IaC service accounts for networking stage
   iac-networking-ro:
     display_name: IaC service account for networking (read-only).
@@ -141,8 +154,8 @@ service_accounts:
     display_name: IaC service account for security (read-only).
   iac-security-rw:
     display_name: IaC service account for security (read-write).
-  # IaC service accounts for vpc-sc stage
-  iac-vpcsc-ro:
-    display_name: IaC service account for VPC service controls (read-only).
-  iac-vpcsc-rw:
-    display_name: IaC service account for VPC service controls (read-write).
+  # IaC service accounts for project factory stage
+  iac-pf-ro:
+    display_name: IaC service account for project factory (read-only).
+  iac-pf-rw:
+    display_name: IaC service account for project factory (read-write).

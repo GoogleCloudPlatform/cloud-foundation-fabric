@@ -18,7 +18,7 @@
 
 id: $defaults:organization/id
 contacts:
-  foo:
+  default:
     - $iam_principals:gcp-organization-admins
 iam:
   roles/billing.creator: []
@@ -34,6 +34,21 @@ iam:
     - group:eip-cloud-multiorg@twosync.google.com
   roles/resourcemanager.organizationAdmin:
     - serviceAccount:latchkey-multiorg-ephemeral-iam-automation@system.gserviceaccount.com
+iam_bindings:
+  pf_org_policy_admin:
+    role: roles/orgpolicy.policyAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    condition:
+      expression: resource.matchTag('${organization}/context', 'project-factory')
+      title: Project factory org policy admin
+  pf_org_policy_viewer:
+    role: roles/orgpolicy.policyViewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-ro
+    condition:
+      expression: resource.matchTag('${organization}/context', 'project-factory')
+      title: Project factory org policy viewer
 iam_by_principals:
   $iam_principals:gcp-organization-admins:
     - roles/cloudasset.owner

@@ -25,15 +25,19 @@ values:
       "roles/resourcemanager.tagUser":
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
         - $iam_principals:service_accounts/iac-0/iac-security-rw
+        - $iam_principals:service_accounts/iac-0/iac-pf-rw
       "roles/resourcemanager.tagViewer":
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
         - $iam_principals:service_accounts/iac-0/iac-security-ro
+        - $iam_principals:service_accounts/iac-0/iac-pf-ro
   production:
     description: "Production."
     iam:
       "roles/resourcemanager.tagUser":
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
         - $iam_principals:service_accounts/iac-0/iac-security-rw
+        - $iam_principals:service_accounts/iac-0/iac-pf-rw
       "roles/resourcemanager.tagViewer":
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
         - $iam_principals:service_accounts/iac-0/iac-security-ro
+        - $iam_principals:service_accounts/iac-0/iac-pf-ro

@@ -41,6 +41,9 @@ locals {
     gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
     gcp-support             = "group:gcp-support@${local.organization.domain}"
   }
+  org_tag_keys = {
+    for k, v in module.organization[0].tag_keys : k => v.id
+  }
   org_tag_values = {
     for k, v in module.organization[0].tag_values : k => v.id
   }
@@ -85,6 +88,10 @@ module "organization-iam" {
       local.ctx.project_ids, module.factory.project_ids
     )
     storage_buckets = module.factory.storage_buckets
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values

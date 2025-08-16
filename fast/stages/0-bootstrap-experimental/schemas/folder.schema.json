@@ -342,7 +342,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^roles/"
+            "pattern": "^(?:roles/|\\$custom_roles:)"
           }
         }
       }
