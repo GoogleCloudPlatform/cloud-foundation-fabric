@@ -84,10 +84,6 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
-  service_encryption_key_ids = merge(
-    each.value.service_encryption_key_ids,
-    var.data_merges.service_encryption_key_ids
-  )
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -114,11 +110,21 @@ module "projects-iam" {
   }
   context = merge(local.ctx, {
     folder_ids     = local.ctx.folder_ids
+    kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
   })
-  iam                    = lookup(each.value, "iam", {})
-  iam_bindings           = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive  = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals      = lookup(each.value, "iam_by_principals", {})
-  shared_vpc_host_config = each.value.shared_vpc_host_config
+  iam                   = lookup(each.value, "iam", {})
+  iam_bindings          = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  service_agents_config = {
+    create_primary_agents = false
+    grant_default_roles   = false
+  }
+  service_encryption_key_ids = merge(
+    each.value.service_encryption_key_ids,
+    var.data_merges.service_encryption_key_ids
+  )
+  shared_vpc_host_config    = each.value.shared_vpc_host_config
+  shared_vpc_service_config = each.value.shared_vpc_service_config
 }

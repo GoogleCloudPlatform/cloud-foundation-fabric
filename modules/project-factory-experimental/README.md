@@ -335,20 +335,20 @@ module "project-factory" {
   # location where the yaml files are read from
   factories_config = {
     budgets = {
-      billing_account   = var.billing_account_id
-      budgets_data_path = "data/budgets"
-      notification_channels = {
-        billing-default = {
-          project_id = "foo-billing-audit"
-          type       = "email"
-          labels = {
-            email_address = "gcp-billing-admins@example.org"
-          }
-        }
+      billing_account_id = var.billing_account_id
+      data               = "data/budgets"
+    }
+    folders  = "data/hierarchy"
+    projects = "data/projects"
+  }
+  notification_channels = {
+    billing-default = {
+      project_id = "foo-billing-audit"
+      type       = "email"
+      labels = {
+        email_address = "gcp-billing-admins@example.org"
       }
     }
-    folders_data_path  = "data/hierarchy"
-    projects_data_path = "data/projects"
   }
 }
 # tftest files=0,1,2,3,4,5,6,7,8,9 inventory=example.yaml
@@ -363,33 +363,33 @@ iam:
   roles/viewer:
     - group:team-a-admins@example.org
     - $iam_principals:gcp-devops
-# tftest-file id=0 path=data/hierarchy/team-a/_config.yaml schema=folder.schema.json
+# tftest-file id=0 path=data/hierarchy/team-a/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team B
 # explicit parent definition via key
 parent: $folder_ids:teams
-# tftest-file id=1 path=data/hierarchy/team-b/_config.yaml schema=folder.schema.json
+# tftest-file id=1 path=data/hierarchy/team-b/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team C
 # explicit parent definition via folder id
 parent: folders/5678901234
-# tftest-file id=2 path=data/hierarchy/team-c/_config.yaml schema=folder.schema.json
+# tftest-file id=2 path=data/hierarchy/team-c/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: App 0
-# tftest-file id=3 path=data/hierarchy/team-a/app-0/_config.yaml schema=folder.schema.json
+# tftest-file id=3 path=data/hierarchy/team-a/app-0/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: App 0
 tag_bindings:
   drs-allow-all: $tag_values:org-policies/drs-allow-all
-# tftest-file id=4 path=data/hierarchy/team-b/app-0/_config.yaml schema=folder.schema.json
+# tftest-file id=4 path=data/hierarchy/team-b/app-0/.config.yaml schema=folder.schema.json
 ```
 
 One project defined within the folder hierarchy:
@@ -475,9 +475,9 @@ services:
 - storage.googleapis.com
 iam:
   "roles/owner":
-    - $iam_principals:service_accounts/test-pf-teams-iac-0/rw
+    - $iam_principals:service_accounts/dev-tb-app0-0/rw
   "roles/viewer":
-    - $iam_principals:service_accounts/test-pf-teams-iac-0/ro
+    - $iam_principals:service_accounts/dev-tb-app0-0/ro
 shared_vpc_host_config:
   enabled: true
 service_accounts:
@@ -487,8 +487,8 @@ service_accounts:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
     iam:
-      "roles/iam.serviceAccountTokenCreator":
-        - $iam_principals:service_accounts/test-pf-teams-iac-0/rw
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:service_accounts/dev-tb-app0-0/rw
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
@@ -502,12 +502,12 @@ automation:
     description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
-        - $iam_principals:service_accounts/test-pf-teams-iac-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/rw
       roles/storage.objectViewer:
         - $iam_principals:gcp-devops
         - group:team-b-admins@example.org
-        - $iam_principals:service_accounts/test-pf-teams-iac-0/rw
-        - $iam_principals:service_accounts/test-pf-teams-iac-0/ro
+        - $iam_principals:service_accounts/dev-tb-app0-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/ro
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
@@ -550,7 +550,7 @@ iam:
   "roles/run.admin":
     - $iam_principals:service_accounts/dev-ta-app0-be/app-0-be
   "roles/run.developer":
-    - $iam_principals:service_accounts/dev-tv-app0-1/app-0-be
+    - $iam_principals:service_accounts/dev-tb-app0-1/app-0-be
 service_accounts:
   app-0-be:
     display_name: "Backend instances."

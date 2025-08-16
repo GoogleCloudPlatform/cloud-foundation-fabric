@@ -27,4 +27,7 @@ module "billing-budgets" {
   factories_config = {
     budgets_data_path = var.factories_config.budgets.data
   }
+  budget_notification_channels = (
+    var.notification_channels
+  )
 }

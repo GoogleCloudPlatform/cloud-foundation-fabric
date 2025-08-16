@@ -61,7 +61,6 @@ module "service-accounts" {
   context = merge(local.ctx, {
     project_ids = local.ctx_project_ids
   })
-  iam = lookup(each.value, "iam", {})
   iam_project_roles = merge(
     each.value.iam_project_roles,
     {
@@ -75,7 +74,7 @@ module "service_accounts-iam" {
   for_each = {
     for k in local.projects_service_accounts :
     "${k.project_key}/${k.name}" => k
-    if k.iam_sa_roles != {}
+    if k.iam_sa_roles != {} || k.iam != {}
   }
   project_id             = module.service-accounts[each.key].service_account.project
   name                   = each.value.name
@@ -89,6 +88,6 @@ module "service_accounts-iam" {
     )
     service_account_ids = local.project_sas_ids
   })
+  iam          = each.value.iam
   iam_sa_roles = each.value.iam_sa_roles
 }
-
