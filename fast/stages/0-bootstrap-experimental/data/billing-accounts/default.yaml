@@ -29,3 +29,6 @@ iam_bindings_additive:
   billing_user_networking_sa:
     role: roles/billing.user
     member: $iam_principals:service_accounts/iac-0/iac-networking-rw
+  billing_user_pf_sa:
+    role: roles/billing.user
+    member: $iam_principals:service_accounts/iac-0/iac-pf-rw

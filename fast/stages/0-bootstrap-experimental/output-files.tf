@@ -61,6 +61,7 @@ locals {
         local.ctx.folder_ids,
         module.factory.folder_ids
       )
+      iam_principals = local.iam_principals
       logging = {
         writer_identities = module.organization-iam.0.sink_writer_identities
       }

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-output "iam_principals" {
-  description = "IAM principals."
-  value       = local.iam_principals
-}
+# ${project_id} ${project_number}
 
-output "locations" {
-  description = "Default locations."
-  value       = local.defaults.locations
+terraform {
+  backend "gcs" {
+    bucket                      = "${bucket}"
+    impersonate_service_account = "${service_account}"
+  }
 }
-
-output "projects" {
-  description = "Attributes for managed projects."
-  value       = module.factory.projects
+provider "google" {
+  impersonate_service_account = "${service_account}"
+}
+provider "google-beta" {
+  impersonate_service_account = "${service_account}"
 }

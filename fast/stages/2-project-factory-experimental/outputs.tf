@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-output "iam_principals" {
-  description = "IAM principals."
-  value       = local.iam_principals
-}
-
-output "locations" {
-  description = "Default locations."
-  value       = local.defaults.locations
-}
-
 output "projects" {
   description = "Attributes for managed projects."
   value       = module.factory.projects
+}
+
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/2-project-factory-version.txt"
+  source = "fast_version.txt"
 }

@@ -53,5 +53,7 @@ to:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [projects](outputs.tf#L17) | Attributes for managed projects. |  |
+| [iam_principals](outputs.tf#L17) | IAM principals. |  |
+| [locations](outputs.tf#L22) | Default locations. |  |
+| [projects](outputs.tf#L27) | Attributes for managed projects. |  |
 <!-- END TFDOC -->

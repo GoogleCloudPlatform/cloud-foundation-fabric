@@ -44,6 +44,7 @@ module "factory" {
         default = try(module.organization[0].id, null)
       }
     )
+    iam_principals = local.iam_principals
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
