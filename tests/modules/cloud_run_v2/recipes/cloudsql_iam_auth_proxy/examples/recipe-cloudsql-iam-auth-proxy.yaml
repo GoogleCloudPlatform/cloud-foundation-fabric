@@ -51,6 +51,9 @@ values:
         command: null
         depends_on: null
         env:
+        - name: APACHE_PORT
+          value: '8080'
+          value_source: []
         - name: PMA_SOCKET
           value_source: []
         - name: PMA_USER
