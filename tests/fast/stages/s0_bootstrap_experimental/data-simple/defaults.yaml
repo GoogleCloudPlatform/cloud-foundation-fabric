@@ -12,27 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../schemas/defaults.schema.json
+# yaml-language-server: $schema=../../../../../fast/stages/0-bootstrap-experimental/schemas/defaults.schema.json
 
 # defaults:
 #   storage_location: europe-west1
 global:
-  billing_account: 017479-47ADAB-670295
+  billing_account: 012345-012345-012345
   locations:
     bigquery: europe-west1
     logging: europe-west1
   organization:
     # domain: example.org
-    id: 925409421350
-    # use our customer id for testing
-    # customer_id: C02h8e9nw
+    id: 1234567890
 projects:
   defaults:
-    prefix: ep1
+    prefix: ft0
     storage_location: europe-west1
   overrides: {}
 output_files:
-  local_path: ~/dev/tf-playground/fast-config/ephemeral-1
+  local_path: /tmp/fast-config
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
     0-bootstrap:
@@ -59,4 +57,4 @@ output_files:
       service_account: $iam_principals:service_accounts/iac-0/iac-pf-rw
 context:
   iam_principals:
-    gcp-organization-admins: group:fabric-fast-domainless-owners@twosync.google.com
+    gcp-organization-admins: group:fabric-fast-owners@google.com

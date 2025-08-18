@@ -18,7 +18,8 @@ locals {
   paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
-  _defaults = try(yamldecode(file(local.paths.defaults)), {})
+  # fail if we have no valid defaults
+  _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(var.context, {
     iam_principals = local.iam_principals
     locations = {
@@ -48,7 +49,7 @@ locals {
   iam_principals = merge(
     local.org_iam_principals,
     var.context.iam_principals,
-    try(local._defaults.context.iam_principals)
+    try(local._defaults.context.iam_principals, {})
   )
   output_files = {
     local_path     = try(local._defaults.output_files.local_path, null)
