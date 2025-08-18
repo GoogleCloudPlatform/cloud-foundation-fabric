@@ -33,7 +33,7 @@ locals {
   managed_folder_iam_bindings = merge([
     for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings :
-      "${k}.${binding_key}" => {
+      "${k}${binding_key}" => {
         managed_folder = k
         role           = data.role
         members        = data.members
@@ -44,7 +44,7 @@ locals {
   managed_folder_iam_bindings_additive = merge([
     for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings_additive :
-      "${k}.${binding_key}" => {
+      "${k}${binding_key}" => {
         managed_folder = k
         role           = data.role
         member         = data.member
@@ -65,7 +65,7 @@ resource "google_storage_managed_folder" "folder" {
 resource "google_storage_managed_folder_iam_binding" "authoritative" {
   for_each = {
     for binding in local.managed_folder_iam :
-    "${binding.managed_folder}.${binding.role}" => binding
+    "${binding.managed_folder}${binding.role}" => binding
   }
   role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [

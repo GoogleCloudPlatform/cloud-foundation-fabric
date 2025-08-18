@@ -84,28 +84,28 @@ values:
     force_destroy: false
     name: folder1/
     timeouts: null
-  google_storage_managed_folder_iam_binding.authoritative["folder1/.$custom_roles:myrole_one"]:
+  google_storage_managed_folder_iam_binding.authoritative["folder1/$custom_roles:myrole_one"]:
     bucket: mybucket
     condition: []
     managed_folder: folder1/
     members:
     - user:test-user@example.com
     role: organizations/366118655033/roles/myRoleOne
-  google_storage_managed_folder_iam_binding.authoritative["folder1/.roles/viewer"]:
+  google_storage_managed_folder_iam_binding.authoritative["folder1/roles/viewer"]:
     bucket: mybucket
     condition: []
     managed_folder: folder1/
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: roles/viewer
-  google_storage_managed_folder_iam_binding.bindings["folder1/.myrole_two"]:
+  google_storage_managed_folder_iam_binding.bindings["folder1/myrole_two"]:
     bucket: mybucket
     condition: []
     managed_folder: folder1/
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleTwo
-  google_storage_managed_folder_iam_member.members["folder1/.myrole_three"]:
+  google_storage_managed_folder_iam_member.members["folder1/myrole_three"]:
     bucket: mybucket
     condition: []
     managed_folder: folder1/
@@ -127,3 +127,12 @@ counts:
   google_tags_location_tag_binding: 1
   modules: 0
   resources: 14
+
+outputs:
+  bucket: __missing__
+  id: mybucket
+  name: mybucket
+  notification: null
+  objects: {}
+  topic: null
+  url: __missing__
