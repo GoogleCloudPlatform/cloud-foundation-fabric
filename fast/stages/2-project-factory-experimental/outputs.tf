@@ -22,6 +22,6 @@ output "projects" {
 resource "google_storage_bucket_object" "version" {
   count  = fileexists("fast_version.txt") ? 1 : 0
   bucket = var.automation.outputs_bucket
-  name   = "versions/2-project-factory-version.txt"
+  name   = "versions/2-${var.stage_name}-version.txt"
   source = "fast_version.txt"
 }
