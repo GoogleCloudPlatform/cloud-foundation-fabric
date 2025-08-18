@@ -66,8 +66,9 @@ module "database_run" {
         }
       }
       env = {
-        PMA_SOCKET = "/cloudsql/${module.db.connection_name}"
-        PMA_USER   = split("@", module.run-sa.email)[0]
+        APACHE_PORT = "8080"
+        PMA_SOCKET  = "/cloudsql/${module.db.connection_name}"
+        PMA_USER    = split("@", module.run-sa.email)[0]
       }
       volume_mounts = {
         custom_cloudsql = "/cloudsql"
