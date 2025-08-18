@@ -15,8 +15,9 @@
 
 module: fast/stages/0-bootstrap-experimental
 tests:
-  simple:
+  # TODO: rename to simple once fast lint setup accepts extra dirs
+  not-simple:
     inventory:
-      - simple.yaml
+      - not-simple.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_bootstrap_experimental/data-simple
