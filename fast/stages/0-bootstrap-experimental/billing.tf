@@ -36,6 +36,8 @@ locals {
   }
 }
 
+# TODO: expose log sinks
+
 module "billing-accounts" {
   source   = "../../../modules/billing-account"
   for_each = local.billing_accounts
