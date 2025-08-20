@@ -29,7 +29,9 @@ The default set of YAML configuration files in the `data` folder mirrors the tra
 
 The default configuration can be used as a starting point to implement radically different Landing Zone designs, or trimmed down to its bare minimum where the requirements are simply to have a secure organization-level configuration (possibly with VPC-SC), and a working project factory.
 
-## Stage configuration
+## Leveraging classic FAST Stages
+
+## Detailed configuration
 
 The following sections explain how to configure and run this stage, and should be read in sequence when using it for the first time.
 
@@ -300,8 +302,6 @@ The default dataset implements a classic FAST layout, with two top-level project
 The provided project configurations also create several key resources for the stage like log buckets, storage buckets, and service accounts.
 
 ### CI/CD configuration
-
-## Running this stage
 
 ## Leveraging classic FAST Stages
 
