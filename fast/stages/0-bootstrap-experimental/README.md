@@ -5,10 +5,11 @@
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
   - [Billing account IAM](#billing-account-iam)
-    - [Context-based replacement in billing account factory](#context-based-replacement-in-billing-account-factory)
+    - [Context-based replacement in the billing account factory](#context-based-replacement-in-the-billing-account-factory)
   - [Organization configuration](#organization-configuration)
     - [Context-based replacement in organization factories](#context-based-replacement-in-organization-factories)
   - [Resource management hierarchy](#resource-management-hierarchy)
+    - [Context-based replacement in the folders factory](#context-based-replacement-in-the-folders-factory)
   - [Project factory](#project-factory)
   - [CI/CD configuration](#cicd-configuration)
 - [Running this stage](#running-this-stage)
@@ -120,10 +121,9 @@ This stage allows the same flexibility, and even makes it possible to mix and ma
 The default dataset assumes an externally managed billing account is used, and configures its IAM accordingly via the billing account factory. The example below shows some of the IAM bindings configured at the billing account level, and how context-based interpolation is used there.
 
 <details>
-
 <summary>Context-based replacement examples for the billing acccounts factory</summary>
 
-#### Context-based replacement in billing account factory
+#### Context-based replacement in the billing account factory
 
 Principal expansion leverages the `$iam_principals:` context, which is populated from the static mappings defined in defaults, and the service accounts generated via the internal project factory [described in a later section](#projects).
 
@@ -153,7 +153,6 @@ Compared to classic FAST this approach makes org-level configuration explicit, a
 Context-based interpolation is heavily used in the organization configuration files to refer to external or project-level resources, so as to make the factory files portable. Some examples are provided below to better illustrate usage and facilitate editing organization-level data.
 
 <details>
-
 <summary>Context-based replacement examples for organization factories</summary>
 
 #### Context-based replacement in organization factories
@@ -229,11 +228,76 @@ values:
   # [...]
 ```
 
+An exception to the namespaced-based context replacements is in IAM conditions, where Terraform limitations force use of native string templating, as in the example below.
+
+```yaml
+iam_bindings:
+  pf_org_policy_admin:
+    role: roles/orgpolicy.policyAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    condition:
+      # $organization is set as a string template variable by the module
+      expression: resource.matchTag('${organization}/context', 'project-factory')
+      title: Project factory org policy admin
+```
+
 </details>
 
 ### Resource management hierarchy
 
+The folder hierarchy is managed via a filesystem tree of YAML configuration files, and leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation, which supports up to 3 levels of folders (4 or more can be easily implemented in the module if needed). The module documentation provides additional information on this factory usage and formats.
+
+The default dataset implements a classic FAST layout, with top-level folders for stage 2 and stage 3, and can be easily tweaked by adding or removing any needed folder.
+
+```bash
+data/folders
+├── networking
+│   ├── .config.yaml
+│   ├── dev
+│   │   └── .config.yaml
+│   └── prod
+│       └── .config.yaml
+├── security
+│   └── .config.yaml
+└── teams
+    └── .config.yaml
+```
+
+Different layouts are very easy to implement by simply modeling the desired hierarchy in the filesystem, and configuring each folder via `.config.yaml` files.
+
+The project factory also supports embedding folder-aware project definitions in folders, but that approach is best used with caution to prevent potential race conditions when moving or deleting folders and projects.
+
+As with the factories described above, context replacements can be used in folder configurations. Some examples are provided below.
+
+<details>
+<summary>Context-based replacement examples for the folder factory</summary>
+
+#### Context-based replacement in the folders factory
+
+As with other examples before, the main use case is to infer IAM principals from either the static or internally defined context. One additional context which is often useful here is tag values, which allows defining a scope for organization-level conditional IAM bindings or org policies.
+
+```yaml
+# file: data/folders/teams/.config.yaml
+name: Teams
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    # [...]
+tag_bindings:
+  context: $tag_values:context/project-factory
+```
+
+</details>
+
 ### Project factory
+
+The projject factory is managed via a set of YAML configuration files, which like folders leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation. The module documentation provides additional information on this factory usage and formats.
+
+The default dataset implements a classic FAST layout, with two top-level projects for log exports and IaC resources. Those projects can easily be changed, for example rooting them in a folder by specifying the folder id or context name in their `parent` attribute.
+
+The provided project configurations also create several key resources for the stage like log buckets, storage buckets, and service accounts.
 
 ### CI/CD configuration
 
