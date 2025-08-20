@@ -1,7 +1,8 @@
 # FAST Light Bootstrap (Experimental)
 
 <!-- BEGIN TOC -->
-- [Stage configuration](#stage-configuration)
+- [Quickstart](#quickstart)
+- [Detailed configuration](#detailed-configuration)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
   - [Billing account IAM](#billing-account-iam)
@@ -12,7 +13,6 @@
     - [Context-based replacement in the folders factory](#context-based-replacement-in-the-folders-factory)
   - [Project factory](#project-factory)
   - [CI/CD configuration](#cicd-configuration)
-- [Running this stage](#running-this-stage)
 - [Leveraging classic FAST Stages](#leveraging-classic-fast-stages)
   - [VPC Service Controls](#vpc-service-controls)
   - [Security](#security)
@@ -29,7 +29,7 @@ The default set of YAML configuration files in the `data` folder mirrors the tra
 
 The default configuration can be used as a starting point to implement radically different Landing Zone designs, or trimmed down to its bare minimum where the requirements are simply to have a secure organization-level configuration (possibly with VPC-SC), and a working project factory.
 
-## Leveraging classic FAST Stages
+## Quickstart
 
 ## Detailed configuration
 
