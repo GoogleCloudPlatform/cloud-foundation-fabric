@@ -2,6 +2,11 @@
 
 <!-- BEGIN TOC -->
 - [Quickstart](#quickstart)
+  - [Prerequisites](#prerequisites)
+  - [Defaults configuration](#defaults-configuration)
+  - [Stage configuration](#stage-configuration)
+  - [Initial user configuration and first apply cycle](#initial-user-configuration-and-first-apply-cycle)
+  - [Impersonation set-up and final apply cycle](#impersonation-set-up-and-final-apply-cycle)
 - [Detailed configuration](#detailed-configuration)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
@@ -30,6 +35,25 @@ The default set of YAML configuration files in the `data` folder mirrors the tra
 The default configuration can be used as a starting point to implement radically different Landing Zone designs, or trimmed down to its bare minimum where the requirements are simply to have a secure organization-level configuration (possibly with VPC-SC), and a working project factory.
 
 ## Quickstart
+
+The high-level flow for running this stage is:
+
+- ensure all pre-requisites are in place, and identify at least one GCP organization admin principal (ideally a group)
+- populate the defaults file with attributes matching your configuration (organization id, billing account, etc.)
+- select the configuration data set among those available (`data`, `data-minimal`, etc.) or edit/create your own
+- assign a set of initial role to the admin principal
+- run a first init/apply cycle using user credentials
+- migrate state, then run a second init/apply cycle using impersonated credentials of the generated service account
+
+### Prerequisites
+
+### Defaults configuration
+
+### Stage configuration
+
+### Initial user configuration and first apply cycle
+
+### Impersonation set-up and final apply cycle
 
 ## Detailed configuration
 
