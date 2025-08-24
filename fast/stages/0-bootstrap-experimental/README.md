@@ -3,10 +3,15 @@
 <!-- BEGIN TOC -->
 - [Quickstart](#quickstart)
   - [Prerequisites](#prerequisites)
-  - [Defaults configuration](#defaults-configuration)
-  - [Stage configuration](#stage-configuration)
-  - [Initial user configuration and first apply cycle](#initial-user-configuration-and-first-apply-cycle)
+  - [Select/configure a factory dataset](#selectconfigure-a-factory-dataset)
+  - [Configure defaults](#configure-defaults)
+  - [Initial user permissions](#initial-user-permissions)
+  - [First apply cycle](#first-apply-cycle)
   - [Impersonation set-up and final apply cycle](#impersonation-set-up-and-final-apply-cycle)
+- [Default factory datasets](#default-factory-datasets)
+  - ["Classic FAST" dataset](#classic-fast-dataset)
+  - ["Minimal" dataset](#minimal-dataset)
+  - [TODO: @jccb dataset](#todo-jccb-dataset)
 - [Detailed configuration](#detailed-configuration)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
@@ -38,22 +43,45 @@ The default configuration can be used as a starting point to implement radically
 
 The high-level flow for running this stage is:
 
-- ensure all pre-requisites are in place, and identify at least one GCP organization admin principal (ideally a group)
-- populate the defaults file with attributes matching your configuration (organization id, billing account, etc.)
-- select the configuration data set among those available (`data`, `data-minimal`, etc.) or edit/create your own
-- assign a set of initial role to the admin principal
-- run a first init/apply cycle using user credentials
-- migrate state, then run a second init/apply cycle using impersonated credentials of the generated service account
+- ensure all **pre-requisites** are in place, and identify at least one GCP organization admin principal (ideally a group)
+- select the **factory data set** for the factories among those available - populate the **defaults file** with attributes matching your configuration (organization id, billing account, etc.)
+(`data`, `data-minimal`, etc.) or edit/create your own
+- assign a set of **initial IAM roles** to the admin principal
+- run a **first init/apply cycle** using user credentials
+- copy the generated provider file, **migrate state**, then run a second init/apply cycle using service account impersonated credentials
 
 ### Prerequisites
 
-### Defaults configuration
+This stage only requires minimal prerequisites:
 
-### Stage configuration
+- one organization
+- credentials with admin access to the organization and one billing account
 
-### Initial user configuration and first apply cycle
+The organization ideally needs to be empty. If pre-existing resources are present some care needs to be put into preserving their existing IAM and org policies, ideally my moving legacy projects to a dedicated folder where the current org-level configuration (IAM and org policies) can be replicated.
+
+Billing admin permissions are ideally available on either an org-contained billing account or an external one. If those are unavailable, the YAML configuration files need to be updated to remove billing IAM bindings, and those need to be assigned via an external flow. Refer to the [billing section](#billing-account-iam) for more details or non-standard configurations.
+
+The admin principal is typically a group that includes the user running the first apply, but any kind of principal is supported. More principals (network admins, security admins, etc.) are present in some of the [default factories datasets](#default-factory-datasets), and others can be added if needed by editing the YAML configuration files.
+
+### Select/configure a factory dataset
+
+### Configure defaults
+
+### Initial user permissions
+
+### First apply cycle
 
 ### Impersonation set-up and final apply cycle
+
+## Default factory datasets
+
+A few example datasets are included with the stage, each implementing a different widely used organizational design. The datasets can be used as-is, potentially with slight changes to better suit specific use cases, or they can serve as a starting point to implement radically different approaches.
+
+### "Classic FAST" dataset
+
+### "Minimal" dataset
+
+### TODO: @jccb dataset
 
 ## Detailed configuration
 
