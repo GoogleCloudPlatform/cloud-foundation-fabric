@@ -65,9 +65,81 @@ The admin principal is typically a group that includes the user running the firs
 
 ### Select/configure a factory dataset
 
+The `factories_config` variable points to several paths containing the YAML configuration files used by this stage. The default variable configuration points to the legacy FAST compatible fileset in the `data` folder.
+
+If you are fine with this configuration nothing needs to be changed at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
+
+```bash
+# create a file named 0-bootstrap.auto.tfvars containing the following
+# and replace paths by pointing them to the desired data folder
+factories_config = {
+  billing_accounts = "data/billing-accounts"
+  cicd             = "data/cicd.yaml"
+  defaults         = "data/defaults.yaml"
+  folders          = "data/folders"
+  organization     = "data/organization"
+  projects         = "data/projects"
+}
+```
+
 ### Configure defaults
 
+Configurations defaults are stored in the `defaults.yaml` file in the dataset selected above. Before starting, edit the following attributes in the file to match your configuration.
+
+The standard datasets use the `gcp-organization-admins` alias to assign administrator roles. The alias is expanded via the `context.iam_principals` attribute in the default file, which should be set to a valid group. Also make sure that the user running the initial apply is a member.
+
+```yaml
+global:
+  # gcloud beta billing accounts list
+  billing_account: 123456-123456-123456
+  locations:
+    bigquery: europe-west1
+    logging: europe-west1
+  organization:
+    # gcloud organizations list
+    domain: example.org
+    id: 1234567890
+    customer_id: ABC0123CDE
+projects:
+  defaults:
+    # define a unique prefix with a maximum of 9 characters
+    prefix: foo-1
+    storage_location: europe-west1
+context:
+  iam_principals:
+    # make sure the user running apply is a member of this group
+    gcp-organization-admins: group:fabric-fast-owners@example.com
+```
+
+A more detailed example containing a few other attributes that can be set in the file is in a [later section](#defaults-configuration) in this document.
+
 ### Initial user permissions
+
+Like in classic FAST, the user running the first apply cycle needs specific permissions on the organization and billing account. Copy the following snippet, edit it to match your organization/billing account ids, then run each command.
+
+To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin.
+
+```bash
+# set variable for current logged in user
+export FAST_BU=$(gcloud config list --format 'value(core.account)')
+
+# find your organization and export its id in the FAST_ORG variable
+gcloud organizations list
+export FAST_ORG_ID=123456
+
+# set needed roles (billing role only needed for organization-owned account)
+export FAST_ROLES="roles/billing.admin roles/logging.admin \
+  roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator \
+  roles/resourcemanager.organizationAdmin roles/resourcemanager.tagAdmin \
+  roles/owner"
+
+for role in $FAST_ROLES; do
+  gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
+    --member user:$FAST_BU --role $role --condition None
+done
+```
+
+If you are using an externally managed billing account also make sure user has Billing Admin role assigned on the account.
 
 ### First apply cycle
 
