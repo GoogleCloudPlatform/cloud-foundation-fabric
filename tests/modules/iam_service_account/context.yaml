@@ -1,0 +1,80 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_folder_iam_member.folder-roles["$folder_ids:test-roles/resourcemanager.folderViewer"]:
+    condition: []
+    folder: folders/1234567890
+    role: roles/resourcemanager.folderViewer
+  google_project_iam_member.project-roles["$project_ids:test-roles/viewer"]:
+    condition: []
+    project: prj-test-0
+    role: roles/viewer
+  google_service_account.service_account[0]:
+    account_id: prefix-test-sa
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: prefix-test-sa@my-project-id.iam.gserviceaccount.com
+    member: serviceAccount:prefix-test-sa@my-project-id.iam.gserviceaccount.com
+    project: my-project-id
+    timeouts: null
+  google_service_account_iam_binding.authoritative["$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_service_account_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: roles/owner
+  google_service_account_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/viewer
+  google_service_account_iam_binding.bindings["myrole_two"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_service_account_iam_member.additive["$service_account_ids:test-roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/prj-test-0/serviceAccounts/test-0@prj-test-0.iam.gserviceaccount.com
+  google_service_account_iam_member.bindings["myrole_two"]:
+    condition: []
+    member: user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_storage_bucket_iam_member.bucket-roles["$storage_buckets:test-roles/storage.admin"]:
+    bucket: gcs-test-0
+    condition: []
+    role: roles/storage.admin
+  google_tags_tag_binding.binding["foo"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+
+counts:
+  google_folder_iam_member: 1
+  google_project_iam_member: 1
+  google_service_account: 1
+  google_service_account_iam_binding: 4
+  google_service_account_iam_member: 2
+  google_storage_bucket_iam_member: 1
+  google_tags_tag_binding: 1
+  modules: 0
+  resources: 11

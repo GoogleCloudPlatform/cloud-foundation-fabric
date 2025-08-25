@@ -35,9 +35,11 @@ module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
-  parent = coalesce(
-    var.folder_ids.networking-prod,
-    var.folder_ids.networking
+  parent = try(
+    var.folder_ids["networking-prod"],
+    var.folder_ids["networking/prod"],
+    var.folder_ids.networking,
+    "organizations/${var.organization.id}"
   )
   prefix = var.prefix
   services = [
@@ -90,8 +92,8 @@ module "prod-spoke-vpc" {
     inbound = true
     logging = local.prod_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/prod"
   }
   delete_default_routes_on_create   = true

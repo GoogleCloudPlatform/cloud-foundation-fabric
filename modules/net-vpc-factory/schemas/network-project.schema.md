@@ -48,6 +48,7 @@
   - **iam_bindings_additive**: *reference([iamBindingsAdditive](#refs-iamBindingsAdditive))*
   - **iam_by_principals**: *reference([iamByPrincipals](#refs-iamByPrincipals))*
   - **iam_by_principals_additive**: *reference([iamByPrincipals](#refs-iamByPrincipals))*
+  - **quotas**: *reference([quotas](#refs-quotas))*
 - **nccHubConfig**<a name="refs-nccHubConfig"></a>: *object*
   <br>*additional properties: false*
   - ⁺**name**: *string*
@@ -461,3 +462,18 @@
   - **all**: *boolean*
   - **values**: *array*
     - items: *string*
+- **quotas**<a name="refs-quotas"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**service**: *string*
+    - ⁺**quota_id**: *string*
+    - ⁺**preferred_value**: *number*
+    - **dimensions**: *object*
+      *additional properties: String*
+    - **justification**: *string*
+    - **contact_email**: *string*
+    - **annotations**: *object*
+      *additional properties: String*
+    - **ignore_safety_checks**: *string*
+      <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*

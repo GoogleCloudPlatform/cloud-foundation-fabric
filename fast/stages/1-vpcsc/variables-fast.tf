@@ -20,14 +20,15 @@ variable "automation" {
   type = object({
     outputs_bucket = string
   })
+  nullable = false
 }
 
 variable "logging" {
   # tfdoc:variable:source 0-bootstrap
   description = "Log writer identities for organization / folders."
   type = object({
-    project_number    = string
     writer_identities = map(string)
+    project_number    = optional(string)
   })
   default = null
 }
@@ -40,6 +41,15 @@ variable "organization" {
     id          = number
     customer_id = string
   })
+  nullable = false
+}
+
+variable "project_numbers" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Project numbers."
+  type        = map(number)
+  nullable    = false
+  default     = {}
 }
 
 variable "root_node" {

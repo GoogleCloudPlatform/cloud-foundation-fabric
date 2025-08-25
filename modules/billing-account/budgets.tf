@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
+locals {
+  ctx_notification_channels = merge(
+    local.ctx.notification_channels,
+    {
+      for k, v in google_monitoring_notification_channel.default :
+      "$notification_channels:${k}" => v.id
+    }
+  )
+}
+
 resource "google_monitoring_notification_channel" "default" {
   for_each    = var.budget_notification_channels
   description = each.value.description
   display_name = coalesce(
     each.value.display_name, "Budget email notification ${each.key}."
   )
-  project      = each.value.project_id
+  project = lookup(
+    local.ctx.project_ids, each.value.project_id, each.value.project_id
+  )
   enabled      = each.value.enabled
   force_delete = each.value.force_delete
   type         = each.value.type
@@ -71,10 +83,16 @@ resource "google_billing_budget" "default" {
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }
-    projects           = each.value.filter.projects
-    resource_ancestors = each.value.filter.resource_ancestors
-    services           = each.value.filter.services
-    subaccounts        = each.value.filter.subaccounts
+    projects = each.value.filter.projects == null ? [] : [
+      for v in each.value.filter.projects :
+      lookup(local.ctx.project_ids, v, v)
+    ]
+    resource_ancestors = each.value.filter.resource_ancestors == null ? [] : [
+      for v in each.value.filter.resource_ancestors :
+      lookup(local.ctx.folder_ids, v, v)
+    ]
+    services    = each.value.filter.services
+    subaccounts = each.value.filter.subaccounts
     dynamic "custom_period" {
       for_each = try(each.value.filter.period.custom, null) != null ? [""] : []
       content {
@@ -117,8 +135,8 @@ resource "google_billing_budget" "default" {
         rule.value.monitoring_notification_channels == null
         ? null
         : [
-          for v in rule.value.monitoring_notification_channels : try(
-            google_monitoring_notification_channel.default[v].id, v
+          for v in rule.value.monitoring_notification_channels : lookup(
+            local.ctx_notification_channels, v, v
           )
         ]
       )
