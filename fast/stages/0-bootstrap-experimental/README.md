@@ -117,25 +117,30 @@ A more detailed example containing a few other attributes that can be set in the
 
 Like in classic FAST, the user running the first apply cycle needs specific permissions on the organization and billing account. Copy the following snippet, edit it to match your organization/billing account ids, then run each command.
 
-To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin.
+To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin. The best approach is to use the same group used for organization admins above.
 
 ```bash
-# set variable for current logged in user
-export FAST_BU=$(gcloud config list --format 'value(core.account)')
+export FAST_PRINCIPAL="group:fabric-fast-owners@example.com"
 
 # find your organization and export its id in the FAST_ORG variable
 gcloud organizations list
 export FAST_ORG_ID=123456
 
 # set needed roles (billing role only needed for organization-owned account)
-export FAST_ROLES="roles/billing.admin roles/logging.admin \
-  roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator \
-  roles/resourcemanager.organizationAdmin roles/resourcemanager.tagAdmin \
+export FAST_ROLES="\
+  roles/billing.admin \
+  roles/logging.admin \
+  roles/iam.organizationRoleAdmin \
+  roles/orgpolicy.policyAdmin \
+  roles/resourcemanager.folderAdmin \
+  roles/resourcemanager.organizationAdmin \
+  roles/resourcemanager.projectCreator \
+  roles/resourcemanager.tagAdmin \
   roles/owner"
 
 for role in $FAST_ROLES; do
   gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
-    --member user:$FAST_BU --role $role --condition None
+    --member $FAST_PRINCIPAL --role $role --condition None
 done
 ```
 
