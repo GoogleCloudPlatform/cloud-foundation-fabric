@@ -28,3 +28,8 @@ output "projects" {
   description = "Attributes for managed projects."
   value       = module.factory.projects
 }
+
+output "tfvars" {
+  description = "Stage tfvars."
+  value       = local.of_tfvars
+}

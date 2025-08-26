@@ -10,7 +10,7 @@
     - [Importing org policies](#importing-org-policies)
     - [Local output files storage](#local-output-files-storage)
     - [Init and apply the stage](#init-and-apply-the-stage)
-  - [Impersonation set-up and final apply cycle](#impersonation-set-up-and-final-apply-cycle)
+  - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
 - [Default factory datasets](#default-factory-datasets)
   - ["Classic FAST" dataset](#classic-fast-dataset)
   - ["Minimal" dataset](#minimal-dataset)
@@ -187,12 +187,52 @@ outputs_location = "~/fast-configs/test-0"
 
 Once everything has been configured go through the standard Terraform init/apply cycle.
 
-```
+```bash
 terraform init
 terraform apply
 ```
 
-### Impersonation set-up and final apply cycle
+### Provider setup and final apply cycle
+
+When the first apply cycle has completed successfully, you are ready to switch Terraform to use the new GCS backend and service account credentials.
+
+The first step is to link the generated provider file, either copying it from the GCS bucket or linking it from the local path if it has been configured in the previous step.
+
+The instructions also assume that you have moved the `0-bootstrap.auto.tfvars` file (if you have one) to the GCS bucket or the local config files. This is good practice in order to have the tfvars file persisted, either via GCS or by committing it to a repository with the source code in a dedicated config folder. The file needs to be copied or moved by hand. Alternatively, the last copy/link command can be ignored.
+
+If local output files are available adjust the path, run the script, then copy/paste the resulting commands.
+
+```bash
+# if local outputs file are available
+../fast-links.sh ~/fast-configs/test-0
+# File linking commands for FAST Bootstrap. stage
+
+# provider file
+ln -s /home/user/fast-configs/test-0/providers/0-bootstrap-providers.tf ./
+
+# conventional location for this stage terraform.tfvars (manually managed)
+ln -s /home/user/fast-configs/test-0/0-bootstrap.auto.tfvars ./
+```
+
+If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars.bootstrap.automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
+
+```bash
+../fast-links.sh gs://test0-prod-iac-core-0-iac-outputs
+# File linking commands for FAST Bootstrap. stage
+
+# provider file
+gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-bootstrap-providers.tf ./
+
+# conventional location for this stage terraform.tfvars (manually managed)
+gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-bootstrap.auto.tfvars ./
+```
+
+Once the provider file has been setup, migrate local state to the GCS backend and re-run apply.
+
+```bash
+terraform init -migrate-state
+terraform apply
+```
 
 ## Default factory datasets
 
@@ -528,4 +568,5 @@ Define environments.
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [locations](outputs.tf#L22) | Default locations. |  |
 | [projects](outputs.tf#L27) | Attributes for managed projects. |  |
+| [tfvars](outputs.tf#L32) | Stage tfvars. |  |
 <!-- END TFDOC -->
