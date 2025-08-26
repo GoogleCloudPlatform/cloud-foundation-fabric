@@ -7,6 +7,9 @@
   - [Configure defaults](#configure-defaults)
   - [Initial user permissions](#initial-user-permissions)
   - [First apply cycle](#first-apply-cycle)
+    - [Importing org policies](#importing-org-policies)
+    - [Local output files storage](#local-output-files-storage)
+    - [Init and apply the stage](#init-and-apply-the-stage)
   - [Impersonation set-up and final apply cycle](#impersonation-set-up-and-final-apply-cycle)
 - [Default factory datasets](#default-factory-datasets)
   - ["Classic FAST" dataset](#classic-fast-dataset)
@@ -144,9 +147,50 @@ for role in $FAST_ROLES; do
 done
 ```
 
-If you are using an externally managed billing account also make sure user has Billing Admin role assigned on the account.
+If you are using an externally managed billing account, make sure user has Billing Admin role assigned on the account.
 
 ### First apply cycle
+
+#### Importing org policies
+
+If your dataset includes org policies which are already set in the organization, you need to either comment them out from the relevant YAML files or tell this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
+
+```bash
+gcloud org-policies list --organization 1234567890
+CONSTRAINT                                       LIST_POLICY  BOOLEAN_POLICY
+iam.allowedPolicyMemberDomains                   SET          -  
+compute.disableSerialPortAccess                  -            SET
+```
+
+```tfvars
+# create or edit the 0-bootstrap.auto.tfvars.file
+org_policies_imports = [
+  'iam.allowedPolicyMemberDomains',
+  'compute.disableSerialPortAccess'
+]
+```
+
+#### Local output files storage
+
+Like any other FAST stage, this stage creates output files that contain information about the resources it manages, or provide initial provider and backend configuration for the following stages.
+
+These files are only persisted by default on a special outputs bucket, but can additionally be also persisted to a local path. This is very useful during the initial deployment, as it allows rapid apply iteration cycles between stages, and provides an easy way to check or derive resource ids.
+
+To enable local output files storage, set the `outputs_location` variable in your tfvars file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
+
+```tfvars
+# create or edit the 0-bootstrap.auto.tfvars.file
+outputs_location = "~/fast-configs/test-0"
+```
+
+#### Init and apply the stage
+
+Once everything has been configured go through the standard Terraform init/apply cycle.
+
+```
+terraform init
+terraform apply
+```
 
 ### Impersonation set-up and final apply cycle
 
