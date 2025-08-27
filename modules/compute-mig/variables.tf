@@ -93,7 +93,7 @@ variable "description" {
 }
 
 variable "distribution_policy" {
-  description = "DIstribution policy for regional MIG."
+  description = "Distribution policy for regional MIG."
   type = object({
     target_shape = optional(string)
     zones        = optional(list(string))
@@ -171,6 +171,20 @@ variable "health_check_config" {
       (try(var.health_check_config.ssl, null) == null ? 0 : 1) <= 1
     )
     error_message = "Only one health check type can be configured at a time."
+  }
+}
+
+variable "instance_flexibility_policy_selections" {
+  description = "Instance flexibility policy selections. Only applicable to regional intances."
+  type = map(object({
+    rank          = number
+    machine_types = list(string)
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition     = length(var.instance_flexibility_policy_selections) == 0 || length(split("-", var.location)) == 2
+    error_message = "Instance flexibility is only supported for regional MIGs."
   }
 }
 
