@@ -36,6 +36,7 @@ iam_bindings:
       description: Allow to check buckets and contact policies
       expression: |
         resource.matchTag('${organization.id}/${tag_names.context}', 'project-factory')
+
 # don't create a context tag since this uses the pf tag
 is_fast_context: false
 tag_bindings:

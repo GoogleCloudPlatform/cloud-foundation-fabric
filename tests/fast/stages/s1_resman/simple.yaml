@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 counts:
   google_folder: 16
   google_folder_iam_binding: 72
@@ -32,6 +33,18 @@ counts:
   resources: 271
 
 values:
+  module.top-level-folder["teams"].google_folder_iam_binding.bindings["pf_viewer"]:
+    condition:
+    - description: Allow to check buckets and contact policies
+      expression: 'resource.matchTag(''${organization.id}/${tag_names.context}'',
+        ''project-factory'')
+
+        '
+      title: project-factory-scoped
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/organizationAdminViewer
+
   google_storage_bucket_object.workflows["2-project-factory"]:
     bucket: fast2-prod-iac-core-outputs
     content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
@@ -160,4 +173,3 @@ outputs:
     secops-rw: fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
     security-ro: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
     security-rw: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
-
