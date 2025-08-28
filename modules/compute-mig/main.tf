@@ -196,4 +196,19 @@ resource "google_compute_region_instance_group_manager" "default" {
       }
     }
   }
+
+  dynamic "instance_flexibility_policy" {
+    for_each = length(var.instance_flexibility_policy_selections) > 0 ? [""] : []
+    content {
+      dynamic "instance_selections" {
+        for_each = var.instance_flexibility_policy_selections
+        content {
+          name          = instance_selections.key
+          rank          = instance_selections.value.rank
+          machine_types = instance_selections.value.machine_types
+        }
+      }
+    }
+  }
+
 }
