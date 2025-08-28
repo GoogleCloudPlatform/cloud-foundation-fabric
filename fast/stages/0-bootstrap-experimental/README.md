@@ -240,7 +240,11 @@ A few example datasets are included with the stage, each implementing a differen
 
 ### "Classic FAST" dataset
 
+This dataset implements a Classic FAST design that replicates legacy bootstrap and resource management stages. The resulting layout supports VPC SC, networking, security and potentially any FAST stage 3 directly.
+
 ### "Minimal" dataset
+
+This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, convergin to the Classic or other types of layouts.
 
 ### TODO: @jccb dataset
 
