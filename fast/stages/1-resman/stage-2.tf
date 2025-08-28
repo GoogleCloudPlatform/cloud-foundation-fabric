@@ -185,13 +185,15 @@ module "stage2-folder" {
       members = [
         for m in v.members : lookup(local.principals_iam, m, m)
       ]
-      role = lookup(var.custom_roles, v.role, v.role)
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
     })
   }
   iam_bindings_additive = {
     for k, v in each.value.folder_config.iam_bindings_additive : k => merge(v, {
-      member = lookup(local.principals_iam, v.member, v.member)
-      role   = lookup(var.custom_roles, v.role, v.role)
+      member    = lookup(local.principals_iam, v.member, v.member)
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
     })
   }
   iam_by_principals = {

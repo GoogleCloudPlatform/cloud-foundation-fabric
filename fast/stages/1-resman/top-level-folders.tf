@@ -100,7 +100,8 @@ module "top-level-folder" {
         ? module.top-level-sa[each.key].iam_email
         : lookup(local.top_level_sa, member, member)
       ]
-      role = lookup(var.custom_roles, v.role, v.role)
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
     }
   }
   iam_bindings_additive = {
@@ -110,7 +111,8 @@ module "top-level-folder" {
         ? module.top-level-sa[each.key].iam_email
         : lookup(local.principals_iam, v.member, v.member)
       )
-      role = lookup(var.custom_roles, v.role, v.role)
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
     })
   }
   iam_by_principals = {
