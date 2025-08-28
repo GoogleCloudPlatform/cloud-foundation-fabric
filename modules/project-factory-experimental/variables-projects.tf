@@ -220,6 +220,10 @@ variable "projects" {
       network_subnet_users     = optional(map(list(string)), {})
     }))
     tag_bindings = optional(map(string), {})
+    universe = optional(object({
+      prefix               = string
+      unavailable_services = optional(list(string), [])
+    }))
     vpc_sc = optional(object({
       perimeter_name = string
       is_dry_run     = optional(bool, false)

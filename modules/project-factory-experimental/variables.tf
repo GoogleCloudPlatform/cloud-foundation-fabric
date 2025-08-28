@@ -85,6 +85,10 @@ variable "data_defaults" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })), {})
+    universe = optional(object({
+      prefix               = string
+      unavailable_services = optional(list(string), [])
+    }))
     vpc_sc = optional(object({
       perimeter_name = string
       is_dry_run     = optional(bool, false)
@@ -145,6 +149,10 @@ variable "data_overrides" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })))
+    universe = optional(object({
+      prefix               = string
+      unavailable_services = optional(list(string), [])
+    }))
     vpc_sc = optional(object({
       perimeter_name = string
       is_dry_run     = optional(bool, false)

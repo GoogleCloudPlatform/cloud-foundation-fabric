@@ -91,9 +91,10 @@ module "projects" {
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
-  tags   = each.value.tags
-  vpc_sc = each.value.vpc_sc
-  quotas = each.value.quotas
+  tags     = each.value.tags
+  universe = each.value.universe
+  vpc_sc   = each.value.vpc_sc
+  quotas   = each.value.quotas
 }
 
 module "projects-iam" {

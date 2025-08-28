@@ -87,6 +87,7 @@ locals {
         storage_location = null
         tag_bindings     = {}
         service_accounts = {}
+        universe         = null
         vpc_sc = merge(
           {
             perimeter_name = null
@@ -131,6 +132,7 @@ locals {
       tag_bindings               = null
       services                   = null
       service_accounts           = null
+      universe                   = null
       vpc_sc = try(
         merge(
           {
@@ -307,6 +309,15 @@ locals {
           }
         }
       }
+      universe = (
+        local.data_defaults.overrides.universe != null
+        ? local.data_defaults.overrides.universe
+        : (
+          try(v.universe, null) != null
+          ? v.universe
+          : local.data_defaults.defaults.universe
+        )
+      )
       vpc_sc = (
         local.data_defaults.overrides.vpc_sc != null
         ? local.data_defaults.overrides.vpc_sc

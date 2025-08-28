@@ -482,6 +482,21 @@
         }
       }
     },
+    "universe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "unavailable_services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "vpc_sc": {
       "type": "object",
       "additionalItems": false,
