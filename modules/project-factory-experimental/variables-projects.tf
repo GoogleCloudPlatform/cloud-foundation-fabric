@@ -221,8 +221,9 @@ variable "projects" {
     }))
     tag_bindings = optional(map(string), {})
     universe = optional(object({
-      prefix               = string
-      unavailable_services = optional(list(string), [])
+      prefix                         = string
+      unavailable_services           = optional(list(string), [])
+      unavailable_service_identities = optional(list(string), [])
     }))
     vpc_sc = optional(object({
       perimeter_name = string

@@ -493,6 +493,12 @@
             "items": {
               "type": "string"
             }
+          },
+          "unavailable_service_identities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }

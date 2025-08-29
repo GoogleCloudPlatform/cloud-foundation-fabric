@@ -17,9 +17,11 @@
 # tfdoc:file:description Service agents supporting resources.
 
 locals {
-  services = distinct(concat(
-    local.available_services, try(var.project_reuse.attributes.services_enabled, [])
-  ))
+  services = [
+    for s in distinct(concat(
+      local.available_services, try(var.project_reuse.attributes.services_enabled, [])
+    )) : s if !contains(local._universe_unavailable_si, s)
+  ]
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
   _service_agents_by_api = {
@@ -31,6 +33,7 @@ locals {
     ? ""
     : "${var.universe.prefix}-system."
   )
+  _universe_unavailable_si = try(var.universe.unavailable_service_identities, [])
   # map of service agent name => agent details for this project
   _project_service_agents_0 = merge([
     for api in concat(local.services, ["cloudservices"]) : {
@@ -56,7 +59,7 @@ locals {
     k => merge(v, {
       iam_email  = "serviceAccount:${v.email}"
       create_jit = v.api == null ? false : contains(local.available_services, v.api)
-    })
+    }) if !contains(local._universe_unavailable_si, k)
   }
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it

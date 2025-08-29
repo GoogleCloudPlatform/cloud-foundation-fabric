@@ -86,8 +86,9 @@ variable "data_defaults" {
       iam_self_roles = optional(list(string))
     })), {})
     universe = optional(object({
-      prefix               = string
-      unavailable_services = optional(list(string), [])
+      prefix                         = string
+      unavailable_service_identities = optional(list(string), [])
+      unavailable_services           = optional(list(string), [])
     }))
     vpc_sc = optional(object({
       perimeter_name = string
@@ -150,8 +151,9 @@ variable "data_overrides" {
       iam_self_roles = optional(list(string))
     })))
     universe = optional(object({
-      prefix               = string
-      unavailable_services = optional(list(string), [])
+      prefix                         = string
+      unavailable_service_identities = optional(list(string), [])
+      unavailable_services           = optional(list(string), [])
     }))
     vpc_sc = optional(object({
       perimeter_name = string
