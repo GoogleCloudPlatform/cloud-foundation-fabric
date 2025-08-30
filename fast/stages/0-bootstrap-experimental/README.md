@@ -1,6 +1,7 @@
 # FAST Light Bootstrap (Experimental)
 
 <!-- BEGIN TOC -->
+- [TODO](#todo)
 - [Quickstart](#quickstart)
   - [Prerequisites](#prerequisites)
   - [Select/configure a factory dataset](#selectconfigure-a-factory-dataset)
@@ -33,6 +34,14 @@
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
+
+## TODO
+
+- [ ] add support for log sinks to billing schema/code
+- [ ] minimal dataset
+- [ ] tenants dataset
+- [ ] clean up classic dataset
+- [ ] finish and review documentation
 
 This stage implements a flexible approach to organization bootstrapping and resource management, that offers full customization via YAML factories.
 
