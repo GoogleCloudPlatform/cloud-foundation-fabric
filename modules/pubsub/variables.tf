@@ -14,41 +14,16 @@
  * limitations under the License.
  */
 
-variable "iam" {
-  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+  })
   default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Keyring individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
   nullable = false
-  default  = {}
 }
 
 variable "kms_key" {

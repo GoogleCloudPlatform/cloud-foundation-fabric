@@ -15,6 +15,11 @@
  */
 
 locals {
+  _ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
   access_policy = try(
     google_access_context_manager_access_policy.default[0].name,
     var.access_policy
@@ -25,13 +30,18 @@ locals {
       local._project_ids
     )
   )
+  ctx = merge(local._ctx, {
+    project_numbers = {
+      for k, v in local._ctx.project_numbers : k => "projects/${v}"
+    }
+  })
+  ctx_p = "$"
   do_cai_query = (
     var.project_id_search_scope == null
     ? false
     : length(local._project_ids) > 0
   )
-
-  # collect project ids and convert them to numbers
+  # collect project ids and convert them to numbers (project numbers is dynamic)
   _all_project_identifiers = distinct(flatten([
     for k, v in local.perimeters : [
       try(v.status.resources, []),
@@ -55,7 +65,8 @@ locals {
     trimprefix(x, "projects/")
     if can(regex("^projects/[a-z]", x))
   ]
-  project_number = (local.do_cai_query
+  project_numbers = (
+    local.do_cai_query
     ? {
       for x in data.google_cloud_asset_search_all_resources.projects[0].results :
       (trimprefix(x.name, "//cloudresourcemanager.googleapis.com/")) => x.project

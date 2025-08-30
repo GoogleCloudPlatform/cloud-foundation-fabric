@@ -18,6 +18,7 @@ common_tfvars:
   - common.tfvars
 
 tests:
+  context:
   prefix:
   no_prefix:
   parent_folder:

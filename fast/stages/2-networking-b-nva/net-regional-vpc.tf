@@ -66,8 +66,8 @@ module "regional-primary-vpc" {
     inbound = true
     logging = local.regpri_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/regional-pri"
   }
   routes = {
@@ -130,8 +130,8 @@ module "regional-secondary-vpc" {
     inbound = true
     logging = local.regsec_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/regional-sec"
   }
   routes = {

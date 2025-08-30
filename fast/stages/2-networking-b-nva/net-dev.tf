@@ -35,9 +35,11 @@ module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
-  parent = coalesce(
-    var.folder_ids.networking-dev,
-    var.folder_ids.networking
+  parent = try(
+    var.folder_ids["networking-dev"],
+    var.folder_ids["networking/dev"],
+    var.folder_ids.networking,
+    "organizations/${var.organization.id}"
   )
   prefix = var.prefix
   services = [
@@ -90,8 +92,8 @@ module "dev-spoke-vpc" {
     inbound = true
     logging = local.dev_cfg.dns_logging
   }
+  context = { regions = var.regions }
   factories_config = {
-    context        = { regions = var.regions }
     subnets_folder = "${var.factories_config.subnets}/dev"
   }
   delete_default_routes_on_create   = true

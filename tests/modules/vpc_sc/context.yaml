@@ -1,0 +1,111 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_access_context_manager_access_level.basic["test-context"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks: []
+        members:
+        - user:one@example.com
+        - user:two@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/12345678/accessLevels/test-context
+    parent: accessPolicies/12345678
+    timeouts: null
+    title: test-context
+  google_access_context_manager_service_perimeter.additive["default"]:
+    description: null
+    name: accessPolicies/12345678/servicePerimeters/default
+    parent: accessPolicies/12345678
+    perimeter_type: PERIMETER_TYPE_REGULAR
+    spec: []
+    status:
+    - egress_policies:
+      - egress_from:
+        - identities:
+          - user:one@example.com
+          - user:two@example.com
+          identity_type: null
+          source_restriction: SOURCE_RESTRICTION_ENABLED
+          sources:
+          - access_level: null
+            resource: projects/111111
+          - access_level: null
+            resource: projects/321
+          - access_level: null
+            resource: projects/654
+        egress_to:
+        - external_resources: null
+          operations:
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: artifactregistry.googleapis.com
+          resources:
+          - projects/111111
+          - projects/321
+          - projects/654
+          roles: []
+        title: test-context
+      ingress_policies:
+      - ingress_from:
+        - identities:
+          - user:one@example.com
+          - user:two@example.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+          - access_level: null
+            resource: projects/111111
+          - access_level: null
+            resource: projects/321
+          - access_level: null
+            resource: projects/654
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - projects/111111
+          - projects/321
+          - projects/654
+          roles: []
+        title: test-context
+      resources:
+      - projects/111111
+      - projects/222222
+      - projects/321
+      - projects/654
+      restricted_services:
+      - compute.googleapis.com
+      - container.googleapis.com
+      vpc_accessible_services: []
+    timeouts: null
+    title: default
+    use_explicit_dry_run_spec: true
+
+counts:
+  google_access_context_manager_access_level: 1
+  google_access_context_manager_service_perimeter: 1
+  modules: 0
+  resources: 2
