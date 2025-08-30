@@ -53,3 +53,10 @@ variable "factories_config" {
   nullable = false
   default  = {}
 }
+
+variable "org_policies_imports" {
+  description = "List of org policies to import. These need to also be defined in data files."
+  type        = list(string)
+  nullable    = false
+  default     = []
+}

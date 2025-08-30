@@ -170,6 +170,8 @@ org_policies_imports = [
 ]
 ```
 
+Once org policies have been imported, the variable definition can be removed from the tfvars file.
+
 #### Local output files storage
 
 Like any other FAST stage, this stage creates output files that contain information about the resources it manages, or provide initial provider and backend configuration for the following stages.
@@ -550,6 +552,7 @@ Define environments.
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [factory.tf](./factory.tf) | None | <code>project-factory-experimental</code> |  |
+| [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
 | [organization.tf](./organization.tf) | None | <code>organization</code> |  |
 | [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
@@ -564,6 +567,7 @@ Define environments.
 | [bootstrap_user](variables.tf#L17) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L23) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [factories_config](variables.tf#L43) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd             &#61; optional&#40;string, &#34;data&#47;cicd.yaml&#34;&#41;&#10;  defaults         &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders          &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization     &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  projects         &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L57) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
