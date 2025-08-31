@@ -447,31 +447,6 @@ values:
     filename: /tmp/fast-config/workflows/bootstrap.yaml
     sensitive_content: null
     source: null
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_bootstrap_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.admin
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: group:fabric-fast-owners@google.com
-    role: roles/billing.admin
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_networking_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_pf_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_security_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
   module.factory.module.buckets["iac-0/iac-bootstrap-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -1962,7 +1937,7 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 8
+  google_org_policy_policy: 9
   google_organization_iam_binding: 33
   google_organization_iam_custom_role: 7
   google_project: 2
@@ -1984,5 +1959,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 36
-  resources: 232
+  resources: 233
   terraform_data: 2

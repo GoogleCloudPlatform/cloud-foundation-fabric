@@ -15,7 +15,7 @@
 - [Default factory datasets](#default-factory-datasets)
   - ["Classic FAST" dataset](#classic-fast-dataset)
   - ["Minimal" dataset](#minimal-dataset)
-  - [TODO: @jccb dataset](#todo-jccb-dataset)
+  - ["Tenants" dataset](#tenants-dataset)
 - [Detailed configuration](#detailed-configuration)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
@@ -257,7 +257,7 @@ This dataset implements a Classic FAST design that replicates legacy bootstrap a
 
 This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, convergin to the Classic or other types of layouts.
 
-### TODO: @jccb dataset
+### "Tenants" dataset
 
 ## Detailed configuration
 
