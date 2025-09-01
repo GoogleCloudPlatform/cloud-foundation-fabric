@@ -41,7 +41,7 @@
 - [ ] minimal dataset
 - [ ] tenants dataset
 - [x] clean up classic dataset
-- [ ] finish and review documentation
+- [x] finish and review documentation
 
 This stage implements a flexible approach to organization bootstrapping and resource management, that offers full customization via YAML factories.
 
@@ -261,9 +261,11 @@ The organizational layout mirrors the consolidated FAST one, where shared infras
 
 ### "Minimal" dataset
 
-This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, convergin to the Classic or other types of layouts.
+This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, converging to the Classic or other types of layouts.
 
 ### "Tenants" dataset
+
+TBD
 
 ## Detailed configuration
 
@@ -361,7 +363,7 @@ The default dataset assumes an externally managed billing account is used, and c
 
 #### Context-based replacement in the billing account factory
 
-Principal expansion leverages the `$iam_principals:` context, which is populated from the static mappings defined in defaults, and the service accounts generated via the internal project factory [described in a later section](#projects).
+Principal expansion leverages the `$iam_principals:` context, which is populated from the static mappings defined in defaults, and the service accounts generated via the internal project factory [described in a later section](#project-factory). Log sink definitions also support `$project_ids:` and `$storage_buckets` expansions.
 
 ```yaml
 # example billing account factory file
@@ -376,6 +378,11 @@ iam_bindings_additive:
     role: roles/billing.admin
     # internally managed principal (project factory service account)
     member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+logging_sinks:
+  test:
+    description: Test sink
+    destination: $project_ids:log-0
+    type: project
 ```
 
 </details>
@@ -393,7 +400,7 @@ Context-based interpolation is heavily used in the organization configuration fi
 
 #### Context-based replacement in organization factories
 
-Principal expansion leverages the `$iam_principals:` context, which is populated from the static mappings defined in defaults, and the service accounts generated via the internal project factory [described in a later section](#projects).
+Principal expansion leverages the `$iam_principals:` context, which is populated from the static mappings defined in defaults, and the service accounts generated via the internal project factory [described in a later section](#project-factory).
 
 ```yaml
 # example principal-level context interpolation
@@ -529,17 +536,63 @@ tag_bindings:
 
 ### Project factory
 
-The projject factory is managed via a set of YAML configuration files, which like folders leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation. The module documentation provides additional information on this factory usage and formats.
+The project factory is managed via a set of YAML configuration files, which like folders leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation. The module documentation provides additional information on this factory usage and formats.
 
 The default dataset implements a classic FAST layout, with two top-level projects for log exports and IaC resources. Those projects can easily be changed, for example rooting them in a folder by specifying the folder id or context name in their `parent` attribute.
 
-The provided project configurations also create several key resources for the stage like log buckets, storage buckets, and service accounts.
+The provided project configurations also create several key resources for the stage like log buckets, storage buckets, and service accounts. Context-based expansions for projects are very similar to the ones defined for folders, you can refer to the above section for details.
 
 ### CI/CD configuration
 
+CI/CD support is implemented in a similar way to classic/legacy FAST, except for being driven by a factory tha points to a single file.
+
+This allows defining a single Workload Identity provider that will be used to exchange external tokens for the pipelines, and one or more workflows that can interpolate internal (from the project factory) or external (user defined) attributes.
+
+This is the default file which implements a workflow for this stage. To enable it, pass the file path to the `factories_config.cicd` variable.
+
+```yaml
+workload_identity_federation:
+  pool_name: iac-0
+  project: $project_ids:iac-0
+  providers:
+    github:
+      # the condition is optional but recommented, use your GitHub org name
+      attribute_condition: attribute.repository_owner=="my_org"
+      issuer: github
+      # custom_settings:
+      #   issuer_uri:
+      #   audiences: []
+      #   jwks_json_path:
+workflows:
+  bootstrap:
+    template: github
+    workload_identity_provider:
+      id: $wif_providers:github
+      audiences: []
+    repository:
+      name: bootstrap
+      branch: main
+    output_files:
+      storage_bucket: $storage_buckets:iac-0/iac-outputs
+      providers:
+        apply: $output_files:providers/0-bootstrap
+        plan: $output_files:providers/0-bootstrap-ro
+      files:
+        - tfvars/0-boostrap.auto.tfvars.json
+    service_accounts:
+      apply: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-rw
+      plan: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-ro
+```
+
 ## Leveraging classic FAST Stages
 
+Classic Fast stage 2 and 3 can be directly used after applying this if the [Classic FAST layout](#classic-fast-dataset) is used, or similar identities and permissions are implemented in a different design.
+
+Specific changes or considerations needed for each stage are described below.
+
 ### VPC Service Controls
+
+To use the predefined logging ingress policy in the VPC SC stage, define it like in the following example.
 
 ```yaml
 from:
@@ -556,7 +609,7 @@ to:
 
 ### Security
 
-Define environments.
+Define values for the `var.environments` variable in a tfvars file.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
@@ -581,7 +634,7 @@ Define environments.
 |---|---|:---:|:---:|:---:|
 | [bootstrap_user](variables.tf#L17) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L23) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L43) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd             &#61; optional&#40;string, &#34;data&#47;cicd.yaml&#34;&#41;&#10;  defaults         &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders          &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization     &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  projects         &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L43) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd             &#61; optional&#40;string&#41;&#10;  defaults         &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders          &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization     &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  projects         &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies_imports](variables.tf#L57) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
