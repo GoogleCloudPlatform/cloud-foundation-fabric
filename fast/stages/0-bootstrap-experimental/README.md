@@ -37,10 +37,10 @@
 
 ## TODO
 
-- [ ] add support for log sinks to billing schema/code
+- [x] add support for log sinks to billing schema/code
 - [ ] minimal dataset
 - [ ] tenants dataset
-- [ ] clean up classic dataset
+- [x] clean up classic dataset
 - [ ] finish and review documentation
 
 This stage implements a flexible approach to organization bootstrapping and resource management, that offers full customization via YAML factories.
@@ -251,7 +251,13 @@ A few example datasets are included with the stage, each implementing a differen
 
 ### "Classic FAST" dataset
 
-This dataset implements a Classic FAST design that replicates legacy bootstrap and resource management stages. The resulting layout supports VPC SC, networking, security and potentially any FAST stage 3 directly.
+This dataset implements a Classic FAST design that replicates legacy bootstrap and resource management stages. The resulting layout is easy to customize, and supports VPC SC, networking, security and potentially any FAST stage 3 directly as explained in a [later section](#leveraging-classic-fast-stages).
+
+The organizational layout mirrors the consolidated FAST one, where shared infrastructure (stage 2 and 3) is partitioned via folders at the top, and further subdivided in environment-level folders for data or fleet management (Stage 3). An example "Teams" folder allows hooking up an application-level project factory as a separate stage, which is then used to define per-team subdivisions and create projects.
+
+<p align="center">
+  <img src="diagram-classic-fast.png" alt="Classic FAST organization-level diagram.">
+</p>
 
 ### "Minimal" dataset
 
