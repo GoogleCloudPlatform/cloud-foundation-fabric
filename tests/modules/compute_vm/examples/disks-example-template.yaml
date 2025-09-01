@@ -1,0 +1,103 @@
+values:
+  module.vm-disks-example.google_compute_instance_template.default[0]:
+    advanced_machine_features: []
+    can_ip_forward: false
+    description: Managed by the compute-vm Terraform module.
+    disk:
+    - auto_delete: true
+      boot: true
+      disk_encryption_key: []
+      disk_name: null
+      disk_size_gb: 10
+      disk_type: pd-balanced
+      guest_os_features: null
+      labels: null
+      resource_manager_tags: null
+      resource_policies: null
+      source: null
+      source_image: projects/debian-cloud/global/images/family/debian-11
+      source_image_encryption_key: []
+      source_snapshot: null
+      source_snapshot_encryption_key: []
+    - auto_delete: false
+      device_name: repd
+      disk_encryption_key: []
+      disk_name: null
+      guest_os_features: null
+      labels: null
+      mode: READ_WRITE
+      resource_manager_tags: null
+      resource_policies: null
+      source: https://www.googleapis.com/compute/v1/projects/project-id/regions/europe-west8/disks/repd-test-1
+      source_image_encryption_key: []
+      source_snapshot: null
+      source_snapshot_encryption_key: []
+      type: PERSISTENT
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: null
+    guest_accelerator: []
+    instance_description: null
+    key_revocation_action_type: null
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    min_cpu_platform: null
+    name_prefix: test-
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      network_ip: null
+      nic_type: null
+      queue_count: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    partner_metadata: null
+    project: project-id
+    region: europe-west8
+    reservation_affinity: []
+    resource_manager_tags: null
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+      termination_time: null
+    service_account:
+    - email: tf-vm-test@project-id.iam.gserviceaccount.com
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.vm-disks-example.google_service_account.service_account[0]:
+    account_id: tf-vm-test
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform VM test.
+    email: tf-vm-test@project-id.iam.gserviceaccount.com
+    member: serviceAccount:tf-vm-test@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+counts:
+  google_compute_instance_template: 1
+  google_service_account: 1
+outputs: {}
