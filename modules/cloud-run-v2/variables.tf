@@ -17,11 +17,10 @@
 variable "containers" {
   description = "Containers in name => attributes format."
   type = map(object({
-    image      = string
-    depends_on = optional(list(string))
-    command    = optional(list(string))
-    args       = optional(list(string))
-    env        = optional(map(string))
+    image   = string
+    command = optional(list(string))
+    args    = optional(list(string))
+    env     = optional(map(string))
     env_from_key = optional(map(object({
       secret  = string
       version = string
