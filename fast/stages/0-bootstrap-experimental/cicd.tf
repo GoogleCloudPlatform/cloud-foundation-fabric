@@ -15,7 +15,7 @@
  */
 
 locals {
-  _cicd = try(yamldecode(file(local.paths.cicd)))
+  _cicd = try(yamldecode(file(local.paths.cicd)), {})
   _cicd_identity_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     "$wif_providers:${k}" => v.id
