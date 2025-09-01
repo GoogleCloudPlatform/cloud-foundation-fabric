@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: 42.0.0
+# Fabric release: v42.1.0
 
 terraform {
   required_version = ">= 1.11.4"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/path:42.0.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-config-container/nginx-tls:v42.1.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/path:42.0.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-config-container/nginx-tls:v42.1.0-tf"
   }
 }
