@@ -230,6 +230,8 @@ resource "google_compute_instance" "default" {
         var.boot_disk.initialize_params == null
         ||
         var.boot_disk.use_independent_disk
+        ||
+        var.boot_disk.source != null
         ? []
         : [""]
       )

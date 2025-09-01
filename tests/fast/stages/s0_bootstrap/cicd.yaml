@@ -173,6 +173,12 @@ values:
       log_type: ADMIN_READ
     project: fast-prod-iac-core-0
     service: iam.googleapis.com
+  module.automation-project.google_project_iam_audit_config.default["sts.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: ADMIN_READ
+    project: fast-prod-iac-core-0
+    service: sts.googleapis.com
   module.automation-project.google_project_iam_binding.authoritative["organizations/123456789012/roles/storageViewer"]:
     condition: []
     members:
@@ -2390,7 +2396,7 @@ counts:
   google_organization_iam_custom_role: 16
   google_organization_iam_member: 31
   google_project: 3
-  google_project_iam_audit_config: 1
+  google_project_iam_audit_config: 2
   google_project_iam_binding: 19
   google_project_iam_member: 23
   google_project_service: 33
@@ -2406,7 +2412,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 297
+  resources: 298
 
 outputs:
   custom_roles:

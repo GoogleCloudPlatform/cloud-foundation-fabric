@@ -80,7 +80,7 @@ variable "attached_disks" {
 }
 
 variable "boot_disk" {
-  description = "Boot disk properties."
+  description = "Boot disk properties. Initialize params are ignored when source is set."
   type = object({
     auto_delete       = optional(bool, true)
     snapshot_schedule = optional(list(string))
@@ -97,10 +97,7 @@ variable "boot_disk" {
   }
   nullable = false
   validation {
-    condition = (
-      (var.boot_disk.source == null ? 0 : 1) +
-      (var.boot_disk.initialize_params == null ? 0 : 1) < 2
-    )
+    condition     = var.boot_disk.source != null || var.boot_disk.initialize_params != null
     error_message = "You can only have one of boot disk source or initialize params."
   }
   validation {
