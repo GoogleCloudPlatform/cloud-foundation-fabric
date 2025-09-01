@@ -127,6 +127,7 @@ variable "context" {
     iam_principals        = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    storage_buckets       = optional(map(string), {})
   })
   default  = {}
   nullable = false
