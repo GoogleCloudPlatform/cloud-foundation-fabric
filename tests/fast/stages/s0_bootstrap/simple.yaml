@@ -116,7 +116,7 @@ values:
     - exempted_members: []
       log_type: ADMIN_READ
     project: fast-prod-iac-core-0
-    service: iam.googleapis.com
+    service: sts.googleapis.com
   module.automation-project.google_project_iam_binding.authoritative["organizations/123456789012/roles/storageViewer"]:
     condition: []
     members:
