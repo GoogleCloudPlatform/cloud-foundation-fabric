@@ -19,7 +19,8 @@ workload_identity_federation:
   project: $project_ids:iac-0
   providers:
     github:
-      attribute_condition: attribute.repository_owner=="ludomagno"
+      # the condition is optional but recommented, use your GitHub org name
+      attribute_condition: attribute.repository_owner=="my_org"
       issuer: github
       # custom_settings:
       #   issuer_uri:

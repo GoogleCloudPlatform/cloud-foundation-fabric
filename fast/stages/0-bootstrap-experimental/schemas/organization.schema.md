@@ -60,7 +60,7 @@
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^roles/`**: *array*
+  - **`^(?:roles/|$custom_roles:|organizations/|projects/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*

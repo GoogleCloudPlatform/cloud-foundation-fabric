@@ -22,42 +22,50 @@ iam.allowedPolicyMemberDomains:
   rules:
     - allow:
         values:
-          - principalSet://iam.googleapis.com/organizations/925409421350
-          - is:C0202kd6o
-          - is:C02h8e9nw
+          - is:${organization.customer_id}
+      condition:
+        title: Restrict member domains
+        expression: |
+          !resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+    - allow:
+        all: true
+      condition:
+        title: Allow any member domain
+        expression: |
+          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
 
-# iam.disableAuditLoggingExemption:
-#   rules:
-#     - enforce: true
+iam.disableAuditLoggingExemption:
+  rules:
+    - enforce: true
 
-# iam.automaticIamGrantsForDefaultServiceAccounts:
-#   rules:
-#     - enforce: true
+iam.automaticIamGrantsForDefaultServiceAccounts:
+  rules:
+    - enforce: true
 
-# iam.disableServiceAccountKeyCreation:
-#   rules:
-#     - enforce: true
+iam.disableServiceAccountKeyCreation:
+  rules:
+    - enforce: true
 
-# iam.disableServiceAccountKeyUpload:
-#   rules:
-#     - enforce: true
+iam.disableServiceAccountKeyUpload:
+  rules:
+    - enforce: true
 
-# iam.managed.disableServiceAccountApiKeyCreation:
-#   rules:
-#     - enforce: true
+iam.managed.disableServiceAccountApiKeyCreation:
+  rules:
+    - enforce: true
 
-# iam.serviceAccountKeyExposureResponse:
-#   rules:
-#     - allow:
-#         values:
-#           - is:DISABLE_KEY
+iam.serviceAccountKeyExposureResponse:
+  rules:
+    - allow:
+        values:
+          - is:DISABLE_KEY
 
-# iam.workloadIdentityPoolAwsAccounts:
-#   rules:
-#     - deny:
-#         all: true
+iam.workloadIdentityPoolAwsAccounts:
+  rules:
+    - deny:
+        all: true
 
-# iam.workloadIdentityPoolProviders:
-#   rules:
-#     - deny:
-#         all: true
+iam.workloadIdentityPoolProviders:
+  rules:
+    - deny:
+        all: true

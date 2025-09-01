@@ -14,25 +14,31 @@
 
 # yaml-language-server: $schema=../schemas/defaults.schema.json
 
-# defaults:
-#   storage_location: europe-west1
 global:
-  billing_account: 017479-47ADAB-670295
+  # use `gcloud beta billing accounts list` to populate
+  billing_account: ABCDEF-0123456-ABCDEF
   locations:
     bigquery: europe-west1
     logging: europe-west1
   organization:
-    # domain: example.org
-    id: 925409421350
-    # use our customer id for testing
-    # customer_id: C02h8e9nw
+    # use `gcloud organizations list`` to populate
+    domain: fast-test-00.example.com
+    id: 1234567890
+    customer_id: abcd123456
 projects:
   defaults:
-    prefix: ep1
+    # prefix must be unique and less than 9 characters
+    prefix: test00
     storage_location: europe-west1
   overrides: {}
+context:
+  # you can populate context variables here for use in YAML replacements
+  iam_principals:
+    # this is the default group used in boostrap, initial user must be a member
+    gcp-organization-admins: group:fabric-fast-domainless-owners@twosync.google.com
 output_files:
-  local_path: ~/dev/tf-playground/fast-config/ephemeral-1
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
     0-bootstrap:
@@ -57,6 +63,3 @@ output_files:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-project-factory
       service_account: $iam_principals:service_accounts/iac-0/iac-pf-rw
-context:
-  iam_principals:
-    gcp-organization-admins: group:fabric-fast-domainless-owners@twosync.google.com

@@ -56,7 +56,7 @@
           - **location**: *string*
           - **title**: *string*
 - **parent**: *string*
-  <br>*pattern: ^($:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
+  <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
 - **tag_bindings**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *string*
@@ -122,7 +122,7 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *array*
     - items: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*

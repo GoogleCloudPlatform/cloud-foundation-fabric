@@ -26,6 +26,8 @@
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
 - **billing_account**: *string*
+- **billing_budgets**: *array*
+  - items: *string*
 - **buckets**: *reference([buckets](#refs-buckets))*
 - **contacts**: *object*
   <br>*additional properties: false*
@@ -221,7 +223,7 @@
     - items: *string*
 - **iam_project_roles**<a name="refs-iam_project_roles"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9-]+$`**: *array*
+  - **`^(?:[a-z0-9-]|\$project_ids:[a-z0-9_-])+$`**: *array*
     - items: *string*
 - **iam_sa_roles**<a name="refs-iam_sa_roles"></a>: *object*
   <br>*additional properties: false*
