@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,16 @@ locals {
     },
     var.fast_stage_3
   )
+  _stage_3_iam = { for k, v in local._stage3 : k => {
+    "roles/logging.admin"                  = [module.stage3-sa-rw[k].iam_email]
+    "roles/owner"                          = [module.stage3-sa-rw[k].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.stage3-sa-rw[k].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.stage3-sa-rw[k].iam_email]
+    "roles/compute.xpnAdmin"               = [module.stage3-sa-rw[k].iam_email]
+    "roles/viewer"                         = [module.stage3-sa-ro[k].iam_email]
+    "roles/resourcemanager.folderViewer"   = [module.stage3-sa-ro[k].iam_email]
+    }
+  }
   # normalize attributes
   stage3 = {
     for k, v in local._stage3 : k => merge(v, {
@@ -78,7 +88,7 @@ locals {
             members = [
               for m in vv.members : contains(["ro", "rw"], m) ? "${k}-${m}" : m
             ]
-            condition = vv.condition == null ? null : {
+            condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
                 custom_roles = var.custom_roles
@@ -95,7 +105,7 @@ locals {
           kk => {
             role   = vv.role
             member = contains(["ro", "rw"], vv.member) ? "${k}-${vv.member}" : vv.member
-            condition = vv.condition == null ? null : {
+            condition = lookup(vv, "condition", null) == null ? null : {
               title = vv.condition.title
               expression = templatestring(vv.condition.expression, {
                 custom_roles = var.custom_roles
@@ -106,6 +116,10 @@ locals {
               description = lookup(vv.condition, "description", null)
             }
           }
+        }
+        iam_by_principals = {
+          for kk, vv in v.folder_config.iam_by_principals :
+          (contains(["ro", "rw"], kk) ? "${k}-${kk}" : kk) => vv
         }
       })
     })
@@ -144,17 +158,40 @@ module "stage3-folder" {
   )
   name = each.value.folder_config.name
   iam = {
-    "roles/logging.admin"                  = [module.stage3-sa-rw[each.key].iam_email]
-    "roles/owner"                          = [module.stage3-sa-rw[each.key].iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.stage3-sa-rw[each.key].iam_email]
-    "roles/resourcemanager.projectCreator" = [module.stage3-sa-rw[each.key].iam_email]
-    "roles/compute.xpnAdmin"               = [module.stage3-sa-rw[each.key].iam_email]
-    "roles/viewer"                         = [module.stage3-sa-ro[each.key].iam_email]
-    "roles/resourcemanager.folderViewer"   = [module.stage3-sa-ro[each.key].iam_email]
-
+    # merge inputs/factory bindings with static role bindings in loocal._stage_3_iam
+    for role in concat(keys(each.value.folder_config.iam), keys(local._stage_3_iam[each.key])) :
+    lookup(var.custom_roles, role, role) => [
+      for m in concat(
+        lookup(local._stage_3_iam[each.key], role, []),
+        lookup(each.value.folder_config.iam, role, [])
+      ) : lookup(local.principals_iam, m, m)
+    ]
   }
-  iam_by_principals = each.value.folder_config.iam_by_principals
-  org_policies      = each.value.folder_config.org_policies
+
+  iam_bindings = {
+    for k, v in each.value.folder_config.iam_bindings : k => merge(v, {
+      members = [
+        for m in v.members : lookup(local.principals_iam, m, m)
+      ]
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in each.value.folder_config.iam_bindings_additive : k => merge(v, {
+      member    = lookup(local.principals_iam, v.member, v.member)
+      role      = lookup(var.custom_roles, v.role, v.role)
+      condition = v.condition
+    })
+  }
+  iam_by_principals = {
+    for k, v in each.value.folder_config.iam_by_principals :
+    lookup(local.principals_iam, k, k) => [
+      for r in v : lookup(var.custom_roles, r, r)
+    ]
+  }
+
+  org_policies = each.value.folder_config.org_policies
   tag_bindings = merge(
     {
       (var.tag_names.environment) = local.tag_values["${var.tag_names.environment}/${var.environments[each.value.environment].tag_name}"].id
