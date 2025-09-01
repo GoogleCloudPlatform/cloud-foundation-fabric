@@ -32,11 +32,10 @@ locals {
         ? local.defaults.billing_account
         : v.id
       )
+      logging_sinks = lookup(v, "logging_sinks", {})
     }) if v.id != null
   }
 }
-
-# TODO: expose log sinks
 
 module "billing-accounts" {
   source   = "../../../modules/billing-account"
@@ -50,6 +49,14 @@ module "billing-accounts" {
       local.ctx.iam_principals,
       module.factory.iam_principals
     )
+    project_ids = merge(
+      local.ctx.project_ids, module.factory.project_ids
+    )
+    storage_buckets = module.factory.storage_buckets
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
@@ -59,4 +66,8 @@ module "billing-accounts" {
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
+  logging_sinks = {
+    for k, v in each.value.logging_sinks : k => v
+    if lookup(v, "destination", null) != null && lookup(v, "type", null) != null
+  }
 }

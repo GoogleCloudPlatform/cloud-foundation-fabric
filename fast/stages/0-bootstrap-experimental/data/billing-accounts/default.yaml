@@ -36,3 +36,8 @@ iam_bindings_additive:
   billing_user_pf_sa:
     role: roles/billing.user
     member: $iam_principals:service_accounts/iac-0/iac-pf-rw
+# logging_sinks:
+#   test:
+#     description: Test sink
+#     destination: $project_ids:log-0
+#     type: project

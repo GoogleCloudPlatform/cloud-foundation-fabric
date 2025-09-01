@@ -124,6 +124,83 @@
           }
         }
       }
+    },
+    "logging_sinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]+": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "destination",
+            "type"
+          ],
+          "properties": {
+            "destination": {
+              "type": "string",
+              "description": "The export destination for the sink."
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of the sink (e.g., 'logging', 'bigquery').",
+              "enum": [
+                "bigquery",
+                "logging",
+                "project",
+                "pubsub",
+                "storage"
+              ]
+            },
+            "bq_partitioned_table": {
+              "type": "boolean",
+              "description": "Specifies whether the destination BigQuery table is partitioned.",
+              "default": false
+            },
+            "description": {
+              "type": "string",
+              "description": "An optional human-readable description of the sink."
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "If true, the sink is disabled and will not export logs.",
+              "default": false
+            },
+            "exclusions": {
+              "type": "object",
+              "description": "A map of exclusion filters to prevent matching log entries from being exported.",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]+": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "filter"
+                  ],
+                  "properties": {
+                    "filter": {
+                      "type": "string",
+                      "description": "An advanced logs filter that specifies the log entries to exclude."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "An optional human-readable description of the exclusion."
+                    },
+                    "disabled": {
+                      "type": "boolean",
+                      "description": "If true, the exclusion is disabled."
+                    }
+                  }
+                }
+              }
+            },
+            "filter": {
+              "type": "string",
+              "description": "An advanced logs filter that specifies the log entries to export."
+            }
+          }
+        }
+      }
     }
   }
 }
