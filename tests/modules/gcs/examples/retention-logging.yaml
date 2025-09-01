@@ -22,7 +22,7 @@ values:
       - retention_duration_seconds: 7776000
     retention_policy:
       - is_locked: true
-        retention_period: 100
+        retention_period: "100"
 
 counts:
   google_storage_bucket: 1

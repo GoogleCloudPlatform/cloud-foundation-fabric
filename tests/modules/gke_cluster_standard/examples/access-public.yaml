@@ -73,9 +73,11 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
+    in_transit_encryption_config: null
     initial_node_count: 1
     ip_allocation_policy:
-    - additional_pod_ranges_config: []
+    - additional_ip_ranges_config: []
+      additional_pod_ranges_config: []
       cluster_secondary_range_name: pods
       services_secondary_range_name: services
       stack_type: IPV4
@@ -104,6 +106,7 @@ values:
       - enabled: true
     name: cluster-1
     network: projects/xxx/global/networks/aaa
+    network_performance_config: []
     network_policy: []
     node_config:
     - advanced_machine_features: []
@@ -116,7 +119,6 @@ values:
       flex_start: null
       gvnic: []
       host_maintenance_policy: []
-      linux_node_config: []
       local_nvme_ssd_block_config: []
       local_ssd_encryption_mode: null
       max_run_duration: null
