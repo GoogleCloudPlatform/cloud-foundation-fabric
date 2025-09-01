@@ -171,12 +171,16 @@ module "automation-project" {
   # https://cloud.google.com/iam/docs/audit-logging#audited_operations
   logging_data_access = {
     "iam.googleapis.com" = {
-      # ADMIN_READ captures impersonation and token generation/exchanges
+      # ADMIN_READ captures impersonation and GenerateAccessToken API calls
       ADMIN_READ = {}
       # enable DATA_WRITE if you want to capture configuration changes
       # to IAM-related resources (roles, deny policies, service
       # accounts, identity pools, etc)
       # DATA_WRITE = {}
+    }
+    "sts.googleapis.com" = {
+      # ADMIN_READ captures SecurityTokenService.ExchangeToken API calls
+      ADMIN_READ = {}
     }
   }
 }
