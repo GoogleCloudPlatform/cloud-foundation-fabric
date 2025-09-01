@@ -2412,7 +2412,7 @@ counts:
   google_tags_tag_value: 2
   local_file: 13
   modules: 26
-  resources: 297
+  resources: 298
 
 outputs:
   custom_roles:
