@@ -22,8 +22,9 @@ global:
     bigquery: europe-west1
     logging: europe-west1
   organization:
-    # domain: example.org
+    domain: example.org
     id: 1234567890
+    customer_id: abcd123456
 projects:
   defaults:
     prefix: ft0
