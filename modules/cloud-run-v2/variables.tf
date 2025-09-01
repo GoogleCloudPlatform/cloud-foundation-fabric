@@ -84,6 +84,14 @@ variable "containers" {
     ])
     error_message = "Only following resource limits are available: 'cpu', 'memory' and 'nvidia.com/gpu'."
   }
+  validation {
+    condition = alltrue([
+      for c in var.containers : (
+        var.type != "WORKERPOOL" || c.depends_on == null
+      )
+    ])
+    error_message = "depends_on is not supported when type is WORKERPOOL."
+  }
 }
 
 variable "deletion_protection" {

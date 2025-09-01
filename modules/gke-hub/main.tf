@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,13 +137,6 @@ resource "google_gke_hub_feature_membership" "default" {
 
   configmanagement {
     version = each.value.version
-
-    dynamic "binauthz" {
-      for_each = each.value.binauthz != true ? {} : { 1 = 1 }
-      content {
-        enabled = true
-      }
-    }
 
     dynamic "config_sync" {
       for_each = each.value.config_sync == null ? {} : { 1 = 1 }
