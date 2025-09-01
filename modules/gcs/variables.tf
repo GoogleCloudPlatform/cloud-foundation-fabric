@@ -281,7 +281,7 @@ variable "requester_pays" {
 variable "retention_policy" {
   description = "Bucket retention policy."
   type = object({
-    retention_period = number
+    retention_period = string
     is_locked        = optional(bool)
   })
   default = null

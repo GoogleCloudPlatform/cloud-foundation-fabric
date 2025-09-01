@@ -45,6 +45,11 @@ values:
       - enabled: false
     allow_net_admin: null
     binary_authorization: []
+    cluster_autoscaling:
+    - autoscaling_profile: BALANCED
+      default_compute_class_enabled: null
+      enabled: true
+      resource_limits: []
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
@@ -110,7 +115,6 @@ values:
       flex_start: null
       gvnic: []
       host_maintenance_policy: []
-      linux_node_config: []
       local_nvme_ssd_block_config: []
       local_ssd_encryption_mode: null
       max_run_duration: null
@@ -209,7 +213,6 @@ values:
     timeouts: null
   module.hub.google_gke_hub_membership.default["cluster-1"]:
     authority: []
-    description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
     endpoint:
@@ -344,6 +347,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -357,6 +361,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -370,6 +375,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: gkehub-test
     tags: null
@@ -382,6 +388,7 @@ values:
     log_config: []
     name: cluster-1
     network: network
+    params: []
     private_ip_google_access: true
     project: gkehub-test
     region: europe-west1

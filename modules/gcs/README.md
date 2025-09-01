@@ -397,7 +397,7 @@ module "bucket" {
 | [prefix](variables.tf#L250) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
 | [public_access_prevention](variables.tf#L265) | Prevents public access to the bucket. | <code>string</code> |  | <code>null</code> |
 | [requester_pays](variables.tf#L275) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
-| [retention_policy](variables.tf#L281) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [retention_policy](variables.tf#L281) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; string&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [rpo](variables.tf#L290) | Bucket recovery point objective. | <code>string</code> |  | <code>null</code> |
 | [soft_delete_retention](variables.tf#L300) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
 | [storage_class](variables.tf#L306) | Bucket storage class. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
