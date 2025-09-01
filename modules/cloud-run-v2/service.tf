@@ -74,10 +74,11 @@ resource "google_cloud_run_v2_service" "service" {
     dynamic "containers" {
       for_each = var.containers
       content {
-        name    = containers.key
-        image   = containers.value.image
-        command = containers.value.command
-        args    = containers.value.args
+        name       = containers.key
+        image      = containers.value.image
+        depends_on = containers.value.depends_on
+        command    = containers.value.command
+        args       = containers.value.args
         dynamic "env" {
           for_each = coalesce(containers.value.env, tomap({}))
           content {
@@ -323,10 +324,11 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
     dynamic "containers" {
       for_each = var.containers
       content {
-        name    = containers.key
-        image   = containers.value.image
-        command = containers.value.command
-        args    = containers.value.args
+        name       = containers.key
+        image      = containers.value.image
+        depends_on = containers.value.depends_on
+        command    = containers.value.command
+        args       = containers.value.args
         dynamic "env" {
           for_each = coalesce(containers.value.env, tomap({}))
           content {
