@@ -207,13 +207,13 @@ resource "google_compute_region_network_endpoint_group" "default" {
 
 resource "google_compute_region_network_endpoint_group" "psc" {
   for_each = local.neg_regional_psc
-    project = (
+  project = (
     each.value.project_id == null
     ? var.project_id
     : each.value.project_id
   )
-  region   = each.value.psc.region
-  name     = "${var.name}-${each.key}"
+  region = each.value.psc.region
+  name   = "${var.name}-${each.key}"
   //description           = coalesce(each.value.description, var.description)
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
@@ -223,7 +223,6 @@ resource "google_compute_region_network_endpoint_group" "psc" {
     # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
     ignore_changes = [psc_data]
   }
-
 }
 
 locals {
