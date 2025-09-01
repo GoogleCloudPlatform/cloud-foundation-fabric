@@ -60,8 +60,9 @@ module "organization" {
     }
   }
   factories_config = {
-    custom_roles = "${local.paths.organization}/custom-roles"
-    tags         = "${local.paths.organization}/tags"
+    org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
+    custom_roles                  = "${local.paths.organization}/custom-roles"
+    tags                          = "${local.paths.organization}/tags"
   }
   tags_config = {
     ignore_iam = true
@@ -83,6 +84,10 @@ module "organization-iam" {
     log_buckets = module.factory.log_buckets
     org_policies = {
       organization = local.defaults.organization
+      tags = merge(
+        local.ctx.tag_values,
+        local.org_tag_values
+      )
     }
     project_ids = merge(
       local.ctx.project_ids, module.factory.project_ids
