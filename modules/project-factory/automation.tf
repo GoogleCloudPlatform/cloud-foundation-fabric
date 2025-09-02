@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,97 +14,93 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Automation projects locals and resources.
-
 locals {
-  automation_buckets = {
-    for k, v in local.projects :
-    k => merge(try(v.automation.bucket, {}), {
-      automation_project = v.automation.project
-      prefix = coalesce(
-        try(v.automation.prefix, null),
-        "${v.prefix}-${v.name}"
-      )
-      project_name = v.name
-    }) if try(v.automation.bucket, null) != null
-  }
-  automation_sa = flatten([
-    for k, v in local.projects : [
-      for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
-        automation_project = v.automation.project
-        name               = ks
+  _automation = merge(
+    {
+      for k, v in local.folders_input : k => {
+        bucket = try(v.automation.bucket, {})
+        # name             = replace(k, "/", "-")
+        parent_type      = "folder"
+        prefix           = try(v.automation.prefix, null)
+        project          = try(v.automation.project, null)
+        service_accounts = try(v.automation.service_accounts, {})
+      } if try(v.automation.bucket, null) != null
+    },
+    {
+      for k, v in local.projects_input : k => {
+        bucket = try(v.automation.bucket, {})
+        # name        = v.name
+        parent_type = "project"
         prefix = coalesce(
           try(v.automation.prefix, null),
-          "${v.prefix}-${v.name}"
+          v.prefix == null ? v.name : "${v.prefix}-${v.name}"
         )
-        project      = k
-        project_name = v.name
+        project          = try(v.automation.project, null)
+        service_accounts = try(v.automation.service_accounts, {})
+      } if try(v.automation.bucket, null) != null
+    }
+  )
+  _automation_buckets = {
+    for k, v in local._automation : k => merge(v.bucket, {
+      automation_project = v.project
+      name               = lookup(v, "name", "tf-state")
+      # project automation always has a prefix
+      prefix = try(coalesce(
+        v.prefix,
+        local.data_defaults.overrides.prefix,
+        local.data_defaults.defaults.prefix
+      ), null)
+    })
+  }
+  _automation_sas = flatten(concat([
+    for k, v in local._automation : [
+      for sk, sv in v.service_accounts : merge(sv, {
+        automation_project = v.project
+        name               = sk
+        parent             = k
+        prefix             = v.prefix
       })
     ]
-  ])
+  ]))
+  automation_buckets = {
+    for k, v in local._automation_buckets :
+    "${k}/${v.name}" => v
+  }
+  automation_sas = {
+    for k in local._automation_sas :
+    "${k.parent}/${k.name}" => k
+  }
+  automation_sas_iam_emails = {
+    for k, v in local.automation_sas :
+    "service_accounts/${v.parent}/${v.name}" => module.automation-service-accounts[k].iam_email
+  }
 }
 
 module "automation-bucket" {
-  source   = "../gcs"
-  for_each = local.automation_buckets
-  # we cannot use interpolation here as we would get a cycle
-  # from the IAM dependency in the outputs of the main project
+  source         = "../gcs"
+  for_each       = local.automation_buckets
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
-  name           = "tf-state"
+  name           = each.value.name
   encryption_key = lookup(each.value, "encryption_key", null)
   force_destroy = try(coalesce(
-    var.data_overrides.bucket.force_destroy,
+    local.data_defaults.overrides.bucket.force_destroy,
     each.value.force_destroy,
-    var.data_defaults.bucket.force_destroy,
+    local.data_defaults.defaults.force_destroy,
   ), null)
-  iam = {
-    for k, v in lookup(each.value, "iam", {}) : k => [
-      for vv in v : try(
-        module.automation-service-accounts["${each.key}/automation/${vv}"].iam_email,
-        module.automation-service-accounts["${each.key}/${vv}"].iam_email,
-        var.factories_config.context.iam_principals[vv],
-        vv
-      )
-    ]
-  }
-  iam_bindings = {
-    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
-      members = [
-        for vv in v.members : try(
-          # rw (infer local project and automation prefix)
-          module.automation-service-accounts["${each.key}/automation/${vv}"].iam_email,
-          # automation/rw or sa (infer local project)
-          module.automation-service-accounts["${each.key}/${vv}"].iam_email,
-          # project/automation/rw project/sa
-          var.factories_config.context.iam_principals[vv],
-          # fully specified principal
-          vv,
-          # passthrough + error handling using tonumber until Terraform gets fail/raise function
-          (
-            strcontains(vv, ":")
-            ? vv
-            : tonumber("[Error] Invalid member: '${vv}' in automation bucket '${each.key}'")
-          )
-        )
-      ]
-    })
-  }
-  iam_bindings_additive = {
-    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
-      member = try(
-        module.automation-service-accounts["${each.key}/automation/${v.member}"].iam_email,
-        module.automation-service-accounts["${each.key}/${v.member}"].iam_email,
-        var.factories_config.context.iam_principals[v.member],
-        v.member
-      )
-    })
-  }
-  labels = lookup(each.value, "labels", {})
+  context = merge(local.ctx, {
+    project_ids    = local.ctx_project_ids
+    iam_principals = local.ctx_iam_principals
+  })
+  iam                   = lookup(each.value, "iam", {})
+  iam_bindings          = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
+  labels                = lookup(each.value, "labels", {})
+  managed_folders       = lookup(each.value, "managed_folders", {})
   location = coalesce(
-    var.data_overrides.storage_location,
+    local.data_defaults.overrides.storage_location,
     lookup(each.value, "location", null),
-    var.data_defaults.storage_location
+    local.data_defaults.defaults.storage_location
   )
   storage_class = lookup(
     each.value, "storage_class", "STANDARD"
@@ -118,12 +114,8 @@ module "automation-bucket" {
 }
 
 module "automation-service-accounts" {
-  source = "../iam-service-account"
-  for_each = {
-    for k in local.automation_sa : "${k.project}/automation/${k.name}" => k
-  }
-  # we cannot use interpolation here as we would get a cycle
-  # from the IAM dependency in the outputs of the main project
+  source      = "../iam-service-account"
+  for_each    = local.automation_sas
   project_id  = each.value.automation_project
   prefix      = each.value.prefix
   name        = each.value.name
@@ -131,32 +123,18 @@ module "automation-service-accounts" {
   display_name = lookup(
     each.value,
     "display_name",
-    "Service account ${each.value.name} for ${each.value.project}."
+    "Service account ${each.value.name} for ${each.value.parent}."
   )
-  # TODO: also support short form for service accounts in this project
-  iam = {
-    for k, v in lookup(each.value, "iam", {}) : k => [
-      for vv in v : lookup(
-        var.factories_config.context.iam_principals, vv, vv
-      )
-    ]
-  }
-  iam_bindings = {
-    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
-      members = [
-        for vv in v.members : lookup(
-          var.factories_config.context.iam_principals, vv, vv
-        )
-      ]
-    })
-  }
-  iam_bindings_additive = {
-    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
-      member = lookup(
-        var.factories_config.context.iam_principals, v.member, v.member
-      )
-    })
-  }
+  context = merge(local.ctx, {
+    project_ids = local.ctx_project_ids
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      local.projects_sas_iam_emails
+    )
+  })
+  iam                    = lookup(each.value, "iam", {})
+  iam_bindings           = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive  = lookup(each.value, "iam_bindings_additive", {})
   iam_billing_roles      = lookup(each.value, "iam_billing_roles", {})
   iam_folder_roles       = lookup(each.value, "iam_folder_roles", {})
   iam_organization_roles = lookup(each.value, "iam_organization_roles", {})

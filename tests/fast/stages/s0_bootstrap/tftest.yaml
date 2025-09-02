@@ -15,16 +15,9 @@
 
 module: fast/stages/0-bootstrap
 tests:
-  simple:
+  # TODO: rename to simple once fast lint setup accepts extra dirs
+  not-simple:
     inventory:
-      - simple.yaml
-      - simple_org_policies.yaml
-  managed_org_policies:
-    inventory:
-      - simple.yaml
-      - managed_org_policies.yaml
-  external_billing_account:
-    inventory:
-      - external_billing_account.yaml
-  iam_by_principals:
-  cicd:
+      - not-simple.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_bootstrap/data-simple

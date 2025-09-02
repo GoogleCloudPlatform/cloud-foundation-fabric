@@ -21,25 +21,23 @@ Stages encapsulate core designs and functionality that is common in most type of
 
 To destroy a previous FAST deployment follow the instructions detailed in [cleanup](CLEANUP.md).
 
-## Organization (experimental)
+## Organization (0)
 
-- [Experimental Bootstrap](./0-bootstrap-experimental/README.md)
+- [Bootstrap](./0-bootstrap/README.md)
   This stage combines the legacy bootstrap and resource management stages described below, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
-  
-## Organization (0 and 1)
-
-- [Bootstrap](0-bootstrap/README.md)  
-  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level to avoid the need of broad permissions later on, and to implement from the start critical auditing or security features like organization policies, sinks and exports.\
-  Exports: automation variables, organization-level custom roles
-- [Resource Management](1-resman/README.md)  
-  Creates the base resource hierarchy (folders) and the automation resources that will be required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures resource management tags used in scoping specific IAM roles on the resource hierarchy.\
-  Exports: folder ids, automation service account emails, tags
 - [VPC Service Controls](./1-vpcsc/README.md)
   Optionally configures VPC Service Controls protection for the organization.
+  
+## Legacy Organization (0 and 1)
 
-## Multitenancy
+These stages are considered legacy, and kept in this release to simplify migration to the new bootstrap stage. They will be dropped from the next release.
 
-Implemented as an [add-on stage 1](../addons/1-resman-tenants/), with optional FAST compatibility for tenants.
+- [Bootstrap](0-bootstrap-legacy/README.md)  
+  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level to avoid the need of broad permissions later on, and to implement from the start critical auditing or security features like organization policies, sinks and exports.\
+  Exports: automation variables, organization-level custom roles
+- [Resource Management](1-resman-legacy/README.md)  
+  Creates the base resource hierarchy (folders) and the automation resources that will be required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures resource management tags used in scoping specific IAM roles on the resource hierarchy.\
+  Exports: folder ids, automation service account emails, tags
 
 ## Shared resources (2)
 
@@ -51,6 +49,8 @@ Implemented as an [add-on stage 1](../addons/1-resman-tenants/), with optional F
   Exports: host project ids and numbers, vpc self links
 - [Project Factory](./2-project-factory/)  
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
+- [Legacy Project Factory](./2-project-factory-legacy/)  
+  More limited version of the project factory, that can be used for backward compatibility. Will be dropped in the next major release.
 
 ## Environment-level resources (3)
 

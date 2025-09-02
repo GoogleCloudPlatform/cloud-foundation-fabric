@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,114 +14,125 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description CI/CD locals and resources.
-
 locals {
-  _cicd_configs = merge(
-    # stages
-    {
-      for k, v in var.cicd_config : k => merge(v, {
-        level = k == "bootstrap" ? 0 : 1
-        stage = k
-      }) if v != null
-    },
-    # addons
-    {
-      for k, v in var.fast_addon : k => merge(v.cicd_config, {
-        level = 1
-        stage = substr(v.parent_stage, 2, -1)
-      }) if v.cicd_config != null
-    }
-  )
-  cicd_providers = {
+  _cicd = try(yamldecode(file(local.paths.cicd)), {})
+  _cicd_identity_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
-    k => {
-      audiences = concat(
-        v.oidc[0].allowed_audiences,
-        ["https://iam.googleapis.com/${v.name}"]
+    "$wif_providers:${k}" => v.id
+  }
+  _cicd_output_files = {
+    for k, v in google_storage_bucket_object.providers :
+    "$output_files:providers/${k}" => v.name
+  }
+  cicd_project_ids = {
+    for k, v in merge(
+      var.context.project_ids, module.factory.project_ids
+    ) : "$project_ids:${k}" => v
+  }
+  cicd_workflows = {
+    for k, v in lookup(local._cicd, "workflows", {}) : k => {
+      outputs_bucket = lookup(
+        local.of_buckets,
+        v.output_files.storage_bucket,
+        v.output_files.storage_bucket
       )
-      issuer           = local.workload_identity_providers[k].issuer
-      issuer_uri       = try(v.oidc[0].issuer_uri, null)
-      name             = v.name
-      principal_branch = local.workload_identity_providers[k].principal_branch
-      principal_repo   = local.workload_identity_providers[k].principal_repo
+      workflow = templatefile("assets/workflow-${v.template}.yaml", {
+        identity_provider = lookup(
+          local._cicd_identity_providers,
+          v.workload_identity_provider.id,
+          v.workload_identity_provider.id
+        )
+        service_accounts = {
+          apply = lookup(
+            local.of_service_accounts,
+            v.service_accounts.apply,
+            v.service_accounts.apply
+          )
+          plan = lookup(
+            local.of_service_accounts,
+            v.service_accounts.plan,
+            v.service_accounts.plan
+          )
+        }
+        outputs_bucket = lookup(
+          local.of_buckets,
+          v.output_files.storage_bucket,
+          v.output_files.storage_bucket
+        )
+        stage_name = k
+        tf_providers_files = {
+          apply = lookup(
+            local._cicd_output_files,
+            v.output_files.providers.apply,
+            v.output_files.providers.apply
+          )
+          plan = lookup(
+            local._cicd_output_files,
+            v.output_files.providers.plan,
+            v.output_files.providers.plan
+          )
+        }
+        tf_var_files = try(v.output_files.files, [])
+      })
     }
   }
-  cicd_repositories = {
-    for k, v in local._cicd_configs : k => v if(
-      contains(keys(local.workload_identity_providers), v.identity_provider) &&
-      fileexists("${path.module}/templates/workflow-${v.repository.type}.yaml")
+  wif_project = try(local._cicd.workload_identity_federation.project, null)
+  wif_providers = {
+    for k, v in try(local._cicd.workload_identity_federation.providers, {}) :
+    k => merge(v, lookup(local.wif_defs, v.issuer, {}))
+  }
+}
+
+resource "google_iam_workload_identity_pool" "default" {
+  count = local.wif_project == null ? 0 : 1
+  project = lookup(
+    local.cicd_project_ids, local.wif_project, local.wif_project
+  )
+  workload_identity_pool_id = try(
+    local._cicd.workload_identity_federation.pool_name, "iac-0"
+  )
+}
+
+resource "google_iam_workload_identity_pool_provider" "default" {
+  for_each = local.wif_providers
+  project = (
+    google_iam_workload_identity_pool.default[0].project
+  )
+  workload_identity_pool_id = (
+    google_iam_workload_identity_pool.default[0].workload_identity_pool_id
+  )
+  workload_identity_pool_provider_id = each.key
+  attribute_condition = lookup(
+    each.value, "attribute_condition", null
+  )
+  attribute_mapping = lookup(
+    each.value, "attribute_mapping", {}
+  )
+  oidc {
+    # Setting an empty list configures allowed_audiences to the url of the provider
+    allowed_audiences = try(each.value.custom_settings.audiences, [])
+    # If users don't provide an issuer_uri, we set the public one for the platform chosen.
+    issuer_uri = (
+      try(each.value.custom_settings.issuer_uri, null) != null
+      ? each.value.custom_settings.issuer_uri
+      : try(each.value.issuer_uri, null)
     )
-  }
-  cicd_workflow_providers = merge(
-    {
-      for k, v in local.cicd_repositories :
-      k => "${v.level}-${k}-providers.tf"
-    },
-    {
-      for k, v in local.cicd_repositories :
-      "${k}-r" => "${v.level}-${k}-r-providers.tf"
-    }
-  )
-}
-
-# SAs used by CI/CD workflows to impersonate automation SAs
-
-module "automation-tf-cicd-sa" {
-  source     = "../../../modules/iam-service-account"
-  for_each   = local.cicd_repositories
-  project_id = module.automation-project.project_id
-  name = templatestring(
-    var.resource_names["sa-cicd_template"], { key = each.key }
-  )
-  display_name = "Terraform CI/CD ${each.key} service account."
-  prefix       = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.repository.branch == null
-      ? format(
-        local.workload_identity_providers_defs[each.value.repository.type].principal_repo,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.repository.name
-      )
-      : format(
-        local.workload_identity_providers_defs[each.value.repository.type].principal_branch,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.repository.name,
-        each.value.repository.branch
-      )
-    ]
-  }
-  iam_project_roles = {
-    (module.automation-project.project_id) = ["roles/logging.logWriter"]
-  }
-  iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
+    # OIDC JWKs in JSON String format. If no value is provided, they key is
+    # fetched from the `.well-known` path for the issuer_uri
+    jwks_json = try(each.value.custom_settings.jwks_json, null)
   }
 }
 
-module "automation-tf-cicd-r-sa" {
-  source     = "../../../modules/iam-service-account"
-  for_each   = local.cicd_repositories
-  project_id = module.automation-project.project_id
-  name = templatestring(
-    var.resource_names["sa-cicd_template_ro"], { key = each.key }
-  )
-  display_name = "Terraform CI/CD ${each.key} service account (read-only)."
-  prefix       = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      format(
-        local.workload_identity_providers_defs[each.value.repository.type].principal_repo,
-        google_iam_workload_identity_pool.default[0].name,
-        each.value.repository.name
-      )
-    ]
-  }
-  iam_project_roles = {
-    (module.automation-project.project_id) = ["roles/logging.logWriter"]
-  }
-  iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
-  }
+resource "local_file" "workflows" {
+  for_each        = local.of_path == null ? {} : local.cicd_workflows
+  file_permission = "0644"
+  filename        = "${local.of_path}/workflows/${each.key}.yaml"
+  content         = each.value.workflow
+}
+
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.cicd_workflows
+  bucket   = each.value.outputs_bucket
+  name     = "workflows/${each.key}.yaml"
+  content  = each.value.workflow
 }

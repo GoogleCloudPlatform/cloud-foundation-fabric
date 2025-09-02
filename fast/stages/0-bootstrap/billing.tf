@@ -14,114 +14,60 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Billing export project and dataset.
-
 locals {
-  billing_mode = (
-    var.billing_account.no_iam
-    ? null
-    : var.billing_account.is_org_level ? "org" : "resource"
+  _billing_accounts_path = try(
+    pathexpand(var.factories_config.billing_accounts), null
   )
-
-  _billing_iam_bindings = {
-    "roles/billing.admin" = [
-      local.principals.gcp-billing-admins,
-      local.principals.gcp-organization-admins,
-      module.automation-tf-bootstrap-sa.iam_email,
-      module.automation-tf-resman-sa.iam_email
-    ],
-    "roles/billing.viewer" = [
-      module.automation-tf-bootstrap-r-sa.iam_email,
-      module.automation-tf-resman-r-sa.iam_email
-    ],
-    "roles/logging.configWriter" = local.billing_mode == "org" || !var.billing_account.force_create.log_bucket ? [] : [
-      module.automation-tf-bootstrap-sa.iam_email
-    ]
+  _billing_accounts_raw = {
+    for f in try(fileset(local._billing_accounts_path, "*.yaml"), []) :
+    trimsuffix(f, ".yaml") => merge(
+      { id = null },
+      yamldecode(file("${local._billing_accounts_path}/${f}"))
+    )
   }
-
-  _billing_iam_bindings_add = flatten([for role, bindings in local._billing_iam_bindings : [
-    for member in bindings : {
-      member = member,
-      role   = role
-    }
-  ]])
-
-  billing_iam_bindings_additive = {
-    for b in local._billing_iam_bindings_add : "${b.role}-${b.member}" => {
-      member = b.member
-      role   = b.role
-    }
+  billing_accounts = {
+    for k, v in local._billing_accounts_raw : k => merge(v, {
+      id = (
+        local.defaults.billing_account != null && v.id == "$defaults:billing_account"
+        ? local.defaults.billing_account
+        : v.id
+      )
+      logging_sinks = lookup(v, "logging_sinks", {})
+    }) if v.id != null
   }
 }
 
-# billing account in same org (IAM is in the organization.tf file)
-
-module "billing-export-project" {
-  source = "../../../modules/project"
-  count = (
-    local.billing_mode == "org" || var.billing_account.force_create.project == true ? 1 : 0
-  )
-  billing_account = var.billing_account.id
-  name            = var.resource_names["project-billing"]
-  parent = coalesce(
-    var.project_parent_ids.billing, "organizations/${var.organization.id}"
-  )
-  prefix   = var.prefix
-  universe = var.universe
-  contacts = (
-    var.bootstrap_user != null || var.essential_contacts == null
-    ? {}
-    : { (var.essential_contacts) = ["ALL"] }
-  )
-  iam = {
-    "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
-    "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
-  }
-  services = [
-    # "cloudresourcemanager.googleapis.com",
-    # "iam.googleapis.com",
-    # "serviceusage.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigquerydatatransfer.googleapis.com",
-    "storage.googleapis.com"
-  ]
-}
-
-module "billing-export-dataset" {
-  source = "../../../modules/bigquery-dataset"
-  count = (
-    local.billing_mode == "org" || var.billing_account.force_create.dataset == true ? 1 : 0
-  )
-  project_id    = module.billing-export-project[0].project_id
-  id            = var.resource_names["bq-billing"]
-  friendly_name = "Billing export."
-  location      = local.locations.bq
-}
-
-# standalone billing account
-
-module "billing-account-logbucket" {
-  source        = "../../../modules/logging-bucket"
-  count         = local.billing_mode == "resource" && var.billing_account.force_create.log_bucket ? 1 : 0
-  parent_type   = "project"
-  parent        = module.log-export-project.project_id
-  name          = "billing-account"
-  location      = local.locations.logging
-  log_analytics = { enable = true }
-  # org-level logging settings ready before we create any logging buckets
-  depends_on = [module.organization-logging]
-}
-
-module "billing-account" {
-  source                = "../../../modules/billing-account"
-  count                 = local.billing_mode == "resource" ? 1 : 0
-  id                    = var.billing_account.id
-  iam_bindings_additive = local.billing_iam_bindings_additive
-  logging_sinks = !var.billing_account.force_create.log_bucket ? {} : {
-    billing_bucket_log_sink = {
-      destination = module.billing-account-logbucket[0].id
-      type        = "logging"
-      description = "billing-account sink (Terraform-managed)."
-    }
+module "billing-accounts" {
+  source   = "../../../modules/billing-account"
+  for_each = local.billing_accounts
+  id       = each.value.id
+  context = merge(local.ctx, {
+    custom_roles = merge(
+      local.ctx.custom_roles, module.organization[0].custom_role_id
+    )
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      module.factory.iam_principals
+    )
+    project_ids = merge(
+      local.ctx.project_ids, module.factory.project_ids
+    )
+    storage_buckets = module.factory.storage_buckets
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
+    tag_values = merge(
+      local.ctx.tag_values,
+      local.org_tag_values
+    )
+  })
+  iam                   = lookup(each.value, "iam", {})
+  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  iam_bindings          = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
+  logging_sinks = {
+    for k, v in each.value.logging_sinks : k => v
+    if lookup(v, "destination", null) != null && lookup(v, "type", null) != null
   }
 }
