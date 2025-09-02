@@ -40,10 +40,6 @@ One of our objectives with FAST is to provide a lightweight reference design for
 
 <!-- TODO: move CI/CD documentation to its own file -->
 
-### Multitenant organizations
-
-FAST has built-in support for multitenancy implemented in [an add-on stage](./addons/1-resman-tenants/). Tenants can optionally be created with FAST compatibility, allowing them independent use of stages 1+ in their own context.
-
 ## Implementation
 
 There are many decisions and tasks required to convert an empty GCP organization to one that can host production environments safely. Arguably, FAST could expose those decisions as configuration options to allow for different outcomes. However, supporting all the possible combinations is almost impossible and leads to code which is hard to maintain efficiently.

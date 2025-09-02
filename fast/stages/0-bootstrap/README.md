@@ -1,7 +1,6 @@
-# FAST Light Bootstrap (Experimental)
+# FAST Organization Setup
 
 <!-- BEGIN TOC -->
-- [TODO](#todo)
 - [Quickstart](#quickstart)
   - [Prerequisites](#prerequisites)
   - [Select/configure a factory dataset](#selectconfigure-a-factory-dataset)
@@ -35,17 +34,9 @@
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-## TODO
-
-- [x] add support for log sinks to billing schema/code
-- [ ] minimal dataset
-- [ ] tenants dataset
-- [x] clean up classic dataset
-- [x] finish and review documentation
-
 This stage implements a flexible approach to organization bootstrapping and resource management, that offers full customization via YAML factories.
 
-It heavily relies on a new [project factory module](../../../modules/project-factory-experimental/) for folder and project configurations, and leverages a new approach to [context-based interpolation](../../../modules/project-factory-experimental/README.md#context-based-interpolation) that allows writing legible, portable YAML definitions.
+It heavily relies on a new [project factory module](../../../modules/project-factory/) for folder and project configurations, and leverages a new approach to [context-based interpolation](../../../modules/project-factory/README.md#context-based-interpolation) that allows writing legible, portable YAML definitions.
 
 The default set of YAML configuration files in the `data` folder mirrors the traditional FAST layout, and implements full compatibility with existing FAST stages like VPC-SC, security, networking, etc.
 
@@ -489,7 +480,7 @@ iam_bindings:
 
 ### Resource management hierarchy
 
-The folder hierarchy is managed via a filesystem tree of YAML configuration files, and leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation, which supports up to 3 levels of folders (4 or more can be easily implemented in the module if needed). The module documentation provides additional information on this factory usage and formats.
+The folder hierarchy is managed via a filesystem tree of YAML configuration files, and leverages the [project factory module](../../../modules/project-factory/README.md#folder-hierarchy) implementation, which supports up to 3 levels of folders (4 or more can be easily implemented in the module if needed). The module documentation provides additional information on this factory usage and formats.
 
 The default dataset implements a classic FAST layout, with top-level folders for stage 2 and stage 3, and can be easily tweaked by adding or removing any needed folder.
 
@@ -536,7 +527,7 @@ tag_bindings:
 
 ### Project factory
 
-The project factory is managed via a set of YAML configuration files, which like folders leverages the [project factory module](../../../modules/project-factory-experimental/README.md#folder-hierarchy) implementation. The module documentation provides additional information on this factory usage and formats.
+The project factory is managed via a set of YAML configuration files, which like folders leverages the [project factory module](../../../modules/project-factory/README.md#folder-hierarchy) implementation. The module documentation provides additional information on this factory usage and formats.
 
 The default dataset implements a classic FAST layout, with two top-level projects for log exports and IaC resources. Those projects can easily be changed, for example rooting them in a folder by specifying the folder id or context name in their `parent` attribute.
 
@@ -619,7 +610,7 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|---|---|
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [factory.tf](./factory.tf) | None | <code>project-factory-experimental</code> |  |
+| [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
 | [organization.tf](./organization.tf) | None | <code>organization</code> |  |

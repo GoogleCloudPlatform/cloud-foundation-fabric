@@ -26,7 +26,7 @@ The pattern implemented here by default allows management of a teams (or busines
 
 ## Design overview and choices
 
-The project factory optionally "consumes" resources created by preceding stages, by using their outputs as a source for [context interpolation](../../../modules/project-factory-experimental/README.md#context-based-interpolation):
+The project factory optionally "consumes" resources created by preceding stages, by using their outputs as a source for [context interpolation](../../../modules/project-factory/README.md#context-based-interpolation):
 
 - folder ids from the bootstrap stage and via `var.context.folder_ids`
 - project ids from the bootstrap and networking stages and via `var.context.project_ids`
@@ -41,7 +41,7 @@ Additionally, some of the values defined earlier in the FAST apply cycle are set
 - billing account
 - storage location
 
-The project factory stage is a thin wrapper of the underlying [project-factory module](../../../modules/project-factory-experimental/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
+The project factory stage is a thin wrapper of the underlying [project-factory module](../../../modules/project-factory/), which in turn exposes the full interface of the [project](../../../modules/project/) and [folder](../../../modules/folder/) modules.
 
 ## How to run this stage
 
@@ -350,7 +350,7 @@ automation:
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | Project factory. | <code>project-factory-experimental</code> |  |
+| [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |

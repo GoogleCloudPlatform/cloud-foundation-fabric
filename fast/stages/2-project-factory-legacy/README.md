@@ -39,7 +39,7 @@ The project factory stage is a thin wrapper of the underlying [project-factory m
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../0-bootstrap/) and [resource management](../1-resman/) "foundational stages". As mentioned above it runs in parallel with other stage 2 and can leverage resources they create but does not depend on them.
+This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured there.
 
 ### Resource Management stage configuration
 
